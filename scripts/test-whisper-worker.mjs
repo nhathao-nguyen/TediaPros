@@ -28,8 +28,22 @@ async function assertOutput(path) {
   }
 }
 
-const worker = resolve(arg('--worker') || 'resources/local-assets/whisper-cpp/whisper-local-worker.exe')
-const model = resolve(arg('--model') || join(process.env.APPDATA || '', 'tedia-pros', 'whisper-cpp-models', 'base', 'ggml-base.bin'))
+const worker = resolve(
+  arg('--worker') ||
+    (process.env.TEDIAPROS_RUNTIME_DIR
+      ? join(process.env.TEDIAPROS_RUNTIME_DIR, 'whisper-cpp', 'whisper-local-worker.exe')
+      : process.env.APPDATA
+        ? join(process.env.APPDATA, 'tedia-pros', 'runtime', 'whisper-cpp', 'whisper-local-worker.exe')
+        : 'whisper-local-worker.exe')
+)
+const model = resolve(
+  arg('--model') ||
+    (process.env.TEDIAPROS_RUNTIME_DIR
+      ? join(process.env.TEDIAPROS_RUNTIME_DIR, 'models', 'whisper-cpp', 'base', 'ggml-base.bin')
+      : process.env.APPDATA
+        ? join(process.env.APPDATA, 'tedia-pros', 'models', 'whisper-cpp', 'base', 'ggml-base.bin')
+        : 'ggml-base.bin')
+)
 const input = resolve(arg('--input') || '')
 const requestedOutput = arg('--output-dir')
 const outputRoot = requestedOutput ? resolve(requestedOutput) : await mkdtemp(join(tmpdir(), 'tedia-whisper-worker-e2e-'))

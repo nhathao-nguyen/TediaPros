@@ -4,14 +4,15 @@ import { constants } from 'node:fs'
 import { basename, join } from 'node:path'
 import { binDir, resolveFfmpeg } from './deps'
 import { engineNeedsUpdate, markEngineInstalled } from './engines-update'
-import { copyPackagedLocalAsset, packagedLocalAssetRoots, resolvePackagedLocalAsset } from './localAssets'
+import { copyDirectory, replaceDirectoryAtomic, findFile } from './localAssets'
+import { resolveRuntimeExecutable, runtimeKindDir, runtimeSearchRoots } from './runtimeResolver'
 import { debugRaw, errLabel, logError, logInfo } from './logger'
 import type { OcrEngineStatus, OcrProgress, OcrResult } from '../shared/types'
 
 const isWin = process.platform === 'win32'
 const isMac = process.platform === 'darwin'
 function engineDir(): string {
-  return join(binDir(), 'ocr-engine')
+  return runtimeKindDir('ocr')
 }
 function enginePath(): string {
   return join(engineDir(), isWin ? 'ocr-engine.exe' : 'ocr-engine')
@@ -27,13 +28,7 @@ async function exists(p: string): Promise<boolean> {
 }
 
 async function resolveEnginePath(): Promise<string | null> {
-  const managed = [
-    enginePath(),
-    join(process.env.APPDATA || '', 'tediapros', 'bin', 'ocr-engine', isWin ? 'ocr-engine.exe' : 'ocr-engine')
-  ]
-  for (const candidate of managed) if (candidate && await exists(candidate)) return candidate
-  const packaged = await resolvePackagedLocalAsset('ocr', [isWin ? 'ocr-engine.exe' : 'ocr-engine'])
-  return packaged?.path ?? null
+  return resolveRuntimeExecutable('ocr', isWin ? ['ocr-engine.exe'] : ['ocr-engine'])
 }
 
 function runCapture(command: string, args: string[], timeoutMs = 15_000): Promise<{ code: number; out: string }> {
@@ -95,24 +90,44 @@ async function probeOcr(path: string): Promise<{ healthy: boolean; version: stri
 
 export async function ocrEngineStatus(): Promise<OcrEngineStatus> {
   const path = await resolveEnginePath()
-  if (!path) return { has: false, healthy: false, needsUpdate: false, message: 'Thiếu OCR asset local có manifest.' }
+  if (!path) return { has: false, healthy: false, needsUpdate: false, message: 'Chưa cài đặt OCR runtime.' }
   const probe = await probeOcr(path)
   return { has: true, needsUpdate: await engineNeedsUpdate('ocr', true), ...probe }
 }
 
 export async function installOcrEngine(onProgress: (p: number) => void): Promise<void> {
-  await mkdir(binDir(), { recursive: true })
-  logInfo('Dịch màn hình: đang lấy asset OCR local…')
+  const targetDir = engineDir()
+  await mkdir(targetDir, { recursive: true })
+  logInfo('Dịch màn hình: đang kiểm tra và cài đặt asset OCR…')
   onProgress(10)
-  const copied = await copyPackagedLocalAsset('ocr', engineDir(), [isWin ? 'ocr-engine.exe' : 'ocr-engine'])
-  if (!copied) throw new Error(`Thiếu OCR asset local có manifest. Đặt bundle vào ${packagedLocalAssetRoots()[0]} rồi thử lại.`)
-  if (!isWin && (await exists(enginePath()))) {
-    await chmod(enginePath(), 0o755)
+
+  const exeName = isWin ? 'ocr-engine.exe' : 'ocr-engine'
+  const devRoots = runtimeSearchRoots('ocr')
+  let candidateDir: string | null = null
+  for (const root of devRoots) {
+    if (root.toLowerCase() === targetDir.toLowerCase()) continue
+    const found = await findFile(root, [exeName])
+    if (found) {
+      candidateDir = root
+      break
+    }
   }
+
+  if (candidateDir) {
+    const staging = `${targetDir}.staging`
+    await rm(staging, { recursive: true, force: true }).catch(() => {})
+    await copyDirectory(candidateDir, staging)
+    onProgress(70)
+    await replaceDirectoryAtomic(staging, targetDir)
+  }
+
   const path = await resolveEnginePath()
-  if (!path) throw new Error('Không tìm thấy OCR binary sau khi import asset local.')
+  if (!path) throw new Error('Không tìm thấy OCR binary sau khi cài đặt runtime.')
+  if (!isWin) {
+    await chmod(path, 0o755).catch(() => {})
+  }
   const probe = await probeOcr(path)
-  if (!probe.healthy) throw new Error(probe.message || 'OCR asset local không qua probe.')
+  if (!probe.healthy) throw new Error(probe.message || 'OCR binary không qua kiểm tra probe.')
   await markEngineInstalled('ocr')
   onProgress(100)
   logInfo('Dịch màn hình: đã cài xong công cụ.')
@@ -120,7 +135,6 @@ export async function installOcrEngine(onProgress: (p: number) => void): Promise
 
 let child: ChildProcess | null = null
 
-/** Huy giua chung: dong tien trinh, video dai co the chay vai phut. */
 export function cancelOcr(): void {
   if (!child) return
   try {

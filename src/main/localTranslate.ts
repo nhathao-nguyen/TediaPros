@@ -20,9 +20,7 @@ import {
   type SemanticGroup
 } from './localTranslatePolicy'
 import { debugRaw, errLabel, logInfo, logWarn } from './logger'
-import type { DichKeyStatus, SrtBlock } from '../shared/types'
-
-const DEFAULT_SERVER_URL = 'http://192.168.1.19:8000'
+import { DEFAULT_AI_SERVER_URL, type DichKeyStatus, type SrtBlock } from '../shared/types'
 
 export type { TranslationMode }
 
@@ -33,6 +31,7 @@ export interface TranslateOptions {
   sourceLanguage?: string | null
   contextRadius?: number
   signal?: AbortSignal
+  model?: string
 }
 
 function keyFile(): string {
@@ -67,7 +66,7 @@ export async function hasLocalKey(): Promise<boolean> {
 }
 
 function normalizeUrl(url?: string): string {
-  const target = (url || DEFAULT_SERVER_URL).trim()
+  const target = (url || DEFAULT_AI_SERVER_URL).trim()
   return target.replace(/\/+$/, '')
 }
 

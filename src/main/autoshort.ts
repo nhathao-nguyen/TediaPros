@@ -36,10 +36,11 @@ import { localTranslateSrt, loadLocalKey, checkLocalTranslateKey } from './local
 import { generateSpeech, generateVoiceClone, getTtsModels, checkTtsServerHealth } from './tts'
 import { burnSubtitle, cancelBurn, probeBurnMedia } from './burn'
 import { parseSrt, serializeSrt, type SubtitleCue } from '../shared/subtitles'
-import { clampAlignedCueTimeline, fuseWhisperAndOcr } from '../shared/autoShortAlignment'
 import { validateAutoShortStartRequest } from '../shared/autoShortContract'
-import type {
-  AutoShortBatchResult,
+import { fuseWhisperAndOcr, clampAlignedCueTimeline } from '../shared/autoShortAlignment'
+import {
+  DEFAULT_AI_SERVER_URL,
+  type AutoShortBatchResult,
   AutoShortDependencyProgress,
   AutoShortDependencyStatus,
   AutoShortReadiness,
@@ -53,6 +54,9 @@ import type {
   AutoShortStartRequest,
   AlignedCue,
   BurnReq,
+  DichKeyStatus,
+  TtsModelInfo,
+  TtsServerHealth,
   WhisperProgress
 } from '../shared/types'
 
@@ -680,7 +684,7 @@ async function rephraseDubbingCue(
 
     if (config.translateProvider === 'local') {
       const localKey = await loadLocalKey()
-      const serverUrl = config.translateServerUrl || 'http://127.0.0.1:8000'
+      const serverUrl = config.translateServerUrl || DEFAULT_AI_SERVER_URL
       const base = serverUrl.replace(/\/+$/u, '')
       const res = await fetch(`${base}/v1/chat/completions`, {
         method: 'POST',
@@ -755,10 +759,28 @@ async function synthesizeVoice(
   const language = resolveAutoShortTtsLanguage(config, detectedLanguage)
   if (language === 'auto' || !language) throw new Error('Không xác định được ngôn ngữ TTS; hãy chọn ngôn ngữ nguồn hoặc đích.')
   const models = await getTtsModels(config.ttsServerUrl, localKey)
-  const selectedModel = models.models.find((model) => model.id === (config.ttsModel || 'tts-vietnamese'))
-  if (selectedModel) {
-    const ttsCapabilityError = validateAutoShortTtsModel(selectedModel, language)
-    if (ttsCapabilityError) throw new Error(ttsCapabilityError)
+  const selectedModel = config.ttsModel
+    ? models.models.find((model: TtsModelInfo) => model.id === config.ttsModel)
+    : (models.models.find((m) => m.available !== false) || models.models[0])
+  if (!selectedModel) {
+    throw new Error(config.ttsModel ? `Model TTS "${config.ttsModel}" không tồn tại trên server.` : 'Không tìm thấy model TTS khả dụng trên server.')
+  }
+  const ttsCapabilityError = validateAutoShortTtsModel(selectedModel, language)
+  if (ttsCapabilityError) throw new Error(ttsCapabilityError)
+
+  const effectiveModel = selectedModel.id
+  let effectiveVoice: string | undefined = undefined
+  if (selectedModel.supports_named_voice !== false) {
+    if (config.ttsVoice && config.ttsVoice !== 'default') {
+      if (selectedModel.voices && selectedModel.voices.length > 0 && !selectedModel.voices.includes(config.ttsVoice) && config.ttsVoice !== selectedModel.default_voice) {
+        logWarn(`[AutoShort] Voice "${config.ttsVoice}" không nằm trong capability của model ${selectedModel.id}; dùng default voice ${selectedModel.default_voice || 'default'}.`)
+        effectiveVoice = selectedModel.default_voice || selectedModel.voices[0]
+      } else {
+        effectiveVoice = config.ttsVoice
+      }
+    } else {
+      effectiveVoice = selectedModel.default_voice
+    }
   }
 
   for (let cueIndex = 0; cueIndex < cues.length; cueIndex++) {
@@ -774,8 +796,8 @@ async function synthesizeVoice(
           serverUrl: config.ttsServerUrl,
           text: cue.text,
           language,
-          model: config.ttsModel || 'tts-vietnamese',
-          voice: config.ttsVoice || 'Mai Anh',
+          model: effectiveModel,
+          voice: effectiveVoice,
           speed: config.ttsSpeed || 1,
           apiKey: localKey,
           options: config.ttsOptions
@@ -842,8 +864,8 @@ async function synthesizeVoice(
             serverUrl: config.ttsServerUrl,
             text: rephrasedText.trim(),
             language,
-            model: config.ttsModel || 'tts-vietnamese',
-            voice: config.ttsVoice || 'Mai Anh',
+            model: effectiveModel,
+            voice: effectiveVoice,
             speed: config.ttsSpeed || 1,
             apiKey: localKey,
             options: config.ttsOptions
@@ -1231,17 +1253,22 @@ async function preflight(job: AutoShortJob): Promise<void> {
   }
   if (config.translateTarget !== 'none' && config.translateProvider === 'local') {
     const key = await loadLocalKey()
-    const health = await preflightStep('kiểm tra dịch nội bộ', () => checkLocalTranslateKey(config.translateServerUrl, key))
+    const health = await preflightStep<DichKeyStatus>('kiểm tra dịch nội bộ', () => checkLocalTranslateKey(config.translateServerUrl, key))
     if (!health.ok) throw new Error(health.message || 'Không kết nối được server dịch nội bộ')
   }
   if (config.ttsEnabled) {
     const key = await loadLocalKey()
-    const health = await preflightStep('kiểm tra TTS', () => checkTtsServerHealth(config.ttsServerUrl, key))
+    const health = await preflightStep<TtsServerHealth>('kiểm tra TTS', () => checkTtsServerHealth(config.ttsServerUrl, key))
     if (!health.ok) throw new Error(health.error || 'Không kết nối được server TTS')
-    const models = await preflightStep('đọc danh sách model TTS', () => getTtsModels(config.ttsServerUrl, key))
-    const selectedModel = models.models.find((model) => model.id === (config.ttsModel || 'tts-vietnamese'))
+    const models = await preflightStep<{ ok: boolean; models: TtsModelInfo[]; error?: string }>('đọc danh sách model TTS', () => getTtsModels(config.ttsServerUrl, key))
+    const selectedModel = config.ttsModel
+      ? models.models.find((model: TtsModelInfo) => model.id === config.ttsModel)
+      : (models.models.find((m) => m.available !== false) || models.models[0])
     if (!models.ok || !selectedModel) {
-      throw new Error(models.error || 'Model TTS đã chọn không khả dụng')
+      throw new Error(models.error || (config.ttsModel ? `Model TTS "${config.ttsModel}" không tồn tại trên server.` : 'Không tìm thấy model TTS khả dụng trên server.'))
+    }
+    if (selectedModel.available === false) {
+      throw new Error(`Model TTS ${selectedModel.id} hiện không khả dụng trên server.`)
     }
     const ttsLanguage = resolveAutoShortTtsLanguage(config)
     const ttsCapabilityError = validateAutoShortTtsModel(selectedModel, ttsLanguage)

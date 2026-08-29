@@ -3,69 +3,17 @@ import { mkdir, readFile, writeFile, stat } from 'node:fs/promises'
 import { basename, dirname, join } from 'node:path'
 import { randomUUID } from 'node:crypto'
 import { logInfo, logWarn, errLabel } from './logger'
-import type {
-  TtsCloneRequest,
-  TtsGenerateResult,
-  TtsModelInfo,
-  TtsServerHealth,
-  TtsSpeechRequest
+import {
+  DEFAULT_AI_SERVER_URL,
+  type TtsCloneRequest,
+  type TtsGenerateResult,
+  type TtsModelInfo,
+  type TtsServerHealth,
+  type TtsSpeechRequest
 } from '../shared/types'
 
-const DEFAULT_SERVER_URL = 'http://192.168.1.19:8000'
-
-const VIENEU_PRESET_VOICES = [
-  'Minh Đức',
-  'Phạm Tuyên',
-  'Thái Sơn',
-  'Xuân Vĩnh',
-  'Thanh Bình',
-  'Trúc Ly',
-  'Ngọc Linh',
-  'Đoan Trang',
-  'Mai Anh',
-  'Thục Đoan',
-  'Minh Triết',
-  'Thùy Dung',
-  'Quang Sơn',
-  'Ngọc Trân',
-  'Mỹ Duyên',
-  'Quỳnh Anh',
-  'Đức Trí',
-  'Kim Thanh',
-  'Ngọc Huyền',
-  'Adam'
-]
-
-const CHATTERBOX_SUPPORTED_LANGUAGES = [
-  'ar',
-  'da',
-  'de',
-  'el',
-  'en',
-  'es',
-  'fi',
-  'fr',
-  'he',
-  'hi',
-  'it',
-  'ja',
-  'ko',
-  'ms',
-  'nl',
-  'no',
-  'pl',
-  'pt',
-  'ru',
-  'sv',
-  'sw',
-  'tr',
-  'zh'
-]
-
-const TTS_MODEL_IDS = new Set(['tts-vietnamese', 'tts-multilingual'])
-
 function normalizeUrl(url?: string): string {
-  const target = (url || DEFAULT_SERVER_URL).trim()
+  const target = (url || DEFAULT_AI_SERVER_URL).trim()
   return target.replace(/\/+$/, '')
 }
 
@@ -191,34 +139,47 @@ export async function getTtsModels(
       if (Array.isArray(candidate)) rawList = candidate
     }
     const models: TtsModelInfo[] = rawList.flatMap((raw: unknown) => {
-        if (!raw || typeof raw !== 'object') return []
-        const m = raw as Record<string, unknown>
-        const capabilities = m.capabilities && typeof m.capabilities === 'object'
-          ? (m.capabilities as Record<string, unknown>)
-          : {}
-        const id = typeof m.id === 'string' ? m.id : typeof m.logical_model === 'string' ? m.logical_model : ''
-        if (!TTS_MODEL_IDS.has(id)) return []
-        const provider = typeof m.provider === 'string' ? m.provider : id === 'tts-vietnamese' ? 'vieneu' : 'chatterbox'
-        const languages = capabilities.supported_languages
-        const voices = capabilities.preset_voice_names
-        const supportedOptions = capabilities.supported_options
-        const defaultOptions = capabilities.default_options
-        return [{
-          id,
-          name: typeof m.name === 'string' ? m.name : typeof m.physical_model === 'string' ? m.physical_model : id,
-          provider,
-          logical_model: typeof m.logical_model === 'string' ? m.logical_model : id,
-          available: m.available !== false,
-          languages: Array.isArray(languages) ? languages.filter((v): v is string => typeof v === 'string') : [],
-          default_voice: typeof capabilities.default_voice === 'string' ? capabilities.default_voice : undefined,
-          voices: Array.isArray(voices) ? voices.filter((v): v is string => typeof v === 'string') : [],
-          supports_voice_clone: capabilities.supports_voice_clone === true,
-          supports_named_voice: capabilities.supports_named_voice === true,
-          supported_options: Array.isArray(supportedOptions)
-            ? supportedOptions.filter((v): v is string => typeof v === 'string')
-            : [],
-          default_options: defaultOptions && typeof defaultOptions === 'object' ? defaultOptions as Record<string, unknown> : undefined
-        }]
+      if (!raw || typeof raw !== 'object') return []
+      const m = raw as Record<string, unknown>
+      const provider = typeof m.provider === 'string' ? m.provider.trim() : ''
+      // Skip pure LLM models such as ollama chat completion models
+      if (provider === 'ollama') return []
+
+      const capabilities = m.capabilities && typeof m.capabilities === 'object'
+        ? (m.capabilities as Record<string, unknown>)
+        : {}
+      const id = typeof m.id === 'string' ? m.id.trim() : typeof m.logical_model === 'string' ? m.logical_model.trim() : ''
+      if (!id) return []
+
+      const effectiveProvider = provider || (id === 'tts-vietnamese' ? 'vieneu' : id === 'tts-multilingual' ? 'chatterbox' : 'tts')
+      const languages = capabilities.supported_languages
+      const voices = capabilities.preset_voice_names
+      const supportedOptions = capabilities.supported_options
+      const defaultOptions = capabilities.default_options
+
+      const isNamedVoice = typeof capabilities.supports_named_voice === 'boolean'
+        ? capabilities.supports_named_voice
+        : (Array.isArray(voices) && voices.length > 0)
+      const isVoiceClone = typeof capabilities.supports_voice_clone === 'boolean'
+        ? capabilities.supports_voice_clone
+        : true
+
+      return [{
+        id,
+        name: typeof m.name === 'string' && m.name.trim() ? m.name.trim() : typeof m.physical_model === 'string' && m.physical_model.trim() ? m.physical_model.trim() : id,
+        provider: effectiveProvider,
+        logical_model: typeof m.logical_model === 'string' && m.logical_model.trim() ? m.logical_model.trim() : id,
+        available: m.available !== false,
+        languages: Array.isArray(languages) ? languages.filter((v): v is string => typeof v === 'string' && Boolean(v.trim())) : [],
+        default_voice: typeof capabilities.default_voice === 'string' && capabilities.default_voice.trim() ? capabilities.default_voice.trim() : undefined,
+        voices: Array.isArray(voices) ? voices.filter((v): v is string => typeof v === 'string' && Boolean(v.trim())) : [],
+        supports_voice_clone: isVoiceClone,
+        supports_named_voice: isNamedVoice,
+        supported_options: Array.isArray(supportedOptions)
+          ? supportedOptions.filter((v): v is string => typeof v === 'string')
+          : [],
+        default_options: defaultOptions && typeof defaultOptions === 'object' ? defaultOptions as Record<string, unknown> : undefined
+      }]
     })
     if (models.length === 0) {
       return { ok: false, models: [], error: 'tts-server không trả về model TTS hợp lệ' }
@@ -230,26 +191,20 @@ export async function getTtsModels(
   }
 }
 
-function cleanOptionsForProvider(
-  provider: 'vieneu' | 'chatterbox',
-  options?: Record<string, any>
-): Record<string, any> {
-  if (!options) return {}
+function cleanOptions(options?: Record<string, any>, supportedOptions?: string[]): Record<string, any> {
+  if (!options || typeof options !== 'object') return {}
   const clean: Record<string, any> = {}
-  if (provider === 'vieneu') {
-    if (typeof options.denoise === 'boolean') clean.denoise = options.denoise
-    if (typeof options.temperature === 'number') clean.temperature = options.temperature
-    if (typeof options.top_p === 'number') clean.top_p = options.top_p
-    if (typeof options.repetition_penalty === 'number') clean.repetition_penalty = options.repetition_penalty
-    if (typeof options.top_k === 'number') clean.top_k = options.top_k
-  } else {
-    // chatterbox options
-    if (typeof options.temperature === 'number') clean.temperature = options.temperature
-    if (typeof options.top_p === 'number') clean.top_p = options.top_p
-    if (typeof options.repetition_penalty === 'number') clean.repetition_penalty = options.repetition_penalty
-    if (typeof options.exaggeration === 'number') clean.exaggeration = options.exaggeration
-    if (typeof options.cfg_weight === 'number') clean.cfg_weight = options.cfg_weight
-    if (typeof options.min_p === 'number') clean.min_p = options.min_p
+  const allowed = supportedOptions && supportedOptions.length > 0 ? new Set(supportedOptions) : null
+
+  for (const [key, value] of Object.entries(options)) {
+    if (allowed && !allowed.has(key)) continue
+    if (typeof value === 'boolean') {
+      clean[key] = value
+    } else if (typeof value === 'number' && Number.isFinite(value)) {
+      clean[key] = value
+    } else if (typeof value === 'string' && value.trim()) {
+      clean[key] = value.trim()
+    }
   }
   return clean
 }
@@ -265,29 +220,23 @@ export async function generateSpeech(
     return { ok: false, error: 'Văn bản không được để trống' }
   }
 
-  const isVieneu = (req.model || 'tts-vietnamese') === 'tts-vietnamese'
-  const provider = isVieneu ? 'vieneu' : 'chatterbox'
-  const cleanOptions = cleanOptionsForProvider(provider, req.options)
-
-  let validVoice: string | null = null
-  if (isVieneu) {
-    validVoice = req.voice && VIENEU_PRESET_VOICES.includes(req.voice) ? req.voice : 'Adam'
-  } else {
-    validVoice = req.voice === 'default' ? 'default' : null
-  }
-
+  const cleanOpts = cleanOptions(req.options)
   const safeSpeed = Number.isFinite(req.speed) ? Math.min(2, Math.max(0.5, req.speed!)) : 1.0
   const payload: Record<string, any> = {
     input: text,
     text: text,
     language: req.language || 'vi',
-    model: req.model || 'tts-vietnamese',
-    voice: validVoice,
     speed: safeSpeed,
-    options: cleanOptions
+    options: cleanOpts
+  }
+  if (req.model && req.model.trim()) {
+    payload.model = req.model.trim()
+  }
+  if (req.voice && req.voice.trim() && req.voice.trim() !== 'default') {
+    payload.voice = req.voice.trim()
   }
 
-  logInfo(`[TTS] Requesting speech from ${base}/v1/audio/speech (${text.length} chars)`)
+  logInfo(`[TTS] Requesting speech from ${base}/v1/audio/speech (${text.length} chars, model=${payload.model || 'auto'}, voice=${payload.voice || 'default'})`)
 
   try {
     const res = await fetch(`${base}/v1/audio/speech`, {
@@ -329,7 +278,7 @@ export async function generateSpeech(
       credits: parseFloat(res.headers.get('x-tts-credits') || '0'),
       model: res.headers.get('x-tts-model') || req.model,
       provider: res.headers.get('x-tts-provider') || undefined,
-      voice: res.headers.get('x-tts-voice') ? decodeURIComponent(res.headers.get('x-tts-voice')!) : (validVoice || req.voice),
+      voice: res.headers.get('x-tts-voice') ? decodeURIComponent(res.headers.get('x-tts-voice')!) : req.voice,
       speed: parseFloat(res.headers.get('x-tts-speed') || '1.0')
     }
   } catch (err: any) {
@@ -358,26 +307,24 @@ export async function generateVoiceClone(
     const fileName = basename(req.referenceAudioPath)
     const blob = new Blob([audioFileBuffer], { type: audioMimeType(fileName) })
 
-    const isVieneu = (req.model || 'tts-vietnamese') === 'tts-vietnamese'
-    const provider = isVieneu ? 'vieneu' : 'chatterbox'
-    const cleanOptions = cleanOptionsForProvider(provider, req.options)
+    const cleanOpts = cleanOptions(req.options)
 
     const form = new FormData()
     form.append('text', text)
     form.append('language', req.language || 'vi')
-    if (req.model) form.append('model', req.model)
-    if (req.referenceTranscript) form.append('reference_transcript', req.referenceTranscript)
+    if (req.model && req.model.trim()) form.append('model', req.model.trim())
+    if (req.referenceTranscript && req.referenceTranscript.trim()) form.append('reference_transcript', req.referenceTranscript.trim())
     const safeSpeed = Number.isFinite(req.speed) ? Math.min(2, Math.max(0.5, req.speed!)) : 1.0
     form.append('speed', String(safeSpeed))
-    if (Object.keys(cleanOptions).length > 0) {
-      form.append('options_json', JSON.stringify(cleanOptions))
+    if (Object.keys(cleanOpts).length > 0) {
+      form.append('options_json', JSON.stringify(cleanOpts))
     }
     // `voice` is deliberately omitted for clone requests. The server treats the
     // reference file as the voice and only accepts preset/default names during
     // validation; the UI's clone name is local metadata, not an API voice id.
     form.append('reference_audio', blob, fileName)
 
-    logInfo(`[TTS] Requesting voice clone from ${base}/v1/audio/voice-clone with ${fileName}`)
+    logInfo(`[TTS] Requesting voice clone from ${base}/v1/audio/voice-clone with ${fileName} (model=${req.model || 'auto'})`)
 
     const res = await fetch(`${base}/v1/audio/voice-clone`, {
       method: 'POST',

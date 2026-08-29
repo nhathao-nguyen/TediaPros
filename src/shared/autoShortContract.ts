@@ -18,8 +18,6 @@ const PROVIDERS = new Set(['gemini', 'openai', 'local'])
 const DISPLAY_STYLES = new Set<SubtitleDisplayStyle>(['standard', 'word-reveal', 'word-highlight'])
 const LAYOUTS = new Set<SubtitleLayoutProfile>(['readable', 'social', 'vertical'])
 const MODELS = new Set(['base', 'small', 'medium'])
-const TTS_MODELS = new Set(['tts-vietnamese', 'tts-multilingual'])
-const LANGUAGES = new Set(['none', 'vi', 'en', 'zh', 'ja', 'ko'])
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return Boolean(value) && typeof value === 'object' && !Array.isArray(value)
@@ -181,7 +179,7 @@ function validateConfigRecord(raw: Record<string, unknown>): AutoShortConfig | s
     }
   }
   if (typeof raw.lamMo !== 'boolean' || typeof raw.ttsEnabled !== 'boolean' || typeof raw.voiceOverMode !== 'boolean') return 'Cấu hình bật/tắt không hợp lệ.'
-  if (raw.translateTarget !== 'none' && !LANGUAGES.has(raw.translateTarget as string)) return 'Ngôn ngữ đích không hợp lệ.'
+  if (typeof raw.translateTarget !== 'string' || !raw.translateTarget.trim() || raw.translateTarget.length > 64) return 'Ngôn ngữ đích không hợp lệ.'
   if (!PROVIDERS.has(raw.translateProvider as string)) return 'Nhà cung cấp dịch không hợp lệ.'
   if (raw.translateServerUrl != null) {
     const error = url(raw.translateServerUrl, 'Server dịch')
@@ -191,7 +189,7 @@ function validateConfigRecord(raw: Record<string, unknown>): AutoShortConfig | s
     const error = url(raw.ttsServerUrl, 'Server TTS')
     if (error) return error
   }
-  if (raw.ttsModel != null && (typeof raw.ttsModel !== 'string' || !TTS_MODELS.has(raw.ttsModel))) {
+  if (raw.ttsModel != null && (typeof raw.ttsModel !== 'string' || !raw.ttsModel.trim() || raw.ttsModel.length > 128)) {
     return 'Mô hình TTS không hợp lệ.'
   }
   for (const [key, label] of [

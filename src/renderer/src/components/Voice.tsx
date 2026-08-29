@@ -1,40 +1,16 @@
 import type { JSX } from 'react'
 import { useEffect, useRef, useState } from 'react'
-import type {
-  ClonedVoice,
-  TtsCloneRequest,
-  TtsGenerateResult,
-  TtsModelInfo,
-  TtsServerHealth,
-  TtsSpeechRequest
+import {
+  DEFAULT_AI_SERVER_URL,
+  type ClonedVoice,
+  type TtsCloneRequest,
+  type TtsGenerateResult,
+  type TtsModelInfo,
+  type TtsServerHealth,
+  type TtsSpeechRequest
 } from '../../../shared/types'
 import { localMediaSource } from '../lib/localMedia'
 import { usePersistedState } from '../lib/persist'
-
-const DEFAULT_SERVER_URL = 'http://192.168.1.19:8000'
-
-const VIENEU_VOICES = [
-  { name: 'Minh Đức', gender: 'Nam', region: 'Bắc' },
-  { name: 'Mai Anh', gender: 'Nữ', region: 'Bắc' },
-  { name: 'Quỳnh Anh', gender: 'Nữ', region: 'Bắc' },
-  { name: 'Kim Thanh', gender: 'Nữ', region: 'Bắc' },
-  { name: 'Phạm Tuyên', gender: 'Nam', region: 'Bắc' },
-  { name: 'Thái Sơn', gender: 'Nam', region: 'Bắc' },
-  { name: 'Xuân Vĩnh', gender: 'Nam', region: 'Bắc' },
-  { name: 'Thanh Bình', gender: 'Nam', region: 'Bắc' },
-  { name: 'Trúc Ly', gender: 'Nữ', region: 'Nam' },
-  { name: 'Ngọc Linh', gender: 'Nữ', region: 'Nam' },
-  { name: 'Đoan Trang', gender: 'Nữ', region: 'Nam' },
-  { name: 'Thục Đoan', gender: 'Nữ', region: 'Nam' },
-  { name: 'Minh Triết', gender: 'Nam', region: 'Nam' },
-  { name: 'Thùy Dung', gender: 'Nữ', region: 'Nam' },
-  { name: 'Quang Sơn', gender: 'Nam', region: 'Nam' },
-  { name: 'Ngọc Trân', gender: 'Nữ', region: 'Nam' },
-  { name: 'Mỹ Duyên', gender: 'Nữ', region: 'Nam' },
-  { name: 'Đức Trí', gender: 'Nam', region: 'Nam' },
-  { name: 'Ngọc Huyền', gender: 'Nữ', region: 'Nam' },
-  { name: 'Adam', gender: 'Nam', region: 'Chuẩn' }
-]
 
 export interface LanguageOption {
   code: string
@@ -114,7 +90,7 @@ interface HistoryItem {
 
 export default function Voice(): JSX.Element {
   // Server connection config
-  const [serverUrl, setServerUrl] = usePersistedState('tblao.tts.serverUrl', DEFAULT_SERVER_URL)
+  const [serverUrl, setServerUrl] = usePersistedState('tblao.ai.serverUrl', DEFAULT_AI_SERVER_URL)
   const [apiKey, setApiKey] = usePersistedState('tblao.tts.apiKey', '')
   const [showApiKey, setShowApiKey] = useState(false)
   const [serverStatus, setServerStatus] = useState<'checking' | 'online' | 'offline'>('checking')
@@ -156,19 +132,38 @@ export default function Voice(): JSX.Element {
 
   const audioRef = useRef<HTMLAudioElement | null>(null)
 
-  const ttsModels = models.filter((model) => model.id === 'tts-vietnamese' || model.id === 'tts-multilingual')
-  const selectedModelInfo = ttsModels.find((model) => model.id === selectedModel)
-  const isVieneu = selectedModelInfo?.provider === 'vieneu' || selectedModel === 'tts-vietnamese'
+  const ttsModels = models.filter(
+    (m) =>
+      m.provider !== 'ollama' &&
+      (m.languages?.length ||
+        m.voices?.length ||
+        m.supports_named_voice ||
+        m.supports_voice_clone ||
+        m.id.startsWith('tts') ||
+        m.provider === 'vieneu' ||
+        m.provider === 'chatterbox' ||
+        m.logical_model?.startsWith('tts'))
+  )
+  const selectedModelInfo = ttsModels.find((model) => model.id === selectedModel) || ttsModels[0]
   const modelLanguages = selectedModelInfo?.languages || []
   const modelVoices = selectedModelInfo?.voices || []
-  const displayedVoices = isVieneu
-    ? modelVoices
-    : selectedModelInfo
-      ? [selectedModelInfo.default_voice || 'default']
-      : []
-  const languageOptions = SUPPORTED_LANGUAGES.filter((lang) =>
-    modelLanguages.includes(lang.code) || (lang.code === 'vi' && modelLanguages.includes('vie'))
-  )
+  const defaultModelVoice = selectedModelInfo?.default_voice || (modelVoices[0] || 'default')
+  const displayedVoices =
+    selectedModelInfo?.supports_named_voice === false
+      ? [defaultModelVoice]
+      : modelVoices.length > 0
+        ? modelVoices
+        : [defaultModelVoice]
+
+  // Dynamic language options based on model capabilities
+  const languageOptions = modelLanguages.map((code) => {
+    const canonical = code.trim().toLowerCase().split(/[-_]/u)[0]
+    const found = SUPPORTED_LANGUAGES.find(
+      (l) => l.code === code || l.code === canonical || (canonical === 'vie' && l.code === 'vi')
+    )
+    if (found) return found
+    return { code, name: code.toUpperCase(), flag: '🌐' }
+  })
 
   // Check health and load models
   const checkConnection = async (targetUrl = serverUrl, targetKey = apiKey): Promise<void> => {
@@ -189,6 +184,29 @@ export default function Voice(): JSX.Element {
         const mRes = await window.api.ttsGetModels(cleanUrl, targetKey.trim())
         if (mRes.ok && mRes.models.length > 0) {
           setModels(mRes.models)
+          const availableTts = mRes.models.filter(
+            (m) =>
+              m.provider !== 'ollama' &&
+              (m.languages?.length ||
+                m.voices?.length ||
+                m.supports_named_voice ||
+                m.supports_voice_clone ||
+                m.id.startsWith('tts') ||
+                m.provider === 'vieneu' ||
+                m.provider === 'chatterbox' ||
+                m.logical_model?.startsWith('tts'))
+          )
+          const matching = availableTts.find((m) => m.id === selectedModel)
+          if (!matching && availableTts.length > 0) {
+            const fallbackModel = availableTts.find((m) => m.available !== false) || availableTts[0]
+            setSelectedModel(fallbackModel.id)
+            const langs = fallbackModel.languages || []
+            if (langs.length > 0 && !langs.includes(selectedLanguage)) {
+              setSelectedLanguage(langs[0])
+            }
+            const fallbackVoice = fallbackModel.default_voice || fallbackModel.voices?.[0] || 'default'
+            setSelectedVoice(fallbackVoice)
+          }
         } else {
           setError(mRes.error || 'Không tải được capability TTS từ server')
         }
@@ -211,12 +229,16 @@ export default function Voice(): JSX.Element {
   useEffect(() => {
     if (!selectedModelInfo) return
     const languages = selectedModelInfo.languages || []
-    if (!languages.includes(selectedLanguage)) {
-      setSelectedLanguage(languages[0] || '')
+    if (languages.length > 0 && !languages.includes(selectedLanguage)) {
+      setSelectedLanguage(languages[0])
     }
     const voices = selectedModelInfo.voices || []
-    const defaultVoice = selectedModelInfo.default_voice || (selectedModelInfo.provider === 'vieneu' ? 'Adam' : 'default')
-    if (!selectedVoice.startsWith('clone:') && !voices.includes(selectedVoice) && selectedVoice !== defaultVoice) {
+    const defaultVoice = selectedModelInfo.default_voice || (voices[0] || 'default')
+    if (
+      !selectedVoice.startsWith('clone:') &&
+      !voices.includes(selectedVoice) &&
+      selectedVoice !== defaultVoice
+    ) {
       setSelectedVoice(defaultVoice)
     }
   }, [selectedModelInfo?.id])
@@ -326,13 +348,14 @@ export default function Voice(): JSX.Element {
           setSelectedVoice(`clone:${newClone.id}`)
         }
       } else {
+        const isNamed = selectedModelInfo?.supports_named_voice !== false
         const req: TtsSpeechRequest = {
           serverUrl,
           apiKey,
           text: cleanText,
           language: selectedLanguage,
           model: selectedModel,
-          voice: selectedModel === 'tts-multilingual' ? undefined : selectedVoice,
+          voice: isNamed && selectedVoice !== 'default' ? selectedVoice : undefined,
           speed,
           options
         }
@@ -404,8 +427,12 @@ export default function Voice(): JSX.Element {
   const applySample = (sample: typeof SAMPLE_TEXTS[0]): void => {
     setText(sample.text)
     setSelectedLanguage(sample.lang)
-    setSelectedModel(sample.model)
-    setSelectedVoice(sample.voice)
+    const matchingModel = ttsModels.find((m) => m.id === sample.model)
+    if (matchingModel) {
+      setSelectedModel(matchingModel.id)
+      const matchingVoice = matchingModel.voices?.find((v) => v === sample.voice)
+      setSelectedVoice(matchingVoice || matchingModel.default_voice || 'default')
+    }
     setError(null)
   }
 
@@ -422,7 +449,7 @@ export default function Voice(): JSX.Element {
                 className="voice-input"
                 value={serverUrl}
                 onChange={(e) => setServerUrl(e.target.value)}
-                placeholder="http://192.168.1.19:8000"
+                placeholder="http://127.0.0.1:8000"
               />
             </div>
           </div>
@@ -473,7 +500,27 @@ export default function Voice(): JSX.Element {
         )}
       </div>
 
-      {/* 2. MAIN WORKSPACE GRID */}
+      {/* 2. ERROR BANNER */}
+      {error && (
+        <div className="voice-alert-banner is-error card">
+          <span>⚠️ {error}</span>
+          <button type="button" className="voice-alert-dismiss" onClick={() => setError(null)}>
+            ✕
+          </button>
+        </div>
+      )}
+
+      {/* 3. SUCCESS TOAST */}
+      {saveSuccessMsg && (
+        <div className="voice-alert-banner is-success card">
+          <span>✅ {saveSuccessMsg}</span>
+          <button type="button" className="voice-alert-dismiss" onClick={() => setSaveSuccessMsg(null)}>
+            ✕
+          </button>
+        </div>
+      )}
+
+      {/* 4. MAIN WORKSPACE */}
       <div className="voice-workspace-grid">
         {/* LEFT COLUMN: CONFIGURATION & SETTINGS */}
         <div className="voice-config-card card">
@@ -507,7 +554,7 @@ export default function Voice(): JSX.Element {
                 setSelectedModel(next)
                 const nextLanguages = nextInfo.languages || []
                 setSelectedLanguage(nextLanguages.includes(selectedLanguage) ? selectedLanguage : (nextLanguages[0] || ''))
-                setSelectedVoice(nextInfo.default_voice || (nextInfo.provider === 'vieneu' ? 'Adam' : 'default'))
+                setSelectedVoice(nextInfo.default_voice || nextInfo.voices?.[0] || 'default')
               }}
             >
               {ttsModels.length === 0 ? (
@@ -550,21 +597,19 @@ export default function Voice(): JSX.Element {
                   value={selectedVoice}
                   onChange={(e) => setSelectedVoice(e.target.value)}
                 >
-                  {isVieneu ? (
-                    <optgroup label="Giọng mẫu tiếng Việt chuẩn (VieNeu)">
-                      {displayedVoices.map((voice) => (
+                  {modelVoices.length > 0 ? (
+                    <optgroup label={`Giọng mẫu (${selectedModelInfo?.name || selectedModelInfo?.id || 'Mô hình'})`}>
+                      {modelVoices.map((voice) => (
                         <option key={voice} value={voice}>
                           {voice}
                         </option>
                       ))}
                     </optgroup>
                   ) : (
-                    <optgroup label="Giọng mẫu chuẩn (Chatterbox)">
-                      {modelVoices.map((voice) => (
-                        <option key={voice} value={voice}>
-                          Giọng đa ngôn ngữ mặc định ({voice})
-                        </option>
-                      ))}
+                    <optgroup label="Giọng mặc định">
+                      <option value={defaultModelVoice}>
+                        {defaultModelVoice} (Mặc định)
+                      </option>
                     </optgroup>
                   )}
 
@@ -652,7 +697,7 @@ export default function Voice(): JSX.Element {
                             onClick={() => {
                               setClonedVoices((prev) => prev.filter((item) => item.id !== cv.id))
                               if (selectedVoice === `clone:${cv.id}`) {
-                                setSelectedVoice('Adam')
+                                setSelectedVoice(defaultModelVoice)
                               }
                             }}
                             title="Xóa giọng clone"
@@ -681,7 +726,7 @@ export default function Voice(): JSX.Element {
 
           {showAdvanced && (
             <div className="voice-advanced-panel">
-              {isVieneu && (
+              {(!selectedModelInfo?.supported_options || selectedModelInfo.supported_options.includes('denoise')) && (
                 <div className="voice-form-row">
                   <label className="voice-checkbox-label">
                     <input

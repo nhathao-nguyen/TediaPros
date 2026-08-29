@@ -55,22 +55,27 @@ app.whenReady().then(async () => {
   try {
     const inputFile = 'C:\\Users\\PC\\Downloads\\test\\test-30s.mp4'
     const outputDir = 'C:\\Users\\PC\\Downloads\\test'
+    const apiKey = 'ai_sk_lauI0AikWJNcDPIsDC3MicpukDRcaK8vg6F5DxX4m7c'
 
-    console.log('[DEBUG] Checking readiness...')
+    console.log('[DEBUG] Saving local API Key...')
     const { getAutoShortReadiness, installAutoShortDependencies } = await import('../src/main/autoshort')
-    const { loadLocalKey, checkLocalTranslateKey } = await import('../src/main/localTranslate')
+    const { saveLocalKey, loadLocalKey, checkLocalTranslateKey } = await import('../src/main/localTranslate')
     const { checkTtsServerHealth, getTtsModels } = await import('../src/main/tts')
     const { whisperModelStatus } = await import('../src/main/whisper')
+
+    await saveLocalKey(apiKey)
+    const key = await loadLocalKey()
+    console.log('[DEBUG] Key loaded successfully. Length:', key.length)
 
     const baseStatus = await whisperModelStatus('base')
     const smallStatus = await whisperModelStatus('small')
     const mediumStatus = await whisperModelStatus('medium')
-    console.log('[DEBUG] Base model:', baseStatus)
-    console.log('[DEBUG] Small model:', smallStatus)
-    console.log('[DEBUG] Medium model:', mediumStatus)
+    console.log('[DEBUG] Base model status:', baseStatus)
+    console.log('[DEBUG] Small model status:', smallStatus)
+    console.log('[DEBUG] Medium model status:', mediumStatus)
 
     const chosenModel = smallStatus.complete ? 'small' : mediumStatus.complete ? 'medium' : baseStatus.complete ? 'base' : 'base'
-    console.log('[DEBUG] Chosen model:', chosenModel)
+    console.log('[DEBUG] Chosen Whisper model:', chosenModel)
 
     let r = await getAutoShortReadiness({ subtitleMethod: 'whisper', whisperModel: chosenModel, whisperDevice: 'cpu' })
     if (!r.ready) {
@@ -81,19 +86,24 @@ app.whenReady().then(async () => {
       console.log('[DEBUG] Dependencies ready:', r.ready)
     }
 
-    const key = await loadLocalKey()
-    console.log('[DEBUG] Key loaded:', Boolean(key), 'key length:', key?.length)
-
     const trHealth = await checkLocalTranslateKey('http://127.0.0.1:8000', key)
     console.log('[DEBUG] Translate health:', trHealth)
 
     const ttsHealth = await checkTtsServerHealth('http://127.0.0.1:8000', key)
     console.log('[DEBUG] TTS health:', ttsHealth)
 
-    const ttsModels = await getTtsModels('http://127.0.0.1:8000', key)
-    console.log('[DEBUG] TTS models:', ttsModels)
+    const ttsModelsRes = await getTtsModels('http://127.0.0.1:8000', key)
+    console.log('[DEBUG] TTS models count:', ttsModelsRes.models.length)
+    if (ttsModelsRes.models.length > 0) {
+      for (const m of ttsModelsRes.models) {
+        console.log(` - Model: ${m.id} (${m.name}) | Voices: ${m.voices?.join(', ') || m.default_voice || 'none'}`)
+      }
+    }
 
-    // 1. Bản Tiếng Việt
+    const defaultTtsModel = ttsModelsRes.models.find((m) => m.id === 'tts-vietnamese') || ttsModelsRes.models[0]
+    const defaultVoice = defaultTtsModel?.default_voice || defaultTtsModel?.voices?.[0] || 'Mai Anh'
+
+    // Cấu hình Auto Short chuẩn liên kết đầy đủ UI parameters
     const viConfig: AutoShortConfig = {
       subtitleMethod: 'whisper',
       whisperModel: chosenModel,
@@ -111,18 +121,18 @@ app.whenReady().then(async () => {
       bgColor: '#000000',
       bgOpacity: 0.8,
       subtitleDisplayStyle: 'standard',
-      subtitleFontSize: 48,
+      subtitleFontSize: 0,
       highlightColor: '#ffcc00',
       subtitleHighlightPop: false,
-      subtitleLayoutProfile: 'vertical',
+      subtitleLayoutProfile: 'readable',
       subtitleAutoOptimize: true,
       translateTarget: 'vi',
       translateProvider: 'local',
       translateServerUrl: 'http://127.0.0.1:8000',
       ttsEnabled: true,
       ttsServerUrl: 'http://127.0.0.1:8000',
-      ttsModel: 'tts-vietnamese',
-      ttsVoice: 'Mai Anh',
+      ttsModel: defaultTtsModel?.id || 'tts-vietnamese',
+      ttsVoice: defaultVoice,
       ttsLanguage: 'vi',
       ttsSpeed: 1.0,
       voiceOverMode: false,
@@ -131,68 +141,13 @@ app.whenReady().then(async () => {
       outputDir
     }
 
-    let viOutput = 'C:\\Users\\PC\\Downloads\\test\\test-30s-tieng-viet.mp4'
+    const rawVi = await runJob(viConfig, inputFile, 'Auto Short Tiếng Việt')
+    const finalViOutput = join(outputDir, 'test-30s-ket-qua-tieng-viet.mp4')
     const fs = await import('node:fs/promises')
-
-    const rawVi = await runJob(viConfig, inputFile, 'Bản Tiếng Việt')
-    await fs.rename(rawVi, viOutput).catch(async () => {
-      await fs.copyFile(rawVi, viOutput)
-    })
-    console.log(`\n>>> XUẤT THÀNH CÔNG BẢN TIẾNG VIỆT: ${viOutput}\n`)
-
-    // Wait a brief moment between jobs
-    await new Promise((r) => setTimeout(r, 1000))
-
-    // 2. Bản Tiếng Anh
-    const enConfig: AutoShortConfig = {
-      subtitleMethod: 'whisper',
-      whisperModel: chosenModel,
-      whisperDevice: 'cpu',
-      whisperLanguage: 'auto',
-      ocrRegion: null,
-      blurRegions: [],
-      lamMo: false,
-      subRegion: null,
-      fontId: 'auto',
-      textColor: '#ffffff',
-      outlineColor: '#000000',
-      outlinePx: 3,
-      bgEnabled: false,
-      bgColor: '#000000',
-      bgOpacity: 0.8,
-      subtitleDisplayStyle: 'standard',
-      subtitleFontSize: 48,
-      highlightColor: '#ffcc00',
-      subtitleHighlightPop: false,
-      subtitleLayoutProfile: 'vertical',
-      subtitleAutoOptimize: true,
-      translateTarget: 'en',
-      translateProvider: 'local',
-      translateServerUrl: 'http://127.0.0.1:8000',
-      ttsEnabled: true,
-      ttsServerUrl: 'http://127.0.0.1:8000',
-      ttsModel: 'tts-multilingual',
-      ttsVoice: 'default',
-      ttsLanguage: 'en',
-      ttsSpeed: 1.0,
-      voiceOverMode: false,
-      audioMode: 'replace',
-      originalAudioVolume: 0,
-      outputDir
-    }
-
-    const rawEn = await runJob(enConfig, inputFile, 'Bản Tiếng Anh')
-    const enOutput = 'C:\\Users\\PC\\Downloads\\test\\test-30s-tieng-anh.mp4'
-    await fs.rename(rawEn, enOutput).catch(async () => {
-      await fs.copyFile(rawEn, enOutput)
-    })
-    console.log(`\n>>> XUẤT THÀNH CÔNG BẢN TIẾNG ANH: ${enOutput}\n`)
-
-    console.log('\n========================================')
-    console.log('HOÀN TẤT CẢ 2 BẢN VIDEO:')
-    console.log('1. Tiếng Việt:', viOutput)
-    console.log('2. Tiếng Anh:', enOutput)
-    console.log('========================================\n')
+    await fs.copyFile(rawVi, finalViOutput)
+    console.log(`\n========================================`)
+    console.log(`>>> TẠO VIDEO THÀNH CÔNG: ${finalViOutput}`)
+    console.log(`========================================\n`)
 
     app.quit()
     process.exit(0)

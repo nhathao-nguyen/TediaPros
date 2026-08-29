@@ -804,11 +804,12 @@ function registerIpc(): void {
       srtPath: string,
       outPath: string,
       dich: string,
-      provider: DichProvider = 'gemini'
+      provider: DichProvider = 'gemini',
+      serverUrl?: string
     ) => {
       const p: DichProvider = isProvider(provider) ? provider : 'gemini'
       if (p === 'local') {
-        return localTranslateSrt(srtPath, outPath, dich, undefined, undefined, (d, t) =>
+        return localTranslateSrt(srtPath, outPath, dich, serverUrl, undefined, (d: number, t: number) =>
           event.sender.send('translate:progress', { done: d, total: t })
         )
       }

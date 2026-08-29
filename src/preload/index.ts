@@ -269,9 +269,10 @@ const api = {
     srtPath: string,
     outPath: string,
     dich: string,
-    provider: DichProvider
+    provider: DichProvider,
+    serverUrl?: string
   ): Promise<{ ok: boolean; error?: string; count?: number }> =>
-    ipcRenderer.invoke('translate:translateSrt', srtPath, outPath, dich, provider),
+    ipcRenderer.invoke('translate:translateSrt', srtPath, outPath, dich, provider, serverUrl),
   onTranslateProgress: (cb: (p: { done: number; total: number }) => void): (() => void) => {
     const listener = (_e: unknown, p: { done: number; total: number }): void => cb(p)
     ipcRenderer.on('translate:progress', listener)

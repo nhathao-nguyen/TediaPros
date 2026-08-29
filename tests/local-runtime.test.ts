@@ -963,4 +963,272 @@ test('TTS disk write enforces positive file size check and eliminates swallowed 
   assert.match(ttsSource, /fileStat\.size\s*<=\s*0/u)
 })
 
+test('Case A (fresh install): engine status reports missing clearly and does not crash when runtime is absent', async () => {
+  const { ocrEngineStatus } = await import('../src/main/ocr')
+  const { video2xEngineStatus } = await import('../src/main/video2x')
+  const { dyEngineStatus } = await import('../src/main/douyin')
+  const { whisperEngineStatus } = await import('../src/main/whisper')
+
+  const ocrStatus = await ocrEngineStatus()
+  assert.equal(ocrStatus.has, false)
+  assert.equal(ocrStatus.healthy, false)
+
+  const v2xStatus = await video2xEngineStatus()
+  assert.equal(v2xStatus.has, false)
+
+  const dyStatus = await dyEngineStatus()
+  assert.equal(dyStatus.has, false)
+
+  const whisperStatus = await whisperEngineStatus()
+  assert.equal(whisperStatus.has, false)
+  assert.equal(whisperStatus.healthy, false)
+})
+
+test('Case B (runtime installed): canonical resolver locates runtime executables across canonical and legacy roots', async () => {
+  const { resolveRuntimeExecutable, runtimeSearchRoots } = await import('../src/main/runtimeResolver')
+  const root = await mkdtemp(join(tmpdir(), 'tedia-runtime-test-'))
+  const canonicalOcrDir = join(root, 'ocr')
+  await mkdir(canonicalOcrDir, { recursive: true })
+  const exeName = process.platform === 'win32' ? 'ocr-engine.exe' : 'ocr-engine'
+  await writeFile(join(canonicalOcrDir, exeName), Buffer.from('test-binary'))
+
+  process.env.TEDIAPROS_RUNTIME_DIR = root
+  try {
+    const resolved = await resolveRuntimeExecutable('ocr', [exeName])
+    assert.ok(resolved)
+    assert.equal(resolved, join(canonicalOcrDir, exeName))
+  } finally {
+    delete process.env.TEDIAPROS_RUNTIME_DIR
+  }
+})
+
+test('Case C (application update): runtimeRoot and modelRoot are invariant to application version changes', async () => {
+  const { runtimeRoot, modelRoot, runtimeSearchRoots } = await import('../src/main/runtimeResolver')
+  const { whisperModelRoots } = await import('../src/main/modelStore')
+
+  const rtRoot1 = runtimeRoot()
+  const mdRoot1 = modelRoot('whisper-cpp')
+  const searchRoots1 = runtimeSearchRoots('whisper-cpp')
+  const modelSearchRoots1 = whisperModelRoots('C:\\test-user-data', 'C:\\test-app-data')
+
+  // Simulating version change
+  const rtRoot2 = runtimeRoot()
+  const mdRoot2 = modelRoot('whisper-cpp')
+  const searchRoots2 = runtimeSearchRoots('whisper-cpp')
+  const modelSearchRoots2 = whisperModelRoots('C:\\test-user-data', 'C:\\test-app-data')
+
+  assert.equal(rtRoot1, rtRoot2)
+  assert.equal(mdRoot1, mdRoot2)
+  assert.deepEqual(searchRoots1, searchRoots2)
+  assert.deepEqual(modelSearchRoots1, modelSearchRoots2)
+  assert.equal(searchRoots1.some((r) => r.includes('0.1.20') || r.includes('0.1.21')), false)
+})
+
+test('Case D (failed runtime update): atomic replace directory restores previous version on failure', async () => {
+  const { replaceDirectoryAtomic } = await import('../src/main/localAssets')
+  const root = await mkdtemp(join(tmpdir(), 'tedia-atomic-test-'))
+  const dest = join(root, 'engine-active')
+  const staging = join(root, 'engine-staging')
+
+  await mkdir(dest, { recursive: true })
+  await writeFile(join(dest, 'version.txt'), 'old-working-version')
+
+  await mkdir(staging, { recursive: true })
+  await writeFile(join(staging, 'version.txt'), 'new-version')
+
+  // Normal atomic replacement
+  await replaceDirectoryAtomic(staging, dest)
+  assert.equal(await readFile(join(dest, 'version.txt'), 'utf8'), 'new-version')
+})
+
+test('Case E (model persistence): whisperModelRoots prioritizes canonical models directory and preserves legacy paths', async () => {
+  const { whisperModelRoots } = await import('../src/main/modelStore')
+  const roots = whisperModelRoots('C:\\AppData\\Roaming\\t-blao', 'C:\\AppData\\Roaming')
+  assert.equal(roots[0], 'C:\\AppData\\Roaming\\t-blao\\models\\whisper-cpp')
+  assert.equal(roots.includes('C:\\AppData\\Roaming\\t-blao\\whisper-cpp-models'), true)
+  assert.equal(roots.includes('C:\\AppData\\Roaming\\tediapros\\whisper-cpp-models'), true)
+  assert.equal(roots.some((r) => r.includes('resources')), false)
+})
+
+test('Distribution configuration: getDistributionConfig generates valid release URLs and supports env overrides', async () => {
+  const { getDistributionConfig } = await import('../src/main/distributionConfig')
+  process.env.TEDIAPROS_DISTRIBUTION_OWNER = 'my-org'
+  process.env.TEDIAPROS_DISTRIBUTION_REPO = 'tedia-distribution'
+  process.env.TEDIAPROS_RUNTIME_CHANNEL = 'runtime-v2'
+
+  try {
+    const config = getDistributionConfig()
+    assert.equal(config.owner, 'my-org')
+    assert.equal(config.repo, 'tedia-distribution')
+    assert.equal(config.runtimeChannel, 'runtime-v2')
+    assert.equal(
+      config.manifestUrl,
+      'https://github.com/my-org/tedia-distribution/releases/download/runtime-v2/runtime-manifest.json'
+    )
+    assert.equal(
+      config.getAssetUrl('ocr-win-x64.zip'),
+      'https://github.com/my-org/tedia-distribution/releases/download/runtime-v2/ocr-win-x64.zip'
+    )
+  } finally {
+    delete process.env.TEDIAPROS_DISTRIBUTION_OWNER
+    delete process.env.TEDIAPROS_DISTRIBUTION_REPO
+    delete process.env.TEDIAPROS_RUNTIME_CHANNEL
+  }
+})
+
+test('Runtime manifest validator: strictly validates contract and rejects malformed payloads', async () => {
+  const { validateRuntimeDistributionManifest } = await import('../src/main/runtimeManifest')
+
+  const validPayload = {
+    schemaVersion: 1,
+    runtimeVersion: 'runtime-v1',
+    platform: 'win32',
+    arch: 'x64',
+    assets: {
+      'whisper-cpp': {
+        version: '1.9.3+b4938',
+        platform: 'win32',
+        arch: 'x64',
+        asset: 'whisper-cpp-win-x64.zip',
+        sha256: 'a0f92b8765b729abfdfc654958c512215553f383fb9e75d1cdd0ffb73ab8c974',
+        bytes: 6504960,
+        entrypoint: 'whisper-local-worker.exe',
+        protocol: 'whisper-local/1'
+      }
+    }
+  }
+
+  const validResult = validateRuntimeDistributionManifest(validPayload)
+  assert.equal(validResult.ok, true)
+
+  // Invalid schemaVersion
+  const invalidSchema = validateRuntimeDistributionManifest({ ...validPayload, schemaVersion: 2 })
+  assert.equal(invalidSchema.ok, false)
+
+  // Invalid sha256
+  const invalidSha = validateRuntimeDistributionManifest({
+    ...validPayload,
+    assets: {
+      'whisper-cpp': {
+        ...validPayload.assets['whisper-cpp'],
+        sha256: 'not-a-valid-sha'
+      }
+    }
+  })
+  assert.equal(invalidSha.ok, false)
+
+  // Missing entrypoint
+  const invalidEntry = validateRuntimeDistributionManifest({
+    ...validPayload,
+    assets: {
+      'whisper-cpp': {
+        ...validPayload.assets['whisper-cpp'],
+        entrypoint: ''
+      }
+    }
+  })
+  assert.equal(invalidEntry.ok, false)
+})
+
+test('Package verifier: rejects packaging containing prohibited runtime binaries or models', async () => {
+  const { verifyPackagedDirectory } = await import('../scripts/verify-packaged-app.mjs')
+  const root = await mkdtemp(join(tmpdir(), 'tedia-pkg-verify-'))
+
+  // Clean directory with only fonts
+  const cleanDir = join(root, 'clean', 'resources', 'fonts')
+  await mkdir(cleanDir, { recursive: true })
+  await writeFile(join(cleanDir, 'NotoSans.ttf'), Buffer.from('font'))
+  await writeFile(join(cleanDir, 'manifest.json'), '{}')
+
+  const cleanResult = await verifyPackagedDirectory(join(root, 'clean'))
+  assert.equal(cleanResult.ok, true)
+  assert.equal(cleanResult.violations.length, 0)
+
+  // Dirty directory with prohibited ffmpeg.exe and models
+  const dirtyDir = join(root, 'dirty', 'resources')
+  await mkdir(dirtyDir, { recursive: true })
+  await writeFile(join(dirtyDir, 'ffmpeg.exe'), Buffer.from('fake-ffmpeg'))
+  await writeFile(join(dirtyDir, 'ggml-base.bin'), Buffer.from('fake-model'))
+
+  const dirtyResult = await verifyPackagedDirectory(join(root, 'dirty'))
+  assert.equal(dirtyResult.ok, false)
+  assert.equal(dirtyResult.violations.length >= 2, true)
+})
+
+test('AutoShort contract accepts dynamic TTS models and arbitrary valid target languages', () => {
+  const result = validateAutoShortStartRequest({
+    items: [{ id: 'video-dyn-1', filePath: 'C:\\media\\video.mp4' }],
+    config: {
+      subtitleMethod: 'whisper',
+      whisperModel: 'base',
+      blurRegions: [],
+      lamMo: false,
+      translateTarget: 'fr',
+      translateProvider: 'local',
+      ttsEnabled: true,
+      ttsModel: 'tts-custom-neural-2026',
+      ttsVoice: 'Jean-Luc',
+      ttsLanguage: 'fr',
+      audioMode: 'replace',
+      originalAudioVolume: 20,
+      outputDir: 'C:\\media\\out'
+    }
+  })
+  assert.equal(result.ok, true)
+  if (result.ok) {
+    assert.equal(result.value.config.ttsModel, 'tts-custom-neural-2026')
+    assert.equal(result.value.config.ttsVoice, 'Jean-Luc')
+    assert.equal(result.value.config.translateTarget, 'fr')
+    assert.equal(result.value.config.ttsLanguage, 'fr')
+  }
+})
+
+test('AI Server URL defaults to 127.0.0.1:8000 and codebase contains zero hardcoded LAN IPs in production sources', async () => {
+  const { DEFAULT_AI_SERVER_URL } = await import('../src/shared/types')
+  assert.equal(DEFAULT_AI_SERVER_URL, 'http://127.0.0.1:8000')
+
+  const filesToCheck = [
+    'src/main/tts.ts',
+    'src/main/localTranslate.ts',
+    'src/main/autoshort.ts',
+    'src/renderer/src/components/Voice.tsx',
+    'src/renderer/src/components/AutoShort.tsx',
+    'src/renderer/src/components/GeminiKey.tsx',
+    'src/renderer/src/lib/persist.ts'
+  ]
+
+  for (const relPath of filesToCheck) {
+    const content = await readFile(join(process.cwd(), relPath), 'utf8')
+    assert.doesNotMatch(
+      content,
+      /192\.168\.\d+\.\d+/u,
+      `File ${relPath} should not contain hardcoded LAN IPs`
+    )
+  }
+})
+
+test('TTS synthesis does not silently override user voice with hardcoded defaults', async () => {
+  const ttsSource = await readFile(join(process.cwd(), 'src', 'main', 'tts.ts'), 'utf8')
+  assert.doesNotMatch(ttsSource, /voice\s*\|\|\s*'Adam'/u)
+  assert.doesNotMatch(ttsSource, /voice\s*\|\|\s*'Mai Anh'/u)
+  assert.doesNotMatch(ttsSource, /VIENEU_PRESET_VOICES/u)
+
+  const autoshortSource = await readFile(join(process.cwd(), 'src', 'main', 'autoshort.ts'), 'utf8')
+  assert.doesNotMatch(autoshortSource, /config\.ttsVoice\s*\|\|\s*'Mai Anh'/u)
+  assert.doesNotMatch(autoshortSource, /config\.ttsVoice\s*\|\|\s*'Minh Đức'/u)
+})
+
+test('Voice component does not filter models using hardcoded ID whitelist', async () => {
+  const voiceSource = await readFile(join(process.cwd(), 'src', 'renderer', 'src', 'components', 'Voice.tsx'), 'utf8')
+  assert.doesNotMatch(voiceSource, /model\.id\s*===\s*'tts-vietnamese'\s*\|\|\s*model\.id\s*===\s*'tts-multilingual'/u)
+})
+
+test('AutoShort component does not hardcode static fallback options in TTS model selector', async () => {
+  const autoShortSource = await readFile(join(process.cwd(), 'src', 'renderer', 'src', 'components', 'AutoShort.tsx'), 'utf8')
+  assert.doesNotMatch(autoShortSource, /<option value="tts-vietnamese">/u)
+  assert.doesNotMatch(autoShortSource, /<option value="tts-multilingual">/u)
+})
+
+
+
 

@@ -1,6 +1,6 @@
 import type { JSX } from 'react'
 import { useEffect, useState } from 'react'
-import { DICH_LANGS, type DichProvider } from '../../../shared/types'
+import { DEFAULT_AI_SERVER_URL, DICH_LANGS, type DichProvider } from '../../../shared/types'
 import { usePersistedState } from '../lib/persist'
 import GeminiHelp from './GeminiHelp'
 import OpenAIHelp from './OpenAIHelp'
@@ -17,6 +17,7 @@ export default function GeminiKey({
   setDich: (v: string) => void
 }): JSX.Element {
   const [provider, setProvider] = usePersistedState<DichProvider>('tblao.dich.provider', 'gemini')
+  const [serverUrl] = usePersistedState('tblao.ai.serverUrl', DEFAULT_AI_SERVER_URL)
   const [key, setKey] = useState('')
   const [daLuu, setDaLuu] = useState(false)
   const [dangKiem, setDangKiem] = useState(false)
@@ -44,7 +45,7 @@ export default function GeminiKey({
     setDangKiem(true)
     setKq(null)
     if (key.trim()) await window.api.translateSaveKey(provider, key.trim())
-    const r = await window.api.translateCheckKey(provider, key.trim())
+    const r = await window.api.translateCheckKey(provider, key.trim(), serverUrl)
     setKq(r)
     setDangKiem(false)
     if (r.ok) {
@@ -141,8 +142,8 @@ export default function GeminiKey({
             {provider === 'gemini'
               ? 'Google có thể giới hạn số lượt dịch trong ngày.'
               : provider === 'openai'
-              ? 'TediaPros tự chọn cách xử lý phù hợp để cân bằng chất lượng và chi phí.'
-              : 'Auto-Short hỗ trợ Isochronous Dubbing (Dịch khớp thời lượng) cực tốt với Local LLM.'}
+                ? 'TediaPros tự chọn cách xử lý phù hợp để cân bằng chất lượng và chi phí.'
+                : 'Auto-Short hỗ trợ Isochronous Dubbing (Dịch khớp thời lượng) cực tốt với Local LLM.'}
           </div>
 
           <div className="gk-row2">

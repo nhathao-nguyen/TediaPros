@@ -1,10 +1,11 @@
 import { spawn, type ChildProcess } from 'node:child_process'
-import { access, chmod, mkdir } from 'node:fs/promises'
+import { access, chmod, mkdir, rm } from 'node:fs/promises'
 import { constants } from 'node:fs'
 import { basename, dirname, join } from 'node:path'
 import { binDir } from './deps'
 import { engineNeedsUpdate, markEngineInstalled } from './engines-update'
-import { copyPackagedLocalAsset, packagedLocalAssetRoots, resolvePackagedLocalAsset } from './localAssets'
+import { copyDirectory, replaceDirectoryAtomic, findFile } from './localAssets'
+import { resolveRuntimeExecutable, runtimeKindDir, runtimeSearchRoots } from './runtimeResolver'
 import { debugRaw, errLabel, logInfo } from './logger'
 import type {
   Video2xDevice,
@@ -19,7 +20,7 @@ const isWin = process.platform === 'win32'
 const isMac = process.platform === 'darwin'
 
 function engineDir(): string {
-  return join(binDir(), 'video2x')
+  return runtimeKindDir('video2x')
 }
 
 function enginePath(): string {
@@ -35,15 +36,8 @@ async function exists(p: string): Promise<boolean> {
   }
 }
 
-/** Tim exe neu zip giai nen them 1 lop thu muc. */
 async function resolveEnginePath(): Promise<string | null> {
-  const candidates = [
-    enginePath(),
-    join(process.env.APPDATA || '', 'tediapros', 'bin', 'video2x', isWin ? 'video2x.exe' : 'video2x'),
-    join(engineDir(), 'video2x', isWin ? 'video2x.exe' : 'video2x')
-  ]
-  for (const candidate of candidates) if (candidate && await exists(candidate)) return candidate
-  return (await resolvePackagedLocalAsset('video2x', [isWin ? 'video2x.exe' : 'video2x']))?.path ?? null
+  return resolveRuntimeExecutable('video2x', isWin ? ['video2x.exe'] : ['video2x'])
 }
 
 function runCapture(command: string, args: string[], timeoutMs = 20_000): Promise<{ code: number; out: string }> {
@@ -103,7 +97,7 @@ export async function video2xEngineStatus(): Promise<Video2xEngineStatus> {
   }
   const path = await resolveEnginePath()
   const has = Boolean(path)
-  if (!path) return { has: false, supported: true, needsUpdate: false, healthy: false, message: 'Thiếu Video2X asset local có manifest.' }
+  if (!path) return { has: false, supported: true, needsUpdate: false, healthy: false, message: 'Chưa cài đặt Video2X runtime.' }
   const probe = await probeVideo2x(path)
   return {
     has,
@@ -117,16 +111,36 @@ export async function installVideo2xEngine(onProgress: (p: number) => void): Pro
   if (isMac) {
     throw new Error('Video2X chưa hỗ trợ macOS (không có bản native).')
   }
-  await mkdir(binDir(), { recursive: true })
-  logInfo('Nâng cấp video: đang lấy asset Video2X local…')
+  const targetDir = engineDir()
+  await mkdir(targetDir, { recursive: true })
+  logInfo('Nâng cấp video: đang kiểm tra và cài đặt asset Video2X…')
   onProgress(10)
-  const copied = await copyPackagedLocalAsset('video2x', engineDir(), [isWin ? 'video2x.exe' : 'video2x'])
-  if (!copied) throw new Error(`Thiếu Video2X asset local có manifest. Đặt bundle vào ${packagedLocalAssetRoots()[0]} rồi thử lại.`)
+
+  const exeName = isWin ? 'video2x.exe' : 'video2x'
+  const devRoots = runtimeSearchRoots('video2x')
+  let candidateDir: string | null = null
+  for (const root of devRoots) {
+    if (root.toLowerCase() === targetDir.toLowerCase()) continue
+    const found = await findFile(root, [exeName])
+    if (found) {
+      candidateDir = root
+      break
+    }
+  }
+
+  if (candidateDir) {
+    const staging = `${targetDir}.staging`
+    await rm(staging, { recursive: true, force: true }).catch(() => {})
+    await copyDirectory(candidateDir, staging)
+    onProgress(70)
+    await replaceDirectoryAtomic(staging, targetDir)
+  }
+
   const path = await resolveEnginePath()
-  if (!path) throw new Error('Không tìm thấy video2x sau khi giải nén.')
-  if (!isWin) await chmod(path, 0o755)
+  if (!path) throw new Error('Không tìm thấy Video2X binary sau khi cài đặt.')
+  if (!isWin) await chmod(path, 0o755).catch(() => {})
   const probe = await probeVideo2x(path)
-  if (!probe.healthy) throw new Error(probe.message || 'Video2X asset local không qua probe.')
+  if (!probe.healthy) throw new Error(probe.message || 'Video2X binary không qua probe.')
   await markEngineInstalled('video2x')
   onProgress(100)
   logInfo('Nâng cấp video: đã cài xong Video2X.')

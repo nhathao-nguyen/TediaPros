@@ -4,6 +4,7 @@ import { createReadStream } from 'node:fs'
 import { access, copyFile, mkdir, readdir, readFile, rename, rm, stat, writeFile } from 'node:fs/promises'
 import { constants } from 'node:fs'
 import { join, relative } from 'node:path'
+import { runtimeRoot, runtimeSearchRoots, RuntimeEngineKind } from './runtimeResolver'
 
 export interface LocalAssetManifestEntry {
   path: string
@@ -31,15 +32,25 @@ function unique(paths: string[]): string[] {
   })
 }
 
+/**
+ * Returns candidate roots for local asset development/staging imports.
+ * In production, packages do NOT bundle engines.
+ */
+export function devLocalAssetRoots(): string[] {
+  const roots: string[] = []
+  const devEnv = process.env.TEDIAPROS_RUNTIME_DIR?.trim()
+  if (devEnv) roots.push(devEnv)
+  return unique(roots)
+}
+
+/** Backward compatibility alias */
 export function packagedLocalAssetRoots(): string[] {
-  return unique([
-    join(process.resourcesPath, 'local-assets'),
-    join(process.cwd(), 'resources', 'local-assets')
-  ])
+  return devLocalAssetRoots()
 }
 
 export function managedLocalAssetRoots(): string[] {
   return unique([
+    runtimeRoot(),
     join(app.getPath('userData'), 'bin'),
     join(app.getPath('appData'), 'tediapros', 'bin')
   ])
@@ -92,7 +103,7 @@ export async function verifyLocalAssetFile(
   }
 }
 
-async function findFile(root: string, names: string[]): Promise<string | null> {
+export async function findFile(root: string, names: string[]): Promise<string | null> {
   const wanted = new Set(names.map((name) => name.toLowerCase()))
   const entries = await readdir(root, { withFileTypes: true }).catch(() => [])
   for (const entry of entries) {
@@ -103,20 +114,6 @@ async function findFile(root: string, names: string[]): Promise<string | null> {
     } else if (wanted.has(entry.name.toLowerCase())) {
       return candidate
     }
-  }
-  return null
-}
-
-export async function resolvePackagedLocalAsset(
-  kind: LocalAssetKind,
-  filenames: string[]
-): Promise<{ path: string; root: string } | null> {
-  for (const root of packagedLocalAssetRoots()) {
-    const direct = await findFile(join(root, kind), filenames)
-    const path = direct ?? await findFile(root, filenames)
-    if (!path) continue
-    const integrity = await verifyLocalAssetFile(root, path, kind)
-    if (integrity.ok) return { path, root }
   }
   return null
 }
@@ -132,23 +129,29 @@ export async function copyDirectory(source: string, destination: string): Promis
   }
 }
 
-export async function copyPackagedLocalAsset(
-  kind: LocalAssetKind,
-  destination: string,
-  filenames: string[]
-): Promise<boolean> {
-  const resolved = await resolvePackagedLocalAsset(kind, filenames)
-  if (!resolved) return false
-  const sourceDir = join(resolved.root, kind)
-  await copyDirectory(sourceDir, destination)
-  return true
+export async function replaceDirectoryAtomic(candidate: string, destination: string): Promise<void> {
+  const backup = `${destination}.previous`
+  await rm(backup, { recursive: true, force: true }).catch(() => {})
+  if (await localFileExists(destination)) {
+    await rename(destination, backup)
+  }
+  try {
+    await rename(candidate, destination)
+    await rm(backup, { recursive: true, force: true }).catch(() => {})
+  } catch (error) {
+    await rm(destination, { recursive: true, force: true }).catch(() => {})
+    if (await localFileExists(backup)) {
+      await rename(backup, destination).catch(() => {})
+    }
+    throw error
+  }
 }
 
 export async function writeLocalAssetManifest(root: string, manifest: LocalAssetManifest): Promise<void> {
   await mkdir(root, { recursive: true })
   const partial = `${manifestPath(root)}.partial`
   await writeFile(partial, JSON.stringify(manifest, null, 2), 'utf8')
-  await rm(manifestPath(root), { force: true })
+  await rm(manifestPath(root), { force: true }).catch(() => {})
   await rename(partial, manifestPath(root))
 }
 

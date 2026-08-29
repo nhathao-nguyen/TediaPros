@@ -7,13 +7,24 @@ import { promisify } from 'node:util'
 import { basename, dirname, join, relative, resolve } from 'node:path'
 
 const execFileAsync = promisify(execFile)
-const platform = `${process.platform}-${process.arch}`
-const destination = resolve('resources', 'local-assets')
+const platform = process.platform
+const arch = process.arch
+
 const sourceArg = process.argv.indexOf('--source')
 const source = sourceArg >= 0 ? process.argv[sourceArg + 1] : null
 
+const destArg = process.argv.indexOf('--destination')
+const destination = resolve(
+  destArg >= 0
+    ? process.argv[destArg + 1]
+    : process.env.TEDIAPROS_RUNTIME_DIR ||
+      (process.env.APPDATA
+        ? join(process.env.APPDATA, 'tedia-pros', 'runtime')
+        : 'runtime-staging')
+)
+
 if (!source) {
-  console.error('Usage: npm run assets:import -- --source <local-directory-or-zip>')
+  console.error('Usage: npm run assets:import -- --source <local-directory-or-zip> [--destination <target-runtime-dir>]')
   process.exit(2)
 }
 
@@ -54,7 +65,7 @@ async function expandSource(input) {
   if (info.isDirectory()) return resolved
   if (!resolved.toLowerCase().endsWith('.zip')) throw new Error('Source phải là thư mục đã giải nén hoặc file .zip.')
   const expanded = join(process.cwd(), '.asset-import-staging')
-  await rm(expanded, { recursive: true, force: true })
+  await rm(expanded, { recursive: true, force: true }).catch(() => {})
   await mkdir(expanded, { recursive: true })
   if (process.platform === 'win32') {
     await execFileAsync('powershell', [
@@ -67,20 +78,23 @@ async function expandSource(input) {
   return expanded
 }
 
-async function importKind(root, kind, names) {
+async function importKind(root, kind, names, defaultEntrypoint) {
   const file = await findFile(root, names)
   if (!file) return null
   const target = join(destination, kind)
-  await rm(target, { recursive: true, force: true })
+  await rm(target, { recursive: true, force: true }).catch(() => {})
   await mkdir(target, { recursive: true })
   await cp(dirname(file), target, { recursive: true })
   const imported = join(target, basename(file))
   const info = await stat(imported)
   return {
-    path: relative(destination, imported).replaceAll('\\', '/'),
+    version: '1.0.0',
+    platform,
+    arch,
+    asset: `${kind}-${platform}-${arch}.zip`,
+    entrypoint: defaultEntrypoint || basename(file),
     sha256: await sha256(imported),
     bytes: info.size,
-    version: 'imported-local',
     protocol: kind === 'ocr' ? 'ocr-local/1' : kind === 'whisper-cpp' ? 'whisper-local/1' : undefined
   }
 }
@@ -88,26 +102,28 @@ async function importKind(root, kind, names) {
 async function main() {
   const root = await expandSource(source)
   await mkdir(destination, { recursive: true })
-  const engines = {}
+  const assets = {}
   const specs = [
-    ['whisper-cpp', ['whisper-local-worker.exe', 'whisper-local-worker', 'whisper-server.exe', 'whisper-server']],
-    ['ocr', ['ocr-engine.exe', 'ocr-engine']],
-    ['video2x', ['video2x.exe', 'video2x']],
-    ['ffmpeg', process.platform === 'win32' ? ['ffmpeg.exe'] : ['ffmpeg']],
-    ['douyin', process.platform === 'win32' ? ['dy-engine.exe'] : ['dy-engine']]
+    ['whisper-cpp', ['whisper-local-worker.exe', 'whisper-local-worker', 'whisper-server.exe', 'whisper-server'], process.platform === 'win32' ? 'whisper-local-worker.exe' : 'whisper-local-worker'],
+    ['ocr', ['ocr-engine.exe', 'ocr-engine'], process.platform === 'win32' ? 'ocr-engine.exe' : 'ocr-engine'],
+    ['video2x', ['video2x.exe', 'video2x'], process.platform === 'win32' ? 'video2x.exe' : 'video2x'],
+    ['ffmpeg', process.platform === 'win32' ? ['ffmpeg.exe'] : ['ffmpeg'], process.platform === 'win32' ? 'ffmpeg.exe' : 'ffmpeg'],
+    ['douyin', process.platform === 'win32' ? ['dy-engine.exe'] : ['dy-engine'], process.platform === 'win32' ? 'dy-engine.exe' : 'dy-engine']
   ]
-  for (const [kind, names] of specs) {
-    const entry = await importKind(root, kind, names)
-    if (entry) engines[kind] = entry
+  for (const [kind, names, entrypoint] of specs) {
+    const entry = await importKind(root, kind, names, entrypoint)
+    if (entry) assets[kind] = entry
   }
-  if (Object.keys(engines).length === 0) throw new Error('Không tìm thấy asset engine được hỗ trợ trong source.')
-  await writeFile(join(destination, 'manifest.json'), JSON.stringify({
-    assetVersion: 'local-1',
+  if (Object.keys(assets).length === 0) throw new Error('Không tìm thấy asset engine được hỗ trợ trong source.')
+  const manifest = {
+    schemaVersion: 1,
+    runtimeVersion: 'runtime-v1',
     platform,
-    engines
-  }, null, 2) + '\n', 'utf8')
-  console.log(`Imported ${Object.keys(engines).join(', ')} into ${destination}`)
-  console.log('Whisper cũ/CTranslate2 không được import; chỉ whisper.cpp GGML/native bundle mới được chấp nhận.')
+    arch,
+    assets
+  }
+  await writeFile(join(destination, 'runtime-manifest.json'), JSON.stringify(manifest, null, 2) + '\n', 'utf8')
+  console.log(`Imported ${Object.keys(assets).join(', ')} into ${destination}`)
 }
 
 main().catch((error) => {

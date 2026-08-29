@@ -1,19 +1,22 @@
 import type { CSSProperties, JSX } from 'react'
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
-import type {
-  AutoShortConfig,
-  AutoShortDependencyProgress,
-  AutoShortReadiness,
-  AutoShortEvent,
-  AutoShortSubtitleMethod,
-  AutoShortTaskItem,
-  BlurRegion,
-  BurnFontEntry,
-  ClonedVoice,
-  DichProvider,
-  SubtitleDisplayStyle,
-  SubtitleLayoutProfile,
-  WhisperDevice
+import {
+  DEFAULT_AI_SERVER_URL,
+  DICH_LANGS,
+  type AutoShortConfig,
+  type AutoShortDependencyProgress,
+  type AutoShortReadiness,
+  type AutoShortEvent,
+  type AutoShortSubtitleMethod,
+  type AutoShortTaskItem,
+  type BlurRegion,
+  type BurnFontEntry,
+  type ClonedVoice,
+  type DichProvider,
+  type SubtitleDisplayStyle,
+  type SubtitleLayoutProfile,
+  type TtsModelInfo,
+  type WhisperDevice
 } from '../../../shared/types'
 import { localMediaSource } from '../lib/localMedia'
 import { useTabOutputDir } from '../lib/outputDir'
@@ -21,8 +24,6 @@ import { usePersistedState } from '../lib/persist'
 import { fitVideoInBounds } from '../lib/videoGeometry'
 import { useVideoTransport } from '../hooks/useVideoTransport'
 import RegionBox, { type Region } from './RegionBox'
-
-const DEFAULT_SERVER_URL = 'http://192.168.1.19:8000'
 
 const PALETTE = [
   '#e8a13c',
@@ -35,41 +36,14 @@ const PALETTE = [
   '#a855f7'
 ]
 
-const VIENEU_PRESET_VOICES = [
-  { name: 'Minh Đức', gender: 'Nam', region: 'Bắc' },
-  { name: 'Mai Anh', gender: 'Nữ', region: 'Bắc' },
-  { name: 'Quỳnh Anh', gender: 'Nữ', region: 'Bắc' },
-  { name: 'Kim Thanh', gender: 'Nữ', region: 'Bắc' },
-  { name: 'Phạm Tuyên', gender: 'Nam', region: 'Bắc' },
-  { name: 'Thái Sơn', gender: 'Nam', region: 'Bắc' },
-  { name: 'Xuân Vĩnh', gender: 'Nam', region: 'Bắc' },
-  { name: 'Thanh Bình', gender: 'Nam', region: 'Bắc' },
-  { name: 'Trúc Ly', gender: 'Nữ', region: 'Nam' },
-  { name: 'Ngọc Linh', gender: 'Nữ', region: 'Nam' },
-  { name: 'Đoan Trang', gender: 'Nữ', region: 'Nam' },
-  { name: 'Thục Đoan', gender: 'Nữ', region: 'Nam' },
-  { name: 'Minh Triết', gender: 'Nam', region: 'Nam' },
-  { name: 'Thùy Dung', gender: 'Nữ', region: 'Nam' },
-  { name: 'Quang Sơn', gender: 'Nam', region: 'Nam' },
-  { name: 'Ngọc Trân', gender: 'Nữ', region: 'Nam' },
-  { name: 'Mỹ Duyên', gender: 'Nữ', region: 'Nam' },
-  { name: 'Đức Trí', gender: 'Nam', region: 'Nam' },
-  { name: 'Ngọc Huyền', gender: 'Nữ', region: 'Nam' },
-  { name: 'Adam', gender: 'Nam', region: 'Chuẩn' }
-]
-
 const TRANSLATE_LANGS = [
   { code: 'none', label: 'Không dịch (Giữ nguyên)' },
-  { code: 'vi', label: 'Tiếng Việt' },
-  { code: 'en', label: 'Tiếng Anh (English)' },
-  { code: 'zh', label: 'Tiếng Trung (中文)' },
-  { code: 'ja', label: 'Tiếng Nhật (日本語)' },
-  { code: 'ko', label: 'Tiếng Hàn (한국어)' }
+  ...DICH_LANGS
 ]
 
 const SOURCE_LANGS = [
   { code: 'auto', label: 'Tự động (Whisper)' },
-  ...TRANSLATE_LANGS.filter((lang) => lang.code !== 'none')
+  ...DICH_LANGS
 ]
 
 const baseName = (path: string): string => path.split(/[\\/]/).pop() || path
@@ -202,15 +176,77 @@ export default function AutoShort(): JSX.Element {
 
   // TTS AI Voice
   const [ttsEnabled, setTtsEnabled] = usePersistedState('tblao.autoshort.ttsEnabled', true)
-  const [ttsServerUrl, setTtsServerUrl] = usePersistedState('tblao.autoshort.ttsUrl', DEFAULT_SERVER_URL)
+  const [ttsServerUrl, setTtsServerUrl] = usePersistedState('tblao.ai.serverUrl', DEFAULT_AI_SERVER_URL)
   const [ttsModel, setTtsModel] = usePersistedState('tblao.autoshort.ttsModel', 'tts-vietnamese')
   const [ttsVoice, setTtsVoice] = usePersistedState('tblao.autoshort.ttsVoice', 'Minh Đức')
   const [ttsSpeed, setTtsSpeed] = usePersistedState('tblao.autoshort.ttsSpeed', 1.0)
   const [clonedVoices] = usePersistedState<ClonedVoice[]>('tblao.tts.clonedVoices', [])
   const [serverOnline, setServerOnline] = useState<boolean | null>(null)
+  const [ttsModels, setTtsModels] = useState<TtsModelInfo[]>([])
   const [voiceOverMode, setVoiceOverMode] = usePersistedState('tblao.autoshort.voiceOverMode', false)
   const [audioMode, setAudioMode] = usePersistedState<'replace' | 'mix'>('tblao.autoshort.audioMode', 'replace')
   const [originalAudioVolume, setOriginalAudioVolume] = usePersistedState('tblao.autoshort.origVol', 20)
+
+  const selectedModelInfo = ttsModels.find((m) => m.id === ttsModel) || ttsModels[0]
+  const modelVoices = selectedModelInfo?.voices || []
+  const defaultVoice = selectedModelInfo?.default_voice || (modelVoices[0] || 'default')
+
+  // Dynamic AI server connection & model capability loading
+  useEffect(() => {
+    let isCancelled = false
+    const loadAiCapabilities = async (): Promise<void> => {
+      const cleanUrl = (ttsServerUrl || DEFAULT_AI_SERVER_URL).trim()
+      if (!cleanUrl) {
+        setServerOnline(false)
+        setTtsModels([])
+        return
+      }
+      try {
+        const health = await window.api.ttsCheckHealth(cleanUrl)
+        if (isCancelled) return
+        setServerOnline(health.ok)
+        if (health.ok) {
+          const res = await window.api.ttsGetModels(cleanUrl)
+          if (isCancelled) return
+          if (res.ok && res.models.length > 0) {
+            const availableTts = res.models.filter(
+              (m) =>
+                m.provider !== 'ollama' &&
+                (m.languages?.length ||
+                  m.voices?.length ||
+                  m.supports_named_voice ||
+                  m.supports_voice_clone ||
+                  m.id.startsWith('tts') ||
+                  m.provider === 'vieneu' ||
+                  m.provider === 'chatterbox' ||
+                  m.logical_model?.startsWith('tts'))
+            )
+            setTtsModels(availableTts)
+            const matching = availableTts.find((m) => m.id === ttsModel)
+            if (!matching && availableTts.length > 0) {
+              const fallback = availableTts.find((m) => m.available !== false) || availableTts[0]
+              setTtsModel(fallback.id)
+              const fallbackVoice = fallback.default_voice || fallback.voices?.[0] || 'default'
+              if (!ttsVoice.startsWith('clone:')) {
+                setTtsVoice(fallbackVoice)
+              }
+            }
+          }
+        } else {
+          setTtsModels([])
+        }
+      } catch {
+        if (!isCancelled) {
+          setServerOnline(false)
+          setTtsModels([])
+        }
+      }
+    }
+    void loadAiCapabilities()
+    return () => {
+      isCancelled = true
+    }
+  }, [ttsServerUrl])
 
   // Batch Execution State
   const [isRunning, setIsRunning] = useState(false)
@@ -301,22 +337,39 @@ export default function AutoShort(): JSX.Element {
     }
   }, [translateProvider])
 
-  // Check TTS server health
+  // Check TTS server health and load capabilities
   useEffect(() => {
     let active = true
-    void window.api.ttsCheckHealth(ttsServerUrl).then((h) => {
-      if (active) setServerOnline(h.ok)
-    })
-    const timer = setInterval(() => {
-      void window.api.ttsCheckHealth(ttsServerUrl).then((h) => {
+    const check = async (): Promise<void> => {
+      try {
+        const h = await window.api.ttsCheckHealth(ttsServerUrl)
         if (active) setServerOnline(h.ok)
-      })
-    }, 8000)
+        if (h.ok) {
+          const mRes = await window.api.ttsGetModels(ttsServerUrl)
+          if (active && mRes.ok && mRes.models.length > 0) {
+            setTtsModels(mRes.models)
+          }
+        }
+      } catch {
+        if (active) setServerOnline(false)
+      }
+    }
+    void check()
+    const timer = setInterval(() => {
+      void check()
+    }, 10000)
     return () => {
       active = false
       clearInterval(timer)
     }
   }, [ttsServerUrl])
+
+  useEffect(() => {
+    if (!selectedModelInfo) return
+    if (!ttsVoice.startsWith('clone:') && !modelVoices.includes(ttsVoice) && ttsVoice !== defaultVoice) {
+      setTtsVoice(defaultVoice)
+    }
+  }, [selectedModelInfo?.id])
 
   // Lắng nghe event discriminated union của job hiện tại.
   useEffect(() => {
@@ -766,7 +819,7 @@ export default function AutoShort(): JSX.Element {
     <div className="video-editor autoshort-page" style={{ gridTemplateRows: 'minmax(0, 1fr) auto' }}>
       {/* KHU VỰC CHÍNH: 2 CỘT (TRÁI: BẢN XEM TRƯỚC, PHẢI: INSPECTOR) */}
       <div className="editor-workspace">
-        
+
         {/* ========================================================================= */}
         {/* CỘT TRÁI: BẢN XEM TRƯỚC VIDEO (CHUẨN 3 HÀNG GRID, TỰ ĐỘNG SCALE VỪA VẶN) */}
         {/* ========================================================================= */}
@@ -842,11 +895,11 @@ export default function AutoShort(): JSX.Element {
                 style={
                   videoW > 0 && videoH > 0
                     ? ({
-                        aspectRatio: `${videoW} / ${videoH}`,
-                        width: previewStageSize.width > 0 ? `${previewStageSize.width}px` : undefined,
-                        height: previewStageSize.height > 0 ? `${previewStageSize.height}px` : undefined,
-                        overflow: 'hidden'
-                      } as CSSProperties)
+                      aspectRatio: `${videoW} / ${videoH}`,
+                      width: previewStageSize.width > 0 ? `${previewStageSize.width}px` : undefined,
+                      height: previewStageSize.height > 0 ? `${previewStageSize.height}px` : undefined,
+                      overflow: 'hidden'
+                    } as CSSProperties)
                     : undefined
                 }
               >
@@ -943,7 +996,7 @@ export default function AutoShort(): JSX.Element {
                 <span>{transport.isPlaying ? '❚❚' : '▶'}</span>
               </button>
               <span className="cue-transport-time">{formatTime(currentTime)}</span>
-              
+
               <div
                 className="cue-rail-track"
                 onClick={(e) => {
@@ -1042,697 +1095,706 @@ export default function AutoShort(): JSX.Element {
 
           <div className="editor-inspector-scroll">
             <fieldset disabled={isRunning} style={{ border: 0, padding: 0, margin: 0, minWidth: 0 }}>
-            {/* ------------------------------------------------------------- */}
-            {/* TAB 1: PHỤ ĐỀ                                                 */}
-            {/* ------------------------------------------------------------- */}
-            {tool === 'subtitle' && (
-              <>
-                {/* 1. Trích xuất phụ đề */}
-                <div className="editor-section-head">
-                  <div>
-                    <strong>Nhận diện phụ đề</strong>
-                    <small>Tự động trích xuất lời thoại từ âm thanh hoặc hình ảnh video.</small>
+              {/* ------------------------------------------------------------- */}
+              {/* TAB 1: PHỤ ĐỀ                                                 */}
+              {/* ------------------------------------------------------------- */}
+              {tool === 'subtitle' && (
+                <>
+                  {/* 1. Trích xuất phụ đề */}
+                  <div className="editor-section-head">
+                    <div>
+                      <strong>Nhận diện phụ đề</strong>
+                      <small>Tự động trích xuất lời thoại từ âm thanh hoặc hình ảnh video.</small>
+                    </div>
                   </div>
-                </div>
 
-                <div className="subtitle-style-options">
-                  {(
-                    [
-                      ['whisper', '🎙️ Whisper', 'Nhận diện âm thanh chuẩn xác'],
-                      ['ocr', '🔍 OCR (Đọc chữ video)', 'Quét trực tiếp chữ trên khung hình'],
-                      ['whisper-ocr', '✨ Whisper + OCR', 'Kết hợp nhận diện âm thanh & hình ảnh']
-                    ] as const
-                  ).map(([value, label, note]) => (
-                    <label
-                      key={value}
-                      className={`subtitle-style-option ${subtitleMethod === value ? 'active' : ''}`}
-                    >
-                      <input
-                        type="radio"
-                        name="auto-sub-method"
-                        value={value}
-                        checked={subtitleMethod === value}
-                        onChange={() => setSubtitleMethod(value)}
-                      />
-                      <span className="subtitle-style-signal" aria-hidden="true" />
-                      <span>
-                        <strong>{label}</strong>
-                        <small>{note}</small>
-                      </span>
-                    </label>
-                  ))}
-                </div>
-
-                {subtitleMethod !== 'ocr' && (
-                  <label className="field editor-field" style={{ marginTop: 6 }}>
-                    <span>Mô hình Whisper</span>
-                    <select value={selectedWhisperModel} onChange={(e) => setWhisperModel(e.target.value)}>
-                      <option value="base">Base (Cân bằng · Khuyên dùng)</option>
-                      <option value="small">Small (Chính xác hơn)</option>
-                      <option value="medium">Medium (Chính xác cao)</option>
-                    </select>
-                  </label>
-                )}
-
-                {subtitleMethod !== 'ocr' && (
-                  <label className="field editor-field" style={{ marginTop: 6 }}>
-                    <span>Thiết bị Whisper</span>
-                    <select value={whisperDevice} onChange={(e) => setWhisperDevice(e.target.value as WhisperDevice)}>
-                      <option value="cpu">CPU (tương thích)</option>
-                      <option value="cuda">CUDA (GPU NVIDIA)</option>
-                    </select>
-                  </label>
-                )}
-
-                <div className="editor-section-divider" style={{ margin: '14px 0', borderBottom: '1px solid var(--border)' }} />
-
-                {/* 2. Dịch phụ đề AI */}
-                <div className="editor-section-head">
-                  <div>
-                    <strong>Dịch phụ đề AI</strong>
-                    <small>Tự động dịch nội dung phụ đề sang ngôn ngữ đích.</small>
-                  </div>
-                </div>
-
-                <label className="field editor-field">
-                  <span>Ngôn ngữ đích</span>
-                  <select value={translateTarget} onChange={(e) => setTranslateTarget(e.target.value)}>
-                    {TRANSLATE_LANGS.map((lang) => (
-                      <option key={lang.code} value={lang.code}>
-                        {lang.label}
-                      </option>
-                    ))}
-                  </select>
-                </label>
-
-                <label className="field editor-field">
-                  <span>Ngôn ngữ nguồn</span>
-                  <select value={whisperLanguage} onChange={(e) => setWhisperLanguage(e.target.value)}>
-                    {SOURCE_LANGS.map((lang) => (
-                      <option key={lang.code} value={lang.code}>
-                        {lang.label}
-                      </option>
-                    ))}
-                  </select>
-                  <small className="muted">Dùng cho nhận diện, dịch và chọn ngôn ngữ TTS khi không có ngôn ngữ đích.</small>
-                </label>
-
-                {translateTarget !== 'none' && (
-                  <>
-                    <label className="field editor-field">
-                      <span>Bộ dịch AI</span>
-                      <select
-                        value={translateProvider}
-                        onChange={(e) => setTranslateProvider(e.target.value as DichProvider)}
+                  <div className="subtitle-style-options">
+                    {(
+                      [
+                        ['whisper', '🎙️ Whisper', 'Nhận diện âm thanh chuẩn xác'],
+                        ['ocr', '🔍 OCR (Đọc chữ video)', 'Quét trực tiếp chữ trên khung hình'],
+                        ['whisper-ocr', '✨ Whisper + OCR', 'Kết hợp nhận diện âm thanh & hình ảnh']
+                      ] as const
+                    ).map(([value, label, note]) => (
+                      <label
+                        key={value}
+                        className={`subtitle-style-option ${subtitleMethod === value ? 'active' : ''}`}
                       >
-                        <option value="local">AI nội bộ (TTS-Server)</option>
-                        <option value="gemini">Google Gemini AI</option>
-                        <option value="openai">OpenAI (ChatGPT)</option>
+                        <input
+                          type="radio"
+                          name="auto-sub-method"
+                          value={value}
+                          checked={subtitleMethod === value}
+                          onChange={() => setSubtitleMethod(value)}
+                        />
+                        <span className="subtitle-style-signal" aria-hidden="true" />
+                        <span>
+                          <strong>{label}</strong>
+                          <small>{note}</small>
+                        </span>
+                      </label>
+                    ))}
+                  </div>
+
+                  {subtitleMethod !== 'ocr' && (
+                    <label className="field editor-field" style={{ marginTop: 6 }}>
+                      <span>Mô hình Whisper</span>
+                      <select value={selectedWhisperModel} onChange={(e) => setWhisperModel(e.target.value)}>
+                        <option value="base">Base (Cân bằng · Khuyên dùng)</option>
+                        <option value="small">Small (Chính xác hơn)</option>
+                        <option value="medium">Medium (Chính xác cao)</option>
                       </select>
                     </label>
+                  )}
 
-                    <div className="autoshort-key-card">
-                      <div className="autoshort-key-header">
-                        <span className="muted small">
-                          {translateProvider === 'local'
-                            ? 'Khóa API AI nội bộ'
-                            : `Khóa API ${translateProvider.toUpperCase()}`}
-                        </span>
-                        <span className={`autoshort-key-badge ${hasStoredKey ? 'saved' : ''}`}>
-                          {hasStoredKey ? '✓ Đã lưu trên máy' : 'Chưa lưu'}
-                        </span>
-                      </div>
+                  {subtitleMethod !== 'ocr' && (
+                    <label className="field editor-field" style={{ marginTop: 6 }}>
+                      <span>Thiết bị Whisper</span>
+                      <select value={whisperDevice} onChange={(e) => setWhisperDevice(e.target.value as WhisperDevice)}>
+                        <option value="cpu">CPU (tương thích)</option>
+                        <option value="cuda">CUDA (GPU NVIDIA)</option>
+                      </select>
+                    </label>
+                  )}
 
-                      <div className="autoshort-key-input-row">
-                        <div className="autoshort-key-input-wrap">
-                          <input
-                            type={showKeyText ? 'text' : 'password'}
-                            placeholder={
-                              hasStoredKey
-                                ? '•••••••••••• (Đã lưu key, nhập mới để đổi)'
-                                : translateProvider === 'local'
-                                  ? 'Nhập API Key (để trống nếu server không yêu cầu)'
-                                  : 'Dán API Key vào đây…'
-                            }
-                            value={apiKeyInput}
-                            onChange={(e) => setApiKeyInput(e.target.value)}
-                          />
-                          <button
-                            type="button"
-                            className="autoshort-key-toggle-btn"
-                            onClick={() => setShowKeyText(!showKeyText)}
-                            title={showKeyText ? 'Ẩn key' : 'Hiện key'}
-                          >
-                            {showKeyText ? (
-                              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24" />
-                                <line x1="1" y1="1" x2="23" y2="23" />
-                              </svg>
-                            ) : (
-                              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
-                                <circle cx="12" cy="12" r="3" />
-                              </svg>
-                            )}
-                          </button>
+                  <div className="editor-section-divider" style={{ margin: '14px 0', borderBottom: '1px solid var(--border)' }} />
+
+                  {/* 2. Dịch phụ đề AI */}
+                  <div className="editor-section-head">
+                    <div>
+                      <strong>Dịch phụ đề AI</strong>
+                      <small>Tự động dịch nội dung phụ đề sang ngôn ngữ đích.</small>
+                    </div>
+                  </div>
+
+                  <label className="field editor-field">
+                    <span>Ngôn ngữ đích</span>
+                    <select value={translateTarget} onChange={(e) => setTranslateTarget(e.target.value)}>
+                      {TRANSLATE_LANGS.map((lang) => (
+                        <option key={lang.code} value={lang.code}>
+                          {lang.label}
+                        </option>
+                      ))}
+                    </select>
+                  </label>
+
+                  <label className="field editor-field">
+                    <span>Ngôn ngữ nguồn</span>
+                    <select value={whisperLanguage} onChange={(e) => setWhisperLanguage(e.target.value)}>
+                      {SOURCE_LANGS.map((lang) => (
+                        <option key={lang.code} value={lang.code}>
+                          {lang.label}
+                        </option>
+                      ))}
+                    </select>
+                    <small className="muted">Dùng cho nhận diện, dịch và chọn ngôn ngữ TTS khi không có ngôn ngữ đích.</small>
+                  </label>
+
+                  {translateTarget !== 'none' && (
+                    <>
+                      <label className="field editor-field">
+                        <span>Bộ dịch AI</span>
+                        <select
+                          value={translateProvider}
+                          onChange={(e) => setTranslateProvider(e.target.value as DichProvider)}
+                        >
+                          <option value="local">AI nội bộ (TTS-Server)</option>
+                          <option value="gemini">Google Gemini AI</option>
+                          <option value="openai">OpenAI (ChatGPT)</option>
+                        </select>
+                      </label>
+
+                      <div className="autoshort-key-card">
+                        <div className="autoshort-key-header">
+                          <span className="muted small">
+                            {translateProvider === 'local'
+                              ? 'Khóa API AI nội bộ'
+                              : `Khóa API ${translateProvider.toUpperCase()}`}
+                          </span>
+                          <span className={`autoshort-key-badge ${hasStoredKey ? 'saved' : ''}`}>
+                            {hasStoredKey ? '✓ Đã lưu trên máy' : 'Chưa lưu'}
+                          </span>
                         </div>
 
-                        <button
-                          type="button"
-                          className="btn primary autoshort-key-btn-save"
-                          disabled={keyTesting || (!apiKeyInput.trim() && !hasStoredKey && translateProvider !== 'local')}
-                          onClick={() => void handleSaveAndTestKey()}
-                        >
-                          {keyTesting ? '⏳…' : 'Lưu'}
-                        </button>
+                        <div className="autoshort-key-input-row">
+                          <div className="autoshort-key-input-wrap">
+                            <input
+                              type={showKeyText ? 'text' : 'password'}
+                              placeholder={
+                                hasStoredKey
+                                  ? '•••••••••••• (Đã lưu key, nhập mới để đổi)'
+                                  : translateProvider === 'local'
+                                    ? 'Nhập API Key (để trống nếu server không yêu cầu)'
+                                    : 'Dán API Key vào đây…'
+                              }
+                              value={apiKeyInput}
+                              onChange={(e) => setApiKeyInput(e.target.value)}
+                            />
+                            <button
+                              type="button"
+                              className="autoshort-key-toggle-btn"
+                              onClick={() => setShowKeyText(!showKeyText)}
+                              title={showKeyText ? 'Ẩn key' : 'Hiện key'}
+                            >
+                              {showKeyText ? (
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                  <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24" />
+                                  <line x1="1" y1="1" x2="23" y2="23" />
+                                </svg>
+                              ) : (
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                                  <circle cx="12" cy="12" r="3" />
+                                </svg>
+                              )}
+                            </button>
+                          </div>
 
-                        {hasStoredKey && (
                           <button
                             type="button"
-                            className="btn ghost danger autoshort-key-btn-del"
-                            onClick={() => void handleClearKey()}
-                            title="Xóa key đã lưu"
+                            className="btn primary autoshort-key-btn-save"
+                            disabled={keyTesting || (!apiKeyInput.trim() && !hasStoredKey && translateProvider !== 'local')}
+                            onClick={() => void handleSaveAndTestKey()}
                           >
-                            Xóa
+                            {keyTesting ? '⏳…' : 'Lưu'}
                           </button>
+
+                          {hasStoredKey && (
+                            <button
+                              type="button"
+                              className="btn ghost danger autoshort-key-btn-del"
+                              onClick={() => void handleClearKey()}
+                              title="Xóa key đã lưu"
+                            >
+                              Xóa
+                            </button>
+                          )}
+                        </div>
+
+                        {keyFeedback && (
+                          <div className={`autoshort-key-feedback ${keyFeedback.ok ? 'success' : 'error'}`}>
+                            {keyFeedback.ok ? '✓ ' : '✕ '}
+                            {keyFeedback.message}
+                          </div>
                         )}
                       </div>
+                    </>
+                  )}
 
-                      {keyFeedback && (
-                        <div className={`autoshort-key-feedback ${keyFeedback.ok ? 'success' : 'error'}`}>
-                          {keyFeedback.ok ? '✓ ' : '✕ '}
-                          {keyFeedback.message}
-                        </div>
-                      )}
+                  <div className="editor-section-divider" style={{ margin: '14px 0', borderBottom: '1px solid var(--border)' }} />
+
+                  {/* 3. Kiểu phụ đề */}
+                  <div className="editor-section-head">
+                    <div>
+                      <strong>Kiểu hiển thị phụ đề</strong>
+                      <small>Áp dụng đồng thời cho xem trước và video xuất.</small>
                     </div>
-                  </>
-                )}
-
-                <div className="editor-section-divider" style={{ margin: '14px 0', borderBottom: '1px solid var(--border)' }} />
-
-                {/* 3. Kiểu phụ đề */}
-                <div className="editor-section-head">
-                  <div>
-                    <strong>Kiểu hiển thị phụ đề</strong>
-                    <small>Áp dụng đồng thời cho xem trước và video xuất.</small>
+                    <label className="editor-switch">
+                      <input type="checkbox" checked readOnly disabled />
+                      <span>Luôn burn khi xuất</span>
+                    </label>
                   </div>
-                  <label className="editor-switch">
-                    <input type="checkbox" checked readOnly disabled />
-                    <span>Luôn burn khi xuất</span>
-                  </label>
-                </div>
 
-                <div className="subtitle-style-options">
-                  {(
-                    [
-                      ['standard', 'Hiển thị cả câu', 'Ổn định và dễ đọc'],
-                      ['word-reveal', 'Hiện lần lượt từng từ', 'Từ đã hiện được giữ lại'],
-                      ['word-highlight', 'Làm nổi bật từ đang đọc', 'Toàn câu luôn hiển thị']
-                    ] as const
-                  ).map(([value, label, note]) => (
-                    <label
-                      key={value}
-                      className={`subtitle-style-option ${displayStyle === value ? 'active' : ''}`}
-                    >
-                      <input
-                        type="radio"
-                        name="subtitle-display-style"
-                        value={value}
-                        checked={displayStyle === value}
-                        onChange={() => setDisplayStyle(value)}
-                      />
-                      <span className="subtitle-style-signal" aria-hidden="true" />
-                      <span>
-                        <strong>{label}</strong>
-                        <small>{note}</small>
-                      </span>
-                    </label>
-                  ))}
-                </div>
+                  <div className="subtitle-style-options">
+                    {(
+                      [
+                        ['standard', 'Hiển thị cả câu', 'Ổn định và dễ đọc'],
+                        ['word-reveal', 'Hiện lần lượt từng từ', 'Từ đã hiện được giữ lại'],
+                        ['word-highlight', 'Làm nổi bật từ đang đọc', 'Toàn câu luôn hiển thị']
+                      ] as const
+                    ).map(([value, label, note]) => (
+                      <label
+                        key={value}
+                        className={`subtitle-style-option ${displayStyle === value ? 'active' : ''}`}
+                      >
+                        <input
+                          type="radio"
+                          name="subtitle-display-style"
+                          value={value}
+                          checked={displayStyle === value}
+                          onChange={() => setDisplayStyle(value)}
+                        />
+                        <span className="subtitle-style-signal" aria-hidden="true" />
+                        <span>
+                          <strong>{label}</strong>
+                          <small>{note}</small>
+                        </span>
+                      </label>
+                    ))}
+                  </div>
 
-                {displayStyle === 'word-highlight' && (
-                  <div className="highlight-effect-controls">
-                    <label className="field editor-field">
-                      <span>Màu từ đang đọc</span>
-                      <input
-                        type="color"
-                        value={highlightColor}
-                        onChange={(e) => setHighlightColor(e.target.value)}
-                      />
-                    </label>
-                    <div className="highlight-pop-control">
+                  {displayStyle === 'word-highlight' && (
+                    <div className="highlight-effect-controls">
+                      <label className="field editor-field">
+                        <span>Màu từ đang đọc</span>
+                        <input
+                          type="color"
+                          value={highlightColor}
+                          onChange={(e) => setHighlightColor(e.target.value)}
+                        />
+                      </label>
+                      <div className="highlight-pop-control">
+                        <div>
+                          <strong>Nhấn nhẹ từ đang đọc</strong>
+                          <small>Phóng nhẹ rồi trở về, không làm xô dòng chữ.</small>
+                        </div>
+                        <label className="editor-switch">
+                          <input
+                            type="checkbox"
+                            checked={highlightPop}
+                            onChange={(e) => setHighlightPop(e.target.checked)}
+                          />
+                          <span>{highlightPop ? 'Bật' : 'Tắt'}</span>
+                        </label>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* 4. Tự tối ưu & Font chữ */}
+                  <div className="subtitle-layout-card">
+                    <div className="subtitle-layout-head">
                       <div>
-                        <strong>Nhấn nhẹ từ đang đọc</strong>
-                        <small>Phóng nhẹ rồi trở về, không làm xô dòng chữ.</small>
+                        <strong>Tự tối ưu phụ đề</strong>
+                        <small>Giữ chữ gọn trong khung mà không sửa file SRT gốc.</small>
                       </div>
                       <label className="editor-switch">
                         <input
                           type="checkbox"
-                          checked={highlightPop}
-                          onChange={(e) => setHighlightPop(e.target.checked)}
+                          checked={autoOptimize}
+                          onChange={(e) => setAutoOptimize(e.target.checked)}
                         />
-                        <span>{highlightPop ? 'Bật' : 'Tắt'}</span>
+                        <span>{autoOptimize ? 'Bật' : 'Tắt'}</span>
                       </label>
                     </div>
+                    <label className="field editor-field">
+                      <span>Nhịp hiển thị</span>
+                      <select
+                        value={layoutProfile}
+                        onChange={(e) => setLayoutProfile(e.target.value as SubtitleLayoutProfile)}
+                      >
+                        <option value="readable">Dễ đọc · tối đa 2 dòng</option>
+                        <option value="social">Social · nhịp nhanh</option>
+                        <option value="vertical">Video dọc · tối đa 2 dòng</option>
+                      </select>
+                    </label>
+                    <label className="gk-check editor-check subtitle-safe-toggle">
+                      <input
+                        type="checkbox"
+                        checked={showSafeArea}
+                        onChange={(e) => setShowSafeArea(e.target.checked)}
+                      />
+                      <span>Hiện vùng an toàn trên bản xem trước</span>
+                    </label>
                   </div>
-                )}
 
-                {/* 4. Tự tối ưu & Font chữ */}
-                <div className="subtitle-layout-card">
-                  <div className="subtitle-layout-head">
+                  <div className="editor-section-divider" style={{ margin: '14px 0', borderBottom: '1px solid var(--border)' }} />
+
+                  <label className="field editor-field">
+                    <span>Font chữ</span>
+                    <select value={fontId} onChange={(e) => setFontId(e.target.value)}>
+                      <option value="auto">Tự động theo nội dung</option>
+                      {groupedFonts.map(([group, entries]) => (
+                        <optgroup key={group} label={group}>
+                          {entries.map((font) => (
+                            <option key={font.id} value={font.id}>
+                              {font.label}
+                            </option>
+                          ))}
+                        </optgroup>
+                      ))}
+                    </select>
+                  </label>
+                  <div className={`font-preview-status ${fontLoadState}`}>
+                    <span className="font-preview-dot" />
+                    <span>{fontMessage || 'Chọn font để xem trực tiếp trên video.'}</span>
+                  </div>
+
+                  <label className="field editor-field">
+                    <span>Cỡ chữ · {fontSize === 0 ? 'Tự động theo khung' : `${fontSize}px`}</span>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                      <input
+                        type="range"
+                        min={0}
+                        max={80}
+                        step={2}
+                        value={fontSize}
+                        onChange={(e) => setFontSize(Number(e.target.value))}
+                        style={{ flex: 1 }}
+                      />
+                      {fontSize > 0 && (
+                        <button
+                          type="button"
+                          className="btn sm ghost"
+                          onClick={() => setFontSize(0)}
+                          style={{ padding: '2px 8px', fontSize: '11px', whiteSpace: 'nowrap' }}
+                          title="Đặt lại cỡ chữ tự động theo kích thước khung phụ đề"
+                        >
+                          Tự động
+                        </button>
+                      )}
+                    </div>
+                  </label>
+
+                  <div className="editor-color-grid">
+                    <label className="field editor-field">
+                      <span>Màu chữ</span>
+                      <input type="color" value={textColor} onChange={(e) => setTextColor(e.target.value)} />
+                    </label>
+                    <label className="field editor-field">
+                      <span>Màu viền</span>
+                      <input type="color" value={outlineColor} onChange={(e) => setOutlineColor(e.target.value)} />
+                    </label>
+                  </div>
+                  <label className="field editor-field">
+                    <span>Độ dày viền · {outlinePx}px</span>
+                    <input
+                      type="range"
+                      min={0}
+                      max={8}
+                      step={0.5}
+                      value={outlinePx}
+                      onChange={(e) => setOutlinePx(Number(e.target.value))}
+                    />
+                  </label>
+
+                  <label className="gk-check editor-check">
+                    <input
+                      type="checkbox"
+                      checked={bgEnabled}
+                      onChange={(e) => setBgEnabled(e.target.checked)}
+                    />
+                    <span>Thêm nền sau chữ</span>
+                  </label>
+                  {bgEnabled && (
+                    <div className="editor-color-grid">
+                      <label className="field editor-field">
+                        <span>Màu nền</span>
+                        <input type="color" value={bgColor} onChange={(e) => setBgColor(e.target.value)} />
+                      </label>
+                      <label className="field editor-field">
+                        <span>Độ đậm · {bgOpacity}%</span>
+                        <input
+                          type="range"
+                          min={0}
+                          max={100}
+                          value={bgOpacity}
+                          onChange={(e) => setBgOpacity(Number(e.target.value))}
+                        />
+                      </label>
+                    </div>
+                  )}
+                </>
+              )}
+
+              {/* ------------------------------------------------------------- */}
+              {/* TAB 2: LÀM MỜ (BLUR)                                          */}
+              {/* ------------------------------------------------------------- */}
+              {tool === 'blur' && (
+                <>
+                  <div className="editor-section-head">
                     <div>
-                      <strong>Tự tối ưu phụ đề</strong>
-                      <small>Giữ chữ gọn trong khung mà không sửa file SRT gốc.</small>
+                      <strong>Vùng làm mờ</strong>
+                      <small>Kéo vùng màu trên video để che phụ đề hoặc logo cũ.</small>
                     </div>
                     <label className="editor-switch">
                       <input
                         type="checkbox"
-                        checked={autoOptimize}
-                        onChange={(e) => setAutoOptimize(e.target.checked)}
+                        checked={blurEnabled}
+                        onChange={(e) => setBlurEnabled(e.target.checked)}
                       />
-                      <span>{autoOptimize ? 'Bật' : 'Tắt'}</span>
+                      <span>{blurEnabled ? 'Bật' : 'Tắt'}</span>
                     </label>
                   </div>
-                  <label className="field editor-field">
-                    <span>Nhịp hiển thị</span>
-                    <select
-                      value={layoutProfile}
-                      onChange={(e) => setLayoutProfile(e.target.value as SubtitleLayoutProfile)}
-                    >
-                      <option value="readable">Dễ đọc · tối đa 2 dòng</option>
-                      <option value="social">Social · nhịp nhanh</option>
-                      <option value="vertical">Video dọc · tối đa 2 dòng</option>
-                    </select>
-                  </label>
-                  <label className="gk-check editor-check subtitle-safe-toggle">
-                    <input
-                      type="checkbox"
-                      checked={showSafeArea}
-                      onChange={(e) => setShowSafeArea(e.target.checked)}
-                    />
-                    <span>Hiện vùng an toàn trên bản xem trước</span>
-                  </label>
-                </div>
 
-                <div className="editor-section-divider" style={{ margin: '14px 0', borderBottom: '1px solid var(--border)' }} />
+                  <button className="btn editor-wide-action" onClick={addBlurRegion} type="button">
+                    + Thêm vùng làm mờ
+                  </button>
 
-                <label className="field editor-field">
-                  <span>Font chữ</span>
-                  <select value={fontId} onChange={(e) => setFontId(e.target.value)}>
-                    <option value="auto">Tự động theo nội dung</option>
-                    {groupedFonts.map(([group, entries]) => (
-                      <optgroup key={group} label={group}>
-                        {entries.map((font) => (
-                          <option key={font.id} value={font.id}>
-                            {font.label}
-                          </option>
-                        ))}
-                      </optgroup>
-                    ))}
-                  </select>
-                </label>
-                <div className={`font-preview-status ${fontLoadState}`}>
-                  <span className="font-preview-dot" />
-                  <span>{fontMessage || 'Chọn font để xem trực tiếp trên video.'}</span>
-                </div>
-
-                <label className="field editor-field">
-                  <span>Cỡ chữ · {fontSize === 0 ? 'Tự động theo khung' : `${fontSize}px`}</span>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                    <input
-                      type="range"
-                      min={0}
-                      max={80}
-                      step={2}
-                      value={fontSize}
-                      onChange={(e) => setFontSize(Number(e.target.value))}
-                      style={{ flex: 1 }}
-                    />
-                    {fontSize > 0 && (
-                      <button
-                        type="button"
-                        className="btn sm ghost"
-                        onClick={() => setFontSize(0)}
-                        style={{ padding: '2px 8px', fontSize: '11px', whiteSpace: 'nowrap' }}
-                        title="Đặt lại cỡ chữ tự động theo kích thước khung phụ đề"
-                      >
-                        Tự động
-                      </button>
+                  <div className="blur-list">
+                    {blurRegions.length === 0 ? (
+                      <div className="muted small" style={{ padding: '12px 0', textAlign: 'center' }}>
+                        Chưa có vùng làm mờ nào. Nhấp "+ Thêm vùng làm mờ" để tạo vùng che.
+                      </div>
+                    ) : (
+                      blurRegions.map((region, index) => (
+                        <button
+                          key={region.id}
+                          className={`blur-item ${activeBlurId === region.id ? 'active' : ''}`}
+                          onClick={() => setActiveBlurId(region.id)}
+                          type="button"
+                        >
+                          <span className="blur-color-badge" style={{ background: region.color || PALETTE[0] }} />
+                          <span className="blur-toado">
+                            <b>Vùng {index + 1}</b>
+                            <span className="blur-coords">{region.x0},{region.y0} → {region.x1},{region.y1}</span>
+                          </span>
+                          <span
+                            className="blur-del-btn"
+                            onClick={(e) => {
+                              e.stopPropagation()
+                              removeBlurRegion(region.id)
+                            }}
+                            title="Xóa vùng này"
+                          >
+                            ×
+                          </span>
+                        </button>
+                      ))
                     )}
                   </div>
-                </label>
+                </>
+              )}
 
-                <div className="editor-color-grid">
-                  <label className="field editor-field">
-                    <span>Màu chữ</span>
-                    <input type="color" value={textColor} onChange={(e) => setTextColor(e.target.value)} />
-                  </label>
-                  <label className="field editor-field">
-                    <span>Màu viền</span>
-                    <input type="color" value={outlineColor} onChange={(e) => setOutlineColor(e.target.value)} />
-                  </label>
-                </div>
-                <label className="field editor-field">
-                  <span>Độ dày viền · {outlinePx}px</span>
-                  <input
-                    type="range"
-                    min={0}
-                    max={8}
-                    step={0.5}
-                    value={outlinePx}
-                    onChange={(e) => setOutlinePx(Number(e.target.value))}
-                  />
-                </label>
-
-                <label className="gk-check editor-check">
-                  <input
-                    type="checkbox"
-                    checked={bgEnabled}
-                    onChange={(e) => setBgEnabled(e.target.checked)}
-                  />
-                  <span>Thêm nền sau chữ</span>
-                </label>
-                {bgEnabled && (
-                  <div className="editor-color-grid">
-                    <label className="field editor-field">
-                      <span>Màu nền</span>
-                      <input type="color" value={bgColor} onChange={(e) => setBgColor(e.target.value)} />
+              {/* ------------------------------------------------------------- */}
+              {/* TAB 3: LỒNG TIẾNG (AI VOICE TTS)                              */}
+              {/* ------------------------------------------------------------- */}
+              {tool === 'audio' && (
+                <>
+                  <div className="editor-section-head">
+                    <div>
+                      <strong>Lồng tiếng AI</strong>
+                      <small>Tự động sinh giọng đọc AI khớp chính xác timeline video.</small>
+                    </div>
+                    <label className="editor-switch">
+                      <input
+                        type="checkbox"
+                        checked={ttsEnabled}
+                        onChange={(e) => setTtsEnabled(e.target.checked)}
+                      />
+                      <span>{ttsEnabled ? 'Bật' : 'Tắt'}</span>
                     </label>
-                    <label className="field editor-field">
-                      <span>Độ đậm · {bgOpacity}%</span>
+                  </div>
+
+                  <label className="field editor-field">
+                    <span>Địa chỉ server AI (dịch/TTS)</span>
+                    <input
+                      type="url"
+                      value={ttsServerUrl}
+                      onChange={(e) => setTtsServerUrl(e.target.value)}
+                      placeholder="http://127.0.0.1:8000"
+                    />
+                  </label>
+
+                  <div className="server-status-pill" style={{ margin: '6px 0' }}>
+                    <span className={`status-dot ${serverOnline ? 'online' : 'offline'}`} />
+                    <span className="small">
+                      Server AI: <code>{ttsServerUrl}</code> ({serverOnline ? 'Sẵn sàng' : 'Chưa kết nối'})
+                    </span>
+                  </div>
+
+                  <label className="field editor-field">
+                    <span>Mô hình giọng đọc</span>
+                    <select
+                      value={selectedModelInfo?.id || ttsModel}
+                      disabled={ttsModels.length === 0}
+                      onChange={(e) => {
+                        const next = e.target.value
+                        setTtsModel(next)
+                        const nextInfo = ttsModels.find((m) => m.id === next)
+                        if (nextInfo && !ttsVoice.startsWith('clone:')) {
+                          setTtsVoice(nextInfo.default_voice || (nextInfo.voices && nextInfo.voices[0]) || 'default')
+                        }
+                      }}
+                    >
+                      {ttsModels.length > 0 ? (
+                        ttsModels.map((m) => (
+                          <option key={m.id} value={m.id} disabled={m.available === false}>
+                            {m.name || m.id}{m.available === false ? ' (không khả dụng)' : ''}
+                          </option>
+                        ))
+                      ) : (
+                        <option value="" disabled>
+                          {serverOnline === false ? 'Server AI chưa kết nối' : 'Đang tải danh sách mô hình…'}
+                        </option>
+                      )}
+                    </select>
+                  </label>
+
+                  <label className="field editor-field">
+                    <span>Giọng đọc</span>
+                    <select value={ttsVoice} onChange={(e) => setTtsVoice(e.target.value)}>
+                      {modelVoices.length > 0 ? (
+                        <optgroup label={`Giọng mẫu (${selectedModelInfo?.name || selectedModelInfo?.id || 'Mô hình'})`}>
+                          {modelVoices.map((v) => (
+                            <option key={v} value={v}>
+                              {v}
+                            </option>
+                          ))}
+                        </optgroup>
+                      ) : (
+                        <optgroup label="Giọng mẫu chuẩn">
+                          <option value={selectedModelInfo?.default_voice || 'default'}>
+                            {selectedModelInfo?.default_voice || 'default'} (Mặc định)
+                          </option>
+                        </optgroup>
+                      )}
+
+                      {clonedVoices.length > 0 && (
+                        <optgroup label={`✨ Giọng Clone đã lưu (${clonedVoices.length})`}>
+                          {clonedVoices.map((cv) => (
+                            <option key={cv.id} value={`clone:${cv.id}`}>
+                              ✨ {cv.name} ({cv.language || 'vi'} · Clone)
+                            </option>
+                          ))}
+                        </optgroup>
+                      )}
+                    </select>
+                  </label>
+
+                  <label className="field editor-field">
+                    <span>Tốc độ đọc · {ttsSpeed.toFixed(2)}x</span>
+                    <input
+                      type="range"
+                      min={0.5}
+                      max={2.0}
+                      step={0.05}
+                      value={ttsSpeed}
+                      onChange={(e) => setTtsSpeed(parseFloat(e.target.value))}
+                    />
+                  </label>
+
+                  <div className="editor-section-divider" style={{ margin: '14px 0', borderBottom: '1px solid var(--border)' }} />
+
+                  <label className="field editor-field">
+                    <span>Chế độ âm thanh xuất</span>
+                    <div className="radio-pill-group" style={{ marginTop: 6 }}>
+                      <label className={`radio-pill ${audioMode === 'replace' ? 'active' : ''}`}>
+                        <input
+                          type="radio"
+                          name="audioMode"
+                          value="replace"
+                          checked={audioMode === 'replace'}
+                          onChange={() => setAudioMode('replace')}
+                        />
+                        <span>Thay thế toàn bộ âm thanh gốc</span>
+                      </label>
+                      <label className={`radio-pill ${audioMode === 'mix' ? 'active' : ''}`}>
+                        <input
+                          type="radio"
+                          name="audioMode"
+                          value="mix"
+                          checked={audioMode === 'mix'}
+                          onChange={() => setAudioMode('mix')}
+                        />
+                        <span>Trộn với âm thanh / nhạc nền gốc</span>
+                      </label>
+                    </div>
+                  </label>
+
+                  {audioMode === 'mix' && (
+                    <label className="field editor-field" style={{ marginTop: 8 }}>
+                      <span>Âm lượng âm thanh gốc · {originalAudioVolume}%</span>
                       <input
                         type="range"
                         min={0}
                         max={100}
-                        value={bgOpacity}
-                        onChange={(e) => setBgOpacity(Number(e.target.value))}
+                        value={originalAudioVolume}
+                        onChange={(e) => setOriginalAudioVolume(Number(e.target.value))}
                       />
                     </label>
-                  </div>
-                )}
-              </>
-            )}
-
-            {/* ------------------------------------------------------------- */}
-            {/* TAB 2: LÀM MỜ (BLUR)                                          */}
-            {/* ------------------------------------------------------------- */}
-            {tool === 'blur' && (
-              <>
-                <div className="editor-section-head">
-                  <div>
-                    <strong>Vùng làm mờ</strong>
-                    <small>Kéo vùng màu trên video để che phụ đề hoặc logo cũ.</small>
-                  </div>
-                  <label className="editor-switch">
-                    <input
-                      type="checkbox"
-                      checked={blurEnabled}
-                      onChange={(e) => setBlurEnabled(e.target.checked)}
-                    />
-                    <span>{blurEnabled ? 'Bật' : 'Tắt'}</span>
-                  </label>
-                </div>
-
-                <button className="btn editor-wide-action" onClick={addBlurRegion} type="button">
-                  + Thêm vùng làm mờ
-                </button>
-
-                <div className="blur-list">
-                  {blurRegions.length === 0 ? (
-                    <div className="muted small" style={{ padding: '12px 0', textAlign: 'center' }}>
-                      Chưa có vùng làm mờ nào. Nhấp "+ Thêm vùng làm mờ" để tạo vùng che.
-                    </div>
-                  ) : (
-                    blurRegions.map((region, index) => (
-                      <button
-                        key={region.id}
-                        className={`blur-item ${activeBlurId === region.id ? 'active' : ''}`}
-                        onClick={() => setActiveBlurId(region.id)}
-                        type="button"
-                      >
-                        <span className="blur-color-badge" style={{ background: region.color || PALETTE[0] }} />
-                        <span className="blur-toado">
-                          <b>Vùng {index + 1}</b>
-                          <span className="blur-coords">{region.x0},{region.y0} → {region.x1},{region.y1}</span>
-                        </span>
-                        <span
-                          className="blur-del-btn"
-                          onClick={(e) => {
-                            e.stopPropagation()
-                            removeBlurRegion(region.id)
-                          }}
-                          title="Xóa vùng này"
-                        >
-                          ×
-                        </span>
-                      </button>
-                    ))
                   )}
-                </div>
-              </>
-            )}
+                </>
+              )}
 
-            {/* ------------------------------------------------------------- */}
-            {/* TAB 3: LỒNG TIẾNG (AI VOICE TTS)                              */}
-            {/* ------------------------------------------------------------- */}
-            {tool === 'audio' && (
-              <>
-                <div className="editor-section-head">
-                  <div>
-                    <strong>Lồng tiếng AI</strong>
-                    <small>Tự động sinh giọng đọc AI khớp chính xác timeline video.</small>
-                  </div>
-                  <label className="editor-switch">
-                    <input
-                      type="checkbox"
-                      checked={ttsEnabled}
-                      onChange={(e) => setTtsEnabled(e.target.checked)}
-                    />
-                    <span>{ttsEnabled ? 'Bật' : 'Tắt'}</span>
-                  </label>
-                </div>
-
-                <label className="field editor-field">
-                  <span>Địa chỉ server AI (dịch/TTS)</span>
-                  <input
-                    type="url"
-                    value={ttsServerUrl}
-                    onChange={(e) => setTtsServerUrl(e.target.value)}
-                    placeholder="http://127.0.0.1:8000"
-                  />
-                </label>
-
-                <div className="server-status-pill" style={{ margin: '6px 0' }}>
-                  <span className={`status-dot ${serverOnline ? 'online' : 'offline'}`} />
-                  <span className="small">
-                    Server AI: <code>{ttsServerUrl}</code> ({serverOnline ? 'Sẵn sàng' : 'Chưa kết nối'})
-                  </span>
-                </div>
-
-                <label className="field editor-field">
-                  <span>Mô hình giọng đọc</span>
-                  <select
-                    value={ttsModel}
-                    onChange={(e) => {
-                      const next = e.target.value
-                      setTtsModel(next)
-                      if (!ttsVoice.startsWith('clone:')) {
-                        if (next === 'tts-multilingual') {
-                          setTtsVoice('default')
-                        } else if (next === 'tts-vietnamese' && ttsVoice === 'default') {
-                          setTtsVoice('Minh Đức')
-                        }
-                      }
-                    }}
-                  >
-                    <option value="tts-vietnamese">VieNeu-TTS (Tiếng Việt biểu cảm)</option>
-                    <option value="tts-multilingual">Chatterbox (Đa ngôn ngữ)</option>
-                  </select>
-                </label>
-
-                <label className="field editor-field">
-                  <span>Giọng đọc</span>
-                  <select value={ttsVoice} onChange={(e) => setTtsVoice(e.target.value)}>
-                    {ttsModel === 'tts-vietnamese' ? (
-                      <optgroup label="Giọng mẫu tiếng Việt chuẩn (VieNeu)">
-                        {VIENEU_PRESET_VOICES.map((v) => (
-                          <option key={v.name} value={v.name}>
-                            {v.name} ({v.gender} · {v.region})
-                          </option>
-                        ))}
-                      </optgroup>
-                    ) : (
-                      <optgroup label="Giọng mẫu chuẩn (Chatterbox)">
-                        <option value="default">Giọng đa ngôn ngữ mặc định (default)</option>
-                      </optgroup>
-                    )}
-
-                    {clonedVoices.length > 0 && (
-                      <optgroup label={`✨ Giọng Clone đã lưu (${clonedVoices.length})`}>
-                        {clonedVoices.map((cv) => (
-                          <option key={cv.id} value={`clone:${cv.id}`}>
-                            ✨ {cv.name} ({cv.language || 'vi'} · Clone)
-                          </option>
-                        ))}
-                      </optgroup>
-                    )}
-                  </select>
-                </label>
-
-                <label className="field editor-field">
-                  <span>Tốc độ đọc · {ttsSpeed.toFixed(2)}x</span>
-                  <input
-                    type="range"
-                    min={0.5}
-                    max={2.0}
-                    step={0.05}
-                    value={ttsSpeed}
-                    onChange={(e) => setTtsSpeed(parseFloat(e.target.value))}
-                  />
-                </label>
-
-                <div className="editor-section-divider" style={{ margin: '14px 0', borderBottom: '1px solid var(--border)' }} />
-
-                <label className="field editor-field">
-                  <span>Chế độ âm thanh xuất</span>
-                  <div className="radio-pill-group" style={{ marginTop: 6 }}>
-                    <label className={`radio-pill ${audioMode === 'replace' ? 'active' : ''}`}>
-                      <input
-                        type="radio"
-                        name="audioMode"
-                        value="replace"
-                        checked={audioMode === 'replace'}
-                        onChange={() => setAudioMode('replace')}
-                      />
-                      <span>Thay thế toàn bộ âm thanh gốc</span>
-                    </label>
-                    <label className={`radio-pill ${audioMode === 'mix' ? 'active' : ''}`}>
-                      <input
-                        type="radio"
-                        name="audioMode"
-                        value="mix"
-                        checked={audioMode === 'mix'}
-                        onChange={() => setAudioMode('mix')}
-                      />
-                      <span>Trộn với âm thanh / nhạc nền gốc</span>
-                    </label>
-                  </div>
-                </label>
-
-                {audioMode === 'mix' && (
-                  <label className="field editor-field" style={{ marginTop: 8 }}>
-                    <span>Âm lượng âm thanh gốc · {originalAudioVolume}%</span>
-                    <input
-                      type="range"
-                      min={0}
-                      max={100}
-                      value={originalAudioVolume}
-                      onChange={(e) => setOriginalAudioVolume(Number(e.target.value))}
-                    />
-                  </label>
-                )}
-              </>
-            )}
-
-            {/* ------------------------------------------------------------- */}
-            {/* TAB 4: HÀNG ĐỢI XỬ LÝ (QUEUE)                                 */}
-            {/* ------------------------------------------------------------- */}
-            {tool === 'queue' && (
-              <>
-                <div className="editor-section-head">
-                  <div>
-                    <strong>Hàng đợi video ({tasks.length})</strong>
-                    <small>Theo dõi trạng thái và tiến độ chi tiết từng video.</small>
-                  </div>
-                  <button className="btn sm primary" onClick={() => void addVideoFiles()} disabled={isRunning} type="button">
-                    + Thêm
-                  </button>
-                </div>
-
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginTop: 8 }}>
-                  {tasks.length === 0 ? (
-                    <div className="muted small" style={{ textAlign: 'center', padding: '30px 10px' }}>
-                      Chưa có video nào trong danh sách. Bấm <b>"+ Thêm"</b> để nạp video.
+              {/* ------------------------------------------------------------- */}
+              {/* TAB 4: HÀNG ĐỢI XỬ LÝ (QUEUE)                                 */}
+              {/* ------------------------------------------------------------- */}
+              {tool === 'queue' && (
+                <>
+                  <div className="editor-section-head">
+                    <div>
+                      <strong>Hàng đợi video ({tasks.length})</strong>
+                      <small>Theo dõi trạng thái và tiến độ chi tiết từng video.</small>
                     </div>
-                  ) : (
-                    tasks.map((task, idx) => (
-                      <div
-                        key={task.id}
-                        className={`autoshort-queue-item ${selectedTask?.id === task.id ? 'selected' : ''}`}
-                        onClick={() => setSelectedId(task.id)}
-                        style={{ padding: '10px 12px' }}
-                      >
-                        <span className="queue-item-index">{idx + 1}</span>
-                        <div className="queue-item-info">
-                          <div className="queue-item-name">{task.fileName}</div>
-                          <div className="queue-item-msg muted small">
-                            {task.currentStepMessage || 'Sẵn sàng'}
-                            {task.percent > 0 && ` (${task.percent}%)`}
-                          </div>
-                          {task.error && <div className="queue-item-msg" style={{ color: 'var(--danger)' }}>{task.error}</div>}
-                          {task.status === 'done' && (
-                            <div className="queue-item-msg small" style={{ color: 'var(--success)' }}>
-                              OCR {task.extractedCueCount ?? 0} cue · Dịch {task.translatedCueCount ?? 0} cue · TTS {task.generatedVoiceCount ?? 0} cue · Voice {task.voice || 'không xác định'} · Render FFmpeg hoàn tất
-                            </div>
-                          )}
-                          {task.outputPath && (
-                            <button
-                              type="button"
-                              className="btn ghost sm"
-                              onClick={(e) => {
-                                e.stopPropagation()
-                                void window.api.openPath(task.outputPath || '')
-                              }}
-                            >
-                              Mở output
-                            </button>
-                          )}
-                          {task.percent > 0 && task.percent < 100 && (
-                            <div className="queue-item-progress-bar">
-                              <div className="queue-item-progress-fill" style={{ width: `${task.percent}%` }} />
-                            </div>
-                          )}
-                        </div>
-                        <div className="queue-item-actions">
-                          <span className={`status-pill ${task.status === 'done' ? 'done' : task.status === 'error' ? 'error' : task.status === 'idle' ? 'idle' : 'working'}`}>
-                            {task.status === 'idle'
-                              ? 'Sẵn sàng'
-                              : task.status === 'queued'
-                                ? 'Chờ'
-                                : task.status === 'done'
-                                  ? 'Hoàn tất'
-                                  : task.status === 'error'
-                                    ? 'Lỗi'
-                                    : 'Đang chạy'}
-                          </span>
-                          <button
-                            className="btn ghost sm icon-btn"
-                            disabled={isRunning}
-                            onClick={(e) => removeTask(task.id, e)}
-                            title="Xóa video này"
-                            type="button"
-                          >
-                            ✕
-                          </button>
-                        </div>
+                    <button className="btn sm primary" onClick={() => void addVideoFiles()} disabled={isRunning} type="button">
+                      + Thêm
+                    </button>
+                  </div>
+
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginTop: 8 }}>
+                    {tasks.length === 0 ? (
+                      <div className="muted small" style={{ textAlign: 'center', padding: '30px 10px' }}>
+                        Chưa có video nào trong danh sách. Bấm <b>"+ Thêm"</b> để nạp video.
                       </div>
-                    ))
-                  )}
-                </div>
+                    ) : (
+                      tasks.map((task, idx) => (
+                        <div
+                          key={task.id}
+                          className={`autoshort-queue-item ${selectedTask?.id === task.id ? 'selected' : ''}`}
+                          onClick={() => setSelectedId(task.id)}
+                          style={{ padding: '10px 12px' }}
+                        >
+                          <span className="queue-item-index">{idx + 1}</span>
+                          <div className="queue-item-info">
+                            <div className="queue-item-name">{task.fileName}</div>
+                            <div className="queue-item-msg muted small">
+                              {task.currentStepMessage || 'Sẵn sàng'}
+                              {task.percent > 0 && ` (${task.percent}%)`}
+                            </div>
+                            {task.error && <div className="queue-item-msg" style={{ color: 'var(--danger)' }}>{task.error}</div>}
+                            {task.status === 'done' && (
+                              <div className="queue-item-msg small" style={{ color: 'var(--success)' }}>
+                                OCR {task.extractedCueCount ?? 0} cue · Dịch {task.translatedCueCount ?? 0} cue · TTS {task.generatedVoiceCount ?? 0} cue · Voice {task.voice || 'không xác định'} · Render FFmpeg hoàn tất
+                              </div>
+                            )}
+                            {task.outputPath && (
+                              <button
+                                type="button"
+                                className="btn ghost sm"
+                                onClick={(e) => {
+                                  e.stopPropagation()
+                                  void window.api.openPath(task.outputPath || '')
+                                }}
+                              >
+                                Mở output
+                              </button>
+                            )}
+                            {task.percent > 0 && task.percent < 100 && (
+                              <div className="queue-item-progress-bar">
+                                <div className="queue-item-progress-fill" style={{ width: `${task.percent}%` }} />
+                              </div>
+                            )}
+                          </div>
+                          <div className="queue-item-actions">
+                            <span className={`status-pill ${task.status === 'done' ? 'done' : task.status === 'error' ? 'error' : task.status === 'idle' ? 'idle' : 'working'}`}>
+                              {task.status === 'idle'
+                                ? 'Sẵn sàng'
+                                : task.status === 'queued'
+                                  ? 'Chờ'
+                                  : task.status === 'done'
+                                    ? 'Hoàn tất'
+                                    : task.status === 'error'
+                                      ? 'Lỗi'
+                                      : 'Đang chạy'}
+                            </span>
+                            <button
+                              className="btn ghost sm icon-btn"
+                              disabled={isRunning}
+                              onClick={(e) => removeTask(task.id, e)}
+                              title="Xóa video này"
+                              type="button"
+                            >
+                              ✕
+                            </button>
+                          </div>
+                        </div>
+                      ))
+                    )}
+                  </div>
 
-                {tasks.length > 0 && (
-                  <button
-                    className="btn ghost danger sm"
-                    onClick={clearAllTasks}
-                    disabled={isRunning}
-                    type="button"
-                    style={{ marginTop: 12, width: '100%' }}
-                  >
-                    Xóa tất cả video
-                  </button>
-                )}
-              </>
-            )}
+                  {tasks.length > 0 && (
+                    <button
+                      className="btn ghost danger sm"
+                      onClick={clearAllTasks}
+                      disabled={isRunning}
+                      type="button"
+                      style={{ marginTop: 12, width: '100%' }}
+                    >
+                      Xóa tất cả video
+                    </button>
+                  )}
+                </>
+              )}
             </fieldset>
           </div>
         </aside>

@@ -19,7 +19,8 @@ import {
 } from './modelStore'
 import { normalizeWhisperModel, WHISPER_MODEL_CATALOG, type WhisperModelId } from './modelCatalog'
 import { isWhisperVersionEvent, parseWhisperVersion, WHISPER_PROTOCOL } from './engineProtocol'
-import { copyDirectory, packagedLocalAssetRoots, resolvePackagedLocalAsset } from './localAssets'
+import { copyDirectory, replaceDirectoryAtomic, findFile } from './localAssets'
+import { runtimeSearchRoots, runtimeKindDir } from './runtimeResolver'
 import type {
   WhisperCudaStatus,
   WhisperEngineStatus,
@@ -105,11 +106,7 @@ function uniquePaths(paths: string[]): string[] {
 }
 
 function engineBundleRoots(): string[] {
-  const current = join(binDir(), 'whisper-cpp')
-  const legacy = join(app.getPath('appData'), 'tediapros', 'bin', 'whisper-cpp')
-  const packaged = join(process.resourcesPath, 'local-assets', 'whisper-cpp')
-  const development = join(process.cwd(), 'resources', 'local-assets', 'whisper-cpp')
-  return uniquePaths([current, legacy, packaged, development])
+  return runtimeSearchRoots('whisper-cpp')
 }
 
 async function engineBundleCandidates(): Promise<WhisperEngineBundle[]> {
@@ -155,19 +152,16 @@ async function resolveEngineBundle(): Promise<WhisperEngineBundle | null> {
   return null
 }
 
-function resourceModelRoot(): string {
-  return join(process.resourcesPath, 'models', 'whisper-cpp')
-}
-
 function modelRoots(): string[] {
-  return whisperModelRoots(app.getPath('userData'), app.getPath('appData'), resourceModelRoot())
+  return whisperModelRoots(app.getPath('userData'), app.getPath('appData'))
 }
 
 function modelSource(model: LocalWhisperModel): 'current' | 'legacy' | 'resources' {
-  const current = join(app.getPath('userData'), 'whisper-cpp-models').toLowerCase()
+  const current = join(app.getPath('userData'), 'models', 'whisper-cpp').toLowerCase()
+  const currentOld = join(app.getPath('userData'), 'whisper-cpp-models').toLowerCase()
   const legacy = join(app.getPath('appData'), 'tediapros', 'whisper-cpp-models').toLowerCase()
   const root = model.root.toLowerCase()
-  if (root === current) return 'current'
+  if (root === current || root === currentOld) return 'current'
   if (root === legacy) return 'legacy'
   return 'resources'
 }
@@ -388,20 +382,39 @@ async function replaceDirectory(candidate: string, destination: string): Promise
 }
 
 export async function installWhisperEngine(onProgress: (percent: number) => void): Promise<void> {
-  const destination = join(binDir(), 'whisper-cpp')
+  const destination = runtimeKindDir('whisper-cpp')
   const workerName = isWin() ? 'whisper-local-worker.exe' : 'whisper-local-worker'
   const serverName = isWin() ? 'whisper-server.exe' : 'whisper-server'
   const cliName = isWin() ? 'whisper-cli.exe' : 'whisper-cli'
-  const asset = await resolvePackagedLocalAsset('whisper-cpp', [workerName, serverName, cliName])
-  if (!asset) throw new Error(`Thiếu Whisper.cpp asset local có manifest. Đặt bundle vào ${packagedLocalAssetRoots()[0]} rồi thử lại.`)
-  const sourceDir = join(asset.root, 'whisper-cpp')
-  const staging = `${destination}.staging`
-  await rm(staging, { recursive: true, force: true })
-  await copyDirectory(sourceDir, staging)
-  onProgress(80)
-  await replaceDirectory(staging, destination)
+
+  const devRoots = runtimeSearchRoots('whisper-cpp')
+  let foundCandidate: string | null = null
+  for (const root of devRoots) {
+    if (root.toLowerCase() === destination.toLowerCase()) continue
+    if (
+      (await fileExists(join(root, workerName))) &&
+      (await fileExists(join(root, serverName))) &&
+      (await fileExists(join(root, cliName)))
+    ) {
+      foundCandidate = root
+      break
+    }
+  }
+
+  if (foundCandidate) {
+    const staging = `${destination}.staging`
+    await rm(staging, { recursive: true, force: true }).catch(() => {})
+    await copyDirectory(foundCandidate, staging)
+    onProgress(80)
+    await replaceDirectoryAtomic(staging, destination)
+  }
+
   const status = await whisperEngineStatus()
-  if (!status.healthy || !status.version || status.protocol !== WHISPER_PROTOCOL) throw new Error('Whisper.cpp binary local không qua protocol/version probe.')
+  if (!status.healthy || !status.version || status.protocol !== WHISPER_PROTOCOL) {
+    throw new Error(
+      status.message || 'Whisper.cpp binary chưa được cài đặt hoặc không qua protocol/version probe.'
+    )
+  }
   logInfo(`Audio→Text: đã cài Whisper.cpp ${status.version}.`)
 }
 

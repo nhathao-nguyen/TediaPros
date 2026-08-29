@@ -510,12 +510,25 @@ export interface SrtBlock {
   sourceIndex?: number
 }
 
+export const DEFAULT_AI_SERVER_URL = 'http://127.0.0.1:8000'
+
 export const DICH_LANGS = [
   { code: 'vi', label: 'Tiếng Việt' },
   { code: 'en', label: 'Tiếng Anh' },
   { code: 'zh', label: 'Tiếng Trung' },
   { code: 'ja', label: 'Tiếng Nhật' },
-  { code: 'ko', label: 'Tiếng Hàn' }
+  { code: 'ko', label: 'Tiếng Hàn' },
+  { code: 'fr', label: 'Tiếng Pháp' },
+  { code: 'de', label: 'Tiếng Đức' },
+  { code: 'es', label: 'Tây Ban Nha' },
+  { code: 'it', label: 'Tiếng Ý' },
+  { code: 'ru', label: 'Tiếng Nga' },
+  { code: 'pt', label: 'Bồ Đào Nha' },
+  { code: 'ar', label: 'Tiếng Ả Rập' },
+  { code: 'hi', label: 'Tiếng Hindi' },
+  { code: 'th', label: 'Tiếng Thái' },
+  { code: 'id', label: 'Indonesia' },
+  { code: 'ms', label: 'Mã Lai' }
 ] as const
 
 export interface GpuInfo {
@@ -741,6 +754,7 @@ export interface ClonedVoice {
   referenceAudioPath: string
   referenceTranscript?: string
   language?: string
+  model?: string
   createdAt: string
 }
 
@@ -935,38 +949,38 @@ export interface AutoShortItemResult {
 export type AutoShortEvent =
   | AutoShortProgress
   | ({
-      type: 'item-done'
-      jobId: string
-      itemId: string
-      batchIndex: number
-      batchTotal: number
-      result: AutoShortItemResult & { status: 'done' }
-    })
+    type: 'item-done'
+    jobId: string
+    itemId: string
+    batchIndex: number
+    batchTotal: number
+    result: AutoShortItemResult & { status: 'done' }
+  })
   | ({
-      type: 'item-error'
-      jobId: string
-      itemId: string
-      batchIndex: number
-      batchTotal: number
-      result: AutoShortItemResult & { status: 'error' }
-    })
+    type: 'item-error'
+    jobId: string
+    itemId: string
+    batchIndex: number
+    batchTotal: number
+    result: AutoShortItemResult & { status: 'error' }
+  })
   | ({
-      type: 'item-cancelled'
-      jobId: string
-      itemId: string
-      batchIndex: number
-      batchTotal: number
-      result: AutoShortItemResult & { status: 'cancelled' }
-    })
+    type: 'item-cancelled'
+    jobId: string
+    itemId: string
+    batchIndex: number
+    batchTotal: number
+    result: AutoShortItemResult & { status: 'cancelled' }
+  })
   | ({
-      type: 'batch-done'
-      jobId: string
-      completedCount: number
-      errorCount: number
-      cancelledCount: number
-      totalCount: number
-      results: AutoShortItemResult[]
-    })
+    type: 'batch-done'
+    jobId: string
+    completedCount: number
+    errorCount: number
+    cancelledCount: number
+    totalCount: number
+    results: AutoShortItemResult[]
+  })
 
 export interface AutoShortBatchResult {
   ok: boolean
@@ -974,3 +988,4 @@ export interface AutoShortBatchResult {
   totalCount: number
   error?: string
 }
+

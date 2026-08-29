@@ -10,7 +10,13 @@ const sourceIndex = process.argv.indexOf('--source')
 const destinationIndex = process.argv.indexOf('--destination')
 const id = idIndex >= 0 ? process.argv[idIndex + 1] : null
 const source = sourceIndex >= 0 ? process.argv[sourceIndex + 1] : null
-const destination = resolve(destinationIndex >= 0 ? process.argv[destinationIndex + 1] : 'resources/models/whisper-cpp')
+const destination = resolve(
+  destinationIndex >= 0
+    ? process.argv[destinationIndex + 1]
+    : process.env.TEDIAPROS_RUNTIME_DIR
+      ? join(process.env.TEDIAPROS_RUNTIME_DIR, 'models', 'whisper-cpp')
+      : (process.env.APPDATA ? join(process.env.APPDATA, 'tedia-pros', 'models', 'whisper-cpp') : 'models-staging/whisper-cpp')
+)
 
 if (!id || !allowed.has(id) || !source) {
   console.error('Usage: npm run model:import -- --id <base|small|medium> --source <ggml-file> [--destination <root>]')

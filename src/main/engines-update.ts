@@ -8,13 +8,24 @@ export type EngineKind = 'ocr' | 'whisper' | 'douyin' | 'whisperCuda' | 'video2x
 
 type VerMap = Partial<Record<EngineKind, { version: string; installedAt: string }>>
 
+import { runtimeStateRoot, installedRuntimeReceiptPath } from './runtimeResolver'
+
 function localPath(): string {
+  return installedRuntimeReceiptPath()
+}
+
+function legacyLocalPath(): string {
   return join(binDir(), 'engines-local.json')
 }
 
 async function readLocal(): Promise<VerMap> {
   try {
-    const raw = await readFile(localPath(), 'utf-8')
+    let raw = ''
+    try {
+      raw = await readFile(localPath(), 'utf-8')
+    } catch {
+      raw = await readFile(legacyLocalPath(), 'utf-8')
+    }
     const parsed = JSON.parse(raw) as Record<string, unknown>
     const result: VerMap = {}
     for (const kind of ['ocr', 'whisper', 'douyin', 'whisperCuda', 'video2x'] as EngineKind[]) {
@@ -38,7 +49,7 @@ async function readLocal(): Promise<VerMap> {
 }
 
 async function writeLocal(map: VerMap): Promise<void> {
-  await mkdir(binDir(), { recursive: true })
+  await mkdir(runtimeStateRoot(), { recursive: true })
   await writeFile(localPath(), JSON.stringify(map, null, 2), 'utf-8')
 }
 

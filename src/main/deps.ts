@@ -7,7 +7,12 @@ import { constants } from 'node:fs'
 import { join } from 'node:path'
 import { Readable } from 'node:stream'
 import { DepStatus, SetupProgress } from '../shared/types'
-import { copyPackagedLocalAsset, packagedLocalAssetRoots } from './localAssets'
+import { devLocalAssetRoots, findFile } from './localAssets'
+import {
+  resolveFfmpeg as canonicalResolveFfmpeg,
+  resolveRuntimeExecutable,
+  runtimeKindDir
+} from './runtimeResolver'
 
 const isWin = process.platform === 'win32'
 const isMac = process.platform === 'darwin'
@@ -83,8 +88,8 @@ function runCapture(
         child.kill()
         finish(-1)
       }, timeoutMs)
-      child.stdout.on('data', (d) => (out += d.toString()))
-      child.stderr.on('data', (d) => (out += d.toString()))
+      child.stdout?.on('data', (d) => (out += d.toString()))
+      child.stderr?.on('data', (d) => (out += d.toString()))
       child.on('error', () => finish(-1))
       child.on('close', (code) => finish(code ?? -1))
     } catch {
@@ -104,8 +109,6 @@ async function canRun(cmd: string, args: string[] = ['--version']): Promise<bool
  * dependency (dac biet la curl_cffi/impersonation).
  */
 export async function resolveYtDlpInstallation(): Promise<YtDlpInstallation | null> {
-  // Khong spawn dung luc Windows dang doi ten binary cu/moi. Neu cap nhat loi,
-  // van tiep tuc resolve ban cu da rollback hoac PATH fallback.
   if (ytDlpInstallInFlight) await ytDlpInstallInFlight.catch(() => {})
   const local = managedYtDlpPath()
   if ((await fileExists(local)) && (await canRun(local))) {
@@ -147,8 +150,7 @@ function parseImpersonateTargets(output: string): string[] {
 }
 
 /**
- * Kiem tra capability that cua binary dang duoc app chon. Khong suy doan theo
- * ten goi: mot ban tren PATH co the chay duoc nhung thieu curl_cffi.
+ * Kiem tra capability that cua binary dang duoc app chon.
  */
 export async function probeYtDlpCapabilities(): Promise<YtDlpCapabilities> {
   const installation = await resolveYtDlpInstallation()
@@ -186,39 +188,12 @@ export async function probeYtDlpCapabilities(): Promise<YtDlpCapabilities> {
   }
 }
 
-/** Tra ve duong dan ffmpeg dung duoc: bundled -> PATH. Null neu khong co. */
+/** Tra ve duong dan ffmpeg dung duoc: runtime -> PATH. Null neu khong co. */
 export async function resolveFfmpeg(): Promise<string | null> {
-  const local = join(binDir(), exe('ffmpeg'))
-  // FFmpeg chi nhan `-version`; `--version` thoat voi loi tren Windows va lam
-  // app nham binary da cai la dang bi thieu o moi lan khoi dong.
-  if (await canRun(local, ['-version'])) {
-    if (isMac && process.arch === 'arm64') {
-      const inspected = await runCapture('/usr/bin/file', ['-b', local])
-      const description = inspected.out.toLowerCase()
-      if (inspected.code === 0 && (description.includes('arm64') || description.includes('universal binary'))) {
-        return local
-      }
-    } else {
-      return local
-    }
-  }
-  if (await canRun('ffmpeg', ['-version'])) {
-    if (isMac && process.arch === 'arm64') {
-      const which = await runCapture('/usr/bin/which', ['ffmpeg'])
-      const resolved = which.out.trim().split(/\r?\n/)[0]
-      if (!resolved) return null
-      const inspected = await runCapture('/usr/bin/file', ['-b', resolved])
-      const description = inspected.out.toLowerCase()
-      if (!description.includes('arm64') && !description.includes('universal binary')) return null
-    }
-    return 'ffmpeg'
-  }
-  return null
+  return canonicalResolveFfmpeg()
 }
 
 export async function checkDependencies(): Promise<DepStatus> {
-  // Trang setup can cai ban official do app quan ly ngay ca khi PATH co yt-dlp.
-  // PATH van la fallback cua resolveYtDlp neu viec cai dat chua hoan tat.
   const [managedYtDlp, ff] = await Promise.all([
     canRun(managedYtDlpPath()),
     resolveFfmpeg()
@@ -278,21 +253,6 @@ export function extractZip(zipPath: string, destDir: string): Promise<void> {
   })
 }
 
-/** Tim de quy 1 file ten cho truoc trong thu muc. */
-async function findFile(dir: string, name: string): Promise<string | null> {
-  const entries = await readdir(dir, { withFileTypes: true })
-  for (const e of entries) {
-    const full = join(dir, e.name)
-    if (e.isDirectory()) {
-      const found = await findFile(full, name)
-      if (found) return found
-    } else if (e.name.toLowerCase() === name.toLowerCase()) {
-      return full
-    }
-  }
-  return null
-}
-
 function isMuslLinux(): boolean {
   if (process.platform !== 'linux') return false
   try {
@@ -301,8 +261,6 @@ function isMuslLinux(): boolean {
     }
     return !report.header?.glibcVersionRuntime
   } catch {
-    // Electron desktop thuong chay tren glibc; neu khong doc duoc report thi
-    // dung asset glibc pho bien thay vi tu dong chon musl sai.
     return false
   }
 }
@@ -314,7 +272,7 @@ export function ytDlpReleaseAssetName(): string {
     if (process.arch === 'ia32') return 'yt-dlp_x86.exe'
     return 'yt-dlp.exe'
   }
-  if (isMac) return 'yt-dlp_macos' // official universal binary: x64 + arm64
+  if (isMac) return 'yt-dlp_macos'
   if (process.platform === 'linux') {
     const musl = isMuslLinux()
     if (process.arch === 'arm64') {
@@ -323,8 +281,6 @@ export function ytDlpReleaseAssetName(): string {
     if (process.arch === 'x64') return musl ? 'yt-dlp_musllinux' : 'yt-dlp_linux'
   }
 
-  // Asset zipimport official, doc lap kien truc, nhung can Python va co the
-  // khong co curl_cffi. Capability probe se bao dung tinh trang nay.
   return 'yt-dlp'
 }
 
@@ -356,8 +312,6 @@ async function latestYtDlpAsset(name: string): Promise<YtDlpReleaseAsset> {
       version: typeof data.tag_name === 'string' ? data.tag_name : null
     }
   } catch {
-    // API co rate-limit rieng. Link latest/download van la nguon official va
-    // giu cho setup hoat dong khi API tam thoi khong truy cap duoc.
     return {
       name,
       url: `${YTDLP_RELEASE_BASE}/${name}`,
@@ -387,7 +341,6 @@ async function sha256File(path: string): Promise<string> {
 async function replaceManagedYtDlp(candidate: string, dest: string): Promise<void> {
   const previous = `${dest}.previous`
 
-  // Phuc hoi neu app da bi tat dung luc Windows dang doi ten binary cu.
   if (!(await fileExists(dest)) && (await fileExists(previous))) {
     await rename(previous, dest)
   } else if ((await fileExists(dest)) && (await fileExists(previous))) {
@@ -400,29 +353,21 @@ async function replaceManagedYtDlp(candidate: string, dest: string): Promise<voi
   }
 
   if (!isWin) {
-    // rename cung filesystem thay the atomically tren POSIX: loi thi binary cu
-    // van con nguyen; thanh cong thi process dang chay van giu inode cu.
     await rename(candidate, dest)
     return
   }
 
-  // Windows khong cho rename de len file ton tai. Giu ban cu cho den khi ban
-  // moi da vao dung vi tri va chay duoc, roi moi xoa backup.
   await rename(dest, previous)
   try {
     await rename(candidate, dest)
     const verified = await runCapture(dest, ['--version'])
     if (verified.code !== 0) throw new Error('Binary yt-dlp moi khong khoi dong duoc.')
-    // Binary cu co the van dang duoc mot process download giu handle. Ban moi
-    // da xac minh thanh cong, nen cleanup backup that bai khong duoc rollback.
     await rm(previous, { force: true }).catch(() => {})
   } catch (err) {
     await rm(dest, { force: true })
     try {
       await rename(previous, dest)
     } catch {
-      // Antivirus/process khac co the chan rename trong thoang choc; copy giu
-      // cho duong dan managed van san sang, file .previous se duoc don lan sau.
       await copyFile(previous, dest).catch(() => {})
     }
     if (!(await fileExists(dest))) {
@@ -476,26 +421,32 @@ async function installYtDlp(onProgress: ProgressCb): Promise<void> {
 }
 
 async function installFfmpeg(onProgress: ProgressCb): Promise<void> {
-  onProgress({ phase: 'downloading-ffmpeg', message: 'Đang lấy FFmpeg asset local…', percent: 0 })
-  const staging = join(binDir(), 'ffmpeg-local-import')
-  await rm(staging, { recursive: true, force: true })
-  const copied = await copyPackagedLocalAsset('ffmpeg', staging, isWin ? ['ffmpeg.exe'] : ['ffmpeg'])
-  if (!copied) {
-    throw new Error(`Thiếu FFmpeg asset local có manifest. Đặt bundle vào ${packagedLocalAssetRoots()[0]} rồi thử lại.`)
+  onProgress({ phase: 'downloading-ffmpeg', message: 'Đang kiểm tra FFmpeg…', percent: 0 })
+  const existing = await resolveFfmpeg()
+  if (existing) {
+    onProgress({ phase: 'done', message: 'Đã sẵn sàng FFmpeg.', percent: 100 })
+    return
   }
-  try {
-    for (const name of isWin ? ['ffmpeg.exe', 'ffprobe.exe'] : ['ffmpeg', 'ffprobe']) {
-      const src = await findFile(staging, name)
-      if (!src) throw new Error(`FFmpeg asset local thiếu ${name}.`)
-      const probe = await runCapture(src, ['-version'])
-      if (probe.code !== 0) throw new Error(`${name} trong asset local không chạy được.`)
-      await copyFile(src, join(binDir(), name))
-      if (!isWin) await chmod(join(binDir(), name), 0o755)
+
+  const devRoots = devLocalAssetRoots()
+  for (const root of devRoots) {
+    const src = await findFile(root, isWin ? ['ffmpeg.exe', 'ffmpeg'] : ['ffmpeg'])
+    if (src) {
+      await mkdir(runtimeKindDir('ffmpeg'), { recursive: true })
+      await copyFile(src, join(runtimeKindDir('ffmpeg'), isWin ? 'ffmpeg.exe' : 'ffmpeg'))
+      const ffprobeSrc = await findFile(root, isWin ? ['ffprobe.exe', 'ffprobe'] : ['ffprobe'])
+      if (ffprobeSrc) {
+        await copyFile(ffprobeSrc, join(runtimeKindDir('ffmpeg'), isWin ? 'ffprobe.exe' : 'ffprobe'))
+      }
+      break
     }
-  } finally {
-    await rm(staging, { recursive: true, force: true }).catch(() => {})
   }
-  onProgress({ phase: 'done', message: 'Đã cài FFmpeg từ asset local.', percent: 100 })
+
+  const resolved = await resolveFfmpeg()
+  if (!resolved) {
+    throw new Error('Chưa tìm thấy FFmpeg. Hãy cài đặt FFmpeg trên PATH hoặc đặt binary vào thư mục runtime/ffmpeg.')
+  }
+  onProgress({ phase: 'done', message: 'Đã sẵn sàng FFmpeg.', percent: 100 })
 }
 
 /** Da co ban yt-dlp rieng do app quan ly (trong userData/bin) chua? */
@@ -511,11 +462,6 @@ export async function ytDlpVersion(): Promise<string | null> {
   return r.code === 0 ? r.out.trim().split(/\r?\n/)[0] || null : null
 }
 
-/**
- * Cap nhat cong cu tai (yt-dlp) len ban moi nhat.
- * Khong dung `-U` tren file dang hoat dong. Ban moi duoc tai vao file tam,
- * kiem tra checksum/version, sau do moi thay the de khong lam hong ban cu.
- */
 export async function updateYtDlp(): Promise<{ ok: boolean; message: string }> {
   try {
     const local = managedYtDlpPath()

@@ -1,19 +1,11 @@
-name: Build macOS Engines & Publish to Release assets-v1
+name: Build macOS Engines (Manual)
 
 on:
   workflow_dispatch:
-  push:
-    tags:
-      - 'assets-v*'
-    paths:
-      - 'engines/**'
-      - '.github/workflows/build-mac-engines.yml'
 
 jobs:
   build-mac-engines:
     runs-on: macos-15
-    permissions:
-      contents: write
 
     steps:
       - name: Checkout code
@@ -75,18 +67,13 @@ jobs:
           file engines/whisper-engine/dist/whisper-engine/whisper-engine | grep -q arm64
           file engines/ocr-engine/dist/ocr-engine/ocr-engine | grep -q arm64
 
-      - name: Publish Binaries to Release assets-v1
-        uses: softprops/action-gh-release@v3
+      - name: Upload engine artifacts
+        uses: actions/upload-artifact@v7
         with:
-          tag_name: assets-v1
-          name: "Assets Release v1"
-          prerelease: true
-          overwrite_files: true
-          fail_on_unmatched_files: false
-          files: |
+          name: macos-engines
+          path: |
             engines/douyin-engine/dist/dy-engine-macos
             engines/whisper-engine/dist/whisper-engine-macos.zip
             engines/ocr-engine/dist/ocr-engine-macos.zip
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
+          if-no-files-found: error
+          retention-days: 7

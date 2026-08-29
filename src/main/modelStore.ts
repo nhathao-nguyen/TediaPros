@@ -92,13 +92,17 @@ export async function findLocalWhisperModel(
   return null
 }
 
-/** Current profile first, then the old %APPDATA%\\tediapros profile. */
-export function whisperModelRoots(userData: string, appData: string, resourcesPath?: string): string[] {
-  const roots = [
-    join(userData, 'whisper-cpp-models'),
-    join(appData, 'tediapros', 'whisper-cpp-models')
-  ]
-  if (resourcesPath) roots.push(join(resourcesPath, 'models', 'whisper-cpp'))
+/** Canonical managed model root first, then legacy profile locations. */
+export function whisperModelRoots(userData: string, appData: string, devOverrideRoot?: string): string[] {
+  const roots: string[] = []
+  if (devOverrideRoot) roots.push(devOverrideRoot)
+  const envDev = process.env.TEDIAPROS_RUNTIME_DIR?.trim()
+  if (envDev) roots.push(join(envDev, 'models', 'whisper-cpp'))
+
+  roots.push(join(userData, 'models', 'whisper-cpp'))
+  roots.push(join(userData, 'whisper-cpp-models'))
+  roots.push(join(appData, 'tediapros', 'whisper-cpp-models'))
+
   const seen = new Set<string>()
   return roots.filter((root) => {
     const key = root.toLowerCase()

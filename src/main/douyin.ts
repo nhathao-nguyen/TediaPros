@@ -5,7 +5,8 @@ import { constants } from 'node:fs'
 import { join } from 'node:path'
 import { binDir } from './deps'
 import { engineNeedsUpdate, markEngineInstalled } from './engines-update'
-import { packagedLocalAssetRoots, resolvePackagedLocalAsset } from './localAssets'
+import { copyDirectory, replaceDirectoryAtomic, findFile } from './localAssets'
+import { resolveRuntimeExecutable, runtimeKindDir, runtimeSearchRoots } from './runtimeResolver'
 import { readDyCookies } from './douyinCookies'
 import { debugRaw, errLabel, logError, logInfo } from './logger'
 import { DouyinProgress, DouyinRequest, DouyinResult, DyChannel, DyEngineStatus } from '../shared/types'
@@ -17,12 +18,11 @@ function engineName(): string {
   return isWin ? 'dy-engine.exe' : 'dy-engine'
 }
 function enginePath(): string {
-  return join(binDir(), engineName())
+  return join(runtimeKindDir('douyin'), engineName())
 }
 
 async function resolveEnginePath(): Promise<string | null> {
-  if (await fileExists(enginePath())) return enginePath()
-  return (await resolvePackagedLocalAsset('douyin', [engineName()]))?.path ?? null
+  return resolveRuntimeExecutable('douyin', [engineName()])
 }
 function libraryDbPath(): string {
   return join(app.getPath('userData'), 'dy-library.db')
@@ -49,20 +49,37 @@ export async function dyEngineStatus(): Promise<DyEngineStatus> {
 }
 
 export async function installDyEngine(onProgress: (percent: number) => void): Promise<void> {
-  await mkdir(binDir(), { recursive: true })
-  logInfo('Douyin: đang lấy asset local…')
+  const targetDir = runtimeKindDir('douyin')
+  await mkdir(targetDir, { recursive: true })
+  logInfo('Douyin: đang kiểm tra và cài đặt asset Douyin…')
   onProgress(10)
-  const asset = await resolvePackagedLocalAsset('douyin', [engineName()])
-  if (!asset) throw new Error(`Thiếu Douyin asset local có manifest. Đặt bundle vào ${packagedLocalAssetRoots()[0]} rồi thử lại.`)
-  const source = asset.path
-  const data = await readFile(source)
-  await writeFile(enginePath(), data)
-  if (!isWin) await chmod(enginePath(), 0o755)
+
+  const devRoots = runtimeSearchRoots('douyin')
+  let candidateDir: string | null = null
+  for (const root of devRoots) {
+    if (root.toLowerCase() === targetDir.toLowerCase()) continue
+    const found = await findFile(root, [engineName()])
+    if (found) {
+      candidateDir = root
+      break
+    }
+  }
+
+  if (candidateDir) {
+    const staging = `${targetDir}.staging`
+    await rm(staging, { recursive: true, force: true }).catch(() => {})
+    await copyDirectory(candidateDir, staging)
+    onProgress(70)
+    await replaceDirectoryAtomic(staging, targetDir)
+  }
+
+  const path = await resolveEnginePath()
+  if (!path) throw new Error('Không tìm thấy Douyin binary sau khi cài đặt.')
+  if (!isWin) await chmod(path, 0o755).catch(() => {})
   await markEngineInstalled('douyin')
   onProgress(100)
   logInfo('Douyin: đã tải xong bộ tải Douyin.')
 }
-
 /** Dung config (object) tu yeu cau + cookie. Ghi JSON (la YAML hop le). */
 function buildConfig(req: DouyinRequest, cookies: Record<string, string>): object {
   const number = { post: 0, like: 0, allmix: 0, mix: 0, music: 0, collect: 0, collectmix: 0 }
