@@ -1,0 +1,12 @@
+/* ---- Setup ---- */
+.setup-card {
+  max-width: 440px;
+  text-align: center;
+}
+.setup-card h2 {
+  margin: 0 0 8px;
+}
+.setup-progress {
+  margin-top: 18px;
+}
+

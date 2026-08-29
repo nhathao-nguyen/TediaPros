@@ -1,0 +1,332 @@
+/* Video2X / enhance tab */
+.v2x-page {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-height: 0;
+  flex: 1;
+}
+.v2x-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+.v2x-toolbar-spacer {
+  flex: 1;
+}
+.v2x-outdir {
+  max-width: 280px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.v2x-main {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(260px, 320px);
+  gap: 12px;
+  min-height: 0;
+  flex: 1;
+  align-items: stretch;
+}
+.v2x-queue {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-width: 0;
+  min-height: 0;
+}
+.v2x-table-wrap {
+  flex: 1;
+  min-height: 180px;
+  overflow: auto;
+  padding: 0;
+}
+.v2x-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+.v2x-table th,
+.v2x-table td {
+  padding: 8px 10px;
+  text-align: left;
+  border-bottom: 1px solid var(--border);
+  vertical-align: middle;
+}
+.v2x-table th {
+  position: sticky;
+  top: 0;
+  background: var(--panel-2);
+  color: var(--muted);
+  font-weight: 600;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  z-index: 1;
+}
+.v2x-table tr:last-child td {
+  border-bottom: none;
+}
+.v2x-table tr.selected {
+  background: color-mix(in srgb, var(--primary) 11%, transparent);
+}
+.v2x-table tr {
+  cursor: pointer;
+}
+.v2x-prog {
+  position: relative;
+  min-width: 140px;
+  height: 22px;
+  border-radius: 4px;
+  background: var(--panel-2);
+  overflow: hidden;
+}
+.v2x-prog-bar {
+  position: absolute;
+  inset: 0 auto 0 0;
+  background: var(--progress-gradient);
+  opacity: 0.35;
+  transition: width 0.2s ease;
+}
+.v2x-prog-bar.done {
+  background: var(--ok);
+  opacity: 0.45;
+}
+.v2x-prog-bar.err {
+  background: var(--fail);
+  opacity: 0.45;
+}
+.v2x-prog-txt {
+  position: relative;
+  z-index: 1;
+  display: block;
+  padding: 3px 8px;
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.v2x-actions {
+  display: flex;
+  gap: 2px;
+  justify-content: flex-end;
+}
+.v2x-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.v2x-cfg {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  padding: 12px;
+  overflow: hidden;
+}
+.v2x-cfg-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+.v2x-cfg-title {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+.v2x-help-btn {
+  flex-shrink: 0;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border-radius: 50%;
+  font-weight: 700;
+  line-height: 1;
+}
+.v2x-help-modal {
+  max-width: 520px;
+  width: 92vw;
+}
+.v2x-help-body {
+  font-size: 13px;
+  line-height: 1.55;
+}
+.v2x-help-body h4 {
+  margin: 14px 0 6px;
+  font-size: 13px;
+}
+.v2x-help-body ul,
+.v2x-help-body ol {
+  margin: 0 0 8px;
+  padding-left: 18px;
+}
+.v2x-help-body li {
+  margin-bottom: 4px;
+}
+.v2x-help-body code {
+  font-size: 12px;
+  padding: 1px 4px;
+  border-radius: 4px;
+  background: var(--panel-2);
+}
+.v2x-cfg-body {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+  padding-right: 2px;
+}
+.v2x-footer {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 14px;
+  padding: 8px 12px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--panel-2);
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+  color: var(--muted);
+}
+.v2x-footer-prog {
+  position: relative;
+  flex: 1;
+  min-width: 140px;
+  height: 22px;
+  border-radius: 4px;
+  background: var(--panel);
+  overflow: hidden;
+}
+.v2x-footer-bar {
+  position: absolute;
+  inset: 0 auto 0 0;
+  background: var(--progress-gradient);
+  opacity: 0.3;
+}
+.v2x-footer-prog > span {
+  position: relative;
+  z-index: 1;
+  display: block;
+  padding: 3px 8px;
+  color: var(--text);
+}
+.v2x-active-path {
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  flex-basis: 100%;
+}
+.v2x-edit-tabs {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 10px;
+}
+.v2x-edit-tabs button {
+  flex: 1;
+  padding: 6px 10px;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+  font-size: 12px;
+}
+.v2x-edit-tabs button.active {
+  background: var(--panel-2);
+  color: var(--text);
+  border-color: var(--primary);
+}
+.v2x-form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.v2x-row2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+@media (max-width: 900px) {
+  .v2x-main {
+    grid-template-columns: 1fr;
+  }
+  .v2x-cfg {
+    max-height: 360px;
+  }
+}
+
+/* The "goal cards" are the one signature interaction of the video enhancer. */
+.v2x-goal-grid {
+  display: grid;
+  gap: 8px;
+  margin: 4px 0 12px;
+}
+.v2x-goal {
+  display: grid;
+  grid-template-columns: 30px minmax(0, 1fr);
+  gap: 9px;
+  align-items: center;
+  width: 100%;
+  padding: 11px;
+  border: 1px solid var(--border);
+  border-radius: 9px;
+  background: var(--panel-2);
+  color: var(--text);
+  text-align: left;
+  cursor: pointer;
+  transition: border-color 0.15s ease, background 0.15s ease, transform 0.15s ease;
+}
+.v2x-goal:hover {
+  border-color: color-mix(in srgb, var(--primary) 55%, var(--border));
+}
+.v2x-goal.active {
+  border-color: var(--primary);
+  background: color-mix(in srgb, var(--primary) 12%, var(--panel-2));
+}
+.v2x-goal-icon {
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--primary) 15%, transparent);
+  color: var(--primary);
+  font-size: 18px;
+  font-weight: 800;
+}
+.v2x-goal b,
+.v2x-goal small {
+  display: block;
+}
+.v2x-goal b {
+  margin-bottom: 3px;
+  font-size: 13px;
+}
+.v2x-goal small {
+  color: var(--muted);
+  line-height: 1.35;
+}
+.v2x-basic-form {
+  display: grid;
+  gap: 10px;
+}
+.v2x-expert-toggle {
+  margin: 12px 0 4px;
+  padding-top: 10px;
+  border-top: 1px solid var(--border);
+  color: var(--muted);
+}
+.v2x-expert {
+  min-height: 0;
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid var(--border);
+  overflow: hidden;
+}
+

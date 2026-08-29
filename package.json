@@ -1,0 +1,49 @@
+{
+  "name": "tedia-pros",
+  "version": "0.1.20",
+  "description": "TediaPros - Trình tải và xử lý video/audio đa nền tảng",
+  "main": "./out/main/index.js",
+  "author": "NeeyuBL",
+  "license": "SEE LICENSE IN LICENSE",
+  "scripts": {
+    "dev": "electron-vite dev",
+    "build": "electron-vite build",
+    "start": "electron-vite preview",
+    "typecheck:node": "tsc --noEmit -p tsconfig.node.json --composite false",
+    "typecheck:web": "tsc --noEmit -p tsconfig.web.json --composite false",
+    "typecheck": "npm run typecheck:node && npm run typecheck:web",
+    "test:local-runtime": "node scripts/run-local-runtime-tests.mjs",
+    "test:whisper-worker": "node scripts/test-whisper-worker.mjs",
+    "assets:import": "node scripts/import-local-assets.mjs",
+    "assets:verify": "node scripts/verify-local-assets.mjs",
+    "model:import": "node scripts/import-local-whisper-model.mjs",
+    "fonts:prepare": "node scripts/prepare-fonts.mjs",
+    "fonts:verify": "node scripts/verify-fonts.mjs",
+    "fonts:verify-packaged": "node scripts/verify-packaged-fonts.mjs",
+    "test:subtitles": "node scripts/run-subtitle-smoke.mjs",
+    "release:verify": "node scripts/verify-release.mjs",
+    "release:verify-assets": "node scripts/verify-release-assets.mjs dist",
+    "package:win": "npm run fonts:prepare && npm run fonts:verify && electron-vite build && electron-builder --win -p never && npm run fonts:verify-packaged -- --platform win",
+    "package:mac": "npm run fonts:prepare && npm run fonts:verify && electron-vite build && electron-builder --mac --arm64 -p never && npm run fonts:verify-packaged -- --platform mac"
+  },
+  "dependencies": {
+    "electron-updater": "^6.3.9",
+    "js-yaml": "^4.3.1",
+    "opentype.js": "^2.0.0",
+    "tldts": "^7.4.10"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.5",
+    "@types/opentype.js": "^1.3.10",
+    "@types/react": "^19.0.7",
+    "@types/react-dom": "^19.0.3",
+    "@vitejs/plugin-react": "^4.3.4",
+    "electron": "^34.0.0",
+    "electron-builder": "^25.1.8",
+    "electron-vite": "^3.0.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "typescript": "^5.7.3",
+    "vite": "^6.0.7"
+  }
+}

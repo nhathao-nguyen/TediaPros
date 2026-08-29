@@ -1,0 +1,12 @@
+@import './styles/base.css';
+@import './styles/setup.css';
+@import './styles/downloader.css';
+@import './styles/douyin.css';
+@import './styles/audiotext.css';
+@import './styles/screentext.css';
+@import './styles/autoshort.css';
+@import './styles/editor.css';
+@import './styles/enhance.css';
+@import './styles/voice.css';
+@import './styles/logs.css';
+@import './styles/license.css';

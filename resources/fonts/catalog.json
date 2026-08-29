@@ -1,0 +1,38 @@
+[
+  {
+    "id": "noto-sans",
+    "label": "Noto Sans",
+    "file": "NotoSans.ttf",
+    "family": "Noto Sans",
+    "group": "Mặc định",
+    "source": "bundled",
+    "available": true
+  },
+  {
+    "id": "noto-sans-arabic",
+    "label": "Noto Sans Arabic",
+    "file": "NotoSansArabic.ttf",
+    "family": "Noto Sans Arabic",
+    "group": "Ả Rập",
+    "source": "bundled",
+    "available": true
+  },
+  {
+    "id": "noto-sans-thai",
+    "label": "Noto Sans Thai",
+    "file": "NotoSansThai.ttf",
+    "family": "Noto Sans Thai",
+    "group": "Thái",
+    "source": "bundled",
+    "available": true
+  },
+  {
+    "id": "noto-sans-kr",
+    "label": "Noto Sans CJK",
+    "file": "NotoSansKR.ttf",
+    "family": "Noto Sans KR",
+    "group": "Trung · Nhật · Hàn",
+    "source": "bundled",
+    "available": true
+  }
+]

@@ -1,0 +1,1301 @@
+import { spawn, type ChildProcess } from 'node:child_process'
+import { basename, dirname, isAbsolute, join } from 'node:path'
+import { mkdir, copyFile, readFile, writeFile, stat, rm } from 'node:fs/promises'
+import { tmpdir } from 'node:os'
+import { resolveFfmpeg } from './deps'
+import {
+  escapeFfmpegFilterPath,
+  readBurnFontPreview,
+  resolveBurnFont,
+  type ResolvedBurnFont
+} from './fonts'
+import { createTextMeasurer } from './fontMeasure'
+import { debugRaw, logInfo } from './logger'
+import type {
+  BlurRegion,
+  BurnFontEntry,
+  BurnReq,
+  BurnProgress,
+  BurnResult,
+  SubtitleLayoutProfile
+} from '../shared/types'
+import { subtitleFontSizeForBox, wrapWidthFromBox } from '../shared/subWrap'
+import {
+  formatAssTimestamp,
+  parseSrt,
+  serializeSrt,
+  subtitleDuration,
+  trimSubtitleCues,
+  type SubtitleCue
+} from '../shared/subtitles'
+import {
+  createSubtitleEffectTimeline,
+  normalizeSubtitleDisplayStyle,
+  planSubtitleWordOverlays,
+  renderAssBaseLineWithHiddenBeat,
+  renderAssWordHighlight,
+  renderAssWordPopLineOverlay,
+  renderAssWordReveal,
+  renderAssWordRevealAt,
+  safeSubtitlePopScale,
+  supportsFixedSubtitleWordPop,
+  type SubtitleDisplayStyle
+} from '../shared/subtitleEffects'
+import { planSubtitleLayout } from '../shared/subtitleLayout'
+import { AUDIO_MIX_DROPOUT_TRANSITION_SECONDS, originalAudioGain } from '../shared/audioMix'
+import { resolveSubtitlePlanFont } from './subtitlePlanner'
+
+/** Parse #RGB / #RRGGBB -> { r,g,b } hoac null. */
+function parseHexColor(hex: string | undefined | null): { r: number; g: number; b: number } | null {
+  if (!hex) return null
+  const s = hex.trim().replace(/^#/, '')
+  if (!/^[0-9a-fA-F]{3}$|^[0-9a-fA-F]{6}$/.test(s)) return null
+  const full =
+    s.length === 3
+      ? s
+          .split('')
+          .map((c) => c + c)
+          .join('')
+      : s
+  return {
+    r: parseInt(full.slice(0, 2), 16),
+    g: parseInt(full.slice(2, 4), 16),
+    b: parseInt(full.slice(4, 6), 16)
+  }
+}
+
+/**
+ * ASS mau &HAABBGGRR — alpha: 00 = dam, FF = trong suot.
+ * opacityPct 0–100 (100 = dam nhat).
+ */
+export function hexToAssColour(hex: string | undefined | null, opacityPct = 100): string {
+  const c = parseHexColor(hex) ?? { r: 255, g: 255, b: 255 }
+  const op = Math.max(0, Math.min(100, opacityPct))
+  const aa = Math.round(255 * (1 - op / 100))
+  const hex2 = (n: number): string => n.toString(16).padStart(2, '0').toUpperCase()
+  return `&H${hex2(aa)}${hex2(c.b)}${hex2(c.g)}${hex2(c.r)}&`
+}
+
+
+interface SubStyle {
+  textColor: string
+  outlineColor: string
+  outlinePx: number
+  bgEnabled: boolean
+  bgColor: string
+  bgOpacity: number
+}
+
+function styleFromReq(req: BurnReq, fallbackVien: number): SubStyle {
+  const outlinePx = Math.max(
+    0,
+    Math.min(
+      8,
+      req.outlinePx != null
+        ? Math.round(req.outlinePx * 2) / 2
+        : Math.min(8, fallbackVien)
+    )
+  )
+  return {
+    textColor: parseHexColor(req.textColor) ? req.textColor! : '#ffffff',
+    outlineColor: parseHexColor(req.outlineColor) ? req.outlineColor! : '#000000',
+    outlinePx,
+    bgEnabled: Boolean(req.bgEnabled),
+    bgColor: parseHexColor(req.bgColor) ? req.bgColor! : '#000000',
+    bgOpacity: Math.max(0, Math.min(100, req.bgOpacity ?? 60))
+  }
+}
+
+let child: ChildProcess | null = null
+let daHuy = false
+let burnInFlight = false
+
+/** Huy giua chung: giet ffmpeg. child.kill() thoat ma null -> hieu la huy, khong loi. */
+export function cancelBurn(): void {
+  daHuy = true
+  if (!child) return
+  try {
+    child.kill()
+  } catch {
+    /* bo qua */
+  }
+  child = null
+}
+
+function duongFfprobe(ffmpeg: string): string {
+  if (ffmpeg === 'ffmpeg') return 'ffprobe'
+  return join(dirname(ffmpeg), process.platform === 'win32' ? 'ffprobe.exe' : 'ffprobe')
+}
+
+export interface Meta {
+  w: number
+  h: number
+  giay: number
+  hasAudio: boolean
+  rotation?: number
+  sampleAspectRatio?: string
+  videoStart?: number
+  audioStart?: number
+}
+
+function evenDimension(value: number, fallback: number): number {
+  const rounded = Math.max(2, Math.round(value || fallback))
+  return rounded % 2 === 0 ? rounded : rounded - 1
+}
+
+/**
+ * FFmpeg's default autorotation happens before a filter graph.  This filter
+ * therefore operates in the same display-space as the subtitle planner:
+ * rotation has already been applied, then non-square pixels are converted to
+ * square pixels and timestamps are rebased only when the source starts late.
+ */
+export function canonicalDisplayVideoFilter(meta: Meta): string | null {
+  const sar = meta.sampleAspectRatio || '1:1'
+  const [sarNumRaw, sarDenRaw] = sar.split(':').map(Number)
+  const sarNum = Number.isFinite(sarNumRaw) && sarNumRaw > 0 ? sarNumRaw : 1
+  const sarDen = Number.isFinite(sarDenRaw) && sarDenRaw > 0 ? sarDenRaw : 1
+  const needsSarNormalization = Math.abs(sarNum / sarDen - 1) > 0.0001
+  const needsPtsNormalization = Math.abs(meta.videoStart || 0) > 0.0001
+  if (!needsSarNormalization && !needsPtsNormalization) return null
+
+  const filters: string[] = []
+  if (needsPtsNormalization) filters.push('setpts=PTS-STARTPTS')
+  if (needsSarNormalization) {
+    filters.push(
+      `scale=${evenDimension(meta.w, 1280)}:${evenDimension(meta.h, 720)}:flags=lanczos`,
+      'setsar=1'
+    )
+  }
+  return filters.join(',')
+}
+
+/** Lay kich thuoc + thoi luong video (de tinh co chu, le, phan tram tien do). */
+async function doVideo(ffprobe: string, video: string): Promise<Meta> {
+  return new Promise((resolve) => {
+    const p = spawn(
+      ffprobe,
+      [
+        '-v', 'error',
+        '-show_entries', 'stream=index,codec_type,width,height,start_time,duration,sample_aspect_ratio:stream_tags=rotate:stream_side_data=rotation',
+        '-show_entries', 'format=duration,start_time',
+        '-of', 'json',
+        video
+      ],
+      { windowsHide: true }
+    )
+      let out = ''
+      p.stdout.on('data', (d: Buffer) => (out += d.toString()))
+      p.on('close', () => {
+        try {
+          const parsed = JSON.parse(out) as {
+            streams?: Array<{
+              codec_type?: string
+              width?: number
+              height?: number
+              start_time?: string
+              sample_aspect_ratio?: string
+              tags?: { rotate?: string }
+              side_data_list?: Array<{ rotation?: number }>
+            }>
+            format?: { duration?: string; start_time?: string }
+          }
+          const streams = Array.isArray(parsed.streams) ? parsed.streams : []
+          const videoStream = streams.find((stream) => stream.codec_type === 'video')
+          const audioStream = streams.find((stream) => stream.codec_type === 'audio')
+          const codedWidth = Number(videoStream?.width) || 0
+          const codedHeight = Number(videoStream?.height) || 0
+          const sar = videoStream?.sample_aspect_ratio || '1:1'
+          const [sarNumRaw, sarDenRaw] = sar.split(':').map(Number)
+          const sarNum = Number.isFinite(sarNumRaw) && sarNumRaw > 0 ? sarNumRaw : 1
+          const sarDen = Number.isFinite(sarDenRaw) && sarDenRaw > 0 ? sarDenRaw : 1
+          const rotationRaw = videoStream?.side_data_list?.find((item) => Number.isFinite(item.rotation))?.rotation
+            ?? Number(videoStream?.tags?.rotate || 0)
+          const rotation = ((Math.round(rotationRaw || 0) % 360) + 360) % 360
+          const displayWidth = Math.max(1, Math.round(codedWidth * sarNum / sarDen))
+          const displayHeight = codedHeight
+          const rotateSwap = rotation === 90 || rotation === 270
+          resolve({
+            w: rotateSwap ? displayHeight : displayWidth,
+            h: rotateSwap ? displayWidth : displayHeight,
+            giay: Number(parsed.format?.duration) || 0,
+            hasAudio: Boolean(audioStream),
+            rotation,
+            sampleAspectRatio: sar,
+            videoStart: Number(videoStream?.start_time) || Number(parsed.format?.start_time) || 0,
+            audioStart: Number(audioStream?.start_time) || 0
+          })
+        } catch {
+          resolve({ w: 0, h: 0, giay: 0, hasAudio: false })
+        }
+      })
+    p.on('error', () => resolve({ w: 0, h: 0, giay: 0, hasAudio: false }))
+  })
+}
+
+export interface BoCuc {
+  che: boolean // co che phu de goc khong
+  y: number // mep tren dai che (pixel)
+  bh: number // chieu cao dai che
+  x: number // mep trai dai che (pixel)
+  bw: number // chieu rong dai che
+  sigma: number // do manh blur (gaussian)
+  fontSize: number // co chu (PIXEL VIDEO — nho .ass co PlayResY = chieu cao video)
+  vien: number // do day vien
+  marginV: number // le duoi (pixel video)
+  tamY: number | null // null = khong co khung sub (user khong keo) => dung marginV mac dinh
+}
+
+/**
+ * Bo tham so bo cuc — video NGANG va DOC dung 2 bo KHAC NHAU.
+ * Vi sao phai tach: video doc (9:16) co chieu cao rat lon nhung khung hep, ma
+ * thang co chu lai tinh theo chieu cao -> 3.5%/4.5%/5.5% cua 1920 deu vuot xa
+ * muc be rong cho phep, bi chan het ve cung MOT so (user doi Vua/Lon/Rat lon ma
+ * chu khong nhuc nhich). Voi video doc phai lay moc theo BE RONG.
+ */
+interface ThamSo {
+  theoCao: boolean // moc tinh co chu: chieu cao (ngang) hay be rong (doc)
+  tuDong: number // co chu tu dong khi KHONG co khung mo
+  thang: Record<'nho' | 'vua' | 'lon' | 'ratlon', number>
+  min: number
+  max: number
+  le: number // le trai/phai (ti le be rong)
+}
+// Ngang: GIU NGUYEN so cu (dang chay tot, khong dung vao).
+const NGANG: ThamSo = {
+  theoCao: true,
+  tuDong: 0.042,
+  thang: { nho: 0.025, vua: 0.035, lon: 0.045, ratlon: 0.055 },
+  min: 0.02,
+  max: 0.055,
+  le: 0.04
+}
+// Doc: moc theo be rong, chu to hon va cho phep 2-3 dong (kieu TikTok/Reels).
+// Thang trai deu tu min den max nen khong con canh 3 muc ra cung mot co.
+const DOC: ThamSo = {
+  theoCao: false,
+  tuDong: 0.045,
+  thang: { nho: 0.035, vua: 0.045, lon: 0.055, ratlon: 0.065 },
+  min: 0.035,
+  max: 0.065,
+  le: 0.05
+}
+
+/**
+ * Tinh bo cuc dot chu tu kich thuoc video + dai chu goc.
+ * Che phu de goc kieu BLUR (kinh mo, giong CapCut) — do that dep hon thanh den
+ * cung. Huong video (ngang/doc) lay tu ffprobe -> chon bo tham so tuong ung.
+ * Dai mo giu DUNG khung user keo; chu can giua quanh tam dai do va duoc phep
+ * tran ra ngoai.
+ */
+export function boCuc(
+  meta: Meta,
+  subRegion?: { x0: number; y0: number; x1: number; y1: number } | null,
+  lamMo?: boolean,
+  customFontSize?: number | null
+): BoCuc {
+  const co = meta.h > 0 ? meta.h : 720
+  const rong = meta.w > 0 ? meta.w : 1280
+  const ts = rong < co ? DOC : NGANG
+  const marginV = Math.round(co * 0.04)
+
+  // Video doc dung be rong lam moc; video ngang dung chieu cao.
+  const fontScaleBase = ts.theoCao ? co : rong
+  let fontSize = customFontSize && customFontSize > 0 ? customFontSize : Math.round(fontScaleBase * ts.tuDong)
+  let y = 0
+  let bh = 0
+  let x = 0
+  let bw = rong
+  let tamY: number | null = null
+
+  if (subRegion && subRegion.y1 > subRegion.y0 && subRegion.x1 > subRegion.x0) {
+    y = Math.max(0, subRegion.y0)
+    bh = Math.min(co - y, subRegion.y1 - subRegion.y0)
+    x = Math.max(0, subRegion.x0)
+    bw = Math.min(rong - x, subRegion.x1 - subRegion.x0)
+
+    fontSize = customFontSize && customFontSize > 0 ? customFontSize : subtitleFontSizeForBox({
+      boxWidth: bw,
+      boxHeight: bh,
+      videoWidth: rong,
+      videoHeight: co
+    })
+    tamY = Math.round(y + bh / 2)
+  }
+
+  y -= y % 2
+  bh -= bh % 2
+  if (bh < 2) bh = 2
+  if (y + bh > co) bh = Math.max(2, co - y - ((co - y) % 2))
+
+  x -= x % 2
+  bw -= bw % 2
+  if (bw < 2) bw = 2
+  if (x + bw > rong) bw = Math.max(2, rong - x - ((rong - x) % 2))
+
+  const vien = Math.max(1, Math.round(fontSize * 0.12))
+  return {
+    che: !!lamMo,
+    y,
+    bh,
+    x,
+    bw,
+    sigma: Math.max(8, Math.round(co * 0.03)),
+    fontSize,
+    vien,
+    marginV,
+    tamY
+  }
+}
+
+/**
+ * Alias giu tuong thich cho code cu. Parser chuan nam trong shared/subtitles va
+ * luon tra moc thoi gian dang so de preview va burn khong the dien giai khac nhau.
+ */
+export function docSrt(srtRaw: string): SubtitleCue[] {
+  return parseSrt(srtRaw).cues
+}
+
+export async function probeBurnMedia(video: string): Promise<Meta> {
+  if (!isAbsolute(video)) throw new Error('Đường dẫn video không hợp lệ.')
+  const info = await stat(video)
+  if (!info.isFile() || info.size <= 0) throw new Error('Không thể đọc video đã chọn.')
+  const ffmpeg = await resolveFfmpeg()
+  if (!ffmpeg) throw new Error('Chưa tìm thấy FFmpeg để kiểm tra âm thanh video.')
+  return doVideo(duongFfprobe(ffmpeg), video)
+}
+
+/** Chon font dong goi theo script; null giu fallback he thong cho script chua co trong pack. */
+function resolveAutomaticSubtitleFont(cues: readonly SubtitleCue[]): ResolvedBurnFont | null {
+  return resolveSubtitlePlanFont(cues, 'auto')
+}
+
+/**
+ * Thoi diem KET THUC cua cau cuoi trong file .srt (giay). Dung de canh bao user
+ * khi ho chon nham file phu de lech han so voi video.
+ */
+export async function srtGiay(duong: string): Promise<number> {
+  try {
+    const cues = docSrt(await readFile(duong, 'utf8'))
+    return subtitleDuration(cues)
+  } catch {
+    return 0
+  }
+}
+
+/**
+ * Cat .srt cho vua thoi luong video: bo han cau bat dau sau khi video da het,
+ * va keo mep cuoi cua cau VAT NGANG ve dung luc video ket thuc.
+ *
+ * !! TU CAT chu KHONG dung co san cua ffmpeg — da do that ca hai deu sai:
+ *    - `-shortest`: LAM MAT HAN cau vat ngang (cau 2s->10s tren video 3s cho ra
+ *      luong phu de rong tuot, mat ca doan dang le phai hien tu giay 2 den 3).
+ *    - `-t` / `-to`: khong dung gi toi luong phu de (van de nguyen 10s).
+ */
+export function catSrtTheoVideo(cues: SubtitleCue[], giayVideo: number): string {
+  return serializeSrt(trimSubtitleCues(cues, giayVideo))
+}
+
+/**
+ * .srt -> .ass, ĐẶT PlayResX/Y = KICH THUOC VIDEO. Vi sao KHONG dung filter
+ * `subtitles=...:force_style`: no doc .srt voi PlayResY mac dinh (~288) nen
+ * FontSize/MarginV (tinh theo pixel video) bi phong ~2.5x va DAT SAI CHO -> chu
+ * khong nam trong dai mo. Da do that. Voi PlayRes = video thi moi so la pixel that.
+ */
+import { readFileSync } from 'node:fs'
+
+/**
+ * Doc file srt tu dong nhan dien encoding (UTF-8, UTF-16LE/BE, EUC-KR cho chu Han)
+ */
+export function docFileSrt(duong: string): string {
+  const buf = readFileSync(duong)
+  if (buf.length >= 2 && buf[0] === 0xFF && buf[1] === 0xFE) {
+    return buf.toString('utf16le')
+  }
+  if (buf.length >= 2 && buf[0] === 0xFE && buf[1] === 0xFF) {
+    try {
+      return new TextDecoder('utf-16be').decode(buf)
+    } catch {
+      return buf.toString('utf16le')
+    }
+  }
+  if (buf.length >= 3 && buf[0] === 0xEF && buf[1] === 0xBB && buf[2] === 0xBF) {
+    return buf.toString('utf8').slice(1)
+  }
+
+  const utf8Str = buf.toString('utf8')
+  if (utf8Str.includes('\uFFFD')) {
+    try {
+      return new TextDecoder('euc-kr').decode(buf)
+    } catch {
+      return buf.toString('latin1')
+    }
+  }
+  return utf8Str
+}
+
+
+
+
+
+export interface AssSubtitleOptions {
+  displayStyle?: SubtitleDisplayStyle
+  highlightColor?: string
+  highlightPop?: boolean
+  layoutProfile?: SubtitleLayoutProfile
+  autoOptimize?: boolean
+  wordTimings?: BurnReq['wordTimings']
+  /** AutoShort sets this so an effect is never synthesized from character
+   * count when a cue has no trustworthy ASR/TTS word alignment. */
+  requireWordTimings?: boolean
+}
+
+export function taoAss(
+  cues: SubtitleCue[],
+  meta: Meta,
+  bc: BoCuc,
+  fontOverride?: string | null,
+  style?: SubStyle | null,
+  pickedFont: BurnFontEntry | null = null,
+  effectOptions: AssSubtitleOptions = {}
+): string {
+  const w = meta.w > 0 ? meta.w : 1280
+  const h = meta.h > 0 ? meta.h : 720
+
+  const marginL = bc.x > 0 ? bc.x : Math.round(w * 0.08)
+  const marginR = bc.x > 0 && bc.bw > 0 ? Math.max(0, w - (bc.x + bc.bw)) : Math.round(w * 0.08)
+  const boxWidth = w - marginL - marginR
+
+  // A selected subtitle region is anchored at its visual centre. This is the
+  // same reference point used by the interactive preview, so 1/2/3 lines do
+  // not jump upward from the blur band as they did with bottom alignment.
+  const marginV = bc.tamY != null ? Math.max(0, h - (bc.y + bc.bh)) : bc.marginV
+
+  // Tu dong phat hien font theo ngon ngu (mau ca file). Wrap xuong dong: theo TUNG cue.
+  const textSample = cues.map((c) => c.text).join('')
+  let fontName = 'Arial'
+  const isJapanese = /[\u3040-\u309f\u30a0-\u30ff]/.test(textSample)
+  const isChinese = /[\u4e00-\u9fa5]/.test(textSample)
+
+  if (fontOverride && fontOverride.trim()) {
+    fontName = fontOverride.trim()
+  } else if (isJapanese) {
+    // Tieng Nhat (uu tien nhan dien truoc do tieng Nhat co chua chu Kanji trung voi tieng Trung)
+    fontName = 'MS Gothic'
+  } else if (/[\uAC00-\uD7A3\u1100-\u11FF\u3130-\u318F]/.test(textSample)) {
+    // Tieng Han
+    fontName = 'Malgun Gothic'
+  } else if (isChinese) {
+    // Tieng Trung (Gian/Phon the)
+    fontName = 'Microsoft YaHei'
+  } else if (/[\u0e00-\u0e7f]/.test(textSample)) {
+    // Tieng Thai
+    fontName = 'Leelawadee UI'
+  } else if (/[\u0900-\u097f]/.test(textSample)) {
+    // Tieng An (Devanagari/Hindi...)
+    fontName = 'Nirmala UI'
+  } else if (/[\u0600-\u06ff]/.test(textSample)) {
+    // Tieng A Rap
+    fontName = 'Segoe UI'
+  }
+
+  // Wrap theo px chieu ngang khung (tru pad neu co nen)
+  const bgOn = Boolean(style?.bgEnabled)
+  const boxPad = Math.max(8, Math.round(bc.fontSize * 0.26))
+  const measure = createTextMeasurer(bc.fontSize, fontName, pickedFont)
+  const renderPlan = planSubtitleLayout(
+    cues,
+    {
+      profile: effectOptions.layoutProfile ?? 'readable',
+      autoOptimize: effectOptions.autoOptimize !== false,
+      videoWidth: w,
+      videoHeight: h,
+      boxWidth,
+      boxHeight: bc.tamY != null ? bc.bh : Math.max(bc.fontSize * 2.5, h * 0.2),
+      fontSize: bc.fontSize,
+      boxPadding: bgOn ? boxPad : 0
+    },
+    measure
+  )
+
+  const primary = hexToAssColour(style?.textColor ?? '#ffffff', 100)
+  const displayStyle = normalizeSubtitleDisplayStyle(effectOptions.displayStyle)
+  const secondary =
+    displayStyle === 'word-reveal'
+      ? hexToAssColour(style?.textColor ?? '#ffffff', 0)
+      : '&H00000000&'
+  const highlight = hexToAssColour(effectOptions.highlightColor ?? '#FFD166', 100)
+  const highlightPop = effectOptions.highlightPop !== false
+  const outline = hexToAssColour(style?.outlineColor ?? '#000000', 100)
+  const outlineW = style != null ? style.outlinePx : bc.vien
+  const back = bgOn
+    ? hexToAssColour(style!.bgColor, style!.bgOpacity)
+    : '&H00000000&'
+  // blur nhe de mem goc hop (ASS khong co border-radius that)
+  const boxBlur = Math.max(2, Math.min(5, bc.fontSize * 0.055))
+
+  // D = chu + vien; Box = chi hop nen (chu trong suot), ôm sát khi xuống dòng
+  const styleText =
+    `Style: D,${fontName},${bc.fontSize},${primary},${secondary},${outline},&H00000000&,` +
+    `0,0,0,0,100,100,0,0,1,${outlineW},0,${bc.tamY != null ? 5 : 2},${marginL},${marginR},${marginV},1`
+  // BorderStyle=3: mau hop = OutlineColour (khong phai BackColour)
+  const styleBox =
+    `Style: Box,${fontName},${bc.fontSize},&HFF000000&,&H00000000&,${back},&H00000000&,` +
+    `0,0,0,0,100,100,0,0,3,${boxPad},0,${bc.tamY != null ? 5 : 2},${marginL},${marginR},${marginV},1`
+
+  const assNumber = (value: number): string =>
+    (Math.round(value * 100) / 100).toString()
+  const lineHeight = bc.fontSize * 1.2
+  const textCenterX = marginL + boxWidth / 2
+  const textCenterY = bc.tamY ?? h - marginV
+  const anchorPosition = bc.tamY != null
+    ? `\\an5\\pos(${assNumber(textCenterX)},${assNumber(textCenterY)})`
+    : ''
+  const fixedLinePosition = (lineIndex: number, lineCount: number): string => {
+    const y = textCenterY + (lineIndex - (lineCount - 1) / 2) * lineHeight
+    return `\\an5\\pos(${assNumber(textCenterX)},${assNumber(y)})`
+  }
+
+  const events = renderPlan.segments.flatMap((cue) => {
+    // Breakpoints and timing already come from the shared render plan.
+    const textFormatted = cue.lines.join('\\N')
+    const a = formatAssTimestamp(cue.start)
+    const b = formatAssTimestamp(cue.end)
+    const layer = bgOn ? 1 : 0
+    const boxEvent = bgOn
+      ? [`Dialogue: 0,${a},${b},Box,,0,0,0,,{${anchorPosition}\\blur${boxBlur.toFixed(1)}}${textFormatted}`]
+      : []
+
+    if (displayStyle === 'standard') {
+      return [...boxEvent, `Dialogue: ${layer},${a},${b},D,,0,0,0,,{${anchorPosition}}${textFormatted}`]
+    }
+
+    const suppliedWords = effectOptions.wordTimings
+      ?.filter((entry) => entry.end > cue.start + 0.001 && entry.start < cue.end - 0.001)
+      .flatMap((entry) => entry.words.filter((word) => word.end > cue.start + 0.001 && word.start < cue.end - 0.001))
+    const timeline = createSubtitleEffectTimeline({
+      ...cue,
+      text: textFormatted.replace(/\\N/g, '\n')
+    }, { wordTimings: suppliedWords })
+    if (timeline.beats.length === 0 || (effectOptions.requireWordTimings && timeline.timingSource !== 'provided')) {
+      return [...boxEvent, `Dialogue: ${layer},${a},${b},D,,0,0,0,,{${anchorPosition}}${textFormatted}`]
+    }
+
+    if (displayStyle === 'word-reveal') {
+      if (timeline.timingSource === 'provided') {
+        return [
+          ...boxEvent,
+          ...timeline.beats.map((beat, beatIndex) => {
+            const nextStart = timeline.beats[beatIndex + 1]?.start ?? cue.end
+            return `Dialogue: ${layer},${formatAssTimestamp(beat.start)},${formatAssTimestamp(nextStart)},D,,0,0,0,,` +
+              `{${anchorPosition}}${renderAssWordRevealAt(timeline, beat.index)}`
+          })
+        ]
+      }
+      return [
+        ...boxEvent,
+        `Dialogue: ${layer},${a},${b},D,,0,0,0,,{${anchorPosition}}${renderAssWordReveal(timeline)}`
+      ]
+    }
+
+    // Colour-only highlight never changes glyph advances, so it is safe for
+    // every script. RTL/context-shaped scripts currently use this same stable
+    // fallback until their word coordinates can be shaped exactly like libass.
+    const fixedPopSupported =
+      highlightPop && supportsFixedSubtitleWordPop(timeline.tokens.map((token) => token.text).join(''))
+    if (!fixedPopSupported) {
+      return [
+        ...boxEvent,
+        ...timeline.beats.map(
+          (beat) =>
+            `Dialogue: ${layer},${formatAssTimestamp(beat.start)},${formatAssTimestamp(beat.end)},D,,0,0,0,,` +
+            `{${anchorPosition}}` + renderAssWordHighlight(timeline, beat.index, primary, highlight, { enabled: false })
+        )
+      ]
+    }
+
+    const overlayPlan = planSubtitleWordOverlays(timeline, measure, cue.lineWidths)
+    const lineCount = overlayPlan.lines.length
+    const fixedBoxEvents = bgOn
+      ? overlayPlan.lines.map(
+          (line) =>
+            `Dialogue: 0,${a},${b},Box,,0,0,0,,{${fixedLinePosition(line.lineIndex, lineCount)}\\blur${boxBlur.toFixed(1)}}${line.text}`
+        )
+      : []
+    const fixedBaseEvents = timeline.beats.flatMap((beat) =>
+      overlayPlan.lines.map(
+        (line) =>
+          `Dialogue: ${layer},${formatAssTimestamp(beat.start)},${formatAssTimestamp(beat.end)},D,,0,0,0,,` +
+          `{${fixedLinePosition(line.lineIndex, lineCount)}}` +
+          renderAssBaseLineWithHiddenBeat(timeline, line.lineIndex, beat.index)
+      )
+    )
+    const overlayEvents = timeline.beats.flatMap((beat) => {
+      const popScale = safeSubtitlePopScale(
+        timeline,
+        beat.index,
+        wrapWidthFromBox(boxWidth, bgOn ? boxPad : 0),
+        measure,
+        cue.lineWidths
+      )
+      return overlayPlan.words
+        .filter((word) => word.beatIndex === beat.index)
+        .map((word) => {
+          const y = textCenterY + (word.lineIndex - (lineCount - 1) / 2) * lineHeight
+          return (
+            `Dialogue: ${layer + 1},${formatAssTimestamp(beat.start)},${formatAssTimestamp(beat.end)},D,,0,0,0,,` +
+            `{\\an5\\pos(${assNumber(textCenterX)},${assNumber(y)})}` +
+            renderAssWordPopLineOverlay(timeline, word.lineIndex, word.tokenIndex, beat, highlight, {
+              enabled: true,
+              peakScale: popScale
+            })
+          )
+        })
+    })
+
+    return [...fixedBoxEvents, ...fixedBaseEvents, ...overlayEvents]
+  })
+
+  const styleLines = bgOn ? [styleBox, styleText] : [styleText]
+
+  return [
+    '[Script Info]',
+    'ScriptType: v4.00+',
+    `PlayResX: ${w}`,
+    `PlayResY: ${h}`,
+    // Planner da chot diem xuong dong; libass khong duoc tu wrap lan hai khi pop.
+    'WrapStyle: 2',
+    '',
+    '[V4+ Styles]',
+    'Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding',
+    ...styleLines,
+    '',
+    '[Events]',
+    'Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text',
+    ...events,
+    ''
+  ].join('\n')
+}
+
+/**
+ * Cac tham so filter cho ffmpeg. Supports N blur regions using split=N+1 stream architecture.
+ */
+export function taoFilterComplex(
+  meta: Meta,
+  regions: BlurRegion[],
+  lamMo: boolean,
+  coAss: boolean,
+  assName: string,
+  batAmThanh = false,
+  hasAudioFile = false,
+  audioVolume = 100,
+  fontsDir: string | null = null
+): string[] {
+  const sigma = Math.max(8, Math.round((meta.h > 0 ? meta.h : 720) * 0.03))
+  const validRegions = lamMo ? regions.filter((r) => r.x1 > r.x0 && r.y1 > r.y0) : []
+  const lines: string[] = []
+  const canonicalFilter = canonicalDisplayVideoFilter(meta)
+  const hasVideoFilters = validRegions.length > 0 || coAss || Boolean(canonicalFilter)
+  let videoInput = '0:v'
+  if (canonicalFilter) {
+    lines.push(`[0:v]${canonicalFilter}[display]`)
+    videoInput = 'display'
+  }
+  const assFilter =
+    fontsDir && coAss
+      ? `ass=${assName}:fontsdir=${escapeFfmpegFilterPath(fontsDir)}`
+      : `ass=${assName}`
+
+  if (hasVideoFilters) {
+    const N = validRegions.length
+    const w = meta.w > 0 ? meta.w : 1280
+    const h = meta.h > 0 ? meta.h : 720
+
+    if (N > 0) {
+      // 1. Split luong goc in canonical display-space thành (N + 1) luong doc lap
+      const splitLabels = Array.from({ length: N }, (_, i) => `[c${i}]`).join('')
+      lines.push(`[${videoInput}]split=${N + 1}[main]${splitLabels}`)
+
+      // 2. Crop va gblur doc lap cho tung vung tu luong [c${i}]
+      for (let i = 0; i < N; i++) {
+        const r = validRegions[i]
+        let x = Math.max(0, r.x0)
+        let bw = Math.min(w - x, r.x1 - r.x0)
+        let y = Math.max(0, r.y0)
+        let bh = Math.min(h - y, r.y1 - r.y0)
+
+        x -= x % 2
+        bw -= bw % 2
+        if (bw < 2) bw = 2
+        if (x + bw > w) bw = Math.max(2, w - x - ((w - x) % 2))
+
+        y -= y % 2
+        bh -= bh % 2
+        if (bh < 2) bh = 2
+        if (y + bh > h) bh = Math.max(2, h - y - ((h - y) % 2))
+
+        lines.push(`[c${i}]crop=${bw}:${bh}:${x}:${y},gblur=sigma=${sigma}:steps=3[b${i}]`)
+      }
+
+      // 3. Overlay noi tiep lan luot cac vung mo len luong [main]
+      let prev = 'main'
+      for (let i = 0; i < N; i++) {
+        const r = validRegions[i]
+        let x = Math.max(0, r.x0)
+        let y = Math.max(0, r.y0)
+        x -= x % 2
+        y -= y % 2
+
+        const outLbl = i === N - 1 && !coAss ? '[out]' : `[v${i + 1}]`
+        lines.push(`[${prev}][b${i}]overlay=${x}:${y}${outLbl}`)
+        prev = `v${i + 1}`
+      }
+
+      // 4. Ghep phu de neu co
+      if (coAss) {
+        lines.push(`[${prev}]${assFilter}[out]`)
+      }
+    } else {
+      // Chi co ass, khong co blur
+      if (coAss) lines.push(`[${videoInput}]${assFilter}[out]`)
+      else lines.push(`[${videoInput}]null[out]`)
+    }
+  }
+
+  // Phối trộn âm thanh
+  if (batAmThanh) {
+    if (meta.hasAudio) {
+      const volRatio = originalAudioGain(audioVolume)
+      const outputDuration = Math.max(0.1, meta.giay).toFixed(3)
+      let audioFilter = ''
+      if (hasAudioFile) {
+        if (volRatio <= 0.0001) {
+          // REPLACE mode: Completely bypass original audio stream; direct narration track
+          audioFilter = `[1:a]asetpts=PTS-STARTPTS,aresample=44100:async=1,aformat=channel_layouts=stereo:sample_rates=44100,volume=1.0,apad=whole_dur=${outputDuration},atrim=duration=${outputDuration},alimiter=limit=-1dB:attack=5:release=50[a_mix]`
+        } else {
+          // MIX mode: Controlled gain mix with normalize=0 and limiter (no dynamic jumping)
+          audioFilter = `[0:a]asetpts=PTS-STARTPTS,aresample=44100:async=1,aformat=channel_layouts=stereo:sample_rates=44100,volume=${volRatio}[a0];[1:a]asetpts=PTS-STARTPTS,aresample=44100:async=1,aformat=channel_layouts=stereo:sample_rates=44100,volume=1.0[a1];[a0][a1]amix=inputs=2:duration=longest:dropout_transition=2:normalize=0[a_sum];[a_sum]alimiter=limit=-1dB:attack=5:release=50,apad=whole_dur=${outputDuration},atrim=duration=${outputDuration}[a_mix]`
+        }
+      } else {
+        // Không nhạc nền + có âm thanh gốc -> Chỉ chỉnh âm lượng gốc
+        audioFilter = `[0:a]asetpts=PTS-STARTPTS,volume=${volRatio},apad=whole_dur=${outputDuration},atrim=duration=${outputDuration}[a_mix]`
+      }
+      
+      if (hasVideoFilters) {
+        lines.push(audioFilter)
+        return ['-filter_complex', lines.join(';'), '-map', '[out]', '-map', '[a_mix]']
+      } else {
+        return ['-filter_complex', audioFilter, '-map', '0:v', '-map', '[a_mix]']
+      }
+    } else {
+      // Video gốc câm (không âm thanh)
+      if (hasAudioFile) {
+        // Có nhạc nền -> reset PTS and bound the result to the video timeline.
+        const outputDuration = Math.max(0.1, meta.giay).toFixed(3)
+        const audioFilter = `[1:a]asetpts=PTS-STARTPTS,aresample=44100:async=1,aformat=channel_layouts=stereo:sample_rates=44100,apad=whole_dur=${outputDuration},atrim=duration=${outputDuration},alimiter=limit=-1dB:attack=5:release=50[a_mix]`
+        if (hasVideoFilters) {
+          return ['-filter_complex', [...lines, audioFilter].join(';'), '-map', '[out]', '-map', '[a_mix]']
+        } else {
+          return ['-filter_complex', audioFilter, '-map', '0:v', '-map', '[a_mix]']
+        }
+      } else {
+        // Không nhạc nền -> Không cần âm thanh
+        if (hasVideoFilters) {
+          return ['-filter_complex', lines.join(';'), '-map', '[out]']
+        } else {
+          return []
+        }
+      }
+    }
+  } else {
+    // Không bật cấu hình âm thanh
+    if (hasVideoFilters) {
+      return ['-filter_complex', lines.join(';'), '-map', '[out]', '-map', '0:a?']
+    } else {
+      return []
+    }
+  }
+}
+
+/** Chay 1 lan ffmpeg, bao tien do theo `time=` tren stderr. */
+async function chay(
+  ff: string,
+  args: string[],
+  cwd: string,
+  meta: Meta,
+  onProgress: (p: BurnProgress) => void
+): Promise<number | null> {
+  return new Promise((resolve) => {
+    const p = spawn(ff, args, { cwd, windowsHide: true })
+    child = p
+    let errTail = ''
+    p.stderr.on('data', (d: Buffer) => {
+      const s = d.toString()
+      const lines = s.split(/\r?\n/)
+      for (const line of lines) {
+        const trimmed = line.trim()
+        if (!trimmed) continue
+        
+        // Neu chua thong tin thoi gian thi cap nhat tien do
+        const m = /time=(\d+):(\d+):(\d+\.\d+)/.exec(trimmed)
+        if (m && meta.giay > 0) {
+          const sec = Number(m[1]) * 3600 + Number(m[2]) * 60 + Number(m[3])
+          onProgress({ percent: Math.min(99, Math.round((sec / meta.giay) * 100)) })
+        }
+        
+        // Log chan doan loi font/ass tu FFmpeg
+        const lower = trimmed.toLowerCase()
+        if (
+          lower.includes('ass') ||
+          lower.includes('font') ||
+          lower.includes('error') ||
+          lower.includes('warning') ||
+          lower.includes('failed')
+        ) {
+          logInfo(`[ffmpeg] ${trimmed}`)
+        }
+      }
+      const last = s.trim().split(/\r?\n/).filter(Boolean).slice(-1)[0]
+      if (last) errTail = last
+    })
+    p.on('error', (err) => {
+      debugRaw('burn spawn', err)
+      child = null
+      resolve(-1)
+    })
+    p.on('close', (code) => {
+      child = null
+      if (code !== 0 && errTail) debugRaw('burn close', errTail)
+      resolve(code)
+    })
+  })
+}
+
+async function duLon(f: string): Promise<boolean> {
+  try {
+    return (await stat(f)).size > 4096 // nvenc hong -> file 0 byte / vai byte
+  } catch {
+    return false
+  }
+}
+
+/**
+ * Ghep phu de / Lam mo video.
+ */
+async function runBurnSubtitle(
+  req: BurnReq,
+  onProgress: (p: BurnProgress) => void
+): Promise<BurnResult> {
+  daHuy = false
+  const ff = await resolveFfmpeg()
+  if (!ff) return { ok: false, error: 'Thiếu ffmpeg. Hãy chạy lại bước cài đặt.' }
+
+  const hasSrt = Boolean(req.srt && req.srt.trim())
+  const regions = req.blurRegions || []
+  const hasBlur = Boolean(req.lamMo && regions.length > 0)
+  const hasAudioFile = Boolean(req.batAmThanh && req.amThanhFile)
+
+  if (!hasSrt && !hasBlur && !req.batAmThanh) {
+    return { ok: false, error: 'Vui lòng chọn ít nhất 1 vùng làm mờ, tải lên tệp phụ đề hoặc bật cấu hình âm thanh.' }
+  }
+
+  const goc = basename(req.video).replace(/\.[^.]+$/, '')
+  const outputName = req.outputName?.trim()
+  const output = join(
+    req.outputDir,
+    outputName || `${goc}${req.mode === 'burn' ? '-phude' : '-phude-mem'}.mp4`
+  )
+
+  const tam = join(tmpdir(), 'tblao-burn')
+  await mkdir(tam, { recursive: true })
+  const srtTam = join(tam, 'sub.srt')
+
+  if (hasSrt && req.srt) {
+    await copyFile(req.srt, srtTam)
+  }
+
+  if (hasSrt && req.mode === 'soft') {
+    logInfo(`Dịch màn hình: gắn phụ đề rời vào ${basename(req.video)}…`)
+    
+    const args = ['-y', '-i', req.video, '-i', 'sub.srt']
+    if (hasAudioFile) {
+      args.push('-i', req.amThanhFile!)
+    }
+
+    const meta = await doVideo(duongFfprobe(ff), req.video)
+    if (req.catSrt && meta.giay > 0) {
+      const cues = docSrt(docFileSrt(srtTam))
+      await writeFile(srtTam, catSrtTheoVideo(cues, meta.giay), 'utf8')
+      logInfo('Dịch màn hình: đã cắt phụ đề cho vừa độ dài video.')
+    }
+
+    if (req.batAmThanh) {
+      const outputDuration = Math.max(0.1, meta.giay).toFixed(3)
+      if (meta.hasAudio) {
+        const vol = originalAudioGain(req.amLuongGoc ?? 100)
+        if (hasAudioFile) {
+          if (vol <= 0.0001) {
+            // REPLACE mode
+            args.push(
+              '-filter_complex', `[2:a]asetpts=PTS-STARTPTS,aresample=44100:async=1,aformat=channel_layouts=stereo:sample_rates=44100,volume=1.0,apad=whole_dur=${outputDuration},atrim=duration=${outputDuration},alimiter=limit=-1dB:attack=5:release=50[a_mix]`,
+              '-map', '0:v', '-map', '1:s', '-map', '[a_mix]',
+              '-c:v', 'copy', '-c:s', 'mov_text', '-metadata:s:s:0', 'language=vie',
+              '-c:a', 'aac'
+            )
+          } else {
+            // MIX mode
+            args.push(
+              '-filter_complex', `[0:a]asetpts=PTS-STARTPTS,aresample=44100:async=1,aformat=channel_layouts=stereo:sample_rates=44100,volume=${vol}[a0];[2:a]asetpts=PTS-STARTPTS,aresample=44100:async=1,aformat=channel_layouts=stereo:sample_rates=44100,volume=1.0[a1];[a0][a1]amix=inputs=2:duration=longest:dropout_transition=2:normalize=0[a_sum];[a_sum]alimiter=limit=-1dB:attack=5:release=50,apad=whole_dur=${outputDuration},atrim=duration=${outputDuration}[a_mix]`,
+              '-map', '0:v', '-map', '1:s', '-map', '[a_mix]',
+              '-c:v', 'copy', '-c:s', 'mov_text', '-metadata:s:s:0', 'language=vie',
+              '-c:a', 'aac'
+            )
+          }
+        } else {
+          // Chỉ chỉnh âm lượng gốc
+          args.push(
+            '-filter_complex', `[0:a]asetpts=PTS-STARTPTS,volume=${vol},apad=whole_dur=${outputDuration},atrim=duration=${outputDuration}[a_mix]`,
+            '-map', '0:v', '-map', '1:s', '-map', '[a_mix]',
+            '-c:v', 'copy', '-c:s', 'mov_text', '-metadata:s:s:0', 'language=vie',
+            '-c:a', 'aac'
+          )
+        }
+      } else {
+        // Video gốc câm
+        if (hasAudioFile) {
+          args.push(
+            '-filter_complex', `[2:a]asetpts=PTS-STARTPTS,aresample=44100:async=1,aformat=channel_layouts=stereo:sample_rates=44100,apad=whole_dur=${outputDuration},atrim=duration=${outputDuration},alimiter=limit=-1dB:attack=5:release=50[a_mix]`,
+            '-map', '0:v', '-map', '1:s', '-map', '[a_mix]',
+            '-c:v', 'copy', '-c:s', 'mov_text', '-metadata:s:s:0', 'language=vie',
+            '-c:a', 'aac'
+          )
+        } else {
+          args.push(
+            '-map', '0:v', '-map', '1:s',
+            '-c:v', 'copy', '-c:s', 'mov_text', '-metadata:s:s:0', 'language=vie'
+          )
+        }
+      }
+    } else {
+      args.push(
+        '-c', 'copy', '-c:s', 'mov_text', '-metadata:s:s:0', 'language=vie'
+      )
+    }
+
+    args.push(output)
+
+    const code = await chay(ff, args, tam, meta, onProgress)
+    if (hasSrt) await rm(srtTam, { force: true })
+    if (daHuy) return { ok: false, error: 'Đã huỷ.' }
+    if (code === 0 && (await duLon(output))) {
+      logInfo('Dịch màn hình: gắn phụ đề rời xong.')
+      return { ok: true, output }
+    }
+    return { ok: false, error: 'Ghép phụ đề thất bại.' }
+  }
+
+  // ---- Dot chet (Render lai video) ----
+  const meta = await doVideo(duongFfprobe(ff), req.video)
+  let bc: BoCuc | null = null
+  const duongAss = join(tam, 'sub.ass')
+  let resolvedFont = resolveBurnFont(req.fontId)
+  let picked = resolvedFont?.entry ?? null
+  let fontsDir = resolvedFont?.fontsDir ?? null
+  let subStyle: SubStyle | null = null
+
+  if (hasSrt) {
+    const srtRaw = docFileSrt(srtTam)
+    const cues = docSrt(srtRaw)
+    if (cues.length === 0) {
+      await rm(srtTam, { force: true })
+      return { ok: false, error: 'File phụ đề không có câu nào với mốc thời gian hợp lệ.' }
+    }
+    const effectReq = req as BurnReq & {
+      subtitleDisplayStyle?: SubtitleDisplayStyle
+      highlightColor?: string
+      subtitleHighlightPop?: boolean
+    }
+    const explicitFontId = req.fontId?.trim()
+    if (explicitFontId && explicitFontId !== 'auto' && !resolvedFont) {
+      await rm(srtTam, { force: true })
+      return {
+        ok: false,
+        error: 'Font phụ đề đã chọn không còn khả dụng. Hãy chọn lại font.'
+      }
+    }
+    if (!resolvedFont) {
+      resolvedFont = resolveAutomaticSubtitleFont(cues)
+      picked = resolvedFont?.entry ?? null
+      fontsDir = resolvedFont?.fontsDir ?? null
+    }
+    if (resolvedFont) {
+      try {
+        // Re-check checksum immediately before FFmpeg uses the same physical file.
+        await readBurnFontPreview(resolvedFont.entry.id)
+      } catch {
+        await rm(srtTam, { force: true })
+        return {
+          ok: false,
+          error: 'File font phụ đề đã thay đổi hoặc không còn tồn tại. Hãy chọn lại font.'
+        }
+      }
+    }
+    logInfo(`Dịch màn hình: đọc được ${cues.length} câu phụ đề.`)
+    bc = boCuc(meta, req.subRegion, req.lamMo, req.subtitleFontSize)
+    subStyle = styleFromReq(req, bc.vien)
+    await writeFile(
+      duongAss,
+      taoAss(cues, meta, bc, picked?.family ?? null, subStyle, picked, {
+        displayStyle: effectReq.subtitleDisplayStyle,
+        highlightColor: effectReq.highlightColor,
+        highlightPop: effectReq.subtitleHighlightPop,
+        layoutProfile: effectReq.subtitleLayoutProfile,
+        autoOptimize: effectReq.subtitleAutoOptimize,
+        wordTimings: effectReq.wordTimings,
+        requireWordTimings: effectReq.requireWordTimings
+      }),
+      'utf8'
+    )
+    if (picked) {
+      logInfo(`Dịch màn hình: font phụ đề «${picked.label}» (${picked.family}).`)
+    }
+  }
+
+  // FFmpeg chay voi cwd = tam nen chi can ten tuong doi 'sub.ass'
+  const filterArgs = taoFilterComplex(
+    meta,
+    regions,
+    req.lamMo ?? false,
+    hasSrt,
+    'sub.ass',
+    req.batAmThanh ?? false,
+    hasAudioFile,
+    req.amLuongGoc ?? 100,
+    fontsDir
+  )
+  logInfo(`Dịch màn hình: đang xử lý video ${basename(req.video)}…`)
+  if (filterArgs.length > 0) {
+    debugRaw('burn filter_complex', filterArgs.join(' '))
+  }
+
+  const encoders: Array<{ ten: string; gpu: boolean; args: string[] }> = [
+    { ten: 'h264_nvenc', gpu: true, args: ['-c:v', 'h264_nvenc', '-preset', 'p4', '-cq', '23'] },
+    { ten: 'h264_amf', gpu: true, args: ['-c:v', 'h264_amf', '-quality', 'balanced', '-rc', 'cqp', '-qp_i', '23', '-qp_p', '23'] },
+    { ten: 'h264_qsv', gpu: true, args: ['-c:v', 'h264_qsv', '-global_quality', '23'] },
+    { ten: 'libx264', gpu: false, args: ['-c:v', 'libx264', '-preset', 'medium', '-crf', '20'] }
+  ]
+
+  for (const enc of encoders) {
+    if (daHuy) break
+
+    const inputArgs = hasAudioFile
+      ? ['-y', '-i', req.video, '-i', req.amThanhFile!]
+      : ['-y', '-i', req.video]
+
+    const dungFilterAudio = req.batAmThanh && (meta.hasAudio || hasAudioFile)
+    const audioCodecArgs = dungFilterAudio ? ['-c:a', 'aac'] : ['-c:a', 'copy']
+
+    const args = filterArgs.length > 0
+      ? [...inputArgs, ...filterArgs, ...enc.args, ...audioCodecArgs, output]
+      : [...inputArgs, ...enc.args, ...audioCodecArgs, output]
+
+    const code = await chay(ff, args, tam, meta, onProgress)
+    if (daHuy) {
+      if (hasSrt) await rm(srtTam, { force: true })
+      return { ok: false, error: 'Đã huỷ.' }
+    }
+    if (code === 0 && (await duLon(output))) {
+      if (hasSrt) await rm(srtTam, { force: true })
+      logInfo(`Dịch màn hình: xử lý video xong${enc.gpu ? ' (tăng tốc GPU)' : ''}.`)
+      return { ok: true, output }
+    }
+  }
+
+  if (hasSrt) await rm(srtTam, { force: true })
+  return { ok: false, error: 'Xử lý video thất bại.' }
+}
+
+type BurnValidation = { ok: true; req: BurnReq } | { ok: false; error: string }
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return Boolean(value) && typeof value === 'object' && !Array.isArray(value)
+}
+
+function validAbsolutePath(value: unknown): value is string {
+  return typeof value === 'string' && value.length > 0 && !value.includes('\0') && isAbsolute(value)
+}
+
+function validateRegion(value: unknown, label: string): string | null {
+  if (!isRecord(value)) return `${label} không hợp lệ.`
+  const coordinates = ['x0', 'y0', 'x1', 'y1'] as const
+  for (const key of coordinates) {
+    const coordinate = value[key]
+    if (typeof coordinate !== 'number' || !Number.isFinite(coordinate) || coordinate < 0 || coordinate > 1_000_000) {
+      return `${label} có tọa độ không hợp lệ.`
+    }
+  }
+  if ((value.x1 as number) <= (value.x0 as number) || (value.y1 as number) <= (value.y0 as number)) {
+    return `${label} phải có chiều rộng và chiều cao lớn hơn 0.`
+  }
+  return null
+}
+
+async function validateBurnRequest(raw: unknown): Promise<BurnValidation> {
+  if (!isRecord(raw)) return { ok: false, error: 'Yêu cầu xuất video không hợp lệ.' }
+  if (raw.mode !== 'burn' && raw.mode !== 'soft') {
+    return { ok: false, error: 'Chế độ xuất video không hợp lệ.' }
+  }
+  if (!validAbsolutePath(raw.video) || !validAbsolutePath(raw.outputDir)) {
+    return { ok: false, error: 'Đường dẫn video hoặc thư mục lưu không hợp lệ.' }
+  }
+
+  try {
+    const [videoInfo, outputInfo] = await Promise.all([stat(raw.video), stat(raw.outputDir)])
+    if (!videoInfo.isFile() || videoInfo.size <= 0) {
+      return { ok: false, error: 'Video nguồn không tồn tại hoặc không hợp lệ.' }
+    }
+    if (!outputInfo.isDirectory()) {
+      return { ok: false, error: 'Thư mục lưu video không còn tồn tại.' }
+    }
+  } catch {
+    return { ok: false, error: 'Không thể mở video nguồn hoặc thư mục lưu đã chọn.' }
+  }
+
+  if (raw.srt != null && typeof raw.srt !== 'string') {
+    return { ok: false, error: 'Đường dẫn phụ đề không hợp lệ.' }
+  }
+  const subtitlePath = typeof raw.srt === 'string' ? raw.srt.trim() : ''
+  if (subtitlePath) {
+    if (!validAbsolutePath(subtitlePath)) return { ok: false, error: 'Đường dẫn phụ đề không hợp lệ.' }
+    try {
+      const subtitleInfo = await stat(subtitlePath)
+      if (!subtitleInfo.isFile() || subtitleInfo.size <= 0 || subtitleInfo.size > 20 * 1024 * 1024) {
+        return { ok: false, error: 'File phụ đề không hợp lệ hoặc lớn hơn 20 MB.' }
+      }
+    } catch {
+      return { ok: false, error: 'File phụ đề không còn tồn tại.' }
+    }
+  }
+
+  if (raw.amThanhFile != null && typeof raw.amThanhFile !== 'string') {
+    return { ok: false, error: 'Đường dẫn âm thanh không hợp lệ.' }
+  }
+  const audioPath = typeof raw.amThanhFile === 'string' ? raw.amThanhFile.trim() : ''
+  if (raw.batAmThanh === true && audioPath) {
+    if (!validAbsolutePath(audioPath)) return { ok: false, error: 'Đường dẫn âm thanh không hợp lệ.' }
+    try {
+      const audioInfo = await stat(audioPath)
+      if (!audioInfo.isFile() || audioInfo.size <= 0) {
+        return { ok: false, error: 'File âm thanh không hợp lệ.' }
+      }
+    } catch {
+      return { ok: false, error: 'File âm thanh không còn tồn tại.' }
+    }
+  }
+
+  if (raw.blurRegions != null) {
+    if (!Array.isArray(raw.blurRegions) || raw.blurRegions.length > 32) {
+      return { ok: false, error: 'Danh sách vùng làm mờ không hợp lệ hoặc quá nhiều.' }
+    }
+    for (const [index, region] of raw.blurRegions.entries()) {
+      const error = validateRegion(region, `Vùng làm mờ ${index + 1}`)
+      if (error) return { ok: false, error }
+    }
+  }
+  if (raw.subRegion != null) {
+    const error = validateRegion(raw.subRegion, 'Khung phụ đề')
+    if (error) return { ok: false, error }
+  }
+
+  const booleans = [
+    'lamMo',
+    'catSrt',
+    'batAmThanh',
+    'bgEnabled',
+    'subtitleAutoOptimize',
+    'subtitleHighlightPop',
+    'requireWordTimings'
+  ] as const
+  for (const key of booleans) {
+    if (raw[key] != null && typeof raw[key] !== 'boolean') {
+      return { ok: false, error: `Giá trị ${key} không hợp lệ.` }
+    }
+  }
+  const boundedNumbers: Array<[keyof BurnReq, number, number]> = [
+    ['amLuongGoc', 0, 100],
+    ['outlinePx', 0, 8],
+    ['bgOpacity', 0, 100]
+  ]
+  for (const [key, minimum, maximum] of boundedNumbers) {
+    const value = raw[key]
+    if (value != null && (typeof value !== 'number' || !Number.isFinite(value) || value < minimum || value > maximum)) {
+      return { ok: false, error: `Giá trị ${String(key)} không hợp lệ.` }
+    }
+  }
+  if (
+    raw.subtitleDisplayStyle != null &&
+    raw.subtitleDisplayStyle !== 'standard' &&
+    raw.subtitleDisplayStyle !== 'word-reveal' &&
+    raw.subtitleDisplayStyle !== 'word-highlight'
+  ) {
+    return { ok: false, error: 'Kiểu hiển thị phụ đề không hợp lệ.' }
+  }
+  if (
+    raw.subtitleLayoutProfile != null &&
+    raw.subtitleLayoutProfile !== 'readable' &&
+    raw.subtitleLayoutProfile !== 'social' &&
+    raw.subtitleLayoutProfile !== 'vertical'
+  ) {
+    return { ok: false, error: 'Cau hinh toi uu phu de khong hop le.' }
+  }
+  if (raw.fontId != null && (typeof raw.fontId !== 'string' || raw.fontId.length > 100)) {
+    return { ok: false, error: 'Font phụ đề không hợp lệ.' }
+  }
+  if (raw.wordTimings != null) {
+    if (!Array.isArray(raw.wordTimings) || raw.wordTimings.length > 20_000) {
+      return { ok: false, error: 'Word timing phụ đề không hợp lệ.' }
+    }
+    for (const timing of raw.wordTimings) {
+      if (!isRecord(timing) || !Array.isArray(timing.words) || timing.words.length > 500 ||
+        !Number.isFinite(timing.start) || !Number.isFinite(timing.end) || Number(timing.end) <= Number(timing.start)) {
+        return { ok: false, error: 'Word timing phụ đề không hợp lệ.' }
+      }
+      if (timing.words.some((word) => !isRecord(word) || typeof word.text !== 'string' ||
+        !Number.isFinite(word.start) || !Number.isFinite(word.end) || Number(word.end) <= Number(word.start))) {
+        return { ok: false, error: 'Từ trong word timing không hợp lệ.' }
+      }
+    }
+  }
+  if (raw.outputName != null &&
+    (typeof raw.outputName !== 'string' || raw.outputName.length > 200 ||
+      raw.outputName !== basename(raw.outputName) || raw.outputName.includes('\0') ||
+      raw.outputName === '.' || raw.outputName === '..' || /[<>:"/\\|?*]/.test(raw.outputName))) {
+    return { ok: false, error: 'Tên file đầu ra không hợp lệ.' }
+  }
+
+  return {
+    ok: true,
+    req: {
+      ...(raw as unknown as BurnReq),
+      srt: subtitlePath || null,
+      amThanhFile: audioPath || null
+    }
+  }
+}
+
+/** Chặn hai yêu cầu dùng chung tiến trình/temp workspace làm hỏng kết quả của nhau. */
+export async function burnSubtitle(
+  req: BurnReq,
+  onProgress: (p: BurnProgress) => void
+): Promise<BurnResult> {
+  if (burnInFlight) {
+    return { ok: false, error: 'Một video khác đang được xuất. Hãy chờ hoàn tất hoặc dừng tác vụ đó.' }
+  }
+  const validation = await validateBurnRequest(req as unknown)
+  if (validation.ok === false) return { ok: false, error: validation.error }
+  burnInFlight = true
+  try {
+    return await runBurnSubtitle(validation.req, onProgress)
+  } finally {
+    burnInFlight = false
+  }
+}

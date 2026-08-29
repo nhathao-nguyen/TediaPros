@@ -1,0 +1,2 @@
+# Keep the bundled Whisper CUDA runtime in Git LFS instead of regular Git blobs.
+resources/local-assets/whisper-cpp/*.dll filter=lfs diff=lfs merge=lfs -text
