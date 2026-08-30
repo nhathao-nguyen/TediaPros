@@ -42,6 +42,7 @@ import { generateSpeech, generateVoiceClone, getTtsModels, checkTtsServerHealth 
 import { burnSubtitle, cancelBurn, probeBurnMedia } from './burn'
 import { composeAutoShortBackgroundAudio } from './autoShortBackgroundAudio'
 import { validateAutoShortMusicTrack } from './autoShortMusicLibrary'
+import { sanitizeAutoShortAuditError } from './autoShortAudit'
 import { parseSrt, serializeSrt, type SubtitleCue } from '../shared/subtitles'
 import { validateAutoShortStartRequest } from '../shared/autoShortContract'
 import { fuseWhisperAndOcr, clampAlignedCueTimeline } from '../shared/autoShortAlignment'
@@ -1331,6 +1332,7 @@ async function processSingleVideo(
       const assignedMusicPath = backgroundMusic.assignments[item.id]
       selectedBackgroundMusicPath = await validateAutoShortMusicTrack(backgroundMusic.folderPath, assignedMusicPath)
       outputAudioPath = join(workDir, 'tts-background-mix.wav')
+      artifactEntries.push({ source: outputAudioPath, name: 'tts-background-mix.wav' })
       emitProgress(job, item, 'stitching_audio', 83, 'Đang trộn nhạc background với giọng lồng tiếng…', index, total)
       await composeAutoShortBackgroundAudio({
         musicPath: selectedBackgroundMusicPath,
@@ -1340,7 +1342,6 @@ async function processSingleVideo(
         volume: backgroundMusic.volume,
         signal: job.controller.signal
       })
-      artifactEntries.push({ source: outputAudioPath, name: 'tts-background-mix.wav' })
     }
 
     throwIfAborted(job.controller.signal)
@@ -1426,8 +1427,13 @@ async function processSingleVideo(
     emitProgress(job, item, 'done', 100, 'Hoàn tất xuất video', index, total, burnResult.output)
     return { itemId: item.id, filePath: item.filePath, status: 'done', outputPath: burnResult.output, artifactDir: artifactPath, extractedCueCount, translatedCueCount, generatedVoiceCount, voice }
   } catch (error) {
-    const rawMessage = error instanceof Error ? error.stack || error.message : String(error)
-    const message = errLabel(error)
+    const rawMessage = sanitizeAutoShortAuditError(error, [
+      item.filePath,
+      config.outputDir,
+      config.backgroundMusic?.folderPath,
+      ...Object.values(config.backgroundMusic?.assignments || {})
+    ])
+    const message = errLabel(rawMessage)
     logError(`[AutoShort] ${basename(item.filePath)} thất bại: ${rawMessage}`)
     const cancelled = job.controller.signal.aborted || isAbortError(error)
     const status: 'error' | 'cancelled' = cancelled ? 'cancelled' : 'error'

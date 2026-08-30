@@ -770,7 +770,7 @@ export function taoFilterComplex(
       if (hasAudioFile) {
         if (volRatio <= 0.0001) {
           // REPLACE mode: Completely bypass original audio stream; direct narration track
-          audioFilter = `[1:a]asetpts=PTS-STARTPTS,aresample=44100:async=1,aformat=channel_layouts=stereo:sample_rates=44100,volume=1.0,apad=whole_dur=${outputDuration},atrim=duration=${outputDuration},alimiter=limit=-1dB:attack=5:release=50[a_mix]`
+          audioFilter = `[1:a]asetpts=PTS-STARTPTS,aresample=44100:async=1,aformat=channel_layouts=stereo:sample_rates=44100,volume=1.0,apad=whole_dur=${outputDuration},atrim=duration=${outputDuration},alimiter=limit=-1dB:attack=5:release=50:level=false[a_mix]`
         } else {
           // MIX mode: Dynamic ducking narration over background audio + limiter
           audioFilter = `[0:a]asetpts=PTS-STARTPTS,aresample=44100:async=1,aformat=channel_layouts=stereo:sample_rates=44100,volume=${volRatio}[bg];[1:a]asetpts=PTS-STARTPTS,aresample=44100:async=1,aformat=channel_layouts=stereo:sample_rates=44100,volume=1.0[narr];[bg][narr]sidechaincompress=threshold=0.06:ratio=4:attack=15:release=200[ducked_bg];[ducked_bg][narr]amix=inputs=2:duration=longest:dropout_transition=2:normalize=0[a_sum];[a_sum]alimiter=limit=-1dB:attack=5:release=50,apad=whole_dur=${outputDuration},atrim=duration=${outputDuration}[a_mix]`
@@ -791,7 +791,7 @@ export function taoFilterComplex(
       if (hasAudioFile) {
         // Có nhạc nền -> reset PTS and bound the result to the video timeline.
         const outputDuration = Math.max(0.1, meta.giay).toFixed(3)
-        const audioFilter = `[1:a]asetpts=PTS-STARTPTS,aresample=44100:async=1,aformat=channel_layouts=stereo:sample_rates=44100,apad=whole_dur=${outputDuration},atrim=duration=${outputDuration},alimiter=limit=-1dB:attack=5:release=50[a_mix]`
+        const audioFilter = `[1:a]asetpts=PTS-STARTPTS,aresample=44100:async=1,aformat=channel_layouts=stereo:sample_rates=44100,apad=whole_dur=${outputDuration},atrim=duration=${outputDuration},alimiter=limit=-1dB:attack=5:release=50:level=false[a_mix]`
         if (hasVideoFilters) {
           return ['-filter_complex', [...lines, audioFilter].join(';'), '-map', '[out]', '-map', '[a_mix]']
         } else {
@@ -936,7 +936,7 @@ async function runBurnSubtitle(
           if (vol <= 0.0001) {
             // REPLACE mode
             args.push(
-              '-filter_complex', `[2:a]asetpts=PTS-STARTPTS,aresample=44100:async=1,aformat=channel_layouts=stereo:sample_rates=44100,volume=1.0,apad=whole_dur=${outputDuration},atrim=duration=${outputDuration},alimiter=limit=-1dB:attack=5:release=50[a_mix]`,
+              '-filter_complex', `[2:a]asetpts=PTS-STARTPTS,aresample=44100:async=1,aformat=channel_layouts=stereo:sample_rates=44100,volume=1.0,apad=whole_dur=${outputDuration},atrim=duration=${outputDuration},alimiter=limit=-1dB:attack=5:release=50:level=false[a_mix]`,
               '-map', '0:v', '-map', '1:s', '-map', '[a_mix]',
               '-c:v', 'copy', '-c:s', 'mov_text', '-metadata:s:s:0', 'language=vie',
               '-c:a', 'aac'
@@ -963,7 +963,7 @@ async function runBurnSubtitle(
         // Video gốc câm
         if (hasAudioFile) {
           args.push(
-            '-filter_complex', `[2:a]asetpts=PTS-STARTPTS,aresample=44100:async=1,aformat=channel_layouts=stereo:sample_rates=44100,apad=whole_dur=${outputDuration},atrim=duration=${outputDuration},alimiter=limit=-1dB:attack=5:release=50[a_mix]`,
+            '-filter_complex', `[2:a]asetpts=PTS-STARTPTS,aresample=44100:async=1,aformat=channel_layouts=stereo:sample_rates=44100,apad=whole_dur=${outputDuration},atrim=duration=${outputDuration},alimiter=limit=-1dB:attack=5:release=50:level=false[a_mix]`,
             '-map', '0:v', '-map', '1:s', '-map', '[a_mix]',
             '-c:v', 'copy', '-c:s', 'mov_text', '-metadata:s:s:0', 'language=vie',
             '-c:a', 'aac'

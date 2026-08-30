@@ -1,6 +1,8 @@
 import { mkdtemp, mkdir, readFile, rm, writeFile } from 'node:fs/promises'
+import { existsSync } from 'node:fs'
+import { spawnSync } from 'node:child_process'
 import { tmpdir } from 'node:os'
-import { join } from 'node:path'
+import { dirname, join } from 'node:path'
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
 import {
@@ -27,12 +29,18 @@ import {
   AUTO_SHORT_TTS_MIN_GAP_SECONDS,
   AUTO_SHORT_TTS_MAX_TEMPO
 } from '../src/main/autoShortPolicy'
-import { taoFilterComplex } from '../src/main/burn'
+import { burnSubtitle, taoFilterComplex } from '../src/main/burn'
 import { audioMixGains } from '../src/shared/audioMix'
 import { validateAutoShortStartRequest } from '../src/shared/autoShortContract'
 import { createAutoShortMusicAssignments } from '../src/shared/autoShortBackgroundMusic'
 import { listAutoShortMusicTracks, validateAutoShortMusicTrack } from '../src/main/autoShortMusicLibrary'
-import { buildAutoShortBackgroundAudioArgs } from '../src/main/autoShortBackgroundAudio'
+import {
+  buildAutoShortBackgroundAudioArgs,
+  composeAutoShortBackgroundAudio,
+  runAutoShortBackgroundFfmpegProcess
+} from '../src/main/autoShortBackgroundAudio'
+import { sanitizeAutoShortAuditError } from '../src/main/autoShortAudit'
+import { runLatestAutoShortMusicFolderRequest } from '../src/renderer/src/lib/latestAutoShortMusicFolderRequest'
 import type { AutoShortStartRequest } from '../src/shared/types'
 import {
   inferTranslationSourceLanguage,
@@ -92,6 +100,52 @@ test('AutoShort music library rejects relative folder and track paths', async ()
   if (!result.ok) assert.match(result.error, /đường dẫn tuyệt đối|folder nhạc/iu)
 })
 
+test('AutoShort music library reports missing folders without exposing their absolute path', async () => {
+  const root = await mkdtemp(join(tmpdir(), 'tedia-music-missing-folder-'))
+  await rm(root, { recursive: true, force: true })
+
+  const result = await listAutoShortMusicTracks(root)
+
+  assert.equal(result.ok, false)
+  if (!result.ok) {
+    assert.match(result.error, /folder nhạc.*không tồn tại|không thể mở/iu)
+    assert.doesNotMatch(result.error, new RegExp(root.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'iu'))
+  }
+})
+
+test('AutoShort music library reports deleted tracks without exposing folder or track paths', async () => {
+  const root = await mkdtemp(join(tmpdir(), 'tedia-music-missing-track-'))
+  const track = join(root, 'đã xóa.mp3')
+  try {
+    let error: Error | undefined
+    try {
+      await validateAutoShortMusicTrack(root, track)
+    } catch (caught) {
+      if (caught instanceof Error) error = caught
+    }
+    assert.ok(error)
+    assert.match(error.message, /bài nhạc background.*không còn tồn tại/iu)
+    assert.doesNotMatch(error.message, new RegExp(root.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'iu'))
+    assert.doesNotMatch(error.message, new RegExp(track.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'iu'))
+  } finally {
+    await rm(root, { recursive: true, force: true })
+  }
+})
+
+test('AutoShort failure audit text redacts absolute music paths while retaining diagnostics', () => {
+  const folder = 'C:\\Users\\Lan Anh\\Nhạc nền riêng'
+  const track = join(folder, 'bí mật.mp3')
+  const error = new Error(`ENOENT: no such file or directory, stat '${track}'`)
+  error.stack = `${error.message}\n    at validate (${folder}\\worker.js:42:7)`
+
+  const auditText = sanitizeAutoShortAuditError(error, [folder, track])
+
+  assert.doesNotMatch(auditText, /C:\\Users\\Lan Anh/iu)
+  assert.doesNotMatch(auditText, /bí mật\.mp3/iu)
+  assert.match(auditText, /ENOENT|no such file/iu)
+  assert.match(auditText, /\[đường dẫn đã ẩn\]/iu)
+})
+
 test('AutoShort exposes dedicated music-folder selection and rescan IPC', async () => {
   const mainSource = await readFile(join(process.cwd(), 'src', 'main', 'index.ts'), 'utf8')
   const preloadSource = await readFile(join(process.cwd(), 'src', 'preload', 'index.ts'), 'utf8')
@@ -117,8 +171,44 @@ test('AutoShort invalidates stale background music folder rescans before applyin
   assert.match(source, /const backgroundMusicScanTokenRef = useRef\(0\)/u)
   assert.match(source, /const scanToken = \+\+backgroundMusicScanTokenRef\.current/u)
   assert.match(source, /backgroundMusicScanTokenRef\.current !== scanToken/u)
-  assert.match(source, /backgroundMusicScanTokenRef\.current\+\+\s*\n\s*const result = await window\.api\.autoShortSelectMusicFolder/u)
   assert.match(source, /\}\)\.catch\(\(\) => \{\s*if \(!active \|\| backgroundMusicScanTokenRef\.current !== scanToken \|\| backgroundMusicScanFolderRef\.current !== folderPath\) return\s*setBackgroundMusicError/u)
+})
+
+test('AutoShort folder chooser ignores stale success and rejection after a newer cancellation', async () => {
+  type Result = { ok: true; folderPath: string } | { ok: false; error: string }
+  const tokenRef = { current: 0 }
+  let resolveFirst!: (value: Result) => void
+  let resolveSecond!: (value: Result) => void
+  const firstRequest = new Promise<Result>((resolve) => { resolveFirst = resolve })
+  const secondRequest = new Promise<Result>((resolve) => { resolveSecond = resolve })
+
+  const first = runLatestAutoShortMusicFolderRequest(tokenRef, () => firstRequest)
+  const second = runLatestAutoShortMusicFolderRequest(tokenRef, () => secondRequest)
+  resolveSecond({ ok: false, error: 'Đã hủy chọn folder nhạc.' })
+  assert.deepEqual(await second, { ok: false, error: 'Đã hủy chọn folder nhạc.' })
+  resolveFirst({ ok: true, folderPath: 'C:\\stale' })
+  assert.equal(await first, undefined)
+
+  let rejectStale!: (error: Error) => void
+  let resolveNewest!: (value: Result) => void
+  const staleErrorRequest = new Promise<Result>((_resolve, reject) => { rejectStale = reject })
+  const newestRequest = new Promise<Result>((resolve) => { resolveNewest = resolve })
+  const staleError = runLatestAutoShortMusicFolderRequest(tokenRef, () => staleErrorRequest)
+  const newest = runLatestAutoShortMusicFolderRequest(tokenRef, () => newestRequest)
+  rejectStale(new Error('stale chooser failed'))
+  resolveNewest({ ok: true, folderPath: 'C:\\newest' })
+  assert.equal(await staleError, undefined)
+  assert.deepEqual(await newest, { ok: true, folderPath: 'C:\\newest' })
+})
+
+test('AutoShort folder chooser still surfaces the newest rejection to the caller', async () => {
+  const tokenRef = { current: 0 }
+  await assert.rejects(
+    () => runLatestAutoShortMusicFolderRequest(tokenRef, async () => {
+      throw new Error('chooser exploded')
+    }),
+    /chooser exploded/u
+  )
 })
 
 test('AutoShort background music assigns one selected track to every queue item', () => {
@@ -156,14 +246,76 @@ test('AutoShort background compositor loops music, ducks it under narration, and
     duration: 12.345,
     volume: 15
   })
-  assert.deepEqual(args.slice(0, 6), ['-y', '-stream_loop', '-1', '-i', 'C:\\Nhạc nền\\bài 01.mp3', '-i'])
+  assert.deepEqual(args.slice(0, 6), ['-y', '-hide_banner', '-nostats', '-loglevel', 'error', '-stream_loop'])
+  assert.equal(args[args.indexOf('-i') + 1], 'C:\\Nhạc nền\\bài 01.mp3')
   const graph = args[args.indexOf('-filter_complex') + 1]
   assert.match(graph, /volume=0\.0225/u)
   assert.match(graph, /sidechaincompress=threshold=0\.06:ratio=4:attack=15:release=200/u)
   assert.match(graph, /amix=inputs=2:duration=longest:dropout_transition=2:normalize=0/u)
-  assert.match(graph, /alimiter=limit=-1dB:attack=5:release=50/u)
+  assert.match(graph, /alimiter=limit=-1dB:attack=5:release=50:level=false/u)
   assert.match(graph, /atrim=duration=12\.345/u)
   assert.equal(args.at(-1), 'C:\\Temp\\tts-background-mix.wav')
+})
+
+test('AutoShort FFmpeg runner drains output and returns a bounded path-free stderr tail', { timeout: 10_000 }, async () => {
+  const root = await mkdtemp(join(tmpdir(), 'tedia-ffmpeg-runner-'))
+  const script = join(root, 'noisy-child.js')
+  const sensitiveTrack = join(root, 'nhạc riêng.mp3')
+  try {
+    await writeFile(script, [
+      "const chunk = 'x'.repeat(64 * 1024)",
+      "for (let i = 0; i < 32; i++) process.stdout.write(chunk)",
+      "for (let i = 0; i < 32; i++) process.stderr.write(chunk)",
+      `process.stderr.write('\\nFINAL_DIAGNOSTIC ${JSON.stringify(sensitiveTrack)}\\n')`,
+      'process.exitCode = 7'
+    ].join('\n'), 'utf8')
+
+    let failure: Error | undefined
+    try {
+      await runAutoShortBackgroundFfmpegProcess({
+        command: process.execPath,
+        args: [script],
+        sensitivePaths: [root, sensitiveTrack]
+      })
+    } catch (error) {
+      if (error instanceof Error) failure = error
+    }
+
+    assert.ok(failure)
+    assert.match(failure.message, /FINAL_DIAGNOSTIC/u)
+    assert.match(failure.message, /FFmpeg.*mã 7/iu)
+    assert.doesNotMatch(failure.message, new RegExp(root.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'iu'))
+    assert.doesNotMatch(failure.message, /nhạc riêng\.mp3/iu)
+    assert.ok(failure.message.length <= 9_000, `stderr diagnostic was not bounded: ${failure.message.length}`)
+  } finally {
+    await rm(root, { recursive: true, force: true })
+  }
+})
+
+test('AutoShort FFmpeg runner aborts a live child cleanly', { timeout: 10_000 }, async () => {
+  const root = await mkdtemp(join(tmpdir(), 'tedia-ffmpeg-abort-'))
+  const script = join(root, 'waiting-child.js')
+  const controller = new AbortController()
+  try {
+    await writeFile(script, [
+      "process.stderr.write('started\\n')",
+      "const timer = setInterval(() => process.stderr.write('tick\\n'), 25)",
+      "process.on('SIGTERM', () => { clearInterval(timer); process.exit(0) })",
+      "process.on('SIGINT', () => { clearInterval(timer); process.exit(0) })",
+      "setInterval(() => {}, 1000)"
+    ].join('\n'), 'utf8')
+    const running = runAutoShortBackgroundFfmpegProcess({
+      command: process.execPath,
+      args: [script],
+      sensitivePaths: [root],
+      signal: controller.signal
+    })
+    await new Promise((resolve) => setTimeout(resolve, 100))
+    controller.abort()
+    await assert.rejects(running, /Đã hủy tác vụ/u)
+  } finally {
+    await rm(root, { recursive: true, force: true })
+  }
 })
 
 test('AutoShort background compositor can render music when narration is absent', () => {
@@ -179,6 +331,151 @@ test('AutoShort background compositor can render music when narration is absent'
   assert.match(graph, /atrim=duration=5\.000/u)
 })
 
+const embeddedFfmpeg = 'C:\\Users\\PC\\AppData\\Roaming\\tedia-pros\\bin\\ffmpeg.exe'
+const embeddedFfprobe = 'C:\\Users\\PC\\AppData\\Roaming\\tedia-pros\\bin\\ffprobe.exe'
+
+function runMediaTool(command: string, args: string[]): Buffer {
+  const result = spawnSync(command, args, {
+    windowsHide: true,
+    encoding: null,
+    maxBuffer: 32 * 1024 * 1024
+  })
+  assert.equal(
+    result.status,
+    0,
+    `${command} failed (${result.status}): ${result.stderr?.toString('utf8').slice(-4000)}`
+  )
+  return result.stdout || Buffer.alloc(0)
+}
+
+function probeMedia(path: string): {
+  streams: Array<{ codec_type?: string; duration?: string; channels?: number; sample_rate?: string; tags?: Record<string, string> }>
+  format: { duration?: string }
+} {
+  const output = runMediaTool(embeddedFfprobe, [
+    '-v', 'error',
+    '-show_entries', 'format=duration:stream=index,codec_type,duration,channels,sample_rate:stream_tags=title',
+    '-of', 'json',
+    path
+  ])
+  return JSON.parse(output.toString('utf8'))
+}
+
+function pcmToneAmplitude(pcm: Buffer, frequency: number, startSeconds: number, endSeconds: number): number {
+  const sampleRate = 44_100
+  const first = Math.max(0, Math.floor(startSeconds * sampleRate))
+  const last = Math.min(Math.floor(endSeconds * sampleRate), Math.floor(pcm.length / 2))
+  let sin = 0
+  let cos = 0
+  for (let index = first; index < last; index++) {
+    const sample = pcm.readInt16LE(index * 2) / 32768
+    const angle = 2 * Math.PI * frequency * index / sampleRate
+    sin += sample * Math.sin(angle)
+    cos += sample * Math.cos(angle)
+  }
+  const count = Math.max(1, last - first)
+  return 2 * Math.hypot(sin, cos) / count
+}
+
+test(
+  'AutoShort embedded FFmpeg composes ducked looped music and replace mux excludes source audio',
+  { skip: !existsSync(embeddedFfmpeg) || !existsSync(embeddedFfprobe), timeout: 60_000 },
+  async (context) => {
+    const root = await mkdtemp(join(tmpdir(), 'tedia media tích hợp '))
+    const sourceVideo = join(root, 'nguồn có âm thanh gốc.mp4')
+    const narration = join(root, 'giọng đọc.wav')
+    const music = join(root, 'nhạc lặp.wav')
+    const composed = join(root, 'tts-background-mix.wav')
+    const replaceOutput = join(root, 'replace-output.mp4')
+    const previousRuntimeDir = process.env.TEDIAPROS_RUNTIME_DIR
+    process.env.TEDIAPROS_RUNTIME_DIR = dirname(embeddedFfmpeg)
+    try {
+      runMediaTool(embeddedFfmpeg, [
+        '-y', '-hide_banner', '-loglevel', 'error',
+        '-f', 'lavfi', '-i', 'color=c=blue:s=320x180:d=2:r=24',
+        '-f', 'lavfi', '-i', 'sine=frequency=1500:sample_rate=44100:duration=2',
+        '-shortest', '-c:v', 'libx264', '-pix_fmt', 'yuv420p', '-c:a', 'aac',
+        '-metadata:s:a:0', 'title=ORIGINAL_AUDIO_SENTINEL',
+        sourceVideo
+      ])
+      runMediaTool(embeddedFfmpeg, [
+        '-y', '-hide_banner', '-loglevel', 'error',
+        '-f', 'lavfi', '-i', 'sine=frequency=997:sample_rate=44100:duration=1,volume=6,apad=whole_dur=2,atrim=duration=2',
+        '-c:a', 'pcm_s16le', narration
+      ])
+      runMediaTool(embeddedFfmpeg, [
+        '-y', '-hide_banner', '-loglevel', 'error',
+        '-f', 'lavfi', '-i', 'sine=frequency=220:sample_rate=44100:duration=0.35',
+        '-c:a', 'pcm_s16le', music
+      ])
+
+      await composeAutoShortBackgroundAudio({
+        musicPath: music,
+        narrationPath: narration,
+        outputPath: composed,
+        duration: 2,
+        volume: 100
+      })
+
+      const composedProbe = probeMedia(composed)
+      const composedDuration = Number(composedProbe.format.duration)
+      assert.ok(Math.abs(composedDuration - 2) <= 0.02, `composed duration=${composedDuration}`)
+      const composedPcm = runMediaTool(embeddedFfmpeg, [
+        '-hide_banner', '-loglevel', 'error', '-i', composed,
+        '-map', '0:a:0', '-ac', '1', '-ar', '44100', '-f', 's16le', '-'
+      ])
+      const loopedMusicNearEnd = pcmToneAmplitude(composedPcm, 220, 1.55, 1.85)
+      const musicDuringNarration = pcmToneAmplitude(composedPcm, 220, 0.3, 0.7)
+      const musicAfterNarration = pcmToneAmplitude(composedPcm, 220, 1.3, 1.7)
+      assert.ok(loopedMusicNearEnd > 0.12, `looped music not present near output end: ${loopedMusicNearEnd}`)
+      assert.ok(
+        musicAfterNarration > musicDuringNarration * 1.5,
+        `ducking not observed: during=${musicDuringNarration}, after=${musicAfterNarration}`
+      )
+
+      const burnResult = await burnSubtitle({
+        video: sourceVideo,
+        srt: null,
+        outputDir: root,
+        outputName: 'replace-output.mp4',
+        mode: 'burn',
+        blurRegions: [],
+        lamMo: false,
+        batAmThanh: true,
+        amThanhFile: composed,
+        amLuongGoc: 0
+      }, () => {})
+      assert.deepEqual(burnResult, { ok: true, output: replaceOutput })
+
+      const outputProbe = probeMedia(replaceOutput)
+      assert.equal(outputProbe.streams.filter((stream) => stream.codec_type === 'video').length, 1)
+      assert.equal(outputProbe.streams.filter((stream) => stream.codec_type === 'audio').length, 1)
+      assert.equal(
+        outputProbe.streams.some((stream) => stream.tags?.title === 'ORIGINAL_AUDIO_SENTINEL'),
+        false
+      )
+      const outputDuration = Number(outputProbe.format.duration)
+      assert.ok(Math.abs(outputDuration - 2) <= 0.1, `replace output duration=${outputDuration}`)
+
+      const outputPcm = runMediaTool(embeddedFfmpeg, [
+        '-hide_banner', '-loglevel', 'error', '-i', replaceOutput,
+        '-map', '0:a:0', '-ac', '1', '-ar', '44100', '-f', 's16le', '-'
+      ])
+      const sourceTone = pcmToneAmplitude(outputPcm, 1500, 0.2, 0.8)
+      const narrationTone = pcmToneAmplitude(outputPcm, 997, 0.2, 0.8)
+      assert.ok(sourceTone < narrationTone * 0.05, `source tone leaked: source=${sourceTone}, narration=${narrationTone}`)
+      context.diagnostic(
+        `integration media: composed=${composedDuration.toFixed(3)}s, output=${outputDuration.toFixed(3)}s, ` +
+        `duck ratio=${(musicAfterNarration / musicDuringNarration).toFixed(2)}, source/narration tone ratio=${(sourceTone / narrationTone).toFixed(4)}`
+      )
+    } finally {
+      if (previousRuntimeDir == null) delete process.env.TEDIAPROS_RUNTIME_DIR
+      else process.env.TEDIAPROS_RUNTIME_DIR = previousRuntimeDir
+      await rm(root, { recursive: true, force: true })
+    }
+  }
+)
+
 test('AutoShort validates and composes assigned background music before replace-mode burn', async () => {
   const source = await readFile(join(process.cwd(), 'src', 'main', 'autoshort.ts'), 'utf8')
   assert.match(source, /validateAutoShortMusicTrack\(backgroundMusic\.folderPath, assignedMusicPath\)/u)
@@ -186,6 +483,24 @@ test('AutoShort validates and composes assigned background music before replace-
   assert.match(source, /tts-background-mix\.wav/u)
   assert.match(source, /amThanhFile:\s*outputAudioPath/u)
   assert.match(source, /amLuongGoc:\s*config\.audioMode === 'mix' \? config\.originalAudioVolume : 0/u)
+})
+
+test('AutoShort registers a partial composed WAV before composition can fail', async () => {
+  const source = await readFile(join(process.cwd(), 'src', 'main', 'autoshort.ts'), 'utf8')
+  const registerArtifact = source.indexOf("artifactEntries.push({ source: outputAudioPath, name: 'tts-background-mix.wav' })")
+  const runCompositor = source.indexOf('await composeAutoShortBackgroundAudio({')
+  assert.ok(registerArtifact >= 0, 'composed WAV is not registered as an artifact candidate')
+  assert.ok(runCompositor >= 0, 'background compositor is not called')
+  assert.ok(registerArtifact < runCompositor, 'partial composed WAV is registered only after composition succeeds')
+})
+
+test('AutoShort sanitizes failure audit text before deriving the user-facing error label', async () => {
+  const source = await readFile(join(process.cwd(), 'src', 'main', 'autoshort.ts'), 'utf8')
+  const failureBlockStart = source.indexOf('const rawMessage = sanitizeAutoShortAuditError(error, [')
+  assert.ok(failureBlockStart >= 0, 'failure block does not sanitize the raw audit text')
+  const failureBlock = source.slice(failureBlockStart, failureBlockStart + 500)
+  assert.match(failureBlock, /const message = errLabel\(rawMessage\)/u)
+  assert.doesNotMatch(failureBlock, /const message = errLabel\(error\)/u)
 })
 
 test('AutoShort background music requires one manual track per queue item', () => {
@@ -257,6 +572,45 @@ test('AutoShort rejects missing or unknown background assignment keys', () => {
   const result = validateAutoShortStartRequest(request)
   assert.equal(result.ok, false)
   if (!result.ok) assert.match(result.error, /mỗi video|không thuộc hàng đợi/iu)
+})
+
+test('AutoShort rejects invalid background music modes, volumes, and nested records', () => {
+  const invalidCases: Array<{ label: string; mutate: (request: AutoShortStartRequest) => void; error: RegExp }> = [
+    {
+      label: 'unknown mode',
+      mutate: (request) => { request.config.backgroundMusic!.mode = 'shuffle' as never },
+      error: /chế độ nhạc background/iu
+    },
+    {
+      label: 'negative volume',
+      mutate: (request) => { request.config.backgroundMusic!.volume = -1 },
+      error: /âm lượng nhạc background/iu
+    },
+    {
+      label: 'non-finite volume',
+      mutate: (request) => { request.config.backgroundMusic!.volume = Number.NaN },
+      error: /âm lượng nhạc background/iu
+    },
+    {
+      label: 'array assignments',
+      mutate: (request) => { request.config.backgroundMusic!.assignments = [] as never },
+      error: /danh sách nhạc background/iu
+    }
+  ]
+
+  for (const invalidCase of invalidCases) {
+    const request = autoShortBackgroundRequest()
+    invalidCase.mutate(request)
+    const result = validateAutoShortStartRequest(request)
+    assert.equal(result.ok, false, invalidCase.label)
+    if (!result.ok) assert.match(result.error, invalidCase.error, invalidCase.label)
+  }
+
+  const malformedConfig = autoShortBackgroundRequest() as unknown as Record<string, unknown>
+  ;(malformedConfig.config as Record<string, unknown>).backgroundMusic = []
+  const malformedResult = validateAutoShortStartRequest(malformedConfig)
+  assert.equal(malformedResult.ok, false)
+  if (!malformedResult.ok) assert.match(malformedResult.error, /cấu hình nhạc background/iu)
 })
 
 test('catalog exposes exactly the three local multilingual models', () => {
@@ -649,7 +1003,7 @@ test('AutoShort audio REPLACE mode isolates narration track without mixing origi
   const filterString = filters.join(' ')
   assert.match(filterString, /\[1:a\]asetpts=PTS-STARTPTS/u)
   assert.doesNotMatch(filterString, /\[0:a\].*amix/u)
-  assert.match(filterString, /alimiter=limit=-1dB/u)
+  assert.match(filterString, /alimiter=limit=-1dB:attack=5:release=50:level=false/u)
 })
 
 test('AutoShort audio MIX mode applies controlled gains with normalize=0 and limiter', () => {

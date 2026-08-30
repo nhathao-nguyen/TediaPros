@@ -27,6 +27,7 @@ import { useTabOutputDir } from '../lib/outputDir'
 import { usePersistedState } from '../lib/persist'
 import { fitVideoInBounds } from '../lib/videoGeometry'
 import { useVideoTransport } from '../hooks/useVideoTransport'
+import { runLatestAutoShortMusicFolderRequest } from '../lib/latestAutoShortMusicFolderRequest'
 import RegionBox, { type Region } from './RegionBox'
 
 const PALETTE = [
@@ -621,8 +622,17 @@ export default function AutoShort(): JSX.Element {
   }
 
   const chooseBackgroundMusicFolder = async (): Promise<void> => {
-    backgroundMusicScanTokenRef.current++
-    const result = await window.api.autoShortSelectMusicFolder()
+    let result
+    try {
+      result = await runLatestAutoShortMusicFolderRequest(
+        backgroundMusicScanTokenRef,
+        () => window.api.autoShortSelectMusicFolder()
+      )
+    } catch {
+      setBackgroundMusicError('Không thể mở trình chọn folder nhạc.')
+      return
+    }
+    if (!result) return
     if (!result.ok) {
       if (result.error !== 'Đã hủy chọn folder nhạc.') setBackgroundMusicError(result.error)
       return
