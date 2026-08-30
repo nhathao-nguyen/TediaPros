@@ -101,6 +101,17 @@ test('AutoShort exposes dedicated music-folder selection and rescan IPC', async 
   assert.match(preloadSource, /autoShortListMusicTracks/u)
 })
 
+test('AutoShort renders all three background music assignment modes only for replace audio', async () => {
+  const source = await readFile(join(process.cwd(), 'src', 'renderer', 'src', 'components', 'AutoShort.tsx'), 'utf8')
+  assert.match(source, /Nhạc background/u)
+  assert.match(source, /Một bài cho tất cả/u)
+  assert.match(source, /Ngẫu nhiên theo video/u)
+  assert.match(source, /Chọn riêng từng video/u)
+  assert.match(source, /audioMode === 'replace'/u)
+  assert.match(source, /createAutoShortMusicAssignments/u)
+  assert.match(source, /backgroundMusic:\s*backgroundMusicConfig/u)
+})
+
 test('AutoShort background music assigns one selected track to every queue item', () => {
   const result = createAutoShortMusicAssignments({
     mode: 'single',

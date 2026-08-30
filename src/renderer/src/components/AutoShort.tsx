@@ -4,11 +4,14 @@ import {
   DEFAULT_AI_SERVER_URL,
   DICH_LANGS,
   type AutoShortConfig,
+  type AutoShortBackgroundMusicConfig,
+  type AutoShortBackgroundMusicMode,
   type AutoShortDependencyProgress,
   type AutoShortReadiness,
   type AutoShortEvent,
   type AutoShortSubtitleMethod,
   type AutoShortTaskItem,
+  type AutoShortMusicTrack,
   type BlurRegion,
   type BurnFontEntry,
   type ClonedVoice,
@@ -18,6 +21,7 @@ import {
   type TtsModelInfo,
   type WhisperDevice
 } from '../../../shared/types'
+import { createAutoShortMusicAssignments } from '../../../shared/autoShortBackgroundMusic'
 import { localMediaSource } from '../lib/localMedia'
 import { useTabOutputDir } from '../lib/outputDir'
 import { usePersistedState } from '../lib/persist'
@@ -186,10 +190,49 @@ export default function AutoShort(): JSX.Element {
   const [voiceOverMode, setVoiceOverMode] = usePersistedState('tblao.autoshort.voiceOverMode', false)
   const [audioMode, setAudioMode] = usePersistedState<'replace' | 'mix'>('tblao.autoshort.audioMode', 'replace')
   const [originalAudioVolume, setOriginalAudioVolume] = usePersistedState('tblao.autoshort.origVol', 20)
+  const [backgroundMusicEnabled, setBackgroundMusicEnabled] = usePersistedState('tblao.autoshort.bgMusic.enabled', false)
+  const [backgroundMusicFolder, setBackgroundMusicFolder] = usePersistedState('tblao.autoshort.bgMusic.folder', '')
+  const [backgroundMusicMode, setBackgroundMusicMode] = usePersistedState<AutoShortBackgroundMusicMode>('tblao.autoshort.bgMusic.mode', 'single')
+  const [backgroundMusicVolume, setBackgroundMusicVolume] = usePersistedState('tblao.autoshort.bgMusic.volume', 15)
+  const [backgroundMusicSingleTrack, setBackgroundMusicSingleTrack] = usePersistedState('tblao.autoshort.bgMusic.singleTrack', '')
+  const [backgroundMusicTracks, setBackgroundMusicTracks] = useState<AutoShortMusicTrack[]>([])
+  const [backgroundMusicAssignments, setBackgroundMusicAssignments] = useState<Record<string, string>>({})
+  const [backgroundMusicError, setBackgroundMusicError] = useState<string | null>(null)
 
   const selectedModelInfo = ttsModels.find((m) => m.id === ttsModel) || ttsModels[0]
   const modelVoices = selectedModelInfo?.voices || []
   const defaultVoice = selectedModelInfo?.default_voice || (modelVoices[0] || 'default')
+
+  useEffect(() => {
+    let active = true
+    if (!backgroundMusicFolder) return
+    void window.api.autoShortListMusicTracks(backgroundMusicFolder).then((result) => {
+      if (!active) return
+      if (result.ok) {
+        setBackgroundMusicTracks(result.tracks)
+        setBackgroundMusicError(result.tracks.length === 0 ? 'Folder nhạc không có file âm thanh được hỗ trợ.' : null)
+        if (!result.tracks.some((track) => track.path === backgroundMusicSingleTrack)) {
+          setBackgroundMusicSingleTrack(result.tracks[0]?.path || '')
+        }
+      } else {
+        setBackgroundMusicTracks([])
+        setBackgroundMusicError(result.error)
+      }
+    }).catch(() => {
+      if (active) setBackgroundMusicError('Không thể quét folder nhạc.')
+    })
+    return () => {
+      active = false
+    }
+  }, [backgroundMusicFolder])
+
+  useEffect(() => {
+    const taskIds = new Set(tasks.map((task) => task.id))
+    setBackgroundMusicAssignments((current) => {
+      const next = Object.fromEntries(Object.entries(current).filter(([id]) => taskIds.has(id)))
+      return Object.keys(next).length === Object.keys(current).length ? current : next
+    })
+  }, [tasks])
 
   // Dynamic AI server connection & model capability loading
   useEffect(() => {
@@ -571,6 +614,21 @@ export default function AutoShort(): JSX.Element {
     setVideoH(0)
   }
 
+  const chooseBackgroundMusicFolder = async (): Promise<void> => {
+    const result = await window.api.autoShortSelectMusicFolder()
+    if (!result.ok) {
+      if (result.error !== 'Đã hủy chọn folder nhạc.') setBackgroundMusicError(result.error)
+      return
+    }
+    setBackgroundMusicFolder(result.folderPath)
+    setBackgroundMusicTracks(result.tracks)
+    setBackgroundMusicError(result.tracks.length === 0 ? 'Folder nhạc không có file âm thanh được hỗ trợ.' : null)
+    if (!result.tracks.some((track) => track.path === backgroundMusicSingleTrack)) {
+      setBackgroundMusicSingleTrack(result.tracks[0]?.path || '')
+    }
+    setBackgroundMusicAssignments({})
+  }
+
   // Blur Box Helpers
   const addBlurRegion = (): void => {
     const w = videoW > 0 ? videoW : 1280
@@ -670,6 +728,26 @@ export default function AutoShort(): JSX.Element {
   // Khởi động chạy hàng loạt Auto Short
   const startBatch = async (): Promise<void> => {
     if (tasks.length === 0 || isRunning) return
+    let backgroundMusicConfig: AutoShortBackgroundMusicConfig | undefined
+    if (ttsEnabled && audioMode === 'replace' && backgroundMusicEnabled) {
+      const assignmentResult = createAutoShortMusicAssignments({
+        mode: backgroundMusicMode,
+        itemIds: tasks.map((task) => task.id),
+        trackPaths: backgroundMusicTracks.map((track) => track.path),
+        selectedTrackPath: backgroundMusicSingleTrack,
+        perVideoAssignments: backgroundMusicAssignments
+      })
+      if (!assignmentResult.ok) {
+        alert(assignmentResult.error)
+        return
+      }
+      backgroundMusicConfig = {
+        folderPath: backgroundMusicFolder,
+        mode: backgroundMusicMode,
+        volume: backgroundMusicVolume,
+        assignments: assignmentResult.assignments
+      }
+    }
     if (!outputDir) {
       alert('Vui lòng chọn thư mục lưu video đầu ra.')
       return
@@ -765,6 +843,7 @@ export default function AutoShort(): JSX.Element {
       voiceOverMode,
       audioMode,
       originalAudioVolume,
+      backgroundMusic: backgroundMusicConfig,
       outputDir
     }
 
@@ -1720,6 +1799,90 @@ export default function AutoShort(): JSX.Element {
                         onChange={(e) => setOriginalAudioVolume(Number(e.target.value))}
                       />
                     </label>
+                  )}
+
+                  {audioMode === 'replace' && (
+                    <div className="autoshort-music-panel">
+                      <div className="editor-section-head">
+                        <div>
+                          <strong>Nhạc background</strong>
+                          <small>Phát lặp, tự giảm âm lượng khi có giọng đọc AI.</small>
+                        </div>
+                        <label className="editor-switch">
+                          <input
+                            type="checkbox"
+                            checked={backgroundMusicEnabled}
+                            onChange={(event) => setBackgroundMusicEnabled(event.target.checked)}
+                          />
+                          <span>{backgroundMusicEnabled ? 'Bật' : 'Tắt'}</span>
+                        </label>
+                      </div>
+
+                      {backgroundMusicEnabled && (
+                        <>
+                          <div className="autoshort-music-folder-row">
+                            <span className="small" title={backgroundMusicFolder}>
+                              {backgroundMusicFolder || 'Chưa chọn folder nhạc'}
+                            </span>
+                            <button className="btn ghost sm" type="button" onClick={() => void chooseBackgroundMusicFolder()}>
+                              Chọn folder
+                            </button>
+                          </div>
+                          {backgroundMusicError && <div className="small" style={{ color: 'var(--danger)' }}>{backgroundMusicError}</div>}
+
+                          <div className="radio-pill-group">
+                            <label className={`radio-pill ${backgroundMusicMode === 'single' ? 'active' : ''}`}>
+                              <input type="radio" name="backgroundMusicMode" value="single" checked={backgroundMusicMode === 'single'} onChange={() => setBackgroundMusicMode('single')} />
+                              <span>Một bài cho tất cả</span>
+                            </label>
+                            <label className={`radio-pill ${backgroundMusicMode === 'random' ? 'active' : ''}`}>
+                              <input type="radio" name="backgroundMusicMode" value="random" checked={backgroundMusicMode === 'random'} onChange={() => setBackgroundMusicMode('random')} />
+                              <span>Ngẫu nhiên theo video</span>
+                            </label>
+                            <label className={`radio-pill ${backgroundMusicMode === 'per-video' ? 'active' : ''}`}>
+                              <input type="radio" name="backgroundMusicMode" value="per-video" checked={backgroundMusicMode === 'per-video'} onChange={() => setBackgroundMusicMode('per-video')} />
+                              <span>Chọn riêng từng video</span>
+                            </label>
+                          </div>
+
+                          {backgroundMusicMode === 'single' && (
+                            <label className="field editor-field">
+                              <span>Bài nhạc dùng cho tất cả video</span>
+                              <select value={backgroundMusicSingleTrack} onChange={(event) => setBackgroundMusicSingleTrack(event.target.value)}>
+                                <option value="">Chọn bài nhạc…</option>
+                                {backgroundMusicTracks.map((track) => <option key={track.path} value={track.path}>{track.name}</option>)}
+                              </select>
+                            </label>
+                          )}
+
+                          {backgroundMusicMode === 'random' && (
+                            <div className="muted small">Mỗi video được gán ngẫu nhiên một bài trước khi bắt đầu chạy.</div>
+                          )}
+
+                          {backgroundMusicMode === 'per-video' && (
+                            <div className="autoshort-music-assignments">
+                              {tasks.map((task) => (
+                                <label className="autoshort-music-assignment" key={task.id}>
+                                  <span title={task.fileName}>{task.fileName}</span>
+                                  <select
+                                    value={backgroundMusicAssignments[task.id] || ''}
+                                    onChange={(event) => setBackgroundMusicAssignments((current) => ({ ...current, [task.id]: event.target.value }))}
+                                  >
+                                    <option value="">Chọn bài nhạc…</option>
+                                    {backgroundMusicTracks.map((track) => <option key={track.path} value={track.path}>{track.name}</option>)}
+                                  </select>
+                                </label>
+                              ))}
+                            </div>
+                          )}
+
+                          <label className="field editor-field">
+                            <span>Âm lượng nhạc background · {backgroundMusicVolume}%</span>
+                            <input type="range" min={0} max={100} value={backgroundMusicVolume} onChange={(event) => setBackgroundMusicVolume(Number(event.target.value))} />
+                          </label>
+                        </>
+                      )}
+                    </div>
                   )}
                 </>
               )}
