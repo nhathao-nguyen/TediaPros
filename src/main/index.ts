@@ -131,6 +131,7 @@ import {
   startAutoShortJob,
   selectAutoShortVideoFiles
 } from './autoshort'
+import { listAutoShortMusicTracks } from './autoShortMusicLibrary'
 import type {
   DichProvider,
   DouyinRequest,
@@ -928,6 +929,21 @@ function registerIpc(): void {
 
   // Auto Short
   ipcMain.handle('autoshort:selectVideos', async () => selectAutoShortVideoFiles())
+  ipcMain.handle('autoshort:selectMusicFolder', async () => {
+    if (!mainWindow) return { ok: false, tracks: [], error: 'Cửa sổ ứng dụng chưa sẵn sàng.' }
+    const result = await dialog.showOpenDialog(mainWindow, {
+      title: 'Chọn folder nhạc background',
+      properties: ['openDirectory']
+    })
+    if (result.canceled || !result.filePaths[0]) return { ok: false, tracks: [], error: 'Đã hủy chọn folder nhạc.' }
+    return listAutoShortMusicTracks(result.filePaths[0])
+  })
+  ipcMain.handle('autoshort:listMusicTracks', async (_event, folderPath: unknown) => {
+    if (typeof folderPath !== 'string' || folderPath.length === 0 || folderPath.length > 32768) {
+      return { ok: false, tracks: [], error: 'Folder nhạc không hợp lệ.' }
+    }
+    return listAutoShortMusicTracks(folderPath)
+  })
   ipcMain.handle('autoshort:getReadiness', async (_event, raw: Pick<AutoShortConfig, 'subtitleMethod' | 'whisperModel' | 'whisperDevice'>) => {
     if (!raw || typeof raw !== 'object' || typeof raw.subtitleMethod !== 'string' || typeof raw.whisperModel !== 'string') {
       throw new Error('Yêu cầu kiểm tra dependency Auto Short không hợp lệ.')

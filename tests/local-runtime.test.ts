@@ -1,4 +1,4 @@
-import { mkdtemp, mkdir, readFile, writeFile } from 'node:fs/promises'
+import { mkdtemp, mkdir, readFile, rm, writeFile } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { test } from 'node:test'
@@ -31,6 +31,7 @@ import { taoFilterComplex } from '../src/main/burn'
 import { audioMixGains } from '../src/shared/audioMix'
 import { validateAutoShortStartRequest } from '../src/shared/autoShortContract'
 import { createAutoShortMusicAssignments } from '../src/shared/autoShortBackgroundMusic'
+import { listAutoShortMusicTracks, validateAutoShortMusicTrack } from '../src/main/autoShortMusicLibrary'
 import type { AutoShortStartRequest } from '../src/shared/types'
 import {
   inferTranslationSourceLanguage,
@@ -53,6 +54,44 @@ import {
   isSentenceTerminal
 } from '../src/main/semanticGrouping'
 import { clampAlignedCueTimeline, fuseWhisperAndOcr } from '../src/shared/autoShortAlignment'
+
+test('AutoShort music library lists only supported direct-child audio files in stable order', async () => {
+  const root = await mkdtemp(join(tmpdir(), 'tedia-music-library-'))
+  try {
+    await mkdir(join(root, 'nested'))
+    await writeFile(join(root, 'Bài Hai.WAV'), Buffer.from('wav'))
+    await writeFile(join(root, 'a-track.mp3'), Buffer.from('mp3'))
+    await writeFile(join(root, 'cover.jpg'), Buffer.from('jpg'))
+    await writeFile(join(root, 'nested', 'hidden.m4a'), Buffer.from('m4a'))
+    const result = await listAutoShortMusicTracks(root)
+    assert.equal(result.ok, true)
+    if (result.ok) assert.deepEqual(result.tracks.map((track) => track.name), ['a-track.mp3', 'Bài Hai.WAV'])
+  } finally {
+    await rm(root, { recursive: true, force: true })
+  }
+})
+
+test('AutoShort music library rejects a selected track outside the chosen folder', async () => {
+  const root = await mkdtemp(join(tmpdir(), 'tedia-music-contained-'))
+  const outside = await mkdtemp(join(tmpdir(), 'tedia-music-outside-'))
+  try {
+    const outsideTrack = join(outside, 'outside.mp3')
+    await writeFile(outsideTrack, Buffer.from('mp3'))
+    await assert.rejects(() => validateAutoShortMusicTrack(root, outsideTrack), /folder nhạc/iu)
+  } finally {
+    await rm(root, { recursive: true, force: true })
+    await rm(outside, { recursive: true, force: true })
+  }
+})
+
+test('AutoShort exposes dedicated music-folder selection and rescan IPC', async () => {
+  const mainSource = await readFile(join(process.cwd(), 'src', 'main', 'index.ts'), 'utf8')
+  const preloadSource = await readFile(join(process.cwd(), 'src', 'preload', 'index.ts'), 'utf8')
+  assert.match(mainSource, /autoshort:selectMusicFolder/u)
+  assert.match(mainSource, /autoshort:listMusicTracks/u)
+  assert.match(preloadSource, /autoShortSelectMusicFolder/u)
+  assert.match(preloadSource, /autoShortListMusicTracks/u)
+})
 
 test('AutoShort background music assigns one selected track to every queue item', () => {
   const result = createAutoShortMusicAssignments({

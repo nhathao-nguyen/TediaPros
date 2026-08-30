@@ -5,6 +5,7 @@ import {
   AutoShortReadiness,
   AutoShortStartRequest,
   AutoShortStartResult,
+  AutoShortMusicLibraryResult,
   CookieCaptureEvent,
   CookieCaptureResult,
   CookieSite,
@@ -374,6 +375,10 @@ const api = {
   // ---- Auto Short ----
   autoShortSelectVideos: (): Promise<{ ok: boolean; paths: string[] }> =>
     ipcRenderer.invoke('autoshort:selectVideos'),
+  autoShortSelectMusicFolder: (): Promise<AutoShortMusicLibraryResult> =>
+    ipcRenderer.invoke('autoshort:selectMusicFolder'),
+  autoShortListMusicTracks: (folderPath: string): Promise<AutoShortMusicLibraryResult> =>
+    ipcRenderer.invoke('autoshort:listMusicTracks', folderPath),
   autoShortGetReadiness: (config: Pick<AutoShortStartRequest['config'], 'subtitleMethod' | 'whisperModel' | 'whisperDevice'>): Promise<AutoShortReadiness> =>
     ipcRenderer.invoke('autoshort:getReadiness', config),
   autoShortInstallDependencies: (config: Pick<AutoShortStartRequest['config'], 'subtitleMethod' | 'whisperModel' | 'whisperDevice'>): Promise<{ ok: boolean; readiness?: AutoShortReadiness; error?: string }> =>
