@@ -143,11 +143,60 @@ test('runtime archive validator reads real ZIP entries before extraction', async
   }
 })
 
+test('runtime release verifier rejects unsafe ZIP entries before publishing', async () => {
+  if (process.platform !== 'win32') return
+  const { verifyRuntimeReleaseDirectory } = await import('../scripts/verify-runtime-release.mjs')
+  const root = await mkdtemp(join(tmpdir(), 'tedia-release-zip-safety-'))
+  try {
+    const unsafeZip = join(root, 'engine.zip')
+    const psLiteral = (value: string): string => `'${value.replace(/'/g, "''")}'`
+    const createZip = spawnSync('powershell', [
+      '-NoProfile', '-NonInteractive', '-Command',
+      `Add-Type -AssemblyName System.IO.Compression; Add-Type -AssemblyName System.IO.Compression.FileSystem; $zip = [System.IO.Compression.ZipFile]::Open(${psLiteral(unsafeZip)}, [System.IO.Compression.ZipArchiveMode]::Create); try { $safe = $zip.CreateEntry('engine.exe'); $safeStream = $safe.Open(); $safeStream.WriteByte(120); $safeStream.Dispose(); $bad = $zip.CreateEntry('../escape.exe'); $badStream = $bad.Open(); $badStream.WriteByte(120); $badStream.Dispose() } finally { $zip.Dispose() }`
+    ], { encoding: 'utf8', windowsHide: true })
+    assert.equal(createZip.status, 0, createZip.stderr)
+    const bytes = await readFile(unsafeZip)
+    const manifest = {
+      schemaVersion: 1,
+      runtimeVersion: 'runtime-v2',
+      platform: 'win32',
+      arch: 'x64',
+      assets: {
+        video2x: {
+          version: '1.0.0',
+          platform: 'win32',
+          arch: 'x64',
+          asset: 'engine.zip',
+          sha256: createHash('sha256').update(bytes).digest('hex'),
+          bytes: bytes.length,
+          entrypoint: 'engine.exe',
+          capabilities: ['probe'],
+          files: ['engine.exe']
+        }
+      }
+    }
+    await writeFile(join(root, 'runtime-manifest.json'), JSON.stringify(manifest))
+    await writeFile(join(root, 'runtime-provenance.json'), JSON.stringify({
+      schemaVersion: 1,
+      runtimeVersion: 'runtime-v2',
+      platform: 'win32',
+      arch: 'x64'
+    }))
+    const result = await verifyRuntimeReleaseDirectory(root)
+    assert.equal(result.ok, false)
+    assert.match(result.error, /unsafe|không an toàn|path/i)
+  } finally {
+    await rm(root, { recursive: true, force: true })
+  }
+})
+
 test('Windows app release verification has an explicit Windows-only mode', async () => {
   const workflow = await readFile(join(process.cwd(), '.github', 'workflows', 'release-app.yml'), 'utf8')
   const verifier = await readFile(join(process.cwd(), 'scripts', 'verify-release-assets.mjs'), 'utf8')
   assert.match(workflow, /--windows-only/u)
   assert.match(verifier, /windows-only|windowsOnly/u)
+  const packageJson = JSON.parse(await readFile(join(process.cwd(), 'package.json'), 'utf8'))
+  assert.match(packageJson.scripts['release:verify-assets'], /--windows-only/u)
 })
 
 test('release tooling has no developer-machine or destructive re-upload fallback', async () => {
@@ -159,6 +208,8 @@ test('release tooling has no developer-machine or destructive re-upload fallback
   assert.doesNotMatch(publisher, /method:\s*['"]DELETE['"]/u)
   assert.doesNotMatch(verifier, /containsEntrypoint\s*=\s*true/u)
   assert.match(publisher, /runtime-v2/u)
+  assert.match(publisher, /manifest\.runtimeVersion/u)
+  assert.match(publisher, /different runtime version|runtimeVersion/u)
   assert.match(publisher, /draft:\s*true/u)
   assert.match(publisher, /method:\s*['"]PATCH['"]/u)
 })

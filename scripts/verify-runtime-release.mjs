@@ -89,6 +89,12 @@ function archiveContains(entries, expected) {
   return entries.some((entry) => entry === target || entry.endsWith(`/${target}`))
 }
 
+export function isSafeRuntimeReleaseArchiveEntry(entry) {
+  if (typeof entry !== 'string' || !entry.trim() || entry.includes('\0')) return false
+  const normalized = entry.replace(/\\/g, '/').replace(/\/+$/u, '')
+  return Boolean(normalized) && safeRelativePath(normalized)
+}
+
 export async function verifyRuntimeReleaseDirectory(artifactsDir) {
   const manifestPath = join(artifactsDir, 'runtime-manifest.json')
   if (!(await fileExists(manifestPath))) return { ok: false, error: `missing manifest: ${manifestPath}` }
@@ -124,6 +130,8 @@ export async function verifyRuntimeReleaseDirectory(artifactsDir) {
 
     const inspected = listArchiveEntries(assetFile)
     if (!inspected.ok) return { ok: false, error: inspected.error }
+    const unsafeEntry = inspected.entries.find((entry) => !isSafeRuntimeReleaseArchiveEntry(entry))
+    if (unsafeEntry) return { ok: false, error: `${spec.asset} contains unsafe archive entry: ${unsafeEntry}` }
     const missingFiles = spec.files.filter((file) => !archiveContains(inspected.entries, file))
     if (missingFiles.length > 0) return { ok: false, error: `${spec.asset} is missing required files: ${missingFiles.join(', ')}` }
   }

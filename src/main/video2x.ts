@@ -5,6 +5,7 @@ import { basename, dirname, join } from 'node:path'
 import { runtimeKindDir } from './runtimeResolver'
 import { probeRuntimeExecutable } from './runtimeProbes'
 import { debugRaw, errLabel, logInfo, logWarn } from './logger'
+import { terminateProcessTree, trackChildProcess } from './processTree'
 import type {
   Video2xDevice,
   Video2xEngineStatus,
@@ -81,7 +82,7 @@ export async function listVideo2xDevices(): Promise<Video2xDevice[]> {
   return new Promise((resolve) => {
     let p: ChildProcess
     try {
-      p = spawn(exe, ['-l'], { windowsHide: true, cwd: dirname(exe) })
+      p = trackChildProcess(spawn(exe, ['-l'], { windowsHide: true, cwd: dirname(exe) }))
     } catch {
       resolve([])
       return
@@ -180,7 +181,7 @@ export function cancelVideo2x(taskId?: string): boolean {
   if (taskId && activeTaskId && activeTaskId !== taskId) return false
   isCancelling = true
   try {
-    activeChild.kill()
+    terminateProcessTree(activeChild)
   } catch {
     /* ignore */
   }
@@ -214,11 +215,11 @@ export async function runVideo2x(
   return new Promise((resolve) => {
     let p: ChildProcess
     try {
-      p = spawn(exe, args, {
+      p = trackChildProcess(spawn(exe, args, {
         windowsHide: true,
         cwd: dirname(exe),
         env: { ...process.env }
-      })
+      }))
     } catch (err) {
       resolve({ ok: false, error: errLabel(err) })
       return

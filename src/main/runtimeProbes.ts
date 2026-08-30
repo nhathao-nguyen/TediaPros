@@ -6,6 +6,7 @@ import { runtimeKindDir } from './runtimeResolver'
 import { parseWhisperVersion } from './engineProtocol'
 import type { RuntimeAssetSpec } from './runtimeManifest'
 import type { RuntimeEngineKind } from './runtimeResolver'
+import { terminateProcessTree, trackChildProcess } from './processTree'
 
 export interface RuntimeProbeResult {
   healthy: boolean
@@ -43,11 +44,11 @@ function run(command: string, args: string[], cwd: string, timeoutMs = 30_000): 
       resolve({ code, output })
     }
     timer = setTimeout(() => {
-      try { child?.kill() } catch { /* best effort */ }
+      terminateProcessTree(child)
       finish(-1)
     }, timeoutMs)
     try {
-      child = spawn(command, args, { cwd, windowsHide: true })
+      child = trackChildProcess(spawn(command, args, { cwd, windowsHide: true }))
     } catch {
       finish(-1)
       return

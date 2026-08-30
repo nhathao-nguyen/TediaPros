@@ -8,7 +8,9 @@ import { verifyRuntimeReleaseDirectory } from './verify-runtime-release.mjs'
 
 const owner = process.env.TEDIAPROS_DISTRIBUTION_OWNER?.trim() || 'nhathao-nguyen'
 const repo = process.env.TEDIAPROS_DISTRIBUTION_REPO?.trim() || 'TediaPros'
-const tag = process.env.TEDIAPROS_RUNTIME_CHANNEL?.trim() || 'runtime-v2'
+const DEFAULT_RUNTIME_CHANNEL = 'runtime-v2'
+const requestedTag = process.env.TEDIAPROS_RUNTIME_CHANNEL?.trim() || process.env.RUNTIME_VERSION?.trim() || DEFAULT_RUNTIME_CHANNEL
+let tag = null
 const tokenArg = process.argv.indexOf('--token')
 const token = (tokenArg >= 0 ? process.argv[tokenArg + 1] : null) || process.env.GITHUB_TOKEN || process.env.GH_TOKEN
 
@@ -114,6 +116,12 @@ async function main() {
   const artifactsDir = resolve(args['artifacts-dir'] || 'release-artifacts')
   const verification = await verifyRuntimeReleaseDirectory(artifactsDir)
   if (!verification.ok) throw new Error(`Refusing to publish unverified runtime artifacts: ${verification.error}`)
+  const manifest = verification.manifest
+  const manifestTag = manifest.runtimeVersion
+  if (requestedTag && requestedTag !== manifestTag) {
+    throw new Error(`Requested runtime channel ${requestedTag} differs from manifest runtimeVersion ${manifestTag}.`)
+  }
+  tag = manifestTag
 
   const expected = [
     { name: 'runtime-manifest.json', path: join(artifactsDir, 'runtime-manifest.json') },
@@ -139,7 +147,7 @@ async function main() {
       tag_name: tag,
       target_commitish: process.env.GITHUB_SHA || 'main',
       name: `TediaPros runtime ${tag}`,
-      body: 'Immutable TediaPros runtime-v2 bundles. All assets are generated from clean pinned inputs and verified before upload.',
+      body: `Immutable TediaPros ${tag} bundles. All assets are generated from clean pinned inputs and verified before upload.`,
       draft: true,
       prerelease: false
     })

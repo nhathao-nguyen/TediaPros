@@ -27,5 +27,4 @@
 ### Cập nhật
 
 - Windows sẽ tự nhận, tải và cài đặt v0.1.21 khi kết nối được với GitHub.
-- macOS từ v0.1.18 trở lên sẽ thông báo bản mới và mở trang tải DMG để người dùng cài thủ công.
-- Bản macOS yêu cầu Apple Silicon và hiện chưa ký/notarize; macOS có thể yêu cầu cấp quyền trong **Privacy & Security** khi mở lần đầu.
+- macOS không nằm trong phạm vi phát hành của v0.1.21; hướng dẫn DMG macOS sẽ được cập nhật cùng một release macOS riêng.

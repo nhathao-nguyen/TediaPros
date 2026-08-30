@@ -1,5 +1,5 @@
 import { app, dialog } from 'electron'
-import { spawn } from 'node:child_process'
+import { spawn, type ChildProcess } from 'node:child_process'
 import { access, copyFile, mkdir, readFile, rm, stat, writeFile } from 'node:fs/promises'
 import { basename, dirname, join } from 'node:path'
 import { randomUUID } from 'node:crypto'
@@ -41,6 +41,7 @@ import { localTranslateSrt, loadLocalKey, checkLocalTranslateKey } from './local
 import { generateSpeech, generateVoiceClone, getTtsModels, checkTtsServerHealth } from './tts'
 import { burnSubtitle, cancelBurn, probeBurnMedia } from './burn'
 import { cancelVideo2x } from './video2x'
+import { terminateProcessTree, terminateTrackedProcessTrees, trackChildProcess } from './processTree'
 import { parseSrt, serializeSrt, type SubtitleCue } from '../shared/subtitles'
 import { validateAutoShortStartRequest } from '../shared/autoShortContract'
 import { fuseWhisperAndOcr, clampAlignedCueTimeline } from '../shared/autoShortAlignment'
@@ -76,6 +77,10 @@ interface AutoShortJob {
 }
 
 let activeJob: AutoShortJob | null = null
+
+function spawnAutoShortChild(command: string, args: string[], options?: Parameters<typeof spawn>[2]): ChildProcess {
+  return trackChildProcess(spawn(command, args, options || {}))
+}
 
 function needsWhisper(method: AutoShortConfig['subtitleMethod']): boolean {
   return method !== 'ocr'
@@ -419,15 +424,15 @@ function emitTerminal(
 async function probeDuration(ffmpeg: string, input: string, signal: AbortSignal): Promise<number> {
   return new Promise((resolve, reject) => {
     const ffprobe = join(dirname(ffmpeg), process.platform === 'win32' ? 'ffprobe.exe' : 'ffprobe')
-    const child = spawn(ffprobe, ['-v', 'error', '-show_entries', 'format=duration', '-of', 'default=nw=1', input], { windowsHide: true })
+    const child = spawnAutoShortChild(ffprobe, ['-v', 'error', '-show_entries', 'format=duration', '-of', 'default=nw=1', input], { windowsHide: true })
     let output = ''
     const abort = (): void => {
-      try { child.kill() } catch { /* ignore */ }
+      terminateProcessTree(child)
       reject(new Error('Đã hủy tác vụ'))
     }
     if (signal.aborted) abort()
     else signal.addEventListener('abort', abort, { once: true })
-    child.stdout.on('data', (chunk: Buffer) => { output += chunk.toString() })
+    child.stdout?.on('data', (chunk: Buffer) => { output += chunk.toString() })
     child.on('error', (error) => {
       signal.removeEventListener('abort', abort)
       reject(error)
@@ -459,9 +464,9 @@ function tempoFilters(actual: number, target: number): string[] {
 async function runAudioFilter(ffmpeg: string, input: string, output: string, filter: string, signal: AbortSignal): Promise<void> {
   throwIfAborted(signal)
   await new Promise<void>((resolve, reject) => {
-    const child = spawn(ffmpeg, ['-y', '-i', input, '-vn', '-ac', '2', '-ar', '44100', '-filter:a', filter, output], { windowsHide: true })
+    const child = spawnAutoShortChild(ffmpeg, ['-y', '-i', input, '-vn', '-ac', '2', '-ar', '44100', '-filter:a', filter, output], { windowsHide: true })
     const abort = (): void => {
-      try { child.kill() } catch { /* ignore */ }
+      terminateProcessTree(child)
       reject(new Error('Đã hủy tác vụ'))
     }
     if (signal.aborted) abort()
@@ -536,9 +541,9 @@ async function stitchAudioTimeline(
   args.push('-filter_complex', filters.join(';'), '-map', '[a_mix]', '-ac', '2', '-ar', '44100', outputPath)
 
   await new Promise<void>((resolve, reject) => {
-    const child = spawn(ffmpeg, args, { windowsHide: true })
+    const child = spawnAutoShortChild(ffmpeg, args, { windowsHide: true })
     const abort = (): void => {
-      try { child.kill() } catch { /* ignore */ }
+      terminateProcessTree(child)
       reject(new Error('Đã hủy tác vụ'))
     }
     if (signal.aborted) abort()
@@ -1134,7 +1139,7 @@ async function probeOutputMediaWithFfprobe(
     let decodeError: string | null = null
     try {
       await new Promise<void>((resolve, reject) => {
-        const child = spawn(ffmpegPath, ['-v', 'error', '-i', outputPath, '-f', 'null', '-'], { windowsHide: true })
+        const child = spawnAutoShortChild(ffmpegPath, ['-v', 'error', '-i', outputPath, '-f', 'null', '-'], { windowsHide: true })
         let err = ''
         child.stderr?.on('data', (d: Buffer) => { err += d.toString() })
         child.on('error', reject)
@@ -1600,6 +1605,7 @@ export async function shutdownAutoShortRuntime(): Promise<void> {
   cancelBurn()
   cancelOcr()
   cancelVideo2x()
+  terminateTrackedProcessTrees()
   if (job) await job.done.catch(() => undefined)
   // A stage may have installed a child between the first cancellation and the
   // job promise settling; repeat the cancellation after the join as a final
@@ -1607,6 +1613,7 @@ export async function shutdownAutoShortRuntime(): Promise<void> {
   cancelBurn()
   cancelOcr()
   cancelVideo2x()
+  terminateTrackedProcessTrees()
 }
 
 export async function selectAutoShortVideoFiles(): Promise<{ ok: boolean; paths: string[] }> {

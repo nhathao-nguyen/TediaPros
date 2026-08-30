@@ -1,12 +1,13 @@
 import { spawn } from 'node:child_process'
 import { GpuInfo } from '../shared/types'
+import { trackChildProcess } from './processTree'
 
 /** Chay 1 lenh, gom stdout+stderr. code=-1 neu khong chay duoc (vd khong co lenh). */
 function run(cmd: string, args: string[]): Promise<{ code: number; out: string }> {
   return new Promise((resolve) => {
     let out = ''
     try {
-      const child = spawn(cmd, args, { windowsHide: true })
+      const child = trackChildProcess(spawn(cmd, args, { windowsHide: true }))
       child.stdout.on('data', (d) => (out += d.toString()))
       child.stderr.on('data', (d) => (out += d.toString()))
       child.on('error', () => resolve({ code: -1, out }))

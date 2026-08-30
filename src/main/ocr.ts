@@ -5,6 +5,7 @@ import { resolveFfmpeg } from './deps'
 import { resolveRuntimeExecutable, runtimeKindDir } from './runtimeResolver'
 import { probeRuntimeExecutable } from './runtimeProbes'
 import { debugRaw, errLabel, logError, logInfo } from './logger'
+import { terminateProcessTree, trackChildProcess } from './processTree'
 import type { OcrEngineStatus, OcrProgress, OcrResult } from '../shared/types'
 
 const isWin = process.platform === 'win32'
@@ -52,11 +53,7 @@ let child: ChildProcess | null = null
 
 export function cancelOcr(): void {
   if (!child) return
-  try {
-    child.kill()
-  } catch {
-    /* bo qua */
-  }
+  terminateProcessTree(child)
   child = null
 }
 
@@ -153,18 +150,14 @@ export async function ocrVideo(
   logInfo(`Dịch màn hình: bắt đầu đọc ${basename(input)}…`)
 
   return new Promise<OcrResult>((resolve) => {
-    const p = spawn(executable, args, {
+    const p = trackChildProcess(spawn(executable, args, {
       windowsHide: true,
       env: { ...process.env, PYTHONUTF8: '1', PYTHONIOENCODING: 'utf-8' }
-    })
+    }))
     child = p
 
     const abort = (): void => {
-      try {
-        p.kill()
-      } catch {
-        /* ignore */
-      }
+      terminateProcessTree(p)
     }
     if (signal?.aborted) abort()
     else signal?.addEventListener('abort', abort, { once: true })

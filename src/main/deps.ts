@@ -1,4 +1,5 @@
 import { app } from 'electron'
+import { terminateProcessTree, trackChildProcess } from './processTree'
 import { spawn } from 'node:child_process'
 import { createHash } from 'node:crypto'
 import { createReadStream, createWriteStream } from 'node:fs'
@@ -71,7 +72,7 @@ function runCapture(
     let out = ''
     let settled = false
     try {
-      const child = spawn(cmd, args, { windowsHide: true })
+      const child = trackChildProcess(spawn(cmd, args, { windowsHide: true }))
       const finish = (code: number): void => {
         if (settled) return
         settled = true
@@ -80,7 +81,7 @@ function runCapture(
       }
       const timer = setTimeout(() => {
         out += '\nQua thoi gian cho yt-dlp.'
-        child.kill()
+        terminateProcessTree(child)
         finish(-1)
       }, timeoutMs)
       child.stdout?.on('data', (d) => (out += d.toString()))
@@ -239,7 +240,7 @@ export function isSafeRuntimeArchiveEntryPath(entry: string): boolean {
 
 function captureProcess(command: string, args: string[]): Promise<string> {
   return new Promise((resolve, reject) => {
-    const child = spawn(command, args, { windowsHide: true })
+    const child = trackChildProcess(spawn(command, args, { windowsHide: true }))
     let stdout = ''
     let stderr = ''
     child.stdout?.on('data', (chunk: Buffer) => { stdout += chunk.toString() })
@@ -281,7 +282,7 @@ export async function extractZip(zipPath: string, destDir: string): Promise<void
   await validateZipArchive(zipPath)
   await new Promise<void>((resolve, reject) => {
     const child = isWin
-      ? spawn(
+      ? trackChildProcess(spawn(
           'powershell',
           [
             '-NoProfile',
@@ -290,8 +291,8 @@ export async function extractZip(zipPath: string, destDir: string): Promise<void
             `Expand-Archive -LiteralPath ${powershellLiteral(zipPath)} -DestinationPath ${powershellLiteral(destDir)} -Force`
           ],
           { windowsHide: true, stdio: 'ignore' }
-        )
-      : spawn('unzip', ['-q', '-o', zipPath, '-d', destDir], { stdio: 'ignore' })
+        ))
+      : trackChildProcess(spawn('unzip', ['-q', '-o', zipPath, '-d', destDir], { stdio: 'ignore' }))
     child.on('error', reject)
     child.on('close', (code) => (code === 0 ? resolve() : reject(new Error('Giải nén thất bại'))))
   })

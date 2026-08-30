@@ -20,7 +20,7 @@
     "release:pack": "node scripts/pack-runtime-release.mjs",
     "release:verify-runtime": "node scripts/verify-runtime-release.mjs release-artifacts",
     "release:verify": "node scripts/verify-release.mjs",
-    "release:verify-assets": "node scripts/verify-release-assets.mjs dist",
+    "release:verify-assets": "node scripts/verify-release-assets.mjs dist --windows-only",
     "package:verify": "node scripts/verify-packaged-app.mjs dist",
     "package:win": "npm run fonts:prepare && npm run fonts:verify && electron-vite build && electron-builder --win -p never && npm run fonts:verify-packaged -- --platform win && npm run package:verify",
     "package:mac": "npm run fonts:prepare && npm run fonts:verify && electron-vite build && electron-builder --mac --arm64 -p never && npm run fonts:verify-packaged -- --platform mac && npm run package:verify"

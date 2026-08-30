@@ -26,6 +26,7 @@ import type {
   WhisperResult,
   WhisperDevice
 } from '../shared/types'
+import { terminateProcessTree, trackChildProcess } from './processTree'
 
 const isWin = process.platform === 'win32'
 
@@ -71,9 +72,9 @@ async function runProbe(command: string, args: string[], timeoutMs = 120_000): P
       resolve({ code, output })
     }
     try {
-      child = spawn(command, args, { windowsHide: true, cwd: dirname(command) })
+      child = trackChildProcess(spawn(command, args, { windowsHide: true, cwd: dirname(command) }))
       timer = setTimeout(() => {
-        try { child?.kill() } catch { /* best effort */ }
+        terminateProcessTree(child)
         finish(-1)
       }, timeoutMs)
       child.stdout?.on('data', (data) => { output += data.toString() })
@@ -256,7 +257,7 @@ let runningWhisperProcess: ChildProcess | null = null
 
 export async function shutdownWhisperRuntime(): Promise<void> {
   if (!runningWhisperProcess) return
-  try { runningWhisperProcess.kill() } catch { /* best effort */ }
+  terminateProcessTree(runningWhisperProcess)
   runningWhisperProcess = null
 }
 
@@ -298,11 +299,11 @@ export async function transcribeAudio(
   return new Promise<WhisperResult>((resolve) => {
     let child: ChildProcess
     try {
-      child = spawn(engine, args, {
+      child = trackChildProcess(spawn(engine, args, {
         windowsHide: true,
         cwd: engineDir(),
         env: { ...process.env, PYTHONUTF8: '1', PYTHONIOENCODING: 'utf-8', HF_HUB_DISABLE_SYMLINKS_WARNING: '1' }
-      })
+      }))
     } catch (error) {
       resolve({ id, ok: false, outputs: [], segments: 0, speakers: 0, error: errLabel(error), requestedDevice: req.device, effectiveDevice })
       return
@@ -319,7 +320,7 @@ export async function transcribeAudio(
     let doneOk = false
     let errMsg: string | null = null
 
-    if (signal) signal.addEventListener('abort', () => { try { child.kill() } catch { /* best effort */ } }, { once: true })
+    if (signal) signal.addEventListener('abort', () => terminateProcessTree(child), { once: true })
     onProgress({ id, status: 'preparing', percent: -1, language: null, line: 'Đang chuẩn bị Faster-Whisper…' })
 
     const handleLine = (line: string): void => {

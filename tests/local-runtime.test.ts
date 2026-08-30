@@ -342,11 +342,20 @@ test('AutoShort validates semantic timeline with separate source and translated 
 
 test('Electron shutdown cancels the Auto Short job and all media child-process owners', async () => {
   const autoshort = await readFile(join(process.cwd(), 'src', 'main', 'autoshort.ts'), 'utf8')
+  const burn = await readFile(join(process.cwd(), 'src', 'main', 'burn.ts'), 'utf8')
+  const ocr = await readFile(join(process.cwd(), 'src', 'main', 'ocr.ts'), 'utf8')
+  const runtimeProbes = await readFile(join(process.cwd(), 'src', 'main', 'runtimeProbes.ts'), 'utf8')
+  const gpu = await readFile(join(process.cwd(), 'src', 'main', 'gpu.ts'), 'utf8')
   const index = await readFile(join(process.cwd(), 'src', 'main', 'index.ts'), 'utf8')
   assert.match(autoshort, /export async function shutdownAutoShortRuntime/u)
   assert.match(autoshort, /cancelOcr\(\)/u)
   assert.match(autoshort, /cancelVideo2x\(\)/u)
   assert.match(index, /shutdownAutoShortRuntime\(\)/u)
+  assert.match(autoshort, /terminateTrackedProcessTrees\(\)/u)
+  assert.match(burn, /terminateProcessTree/u)
+  assert.match(ocr, /terminateProcessTree/u)
+  assert.match(runtimeProbes, /trackChildProcess/u)
+  assert.match(gpu, /trackChildProcess/u)
 })
 
 test('AutoShort scene transition: gaps between non-adjacent cues are not treated as free slack for earlier voice', () => {
