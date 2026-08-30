@@ -79,7 +79,9 @@ export async function checkTtsServerHealth(
         Accept: 'application/json',
         ...getAuthHeaders(apiKey)
       },
-      signal: AbortSignal.timeout(1500)
+      // The local CPU server can briefly exceed 1.5s while a model worker
+      // is cold-starting; health must not report a false offline state.
+      signal: AbortSignal.timeout(5_000)
     })
 
     if (!res.ok) {

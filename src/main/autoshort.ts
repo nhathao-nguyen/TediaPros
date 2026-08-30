@@ -715,8 +715,9 @@ async function rephraseDubbingCue(
       'Yêu cầu diễn đạt lại (rephrase):',
       `1. Hãy viết lại câu trên bằng ${targetLanguage} thật tự nhiên, súc tích và ngắn gọn hơn để người bản ngữ đọc vừa vặn trong ${durationStr} giây.`,
       '2. Giữ nguyên trọn vẹn ý nghĩa cốt lõi, không làm mất hoặc sai lệch thông tin quan trọng.',
-      '3. Không thêm bớt thông tin ngoài lề.',
-      `4. Trả về đúng định dạng: [${cueId}] câu_viết_lại_ngắn_gọn`
+      '3. Giữ nguyên chủ thể, đối tượng, số liệu và quan hệ hành động; không thêm đại từ hoặc tác nhân không xuất hiện trong câu hiện tại hoặc nguồn. Nếu chủ thể được lược bỏ trong bản gốc, không tự suy ra chủ thể mới.',
+      '4. Không thêm bớt thông tin ngoài lề.',
+      `5. Trả về đúng định dạng: [${cueId}] câu_viết_lại_ngắn_gọn`
     ].join('\n')
 
     if (config.translateProvider === 'local') {

@@ -989,12 +989,30 @@ test('translation mode dubbing configures dubbing-specific instructions without 
   assert.match(defaultPrompt, /mode=subtitle/u)
 })
 
+test('AutoShort rephrase guidance preserves subjects and forbids ungrounded actors', async () => {
+  const source = await readFile(join(process.cwd(), 'src', 'main', 'autoshort.ts'), 'utf8')
+  assert.match(source, /giữ nguyên chủ thể, đối tượng, số liệu/iu)
+  assert.match(source, /không thêm đại từ hoặc tác nhân không xuất hiện/iu)
+})
+
 test('translation guidance has no extreme instruction demanding removal of all source characters', () => {
   const prompt = huongDan('vi', { mode: 'dubbing' })
   assert.doesNotMatch(prompt, /không để lại bất kỳ từ ngữ, ký tự hoặc chữ viết thuộc ngôn ngữ nguồn/iu)
   assert.doesNotMatch(prompt, /tuyệt đối không để sót chữ viết thuộc ngôn ngữ nguồn/iu)
   assert.match(prompt, /không bỏ sót nội dung cần dịch/iu)
   assert.match(prompt, /tên riêng.*thương hiệu.*thuật ngữ quốc tế/iu)
+})
+
+test('translation guidance resolves ordinary source-language residue without erasing proper nouns', () => {
+  const prompt = huongDan('vi', { mode: 'dubbing' })
+  assert.match(prompt, /trình bày kết quả bằng ngôn ngữ đích/iu)
+  assert.match(prompt, /từ\/cụm từ thông thường còn sót lại từ nguồn/iu)
+  assert.match(prompt, /chỉ giữ nguyên tên riêng, thương hiệu, mã hiệu hoặc thuật ngữ quốc tế/iu)
+})
+
+test('AutoShort TTS health probe tolerates cold CPU server latency', async () => {
+  const source = await readFile(join(process.cwd(), 'src', 'main', 'tts.ts'), 'utf8')
+  assert.match(source, /AbortSignal\.timeout\(5_000\)/u)
 })
 
 test('translation pipeline contains no phrase-specific or language-specific repair rules', async () => {
