@@ -1,20 +1,27 @@
 import { createHash } from 'node:crypto'
 import { createReadStream } from 'node:fs'
-import { access, mkdir, readdir, readFile, stat, writeFile } from 'node:fs/promises'
+import { access, mkdir, readFile, stat, writeFile, rename, rm } from 'node:fs/promises'
 import { constants } from 'node:fs'
-import { join } from 'node:path'
-import { WHISPER_PROTOCOL, LEGACY_WHISPER_PROTOCOL } from './engineProtocol'
+import { join, relative } from 'node:path'
+import { WHISPER_PROTOCOL } from './engineProtocol'
 import { isWhisperModelId, WHISPER_MODEL_CATALOG, type WhisperModelId } from './modelCatalog'
 
-export interface WhisperModelManifest {
-  id: WhisperModelId
-  backend: 'faster-whisper' | 'whisper.cpp'
-  format: 'ctranslate2' | 'ggml'
-  filename: string
+export interface WhisperModelFile {
+  path: string
   bytes: number
-  sha256?: string
+  sha256: string
+}
+
+export interface WhisperModelManifest {
+  schemaVersion: 1
+  id: WhisperModelId
+  repoId: string
+  revision: string
+  backend: 'faster-whisper'
+  format: 'ctranslate2'
+  files: WhisperModelFile[]
   languageFamily: 'multilingual'
-  engineProtocol?: string
+  engineProtocol: typeof WHISPER_PROTOCOL
 }
 
 export interface LocalWhisperModel {
@@ -22,9 +29,11 @@ export interface LocalWhisperModel {
   root: string
   modelDir: string
   modelPath: string
-  manifestPath?: string
-  manifest?: WhisperModelManifest
+  manifestPath: string
+  manifest: WhisperModelManifest
 }
+
+const REQUIRED_MODEL_FILES = ['model.bin', 'config.json', 'tokenizer.json'] as const
 
 async function fileExists(path: string): Promise<boolean> {
   try {
@@ -41,144 +50,109 @@ export async function sha256File(path: string): Promise<string> {
   return hash.digest('hex')
 }
 
+function isSafeModelPath(path: unknown): path is string {
+  if (typeof path !== 'string' || !path.trim()) return false
+  const normalized = path.replace(/\\/g, '/')
+  return !normalized.startsWith('/') && !/^[A-Za-z]:\//u.test(normalized) &&
+    normalized.split('/').every((part) => part && part !== '.' && part !== '..')
+}
+
+function isModelFile(value: unknown): value is WhisperModelFile {
+  if (!value || typeof value !== 'object' || Array.isArray(value)) return false
+  const record = value as Record<string, unknown>
+  return isSafeModelPath(record.path) &&
+    typeof record.bytes === 'number' && Number.isSafeInteger(record.bytes) && record.bytes > 0 &&
+    typeof record.sha256 === 'string' && /^[a-f0-9]{64}$/iu.test(record.sha256)
+}
+
+async function readModelManifest(modelDir: string, model: WhisperModelId): Promise<WhisperModelManifest | null> {
+  const manifestPath = join(modelDir, 'manifest.json')
+  try {
+    const parsed = JSON.parse(await readFile(manifestPath, 'utf8')) as Record<string, unknown>
+    if (
+      parsed.schemaVersion !== 1 || parsed.id !== model ||
+      parsed.backend !== 'faster-whisper' || parsed.format !== 'ctranslate2' ||
+      parsed.languageFamily !== 'multilingual' || parsed.engineProtocol !== WHISPER_PROTOCOL ||
+      typeof parsed.repoId !== 'string' || parsed.repoId !== WHISPER_MODEL_CATALOG[model].repoId ||
+      typeof parsed.revision !== 'string' || parsed.revision.toLowerCase() !== WHISPER_MODEL_CATALOG[model].revision.toLowerCase() ||
+      !Array.isArray(parsed.files) || parsed.files.length < REQUIRED_MODEL_FILES.length ||
+      !parsed.files.every(isModelFile)
+    ) return null
+
+    const files = parsed.files as WhisperModelFile[]
+    const names = new Set(files.map((file) => file.path.replace(/\\/g, '/')))
+    if (!REQUIRED_MODEL_FILES.every((file) => names.has(file)) || (!names.has('vocabulary.json') && !names.has('vocabulary.txt'))) {
+      return null
+    }
+    return { ...parsed, files: files.map((file) => ({ ...file, path: file.path.replace(/\\/g, '/') })) } as WhisperModelManifest
+  } catch {
+    return null
+  }
+}
+
 export async function isCompleteWhisperModel(modelDir: string, model: string): Promise<boolean> {
   if (!isWhisperModelId(model)) return false
   if (!(await fileExists(modelDir))) return false
-
-  const manifestPath = join(modelDir, 'manifest.json')
-  if (await fileExists(manifestPath)) {
-    if (await fileExists(`${manifestPath}.partial`)) return false
-    try {
-      const parsed = JSON.parse(await readFile(manifestPath, 'utf8')) as Record<string, unknown>
-      if (parsed.id !== model || typeof parsed.filename !== 'string') return false
-      const binPath = join(modelDir, parsed.filename)
-      if (await fileExists(`${binPath}.partial`)) return false
-      const s = await stat(binPath).catch(() => null)
-      if (!s || !s.isFile() || s.size <= 0) return false
-      if (typeof parsed.bytes === 'number' && parsed.bytes > 0 && s.size !== parsed.bytes) return false
-      if (parsed.sha256 && typeof parsed.sha256 === 'string') {
-        const h = await sha256File(binPath)
-        return h.toLowerCase() === parsed.sha256.toLowerCase()
-      }
-      return true
-    } catch {
-      return false
-    }
+  const manifest = await readModelManifest(modelDir, model)
+  if (!manifest) return false
+  for (const file of manifest.files) {
+    const path = join(modelDir, file.path)
+    if (await fileExists(`${path}.part`) || await fileExists(`${path}.partial`)) return false
+    const info = await stat(path).catch(() => null)
+    if (!info?.isFile() || info.size !== file.bytes) return false
+    if ((await sha256File(path)).toLowerCase() !== file.sha256.toLowerCase()) return false
   }
-
-  const directBin = join(modelDir, 'model.bin')
-  if (await fileExists(directBin)) {
-    if (await fileExists(`${directBin}.partial`)) return false
-    const s = await stat(directBin).catch(() => null)
-    if (s && s.isFile() && s.size > 0) return true
-  }
-
-  // Kiem tra thu muc HuggingFace cache con
-  try {
-    const entries = await readdir(modelDir)
-    const hfDirName = `models--Systran--faster-whisper-${model}`
-    if (entries.includes(hfDirName)) {
-      const snapshotsDir = join(modelDir, hfDirName, 'snapshots')
-      if (await fileExists(snapshotsDir)) {
-        const snaps = await readdir(snapshotsDir)
-        for (const snap of snaps) {
-          const target = join(snapshotsDir, snap, 'model.bin')
-          const s = await stat(target).catch(() => null)
-          if (s && s.isFile() && s.size > 0) return true
-        }
-      }
-    }
-  } catch {
-    // ignore
-  }
-
-  return false
+  return true
 }
 
-export async function findLocalWhisperModel(
-  model: string,
-  roots: string[]
-): Promise<LocalWhisperModel | null> {
+export async function findLocalWhisperModel(model: string, roots: string[]): Promise<LocalWhisperModel | null> {
   if (!isWhisperModelId(model)) return null
   for (const root of roots) {
-    const candidateDirs = [
-      join(root, model),
-      root
-    ]
-    for (const modelDir of candidateDirs) {
-      if (await isCompleteWhisperModel(modelDir, model)) {
-        const directBin = join(modelDir, 'model.bin')
-        const manifestPath = join(modelDir, 'manifest.json')
-        let manifest: WhisperModelManifest | undefined
-        if (await fileExists(manifestPath)) {
-          try {
-            manifest = JSON.parse(await readFile(manifestPath, 'utf8')) as WhisperModelManifest
-          } catch {
-            /* ignore */
-          }
-        }
-        return {
-          id: model,
-          root,
-          modelDir,
-          modelPath: (await fileExists(directBin)) ? directBin : join(modelDir, `${model}.bin`),
-          manifestPath: (await fileExists(manifestPath)) ? manifestPath : undefined,
-          manifest
-        }
-      }
-    }
+    const modelDir = join(root, model)
+    if (!(await isCompleteWhisperModel(modelDir, model))) continue
+    const manifestPath = join(modelDir, 'manifest.json')
+    const manifest = await readModelManifest(modelDir, model)
+    if (!manifest) continue
+    return { id: model, root, modelDir, modelPath: modelDir, manifestPath, manifest }
   }
   return null
 }
 
-/** Canonical managed model root first, then legacy profile locations. */
-export function whisperModelRoots(userData: string, appData: string, devOverrideRoot?: string): string[] {
-  const roots: string[] = []
-  if (devOverrideRoot) roots.push(devOverrideRoot)
-  const envDev = process.env.TEDIAPROS_RUNTIME_DIR?.trim()
-  if (envDev) {
-    roots.push(join(envDev, 'whisper-models'))
-    roots.push(join(envDev, 'models', 'whisper'))
-  }
-
-  // Canonical HuggingFace / Faster-Whisper cache dir in userData
-  roots.push(join(userData, 'whisper-models'))
-  roots.push(join(userData, 'models', 'whisper'))
-  roots.push(join(userData, 'models', 'whisper-cpp'))
-
-  // Legacy managed roots for migration / backward-compatibility
-  roots.push(join(appData, 'tedia-pros', 'whisper-models'))
-  roots.push(join(appData, 'tedia-pros', 'models', 'whisper-cpp'))
-  roots.push(join(appData, 'tediapros', 'whisper-models'))
-
-  const seen = new Set<string>()
-  return roots.filter((r) => {
-    const key = r.toLowerCase()
-    if (seen.has(key)) return false
-    seen.add(key)
-    return true
-  })
+/** Only the current user-data profile is a production model root. */
+export function whisperModelRoots(userData: string): string[] {
+  return [join(userData, 'whisper-models')]
 }
 
 export async function writeWhisperModelManifest(
   targetDir: string,
   model: WhisperModelId,
-  filePath: string,
-  sha256?: string
+  repoId = WHISPER_MODEL_CATALOG[model].repoId,
+  revision = WHISPER_MODEL_CATALOG[model].revision
 ): Promise<string> {
   await mkdir(targetDir, { recursive: true })
-  const s = await stat(filePath)
+  const names = ['model.bin', 'config.json', 'tokenizer.json', 'vocabulary.json', 'vocabulary.txt']
+  const files: WhisperModelFile[] = []
+  for (const name of names) {
+    const path = join(targetDir, name)
+    const info = await stat(path).catch(() => null)
+    if (!info?.isFile() || info.size <= 0) continue
+    files.push({ path: relative(targetDir, path).replace(/\\/g, '/'), bytes: info.size, sha256: await sha256File(path) })
+  }
   const manifest: WhisperModelManifest = {
+    schemaVersion: 1,
     id: model,
+    repoId,
+    revision,
     backend: 'faster-whisper',
     format: 'ctranslate2',
-    filename: WHISPER_MODEL_CATALOG[model].filename,
-    bytes: s.size,
-    sha256: sha256 || (await sha256File(filePath)),
+    files,
     languageFamily: 'multilingual',
     engineProtocol: WHISPER_PROTOCOL
   }
   const manifestPath = join(targetDir, 'manifest.json')
-  await writeFile(manifestPath, JSON.stringify(manifest, null, 2), 'utf8')
+  const partial = `${manifestPath}.partial`
+  await writeFile(partial, `${JSON.stringify(manifest, null, 2)}\n`, 'utf8')
+  await rm(manifestPath, { force: true }).catch(() => {})
+  await rename(partial, manifestPath)
   return manifestPath
 }

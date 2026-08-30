@@ -2,21 +2,15 @@ import { app } from 'electron'
 import { spawn } from 'node:child_process'
 import { createHash } from 'node:crypto'
 import { createReadStream, createWriteStream } from 'node:fs'
-import { mkdir, access, rm, readdir, copyFile, chmod, rename } from 'node:fs/promises'
+import { mkdir, access, rm, copyFile, chmod, rename } from 'node:fs/promises'
 import { constants } from 'node:fs'
 import { join } from 'node:path'
 import { Readable } from 'node:stream'
 import { DepStatus, SetupProgress } from '../shared/types'
-import { devLocalAssetRoots, findFile } from './localAssets'
-import {
-  resolveFfmpeg as canonicalResolveFfmpeg,
-  resolveRuntimeExecutable,
-  runtimeKindDir
-} from './runtimeResolver'
+import { resolveFfmpeg as canonicalResolveFfmpeg } from './runtimeResolver'
 
 const isWin = process.platform === 'win32'
 const isMac = process.platform === 'darwin'
-export const ASSET_BASE = 'https://github.com/NeeyuBL/neeyut-blao/releases/download/assets-v1'
 const YTDLP_RELEASE_BASE = 'https://github.com/yt-dlp/yt-dlp/releases/latest/download'
 const YTDLP_RELEASE_API = 'https://api.github.com/repos/yt-dlp/yt-dlp/releases/latest'
 let ytDlpInstallInFlight: Promise<void> | null = null
@@ -421,9 +415,6 @@ async function installYtDlp(onProgress: ProgressCb): Promise<void> {
   }
 }
 
-const FFMPEG_WIN64_URL =
-  'https://github.com/yt-dlp/FFmpeg-Builds/releases/download/latest/ffmpeg-master-latest-win64-gpl.zip'
-
 export async function installFfmpeg(onProgress: ProgressCb): Promise<void> {
   onProgress({ phase: 'downloading-ffmpeg', message: 'Đang kiểm tra FFmpeg…', percent: 0 })
   const existing = await canonicalResolveFfmpeg()
@@ -432,81 +423,12 @@ export async function installFfmpeg(onProgress: ProgressCb): Promise<void> {
     return
   }
 
-  const targetDir = runtimeKindDir('ffmpeg')
-  await mkdir(targetDir, { recursive: true })
-
-  // 1. Check dev / local staging roots first
-  const devRoots = devLocalAssetRoots()
-  for (const root of devRoots) {
-    const src = await findFile(root, isWin ? ['ffmpeg.exe', 'ffmpeg'] : ['ffmpeg'])
-    if (src) {
-      await copyFile(src, join(targetDir, isWin ? 'ffmpeg.exe' : 'ffmpeg'))
-      const ffprobeSrc = await findFile(root, isWin ? ['ffprobe.exe', 'ffprobe'] : ['ffprobe'])
-      if (ffprobeSrc) {
-        await copyFile(ffprobeSrc, join(targetDir, isWin ? 'ffprobe.exe' : 'ffprobe'))
-      }
-      break
-    }
-  }
-
-  let resolved = await canonicalResolveFfmpeg()
-  if (resolved) {
-    onProgress({ phase: 'done', message: 'Đã sẵn sàng FFmpeg.', percent: 100 })
-    return
-  }
-
-  // 2. Try download from official TediaPros runtime release manifest
-  try {
-    const { downloadRuntimeEngineFromManifest } = await import('./runtimeInstaller')
-    await downloadRuntimeEngineFromManifest('ffmpeg', (p, msg) => {
-      onProgress({ phase: 'downloading-ffmpeg', message: msg, percent: p })
-    })
-  } catch {
-    /* fallback to external release */
-  }
-
-  resolved = await canonicalResolveFfmpeg()
-  if (resolved) {
-    onProgress({ phase: 'done', message: 'Đã sẵn sàng FFmpeg.', percent: 100 })
-    return
-  }
-
-  // 2. If Windows and not found locally, download official managed release
-  if (isWin) {
-    const stagingDir = `${targetDir}.staging`
-    const zipPath = join(stagingDir, 'ffmpeg.zip')
-    await rm(stagingDir, { recursive: true, force: true }).catch(() => {})
-    await mkdir(stagingDir, { recursive: true })
-
-    try {
-      onProgress({ phase: 'downloading-ffmpeg', message: 'Đang tải gói FFmpeg Windows… 0%', percent: 0 })
-      await downloadFile(FFMPEG_WIN64_URL, zipPath, (p) => {
-        onProgress({ phase: 'downloading-ffmpeg', message: `Đang tải gói FFmpeg Windows… ${p}%`, percent: Math.round(p * 0.7) })
-      })
-
-      onProgress({ phase: 'extracting', message: 'Đang giải nén FFmpeg…', percent: 75 })
-      const extractDest = join(stagingDir, 'extracted')
-      await mkdir(extractDest, { recursive: true })
-      await extractZip(zipPath, extractDest)
-
-      const foundFfmpeg = await findFile(extractDest, ['ffmpeg.exe'])
-      const foundFfprobe = await findFile(extractDest, ['ffprobe.exe'])
-      if (!foundFfmpeg) {
-        throw new Error('Gói tải về không chứa file ffmpeg.exe hợp lệ.')
-      }
-
-      await copyFile(foundFfmpeg, join(targetDir, 'ffmpeg.exe'))
-      if (foundFfprobe) {
-        await copyFile(foundFfprobe, join(targetDir, 'ffprobe.exe'))
-      }
-    } finally {
-      await rm(stagingDir, { recursive: true, force: true }).catch(() => {})
-    }
-  }
-
-  resolved = await canonicalResolveFfmpeg()
-  if (!resolved) {
-    throw new Error('Chưa tìm thấy FFmpeg. Hãy cài đặt FFmpeg trên PATH hoặc đặt binary vào thư mục runtime/ffmpeg.')
+  const { downloadRuntimeEngineFromManifest } = await import('./runtimeInstaller')
+  const installed = await downloadRuntimeEngineFromManifest('ffmpeg', (percent, message) => {
+    onProgress({ phase: percent >= 90 ? 'extracting' : 'downloading-ffmpeg', message, percent })
+  })
+  if (!installed || !(await canonicalResolveFfmpeg())) {
+    throw new Error('Không có asset FFmpeg/FFprobe hợp lệ trong runtime manifest.')
   }
   onProgress({ phase: 'done', message: 'Đã sẵn sàng FFmpeg.', percent: 100 })
 }

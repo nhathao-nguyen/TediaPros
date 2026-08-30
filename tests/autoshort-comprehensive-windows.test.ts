@@ -19,7 +19,7 @@ import { runtimeRoot, modelRoot, runtimeSearchRoots } from '../src/main/runtimeR
 
 test('Case 1 & 2: Lazy runtime and model paths reside strictly in persistent userData, not app install dir', () => {
   const root = runtimeRoot()
-  const mRoot = modelRoot('whisper-cpp')
+  const mRoot = modelRoot()
   assert.ok(root.toLowerCase().includes('userdata') || root.toLowerCase().includes('appdata') || root.length > 5)
   assert.ok(mRoot.toLowerCase().includes('userdata') || mRoot.toLowerCase().includes('appdata') || mRoot.length > 5)
   assert.ok(!root.toLowerCase().includes('resources\\local-assets'))
@@ -186,5 +186,4 @@ test('Case 12: Windows Unicode & Space path escaping in FFmpeg filter graph', ()
   assert.ok(filterStr.includes('Thư Mục Video 2026'))
   assert.match(filterStr, /ass=.*Thư Mục Video 2026/u)
 })
-
 

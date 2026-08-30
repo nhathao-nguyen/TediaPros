@@ -69,8 +69,7 @@ export function isAutoShortWhisperEngineReady(
   return Boolean(
     status?.has &&
     status.healthy !== false &&
-    (status.protocol === WHISPER_PROTOCOL || status.protocol === 'whisper-local/1' || status.protocol === 'whisper-engine/1') &&
-    (status.engine === 'faster-whisper' || status.engine === 'whisper.cpp')
+    status.protocol === WHISPER_PROTOCOL && status.engine === 'faster-whisper'
   )
 }
 
@@ -604,7 +603,6 @@ export function validateRenderedOutputMedia(
     decodable: true
   }
 }
-
 
 
 

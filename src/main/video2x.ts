@@ -1,11 +1,9 @@
 import { spawn, type ChildProcess } from 'node:child_process'
-import { access, chmod, mkdir, rm, stat } from 'node:fs/promises'
+import { access, stat } from 'node:fs/promises'
 import { constants } from 'node:fs'
 import { basename, dirname, join } from 'node:path'
-import { ASSET_BASE, binDir, downloadFile, extractZip } from './deps'
-import { engineNeedsUpdate, markEngineInstalled } from './engines-update'
-import { getDistributionConfig } from './distributionConfig'
-import { runtimeSearchRoots, runtimeKindDir } from './runtimeResolver'
+import { runtimeKindDir } from './runtimeResolver'
+import { probeRuntimeExecutable } from './runtimeProbes'
 import { debugRaw, errLabel, logInfo, logWarn } from './logger'
 import type {
   Video2xDevice,
@@ -19,20 +17,8 @@ import type {
 const isWin = process.platform === 'win32'
 const isMac = process.platform === 'darwin'
 
-function asset(): string {
-  return isWin ? 'video2x-win.zip' : 'video2x-linux.zip'
-}
-
-function assetUrl(): string {
-  const config = getDistributionConfig()
-  if (config.getAssetUrl(asset())) {
-    return config.getAssetUrl(asset())
-  }
-  return `${ASSET_BASE}/${asset()}`
-}
-
 function engineDir(): string {
-  return join(binDir(), 'video2x')
+  return runtimeKindDir('video2x')
 }
 
 function enginePath(): string {
@@ -48,25 +34,11 @@ async function exists(p: string): Promise<boolean> {
   }
 }
 
-/** Tim exe neu zip giai nen them 1 lop thu muc hoac trong search roots. */
+/** Resolve the executable in the canonical managed runtime directory. */
 export async function resolveEnginePath(): Promise<string | null> {
-  const devRoots = runtimeSearchRoots('video2x')
-  const candidateDirs = [
-    engineDir(),
-    join(engineDir(), 'video2x'),
-    join(binDir(), 'video2x'),
-    ...devRoots.map((r) => (r.endsWith('video2x') ? r : join(r, 'video2x'))),
-    ...devRoots
-  ]
-
   const exeName = isWin ? 'video2x.exe' : 'video2x'
-  for (const dir of candidateDirs) {
-    const candidate = join(dir, exeName)
-    if (await exists(candidate)) {
-      return candidate
-    }
-  }
-  return null
+  const candidate = join(engineDir(), exeName)
+  return (await exists(candidate)) ? candidate : null
 }
 
 export async function video2xEngineStatus(): Promise<Video2xEngineStatus> {
@@ -78,12 +50,14 @@ export async function video2xEngineStatus(): Promise<Video2xEngineStatus> {
   if (!path) {
     return { has: false, supported: true, needsUpdate: false, healthy: false, message: 'Chưa cài đặt Video2X runtime.' }
   }
-  const needsUp = await engineNeedsUpdate('video2x', has)
+  const probe = await probeRuntimeExecutable('video2x', path)
+  const needsUp = !probe.healthy
   return {
     has,
     supported: true,
-    healthy: true,
-    needsUpdate: needsUp
+    healthy: probe.healthy,
+    needsUpdate: needsUp,
+    message: probe.message
   }
 }
 
@@ -91,18 +65,12 @@ export async function installVideo2xEngine(onProgress: (p: number) => void): Pro
   if (isMac) {
     throw new Error('Video2X chưa hỗ trợ macOS (không có bản native).')
   }
-  await mkdir(binDir(), { recursive: true })
-  const zip = join(binDir(), 'video2x.zip')
   logInfo('Nâng cấp video: đang tải công cụ Video2X…')
-  await downloadFile(assetUrl(), zip, onProgress)
-  logInfo('Nâng cấp video: đang giải nén…')
-  await rm(engineDir(), { recursive: true, force: true }).catch(() => {})
-  await extractZip(zip, binDir())
-  await rm(zip, { force: true }).catch(() => {})
+  const { downloadRuntimeEngineFromManifest } = await import('./runtimeInstaller')
+  const installed = await downloadRuntimeEngineFromManifest('video2x', (percent) => onProgress(percent))
+  if (!installed) throw new Error('Không có asset Video2X phù hợp trong runtime manifest.')
   const path = await resolveEnginePath()
   if (!path) throw new Error('Không tìm thấy Video2X binary sau khi giải nén.')
-  if (!isWin) await chmod(path, 0o755).catch(() => {})
-  await markEngineInstalled('video2x')
   logInfo('Nâng cấp video: đã cài xong Video2X.')
 }
 

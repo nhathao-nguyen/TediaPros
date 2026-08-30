@@ -179,7 +179,9 @@ export interface DouyinProgress {
 
 export interface DyEngineStatus {
   has: boolean
-  /** Kept for compatibility with older renderer code; local assets never poll remotely. */
+  healthy?: boolean
+  version?: string | null
+  message?: string
   needsUpdate?: boolean
 }
 
@@ -244,15 +246,6 @@ export interface WhisperResult {
   coverage?: number | null
 }
 
-export interface WhisperWorkerStats {
-  workerStartCount: number
-  modelLoadCount: number
-  processedRequestCount: number
-  currentModel: string | null
-  currentDevice: WhisperDevice | null
-  effectiveDevice: WhisperDevice | null
-}
-
 export interface WhisperEngineStatus {
   has: boolean
   needsUpdate?: boolean
@@ -272,12 +265,8 @@ export interface WhisperModelStatus {
   downloadBytes: number
   path: string | null
   message?: string
-  backend?: string
-  format?: string
   valid?: boolean
-  source?: 'current' | 'legacy' | 'resources' | 'none'
   sha256?: string | null
-  incompatible?: boolean
 }
 
 // ---- Tab Dich man hinh (doc chu chay tren video) ----
@@ -995,4 +984,3 @@ export interface AutoShortBatchResult {
   totalCount: number
   error?: string
 }
-

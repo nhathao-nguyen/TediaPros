@@ -4,14 +4,11 @@ import os
 
 datas = [('dia-models', 'dia-models')] if os.path.exists('dia-models') else []
 binaries = []
-hiddenimports = ['tokenizers']
+hiddenimports = []
 
-for _m in ('tokenizers', 'wtpsplit_lite', 'huggingface_hub', 'faster_whisper', 'ctranslate2', 'av', 'onnxruntime', 'sherpa_onnx', 'sentencepiece'):
-    try:
-        _r = collect_all(_m)
-        datas += _r[0]; binaries += _r[1]; hiddenimports += _r[2]
-    except Exception:
-        pass
+for _m in ('tokenizers', 'huggingface_hub', 'faster_whisper', 'ctranslate2', 'av', 'onnxruntime', 'sherpa_onnx'):
+    _r = collect_all(_m)
+    datas += _r[0]; binaries += _r[1]; hiddenimports += _r[2]
 
 a = Analysis(
     ['engine.py'],

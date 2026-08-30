@@ -2,183 +2,160 @@ import { createHash } from 'node:crypto'
 import { createReadStream } from 'node:fs'
 import { access, readFile, stat } from 'node:fs/promises'
 import { constants } from 'node:fs'
-import { basename, join, resolve } from 'node:path'
+import { join, resolve } from 'node:path'
+import { Readable } from 'node:stream'
+import { verifyRuntimeReleaseDirectory } from './verify-runtime-release.mjs'
 
 const owner = process.env.TEDIAPROS_DISTRIBUTION_OWNER?.trim() || 'nhathao-nguyen'
 const repo = process.env.TEDIAPROS_DISTRIBUTION_REPO?.trim() || 'TediaPros'
-const tag = process.env.TEDIAPROS_RUNTIME_CHANNEL?.trim() || 'runtime-v1'
+const tag = process.env.TEDIAPROS_RUNTIME_CHANNEL?.trim() || 'runtime-v2'
+const tokenArg = process.argv.indexOf('--token')
+const token = (tokenArg >= 0 ? process.argv[tokenArg + 1] : null) || process.env.GITHUB_TOKEN || process.env.GH_TOKEN
 
-async function sha256File(filePath) {
-  const hash = createHash('sha256')
-  for await (const chunk of createReadStream(filePath)) {
-    hash.update(chunk)
-  }
-  return hash.digest('hex')
-}
-
-async function fileExists(p) {
+async function fileExists(filePath) {
   try {
-    await access(p, constants.F_OK)
+    await access(filePath, constants.F_OK)
     return true
   } catch {
     return false
   }
 }
 
-const tokenArgIdx = process.argv.indexOf('--token')
-const token = (tokenArgIdx >= 0 ? process.argv[tokenArgIdx + 1] : null) || process.env.GITHUB_TOKEN || process.env.GH_TOKEN
-
-if (!token) {
-  console.log(`
-========================================================================
-HƯỚNG DẪN TẠO RELEASE TRÊN GITHUB CHO REPO ${owner}/${repo}:
-========================================================================
-
-Cách 1: Chạy tự động qua script (Cần GitHub Token):
-  node scripts/publish-github-release.mjs --token <github_personal_access_token>
-
-Cách 2: Upload trực tiếp trên giao diện GitHub Web:
-  1. Mở trình duyệt vào trang:
-     https://github.com/${owner}/${repo}/releases/new
-  2. Điền:
-     - Tag name: ${tag}
-     - Release title: Runtime Bundles ${tag}
-  3. Kéo thả tất cả các tệp trong thư mục:
-     • release-artifacts/runtime-manifest.json
-     • và các tệp zip tương ứng trong release-artifacts/
-  4. Bấm "Publish release".
-========================================================================
-`)
-  process.exit(0)
+async function sha256File(filePath) {
+  const hash = createHash('sha256')
+  for await (const chunk of createReadStream(filePath)) hash.update(chunk)
+  return hash.digest('hex')
 }
 
-async function uploadAsset(uploadUrlTemplate, filePath, fileName, token) {
-  const uploadUrl = uploadUrlTemplate.replace(/\{(\?.*)?\}$/, '') + `?name=${encodeURIComponent(fileName)}`
-  const fileStat = await stat(filePath)
-  const fileBuffer = await readFile(filePath)
+async function sha256Response(response) {
+  const hash = createHash('sha256')
+  if (!response.body) throw new Error('GitHub returned an empty asset body.')
+  for await (const chunk of Readable.fromWeb(response.body)) hash.update(chunk)
+  return hash.digest('hex')
+}
 
-  console.log(`[Upload] Đang tải lên ${fileName} (${(fileStat.size / (1024 * 1024)).toFixed(2)} MB)...`)
-  const res = await fetch(uploadUrl, {
-    method: 'POST',
-    headers: {
-      Authorization: `Bearer ${token}`,
-      Accept: 'application/vnd.github+json',
-      'Content-Type': fileName.endsWith('.json') ? 'application/json' : 'application/zip',
-      'Content-Length': String(fileStat.size)
-    },
-    body: fileBuffer
-  })
-
-  if (!res.ok) {
-    const txt = await res.text()
-    throw new Error(`Upload ${fileName} thất bại (${res.status}): ${txt}`)
+function parseArgs(argv) {
+  const values = {}
+  for (let i = 0; i < argv.length; i += 1) {
+    if (argv[i] === '--token') { i += 1; continue }
+    if (!argv[i].startsWith('--')) throw new Error(`Unknown argument: ${argv[i]}`)
+    const key = argv[i].slice(2)
+    const value = argv[i + 1]
+    if (!value || value.startsWith('--')) throw new Error(`Missing value for --${key}`)
+    values[key] = value
+    i += 1
   }
+  return values
+}
 
-  const asset = await res.json()
-  console.log(`✓ Upload thành công ${fileName} -> ${asset.browser_download_url}`)
+function apiHeaders() {
+  return {
+    Authorization: `Bearer ${token}`,
+    Accept: 'application/vnd.github+json',
+    'X-GitHub-Api-Version': '2022-11-28'
+  }
+}
+
+async function getRelease() {
+  const response = await fetch(`https://api.github.com/repos/${owner}/${repo}/releases/tags/${encodeURIComponent(tag)}`, { headers: apiHeaders() })
+  if (response.status === 404) return null
+  if (!response.ok) throw new Error(`GitHub release lookup failed (${response.status}).`)
+  return response.json()
+}
+
+async function remoteAssetHash(asset) {
+  if (typeof asset.digest === 'string' && asset.digest.startsWith('sha256:')) return asset.digest.slice('sha256:'.length).toLowerCase()
+  const response = await fetch(asset.browser_download_url, { headers: { ...apiHeaders(), Accept: 'application/octet-stream' }, redirect: 'follow' })
+  if (!response.ok) throw new Error(`Cannot download existing GitHub asset ${asset.name} (${response.status}).`)
+  return sha256Response(response)
+}
+
+async function assertExistingReleaseMatches(release, expected) {
+  if (release.tag_name !== tag) throw new Error(`Existing release does not point to ${tag}.`)
+  const remote = new Map((release.assets || []).map((asset) => [asset.name, asset]))
+  for (const file of expected) {
+    const asset = remote.get(file.name)
+    if (!asset) throw new Error(`Immutable release ${tag} is missing asset ${file.name}; refusing to mutate it.`)
+    const localSize = (await stat(file.path)).size
+    if (asset.size !== localSize) throw new Error(`Immutable release asset ${file.name} has a different byte count.`)
+    const remoteHash = await remoteAssetHash(asset)
+    const localHash = await sha256File(file.path)
+    if (remoteHash !== localHash) throw new Error(`Immutable release asset ${file.name} has a different SHA-256.`)
+  }
+  console.log(`Existing immutable runtime release ${tag} matches all ${expected.length} local assets.`)
+  return release
+}
+
+async function uploadAsset(uploadUrl, file, fileName) {
+  const info = await stat(file)
+  const body = await readFile(file)
+  const url = uploadUrl.replace(/\{.*\}$/, '') + `?name=${encodeURIComponent(fileName)}`
+  const response = await fetch(url, {
+    method: 'POST',
+    headers: { ...apiHeaders(), 'Content-Type': fileName.endsWith('.json') ? 'application/json' : 'application/zip', 'Content-Length': String(info.size) },
+    body
+  })
+  if (!response.ok) throw new Error(`Upload failed for ${fileName} (${response.status}): ${await response.text()}`)
+}
+
+async function publishDraftRelease(release) {
+  const response = await fetch(`https://api.github.com/repos/${owner}/${repo}/releases/${release.id}`, {
+    method: 'PATCH',
+    headers: { ...apiHeaders(), 'Content-Type': 'application/json' },
+    body: JSON.stringify({ draft: false })
+  })
+  if (!response.ok) throw new Error(`GitHub release publication failed (${response.status}): ${await response.text()}`)
+  return response.json()
 }
 
 async function main() {
-  const artifactsDir = resolve('release-artifacts')
-  const manifestPath = join(artifactsDir, 'runtime-manifest.json')
+  if (!token) throw new Error('A GitHub token is required through --token, GITHUB_TOKEN, or GH_TOKEN.')
+  const args = parseArgs(process.argv.slice(2))
+  const artifactsDir = resolve(args['artifacts-dir'] || 'release-artifacts')
+  const verification = await verifyRuntimeReleaseDirectory(artifactsDir)
+  if (!verification.ok) throw new Error(`Refusing to publish unverified runtime artifacts: ${verification.error}`)
 
-  if (!(await fileExists(manifestPath))) {
-    throw new Error(`Không tìm thấy manifest tại ${manifestPath}. Hãy chạy npm run release:pack trước.`)
-  }
-
-  const manifestRaw = await readFile(manifestPath, 'utf8')
-  const manifest = JSON.parse(manifestRaw)
-
-  if (!manifest.assets || typeof manifest.assets !== 'object') {
-    throw new Error('Manifest không hợp lệ hoặc thiếu mục assets.')
-  }
-
-  const filesToUpload = [
-    { name: 'runtime-manifest.json', path: manifestPath }
+  const expected = [
+    { name: 'runtime-manifest.json', path: join(artifactsDir, 'runtime-manifest.json') },
+    { name: 'runtime-provenance.json', path: join(artifactsDir, 'runtime-provenance.json') },
+    ...Object.values(verification.manifest.assets).map((spec) => ({ name: spec.asset, path: join(artifactsDir, spec.asset) }))
   ]
+  for (const file of expected) if (!(await fileExists(file.path))) throw new Error(`Missing release file ${file.path}`)
 
-  console.log('[Verify] Đang kiểm tra tính toàn vẹn của tất cả asset trước khi phát hành…')
-  for (const [kind, spec] of Object.entries(manifest.assets)) {
-    const assetPath = join(artifactsDir, spec.asset)
-    if (!(await fileExists(assetPath))) {
-      throw new Error(`Asset ${spec.asset} cho [${kind}] được khai báo trong manifest nhưng không tồn tại trên đĩa!`)
+  let release = await getRelease()
+  if (release) {
+    await assertExistingReleaseMatches(release, expected)
+    if (release.draft) {
+      await publishDraftRelease(release)
+      console.log(`Published previously staged immutable runtime release: ${tag}`)
     }
-    const info = await stat(assetPath)
-    if (spec.bytes && info.size !== spec.bytes) {
-      throw new Error(`Kích thước file ${spec.asset} (${info.size}) không khớp với manifest (${spec.bytes})!`)
-    }
-    const actualHash = await sha256File(assetPath)
-    if (actualHash.toLowerCase() !== spec.sha256.toLowerCase()) {
-      throw new Error(`Checksum SHA-256 của ${spec.asset} không khớp với manifest!`)
-    }
-    filesToUpload.push({ name: spec.asset, path: assetPath })
-    console.log(`✓ [${kind}] ${spec.asset}: ${(info.size / (1024 * 1024)).toFixed(2)} MB, SHA-256 OK`)
+    return
   }
 
-  console.log(`\n[Release] Đang kết nối GitHub API để tạo/cập nhật Release "${tag}" cho ${owner}/${repo}...`)
-
-  let release = null
-  const checkRes = await fetch(`https://api.github.com/repos/${owner}/${repo}/releases/tags/${tag}`, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-      Accept: 'application/vnd.github+json'
-    }
-  })
-
-  if (checkRes.ok) {
-    release = await checkRes.json()
-    console.log(`[Release] Release "${tag}" đã tồn tại (ID: ${release.id}).`)
-  } else {
-    const createRes = await fetch(`https://api.github.com/repos/${owner}/${repo}/releases`, {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${token}`,
-        Accept: 'application/vnd.github+json',
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        tag_name: tag,
-        target_commitish: 'main',
-        name: `Runtime Bundles ${tag} (Engines & Manifest)`,
-        body: 'Official lazy-install runtime bundles and manifest for TediaPros.',
-        draft: false,
-        prerelease: false
-      })
+  const created = await fetch(`https://api.github.com/repos/${owner}/${repo}/releases`, {
+    method: 'POST',
+    headers: { ...apiHeaders(), 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      tag_name: tag,
+      target_commitish: process.env.GITHUB_SHA || 'main',
+      name: `TediaPros runtime ${tag}`,
+      body: 'Immutable TediaPros runtime-v2 bundles. All assets are generated from clean pinned inputs and verified before upload.',
+      draft: true,
+      prerelease: false
     })
+  })
+  if (!created.ok) throw new Error(`GitHub release creation failed (${created.status}): ${await created.text()}`)
+  release = await created.json()
 
-    if (!createRes.ok) {
-      const errText = await createRes.text()
-      throw new Error(`Tạo release thất bại (${createRes.status}): ${errText}`)
-    }
-
-    release = await createRes.json()
-    console.log(`[Release] Đã tạo thành công Release "${tag}" (ID: ${release.id})!`)
+  for (const file of expected) {
+    await uploadAsset(release.upload_url, file.path, file.name)
+    console.log(`Uploaded ${file.name} (${(await stat(file.path)).size} bytes, ${await sha256File(file.path)}).`)
   }
-
-  for (const f of filesToUpload) {
-    if (Array.isArray(release.assets)) {
-      const existing = release.assets.find((a) => a.name === f.name)
-      if (existing) {
-        console.log(`[Release] Xóa asset cũ ${f.name} (ID: ${existing.id})...`)
-        await fetch(`https://api.github.com/repos/${owner}/${repo}/releases/assets/${existing.id}`, {
-          method: 'DELETE',
-          headers: {
-            Authorization: `Bearer ${token}`,
-            Accept: 'application/vnd.github+json'
-          }
-        })
-      }
-    }
-    await uploadAsset(release.upload_url, f.path, f.name, token)
-  }
-
-  console.log('\n======================================================')
-  console.log(`✓ HOÀN TẤT PHÁT HÀNH RELEASE ĐỒNG BỘ: ${release.html_url}`)
-  console.log(`Đã tải lên toàn bộ ${filesToUpload.length} tệp (manifest + assets).`)
-  console.log('======================================================')
+  await publishDraftRelease(release)
+  const published = await getRelease()
+  if (!published) throw new Error(`Release ${tag} disappeared after upload.`)
+  await assertExistingReleaseMatches(published, expected)
+  console.log(`Published and verified immutable runtime release: ${published.html_url}`)
 }
 
-main().catch((err) => {
-  console.error('[Release] Lỗi:', err)
-  process.exit(1)
-})
+main().catch((error) => { console.error(`[Release] ${error.message}`); process.exit(1) })

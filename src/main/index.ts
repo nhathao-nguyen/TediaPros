@@ -70,7 +70,6 @@ import {
   installCudaPack,
   whisperModelStatus,
   installWhisperModel,
-  whisperWorkerStats,
   shutdownWhisperRuntime
 } from './whisper'
 import { detectGpu } from './gpu'
@@ -943,7 +942,6 @@ function registerIpc(): void {
       return { ok: false, error: err instanceof Error ? err.message : String(err) }
     }
   })
-  ipcMain.handle('whisper:workerStats', async () => whisperWorkerStats())
   ipcMain.handle('whisper:stopWorker', async () => {
     await shutdownWhisperRuntime()
     return { ok: true }

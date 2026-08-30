@@ -119,8 +119,8 @@ export default function AudioText({
     void (async () => {
       const s = await window.api.whisperEngineStatus()
       if (huy) return
-      setHasEngine(s.has && s.healthy === true && s.protocol === 'whisper-local/1')
-      if (!s.has || s.needsUpdate || s.healthy !== true || s.protocol !== 'whisper-local/1') {
+      setHasEngine(s.has && s.healthy === true && s.protocol === 'whisper-engine/1' && s.engine === 'faster-whisper')
+      if (!s.has || s.needsUpdate || s.healthy !== true || s.protocol !== 'whisper-engine/1' || s.engine !== 'faster-whisper') {
         setInstalling(true)
         setInstallErr(null)
         setInstallPct(0)
@@ -418,7 +418,7 @@ export default function AudioText({
         </div>
         <div className="model-readiness" style={{ marginTop: 8 }}>
           {modelStatus?.complete ? (
-            <div className="muted small">Model {modelStatus.id} đã có và đã kiểm tra SHA-256 · {modelStatus.source}</div>
+            <div className="muted small">Model {modelStatus.id} đã có và đã kiểm tra SHA-256.</div>
           ) : modelInstalling ? (
             <>
               <div className="bar">

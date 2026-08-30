@@ -85,6 +85,19 @@ def resource_dir():
     return os.path.dirname(os.path.abspath(__file__))
 
 
+def configure_cuda(cuda_dir):
+    """Make bundled CUDA libraries visible before importing CTranslate2."""
+    if not cuda_dir or not os.path.isdir(cuda_dir):
+        return
+    cdir = os.path.abspath(cuda_dir)
+    os.environ["PATH"] = cdir + os.pathsep + os.environ.get("PATH", "")
+    if hasattr(os, "add_dll_directory"):
+        try:
+            os.add_dll_directory(cdir)
+        except Exception:
+            pass
+
+
 DIA_THRESHOLD = 0.8
 MIN_SEG_SEC = 0.5
 
@@ -161,8 +174,7 @@ def main():
     p.add_argument("--input", help="file audio/video dau vao (che do file)")
     p.add_argument("--output-dir", help="thu muc luu ket qua (che do file)")
     p.add_argument("--basename", default=None, help="ten file xuat (khong duoi)")
-    p.add_argument("--model", default="small", help="base|small|medium|tiny|large-v3")
-    p.add_argument("--model-dir", default=None, help="noi cache model (userData)")
+    p.add_argument("--model-path", default=None, help="local Faster-Whisper CTranslate2 model directory")
     p.add_argument("--language", default="auto", help="auto | ma ngon ngu (vi, en...)")
     p.add_argument("--task", default="transcribe", choices=["transcribe", "translate"])
     p.add_argument("--formats", default="srt", help="danh sach: srt,txt,vtt,json")
@@ -179,20 +191,31 @@ def main():
         return 0
 
     if args.probe:
+        device = args.device if args.device != "auto" else "cpu"
+        configure_cuda(args.cuda_dir)
         try:
             import ctranslate2
             from faster_whisper import WhisperModel
-            has_cuda = False
-            try:
-                has_cuda = ctranslate2.get_cuda_device_count() > 0
-            except Exception:
-                pass
+            has_cuda = ctranslate2.get_cuda_device_count() > 0
+            if device == "cuda" and not has_cuda:
+                emit({"type": "probe", "protocol": "whisper-engine/1", "ready": False,
+                      "engine": "faster-whisper", "device": "cuda", "cuda": False,
+                      "modelLoaded": False, "error": "CTranslate2 không nhìn thấy CUDA."})
+                return 1
+            model_loaded = False
+            if args.model_path:
+                if not os.path.isdir(args.model_path):
+                    raise RuntimeError("--model-path không phải thư mục model local")
+                WhisperModel(args.model_path, device=device, compute_type="auto" if device == "cuda" else "int8")
+                model_loaded = True
             emit({
                 "type": "probe",
                 "protocol": "whisper-engine/1",
                 "ready": True,
                 "engine": "faster-whisper",
-                "cuda": has_cuda
+                "device": device,
+                "cuda": has_cuda,
+                "modelLoaded": model_loaded
             })
             return 0
         except Exception as e:
@@ -207,14 +230,7 @@ def main():
     if device == "auto":
         device = "cpu"
 
-    if device == "cuda" and args.cuda_dir and os.path.isdir(args.cuda_dir):
-        cdir = os.path.abspath(args.cuda_dir)
-        os.environ["PATH"] = cdir + os.pathsep + os.environ.get("PATH", "")
-        if hasattr(os, "add_dll_directory"):
-            try:
-                os.add_dll_directory(cdir)
-            except Exception:
-                pass
+    configure_cuda(args.cuda_dir)
 
     try:
         from faster_whisper import WhisperModel
@@ -229,13 +245,16 @@ def main():
     else:
         compute_type = "int8"
 
+    if not args.model_path or not os.path.isdir(args.model_path):
+        emit({"type": "error", "message": "Thiếu model Faster-Whisper local (--model-path)."})
+        return 1
+
     try:
-        emit({"type": "status", "message": "Dang nap model %s (%s)..." % (args.model, device)})
+        emit({"type": "status", "message": "Dang nap model local (%s)..." % device})
         model = WhisperModel(
-            args.model,
+            args.model_path,
             device=device,
             compute_type=compute_type,
-            download_root=args.model_dir,
             cpu_threads=max(0, args.threads),
         )
     except Exception as e:

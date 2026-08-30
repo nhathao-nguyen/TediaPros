@@ -4,10 +4,11 @@ export interface WhisperModelSpec {
   id: WhisperModelId
   label: string
   note: string
-  backend: 'faster-whisper' | 'whisper.cpp'
-  format: 'ctranslate2' | 'ggml'
+  backend: 'faster-whisper'
+  format: 'ctranslate2'
   languageFamily: 'multilingual'
   repoId: string
+  revision: string
   filename: string
   downloadBytes: number
 }
@@ -22,6 +23,7 @@ export const WHISPER_MODEL_CATALOG: Readonly<Record<WhisperModelId, WhisperModel
     format: 'ctranslate2',
     languageFamily: 'multilingual',
     repoId: 'Systran/faster-whisper-base',
+    revision: 'ebe41f70d5b6dfa9166e2c581c45c9c0cfc57b66',
     filename: 'model.bin',
     downloadBytes: 145_000_000
   },
@@ -33,6 +35,7 @@ export const WHISPER_MODEL_CATALOG: Readonly<Record<WhisperModelId, WhisperModel
     format: 'ctranslate2',
     languageFamily: 'multilingual',
     repoId: 'Systran/faster-whisper-small',
+    revision: '536b0662742c02347bc0e980a01041f333bce120',
     filename: 'model.bin',
     downloadBytes: 484_000_000
   },
@@ -44,6 +47,7 @@ export const WHISPER_MODEL_CATALOG: Readonly<Record<WhisperModelId, WhisperModel
     format: 'ctranslate2',
     languageFamily: 'multilingual',
     repoId: 'Systran/faster-whisper-medium',
+    revision: '08e178d48790749d25932bbc082711ddcfdfbc4f',
     filename: 'model.bin',
     downloadBytes: 1_530_000_000
   }

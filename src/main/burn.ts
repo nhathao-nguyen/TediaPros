@@ -123,7 +123,6 @@ export function cancelBurn(): void {
 }
 
 function duongFfprobe(ffmpeg: string): string {
-  if (ffmpeg === 'ffmpeg') return 'ffprobe'
   return join(dirname(ffmpeg), process.platform === 'win32' ? 'ffprobe.exe' : 'ffprobe')
 }
 

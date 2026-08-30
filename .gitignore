@@ -6,6 +6,7 @@ out/
 dist/
 dist-engine/
 *.tsbuildinfo
+/release-artifacts/
 
 # Logs
 *.log

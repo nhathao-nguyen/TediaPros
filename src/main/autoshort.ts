@@ -119,8 +119,10 @@ export async function getAutoShortReadiness(config: Pick<AutoShortConfig, 'subti
     useCuda ? detectGpu() : Promise.resolve(null)
   ])
   const cudaProbe = useCuda && engine?.has && engine.healthy && cuda?.has
-    ? await whisperCudaProbe(config.whisperModel || 'base')
+    ? await whisperCudaProbe(config.whisperModel || 'base', 'cuda')
     : null
+  const gpuReady = Boolean(useCuda && gpu?.hasNvidia && gpu.canAccelerate)
+  const cudaReady = Boolean(useCuda && cuda?.has && cudaProbe?.ready)
   const dependencies: AutoShortDependencyStatus[] = []
 
   dependencies.push(dependency(
@@ -158,18 +160,17 @@ export async function getAutoShortReadiness(config: Pick<AutoShortConfig, 'subti
     ))
   }
   if (useCuda) {
-    const gpuReady = Boolean(gpu?.hasNvidia && gpu.canAccelerate)
     dependencies.push(dependency(
       'whisper-cuda',
       'Gói CUDA Faster-Whisper',
-      true,
-      Boolean(cuda?.has && (gpuReady || cudaProbe?.ready)),
+      gpuReady,
+      cudaReady,
       1_100_000_000,
       !gpuReady
         ? gpu?.reason || 'Không tìm thấy GPU NVIDIA tương thích.'
         : !cuda?.has
           ? 'Chưa tải gói CUDA.'
-          : cudaProbe?.message || 'CUDA chưa được engine xác nhận.'
+        : cudaProbe?.message || (gpuReady ? 'CUDA chưa được engine xác nhận.' : 'Không tìm thấy GPU NVIDIA tương thích.')
     ))
   }
   if (ocr) {
@@ -177,9 +178,9 @@ export async function getAutoShortReadiness(config: Pick<AutoShortConfig, 'subti
       'ocr-engine',
       'OCR engine',
       true,
-      ocr.has,
+      Boolean(ocr.has && ocr.healthy),
       230_000_000,
-      ocr.has ? undefined : 'Chưa cài OCR engine.'
+      !ocr.has ? 'Chưa cài OCR engine.' : !ocr.healthy ? (ocr.message || 'OCR engine probe thất bại.') : undefined
     ))
   }
   const missing = dependencies.filter((item) => item.required && !item.ready)
@@ -190,7 +191,7 @@ export async function getAutoShortReadiness(config: Pick<AutoShortConfig, 'subti
     ready: missing.length === 0,
     method: config.subtitleMethod,
     requestedDevice: useWhisper ? (useCuda ? 'cuda' : 'cpu') : null,
-    effectiveDevice: useWhisper ? (useCuda && missing.length === 0 ? 'cuda' : 'cpu') : null,
+    effectiveDevice: useWhisper ? (useCuda && cudaReady ? 'cuda' : 'cpu') : null,
     dependencies,
     model,
     message
@@ -1229,9 +1230,6 @@ async function processSingleVideo(
           emitProgress(job, item, 'extracting_sub', 5 + Math.max(0, p.percent) * 0.25, p.line || 'Đang nhận diện giọng nói…', index, total)
         }, job.controller.signal)
         if (!whisperResult.ok || !whisperResult.outputs.length) throw new Error(whisperResult.error || 'Whisper không tạo được SRT')
-        if (needsCuda(config) && whisperResult.effectiveDevice !== 'cuda') {
-          throw new Error('Whisper không xác nhận được CUDA; đã dừng để tránh chạy CPU ngầm.')
-        }
         const srtPath = whisperResult.outputs.find((path) => path.toLowerCase().endsWith('.srt')) || whisperResult.outputs[0]
         const cues = await readWhisperAlignedCues(srtPath, whisperResult.alignmentPath)
         if (cues.length === 0) throw new Error('Whisper không nhận được câu phụ đề hợp lệ')
@@ -1393,7 +1391,8 @@ async function processSingleVideo(
     }
 
     // 5. Stage: Output Media Validation via FFprobe
-    const ffmpegPath = (await resolveFfmpeg()) || 'ffmpeg'
+    const ffmpegPath = await resolveFfmpeg()
+    if (!ffmpegPath) throw new Error('Thiếu FFmpeg/FFprobe đã xác minh để kiểm tra video đầu ra.')
     emitProgress(job, item, 'rendering_video', 98, 'Đang kiểm tra chất lượng video đầu ra…', index, total)
     const mediaCheck = await probeOutputMediaWithFfprobe(ffmpegPath, burnResult.output, config.ttsEnabled)
     if (!mediaCheck.ok) {

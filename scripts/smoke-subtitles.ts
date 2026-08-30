@@ -40,16 +40,11 @@ assert.equal(isNewerAppVersion('0.1.17', '0.1.18'), false)
 assert.equal(isNewerAppVersion('latest', '0.1.18'), false)
 
 const cudaUserData = join('fixtures', 'tedia-pros')
-const cudaAppData = join('fixtures')
-const cudaCandidates = whisperCudaCandidateDirs(cudaUserData, cudaAppData)
+const cudaCandidates = whisperCudaCandidateDirs(cudaUserData)
 assert.deepEqual(cudaCandidates, [
-  join(cudaUserData, 'bin', 'whisper-cuda'),
-  join(cudaUserData, 'runtime', 'whisper-cuda'),
-  join(cudaUserData, 'bin', 'whisper-cpp'),
-  join(cudaUserData, 'runtime', 'whisper-cpp'),
-  join(cudaAppData, 'tediapros', 'bin', 'whisper-cuda')
+  join(cudaUserData, 'bin', 'whisper-cuda')
 ])
-assert.equal(findWhisperCudaDir(cudaCandidates, (path) => path === cudaCandidates[1]), cudaCandidates[1])
+assert.equal(findWhisperCudaDir(cudaCandidates, (path) => path === cudaCandidates[0]), cudaCandidates[0])
 assert.equal(findWhisperCudaDir(cudaCandidates, () => false), null)
 
 assert.equal(originalAudioGain(100), 1)

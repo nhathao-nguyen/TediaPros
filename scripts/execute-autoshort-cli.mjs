@@ -1,9 +1,14 @@
 import { build } from 'esbuild'
 import { existsSync, mkdirSync, rmSync, writeFileSync } from 'node:fs'
+import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { spawn } from 'node:child_process'
 
-const userDataDir = 'C:\\\\Users\\\\PC\\\\AppData\\\\Roaming\\\\tedia-pros'
+const debugRoot = join(tmpdir(), 'tediapros-debug')
+const userDataDir = join(debugRoot, 'user-data')
+const appDataDir = join(debugRoot, 'app-data')
+const mediaDir = join(debugRoot, 'media')
+const escapeJsString = (value) => value.replace(/\\/g, '\\\\').replace(/'/g, "\\'")
 const tempRunnerDir = join(process.cwd(), '.runner-staging')
 if (existsSync(tempRunnerDir)) rmSync(tempRunnerDir, { recursive: true, force: true })
 mkdirSync(tempRunnerDir, { recursive: true })
@@ -60,7 +65,7 @@ async function debugPreflight() {
     voiceOverMode: false,
     audioMode: 'replace',
     originalAudioVolume: 20,
-    outputDir: 'C:\\\\Users\\\\PC\\\\Downloads\\\\test'
+    outputDir: '${escapeJsString(mediaDir)}'
   } as any
 
   const readiness = await getAutoShortReadiness(config)
@@ -85,7 +90,7 @@ async function debugPreflight() {
     items: [
       {
         id: 'task-test-1',
-        filePath: 'C:\\\\Users\\\\PC\\\\Downloads\\\\test\\\\short-test.mp4'
+        filePath: '${escapeJsString(join(mediaDir, 'short-test.mp4'))}'
       }
     ]
   }
@@ -129,9 +134,9 @@ const electronMockPlugin = {
       contents: `
         const path = require('node:path');
         const os = require('node:os');
-        const userData = '${userDataDir.replace(/\\/g, '\\\\')}';
-        const appData = 'C:\\\\Users\\\\PC\\\\AppData\\\\Roaming';
-        const projectRoot = '${process.cwd().replace(/\\/g, '\\\\')}';
+        const userData = '${escapeJsString(userDataDir)}';
+        const appData = '${escapeJsString(appDataDir)}';
+        const projectRoot = '${escapeJsString(process.cwd())}';
         module.exports = {
           app: {
             getPath: (name) => {
