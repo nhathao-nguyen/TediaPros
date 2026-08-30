@@ -15,6 +15,7 @@ const isMac = process.platform === 'darwin'
 const YTDLP_RELEASE_BASE = 'https://github.com/yt-dlp/yt-dlp/releases/latest/download'
 const YTDLP_RELEASE_API = 'https://api.github.com/repos/yt-dlp/yt-dlp/releases/latest'
 let ytDlpInstallInFlight: Promise<void> | null = null
+let ffmpegInstallInFlight: Promise<void> | null = null
 
 export type YtDlpSource = 'managed' | 'path'
 
@@ -465,7 +466,7 @@ async function installYtDlp(onProgress: ProgressCb): Promise<void> {
   }
 }
 
-export async function installFfmpeg(onProgress: ProgressCb): Promise<void> {
+async function doInstallFfmpeg(onProgress: ProgressCb): Promise<void> {
   onProgress({ phase: 'downloading-ffmpeg', message: 'Đang kiểm tra FFmpeg…', percent: 0 })
   const existing = await canonicalResolveFfmpeg()
   if (existing) {
@@ -481,6 +482,16 @@ export async function installFfmpeg(onProgress: ProgressCb): Promise<void> {
     throw new Error('Không có asset FFmpeg/FFprobe hợp lệ trong runtime manifest.')
   }
   onProgress({ phase: 'done', message: 'Đã sẵn sàng FFmpeg.', percent: 100 })
+}
+
+export async function installFfmpeg(onProgress: ProgressCb): Promise<void> {
+  if (ffmpegInstallInFlight) return ffmpegInstallInFlight
+  ffmpegInstallInFlight = doInstallFfmpeg(onProgress)
+  try {
+    await ffmpegInstallInFlight
+  } finally {
+    ffmpegInstallInFlight = null
+  }
 }
 
 /** Da co ban yt-dlp rieng do app quan ly (trong userData/bin) chua? */

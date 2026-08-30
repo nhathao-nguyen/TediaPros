@@ -10,6 +10,7 @@ import {
   resolveAutoShortWhisperLanguage,
   validateAutoShortTtsModel,
   validateAutoShortTimelineSync,
+  shouldSplitAutoShortVoiceGroup,
   validateVoiceAudioCompleteness,
   validateRenderedOutputMedia,
   type RenderedMediaProbeInfo,
@@ -19,7 +20,7 @@ import {
   AUTO_SHORT_TTS_TAIL_MARGIN_SECONDS,
   buildAutoShortTtsTrimFilter
 } from './autoShortPolicy'
-import { buildSemanticGroups, joinGroupText, type SemanticGroup } from './semanticGrouping'
+import { buildSemanticGroups, joinGroupText, splitSemanticBatch, type SemanticGroup } from './semanticGrouping'
 import { huongDan, parseTranslationItems } from './translate-shared'
 import { resolveTranslationSourceLanguage } from './localTranslatePolicy'
 import { debugRaw, logInfo, logWarn, logError, errLabel } from './logger'
@@ -816,28 +817,29 @@ async function synthesizeVoice(
   }
 
   // 1. Group consecutive cues into semantic groups for natural prosody
-  const semanticGroups = buildSemanticGroups(cues)
+  let semanticGroups = buildSemanticGroups(cues)
   logInfo(`[AutoShort] Đã gom ${cues.length} cue thành ${semanticGroups.length} semantic group để lồng tiếng tự nhiên.`)
 
   let voice: string | undefined
-  const generatedGroupClips: Array<{
+  const preparedClips: Array<{
     group: SemanticGroup<SubtitleCue>
     path: string
+    rawPath: string
     rawDuration: number
+    naturalDuration: number
+    rephraseAttempted: boolean
     text: string
   }> = []
 
-  // 2. Synthesize each semantic group with completeness validation and retry
-  for (let gIndex = 0; gIndex < semanticGroups.length; gIndex++) {
-    throwIfAborted(job.controller.signal)
-    const group = semanticGroups[gIndex]
+  // 2-3. Synthesize, trim, rephrase, and split only when a complete multi-cue
+  // group still cannot fit at the hard tempo limit. This preserves every cue
+  // while giving the rephrase step smaller semantic units to work with.
+  const synthesizeGroup = async (group: SemanticGroup<SubtitleCue>, gIndex: number) => {
     const groupText = joinGroupText(group.cues)
-    emitProgress(job, item, 'generating_tts', 58 + (gIndex / semanticGroups.length) * 20, `Đang tạo voice ${gIndex + 1}/${semanticGroups.length}`, index, total)
-    
-    let lastError = 'Không tạo được voice'
-    let wasGenerated = false
+    emitProgress(job, item, 'generating_tts', 58 + (gIndex / Math.max(1, semanticGroups.length)) * 20, `Đang tạo voice ${gIndex + 1}/${semanticGroups.length}`, index, total)
 
-    for (let attempt = 0; attempt < 3 && !wasGenerated; attempt++) {
+    let lastError = 'Không tạo được voice'
+    for (let attempt = 0; attempt < 3; attempt++) {
       try {
         const clipPath = join(workDir, `group-${gIndex}.wav`)
         const request = {
@@ -856,38 +858,20 @@ async function synthesizeVoice(
         if (!result.ok || !result.savedPath) throw new Error(result.error || 'Server không trả về audio')
         voice = result.voice || voice
         const rawDuration = await probeDuration(ffmpeg, result.savedPath, job.controller.signal)
-
-        // Validate audio completeness
         const completeness = validateVoiceAudioCompleteness(groupText, rawDuration)
-        if (!completeness.ok) {
-          throw new Error(completeness.error || 'Audio phát âm không đầy đủ nội dung')
-        }
-
-        generatedGroupClips.push({ group, path: result.savedPath, rawDuration, text: groupText })
-        wasGenerated = true
+        if (!completeness.ok) throw new Error(completeness.error || 'Audio phát âm không đầy đủ nội dung')
+        return { group, path: result.savedPath, rawDuration, text: groupText }
       } catch (error) {
         lastError = errLabel(error)
         if (isAbortError(error)) throw error
         if (attempt < 2) await new Promise((resolve) => setTimeout(resolve, 500 * (attempt + 1)))
       }
     }
-    if (!wasGenerated) throw new Error(`Voice đoạn ${gIndex + 1} (${group.id}) thất bại: ${lastError}`)
+    throw new Error(`Voice đoạn ${gIndex + 1} (${group.id}) thất bại: ${lastError}`)
   }
 
-  // 3. Trim outer silence and perform duration-aware rephrasing if needed
-  const preparedClips: Array<{
-    group: SemanticGroup<SubtitleCue>
-    path: string
-    rawPath: string
-    rawDuration: number
-    naturalDuration: number
-    rephraseAttempted: boolean
-    text: string
-  }> = []
-
-  for (let gIndex = 0; gIndex < generatedGroupClips.length; gIndex++) {
+  const prepareGroup = async (current: Awaited<ReturnType<typeof synthesizeGroup>>, gIndex: number) => {
     throwIfAborted(job.controller.signal)
-    const current = generatedGroupClips[gIndex]
     const trimmedPath = join(workDir, `group-${gIndex}-trim.wav`)
     let naturalDuration = await trimVoiceClip(ffmpeg, current.path, trimmedPath, job.controller.signal)
     if (!(naturalDuration > 0.05)) throw new Error(`Voice đoạn ${gIndex + 1} không có âm thanh hợp lệ.`)
@@ -944,7 +928,7 @@ async function synthesizeVoice(
       }
     }
 
-    preparedClips.push({
+    return {
       group: current.group,
       path: finalPath,
       rawPath: current.path,
@@ -952,7 +936,30 @@ async function synthesizeVoice(
       naturalDuration,
       rephraseAttempted,
       text: finalText
-    })
+    }
+  }
+
+  let gIndex = 0
+  while (gIndex < semanticGroups.length) {
+    throwIfAborted(job.controller.signal)
+    const group = semanticGroups[gIndex]
+    const current = await synthesizeGroup(group, gIndex)
+    const prepared = await prepareGroup(current, gIndex)
+    const groupStart = group.start ?? group.cues[0]?.start ?? 0
+    const groupEnd = group.end ?? group.cues[group.cues.length - 1]?.end ?? (groupStart + 2.5)
+    const availableDuration = Math.max(0.1, groupEnd >= groupStart ? groupEnd - groupStart : 2.5)
+
+    if (shouldSplitAutoShortVoiceGroup(group.cues.length, prepared.naturalDuration, availableDuration, AUTO_SHORT_TTS_MAX_TEMPO)) {
+      const split = splitSemanticBatch([group])
+      if (split) {
+        semanticGroups.splice(gIndex, 1, ...split[0], ...split[1])
+        logInfo(`[AutoShort] Nhóm ${group.id} vẫn dài ${prepared.naturalDuration.toFixed(2)}s sau rephrase; tách thành ${split[0][0].id} và ${split[1][0].id} để giữ trọn nội dung.`)
+        continue
+      }
+    }
+
+    preparedClips.push(prepared)
+    gIndex++
   }
 
   // 4. Plan voice timeline for semantic groups using robust global tempo
