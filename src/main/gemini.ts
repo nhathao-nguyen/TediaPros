@@ -242,14 +242,34 @@ export async function translateSrt(
   let processed = 0
   for (let i = 0; i < chunks.length; i++) {
     const c = chunks[i]
-    const currentContext = c.map((block) => context.find((item) => item.id === block.id)).filter((item): item is (typeof context)[number] => Boolean(item))
-    const payload = [
-      'Dữ liệu phụ đề cần dịch:',
-      ...currentContext.map((cue) => {
-        const durStr = cue.duration != null ? ` (thời lượng: ${cue.duration.toFixed(2)}s)` : ''
-        return `[${cue.id}]${options.mode === 'dubbing' ? durStr : ''} ${cue.text}`
-      })
-    ].join('\n')
+    const radius = Number.isInteger(options.contextRadius) ? Math.max(0, Math.min(3, options.contextRadius!)) : 1
+    const firstIndex = blocks.findIndex((b) => b.id === c[0]?.id)
+    const lastIndex = blocks.findIndex((b) => b.id === c[c.length - 1]?.id)
+    const contextBefore = firstIndex > 0 ? blocks.slice(Math.max(0, firstIndex - radius), firstIndex) : []
+    const contextAfter = lastIndex >= 0 && lastIndex < blocks.length - 1 ? blocks.slice(lastIndex + 1, Math.min(blocks.length, lastIndex + 1 + radius)) : []
+
+    const payloadLines: string[] = []
+    if (contextBefore.length > 0) {
+      payloadLines.push(
+        '[Ngữ cảnh phía trước (chỉ để hiểu nghĩa, không dịch)]:',
+        ...contextBefore.map((b) => `[${b.id}] ${b.text}`),
+        ''
+      )
+    }
+    payloadLines.push('[Nội dung cần dịch]:')
+    for (const cue of c) {
+      const duration = cue.duration != null ? cue.duration : (cue.end != null && cue.start != null && cue.end >= cue.start ? cue.end - cue.start : null)
+      const durStr = duration != null ? ` (thời lượng: ${duration.toFixed(2)}s)` : ''
+      payloadLines.push(`[${cue.id}]${options.mode === 'dubbing' ? durStr : ''} ${cue.text}`)
+    }
+    if (contextAfter.length > 0) {
+      payloadLines.push(
+        '',
+        '[Ngữ cảnh phía sau (chỉ để hiểu nghĩa, không dịch)]:',
+        ...contextAfter.map((b) => `[${b.id}] ${b.text}`)
+      )
+    }
+    const payload = payloadLines.join('\n')
     const r = await goiCoLui(key, models, huongDan(dich, { mode: options.mode, concise: options.concise, sourceLanguage: options.sourceLanguage }), payload, SCHEMA, undefined, options.signal)
     if (!r.ok) return { ok: false, error: errLabel(r.err) }
 

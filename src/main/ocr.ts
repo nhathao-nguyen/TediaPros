@@ -69,23 +69,24 @@ async function probeOcr(path: string): Promise<{ healthy: boolean; version: stri
   const versionJson = parseJsonLine(version.out)
   const protocol = typeof versionJson?.protocol === 'string' ? versionJson.protocol : null
   const versionText = typeof versionJson?.version === 'string' ? versionJson.version : null
-  // Older bundled OCR builds expose the same JSON streaming inference CLI but
-  // predate the --version/--probe readiness protocol. Accept that interface
-  // after verifying its required input/output flags; inference still validates
-  // the actual process and output below.
-  const legacyCliHelp = await runCapture(path, ['--help'])
-  if (/--input[\s\S]+--output/u.test(legacyCliHelp.out)) {
-    return { healthy: true, version: versionText, protocol: 'ocr-legacy-cli/1' }
-  }
-  if (version.code !== 0 || versionJson?.type !== 'version' || protocol !== 'ocr-local/1' || versionJson.engine !== 'rapidocr') {
-    return { healthy: false, version: versionText, protocol, message: 'OCR binary không hỗ trợ protocol ocr-local/1; không dùng --help để đánh dấu sẵn sàng.' }
-  }
-  const probe = await runCapture(path, ['--probe'])
-  const probeJson = parseJsonLine(probe.out)
-  if (probe.code !== 0 || probeJson?.type !== 'probe' || probeJson.ready !== true || probeJson.protocol !== 'ocr-local/1') {
+
+  if (version.code === 0 && versionJson?.type === 'version' && protocol === 'ocr-local/1' && versionJson.engine === 'rapidocr') {
+    const probe = await runCapture(path, ['--probe'])
+    const probeJson = parseJsonLine(probe.out)
+    if (probe.code === 0 && probeJson?.type === 'probe' && probeJson.ready === true && probeJson.protocol === 'ocr-local/1') {
+      return { healthy: true, version: versionText, protocol }
+    }
     return { healthy: false, version: versionText, protocol, message: 'OCR probe thất bại hoặc RapidOCR/model nhúng chưa khởi tạo được.' }
   }
-  return { healthy: true, version: versionText, protocol }
+
+  // Legacy fallback: probe using --probe if supported
+  const probe = await runCapture(path, ['--probe'])
+  const probeJson = parseJsonLine(probe.out)
+  if (probe.code === 0 && probeJson?.type === 'probe' && probeJson.ready === true) {
+    return { healthy: true, version: versionText || '1.0.0', protocol: 'ocr-local/1' }
+  }
+
+  return { healthy: false, version: versionText, protocol, message: 'OCR binary không vượt qua kiểm tra probe hoặc không tương thích protocol ocr-local/1.' }
 }
 
 export async function ocrEngineStatus(): Promise<OcrEngineStatus> {

@@ -279,18 +279,18 @@ test('AutoShort accepts only a TTS capability that declares the requested langua
   assert.equal(validateAutoShortTtsModel({ id: 'tts-multilingual', available: true, languages: ['en', 'zh'] }, 'en'), undefined)
 })
 
-test('AutoShort plans voice timing per cue: a long cue does not accelerate the entire video', () => {
+test('AutoShort plans voice timing per cue: a long cue does not accelerate the entire video and respects hard max tempo', () => {
   const cues = [
     { start: 0, end: 2.0 },
-    { start: 2.2, end: 3.2 },
-    { start: 3.4, end: 4.5 }
+    { start: 2.5, end: 3.7 },
+    { start: 4.0, end: 5.5 }
   ]
-  const naturalDurations = [1.8, 1.7, 1.2]
-  const plan = planAutoShortVoiceTimeline(cues, naturalDurations, 4.8)
+  const naturalDurations = [1.8, 1.5, 1.4]
+  const plan = planAutoShortVoiceTimeline(cues, naturalDurations, 6.0, 1.35)
 
   assert.equal(plan.cues[0].tempo, 1.0)
-  assert.ok(plan.cues[1].tempo >= 1.6)
-  assert.ok(plan.cues[2].tempo <= 1.1)
+  assert.equal(plan.cues[1].tempo, 1.25)
+  assert.equal(plan.cues[2].tempo, 1.0)
 })
 
 test('AutoShort regression test: voice and subtitle do not spill into adjacent cue or stretch into next scene', () => {
@@ -495,12 +495,11 @@ test('AutoShort clamps recognition cues that round past the video EOF', () => {
   assert.deepEqual(result.map((cue) => [cue.start, cue.end]), [[1, 2], [4, 5.5]])
 })
 
-test('OCR accepts the legacy local CLI when the new probe flags are unavailable', async () => {
+test('OCR verifies runtime readiness using protocol probe and version commands', async () => {
   const source = await readFile(join(process.cwd(), 'src', 'main', 'ocr.ts'), 'utf8')
-  assert.match(source, /legacyCliHelp\s*=\s*await runCapture\(path, \['--help'\]\)/u)
-  assert.doesNotMatch(source, /legacyCliHelp\.code === 0/u)
-  assert.match(source, /legacyCliHelp\.out/u)
-  assert.match(source, /--input[\s\S]+--output/u)
+  assert.match(source, /runCapture\(path,\s*\['--version'\]\)/u)
+  assert.match(source, /runCapture\(path,\s*\['--probe'\]\)/u)
+  assert.match(source, /ocr-local\/1/u)
 })
 
 test('AutoShort requests chat completion translation so cue meaning is preserved', async () => {
@@ -558,11 +557,10 @@ test('AutoShort Main OCR fallback matches the portrait and landscape UI defaults
   assert.match(source, /const portrait = meta\.h > meta\.w[\s\S]{0,320}0\.72[\s\S]{0,320}0\.74[\s\S]{0,320}0\.92[\s\S]{0,320}0\.94/u)
 })
 
-test('OCR legacy CLI detection accepts argparse usage output with a nonzero exit', async () => {
+test('OCR protocol rejects unprobed binaries and requires genuine model probe', async () => {
   const source = await readFile(join(process.cwd(), 'src', 'main', 'ocr.ts'), 'utf8')
-  assert.doesNotMatch(source, /legacyCliHelp\.code === 0/u)
-  assert.match(source, /legacyCliHelp\.out/u)
-  assert.match(source, /--input[\s\S]+--output/u)
+  assert.match(source, /ocr-local\/1/u)
+  assert.doesNotMatch(source, /legacyCliHelp/u)
 })
 
 test('local translation defers source detection to the provider when no hint exists', () => {
@@ -784,18 +782,17 @@ test('semantic grouping is language-agnostic across multiple scripts and punctua
   assert.equal(esGroups.length, 1)
 })
 
-test('AutoShort translation guidance clarifies that cues are timeline markers rather than semantic boundaries', () => {
+test('AutoShort translation guidance clarifies that cues are timeline markers and enables contextual reading', () => {
   const prompt = huongDan('vi', { mode: 'dubbing' })
   assert.match(prompt, /mốc timeline/iu)
-  assert.match(prompt, /không nhất thiết là ranh giới ngữ nghĩa/iu)
   assert.match(prompt, /liền mạch/iu)
+  assert.match(prompt, /hiểu trọn vẹn ngữ cảnh/iu)
 })
 
-test('AutoShort translation guidance permits restructuring and natural phrase distribution across cues', () => {
+test('AutoShort translation guidance requires per-cue semantic preservation and forbids shifting content across cues', () => {
   const prompt = huongDan('vi', { mode: 'dubbing' })
-  assert.match(prompt, /tái cấu trúc ngữ pháp/iu)
-  assert.match(prompt, /phân phối tự nhiên cụm từ dịch giữa các cue liền kề/iu)
-  assert.match(prompt, /không bắt buộc giữ nguyên trật tự từ/iu)
+  assert.match(prompt, /Bảo toàn đúng phần nội dung và ý nghĩa ngữ nghĩa tương ứng với từng cue/iu)
+  assert.match(prompt, /không tự ý dịch chuyển hoặc dồn ý nghĩa từ cue này sang cue khác/iu)
 })
 
 test('translation validation strictly requires all cue IDs and rejects missing, duplicate, unknown, or empty IDs', () => {
@@ -1229,6 +1226,59 @@ test('AutoShort component does not hardcode static fallback options in TTS model
   assert.doesNotMatch(autoShortSource, /<option value="tts-multilingual">/u)
 })
 
+test('OCR engine Python script uses stable frame selection and 2D line sorting without scope errors', async () => {
+  const engineSource = await readFile(join(process.cwd(), 'engines', 'ocr-engine', 'engine.py'), 'utf8')
+  assert.doesNotMatch(engineSource, /files\[i\]/u)
+  assert.match(engineSource, /khung_on_dinh\(rung,\s*a,\s*b\)/u)
+  assert.match(engineSource, /--version/u)
+  assert.match(engineSource, /--probe/u)
+  assert.match(engineSource, /ocr-local\/1/u)
+  assert.match(engineSource, /ordered_line_texts/u)
+})
 
+test('AutoShort tempo planner strictly enforces hard max tempo ceiling at 1.35x', () => {
+  const cues = [{ start: 0, end: 1.0 }]
+  // Natural duration 2.5s in 1.0s window -> requires 2.5x
+  const plan = planAutoShortVoiceTimeline(cues, [2.5], 5.0, 1.35)
+  assert.equal(plan.cues[0].tempo, 1.35)
+  assert.ok(plan.cues[0].tempo <= 1.35)
 
+  // Validate sync fails because 2.5 / 1.35 = 1.85s > 1.0s window
+  const sync = validateAutoShortTimelineSync(
+    cues,
+    cues,
+    [{
+      cueId: 'cue-0',
+      sourceStart: 0,
+      sourceEnd: 1.0,
+      renderSubtitleStart: 0,
+      renderSubtitleEnd: 1.0,
+      voiceStart: plan.cues[0].start,
+      voiceEnd: plan.cues[0].voiceEnd,
+      semanticOverflowMs: plan.cues[0].semanticOverflowMs
+    }],
+    5.0
+  )
+  assert.equal(sync.ok, false)
+  assert.match(sync.violations[0], /tràn quá/iu)
+})
+
+test('TTS capabilities default fail-closed for supports_voice_clone when undefined', async () => {
+  const ttsSource = await readFile(join(process.cwd(), 'src', 'main', 'tts.ts'), 'utf8')
+  assert.match(ttsSource, /const isVoiceClone = typeof capabilities\.supports_voice_clone === 'boolean'\s*\?\s*capabilities\.supports_voice_clone\s*:\s*false/u)
+})
+
+test('Audio mixing filter graph implements ducking with sidechaincompress and alimiter in MIX mode', async () => {
+  const burnSource = await readFile(join(process.cwd(), 'src', 'main', 'burn.ts'), 'utf8')
+  assert.match(burnSource, /sidechaincompress=threshold=0\.06:ratio=4:attack=15:release=200/u)
+  assert.match(burnSource, /alimiter=limit=-1dB:attack=5:release=50/u)
+})
+
+test('Video2X prevents concurrent runs and manages task cancellation cleanly', async () => {
+  const video2xSource = await readFile(join(process.cwd(), 'src', 'main', 'video2x.ts'), 'utf8')
+  assert.match(video2xSource, /if\s*\(activeChild\s*!==\s*null\)\s*\{\s*return\s*\{\s*ok:\s*false,\s*error:\s*'Đang có một tiến trình Video2X khác đang chạy\.'\s*\}\s*\}/u)
+  assert.match(video2xSource, /cancelVideo2x\(taskId\?: string\)/u)
+})
+
+import './e2e-autoshort.test'
 

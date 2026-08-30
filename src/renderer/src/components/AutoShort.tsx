@@ -743,7 +743,7 @@ export default function AutoShort(): JSX.Element {
       bgEnabled,
       bgColor,
       bgOpacity,
-      subtitleDisplayStyle: displayStyle,
+      subtitleDisplayStyle: (subtitleMethod !== 'ocr' && translateTarget === 'none' && !ttsEnabled) ? displayStyle : 'standard',
       subtitleFontSize: fontSize > 0 ? fontSize : undefined,
       subtitleFontScale: fontSize > 0 ? fontSize / h : undefined,
       highlightColor,
@@ -1295,33 +1295,59 @@ export default function AutoShort(): JSX.Element {
                     </label>
                   </div>
 
-                  <div className="subtitle-style-options">
-                    {(
-                      [
-                        ['standard', 'Hiển thị cả câu', 'Ổn định và dễ đọc'],
-                        ['word-reveal', 'Hiện lần lượt từng từ', 'Từ đã hiện được giữ lại'],
-                        ['word-highlight', 'Làm nổi bật từ đang đọc', 'Toàn câu luôn hiển thị']
-                      ] as const
-                    ).map(([value, label, note]) => (
-                      <label
-                        key={value}
-                        className={`subtitle-style-option ${displayStyle === value ? 'active' : ''}`}
-                      >
-                        <input
-                          type="radio"
-                          name="subtitle-display-style"
-                          value={value}
-                          checked={displayStyle === value}
-                          onChange={() => setDisplayStyle(value)}
-                        />
-                        <span className="subtitle-style-signal" aria-hidden="true" />
-                        <span>
-                          <strong>{label}</strong>
-                          <small>{note}</small>
-                        </span>
-                      </label>
-                    ))}
-                  </div>
+                  {(() => {
+                    const supportsWordEffects = subtitleMethod !== 'ocr' && translateTarget === 'none' && !ttsEnabled
+                    const wordEffectDisabledReason = ttsEnabled
+                      ? 'Không khả dụng khi bật Lồng tiếng AI (TTS chưa hỗ trợ word timestamps)'
+                      : translateTarget !== 'none'
+                        ? 'Không khả dụng khi Dịch phụ đề (chưa có alignment từ cho bản dịch)'
+                        : subtitleMethod === 'ocr'
+                          ? 'Không khả dụng với OCR hình ảnh (OCR chỉ đọc theo khung hình)'
+                          : ''
+
+                    return (
+                      <>
+                        <div className="subtitle-style-options">
+                          {(
+                            [
+                              ['standard', 'Hiển thị cả câu', 'Ổn định và dễ đọc', true],
+                              ['word-reveal', 'Hiện lần lượt từng từ', 'Từ đã hiện được giữ lại', supportsWordEffects],
+                              ['word-highlight', 'Làm nổi bật từ đang đọc', 'Toàn câu luôn hiển thị', supportsWordEffects]
+                            ] as const
+                          ).map(([value, label, note, available]) => {
+                            const isSelected = (supportsWordEffects ? displayStyle : 'standard') === value
+                            return (
+                              <label
+                                key={value}
+                                className={`subtitle-style-option ${isSelected ? 'active' : ''} ${!available ? 'disabled' : ''}`}
+                                title={!available ? wordEffectDisabledReason : undefined}
+                                style={!available ? { opacity: 0.5, cursor: 'not-allowed' } : undefined}
+                              >
+                                <input
+                                  type="radio"
+                                  name="subtitle-display-style"
+                                  value={value}
+                                  checked={isSelected}
+                                  disabled={!available}
+                                  onChange={() => available && setDisplayStyle(value)}
+                                />
+                                <span className="subtitle-style-signal" aria-hidden="true" />
+                                <span>
+                                  <strong>{label} {!available && <span style={{ fontSize: '0.75rem', fontWeight: 'normal', color: 'var(--muted)' }}>(Chưa khả dụng)</span>}</strong>
+                                  <small>{!available ? wordEffectDisabledReason : note}</small>
+                                </span>
+                              </label>
+                            )
+                          })}
+                        </div>
+                        {!supportsWordEffects && (
+                          <div style={{ fontSize: '0.8rem', color: 'var(--muted)', marginTop: 4, fontStyle: 'italic' }}>
+                            ℹ️ {wordEffectDisabledReason}
+                          </div>
+                        )}
+                      </>
+                    )
+                  })()}
 
                   {displayStyle === 'word-highlight' && (
                     <div className="highlight-effect-controls">

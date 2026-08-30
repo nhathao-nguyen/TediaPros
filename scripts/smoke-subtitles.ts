@@ -494,6 +494,6 @@ if (ffmpegProbe.status === 0) {
   }
 }
 
-console.log(
-  `subtitle smoke OK: ${parsed.cues.length} cues, ${tokens.length} tokens, ${timeline.beats.length} beats; ${ffmpegSummary}`
-)
+console.log(`[SUBTITLE TEST] Logic verified: ${parsed.cues.length} cues, ${tokens.length} tokens, ${timeline.beats.length} beats`)
+console.log(`[RENDER TEST] Executed with FFmpeg: ${ffmpegProbe.status === 0 ? 'YES' : 'SKIPPED (FFmpeg binary not in PATH)'} (${ffmpegSummary})`)
+console.log('subtitle smoke OK')

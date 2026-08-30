@@ -844,7 +844,7 @@ async function synthesizeVoice(
     let finalPath = trimmedPath
 
     // If TTS duration exceeds mild tempo limit, attempt duration-aware rephrase
-    if (naturalDuration > availableDuration * AUTO_SHORT_TTS_NORMAL_MAX_TEMPO && config.translateTarget !== 'none') {
+    if (naturalDuration > availableDuration * AUTO_SHORT_TTS_NORMAL_MAX_TEMPO && config.ttsEnabled) {
       rephraseAttempted = true
       logInfo(`[AutoShort] Câu ${cueIndex + 1} (${current.cue.id || cueIndex}) có thời lượng ${naturalDuration.toFixed(2)}s vượt ${availableDuration.toFixed(2)}s. Đang rephrase ngắn gọn…`)
       const rephrasedText = await rephraseDubbingCue(
@@ -990,6 +990,14 @@ async function synthesizeVoice(
     clips.push({ start: planned.start, path })
     timedCues.push({ ...current.cue, start: planned.subtitleStart, end: planned.subtitleEnd })
   }
+
+  const anyRephrased = preparedClips.some((c) => c.rephraseAttempted)
+  if (anyRephrased) {
+    const dubbingSrtPath = join(workDir, 'dubbing.srt')
+    await writeFile(dubbingSrtPath, serializeSrt(preparedClips.map((c) => c.cue)), 'utf8')
+    artifacts.push({ source: dubbingSrtPath, name: 'dubbing.srt' })
+  }
+
   return {
     path: join(workDir, 'tts-timeline.wav'),
     clips,
@@ -1226,8 +1234,28 @@ async function processSingleVideo(job: AutoShortJob, item: AutoShortQueueItemInp
     logError(`[AutoShort] ${basename(item.filePath)} thất bại: ${rawMessage}`)
     const cancelled = job.controller.signal.aborted || isAbortError(error)
     const status: 'error' | 'cancelled' = cancelled ? 'cancelled' : 'error'
+
+    try {
+      artifactPath = await preserveAutoShortArtifacts(artifactDir, artifactEntries, {
+        version: 1,
+        status,
+        error: message,
+        rawMessage,
+        sourceFile: basename(item.filePath),
+        outputFile: outputName,
+        sourceLanguage: resolveTranslationSourceLanguage(config.whisperLanguage, detectedSourceLanguage),
+        targetLanguage: config.translateTarget,
+        extractedCueCount,
+        translatedCueCount,
+        generatedVoiceCount,
+        voice
+      })
+    } catch (preserveError) {
+      logWarn(`[AutoShort] Không thể lưu failure artifacts: ${errLabel(preserveError)}`)
+    }
+
     emitProgress(job, item, status, 0, cancelled ? 'Đã hủy tác vụ' : `Lỗi: ${message}`, index, total, undefined, message)
-    return { itemId: item.id, filePath: item.filePath, status, error: cancelled ? 'Đã hủy tác vụ' : message, extractedCueCount, translatedCueCount, generatedVoiceCount, voice }
+    return { itemId: item.id, filePath: item.filePath, status, error: cancelled ? 'Đã hủy tác vụ' : message, artifactDir: artifactPath, extractedCueCount, translatedCueCount, generatedVoiceCount, voice }
   } finally {
     await rm(workDir, { recursive: true, force: true }).catch(() => undefined)
   }

@@ -196,22 +196,63 @@ def run(args):
         mask_cu, text_cu = None, None
         band_top, band_bot = None, None
         for k, (a, b) in enumerate(doan):
-            frame_img = cv2.imread(files[i])
+            stable_idx = khung_on_dinh(rung, a, b)
+            frame_img = cv2.imread(files[stable_idx])
+            if frame_img is None:
+                continue
             m = mask_chu(frame_img[y0:y1, x0:x1], cv2, np)
             if mask_cu is not None and jaccard(m, mask_cu, np) < NG_TRUNG:
                 text = text_cu
             else:
-                res, _ = ocr(files[i])
-                chu = []
+                res, _ = ocr(files[stable_idx])
+                boxes = []
                 for box, t, score in (res or []):
                     cx = sum(pt[0] for pt in box) / 4
                     cy = sum(pt[1] for pt in box) / 4
+                    min_x = min(pt[0] for pt in box)
+                    min_y = min(pt[1] for pt in box)
+                    max_y = max(pt[1] for pt in box)
+                    h = max_y - min_y
                     if y0 <= cy <= y1 and x0 <= cx <= x1 and score > 0.5:
-                        chu.append((min(pt[0] for pt in box), t))
+                        boxes.append({
+                            "box": box,
+                            "text": str(t).strip(),
+                            "cx": cx,
+                            "cy": cy,
+                            "min_x": min_x,
+                            "min_y": min_y,
+                            "max_y": max_y,
+                            "h": h
+                        })
                         ys = [pt[1] for pt in box]
                         band_top = min(ys) if band_top is None else min(band_top, min(ys))
                         band_bot = max(ys) if band_bot is None else max(band_bot, max(ys))
-                text = " ".join(t for _, t in sorted(chu)) if chu else ""
+
+                if boxes:
+                    # Sắp xếp theo trục Y (trên -> dưới) rồi gom cụm dòng
+                    boxes.sort(key=lambda item: item["cy"])
+                    lines = []
+                    curr_line = [boxes[0]]
+                    for item in boxes[1:]:
+                        avg_h = sum(x["h"] for x in curr_line) / len(curr_line)
+                        line_cy = sum(x["cy"] for x in curr_line) / len(curr_line)
+                        if abs(item["cy"] - line_cy) < max(12.0, avg_h * 0.6):
+                            curr_line.append(item)
+                        else:
+                            lines.append(curr_line)
+                            curr_line = [item]
+                    lines.append(curr_line)
+
+                    ordered_line_texts = []
+                    for line in lines:
+                        # Trong từng dòng: sắp xếp trái -> phải
+                        line.sort(key=lambda item: item["min_x"])
+                        line_str = " ".join(item["text"] for item in line if item["text"])
+                        if line_str:
+                            ordered_line_texts.append(line_str)
+                    text = " ".join(ordered_line_texts)
+                else:
+                    text = ""
                 mask_cu, text_cu = m, text
             emit({
                 "type": "progress",
@@ -241,8 +282,10 @@ def run(args):
 
 def main():
     p = argparse.ArgumentParser(description="ocr-engine")
-    p.add_argument("--input", required=True, help="file video")
-    p.add_argument("--output", required=True, help="file .srt xuat ra")
+    p.add_argument("--version", action="store_true", help="in phien ban va protocol")
+    p.add_argument("--probe", action="store_true", help="kiem tra kha nang chay thuc te")
+    p.add_argument("--input", help="file video")
+    p.add_argument("--output", help="file .srt xuat ra")
     p.add_argument("--y0", type=int, default=-1, help="mep TREN vung chu (px, -1 = tu chon)")
     p.add_argument("--y1", type=int, default=-1, help="mep DUOI vung chu (px)")
     p.add_argument("--x0", type=int, default=-1, help="mep TRAI vung chu (px, -1 = tu chon)")
@@ -250,6 +293,24 @@ def main():
     p.add_argument("--fps", type=int, default=2, help="so khung/giay lay ra")
     p.add_argument("--ffmpeg", default="ffmpeg", help="duong dan ffmpeg")
     args = p.parse_args()
+
+    if args.version:
+        emit({"type": "version", "protocol": "ocr-local/1", "version": "1.0.0", "engine": "rapidocr"})
+        return 0
+
+    if args.probe:
+        try:
+            tao_ocr()
+            emit({"type": "probe", "protocol": "ocr-local/1", "ready": True, "engine": "rapidocr", "gpu": gpu_that_su_chay()})
+            return 0
+        except Exception as e:
+            emit({"type": "probe", "protocol": "ocr-local/1", "ready": False, "error": str(e)})
+            return 1
+
+    if not args.input or not args.output:
+        p.print_help()
+        return 1
+
     try:
         return run(args)
     except Exception as e:

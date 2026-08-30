@@ -508,6 +508,9 @@ export interface SrtBlock {
   /** Stable identity used only inside translation adapters; not serialized to SRT. */
   id?: string
   sourceIndex?: number
+  start?: number
+  end?: number
+  duration?: number
 }
 
 export const DEFAULT_AI_SERVER_URL = 'http://127.0.0.1:8000'

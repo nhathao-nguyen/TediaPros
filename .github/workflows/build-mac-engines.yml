@@ -34,19 +34,6 @@ jobs:
           fi
           chmod +x dist/dy-engine-macos || true
 
-      - name: Build Whisper Engine (macOS)
-        run: |
-          cd engines/whisper-engine
-          pip install faster-whisper ctranslate2 onnxruntime sentencepiece tokenizers sherpa_onnx wtpsplit_lite av || true
-          if [ -f "whisper-engine.spec" ]; then
-            pyinstaller whisper-engine.spec
-          else
-            pyinstaller --onedir --name whisper-engine engine.py
-          fi
-          chmod +x dist/whisper-engine/whisper-engine || true
-          cd dist
-          zip -r whisper-engine-macos.zip whisper-engine/
-
       - name: Build OCR Engine (macOS)
         run: |
           cd engines/ocr-engine
@@ -64,7 +51,6 @@ jobs:
         run: |
           test "$(uname -m)" = "arm64"
           file engines/douyin-engine/dist/dy-engine-macos | grep -q arm64
-          file engines/whisper-engine/dist/whisper-engine/whisper-engine | grep -q arm64
           file engines/ocr-engine/dist/ocr-engine/ocr-engine | grep -q arm64
 
       - name: Upload engine artifacts
@@ -73,7 +59,6 @@ jobs:
           name: macos-engines
           path: |
             engines/douyin-engine/dist/dy-engine-macos
-            engines/whisper-engine/dist/whisper-engine-macos.zip
             engines/ocr-engine/dist/ocr-engine-macos.zip
           if-no-files-found: error
           retention-days: 7

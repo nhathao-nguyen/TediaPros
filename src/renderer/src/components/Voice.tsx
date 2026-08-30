@@ -91,11 +91,34 @@ interface HistoryItem {
 export default function Voice(): JSX.Element {
   // Server connection config
   const [serverUrl, setServerUrl] = usePersistedState('tblao.ai.serverUrl', DEFAULT_AI_SERVER_URL)
-  const [apiKey, setApiKey] = usePersistedState('tblao.tts.apiKey', '')
+  const [apiKey, setApiKey] = useState('')
+  const [hasStoredKey, setHasStoredKey] = useState(false)
   const [showApiKey, setShowApiKey] = useState(false)
   const [serverStatus, setServerStatus] = useState<'checking' | 'online' | 'offline'>('checking')
   const [healthData, setHealthData] = useState<TtsServerHealth | null>(null)
   const [models, setModels] = useState<TtsModelInfo[]>([])
+
+  // Migrate legacy plaintext localStorage key to safeStorage
+  useEffect(() => {
+    let active = true
+    const initKey = async (): Promise<void> => {
+      const legacyKey = localStorage.getItem('tblao.tts.apiKey')
+      if (legacyKey) {
+        try {
+          await window.api.translateSaveKey('local', legacyKey)
+          localStorage.removeItem('tblao.tts.apiKey')
+        } catch {
+          /* ignore */
+        }
+      }
+      const hasKey = await window.api.translateHasKey('local').catch(() => false)
+      if (active) setHasStoredKey(hasKey)
+    }
+    void initKey()
+    return () => {
+      active = false
+    }
+  }, [])
 
   // Mode and form state
   const [mode, setMode] = useState<'speech' | 'clone'>('speech')
@@ -455,14 +478,18 @@ export default function Voice(): JSX.Element {
           </div>
 
           <div className="voice-server-field">
-            <label className="voice-label">API Key (tùy chọn):</label>
+            <label className="voice-label">API Key (tùy chọn, lưu an toàn):</label>
             <div className="voice-input-group">
               <input
                 type={showApiKey ? 'text' : 'password'}
                 className="voice-input"
                 value={apiKey}
-                onChange={(e) => setApiKey(e.target.value)}
-                placeholder="ai_sk_... (nếu bật bảo vệ)"
+                onChange={(e) => {
+                  const val = e.target.value
+                  setApiKey(val)
+                  void window.api.translateSaveKey('local', val).then(() => window.api.translateHasKey('local')).then(setHasStoredKey)
+                }}
+                placeholder={hasStoredKey ? '•••••••• (Đã lưu an toàn)' : 'ai_sk_... (nếu bật bảo vệ)'}
               />
               <button
                 type="button"

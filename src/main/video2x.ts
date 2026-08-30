@@ -235,26 +235,38 @@ export function parseVideo2xProgressLine(line: string): Video2xProgress | null {
   }
 }
 
-let child: ChildProcess | null = null
-let daHuy = false
+let activeChild: ChildProcess | null = null
+let activeTaskId: string | null = null
+let isCancelling = false
 
-export function cancelVideo2x(): void {
-  daHuy = true
-  if (!child) return
+export function isVideo2xRunning(): boolean {
+  return activeChild !== null
+}
+
+export function cancelVideo2x(taskId?: string): boolean {
+  if (!activeChild) return false
+  if (taskId && activeTaskId && activeTaskId !== taskId) return false
+  isCancelling = true
   try {
-    child.kill()
+    activeChild.kill()
   } catch {
     /* bo qua */
   }
-  child = null
+  activeChild = null
+  activeTaskId = null
+  return true
 }
 
 export async function runVideo2x(
   req: Video2xRunRequest,
-  onProgress: (p: Video2xProgress) => void
+  onProgress: (p: Video2xProgress) => void,
+  taskId?: string
 ): Promise<Video2xRunResult> {
   if (isMac) {
     return { ok: false, error: 'Video2X chưa hỗ trợ macOS.' }
+  }
+  if (activeChild !== null) {
+    return { ok: false, error: 'Đang có một tiến trình Video2X khác đang chạy.' }
   }
   const exe = await resolveEnginePath()
   if (!exe) {
@@ -263,18 +275,27 @@ export async function runVideo2x(
   const ready = await probeVideo2x(exe)
   if (!ready.healthy) return { ok: false, error: ready.message || 'Video2X chưa qua probe.' }
 
-  daHuy = false
+  isCancelling = false
+  const currentTaskId = taskId || 'singleton'
   const args = buildVideo2xArgs(req)
   logInfo(`Nâng cấp video: ${basename(req.input)} → ${basename(req.output)}…`)
   debugRaw('video2x args', args.join(' '))
 
   return new Promise((resolve) => {
-    const p = spawn(exe, args, {
-      windowsHide: true,
-      cwd: dirname(exe),
-      env: { ...process.env }
-    })
-    child = p
+    let p: ChildProcess
+    try {
+      p = spawn(exe, args, {
+        windowsHide: true,
+        cwd: dirname(exe),
+        env: { ...process.env }
+      })
+    } catch (err) {
+      resolve({ ok: false, error: errLabel(err) })
+      return
+    }
+
+    activeChild = p
+    activeTaskId = currentTaskId
     let errTail = ''
     let lastPct = 0
 
@@ -298,14 +319,22 @@ export async function runVideo2x(
     p.stderr?.on('data', onChunk)
 
     p.on('error', (err) => {
-      child = null
+      if (activeChild === p) {
+        activeChild = null
+        activeTaskId = null
+      }
       debugRaw('video2x spawn', err)
       resolve({ ok: false, error: errLabel(err) })
     })
 
     p.on('close', async (code) => {
-      child = null
-      if (daHuy) {
+      const wasCancelled = isCancelling
+      if (activeChild === p) {
+        activeChild = null
+        activeTaskId = null
+        isCancelling = false
+      }
+      if (wasCancelled) {
         resolve({ ok: false, error: 'Đã huỷ.' })
         return
       }

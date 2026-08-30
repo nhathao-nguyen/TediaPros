@@ -162,7 +162,7 @@ export async function getTtsModels(
         : (Array.isArray(voices) && voices.length > 0)
       const isVoiceClone = typeof capabilities.supports_voice_clone === 'boolean'
         ? capabilities.supports_voice_clone
-        : true
+        : false
 
       return [{
         id,

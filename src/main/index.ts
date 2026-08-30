@@ -199,6 +199,10 @@ function createWindow(): void {
     backgroundColor: '#0f1115',
     webPreferences: {
       preload: join(__dirname, '../preload/index.js'),
+      // sandbox: false is required to permit the preload bridge to expose native Node IPC
+      // and system dialog interfaces without bundling full Node in the renderer.
+      // Security posture is strictly maintained by contextIsolation: true, nodeIntegration: false,
+      // and webSecurity: true (enforcing same-origin restrictions and protocol handlers).
       sandbox: false,
       contextIsolation: true,
       nodeIntegration: false
@@ -283,14 +287,62 @@ app.whenReady().then(async () => {
           }
         })
       }
-      const m = /bytes=(\d*)-(\d*)/.exec(dau)
-      const b = m?.[1] ? Number(m[1]) : 0
-      const k = m?.[2] ? Number(m[2]) : co - 1
+
+      // Handle Range header: bytes=start-end, bytes=start-, bytes=-suffix
+      const rangeMatch = /^bytes=(\d*)-(\d*)$/i.exec(dau.trim())
+      if (!rangeMatch || (!rangeMatch[1] && !rangeMatch[2])) {
+        return new Response('Range Not Satisfiable', {
+          status: 416,
+          headers: {
+            'Content-Range': `bytes */${co}`,
+            'Accept-Ranges': 'bytes'
+          }
+        })
+      }
+
+      let b = 0
+      let k = co - 1
+
+      if (!rangeMatch[1] && rangeMatch[2]) {
+        // Suffix range: bytes=-500 -> last 500 bytes
+        const suffixLen = Number(rangeMatch[2])
+        if (suffixLen <= 0) {
+          return new Response('Range Not Satisfiable', {
+            status: 416,
+            headers: { 'Content-Range': `bytes */${co}`, 'Accept-Ranges': 'bytes' }
+          })
+        }
+        b = Math.max(0, co - suffixLen)
+        k = co - 1
+      } else if (rangeMatch[1] && !rangeMatch[2]) {
+        // Open-ended: bytes=500-
+        b = Number(rangeMatch[1])
+        k = co - 1
+      } else {
+        // Range: bytes=0-499
+        b = Number(rangeMatch[1])
+        k = Number(rangeMatch[2])
+      }
+
+      // Bounds validation: non-negative, start <= end, start < co
+      if (b < 0 || k < b || b >= co || co === 0) {
+        return new Response('Range Not Satisfiable', {
+          status: 416,
+          headers: {
+            'Content-Range': `bytes */${co}`,
+            'Accept-Ranges': 'bytes'
+          }
+        })
+      }
+
+      // Clamp k to file end
+      k = Math.min(k, co - 1)
+      const chunkLen = k - b + 1
       return new Response(Readable.toWeb(createReadStream(p, { start: b, end: k })) as ReadableStream, {
         status: 206,
         headers: {
           'Content-Type': kieu,
-          'Content-Length': String(k - b + 1),
+          'Content-Length': String(chunkLen),
           'Content-Range': `bytes ${b}-${k}/${co}`,
           'Accept-Ranges': 'bytes',
           'Access-Control-Allow-Origin': '*'

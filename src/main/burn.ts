@@ -772,8 +772,8 @@ export function taoFilterComplex(
           // REPLACE mode: Completely bypass original audio stream; direct narration track
           audioFilter = `[1:a]asetpts=PTS-STARTPTS,aresample=44100:async=1,aformat=channel_layouts=stereo:sample_rates=44100,volume=1.0,apad=whole_dur=${outputDuration},atrim=duration=${outputDuration},alimiter=limit=-1dB:attack=5:release=50[a_mix]`
         } else {
-          // MIX mode: Controlled gain mix with normalize=0 and limiter (no dynamic jumping)
-          audioFilter = `[0:a]asetpts=PTS-STARTPTS,aresample=44100:async=1,aformat=channel_layouts=stereo:sample_rates=44100,volume=${volRatio}[a0];[1:a]asetpts=PTS-STARTPTS,aresample=44100:async=1,aformat=channel_layouts=stereo:sample_rates=44100,volume=1.0[a1];[a0][a1]amix=inputs=2:duration=longest:dropout_transition=2:normalize=0[a_sum];[a_sum]alimiter=limit=-1dB:attack=5:release=50,apad=whole_dur=${outputDuration},atrim=duration=${outputDuration}[a_mix]`
+          // MIX mode: Dynamic ducking narration over background audio + limiter
+          audioFilter = `[0:a]asetpts=PTS-STARTPTS,aresample=44100:async=1,aformat=channel_layouts=stereo:sample_rates=44100,volume=${volRatio}[bg];[1:a]asetpts=PTS-STARTPTS,aresample=44100:async=1,aformat=channel_layouts=stereo:sample_rates=44100,volume=1.0[narr];[bg][narr]sidechaincompress=threshold=0.06:ratio=4:attack=15:release=200[ducked_bg];[ducked_bg][narr]amix=inputs=2:duration=longest:dropout_transition=2:normalize=0[a_sum];[a_sum]alimiter=limit=-1dB:attack=5:release=50,apad=whole_dur=${outputDuration},atrim=duration=${outputDuration}[a_mix]`
         }
       } else {
         // Không nhạc nền + có âm thanh gốc -> Chỉ chỉnh âm lượng gốc

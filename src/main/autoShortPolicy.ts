@@ -168,7 +168,7 @@ export function planAutoShortVoiceTimeline(
     throw new Error('Không thể lập timeline voice: thời lượng audio không hợp lệ.')
   }
 
-  const upperTempo = Math.max(1, maxTempo)
+  const upperTempo = Math.min(Math.max(1, maxTempo), AUTO_SHORT_TTS_HARD_MAX_TEMPO)
   const n = cues.length
   const plannedCues: AutoShortVoiceCuePlan[] = []
   let previousVoiceEnd = 0
@@ -209,7 +209,7 @@ export function planAutoShortVoiceTimeline(
       plannedStart = earliestStart
     } else {
       const neededTempo = Number((naturalDuration / availableDuration).toFixed(4))
-      tempo = Math.min(2.0, Math.max(1.0, neededTempo))
+      tempo = Math.min(upperTempo, Math.max(1.0, neededTempo))
       plannedDuration = Number((naturalDuration / tempo).toFixed(3))
       plannedStart = earliestStart
     }
