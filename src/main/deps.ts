@@ -454,6 +454,22 @@ export async function installFfmpeg(onProgress: ProgressCb): Promise<void> {
     return
   }
 
+  // 2. Try download from official TediaPros runtime release manifest
+  try {
+    const { downloadRuntimeEngineFromManifest } = await import('./runtimeInstaller')
+    await downloadRuntimeEngineFromManifest('ffmpeg', (p, msg) => {
+      onProgress({ phase: 'downloading-ffmpeg', message: msg, percent: p })
+    })
+  } catch {
+    /* fallback to external release */
+  }
+
+  resolved = await canonicalResolveFfmpeg()
+  if (resolved) {
+    onProgress({ phase: 'done', message: 'Đã sẵn sàng FFmpeg.', percent: 100 })
+    return
+  }
+
   // 2. If Windows and not found locally, download official managed release
   if (isWin) {
     const stagingDir = `${targetDir}.staging`

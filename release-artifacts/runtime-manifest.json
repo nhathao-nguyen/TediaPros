@@ -20,9 +20,27 @@
       "arch": "x64",
       "asset": "ocr-win32-x64.zip",
       "entrypoint": "ocr-engine.exe",
-      "sha256": "da7682d11729909edb4fd994589246ea88e5427848ab656064590d0f93a64048",
+      "sha256": "c155735f8aa93727bc128b9643e4056de23e18fccccb8b1ca728d25acd39f741",
       "bytes": 105591232,
       "protocol": "ocr-local/1"
+    },
+    "ffmpeg": {
+      "version": "7.1.0",
+      "platform": "win32",
+      "arch": "x64",
+      "asset": "ffmpeg-win32-x64.zip",
+      "entrypoint": "ffmpeg.exe",
+      "sha256": "3877c4f83e6843c94f412d57a6b7ede4d9e80ba27f509394c7f08e6ef44bf802",
+      "bytes": 73513031
+    },
+    "ytdlp": {
+      "version": "2026.08.01",
+      "platform": "win32",
+      "arch": "x64",
+      "asset": "ytdlp-win32-x64.zip",
+      "entrypoint": "yt-dlp.exe",
+      "sha256": "9110909c01bd4a1379739871d13ce9c5c86d0891db3e7d45ad51c0783c15d9e1",
+      "bytes": 17620273
     }
   }
 }
