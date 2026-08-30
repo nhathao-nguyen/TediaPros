@@ -12,8 +12,8 @@ export interface DistributionConfig {
  * At the current stage, no actual publishing or releases are triggered.
  */
 export function getDistributionConfig(): DistributionConfig {
-  const owner = process.env.TEDIAPROS_DISTRIBUTION_OWNER?.trim() || ''
-  const repo = process.env.TEDIAPROS_DISTRIBUTION_REPO?.trim() || ''
+  const owner = process.env.TEDIAPROS_DISTRIBUTION_OWNER?.trim() || 'nhathao-nguyen'
+  const repo = process.env.TEDIAPROS_DISTRIBUTION_REPO?.trim() || 'TediaPros'
   const runtimeChannel = process.env.TEDIAPROS_RUNTIME_CHANNEL?.trim() || 'runtime-v1'
 
   const manifestUrl =
