@@ -215,6 +215,17 @@ test('Windows app release verification has an explicit Windows-only mode', async
   assert.match(packageJson.scripts['release:verify-assets'], /--windows-only/u)
 })
 
+test('app release publish job installs Node dependencies before verifying assets', async () => {
+  const workflow = await readFile(join(process.cwd(), '.github', 'workflows', 'release-app.yml'), 'utf8')
+  const publishJob = workflow.slice(workflow.indexOf('\n  publish:\n'))
+  const setupIndex = publishJob.indexOf('uses: actions/setup-node@v4')
+  const installIndex = publishJob.indexOf('run: npm ci', setupIndex)
+  const verifyIndex = publishJob.indexOf('node scripts/verify-release-assets.mjs', installIndex)
+  assert.ok(setupIndex >= 0, 'publish job must set up Node.js')
+  assert.ok(installIndex > setupIndex, 'publish job must install Node dependencies')
+  assert.ok(verifyIndex > installIndex, 'publish job must install dependencies before verifying assets')
+})
+
 test('release tooling has no developer-machine or destructive re-upload fallback', async () => {
   const { readFile } = await import('node:fs/promises')
   const packer = await readFile(join(process.cwd(), 'scripts', 'pack-runtime-release.mjs'), 'utf8')
