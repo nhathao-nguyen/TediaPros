@@ -1,5 +1,5 @@
 import { readdir, realpath, stat } from 'node:fs/promises'
-import { dirname, extname, join } from 'node:path'
+import { dirname, extname, isAbsolute, join } from 'node:path'
 import type { AutoShortMusicLibraryResult, AutoShortMusicTrack } from '../shared/types'
 
 const SUPPORTED_AUTO_SHORT_MUSIC_EXTENSIONS = new Set([
@@ -7,6 +7,9 @@ const SUPPORTED_AUTO_SHORT_MUSIC_EXTENSIONS = new Set([
 ])
 
 export async function validateAutoShortMusicTrack(folderPath: string, trackPath: string): Promise<string> {
+  if (!isAbsolute(folderPath) || !isAbsolute(trackPath)) {
+    throw new Error('Đường dẫn folder nhạc và bài nhạc phải là đường dẫn tuyệt đối.')
+  }
   const [folder, track] = await Promise.all([realpath(folderPath), realpath(trackPath)])
   const sameParent = process.platform === 'win32'
     ? dirname(track).toLowerCase() === folder.toLowerCase()
@@ -22,6 +25,7 @@ export async function validateAutoShortMusicTrack(folderPath: string, trackPath:
 
 export async function listAutoShortMusicTracks(folderPath: string): Promise<AutoShortMusicLibraryResult> {
   try {
+    if (!isAbsolute(folderPath)) throw new Error('Đường dẫn folder nhạc phải là đường dẫn tuyệt đối.')
     const folder = await realpath(folderPath)
     const entries = await readdir(folder, { withFileTypes: true })
     const tracks: AutoShortMusicTrack[] = []

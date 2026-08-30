@@ -84,6 +84,13 @@ test('AutoShort music library rejects a selected track outside the chosen folder
   }
 })
 
+test('AutoShort music library rejects relative folder and track paths', async () => {
+  await assert.rejects(() => validateAutoShortMusicTrack('.', 'music.mp3'), /đường dẫn tuyệt đối|folder nhạc/iu)
+  const result = await listAutoShortMusicTracks('.')
+  assert.equal(result.ok, false)
+  if (!result.ok) assert.match(result.error, /đường dẫn tuyệt đối|folder nhạc/iu)
+})
+
 test('AutoShort exposes dedicated music-folder selection and rescan IPC', async () => {
   const mainSource = await readFile(join(process.cwd(), 'src', 'main', 'index.ts'), 'utf8')
   const preloadSource = await readFile(join(process.cwd(), 'src', 'preload', 'index.ts'), 'utf8')
