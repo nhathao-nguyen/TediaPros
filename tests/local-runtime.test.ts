@@ -107,9 +107,17 @@ test('AutoShort renders all three background music assignment modes only for rep
   assert.match(source, /Một bài cho tất cả/u)
   assert.match(source, /Ngẫu nhiên theo video/u)
   assert.match(source, /Chọn riêng từng video/u)
-  assert.match(source, /audioMode === 'replace'/u)
+  assert.match(source, /\{ttsEnabled && audioMode === 'replace' && \(/u)
   assert.match(source, /createAutoShortMusicAssignments/u)
   assert.match(source, /backgroundMusic:\s*backgroundMusicConfig/u)
+})
+
+test('AutoShort invalidates stale background music folder rescans before applying their catalog', async () => {
+  const source = await readFile(join(process.cwd(), 'src', 'renderer', 'src', 'components', 'AutoShort.tsx'), 'utf8')
+  assert.match(source, /const backgroundMusicScanTokenRef = useRef\(0\)/u)
+  assert.match(source, /const scanToken = \+\+backgroundMusicScanTokenRef\.current/u)
+  assert.match(source, /backgroundMusicScanTokenRef\.current !== scanToken/u)
+  assert.match(source, /backgroundMusicScanTokenRef\.current\+\+\s*\n\s*const result = await window\.api\.autoShortSelectMusicFolder/u)
 })
 
 test('AutoShort background music assigns one selected track to every queue item', () => {

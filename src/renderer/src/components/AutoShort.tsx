@@ -198,6 +198,8 @@ export default function AutoShort(): JSX.Element {
   const [backgroundMusicTracks, setBackgroundMusicTracks] = useState<AutoShortMusicTrack[]>([])
   const [backgroundMusicAssignments, setBackgroundMusicAssignments] = useState<Record<string, string>>({})
   const [backgroundMusicError, setBackgroundMusicError] = useState<string | null>(null)
+  const backgroundMusicScanTokenRef = useRef(0)
+  const backgroundMusicScanFolderRef = useRef('')
 
   const selectedModelInfo = ttsModels.find((m) => m.id === ttsModel) || ttsModels[0]
   const modelVoices = selectedModelInfo?.voices || []
@@ -205,9 +207,12 @@ export default function AutoShort(): JSX.Element {
 
   useEffect(() => {
     let active = true
-    if (!backgroundMusicFolder) return
-    void window.api.autoShortListMusicTracks(backgroundMusicFolder).then((result) => {
-      if (!active) return
+    const folderPath = backgroundMusicFolder
+    const scanToken = ++backgroundMusicScanTokenRef.current
+    backgroundMusicScanFolderRef.current = folderPath
+    if (!folderPath) return
+    void window.api.autoShortListMusicTracks(folderPath).then((result) => {
+      if (!active || backgroundMusicScanTokenRef.current !== scanToken || backgroundMusicScanFolderRef.current !== folderPath) return
       if (result.ok) {
         setBackgroundMusicTracks(result.tracks)
         setBackgroundMusicError(result.tracks.length === 0 ? 'Folder nhạc không có file âm thanh được hỗ trợ.' : null)
@@ -615,11 +620,13 @@ export default function AutoShort(): JSX.Element {
   }
 
   const chooseBackgroundMusicFolder = async (): Promise<void> => {
+    backgroundMusicScanTokenRef.current++
     const result = await window.api.autoShortSelectMusicFolder()
     if (!result.ok) {
       if (result.error !== 'Đã hủy chọn folder nhạc.') setBackgroundMusicError(result.error)
       return
     }
+    backgroundMusicScanFolderRef.current = result.folderPath
     setBackgroundMusicFolder(result.folderPath)
     setBackgroundMusicTracks(result.tracks)
     setBackgroundMusicError(result.tracks.length === 0 ? 'Folder nhạc không có file âm thanh được hỗ trợ.' : null)
@@ -1801,7 +1808,7 @@ export default function AutoShort(): JSX.Element {
                     </label>
                   )}
 
-                  {audioMode === 'replace' && (
+                  {ttsEnabled && audioMode === 'replace' && (
                     <div className="autoshort-music-panel">
                       <div className="editor-section-head">
                         <div>
