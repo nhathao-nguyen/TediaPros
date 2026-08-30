@@ -112,6 +112,15 @@ test('Windows runtime workflow stops when a native capability probe fails', asyn
   assert.match(probeStep, /LASTEXITCODE\s*-ne\s*0[\s\S]{0,180}(throw|exit)/u)
 })
 
+test('Windows runtime workflow uses a headless-safe Video2X startup probe', async () => {
+  const workflow = await readFile(join(process.cwd(), '.github', 'workflows', 'build-windows-runtime.yml'), 'utf8')
+  const start = workflow.indexOf('Run native capability probes before packaging')
+  const end = workflow.indexOf('Create and verify runtime-v3 manifest from clean artifacts', start)
+  const probeStep = workflow.slice(start, end)
+  assert.match(probeStep, /video2x\\video2x\.exe'\)\s+@\('--version'\)/u)
+  assert.doesNotMatch(probeStep, /video2x\\video2x\.exe'\)\s+@\('-l'\)/u)
+})
+
 test('runtime input spec pins the Video2X archive with a SHA-256 digest', async () => {
   const inputSpec = JSON.parse(await readFile(join(process.cwd(), 'distribution', 'runtime-inputs.json'), 'utf8'))
   const video2x = inputSpec.assets?.video2x?.source

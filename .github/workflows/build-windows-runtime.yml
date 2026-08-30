@@ -176,7 +176,11 @@ jobs:
           Invoke-NativeProbe (Join-Path $root 'ocr-engine\ocr-engine.exe') @('--version')
           Invoke-NativeProbe (Join-Path $root 'ocr-engine\ocr-engine.exe') @('--probe')
           Invoke-NativeProbe (Join-Path $root 'douyin\dy-engine.exe') @('--version')
-          Invoke-NativeProbe (Join-Path $root 'video2x\video2x.exe') @('-l')
+          # The hosted Windows runner is headless and has no Vulkan GPU.  A
+          # device-list probe would therefore reject a valid Video2X binary
+          # before packaging; --version verifies the exact native executable
+          # without requiring hardware that CI does not provide.
+          Invoke-NativeProbe (Join-Path $root 'video2x\video2x.exe') @('--version')
           Invoke-NativeProbe (Join-Path $root 'ffmpeg\ffmpeg.exe') @('-version')
           Invoke-NativeProbe (Join-Path $root 'ffmpeg\ffprobe.exe') @('-version')
 
