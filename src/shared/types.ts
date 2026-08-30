@@ -790,6 +790,24 @@ export interface AutoShortBlurRegion extends AutoShortNormalizedRegion {
   color?: string
 }
 
+export type AutoShortBackgroundMusicMode = 'single' | 'random' | 'per-video'
+
+export interface AutoShortBackgroundMusicConfig {
+  folderPath: string
+  mode: AutoShortBackgroundMusicMode
+  volume: number
+  assignments: Record<string, string>
+}
+
+export interface AutoShortMusicTrack {
+  name: string
+  path: string
+}
+
+export type AutoShortMusicLibraryResult =
+  | { ok: true; folderPath: string; tracks: AutoShortMusicTrack[] }
+  | { ok: false; tracks: []; error: string }
+
 export interface AutoShortConfig {
   subtitleMethod: AutoShortSubtitleMethod
   whisperModel: string
@@ -832,6 +850,7 @@ export interface AutoShortConfig {
   voiceOverMode: boolean
   audioMode: 'replace' | 'mix'
   originalAudioVolume: number
+  backgroundMusic?: AutoShortBackgroundMusicConfig
   outputDir: string
 }
 
@@ -995,4 +1014,3 @@ export interface AutoShortBatchResult {
   totalCount: number
   error?: string
 }
-

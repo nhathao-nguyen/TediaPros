@@ -30,6 +30,8 @@ import {
 import { taoFilterComplex } from '../src/main/burn'
 import { audioMixGains } from '../src/shared/audioMix'
 import { validateAutoShortStartRequest } from '../src/shared/autoShortContract'
+import { createAutoShortMusicAssignments } from '../src/shared/autoShortBackgroundMusic'
+import type { AutoShortStartRequest } from '../src/shared/types'
 import {
   inferTranslationSourceLanguage,
   isRetryableLocalTranslationError,
@@ -51,6 +53,104 @@ import {
   isSentenceTerminal
 } from '../src/main/semanticGrouping'
 import { clampAlignedCueTimeline, fuseWhisperAndOcr } from '../src/shared/autoShortAlignment'
+
+test('AutoShort background music assigns one selected track to every queue item', () => {
+  const result = createAutoShortMusicAssignments({
+    mode: 'single',
+    itemIds: ['video-1', 'video-2'],
+    trackPaths: ['C:\\music\\one.mp3', 'C:\\music\\two.wav'],
+    selectedTrackPath: 'C:\\music\\two.wav'
+  })
+  assert.deepEqual(result, {
+    ok: true,
+    assignments: { 'video-1': 'C:\\music\\two.wav', 'video-2': 'C:\\music\\two.wav' }
+  })
+})
+
+test('AutoShort background music resolves random choices once into explicit assignments', () => {
+  const values = [0.1, 0.9]
+  const result = createAutoShortMusicAssignments({
+    mode: 'random',
+    itemIds: ['video-1', 'video-2'],
+    trackPaths: ['C:\\music\\one.mp3', 'C:\\music\\two.wav'],
+    random: () => values.shift() ?? 0
+  })
+  assert.deepEqual(result, {
+    ok: true,
+    assignments: { 'video-1': 'C:\\music\\one.mp3', 'video-2': 'C:\\music\\two.wav' }
+  })
+})
+
+test('AutoShort background music requires one manual track per queue item', () => {
+  const result = createAutoShortMusicAssignments({
+    mode: 'per-video',
+    itemIds: ['video-1', 'video-2'],
+    trackPaths: ['C:\\music\\one.mp3'],
+    perVideoAssignments: { 'video-1': 'C:\\music\\one.mp3' }
+  })
+  assert.equal(result.ok, false)
+  if (!result.ok) assert.match(result.error, /video-2|chưa chọn nhạc/iu)
+})
+
+const autoShortBackgroundRequest = (): AutoShortStartRequest => ({
+  items: [
+    { id: 'video-1', filePath: 'C:\\media\\one.mp4' },
+    { id: 'video-2', filePath: 'C:\\media\\two.mp4' }
+  ],
+  config: {
+    subtitleMethod: 'whisper',
+    whisperModel: 'base',
+    whisperDevice: 'cpu',
+    blurRegions: [],
+    lamMo: false,
+    translateTarget: 'none',
+    translateProvider: 'local',
+    ttsEnabled: true,
+    voiceOverMode: false,
+    audioMode: 'replace',
+    originalAudioVolume: 20,
+    backgroundMusic: {
+      folderPath: 'C:\\music',
+      mode: 'per-video',
+      volume: 15,
+      assignments: {
+        'video-1': 'C:\\music\\one.mp3',
+        'video-2': 'C:\\music\\two.wav'
+      }
+    },
+    outputDir: 'C:\\media\\out'
+  }
+})
+
+test('AutoShort accepts exact background music assignments for replace mode', () => {
+  assert.equal(validateAutoShortStartRequest(autoShortBackgroundRequest()).ok, true)
+})
+
+test('AutoShort rejects background music in source-audio mix mode', () => {
+  const request = autoShortBackgroundRequest()
+  request.config.audioMode = 'mix'
+  const result = validateAutoShortStartRequest(request)
+  assert.equal(result.ok, false)
+  if (!result.ok) assert.match(result.error, /thay thế toàn bộ âm thanh gốc/iu)
+})
+
+test('AutoShort rejects background music when AI narration is disabled', () => {
+  const request = autoShortBackgroundRequest()
+  request.config.ttsEnabled = false
+  const result = validateAutoShortStartRequest(request)
+  assert.equal(result.ok, false)
+  if (!result.ok) assert.match(result.error, /lồng tiếng AI/iu)
+})
+
+test('AutoShort rejects missing or unknown background assignment keys', () => {
+  const request = autoShortBackgroundRequest()
+  const assignments = request.config.backgroundMusic!.assignments
+  delete assignments['video-2']
+  assignments.unknown = 'C:\\music\\one.mp3'
+  const result = validateAutoShortStartRequest(request)
+  assert.equal(result.ok, false)
+  if (!result.ok) assert.match(result.error, /mỗi video|không thuộc hàng đợi/iu)
+})
 
 test('catalog exposes exactly the three local multilingual models', () => {
   assert.deepEqual(Object.keys(WHISPER_MODEL_CATALOG), ['base', 'small', 'medium'])
@@ -1281,4 +1381,3 @@ test('Video2X prevents concurrent runs and manages task cancellation cleanly', a
 })
 
 import './e2e-autoshort.test'
-

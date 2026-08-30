@@ -1,6 +1,7 @@
 import type {
   AutoShortBlurRegion,
   AutoShortConfig,
+  AutoShortBackgroundMusicMode,
   AutoShortNormalizedRegion,
   AutoShortQueueItemInput,
   AutoShortStartRequest,
@@ -18,6 +19,7 @@ const PROVIDERS = new Set(['gemini', 'openai', 'local'])
 const DISPLAY_STYLES = new Set<SubtitleDisplayStyle>(['standard', 'word-reveal', 'word-highlight'])
 const LAYOUTS = new Set<SubtitleLayoutProfile>(['readable', 'social', 'vertical'])
 const MODELS = new Set(['base', 'small', 'medium'])
+const BACKGROUND_MUSIC_MODES = new Set<AutoShortBackgroundMusicMode>(['single', 'random', 'per-video'])
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return Boolean(value) && typeof value === 'object' && !Array.isArray(value)
@@ -210,6 +212,24 @@ function validateConfigRecord(raw: Record<string, unknown>): AutoShortConfig | s
   }
   if (raw.ttsOptions != null && !isRecord(raw.ttsOptions)) return 'Tùy chọn TTS không hợp lệ.'
   if (raw.audioMode !== 'replace' && raw.audioMode !== 'mix') return 'Chế độ âm thanh không hợp lệ.'
+  if (raw.backgroundMusic != null) {
+    if (!isRecord(raw.backgroundMusic)) return 'Cấu hình nhạc background không hợp lệ.'
+    const backgroundMusic = raw.backgroundMusic
+    const folderError = absolutePath(backgroundMusic.folderPath, 'Folder nhạc background')
+    if (folderError) return folderError
+    if (!BACKGROUND_MUSIC_MODES.has(backgroundMusic.mode as AutoShortBackgroundMusicMode)) {
+      return 'Chế độ nhạc background không hợp lệ.'
+    }
+    const volumeError = numberIn(backgroundMusic.volume, 'Âm lượng nhạc background', 0, 100)
+    if (volumeError) return volumeError
+    if (!isRecord(backgroundMusic.assignments)) return 'Danh sách nhạc background không hợp lệ.'
+    for (const [id, path] of Object.entries(backgroundMusic.assignments)) {
+      const pathError = absolutePath(path, `Nhạc background của video ${id}`)
+      if (pathError) return pathError
+    }
+    if (raw.audioMode !== 'replace') return 'Nhạc background chỉ dùng khi thay thế toàn bộ âm thanh gốc.'
+    if (raw.ttsEnabled !== true) return 'Nhạc background cần bật lồng tiếng AI.'
+  }
   const outputError = absolutePath(raw.outputDir, 'Thư mục đầu ra')
   if (outputError) return outputError
 
@@ -246,5 +266,16 @@ export function validateAutoShortStartRequest(raw: unknown): AutoShortValidation
   }
   const config = validateConfig(raw.config)
   if (typeof config === 'string') return { ok: false, error: config }
+  const backgroundMusic = config.backgroundMusic
+  if (backgroundMusic) {
+    const itemIds = new Set(items.map((item) => item.id))
+    const assignedIds = Object.keys(backgroundMusic.assignments)
+    if (assignedIds.length !== items.length || items.some((item) => !backgroundMusic.assignments[item.id])) {
+      return { ok: false, error: 'Phải chọn nhạc background cho mỗi video trong hàng đợi.' }
+    }
+    if (assignedIds.some((id) => !itemIds.has(id))) {
+      return { ok: false, error: 'Danh sách nhạc có video không thuộc hàng đợi.' }
+    }
+  }
   return { ok: true, value: { config, items } }
 }
