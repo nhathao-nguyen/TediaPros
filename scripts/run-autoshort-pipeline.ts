@@ -55,17 +55,19 @@ app.whenReady().then(async () => {
   try {
     const inputFile = 'C:\\Users\\PC\\Downloads\\test\\test-30s.mp4'
     const outputDir = 'C:\\Users\\PC\\Downloads\\test'
-    const apiKey = 'ai_sk_lauI0AikWJNcDPIsDC3MicpukDRcaK8vg6F5DxX4m7c'
+    const apiKey = process.env.LOCAL_AI_API_KEY || ''
 
-    console.log('[DEBUG] Saving local API Key...')
+    console.log('[DEBUG] Checking local API Key...')
     const { getAutoShortReadiness, installAutoShortDependencies } = await import('../src/main/autoshort')
     const { saveLocalKey, loadLocalKey, checkLocalTranslateKey } = await import('../src/main/localTranslate')
     const { checkTtsServerHealth, getTtsModels } = await import('../src/main/tts')
     const { whisperModelStatus } = await import('../src/main/whisper')
 
-    await saveLocalKey(apiKey)
-    const key = await loadLocalKey()
-    console.log('[DEBUG] Key loaded successfully. Length:', key.length)
+    if (apiKey) {
+      await saveLocalKey(apiKey)
+      const key = await loadLocalKey()
+      console.log('[DEBUG] Key loaded successfully. Length:', key.length)
+    }
 
     const baseStatus = await whisperModelStatus('base')
     const smallStatus = await whisperModelStatus('small')
