@@ -1462,8 +1462,42 @@ test('Clean-Machine Test 11: Checksum mismatch preserves existing working runtim
 
 test('Clean-Machine Test 12: Interrupted download staging directory is cleaned on failure', async () => {
   const { downloadRuntimeEngineFromManifest } = await import('../src/main/runtimeInstaller')
-  const result = await downloadRuntimeEngineFromManifest('video2x', () => {})
-  assert.equal(result, false)
+  const { runtimeKindDir } = await import('../src/main/runtimeResolver')
+  const { access, rm } = await import('node:fs/promises')
+  const target = runtimeKindDir('video2x')
+  const staging = `${target}.staging`
+  await rm(target, { recursive: true, force: true })
+  await rm(staging, { recursive: true, force: true })
+
+  const platform = process.platform === 'darwin' ? 'darwin' : process.platform === 'win32' ? 'win32' : 'linux'
+  const arch = process.arch === 'arm64' ? 'arm64' : process.arch === 'ia32' ? 'ia32' : 'x64'
+  const manifest = {
+    schemaVersion: 1,
+    runtimeVersion: 'runtime-v2',
+    platform,
+    arch,
+    assets: {
+      video2x: {
+        version: '6.4.0',
+        platform,
+        arch,
+        asset: 'video2x.zip',
+        sha256: createHash('sha256').update('complete archive').digest('hex'),
+        bytes: Buffer.byteLength('complete archive'),
+        entrypoint: 'video2x.exe',
+        capabilities: ['list-devices'],
+        files: ['video2x.exe']
+      }
+    }
+  }
+  let request = 0
+  await assert.rejects(downloadRuntimeEngineFromManifest('video2x', () => {}, {
+    fetch: async () => request++ === 0
+      ? new Response(JSON.stringify(manifest), { status: 200 })
+      : new Response('partial archive', { status: 200 })
+  }), /kích thước archive|archive.*size/i)
+  assert.equal(await access(staging).then(() => true).catch(() => false), false)
+  assert.equal(await access(target).then(() => true).catch(() => false), false)
 })
 
 test('Clean-Machine Test 13: Manifest validator strictly catches missing asset and malformed hash', async () => {
