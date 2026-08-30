@@ -1,4 +1,4 @@
-import { mkdtemp, mkdir, readFile, writeFile, rm } from 'node:fs/promises'
+import { mkdtemp, mkdir, readFile, writeFile, rm, stat } from 'node:fs/promises'
 import { createHash } from 'node:crypto'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
@@ -93,6 +93,23 @@ test('PyInstaller specs resolve entrypoints and hooks from the spec directory, n
     assert.match(source, new RegExp(`Analysis\\(\\s*\\[\\s*str\\(SPEC_DIR\\s*\\/\\s*['"]${entrypoint}['"]\\)`), `${file} must use an absolute entrypoint`)
     assert.doesNotMatch(source, new RegExp(`Analysis\\(\\s*\\[\\s*['"]${entrypoint}['"]`), `${file} still depends on CWD`)
   }
+})
+
+test('Douyin runtime source contains the storage package required by its CLI and downloader', async () => {
+  const storageFiles = ['__init__.py', 'database.py', 'file_manager.py', 'metadata_handler.py']
+  for (const file of storageFiles) {
+    const path = join(process.cwd(), 'engines', 'douyin-engine', 'storage', file)
+    const info = await stat(path).catch(() => null)
+    assert.ok(info?.isFile(), `missing Douyin runtime source file: ${path}`)
+  }
+})
+
+test('Windows runtime workflow stops when a native capability probe fails', async () => {
+  const workflow = await readFile(join(process.cwd(), '.github', 'workflows', 'build-windows-runtime.yml'), 'utf8')
+  const start = workflow.indexOf('Run native capability probes before packaging')
+  const end = workflow.indexOf('Create and verify runtime-v3 manifest from clean artifacts', start)
+  const probeStep = workflow.slice(start, end)
+  assert.match(probeStep, /LASTEXITCODE\s*-ne\s*0[\s\S]{0,180}(throw|exit)/u)
 })
 
 test('runtime input spec pins the Video2X archive with a SHA-256 digest', async () => {
@@ -234,7 +251,7 @@ test('release tooling has no developer-machine or destructive re-upload fallback
   assert.doesNotMatch(packer, /where\.exe|findInPath|process\.env\.PATH/u)
   assert.doesNotMatch(publisher, /method:\s*['"]DELETE['"]/u)
   assert.doesNotMatch(verifier, /containsEntrypoint\s*=\s*true/u)
-  assert.match(publisher, /runtime-v2/u)
+  assert.match(publisher, /runtime-v3/u)
   assert.match(publisher, /manifest\.runtimeVersion/u)
   assert.match(publisher, /different runtime version|runtimeVersion/u)
   assert.match(publisher, /draft:\s*true/u)
@@ -263,7 +280,7 @@ test('runtime packer archives every canonical kind and verifies the generated ma
       inputSpecPath
     })
     assert.equal(Object.keys(result.manifest.assets).length, 6)
-    assert.equal((await readFile(join(root, 'release', 'runtime-provenance.json'), 'utf8')).includes('runtime-v2'), true)
+    assert.equal((await readFile(join(root, 'release', 'runtime-provenance.json'), 'utf8')).includes('runtime-v3'), true)
   } finally {
     await rm(root, { recursive: true, force: true })
   }

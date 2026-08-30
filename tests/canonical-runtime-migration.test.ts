@@ -214,6 +214,47 @@ test('runtime installer promotes only a checksum-verified and probed staging tre
   await rm(target, { recursive: true, force: true })
 })
 
+test('runtime installer accepts declared zero-byte package data files', async () => {
+  const { downloadRuntimeEngineFromManifest } = await import('../src/main/runtimeInstaller')
+  const target = runtimeKindDir('whisper-engine')
+  await rm(target, { recursive: true, force: true })
+  const archive = Buffer.from('runtime-archive-with-empty-pxd')
+  const platform = process.platform === 'darwin' ? 'darwin' : process.platform === 'win32' ? 'win32' : 'linux'
+  const arch = process.arch === 'arm64' ? 'arm64' : process.arch === 'ia32' ? 'ia32' : 'x64'
+  const manifest = {
+    schemaVersion: 1,
+    runtimeVersion: 'runtime-v2',
+    platform,
+    arch,
+    assets: {
+      'whisper-engine': {
+        version: '1.0.0', platform, arch, asset: 'whisper-engine.zip',
+        sha256: createHash('sha256').update(archive).digest('hex'), bytes: archive.length,
+        entrypoint: 'whisper-engine.exe', capabilities: ['probe'],
+        files: ['whisper-engine.exe', '_internal/av/__init__.pxd']
+      }
+    }
+  }
+  let request = 0
+  try {
+    const result = await downloadRuntimeEngineFromManifest('whisper-engine', () => {}, {
+      fetch: async () => request++ === 0
+        ? new Response(JSON.stringify(manifest), { status: 200 })
+        : new Response(archive, { status: 200 }),
+      extract: async (_archive, destination) => {
+        await mkdir(join(destination, '_internal', 'av'), { recursive: true })
+        await writeFile(join(destination, 'whisper-engine.exe'), 'verified runtime')
+        await writeFile(join(destination, '_internal', 'av', '__init__.pxd'), '')
+      },
+      probe: async () => ({ healthy: true, version: '1.0.0' })
+    })
+    assert.equal(result, true)
+    assert.equal(await readFile(join(target, '_internal', 'av', '__init__.pxd'), 'utf8'), '')
+  } finally {
+    await rm(target, { recursive: true, force: true })
+  }
+})
+
 test('runtime installer leaves the active tree untouched when the real probe fails', async () => {
   const { downloadRuntimeEngineFromManifest } = await import('../src/main/runtimeInstaller')
   const target = runtimeKindDir('video2x')

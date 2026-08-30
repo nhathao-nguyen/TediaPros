@@ -86,3 +86,7 @@ DONG_GOI.md
 
 # File tien ich ca nhan (mo app thu cong)
 run.bat
+
+# Douyin runtime source package (required by the packaged CLI; not generated data).
+!engines/douyin-engine/storage/
+!engines/douyin-engine/storage/*.py

@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "runtimeVersion": "runtime-v2",
+  "runtimeVersion": "runtime-v3",
   "platform": "win32",
   "arch": "x64",
   "assets": {

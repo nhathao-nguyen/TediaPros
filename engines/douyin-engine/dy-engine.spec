@@ -16,6 +16,12 @@ hiddenimports += tmp_ret[2]
 # Goi local (cli/core/storage/...) — bat buoc de one-file khong thieu module
 for pkg in ('cli', 'core', 'storage', 'auth', 'config', 'control', 'utils', 'server', 'tools'):
     hiddenimports += collect_submodules(pkg)
+hiddenimports += [
+    'storage',
+    'storage.database',
+    'storage.file_manager',
+    'storage.metadata_handler',
+]
 
 a = Analysis(
     [str(SPEC_DIR / 'run.py')],

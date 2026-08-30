@@ -1,3 +1,12 @@
+## TediaPros v0.1.22
+
+### Sửa runtime phụ đề và Douyin
+
+- Chấp nhận metadata file 0 byte hợp lệ trong archive Faster-Whisper, đồng thời vẫn bắt buộc entrypoint có dữ liệu.
+- Bổ sung package `storage` bị thiếu trong engine Douyin và khóa kiểm tra hidden import khi build native.
+- Native capability probe trên Windows giờ dừng workflow ngay khi bất kỳ engine nào trả mã lỗi.
+- Chuyển kênh runtime bất biến sang `runtime-v3` để bản cài mới nhận đúng asset đã sửa.
+
 ## TediaPros v0.1.21
 
 ### Production Windows Auto Short
