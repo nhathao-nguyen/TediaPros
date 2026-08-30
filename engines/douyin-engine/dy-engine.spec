@@ -3,7 +3,7 @@ from pathlib import Path
 import sys
 from PyInstaller.utils.hooks import collect_all, collect_submodules
 
-SPEC_DIR = Path(__file__).resolve().parent
+SPEC_DIR = Path(SPECPATH).resolve().parent
 sys.path.insert(0, str(SPEC_DIR))
 datas = []
 binaries = []
