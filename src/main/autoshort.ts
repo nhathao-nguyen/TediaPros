@@ -7,6 +7,8 @@ import { resolveFfmpeg, installFfmpeg } from './deps'
 import {
   isAutoShortWhisperEngineReady,
   planAutoShortVoiceTimeline,
+  alignKnownTextWithAsrWords,
+  segmentDubbingSubtitles,
   resolveAutoShortWhisperLanguage,
   validateAutoShortTtsModel,
   validateAutoShortTimelineSync,
@@ -15,6 +17,8 @@ import {
   validateRenderedOutputMedia,
   type RenderedMediaProbeInfo,
   type AutoShortVoiceCueInput,
+  type AutoShortDubbingUnit,
+  type AutoShortWordTiming,
   AUTO_SHORT_TTS_MAX_TEMPO,
   AUTO_SHORT_TTS_NORMAL_MAX_TEMPO,
   AUTO_SHORT_TTS_TAIL_MARGIN_SECONDS,
@@ -772,6 +776,8 @@ async function synthesizeVoice(
   path: string
   clips: Array<{ start: number; path: string }>
   cues: SubtitleCue[]
+  dubbingUnits: AutoShortDubbingUnit[]
+  wordTimings?: Array<{ start: number; end: number; words: Array<{ text: string; start: number; end: number; probability?: number | null }> }>
   count: number
   voice?: string
   language: string
@@ -816,7 +822,6 @@ async function synthesizeVoice(
     }
   }
 
-  // 1. Group consecutive cues into semantic groups for natural prosody
   let semanticGroups = buildSemanticGroups(cues)
   logInfo(`[AutoShort] Đã gom ${cues.length} cue thành ${semanticGroups.length} semantic group để lồng tiếng tự nhiên.`)
 
@@ -828,12 +833,10 @@ async function synthesizeVoice(
     rawDuration: number
     naturalDuration: number
     rephraseAttempted: boolean
-    text: string
+    translatedText: string
+    finalSpokenText: string
   }> = []
 
-  // 2-3. Synthesize, trim, rephrase, and split only when a complete multi-cue
-  // group still cannot fit at the hard tempo limit. This preserves every cue
-  // while giving the rephrase step smaller semantic units to work with.
   const synthesizeGroup = async (group: SemanticGroup<SubtitleCue>, gIndex: number) => {
     const groupText = joinGroupText(group.cues)
     emitProgress(job, item, 'generating_tts', 58 + (gIndex / Math.max(1, semanticGroups.length)) * 20, `Đang tạo voice ${gIndex + 1}/${semanticGroups.length}`, index, total)
@@ -881,7 +884,7 @@ async function synthesizeVoice(
     const groupNominalDuration = gEnd >= gStart ? gEnd - gStart : 2.5
     const availableDuration = Math.max(0.1, groupNominalDuration)
     let rephraseAttempted = false
-    let finalText = current.text
+    let finalSpokenText = current.text
     let finalPath = trimmedPath
 
     if (naturalDuration > availableDuration * AUTO_SHORT_TTS_NORMAL_MAX_TEMPO && config.ttsEnabled) {
@@ -916,7 +919,7 @@ async function synthesizeVoice(
           if (repResult.ok && repResult.savedPath) {
             const repNatDur = await trimVoiceClip(ffmpeg, repResult.savedPath, rephraseTrimPath, job.controller.signal)
             if (repNatDur > 0.05 && repNatDur < naturalDuration) {
-              finalText = rephrasedText.trim()
+              finalSpokenText = rephrasedText.trim()
               naturalDuration = repNatDur
               finalPath = rephraseTrimPath
               logInfo(`[AutoShort] Đoạn ${gIndex + 1} đã rephrase thành công (${naturalDuration.toFixed(2)}s).`)
@@ -935,7 +938,8 @@ async function synthesizeVoice(
       rawDuration: current.rawDuration,
       naturalDuration,
       rephraseAttempted,
-      text: finalText
+      translatedText: current.text,
+      finalSpokenText
     }
   }
 
@@ -962,11 +966,10 @@ async function synthesizeVoice(
     gIndex++
   }
 
-  // 4. Plan voice timeline for semantic groups using robust global tempo
-  const targetGroupInputs: AutoShortVoiceCueInput[] = preparedClips.map(({ group, text }) => {
+  const targetGroupInputs: AutoShortVoiceCueInput[] = preparedClips.map(({ group, finalSpokenText }) => {
     const start = group.start ?? group.cues[0]?.start ?? 0
     const end = group.end ?? group.cues[group.cues.length - 1]?.end ?? (start + 2.5)
-    return { id: group.id, start, end, text }
+    return { id: group.id, start, end, text: finalSpokenText }
   })
   const sourceGroupInputs: AutoShortVoiceCueInput[] = preparedClips.map(({ group }) => {
     const sourceGroupCues = group.cues
@@ -992,8 +995,14 @@ async function synthesizeVoice(
 
   logInfo(`[AutoShort] Lập timeline voice hoàn tất. Global tempo: ${timing.globalTempo.toFixed(3)}x, max tempo: ${timing.maxTempo.toFixed(3)}x, avg tempo: ${timing.averageTempo.toFixed(3)}x.`)
 
-  // 5. Apply tempo speedup per group and redistribute subtitle timing to constituent cues
+  const [engineStat, modelStat] = await Promise.all([
+    whisperEngineStatus().catch(() => null),
+    whisperModelStatus(config.whisperModel || 'base').catch(() => null)
+  ])
+  const canUseWhisperAlignment = Boolean(isAutoShortWhisperEngineReady(engineStat) && (modelStat?.complete || modelStat?.installed))
+
   const clips: Array<{ start: number; path: string }> = []
+  const dubbingUnits: AutoShortDubbingUnit[] = []
   const timedCues: SubtitleCue[] = []
   const diagnostics: AutoShortCueDiagnostic[] = []
   const artifacts: AutoShortArtifactEntry[] = []
@@ -1033,15 +1042,106 @@ async function synthesizeVoice(
     const srcCue = sourceGroupCues[0] || sourceCues[gIndex] || current.group.cues[0]
     const srcGroupEnd = sourceGroupCues[sourceGroupCues.length - 1]?.end ?? srcCue?.end ?? planned.subtitleEnd
 
+    let asrWords: AutoShortWordTiming[] = []
+    if (canUseWhisperAlignment) {
+      try {
+        const alignDir = join(workDir, `align-${gIndex}`)
+        await mkdir(alignDir, { recursive: true })
+        const alignResult = await transcribeAudio(
+          `${job.id}-align-${gIndex}`,
+          {
+            input: path,
+            outputDir: alignDir,
+            model: config.whisperModel || 'base',
+            language: resolveAutoShortWhisperLanguage(language),
+            task: 'transcribe',
+            formats: ['json'],
+            device: 'cpu',
+            diarize: false,
+            speakers: 0
+          },
+          () => {},
+          job.controller.signal
+        )
+        if (alignResult.ok && alignResult.alignmentPath && (await fileExists(alignResult.alignmentPath))) {
+          const alignData = JSON.parse(await readFile(alignResult.alignmentPath, 'utf8')) as {
+            segments?: Array<{ words?: Array<{ text: string; start: number; end: number; probability?: number }> }>
+          }
+          if (Array.isArray(alignData.segments)) {
+            for (const seg of alignData.segments) {
+              if (Array.isArray(seg.words)) {
+                for (const w of seg.words) {
+                  if (w.text && Number.isFinite(w.start) && Number.isFinite(w.end)) {
+                    asrWords.push({
+                      text: w.text.trim(),
+                      start: Number(w.start),
+                      end: Number(w.end),
+                      probability: Number(w.probability ?? 1.0)
+                    })
+                  }
+                }
+              }
+            }
+          }
+        }
+      } catch (alignErr) {
+        logWarn(`[AutoShort] Không lấy được ASR word timestamps cho đoạn ${gIndex + 1}: ${errLabel(alignErr)}`)
+      }
+    }
+
+    const alignResult = alignKnownTextWithAsrWords(
+      current.finalSpokenText,
+      asrWords,
+      planned.start,
+      duration,
+      true
+    )
+
+    const unitSubtitles = segmentDubbingSubtitles({
+      id: current.group.id || `group-${gIndex}`,
+      sourceCueIds: sourceGroupCues.map((c, idx) => c.id || `cue-${idx}`),
+      finalSpokenText: current.finalSpokenText,
+      words: alignResult.words,
+      plannedStart: planned.start,
+      plannedEnd: speechEnd
+    })
+
+    const dubbingUnit: AutoShortDubbingUnit = {
+      id: current.group.id || `group-${gIndex}`,
+      sourceCueIds: sourceGroupCues.map((c, idx) => c.id || `cue-${idx}`),
+      sourceStart: srcCue ? srcCue.start : planned.subtitleStart,
+      sourceEnd: srcGroupEnd,
+      sourceText: sourceGroupCues.length > 0 ? sourceGroupCues.map((c) => c.text).join(' ') : current.group.cues.map((c) => c.text).join(' '),
+      translatedText: current.translatedText,
+      finalSpokenText: current.finalSpokenText,
+      rephrased: current.rephraseAttempted && current.finalSpokenText !== current.translatedText,
+      rawAudioPath: current.rawPath,
+      rawDuration: current.rawDuration,
+      trimmedAudioPath: current.path,
+      naturalDuration: current.naturalDuration,
+      finalAudioPath: path,
+      finalDuration: duration,
+      plannedStart: planned.start,
+      plannedEnd: speechEnd,
+      plannedDuration: planned.plannedDuration,
+      tempo: planned.tempo,
+      words: alignResult.words,
+      alignmentConfidence: alignResult.confidence,
+      alignmentQuality: alignResult.quality,
+      subtitles: unitSubtitles
+    }
+    dubbingUnits.push(dubbingUnit)
+    timedCues.push(...unitSubtitles)
+
     diagnostics.push({
       cueIndex: gIndex,
       cueId: current.group.id || `group-${gIndex}`,
       sourceStart: srcCue ? srcCue.start : planned.subtitleStart,
       sourceEnd: srcGroupEnd,
-      sourceText: sourceGroupCues.length > 0 ? sourceGroupCues.map((c) => c.text).join(' ') : current.group.cues.map((c) => c.text).join(' '),
-      translatedText: current.text,
-      cueStart: planned.subtitleStart,
-      cueEnd: planned.subtitleEnd,
+      sourceText: dubbingUnit.sourceText,
+      translatedText: current.finalSpokenText,
+      cueStart: unitSubtitles[0]?.start ?? planned.subtitleStart,
+      cueEnd: unitSubtitles[unitSubtitles.length - 1]?.end ?? planned.subtitleEnd,
       rawPath: current.rawPath,
       rawDuration: current.rawDuration,
       trimmedPath: current.path,
@@ -1057,8 +1157,8 @@ async function synthesizeVoice(
       voiceStart: planned.start,
       voiceEnd: speechEnd,
       tempo: planned.tempo,
-      renderSubtitleStart: planned.subtitleStart,
-      renderSubtitleEnd: planned.subtitleEnd,
+      renderSubtitleStart: unitSubtitles[0]?.start ?? planned.subtitleStart,
+      renderSubtitleEnd: unitSubtitles[unitSubtitles.length - 1]?.end ?? planned.subtitleEnd,
       semanticOverflowMs: planned.semanticOverflowMs,
       rephraseAttempted: current.rephraseAttempted,
       plannedDuration: planned.plannedDuration,
@@ -1077,48 +1177,81 @@ async function synthesizeVoice(
     }
 
     clips.push({ start: planned.start, path })
-
-    // Subtitle redistribution for multi-cue groups
-    if (current.group.cues.length <= 1) {
-      const single = current.group.cues[0] || { id: `cue-${gIndex}`, start: planned.subtitleStart, end: planned.subtitleEnd, text: current.text }
-      timedCues.push({
-        ...single,
-        text: current.text,
-        start: planned.subtitleStart,
-        end: planned.subtitleEnd
-      })
-    } else {
-      const totalWords = current.group.cues.reduce((sum, c) => sum + Math.max(1, c.text.trim().split(/\s+/).length), 0)
-      let offset = planned.subtitleStart
-      const totalSubDur = planned.subtitleEnd - planned.subtitleStart
-
-      for (let cIdx = 0; cIdx < current.group.cues.length; cIdx++) {
-        const subCue = current.group.cues[cIdx]
-        const words = Math.max(1, subCue.text.trim().split(/\s+/).length)
-        const subDur = (words / totalWords) * totalSubDur
-        const subStart = offset
-        const subEnd = cIdx === current.group.cues.length - 1 ? planned.subtitleEnd : offset + subDur
-        timedCues.push({
-          ...subCue,
-          start: Number(subStart.toFixed(3)),
-          end: Number(subEnd.toFixed(3))
-        })
-        offset = subEnd
-      }
-    }
   }
 
-  const anyRephrased = preparedClips.some((c) => c.rephraseAttempted)
+  const anyRephrased = dubbingUnits.some((u) => u.rephrased)
   if (anyRephrased) {
     const dubbingSrtPath = join(workDir, 'dubbing.srt')
     await writeFile(dubbingSrtPath, serializeSrt(timedCues), 'utf8')
     artifacts.push({ source: dubbingSrtPath, name: 'dubbing.srt' })
   }
 
+  // Diagnostic artifacts
+  const finalSpokenTextArtifactPath = join(workDir, 'final-spoken-text.json')
+  await writeFile(
+    finalSpokenTextArtifactPath,
+    JSON.stringify(
+      dubbingUnits.map((u) => ({
+        unitId: u.id,
+        sourceCueIds: u.sourceCueIds,
+        sourceStart: u.sourceStart,
+        sourceEnd: u.sourceEnd,
+        sourceText: u.sourceText,
+        translatedText: u.translatedText,
+        finalSpokenText: u.finalSpokenText,
+        rephrased: u.rephrased
+      })),
+      null,
+      2
+    ),
+    'utf8'
+  )
+  artifacts.push({ source: finalSpokenTextArtifactPath, name: 'final-spoken-text.json' })
+
+  const targetWordTimelineArtifactPath = join(workDir, 'target-word-timeline.json')
+  await writeFile(
+    targetWordTimelineArtifactPath,
+    JSON.stringify(
+      dubbingUnits.map((u) => ({
+        unitId: u.id,
+        plannedStart: u.plannedStart,
+        plannedEnd: u.plannedEnd,
+        alignmentQuality: u.alignmentQuality,
+        alignmentConfidence: u.alignmentConfidence,
+        words: u.words
+      })),
+      null,
+      2
+    ),
+    'utf8'
+  )
+  artifacts.push({ source: targetWordTimelineArtifactPath, name: 'target-word-timeline.json' })
+
+  const dubbingUnitsArtifactPath = join(workDir, 'dubbing-units.json')
+  await writeFile(dubbingUnitsArtifactPath, JSON.stringify(dubbingUnits, null, 2), 'utf8')
+  artifacts.push({ source: dubbingUnitsArtifactPath, name: 'dubbing-units.json' })
+
+  // Prepare word timings for subtitle effects if alignment quality is good
+  const allWordAligned = dubbingUnits.every((u) => u.alignmentQuality === 'word' && u.alignmentConfidence >= 0.60)
+  const wordTimings = allWordAligned
+    ? dubbingUnits.map((u) => ({
+        start: u.plannedStart,
+        end: u.plannedEnd,
+        words: u.words.map((w) => ({
+          text: w.text,
+          start: w.start,
+          end: w.end,
+          probability: w.probability
+        }))
+      }))
+    : undefined
+
   return {
     path: join(workDir, 'tts-timeline.wav'),
     clips,
     cues: timedCues,
+    dubbingUnits,
+    wordTimings,
     count: clips.length,
     voice,
     language,
@@ -1304,7 +1437,6 @@ async function processSingleVideo(
 
     artifactEntries.push({ source: rawSrtPath, name: 'source.srt' })
 
-    // 2. Stage: Translation (check checkpoint first)
     let targetSrtPath = rawSrtPath
     let targetCues: SubtitleCue[] = sourceCues
 
@@ -1331,16 +1463,21 @@ async function processSingleVideo(
       artifactEntries.push({ source: targetSrtPath, name: 'translated.srt' })
     }
 
-    // 3. Stage: TTS Synthesis & Timeline Stitching
     let stitchedAudioPath: string | null = null
     let renderSrtPath = targetSrtPath
     let renderDisplayStyle = config.subtitleDisplayStyle || 'standard'
+    let finalWordTimings: any = undefined
 
     if (config.ttsEnabled) {
       emitProgress(job, item, 'generating_tts', 58, 'Đang tạo voice từ SRT đích…', index, total)
       const synthesized = await synthesizeVoice(job, item, config, targetCues, sourceCues, workDir, meta.giay, index, total, detectedSourceLanguage)
       
-      const syncValidation = validateAutoShortTimelineSync(synthesized.sourceGroupInputs, synthesized.targetGroupInputs, synthesized.diagnostics, meta.giay)
+      const syncValidation = validateAutoShortTimelineSync(
+        synthesized.dubbingUnits,
+        meta.giay,
+        synthesized.sourceGroupInputs,
+        synthesized.targetGroupInputs
+      )
       if (!syncValidation.ok) {
         logError(`[AutoShort] Vi phạm đồng bộ semantic timeline:\n${syncValidation.violations.join('\n')}`)
         throw new Error(`Không thể xuất video do vi phạm đồng bộ semantic timeline: ${syncValidation.violations[0]}`)
@@ -1368,15 +1505,17 @@ async function processSingleVideo(
         cues: synthesized.diagnostics
       }, null, 2), 'utf8')
       artifactEntries.push({ source: timelineManifestPath, name: 'tts-timeline.json' })
-      if (renderDisplayStyle !== 'standard') {
+
+      if (synthesized.wordTimings && synthesized.wordTimings.length > 0) {
+        finalWordTimings = synthesized.wordTimings
+      } else if (renderDisplayStyle !== 'standard') {
         renderDisplayStyle = 'standard'
-        logWarn('[AutoShort] Đã chuyển word effect sang standard vì TTS chưa trả word timestamp thật.')
+        logWarn('[AutoShort] Đã chuyển word effect sang standard vì độ tin cậy word timing chưa đủ.')
       }
     }
 
     throwIfAborted(job.controller.signal)
 
-    // 4. Stage: Video Rendering
     emitProgress(job, item, 'rendering_video', 85, 'Đang làm mờ, gắn phụ đề và xuất video…', index, total)
     outputName = await uniqueOutputName(config.outputDir, item.filePath)
     const burnReq: BurnReq = {
@@ -1403,12 +1542,12 @@ async function processSingleVideo(
       subtitleHighlightPop: config.subtitleHighlightPop,
       subtitleLayoutProfile: config.subtitleLayoutProfile || 'vertical',
       subtitleAutoOptimize: config.subtitleAutoOptimize !== false,
-      wordTimings: !config.ttsEnabled && config.translateTarget === 'none'
+      wordTimings: finalWordTimings || (!config.ttsEnabled && config.translateTarget === 'none'
         ? (checkpoint.sourceCues || [])
             .filter((cue) => Array.isArray(cue.words) && cue.words.length > 0)
             .map((cue) => ({ start: cue.start, end: cue.end, words: cue.words! }))
-        : undefined,
-      requireWordTimings: !config.ttsEnabled && renderDisplayStyle !== 'standard',
+        : undefined),
+      requireWordTimings: renderDisplayStyle !== 'standard',
       batAmThanh: Boolean(stitchedAudioPath),
       amThanhFile: stitchedAudioPath,
       amLuongGoc: config.audioMode === 'mix' ? config.originalAudioVolume : 0

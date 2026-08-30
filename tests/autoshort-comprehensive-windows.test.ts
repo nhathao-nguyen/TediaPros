@@ -9,6 +9,11 @@ import {
   validateVoiceAudioCompleteness,
   validateRenderedOutputMedia,
   validateAutoShortTimelineSync,
+  alignKnownTextWithAsrWords,
+  segmentDubbingSubtitles,
+  shouldSplitAutoShortVoiceGroup,
+  type AutoShortDubbingUnit,
+  type AutoShortWordTiming,
   AUTO_SHORT_TTS_MAX_TEMPO,
   AUTO_SHORT_TTS_HARD_MAX_TEMPO
 } from '../src/main/autoShortPolicy'
@@ -186,4 +191,242 @@ test('Case 12: Windows Unicode & Space path escaping in FFmpeg filter graph', ()
   assert.ok(filterStr.includes('Thư Mục Video 2026'))
   assert.match(filterStr, /ass=.*Thư Mục Video 2026/u)
 })
+
+// === NEW CANONICAL TESTS FOR WORD ALIGNMENT, DUBBING UNIT & DRIFT PREVENTION ===
+
+test('Case A: Fragmented source cues merge into 1 audio and resegment accurately by voice word timings', () => {
+  const knownText = 'Hôm nay chúng ta sẽ tìm hiểu về trí tuệ nhân tạo'
+  const asrWords: AutoShortWordTiming[] = [
+    { text: 'Hôm', start: 0.1, end: 0.35, probability: 0.95 },
+    { text: 'nay', start: 0.36, end: 0.6, probability: 0.98 },
+    { text: 'chúng', start: 0.62, end: 0.85, probability: 0.92 },
+    { text: 'ta', start: 0.86, end: 1.05, probability: 0.99 },
+    { text: 'sẽ', start: 1.06, end: 1.25, probability: 0.97 },
+    { text: 'tìm', start: 1.26, end: 1.5, probability: 0.94 },
+    { text: 'hiểu', start: 1.51, end: 1.8, probability: 0.96 },
+    { text: 'về', start: 1.81, end: 2.0, probability: 0.98 },
+    { text: 'trí', start: 2.05, end: 2.3, probability: 0.95 },
+    { text: 'tuệ', start: 2.31, end: 2.55, probability: 0.99 },
+    { text: 'nhân', start: 2.56, end: 2.8, probability: 0.97 },
+    { text: 'tạo', start: 2.81, end: 3.1, probability: 0.98 }
+  ]
+
+  const alignment = alignKnownTextWithAsrWords(knownText, asrWords, 0.0, 3.2, false)
+  assert.equal(alignment.quality, 'word')
+  assert.ok(alignment.confidence > 0.9)
+  assert.equal(alignment.words.length, 12)
+
+  const subs = segmentDubbingSubtitles({
+    id: 'unit-1',
+    sourceCueIds: ['cue-1', 'cue-2', 'cue-3'],
+    finalSpokenText: knownText,
+    words: alignment.words,
+    plannedStart: 0.0,
+    plannedEnd: 3.2
+  })
+
+  assert.ok(subs.length >= 1)
+  assert.equal(subs[0].text.trim().split(/\s+/)[0], 'Hôm')
+  assert.ok(subs[0].start >= 0.0)
+  assert.ok(subs[subs.length - 1].end <= 3.2)
+})
+
+test('Case B: Rephrase consistency - subtitle displays finalSpokenText and NEVER old translation text', () => {
+  const oldTranslation = 'Công nghệ trí tuệ nhân tạo hiện nay đang có những bước tiến vô cùng vượt bậc và đáng kinh ngạc'
+  const rephrasedFinalText = 'Công nghệ AI hiện nay đang phát triển rất mạnh mẽ'
+
+  const asrWords: AutoShortWordTiming[] = [
+    { text: 'Công', start: 0.1, end: 0.3 },
+    { text: 'nghệ', start: 0.31, end: 0.5 },
+    { text: 'AI', start: 0.52, end: 0.8 },
+    { text: 'hiện', start: 0.82, end: 1.0 },
+    { text: 'nay', start: 1.02, end: 1.2 },
+    { text: 'đang', start: 1.22, end: 1.4 },
+    { text: 'phát', start: 1.42, end: 1.65 },
+    { text: 'triển', start: 1.66, end: 1.9 },
+    { text: 'rất', start: 1.92, end: 2.1 },
+    { text: 'mạnh', start: 2.12, end: 2.35 },
+    { text: 'mẽ', start: 2.36, end: 2.6 }
+  ]
+
+  const alignment = alignKnownTextWithAsrWords(rephrasedFinalText, asrWords, 0.5, 2.7, true)
+  assert.equal(alignment.words.length, 11)
+
+  const unit: AutoShortDubbingUnit = {
+    id: 'group-0',
+    sourceCueIds: ['1', '2'],
+    sourceStart: 0.5,
+    sourceEnd: 3.2,
+    sourceText: 'AI technology is advancing remarkably today',
+    translatedText: oldTranslation,
+    finalSpokenText: rephrasedFinalText,
+    rephrased: true,
+    rawAudioPath: 'raw.wav',
+    rawDuration: 4.8,
+    trimmedAudioPath: 'trim.wav',
+    naturalDuration: 2.7,
+    finalAudioPath: 'final.wav',
+    finalDuration: 2.7,
+    plannedStart: 0.5,
+    plannedEnd: 3.2,
+    plannedDuration: 2.7,
+    tempo: 1.0,
+    words: alignment.words,
+    alignmentConfidence: alignment.confidence,
+    alignmentQuality: alignment.quality,
+    subtitles: segmentDubbingSubtitles({
+      id: 'group-0',
+      sourceCueIds: ['1', '2'],
+      finalSpokenText: rephrasedFinalText,
+      words: alignment.words,
+      plannedStart: 0.5,
+      plannedEnd: 3.2
+    })
+  }
+
+  // Verify subtitle text strictly contains rephrased words, NOT old words
+  const fullSubText = unit.subtitles.map((s) => s.text).join(' ')
+  assert.equal(fullSubText, rephrasedFinalText)
+  assert.ok(!fullSubText.includes('vô cùng vượt bậc'))
+  assert.ok(!fullSubText.includes('đáng kinh ngạc'))
+
+  // Timeline sync validation passes
+  const syncValidation = validateAutoShortTimelineSync([unit], 10.0)
+  assert.equal(syncValidation.ok, true, `Validation failed: ${syncValidation.violations.join(', ')}`)
+})
+
+test('Case C: Multi-cue target group segmented cleanly by clause punctuation inside voice window', () => {
+  const text = 'Bước đầu tiên, hãy mở ứng dụng. Sau đó, chọn dự án của bạn.'
+  const words: AutoShortWordTiming[] = [
+    { text: 'Bước', start: 1.0, end: 1.2 },
+    { text: 'đầu', start: 1.2, end: 1.4 },
+    { text: 'tiên,', start: 1.4, end: 1.7 },
+    { text: 'hãy', start: 1.8, end: 2.0 },
+    { text: 'mở', start: 2.0, end: 2.2 },
+    { text: 'ứng', start: 2.2, end: 2.4 },
+    { text: 'dụng.', start: 2.4, end: 2.8 },
+    { text: 'Sau', start: 3.1, end: 3.3 },
+    { text: 'đó,', start: 3.3, end: 3.6 },
+    { text: 'chọn', start: 3.7, end: 3.9 },
+    { text: 'dự', start: 3.9, end: 4.1 },
+    { text: 'án', start: 4.1, end: 4.3 },
+    { text: 'của', start: 4.3, end: 4.5 },
+    { text: 'bạn.', start: 4.5, end: 4.9 }
+  ]
+
+  const subs = segmentDubbingSubtitles({
+    id: 'unit-c',
+    sourceCueIds: ['1', '2'],
+    finalSpokenText: text,
+    words,
+    plannedStart: 1.0,
+    plannedEnd: 5.0
+  })
+
+  assert.equal(subs.length, 2, 'Should split into 2 natural subtitle cues at the period/pause')
+  assert.equal(subs[0].text, 'Bước đầu tiên, hãy mở ứng dụng.')
+  assert.equal(subs[1].text, 'Sau đó, chọn dự án của bạn.')
+  assert.ok(subs[0].end <= subs[1].start, 'Subtitles must not overlap')
+})
+
+test('Case D: Real word alignment with Whisper word timestamps and coverage scoring', () => {
+  const knownText = 'Tập thể dục mỗi ngày giúp tăng cường sức khỏe'
+  const asrWords: AutoShortWordTiming[] = [
+    { text: 'Tập', start: 0.05, end: 0.25, probability: 0.95 },
+    { text: 'thể', start: 0.26, end: 0.45, probability: 0.96 },
+    { text: 'dục', start: 0.46, end: 0.65, probability: 0.97 },
+    { text: 'mỗi', start: 0.66, end: 0.85, probability: 0.94 },
+    { text: 'ngày', start: 0.86, end: 1.1, probability: 0.98 },
+    { text: 'giúp', start: 1.15, end: 1.35, probability: 0.93 },
+    { text: 'tăng', start: 1.36, end: 1.6, probability: 0.97 },
+    { text: 'cường', start: 1.61, end: 1.85, probability: 0.98 },
+    { text: 'sức', start: 1.86, end: 2.1, probability: 0.96 },
+    { text: 'khỏe', start: 2.11, end: 2.4, probability: 0.99 }
+  ]
+
+  const offset = 2.0
+  const duration = 2.45
+  const result = alignKnownTextWithAsrWords(knownText, asrWords, offset, duration, true)
+
+  assert.equal(result.quality, 'word')
+  assert.ok(result.confidence > 0.9)
+  assert.equal(result.words.length, 10)
+  // Check that words are shifted by offset
+  assert.ok(Math.abs(result.words[0].start - (offset + 0.05)) < 0.01)
+  assert.ok(Math.abs(result.words[9].end - (offset + 2.4)) < 0.01)
+})
+
+test('Case E: Voice timeline lookahead budgeting prevents end-of-video overflow', () => {
+  // 6 cues in a 30s video
+  const cues: AutoShortVoiceCueInput[] = [
+    { id: '1', start: 0.5, end: 4.5, text: 'Câu một dài vừa phải' },
+    { id: '2', start: 5.0, end: 9.5, text: 'Câu hai nội dung giải thích' },
+    { id: '3', start: 10.0, end: 14.5, text: 'Câu ba cung cấp thông tin' },
+    { id: '4', start: 15.0, end: 19.5, text: 'Câu bốn chuyển tiếp nội dung' },
+    { id: '5', start: 20.0, end: 24.5, text: 'Câu năm phân tích sâu hơn' },
+    { id: '6', start: 25.0, end: 29.5, text: 'Câu sáu kết luận toàn bộ video' }
+  ]
+  // Slightly longer natural durations (e.g. 4.8s each in 4.5s windows)
+  const naturalDurations = [4.8, 4.8, 4.9, 4.8, 4.8, 4.8]
+  const videoDuration = 30.0
+
+  const timing = planAutoShortVoiceTimeline(cues, naturalDurations, videoDuration, AUTO_SHORT_TTS_MAX_TEMPO)
+
+  // Last cue voiceEnd MUST strictly finish within videoDuration + 0.05s
+  const lastCue = timing.cues[timing.cues.length - 1]
+  assert.ok(
+    lastCue.voiceEnd <= videoDuration + 0.05,
+    `Last cue voiceEnd (${lastCue.voiceEnd}) must not exceed video duration (${videoDuration})`
+  )
+  assert.ok(timing.maxTempo <= AUTO_SHORT_TTS_MAX_TEMPO + 0.01)
+})
+
+test('Case F: Overlong multi-cue group splitting without dropping content', () => {
+  // A multi-cue group with 3 cues requiring 8s in a 2s available window
+  assert.equal(shouldSplitAutoShortVoiceGroup(3, 8.0, 2.0, AUTO_SHORT_TTS_MAX_TEMPO), true)
+  // A single-cue group cannot be split
+  assert.equal(shouldSplitAutoShortVoiceGroup(1, 8.0, 2.0, AUTO_SHORT_TTS_MAX_TEMPO), false)
+  // A group that fits within tempo limit should not be split
+  assert.equal(shouldSplitAutoShortVoiceGroup(2, 2.2, 2.0, AUTO_SHORT_TTS_MAX_TEMPO), false)
+})
+
+test('Case G: Imperfect ASR transcript smoothly falls back to monotonic interpolation', () => {
+  const knownText = 'Công nghệ phát triển rất nhanh'
+  // ASR missed the last 2 words 'rất nhanh'
+  const imperfectAsr: AutoShortWordTiming[] = [
+    { text: 'Công', start: 0.0, end: 0.3, probability: 0.9 },
+    { text: 'nghệ', start: 0.35, end: 0.65, probability: 0.9 },
+    { text: 'phát', start: 0.7, end: 1.0, probability: 0.85 },
+    { text: 'triển', start: 1.05, end: 1.35, probability: 0.85 }
+  ]
+
+  const result = alignKnownTextWithAsrWords(knownText, imperfectAsr, 1.0, 2.5, true)
+  assert.equal(result.words.length, 6)
+  // All 6 words have valid monotonic start/end
+  for (let i = 1; i < result.words.length; i++) {
+    assert.ok(result.words[i].start >= result.words[i - 1].start, 'Timings must be monotonic')
+    assert.ok(result.words[i].end > result.words[i].start, 'End must be after start')
+  }
+})
+
+test('Case H: No cumulative drift across all cues in sequence', () => {
+  const cues: AutoShortVoiceCueInput[] = [
+    { id: '1', start: 0.0, end: 3.0, text: 'First phrase' },
+    { id: '2', start: 3.5, end: 6.5, text: 'Second phrase' },
+    { id: '3', start: 7.0, end: 10.0, text: 'Third phrase' },
+    { id: '4', start: 10.5, end: 13.5, text: 'Fourth phrase' },
+    { id: '5', start: 14.0, end: 17.0, text: 'Fifth phrase' }
+  ]
+  const naturalDurations = [3.2, 3.2, 3.2, 3.2, 3.2]
+  const timing = planAutoShortVoiceTimeline(cues, naturalDurations, 18.0, 1.25)
+
+  for (let i = 0; i < timing.cues.length; i++) {
+    const planned = timing.cues[i]
+    const original = cues[i]
+    // The voice start must not drift more than 0.3s from original target cue start
+    const drift = Math.abs(planned.start - original.start)
+    assert.ok(drift < 0.35, `Cue ${i} accumulated excessive drift (${drift.toFixed(3)}s)`)
+  }
+})
+
 

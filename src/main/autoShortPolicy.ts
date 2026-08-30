@@ -1,5 +1,5 @@
 import { WHISPER_PROTOCOL } from './engineProtocol'
-import type { TtsModelInfo, WhisperEngineStatus } from '../shared/types'
+import type { SubtitleCue, TtsModelInfo, WhisperEngineStatus } from '../shared/types'
 
 export const AUTO_SHORT_TTS_MIN_GAP_SECONDS = 0.08
 export const AUTO_SHORT_TTS_TAIL_SECONDS = 0.50
@@ -163,10 +163,47 @@ export interface AutoShortVoiceTimelinePlan {
   degraded: boolean
 }
 
+export interface AutoShortWordTiming {
+  text: string
+  start: number
+  end: number
+  probability?: number
+}
+
+export interface AutoShortDubbingUnit {
+  id: string
+  sourceCueIds: string[]
+  sourceStart: number
+  sourceEnd: number
+  sourceText: string
+
+  translatedText: string
+  finalSpokenText: string
+  rephrased: boolean
+
+  rawAudioPath?: string
+  rawDuration?: number
+  trimmedAudioPath?: string
+  naturalDuration: number
+
+  finalAudioPath?: string
+  finalDuration?: number
+
+  plannedStart: number
+  plannedEnd: number
+  plannedDuration: number
+  tempo: number
+
+  words: AutoShortWordTiming[]
+  alignmentConfidence: number
+  alignmentQuality: 'word' | 'fallback'
+
+  subtitles: SubtitleCue[]
+}
+
 /**
  * Calculate a robust global voice tempo across all semantic groups / cues.
- * Outliers needing excessive speedup (> 1.25x) are excluded from the baseline
- * and handled by the resolver (rephrasing/slack) instead of distorting the entire video.
+ * Distributes tempo smoothly so trailing cues are not compressed into video overflow.
  */
 export function calculateGlobalVoiceTempo(
   requiredTempos: readonly number[],
@@ -190,7 +227,7 @@ export function calculateGlobalVoiceTempo(
 }
 
 /**
- * Plan voice timing for semantic groups with global baseline tempo and micro-adjustments.
+ * Plan voice timing for semantic groups with global baseline tempo and lookahead budgeting.
  *
  * Invariants:
  * 1. sourceCue.start and sourceCue.end are strict semantic anchors.
@@ -228,6 +265,11 @@ export function planAutoShortVoiceTimeline(
     requiredTempo: number
   }> = []
 
+  // Global estimate of speech load vs video window
+  const totalSpeechDuration = naturalDurations.reduce((sum, d) => sum + d, 0)
+  const totalVideoSpan = Math.max(0.1, videoDuration - cues[0].start - AUTO_SHORT_TTS_END_GUARD_SECONDS)
+  const roughGlobalRatio = Math.max(1.0, totalSpeechDuration / totalVideoSpan)
+
   let prevEnd = 0
   for (let i = 0; i < n; i++) {
     const cue = cues[i]
@@ -238,6 +280,7 @@ export function planAutoShortVoiceTimeline(
       ? (cue.end as number)
       : (i < n - 1 ? Math.max(rawStart + 0.1, cues[i + 1].start) : videoDuration)
 
+    const estimatedStepDuration = naturalDuration / Math.min(upperTempo, Math.max(1.0, roughGlobalRatio))
     const earliestStart = i === 0 ? rawStart : Math.max(rawStart, prevEnd + AUTO_SHORT_TTS_MIN_GAP_SECONDS)
     const maxAllowedVoiceEnd = Math.min(
       rawEnd,
@@ -256,11 +299,12 @@ export function planAutoShortVoiceTimeline(
       naturalDuration,
       requiredTempo
     })
-    prevEnd = earliestStart + naturalDuration
+    prevEnd = earliestStart + estimatedStepDuration
   }
 
   // Calculate robust global voice tempo
-  const globalTempo = calculateGlobalVoiceTempo(preliminary.map((p) => p.requiredTempo))
+  const baselineCandidate = calculateGlobalVoiceTempo(preliminary.map((p) => p.requiredTempo))
+  const globalTempo = Math.min(upperTempo, Math.max(baselineCandidate, roughGlobalRatio > 1.05 ? Math.min(AUTO_SHORT_TTS_NORMAL_MAX_TEMPO, Number(roughGlobalRatio.toFixed(3))) : 1.0))
 
   // Second pass: apply global tempo with micro-adjustments
   const plannedCues: AutoShortVoiceCuePlan[] = []
@@ -288,6 +332,16 @@ export function planAutoShortVoiceTimeline(
       const neededLocal = Number((p.naturalDuration / availableDuration).toFixed(4))
       tempo = Math.min(upperTempo, Math.max(globalTempo, neededLocal))
       plannedDuration = Number((p.naturalDuration / tempo).toFixed(3))
+    }
+
+    // Safety lookback adjustment if end of video is reached
+    if (i === n - 1 && plannedStart + plannedDuration > videoDuration + 0.25) {
+      const remainingTime = Math.max(0.1, videoDuration - AUTO_SHORT_TTS_END_GUARD_SECONDS - plannedStart)
+      const finalNeededTempo = Number((p.naturalDuration / remainingTime).toFixed(4))
+      if (finalNeededTempo <= upperTempo + 0.05) {
+        tempo = Math.min(upperTempo, Math.max(globalTempo, finalNeededTempo))
+        plannedDuration = Number((p.naturalDuration / tempo).toFixed(3))
+      }
     }
 
     const voiceEnd = plannedStart + plannedDuration
@@ -344,94 +398,383 @@ export function planAutoShortVoiceTimeline(
   }
 }
 
+/**
+ * Clean text for comparison and phonetic matching (removes punctuation, lowercases).
+ */
+export function normalizeSpokenWord(word: string): string {
+  return word
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^\p{L}\p{N}]+/gu, '')
+    .trim()
+}
+
+export interface KnownTextAlignmentResult {
+  words: AutoShortWordTiming[]
+  confidence: number
+  coverage: number
+  quality: 'word' | 'fallback'
+  expectedCount: number
+  matchedCount: number
+}
+
+/**
+ * Align known final spoken text with ASR word timestamps from the final synthesized audio.
+ * Uses monotonic known-text alignment with interpolation for unmatched intermediate tokens.
+ */
+export function alignKnownTextWithAsrWords(
+  finalSpokenText: string,
+  asrWords: readonly AutoShortWordTiming[],
+  plannedStart: number,
+  plannedDuration: number,
+  isRelativeAudio = true
+): KnownTextAlignmentResult {
+  const rawTokens = finalSpokenText.trim().split(/\s+/).filter(Boolean)
+  if (rawTokens.length === 0) {
+    return {
+      words: [],
+      confidence: 1.0,
+      coverage: 1.0,
+      quality: 'word',
+      expectedCount: 0,
+      matchedCount: 0
+    }
+  }
+
+  const expectedCount = rawTokens.length
+  const offset = isRelativeAudio ? plannedStart : 0
+
+  // Fallback helper to distribute duration across tokens
+  const buildFallbackWords = (): AutoShortWordTiming[] => {
+    const totalChars = rawTokens.reduce((sum, t) => sum + Math.max(1, t.length), 0)
+    let currentOffset = plannedStart
+    const stepDuration = plannedDuration / Math.max(1, expectedCount)
+
+    return rawTokens.map((token, index) => {
+      const charRatio = Math.max(1, token.length) / totalChars
+      const dur = Math.max(0.08, plannedDuration * charRatio)
+      const wStart = Number(currentOffset.toFixed(3))
+      const wEnd = Number(Math.min(plannedStart + plannedDuration, wStart + dur).toFixed(3))
+      currentOffset = wEnd
+      return {
+        text: token,
+        start: wStart,
+        end: index === expectedCount - 1 ? Number((plannedStart + plannedDuration).toFixed(3)) : wEnd,
+        probability: 0.5
+      }
+    })
+  }
+
+  if (!asrWords || asrWords.length === 0) {
+    return {
+      words: buildFallbackWords(),
+      confidence: 0,
+      coverage: 0,
+      quality: 'fallback',
+      expectedCount,
+      matchedCount: 0
+    }
+  }
+
+  // Monotonic matching
+  const normalizedTokens = rawTokens.map((t) => normalizeSpokenWord(t))
+  const normalizedAsr = asrWords.map((w) => ({
+    rawText: w.text,
+    clean: normalizeSpokenWord(w.text),
+    start: Number((w.start + offset).toFixed(3)),
+    end: Number((w.end + offset).toFixed(3)),
+    probability: w.probability ?? 1.0
+  }))
+
+  const matches: Array<{ tokenIndex: number; asrIndex: number; start: number; end: number; prob: number }> = []
+  let asrCursor = 0
+
+  for (let i = 0; i < expectedCount; i++) {
+    const target = normalizedTokens[i]
+    if (!target) continue
+
+    let bestMatchIdx = -1
+    for (let j = asrCursor; j < Math.min(normalizedAsr.length, asrCursor + 8); j++) {
+      const candidate = normalizedAsr[j].clean
+      if (candidate === target || candidate.startsWith(target) || target.startsWith(candidate)) {
+        bestMatchIdx = j
+        break
+      }
+    }
+
+    if (bestMatchIdx !== -1) {
+      matches.push({
+        tokenIndex: i,
+        asrIndex: bestMatchIdx,
+        start: Math.max(plannedStart, normalizedAsr[bestMatchIdx].start),
+        end: Math.min(plannedStart + plannedDuration + 0.15, normalizedAsr[bestMatchIdx].end),
+        prob: normalizedAsr[bestMatchIdx].probability
+      })
+      asrCursor = bestMatchIdx + 1
+    }
+  }
+
+  const matchedCount = matches.length
+  const coverage = matchedCount / expectedCount
+
+  if (coverage < 0.60 || matchedCount === 0) {
+    return {
+      words: buildFallbackWords(),
+      confidence: Number(coverage.toFixed(3)),
+      coverage: Number(coverage.toFixed(3)),
+      quality: 'fallback',
+      expectedCount,
+      matchedCount
+    }
+  }
+
+  // Construct aligned words with smooth interpolation for gaps
+  const alignedWords: AutoShortWordTiming[] = new Array(expectedCount)
+  const matchMap = new Map(matches.map((m) => [m.tokenIndex, m]))
+
+  let lastKnownEnd = plannedStart
+  let nextMatchIdx = 0
+
+  for (let i = 0; i < expectedCount; i++) {
+    const exact = matchMap.get(i)
+    if (exact) {
+      alignedWords[i] = {
+        text: rawTokens[i],
+        start: exact.start,
+        end: exact.end,
+        probability: exact.prob
+      }
+      lastKnownEnd = exact.end
+      while (nextMatchIdx < matches.length && matches[nextMatchIdx].tokenIndex <= i) {
+        nextMatchIdx++
+      }
+    } else {
+      // Unmatched token: interpolate between lastKnownEnd and the next matched token's start
+      const nextMatch = matches[nextMatchIdx]
+      const targetEnd = nextMatch ? nextMatch.start : plannedStart + plannedDuration
+      const gapTokens = nextMatch ? nextMatch.tokenIndex - i : expectedCount - i
+      const gapDuration = Math.max(0.05, targetEnd - lastKnownEnd)
+      const tokenDuration = gapDuration / Math.max(1, gapTokens)
+
+      const wStart = Number(lastKnownEnd.toFixed(3))
+      const wEnd = Number((lastKnownEnd + tokenDuration).toFixed(3))
+      alignedWords[i] = {
+        text: rawTokens[i],
+        start: wStart,
+        end: wEnd,
+        probability: 0.7
+      }
+      lastKnownEnd = wEnd
+    }
+  }
+
+  // Ensure strict monotonic timing
+  for (let i = 0; i < expectedCount; i++) {
+    if (i > 0 && alignedWords[i].start < alignedWords[i - 1].end) {
+      alignedWords[i].start = alignedWords[i - 1].end
+    }
+    if (alignedWords[i].end <= alignedWords[i].start) {
+      alignedWords[i].end = alignedWords[i].start + 0.05
+    }
+  }
+
+  return {
+    words: alignedWords,
+    confidence: Number(coverage.toFixed(3)),
+    coverage: Number(coverage.toFixed(3)),
+    quality: 'word',
+    expectedCount,
+    matchedCount
+  }
+}
+
+/**
+ * Segment a dubbing unit's final spoken text into readable subtitle cues based on
+ * actual spoken word timings, clause punctuation, and natural voice pauses.
+ */
+export function segmentDubbingSubtitles(
+  unit: Pick<AutoShortDubbingUnit, 'id' | 'sourceCueIds' | 'finalSpokenText' | 'words' | 'plannedStart' | 'plannedEnd'>,
+  maxCharsPerChunk = 42,
+  minDurationSec = 0.5
+): SubtitleCue[] {
+  const words = unit.words
+  if (!words || words.length === 0) {
+    return [{
+      id: `${unit.id}-sub-0`,
+      sourceIndex: 1,
+      start: unit.plannedStart,
+      end: unit.plannedEnd,
+      text: unit.finalSpokenText
+    }]
+  }
+
+  const chunks: Array<{ words: AutoShortWordTiming[]; text: string }> = []
+  let currentWords: AutoShortWordTiming[] = []
+  let currentChars = 0
+
+  for (let i = 0; i < words.length; i++) {
+    const w = words[i]
+    currentWords.push(w)
+    currentChars += w.text.length + 1
+
+    const isLast = i === words.length - 1
+    const endsWithTerminal = /[.!?。！？…]$/u.test(w.text)
+    const endsWithClause = /[,;:\-—]$/u.test(w.text) && currentChars >= 20
+    const hasVoicePause = !isLast && words[i + 1].start - w.end >= 0.35 && currentChars >= 15
+    const isOverLength = currentChars >= maxCharsPerChunk
+
+    if (isLast || endsWithTerminal || endsWithClause || hasVoicePause || isOverLength) {
+      chunks.push({
+        words: [...currentWords],
+        text: currentWords.map((item) => item.text).join(' ')
+      })
+      currentWords = []
+      currentChars = 0
+    }
+  }
+
+  const subtitles: SubtitleCue[] = []
+  for (let i = 0; i < chunks.length; i++) {
+    const chunk = chunks[i]
+    const firstWord = chunk.words[0]
+    const lastWord = chunk.words[chunk.words.length - 1]
+
+    const subStart = Math.max(unit.plannedStart, Number((firstWord.start - 0.04).toFixed(3)))
+    let subEnd = Math.min(unit.plannedEnd, Number((lastWord.end + 0.06).toFixed(3)))
+    if (subEnd - subStart < minDurationSec) {
+      subEnd = Math.min(unit.plannedEnd, Number((subStart + minDurationSec).toFixed(3)))
+    }
+
+    subtitles.push({
+      id: `${unit.id}-sub-${i}`,
+      sourceIndex: i + 1,
+      start: subStart,
+      end: subEnd,
+      text: chunk.text
+    })
+  }
+
+  // Adjust overlap between consecutive chunks
+  for (let i = 0; i < subtitles.length - 1; i++) {
+    if (subtitles[i].end > subtitles[i + 1].start) {
+      subtitles[i].end = subtitles[i + 1].start
+    }
+  }
+
+  return subtitles
+}
+
 export interface TimelineSyncValidationResult {
   ok: boolean
   error?: string
   violations: string[]
 }
 
+/**
+ * Validate target dubbing timeline synchronization across all semantic units.
+ * Checks semantic integrity, content integrity, timeline bounds, and voice/subtitle sync.
+ * Also supports legacy signature for backward compatibility.
+ */
 export function validateAutoShortTimelineSync(
-  sourceCues: readonly AutoShortVoiceCueInput[],
-  targetCues: readonly AutoShortVoiceCueInput[],
-  diagnostics: readonly {
-    cueId?: string
-    sourceStart?: number
-    sourceEnd?: number
-    renderSubtitleStart?: number
-    renderSubtitleEnd?: number
-    voiceStart?: number
-    voiceEnd?: number
-    semanticOverflowMs?: number
-  }[],
-  videoDuration: number,
-  toleranceSec = 0.08
+  dubbingUnitsOrSource: readonly any[],
+  videoDurationOrTarget: any,
+  diagnosticsOrTol?: any,
+  legacyVideoDuration?: any,
+  legacyTolerance = 0.25
 ): TimelineSyncValidationResult {
   const violations: string[] = []
 
-  if (sourceCues.length !== targetCues.length) {
-    violations.push(`Số lượng cue nguồn (${sourceCues.length}) và cue đích (${targetCues.length}) không khớp.`)
-  }
-  if (diagnostics.length !== targetCues.length) {
-    violations.push(`Số lượng chẩn đoán (${diagnostics.length}) và cue đích (${targetCues.length}) không khớp.`)
-  }
+  // Check if called with modern DubbingUnit array
+  const isModern = Array.isArray(dubbingUnitsOrSource) &&
+    dubbingUnitsOrSource.length > 0 &&
+    typeof (dubbingUnitsOrSource[0] as AutoShortDubbingUnit).finalSpokenText === 'string'
 
-  for (let i = 0; i < Math.min(sourceCues.length, diagnostics.length); i++) {
-    const src = sourceCues[i]
-    const tgt = targetCues[i]
-    const diag = diagnostics[i]
+  if (isModern) {
+    const units = dubbingUnitsOrSource as readonly AutoShortDubbingUnit[]
+    const videoDuration = typeof videoDurationOrTarget === 'number' ? videoDurationOrTarget : 0
+    const tolerance = typeof diagnosticsOrTol === 'number' ? diagnosticsOrTol : 0.25
 
-    const srcId = src.id || `cue-${i}`
-    const tgtId = tgt.id || `cue-${i}`
-    const diagId = diag.cueId || `cue-${i}`
-
-    if (srcId !== diagId || tgtId !== diagId) {
-      violations.push(`Cue ${i + 1}: Cue ID không đồng bộ (src=${srcId}, tgt=${tgtId}, diag=${diagId}).`)
+    if (units.length === 0) {
+      return { ok: false, error: 'Danh sách dubbing unit rỗng.', violations: ['Danh sách dubbing unit rỗng.'] }
     }
 
-    const srcStart = src.start
-    const srcEnd = src.end ?? src.start
-    const targetStart = tgt.start
-    const targetEnd = tgt.end ?? tgt.start
-    if (Math.abs(targetStart - srcStart) > 0.05) {
-      violations.push(`Cue ${i + 1} (${diagId}): Target start (${targetStart.toFixed(3)}s) lệch khỏi source start (${srcStart.toFixed(3)}s).`)
+    for (let i = 0; i < units.length; i++) {
+      const u = units[i]
+      const unitId = u.id || `unit-${i}`
+
+      if (!u.finalSpokenText || !u.finalSpokenText.trim()) {
+        violations.push(`Unit ${i + 1} (${unitId}): finalSpokenText bị rỗng.`)
+      }
+
+      // Content integrity: subtitle concatenation must equal finalSpokenText
+      if (!u.subtitles || u.subtitles.length === 0) {
+        violations.push(`Unit ${i + 1} (${unitId}): Không có subtitle cue nào được tạo.`)
+      } else {
+        const subConcat = u.subtitles.map((s) => s.text.trim()).join(' ')
+        const normSub = normalizeSpokenWord(subConcat)
+        const normSpoken = normalizeSpokenWord(u.finalSpokenText)
+        if (normSub !== normSpoken && !normSub.includes(normSpoken) && !normSpoken.includes(normSub)) {
+          violations.push(`Unit ${i + 1} (${unitId}): Subtitle text không khớp finalSpokenText (sub="${subConcat}", spoken="${u.finalSpokenText}").`)
+        }
+      }
+
+      // Timeline integrity
+      if (u.plannedStart < 0) {
+        violations.push(`Unit ${i + 1} (${unitId}): plannedStart âm (${u.plannedStart.toFixed(3)}s).`)
+      }
+      if (u.plannedEnd <= u.plannedStart) {
+        violations.push(`Unit ${i + 1} (${unitId}): plannedEnd (${u.plannedEnd.toFixed(3)}s) <= plannedStart (${u.plannedStart.toFixed(3)}s).`)
+      }
+      if (videoDuration > 0 && u.plannedEnd > videoDuration + tolerance) {
+        violations.push(`Unit ${i + 1} (${unitId}): plannedEnd (${u.plannedEnd.toFixed(3)}s) vượt quá thời lượng video (${videoDuration.toFixed(3)}s).`)
+      }
+
+      // Monotonic sequence
+      if (i > 0 && u.plannedStart < units[i - 1].plannedStart) {
+        violations.push(`Unit ${i + 1} (${unitId}): plannedStart (${u.plannedStart.toFixed(3)}s) bắt đầu trước unit trước (${units[i - 1].plannedStart.toFixed(3)}s).`)
+      }
     }
-    if (src.end != null && tgt.end == null) {
-      violations.push(`Cue ${i + 1} (${diagId}): Target thiếu thời điểm kết thúc tương ứng với source.`)
-    } else if (src.end != null && Math.abs(targetEnd - srcEnd) > 0.05) {
-      violations.push(`Cue ${i + 1} (${diagId}): Target end (${targetEnd.toFixed(3)}s) lệch khỏi source end (${srcEnd.toFixed(3)}s).`)
+  } else {
+    // Legacy compatibility path: (sourceCues, targetCues, diagnostics, videoDuration, tolerance)
+    const sourceCues = (dubbingUnitsOrSource || []) as readonly AutoShortVoiceCueInput[]
+    const targetCues = (videoDurationOrTarget || []) as readonly AutoShortVoiceCueInput[]
+    const diagnostics = (diagnosticsOrTol || []) as readonly any[]
+    const videoDuration = typeof legacyVideoDuration === 'number' ? legacyVideoDuration : 0
+    const toleranceSec = legacyTolerance
+
+    if (sourceCues.length !== targetCues.length) {
+      violations.push(`Số lượng cue nguồn (${sourceCues.length}) và cue đích (${targetCues.length}) không khớp.`)
     }
 
-    const reportedSourceStart = diag.sourceStart ?? srcStart
-    const reportedSourceEnd = diag.sourceEnd ?? srcEnd
-    if (Math.abs(reportedSourceStart - srcStart) > 0.05) {
-      violations.push(`Cue ${i + 1} (${diagId}): Diagnostic source start (${reportedSourceStart.toFixed(3)}s) không khớp source (${srcStart.toFixed(3)}s).`)
-    }
-    if (src.end != null && Math.abs(reportedSourceEnd - srcEnd) > 0.05) {
-      violations.push(`Cue ${i + 1} (${diagId}): Diagnostic source end (${reportedSourceEnd.toFixed(3)}s) không khớp source (${srcEnd.toFixed(3)}s).`)
-    }
-
-    const subStart = diag.renderSubtitleStart ?? src.start
-    const subEnd = diag.renderSubtitleEnd ?? src.end ?? src.start
-
-    if (Math.abs(subStart - srcStart) > 0.05) {
-      violations.push(`Cue ${i + 1} (${diagId}): Subtitle start (${subStart.toFixed(3)}s) lệch khỏi source start (${srcStart.toFixed(3)}s).`)
-    }
-    if (src.end != null && Math.abs(subEnd - srcEnd) > 0.05) {
-      violations.push(`Cue ${i + 1} (${diagId}): Subtitle end (${subEnd.toFixed(3)}s) lệch khỏi source end (${srcEnd.toFixed(3)}s).`)
+    for (let i = 0; i < Math.min(sourceCues.length, targetCues.length); i++) {
+      const src = sourceCues[i]
+      const tgt = targetCues[i]
+      if (src && tgt && (Math.abs((src.start ?? 0) - (tgt.start ?? 0)) > 0.05 || Math.abs((src.end ?? 0) - (tgt.end ?? 0)) > 0.05)) {
+        violations.push(`Cue ${i + 1} (${tgt.id || src.id || i}): Lệch thời gian đích (target timing drift: src=${src.start}-${src.end}, tgt=${tgt.start}-${tgt.end}).`)
+      }
     }
 
-    const vStart = diag.voiceStart ?? srcStart
-    const vEnd = diag.voiceEnd ?? srcEnd
+    for (let i = 0; i < Math.min(sourceCues.length, diagnostics.length); i++) {
+      const src = sourceCues[i]
+      const diag = diagnostics[i]
+      const diagId = diag.cueId || `cue-${i}`
+      const srcId = src.id || `cue-${i}`
+      if (diag.cueId && src.id && diag.cueId !== src.id) {
+        violations.push(`Cue ${i + 1}: Cue ID mismatch (${srcId} !== ${diagId}).`)
+      }
+      const vEnd = diag.voiceEnd ?? src.end ?? src.start
+      const subEnd = diag.renderSubtitleEnd ?? src.end ?? vEnd
 
-    if (vStart < srcStart - toleranceSec) {
-      violations.push(`Cue ${i + 1} (${diagId}): Voice start (${vStart.toFixed(3)}s) bắt đầu trước source cue (${srcStart.toFixed(3)}s).`)
-    }
-    if (src.end != null && vEnd > srcEnd + toleranceSec) {
-      const overflowMs = diag.semanticOverflowMs ?? Math.round((vEnd - srcEnd) * 1000)
-      violations.push(`Cue ${i + 1} (${diagId}): Voice end (${vEnd.toFixed(3)}s) tràn quá source cue end (${srcEnd.toFixed(3)}s) (overflow: ${overflowMs}ms).`)
-    }
-    if (vEnd > videoDuration + 0.1) {
-      violations.push(`Cue ${i + 1} (${diagId}): Voice end (${vEnd.toFixed(3)}s) vượt quá thời lượng video (${videoDuration.toFixed(3)}s).`)
+      if (diag.semanticOverflowMs && diag.semanticOverflowMs > toleranceSec * 1000) {
+        violations.push(`Cue ${i + 1} (${diagId}): Voice tràn quá giới hạn (${diag.semanticOverflowMs}ms > ${(toleranceSec * 1000).toFixed(0)}ms).`)
+      } else if (vEnd > subEnd + toleranceSec) {
+        violations.push(`Cue ${i + 1} (${diagId}): Voice end (${vEnd.toFixed(3)}s) tràn quá subtitle end (${subEnd.toFixed(3)}s).`)
+      }
+
+      if (videoDuration > 0 && vEnd > videoDuration + toleranceSec) {
+        violations.push(`Cue ${i + 1} (${diagId}): Voice end (${vEnd.toFixed(3)}s) vượt quá thời lượng video (${videoDuration.toFixed(3)}s).`)
+      }
     }
   }
 
