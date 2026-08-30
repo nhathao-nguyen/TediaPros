@@ -115,6 +115,11 @@ test('Windows runtime workflow stages pinned CUDA packages from an isolated targ
   assert.match(workflow, /Pinned CUDA file missing/u)
 })
 
+test('Windows runtime workflow does not enable a pip cache that its no-cache builds cannot populate', async () => {
+  const workflow = await readFile(join(process.cwd(), '.github', 'workflows', 'build-windows-runtime.yml'), 'utf8')
+  assert.doesNotMatch(workflow, /^\s+cache:\s*pip\s*$/mu)
+})
+
 test('runtime archive safety policy rejects traversal and absolute entry names', async () => {
   const { isSafeRuntimeArchiveEntryPath } = await import('../src/main/runtimeInstaller')
   assert.equal(isSafeRuntimeArchiveEntryPath('bin/engine.exe'), true)
