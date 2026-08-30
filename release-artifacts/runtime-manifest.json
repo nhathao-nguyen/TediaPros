@@ -13,6 +13,16 @@
       "sha256": "10e8ebcefee6747bdac9ffd2877d124fe4aec4d39156787573cf844d663755d3",
       "bytes": 46255165,
       "protocol": "whisper-local/1"
+    },
+    "ocr": {
+      "version": "1.0.0",
+      "platform": "win32",
+      "arch": "x64",
+      "asset": "ocr-win32-x64.zip",
+      "entrypoint": "ocr-engine.exe",
+      "sha256": "da7682d11729909edb4fd994589246ea88e5427848ab656064590d0f93a64048",
+      "bytes": 105591232,
+      "protocol": "ocr-local/1"
     }
   }
 }
