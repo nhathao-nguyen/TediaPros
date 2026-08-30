@@ -40,6 +40,8 @@ import { translateSrt as openaiTranslateSrt } from './openai'
 import { localTranslateSrt, loadLocalKey, checkLocalTranslateKey } from './localTranslate'
 import { generateSpeech, generateVoiceClone, getTtsModels, checkTtsServerHealth } from './tts'
 import { burnSubtitle, cancelBurn, probeBurnMedia } from './burn'
+import { composeAutoShortBackgroundAudio } from './autoShortBackgroundAudio'
+import { validateAutoShortMusicTrack } from './autoShortMusicLibrary'
 import { parseSrt, serializeSrt, type SubtitleCue } from '../shared/subtitles'
 import { validateAutoShortStartRequest } from '../shared/autoShortContract'
 import { fuseWhisperAndOcr, clampAlignedCueTimeline } from '../shared/autoShortAlignment'
@@ -1152,6 +1154,7 @@ async function processSingleVideo(
   let voice: string | undefined
   let detectedSourceLanguage: string | null = checkpoint.detectedSourceLanguage || null
   let outputName: string | undefined
+  let selectedBackgroundMusicPath: string | undefined
   let artifactPath: string | undefined
 
   try {
@@ -1322,6 +1325,24 @@ async function processSingleVideo(
       }
     }
 
+    let outputAudioPath = stitchedAudioPath
+    const backgroundMusic = config.backgroundMusic
+    if (backgroundMusic) {
+      const assignedMusicPath = backgroundMusic.assignments[item.id]
+      selectedBackgroundMusicPath = await validateAutoShortMusicTrack(backgroundMusic.folderPath, assignedMusicPath)
+      outputAudioPath = join(workDir, 'tts-background-mix.wav')
+      emitProgress(job, item, 'stitching_audio', 83, 'Đang trộn nhạc background với giọng lồng tiếng…', index, total)
+      await composeAutoShortBackgroundAudio({
+        musicPath: selectedBackgroundMusicPath,
+        narrationPath: stitchedAudioPath,
+        outputPath: outputAudioPath,
+        duration: meta.giay,
+        volume: backgroundMusic.volume,
+        signal: job.controller.signal
+      })
+      artifactEntries.push({ source: outputAudioPath, name: 'tts-background-mix.wav' })
+    }
+
     throwIfAborted(job.controller.signal)
 
     // 4. Stage: Video Rendering
@@ -1357,8 +1378,8 @@ async function processSingleVideo(
             .map((cue) => ({ start: cue.start, end: cue.end, words: cue.words! }))
         : undefined,
       requireWordTimings: !config.ttsEnabled && renderDisplayStyle !== 'standard',
-      batAmThanh: Boolean(stitchedAudioPath),
-      amThanhFile: stitchedAudioPath,
+      batAmThanh: Boolean(outputAudioPath),
+      amThanhFile: outputAudioPath,
       amLuongGoc: config.audioMode === 'mix' ? config.originalAudioVolume : 0
     }
     const burnResult = await burnSubtitle(burnReq, (progress) => {
@@ -1393,7 +1414,10 @@ async function processSingleVideo(
       extractedCueCount,
       translatedCueCount,
       generatedVoiceCount,
-      voice
+      voice,
+      backgroundMusicMode: config.backgroundMusic?.mode,
+      backgroundMusicFile: selectedBackgroundMusicPath ? basename(selectedBackgroundMusicPath) : undefined,
+      backgroundMusicVolume: config.backgroundMusic?.volume
     })
 
     // Clean up checkpoint upon successful completion
@@ -1421,7 +1445,10 @@ async function processSingleVideo(
         extractedCueCount,
         translatedCueCount,
         generatedVoiceCount,
-        voice
+        voice,
+        backgroundMusicMode: config.backgroundMusic?.mode,
+        backgroundMusicFile: selectedBackgroundMusicPath ? basename(selectedBackgroundMusicPath) : undefined,
+        backgroundMusicVolume: config.backgroundMusic?.volume
       })
     } catch (preserveError) {
       logWarn(`[AutoShort] Không thể lưu failure artifacts: ${errLabel(preserveError)}`)

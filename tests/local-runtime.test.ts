@@ -32,6 +32,7 @@ import { audioMixGains } from '../src/shared/audioMix'
 import { validateAutoShortStartRequest } from '../src/shared/autoShortContract'
 import { createAutoShortMusicAssignments } from '../src/shared/autoShortBackgroundMusic'
 import { listAutoShortMusicTracks, validateAutoShortMusicTrack } from '../src/main/autoShortMusicLibrary'
+import { buildAutoShortBackgroundAudioArgs } from '../src/main/autoShortBackgroundAudio'
 import type { AutoShortStartRequest } from '../src/shared/types'
 import {
   inferTranslationSourceLanguage,
@@ -125,6 +126,46 @@ test('AutoShort background music resolves random choices once into explicit assi
     ok: true,
     assignments: { 'video-1': 'C:\\music\\one.mp3', 'video-2': 'C:\\music\\two.wav' }
   })
+})
+
+test('AutoShort background compositor loops music, ducks it under narration, and trims to video duration', () => {
+  const args = buildAutoShortBackgroundAudioArgs({
+    musicPath: 'C:\\Nhạc nền\\bài 01.mp3',
+    narrationPath: 'C:\\Temp\\tts-timeline.wav',
+    outputPath: 'C:\\Temp\\tts-background-mix.wav',
+    duration: 12.345,
+    volume: 15
+  })
+  assert.deepEqual(args.slice(0, 6), ['-y', '-stream_loop', '-1', '-i', 'C:\\Nhạc nền\\bài 01.mp3', '-i'])
+  const graph = args[args.indexOf('-filter_complex') + 1]
+  assert.match(graph, /volume=0\.0225/u)
+  assert.match(graph, /sidechaincompress=threshold=0\.06:ratio=4:attack=15:release=200/u)
+  assert.match(graph, /amix=inputs=2:duration=longest:dropout_transition=2:normalize=0/u)
+  assert.match(graph, /alimiter=limit=-1dB:attack=5:release=50/u)
+  assert.match(graph, /atrim=duration=12\.345/u)
+  assert.equal(args.at(-1), 'C:\\Temp\\tts-background-mix.wav')
+})
+
+test('AutoShort background compositor can render music when narration is absent', () => {
+  const args = buildAutoShortBackgroundAudioArgs({
+    musicPath: 'C:\\music\\one.mp3',
+    narrationPath: null,
+    outputPath: 'C:\\Temp\\music-only.wav',
+    duration: 5,
+    volume: 20
+  })
+  const graph = args[args.indexOf('-filter_complex') + 1]
+  assert.doesNotMatch(graph, /sidechaincompress/u)
+  assert.match(graph, /atrim=duration=5\.000/u)
+})
+
+test('AutoShort validates and composes assigned background music before replace-mode burn', async () => {
+  const source = await readFile(join(process.cwd(), 'src', 'main', 'autoshort.ts'), 'utf8')
+  assert.match(source, /validateAutoShortMusicTrack\(backgroundMusic\.folderPath, assignedMusicPath\)/u)
+  assert.match(source, /composeAutoShortBackgroundAudio\(/u)
+  assert.match(source, /tts-background-mix\.wav/u)
+  assert.match(source, /amThanhFile:\s*outputAudioPath/u)
+  assert.match(source, /amLuongGoc:\s*config\.audioMode === 'mix' \? config\.originalAudioVolume : 0/u)
 })
 
 test('AutoShort background music requires one manual track per queue item', () => {
