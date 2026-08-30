@@ -104,6 +104,17 @@ test('runtime input spec pins the Video2X archive with a SHA-256 digest', async 
   assert.match(workflow, /assets\.video2x\.source\.sha256/u)
 })
 
+test('Windows runtime workflow stages pinned CUDA packages from an isolated target', async () => {
+  const workflow = await readFile(join(process.cwd(), '.github', 'workflows', 'build-windows-runtime.yml'), 'utf8')
+  assert.match(workflow, /nvidia-cuda-runtime-cu12/u)
+  assert.match(workflow, /nvidia-cublas-cu12/u)
+  assert.match(workflow, /nvidia-cudnn-cu12/u)
+  assert.match(workflow, /--target\s+\$cudaPackageRoot/u)
+  assert.match(workflow, /--no-deps[\s\S]{0,240}\$cudaRequirements/u)
+  assert.match(workflow, /Get-Content[\s\S]{0,180}engines\\whisper-engine\\requirements\.txt/u)
+  assert.match(workflow, /Pinned CUDA file missing/u)
+})
+
 test('runtime archive safety policy rejects traversal and absolute entry names', async () => {
   const { isSafeRuntimeArchiveEntryPath } = await import('../src/main/runtimeInstaller')
   assert.equal(isSafeRuntimeArchiveEntryPath('bin/engine.exe'), true)

@@ -81,14 +81,23 @@ jobs:
         shell: pwsh
         run: |
           $python = Join-Path $env:RUNNER_TEMP 'whisper-build-venv\Scripts\python.exe'
-          $site = & $python -c "import site; print(site.getsitepackages()[0])"
+          $cudaPackageRoot = Join-Path $env:RUNNER_TEMP 'whisper-cuda-packages'
+          New-Item -ItemType Directory -Force -Path $cudaPackageRoot | Out-Null
+          $cudaRequirements = @(
+            Get-Content -LiteralPath 'engines\whisper-engine\requirements.txt' |
+              ForEach-Object { ($_ -split ';', 2)[0].Trim() } |
+              Where-Object { $_ -match '^(nvidia-cuda-runtime-cu12|nvidia-cublas-cu12|nvidia-cudnn-cu12)==[0-9.]+$' }
+          )
+          if ($cudaRequirements.Count -ne 3) { throw 'Expected exactly three pinned NVIDIA CUDA package requirements.' }
+          & $python -m pip install --disable-pip-version-check --no-cache-dir --upgrade --no-deps --target $cudaPackageRoot $cudaRequirements
+          if ($LASTEXITCODE -ne 0) { throw 'Pinned CUDA package staging failed.' }
           $target = Join-Path $env:RUNTIME_INPUT_ROOT 'whisper-cuda'
           New-Item -ItemType Directory -Force -Path $target | Out-Null
           $files = @(
-            (Join-Path $site 'nvidia\cuda_runtime\bin\cudart64_12.dll'),
-            (Join-Path $site 'nvidia\cublas\bin\cublas64_12.dll'),
-            (Join-Path $site 'nvidia\cublas\bin\cublasLt64_12.dll'),
-            (Join-Path $site 'nvidia\cudnn\bin\cudnn64_9.dll')
+            (Join-Path $cudaPackageRoot 'nvidia\cuda_runtime\bin\cudart64_12.dll'),
+            (Join-Path $cudaPackageRoot 'nvidia\cublas\bin\cublas64_12.dll'),
+            (Join-Path $cudaPackageRoot 'nvidia\cublas\bin\cublasLt64_12.dll'),
+            (Join-Path $cudaPackageRoot 'nvidia\cudnn\bin\cudnn64_9.dll')
           )
           foreach ($file in $files) {
             if (-not (Test-Path -LiteralPath $file -PathType Leaf)) { throw "Pinned CUDA file missing: $file" }
