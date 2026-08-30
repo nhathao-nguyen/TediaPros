@@ -2,7 +2,7 @@
 from pathlib import Path
 from PyInstaller.utils.hooks import collect_all
 
-SPEC_DIR = Path(SPECPATH).resolve().parent
+SPEC_DIR = Path(SPECPATH).resolve()
 datas = []
 binaries = []
 hiddenimports = []

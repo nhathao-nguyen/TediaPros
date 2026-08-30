@@ -88,7 +88,7 @@ test('PyInstaller specs resolve entrypoints and hooks from the spec directory, n
   ] as const
   for (const [file, entrypoint] of specs) {
     const source = await readFile(join(process.cwd(), file), 'utf8')
-    assert.match(source, /Path\(SPECPATH\)\.resolve\(\)\.parent/u, `${file} must derive its directory from PyInstaller's SPECPATH`)
+    assert.match(source, /^SPEC_DIR\s*=\s*Path\(SPECPATH\)\.resolve\(\)\s*$/mu, `${file} must use PyInstaller's absolute spec directory`)
     assert.doesNotMatch(source, /__file__/u, `${file} must not rely on __file__; PyInstaller does not define it in spec namespaces`)
     assert.match(source, new RegExp(`Analysis\\(\\s*\\[\\s*str\\(SPEC_DIR\\s*\\/\\s*['"]${entrypoint}['"]\\)`), `${file} must use an absolute entrypoint`)
     assert.doesNotMatch(source, new RegExp(`Analysis\\(\\s*\\[\\s*['"]${entrypoint}['"]`), `${file} still depends on CWD`)

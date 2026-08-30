@@ -2,7 +2,7 @@
 from pathlib import Path
 from PyInstaller.utils.hooks import collect_all
 
-SPEC_DIR = Path(SPECPATH).resolve().parent
+SPEC_DIR = Path(SPECPATH).resolve()
 MODEL_DIR = SPEC_DIR / 'dia-models'
 datas = [(str(MODEL_DIR), 'dia-models')] if MODEL_DIR.exists() else []
 binaries = []
