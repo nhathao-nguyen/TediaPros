@@ -3,6 +3,8 @@ import { readFile, rm, writeFile } from 'node:fs/promises'
 import { join } from 'node:path'
 import {
   buildSrt,
+  buildDubbingTranslationPayload,
+  buildTranslationBatches,
   huongDan,
   parseSrt,
   parseTranslationItems,
@@ -219,7 +221,9 @@ export async function localTranslateSrt(
   const total = sourceBlocks.length
   const sourceLanguage = resolveTranslationSourceLanguage(options.sourceLanguage)
   const semanticGroups = buildSemanticGroups(sourceBlocks)
-  const batches = buildSemanticBatches(semanticGroups, 10)
+  const batches = mode === 'dubbing'
+    ? buildTranslationBatches(sourceBlocks).map((batch) => buildSemanticGroups(batch))
+    : buildSemanticBatches(semanticGroups, 10)
   const translatedBlocks: SrtBlock[] = []
 
   let doneCount = 0
@@ -231,64 +235,52 @@ export async function localTranslateSrt(
     const batchCues = batchGroups.flatMap((g) => g.cues)
     const expectedIds = batchCues.map((c) => c.id || '')
 
-    const radius = Number.isInteger(options.contextRadius)
-      ? Math.max(0, Math.min(3, options.contextRadius!))
-      : 1
-    const firstCueIndex = sourceBlocks.findIndex((b) => b.id === batchCues[0]?.id)
-    const lastCueIndex = sourceBlocks.findIndex((b) => b.id === batchCues[batchCues.length - 1]?.id)
-
-    const contextBefore = firstCueIndex > 0
-      ? sourceBlocks.slice(Math.max(0, firstCueIndex - radius), firstCueIndex)
-      : []
-    const contextAfter = lastCueIndex >= 0 && lastCueIndex < sourceBlocks.length - 1
-      ? sourceBlocks.slice(lastCueIndex + 1, Math.min(sourceBlocks.length, lastCueIndex + 1 + radius))
-      : []
-
     const systemPrompt = huongDan(targetLanguage, { mode, sourceLanguage })
-
-    const userPromptLines: string[] = [
-      `Dịch các nhóm lời thoại/phụ đề sau sang ngôn ngữ đích: target_language=${targetLanguage} (chế độ: ${mode}).`,
-      '',
-      'Yêu cầu dịch thuật:',
-      '1. Đọc toàn bộ các cue trong cùng một nhóm như một câu/lời thoại liền mạch để hiểu trọn vẹn ngữ cảnh và ý nghĩa toàn câu.',
-      '2. Dịch câu tự nhiên, trôi chảy theo văn phong nói của người bản ngữ.',
-      '3. Phân phối nội dung dịch trở lại đúng các cue ID trong nhóm.',
-      '4. Trả về đúng định dạng [cue-id] bản_dịch cho tất cả các cue cần dịch.',
-      ''
-    ]
-
-    if (contextBefore.length > 0) {
-      userPromptLines.push(
-        '[Ngữ cảnh phía trước (chỉ để hiểu nghĩa, không dịch)]:',
-        ...contextBefore.map((c) => `[${c.id}] ${c.text}`),
-        ''
-      )
-    }
-
-    userPromptLines.push('[Nội dung cần dịch]:')
-    for (let gIdx = 0; gIdx < batchGroups.length; gIdx++) {
-      const g = batchGroups[gIdx]
-      if (batchGroups.length > 1) {
-        userPromptLines.push(`[Nhóm câu ${gIdx + 1}]`)
-      }
-      for (const cue of g.cues) {
-        const timing = parseCueTiming(cue)
-        const durStr = timing.start != null && timing.end != null
-          ? ` (thời lượng: ${(timing.end - timing.start).toFixed(2)}s)`
-          : ''
-        userPromptLines.push(`[${cue.id}]${mode === 'dubbing' ? durStr : ''} ${cue.text}`)
-      }
-    }
-
-    if (contextAfter.length > 0) {
-      userPromptLines.push(
+    let userPrompt: string
+    if (mode === 'dubbing') {
+      userPrompt = buildDubbingTranslationPayload(batchCues, sourceBlocks, options.contextRadius)
+    } else {
+      const radius = Number.isInteger(options.contextRadius)
+        ? Math.max(0, Math.min(3, options.contextRadius!))
+        : 1
+      const firstCueIndex = sourceBlocks.findIndex((b) => b.id === batchCues[0]?.id)
+      const lastCueIndex = sourceBlocks.findIndex((b) => b.id === batchCues[batchCues.length - 1]?.id)
+      const contextBefore = firstCueIndex > 0
+        ? sourceBlocks.slice(Math.max(0, firstCueIndex - radius), firstCueIndex)
+        : []
+      const contextAfter = lastCueIndex >= 0 && lastCueIndex < sourceBlocks.length - 1
+        ? sourceBlocks.slice(lastCueIndex + 1, Math.min(sourceBlocks.length, lastCueIndex + 1 + radius))
+        : []
+      const userPromptLines: string[] = [
+        `Dịch các nhóm lời thoại/phụ đề sau sang ngôn ngữ đích: target_language=${targetLanguage} (chế độ: ${mode}).`,
         '',
-        '[Ngữ cảnh phía sau (chỉ để hiểu nghĩa, không dịch)]:',
-        ...contextAfter.map((c) => `[${c.id}] ${c.text}`)
-      )
+        'Yêu cầu dịch thuật:',
+        '1. Đọc toàn bộ các cue trong cùng một nhóm như một câu/lời thoại liền mạch để hiểu trọn vẹn ngữ cảnh và ý nghĩa toàn câu.',
+        '2. Dịch câu tự nhiên, trôi chảy theo văn phong nói của người bản ngữ.',
+        '3. Phân phối nội dung dịch trở lại đúng các cue ID trong nhóm.',
+        '4. Trả về đúng định dạng [cue-id] bản_dịch cho tất cả các cue cần dịch.',
+        ''
+      ]
+      if (contextBefore.length > 0) {
+        userPromptLines.push(
+          '[Ngữ cảnh phía trước (chỉ để hiểu nghĩa, không dịch)]:',
+          ...contextBefore.map((c) => `[${c.id}] ${c.text}`),
+          ''
+        )
+      }
+      userPromptLines.push('[Nội dung cần dịch]:')
+      for (const group of batchGroups) {
+        for (const cue of group.cues) userPromptLines.push(`[${cue.id}] ${cue.text}`)
+      }
+      if (contextAfter.length > 0) {
+        userPromptLines.push(
+          '',
+          '[Ngữ cảnh phía sau (chỉ để hiểu nghĩa, không dịch)]:',
+          ...contextAfter.map((c) => `[${c.id}] ${c.text}`)
+        )
+      }
+      userPrompt = userPromptLines.join('\n')
     }
-
-    const userPrompt = userPromptLines.join('\n')
     let resultMap: Map<string, string> | undefined
     let invalidResponseReason = ''
 
@@ -385,4 +377,3 @@ export async function localTranslateSrt(
     return { ok: false, error: `Không thể lưu file phụ đề đã dịch: ${errLabel(err)}` }
   }
 }
-

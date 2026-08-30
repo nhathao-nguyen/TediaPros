@@ -859,6 +859,37 @@ test('AutoShort translation guidance requires per-cue semantic preservation and 
   assert.match(prompt, /không tự ý dịch chuyển hoặc dồn ý nghĩa từ cue này sang cue khác/iu)
 })
 
+test('AutoShort dubbing translation carries semantic-group text and a speaking-duration budget', async () => {
+  const { buildDubbingTranslationPayload, buildTranslationBatches } = await import('../src/main/translate-shared')
+  const cues = [
+    { id: 'cue-a', sourceIndex: 0, time: '00:00:00,000 --> 00:00:01,200', start: 0, end: 1.2, text: 'At this point it became increasingly clear' },
+    { id: 'cue-b', sourceIndex: 1, time: '00:00:01,300 --> 00:00:03,800', start: 1.3, end: 3.8, text: 'that the experiment had failed.' },
+    { id: 'cue-c', sourceIndex: 2, time: '00:00:04,600 --> 00:00:05,200', start: 4.6, end: 5.2, text: 'We stopped.' }
+  ]
+
+  const batches = buildTranslationBatches(cues)
+  assert.equal(batches.length, 1)
+  const payload = buildDubbingTranslationPayload(batches[0].slice(0, 2), cues, 1)
+
+  assert.match(payload, /Nhóm ngữ nghĩa/iu)
+  assert.match(payload, /tổng thời lượng|ngân sách thời lượng/iu)
+  assert.match(payload, /3\.80s/u)
+  assert.match(payload, /\[cue-a\]/u)
+  assert.match(payload, /\[cue-b\]/u)
+  assert.match(payload, /\[cue-c\]/u)
+  assert.match(payload, /ngữ cảnh phía sau/iu)
+  assert.match(payload, /tự nhiên|súc tích/iu)
+})
+
+test('AutoShort translation providers use the shared duration-aware semantic payload', async () => {
+  const providerPaths = ['src/main/localTranslate.ts', 'src/main/openai.ts', 'src/main/gemini.ts']
+  for (const relativePath of providerPaths) {
+    const source = await readFile(join(process.cwd(), relativePath), 'utf8')
+    assert.match(source, /buildDubbingTranslationPayload/u, `${relativePath} must use the shared dubbing payload`)
+    assert.match(source, /buildTranslationBatches/u, `${relativePath} must preserve semantic groups at batch boundaries`)
+  }
+})
+
 test('translation validation strictly requires all cue IDs and rejects missing, duplicate, unknown, or empty IDs', () => {
   // Valid
   assert.doesNotThrow(() => validateTranslationItems(

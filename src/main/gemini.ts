@@ -6,7 +6,8 @@ import { debugRaw, errLabel, logInfo } from './logger'
 import type { GeminiStatus, SrtBlock } from '../shared/types'
 import {
   buildSrt,
-  buildTranslationContext,
+  buildDubbingTranslationPayload,
+  buildTranslationBatches,
   chia,
   huongDan,
   parseSrt,
@@ -234,42 +235,43 @@ export async function translateSrt(
   if (!blocks.length) return { ok: false, error: 'File phụ đề trống.' }
 
   const models = await danhSach(key)
-  const chunks = chia(blocks)
-  const context = buildTranslationContext(blocks, options.contextRadius)
+  const chunks = options.mode === 'dubbing' ? buildTranslationBatches(blocks) : chia(blocks)
   logInfo(`Dịch phụ đề: ${blocks.length} câu…`)
 
   const ra: SrtBlock[] = []
   let processed = 0
   for (let i = 0; i < chunks.length; i++) {
     const c = chunks[i]
-    const radius = Number.isInteger(options.contextRadius) ? Math.max(0, Math.min(3, options.contextRadius!)) : 1
-    const firstIndex = blocks.findIndex((b) => b.id === c[0]?.id)
-    const lastIndex = blocks.findIndex((b) => b.id === c[c.length - 1]?.id)
-    const contextBefore = firstIndex > 0 ? blocks.slice(Math.max(0, firstIndex - radius), firstIndex) : []
-    const contextAfter = lastIndex >= 0 && lastIndex < blocks.length - 1 ? blocks.slice(lastIndex + 1, Math.min(blocks.length, lastIndex + 1 + radius)) : []
-
-    const payloadLines: string[] = []
-    if (contextBefore.length > 0) {
-      payloadLines.push(
-        '[Ngữ cảnh phía trước (chỉ để hiểu nghĩa, không dịch)]:',
-        ...contextBefore.map((b) => `[${b.id}] ${b.text}`),
-        ''
-      )
+    let payload: string
+    if (options.mode === 'dubbing') {
+      payload = buildDubbingTranslationPayload(c, blocks, options.contextRadius)
+    } else {
+      const radius = Number.isInteger(options.contextRadius) ? Math.max(0, Math.min(3, options.contextRadius!)) : 1
+      const firstIndex = blocks.findIndex((b) => b.id === c[0]?.id)
+      const lastIndex = blocks.findIndex((b) => b.id === c[c.length - 1]?.id)
+      const contextBefore = firstIndex > 0 ? blocks.slice(Math.max(0, firstIndex - radius), firstIndex) : []
+      const contextAfter = lastIndex >= 0 && lastIndex < blocks.length - 1 ? blocks.slice(lastIndex + 1, Math.min(blocks.length, lastIndex + 1 + radius)) : []
+      const payloadLines: string[] = []
+      if (contextBefore.length > 0) {
+        payloadLines.push(
+          '[Ngữ cảnh phía trước (chỉ để hiểu nghĩa, không dịch)]:',
+          ...contextBefore.map((b) => `[${b.id}] ${b.text}`),
+          ''
+        )
+      }
+      payloadLines.push('[Nội dung cần dịch]:')
+      for (const cue of c) {
+        payloadLines.push(`[${cue.id}] ${cue.text}`)
+      }
+      if (contextAfter.length > 0) {
+        payloadLines.push(
+          '',
+          '[Ngữ cảnh phía sau (chỉ để hiểu nghĩa, không dịch)]:',
+          ...contextAfter.map((b) => `[${b.id}] ${b.text}`)
+        )
+      }
+      payload = payloadLines.join('\n')
     }
-    payloadLines.push('[Nội dung cần dịch]:')
-    for (const cue of c) {
-      const duration = cue.duration != null ? cue.duration : (cue.end != null && cue.start != null && cue.end >= cue.start ? cue.end - cue.start : null)
-      const durStr = duration != null ? ` (thời lượng: ${duration.toFixed(2)}s)` : ''
-      payloadLines.push(`[${cue.id}]${options.mode === 'dubbing' ? durStr : ''} ${cue.text}`)
-    }
-    if (contextAfter.length > 0) {
-      payloadLines.push(
-        '',
-        '[Ngữ cảnh phía sau (chỉ để hiểu nghĩa, không dịch)]:',
-        ...contextAfter.map((b) => `[${b.id}] ${b.text}`)
-      )
-    }
-    const payload = payloadLines.join('\n')
     const r = await goiCoLui(key, models, huongDan(dich, { mode: options.mode, concise: options.concise, sourceLanguage: options.sourceLanguage }), payload, SCHEMA, undefined, options.signal)
     if (!r.ok) return { ok: false, error: errLabel(r.err) }
 
