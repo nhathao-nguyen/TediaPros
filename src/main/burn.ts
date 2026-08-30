@@ -44,6 +44,7 @@ import {
 import { planSubtitleLayout } from '../shared/subtitleLayout'
 import { AUDIO_MIX_DROPOUT_TRANSITION_SECONDS, originalAudioGain } from '../shared/audioMix'
 import { resolveSubtitlePlanFont } from './subtitlePlanner'
+import { terminateProcessTree, trackChildProcess } from './processTree'
 
 /** Parse #RGB / #RRGGBB -> { r,g,b } hoac null. */
 function parseHexColor(hex: string | undefined | null): { r: number; g: number; b: number } | null {
@@ -109,21 +110,25 @@ function styleFromReq(req: BurnReq, fallbackVien: number): SubStyle {
 let child: ChildProcess | null = null
 let daHuy = false
 let burnInFlight = false
+const burnChildren = new Set<ChildProcess>()
+
+function spawnBurnChild<T extends ChildProcess>(process: T): T {
+  burnChildren.add(process)
+  const forget = (): void => { burnChildren.delete(process) }
+  process.once('close', forget)
+  process.once('error', forget)
+  return trackChildProcess(process)
+}
 
 /** Huy giua chung: giet ffmpeg. child.kill() thoat ma null -> hieu la huy, khong loi. */
 export function cancelBurn(): void {
   daHuy = true
-  if (!child) return
-  try {
-    child.kill()
-  } catch {
-    /* bo qua */
-  }
+  for (const process of [...burnChildren]) terminateProcessTree(process)
+  terminateProcessTree(child)
   child = null
 }
 
 function duongFfprobe(ffmpeg: string): string {
-  if (ffmpeg === 'ffmpeg') return 'ffprobe'
   return join(dirname(ffmpeg), process.platform === 'win32' ? 'ffprobe.exe' : 'ffprobe')
 }
 
@@ -172,7 +177,7 @@ export function canonicalDisplayVideoFilter(meta: Meta): string | null {
 /** Lay kich thuoc + thoi luong video (de tinh co chu, le, phan tram tien do). */
 async function doVideo(ffprobe: string, video: string): Promise<Meta> {
   return new Promise((resolve) => {
-    const p = spawn(
+    const p = spawnBurnChild(spawn(
       ffprobe,
       [
         '-v', 'error',
@@ -182,7 +187,7 @@ async function doVideo(ffprobe: string, video: string): Promise<Meta> {
         video
       ],
       { windowsHide: true }
-    )
+    ))
       let out = ''
       p.stdout.on('data', (d: Buffer) => (out += d.toString()))
       p.on('close', () => {
@@ -825,7 +830,7 @@ async function chay(
   onProgress: (p: BurnProgress) => void
 ): Promise<number | null> {
   return new Promise((resolve) => {
-    const p = spawn(ff, args, { cwd, windowsHide: true })
+    const p = spawnBurnChild(spawn(ff, args, { cwd, windowsHide: true }))
     child = p
     let errTail = ''
     p.stderr.on('data', (d: Buffer) => {

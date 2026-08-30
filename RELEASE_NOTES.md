@@ -1,4 +1,11 @@
-## TediaPros v0.1.20
+## TediaPros v0.1.21
+
+### Production Windows Auto Short
+
+- Đóng gói runtime Windows `runtime-v2` từ các input đã pin và verify SHA-256.
+- Sửa build engine để không phụ thuộc thư mục chạy PyInstaller; tăng cường kiểm tra archive trước khi giải nén.
+- Giữ độc lập timeline nguồn/đích, không cắt speech khi căn TTS, và dọn child process Auto Short khi thoát ứng dụng.
+- Release lần này tập trung vào bộ cài Windows; macOS không nằm trong phạm vi phát hành.
 
 ### Đổi thương hiệu
 
@@ -19,6 +26,5 @@
 
 ### Cập nhật
 
-- Windows sẽ tự nhận, tải và cài đặt v0.1.20 khi kết nối được với GitHub.
-- macOS từ v0.1.18 trở lên sẽ thông báo bản mới và mở trang tải DMG để người dùng cài thủ công.
-- Bản macOS yêu cầu Apple Silicon và hiện chưa ký/notarize; macOS có thể yêu cầu cấp quyền trong **Privacy & Security** khi mở lần đầu.
+- Windows sẽ tự nhận, tải và cài đặt v0.1.21 khi kết nối được với GitHub.
+- macOS không nằm trong phạm vi phát hành của v0.1.21; hướng dẫn DMG macOS sẽ được cập nhật cùng một release macOS riêng.

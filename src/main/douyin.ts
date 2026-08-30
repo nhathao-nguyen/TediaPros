@@ -1,26 +1,18 @@
 import { app } from 'electron'
 import { spawn } from 'node:child_process'
-import { access, chmod, mkdir, readFile, writeFile, rm } from 'node:fs/promises'
-import { constants } from 'node:fs'
+import { chmod, readFile, writeFile, rm } from 'node:fs/promises'
 import { join } from 'node:path'
-import { binDir } from './deps'
-import { engineNeedsUpdate, markEngineInstalled } from './engines-update'
-import { copyDirectory, replaceDirectoryAtomic, findFile } from './localAssets'
-import { resolveRuntimeExecutable, runtimeKindDir, runtimeSearchRoots } from './runtimeResolver'
+import { resolveRuntimeExecutable, runtimeKindDir } from './runtimeResolver'
+import { probeRuntimeExecutable } from './runtimeProbes'
 import { readDyCookies } from './douyinCookies'
 import { debugRaw, errLabel, logError, logInfo } from './logger'
 import { DouyinProgress, DouyinRequest, DouyinResult, DyChannel, DyEngineStatus } from '../shared/types'
 
 const isWin = process.platform === 'win32'
-const isMac = process.platform === 'darwin'
 
 function engineName(): string {
   return isWin ? 'dy-engine.exe' : 'dy-engine'
 }
-function enginePath(): string {
-  return join(runtimeKindDir('douyin'), engineName())
-}
-
 async function resolveEnginePath(): Promise<string | null> {
   return resolveRuntimeExecutable('douyin', [engineName()])
 }
@@ -34,49 +26,24 @@ function channelsPath(): string {
   return join(app.getPath('userData'), 'dy-channels.json')
 }
 
-async function fileExists(p: string): Promise<boolean> {
-  try {
-    await access(p, constants.F_OK)
-    return true
-  } catch {
-    return false
-  }
-}
-
 export async function dyEngineStatus(): Promise<DyEngineStatus> {
-  const has = (await resolveEnginePath()) !== null
-  return { has, needsUpdate: await engineNeedsUpdate('douyin', has) }
+  const path = await resolveEnginePath()
+  if (!path) return { has: false, healthy: false, needsUpdate: false, message: 'Chưa cài đặt Douyin runtime.' }
+  const probe = await probeRuntimeExecutable('douyin', path)
+  return { has: true, healthy: probe.healthy, needsUpdate: !probe.healthy, message: probe.message }
 }
 
 export async function installDyEngine(onProgress: (percent: number) => void): Promise<void> {
-  const targetDir = runtimeKindDir('douyin')
-  await mkdir(targetDir, { recursive: true })
   logInfo('Douyin: đang kiểm tra và cài đặt asset Douyin…')
   onProgress(10)
 
-  const devRoots = runtimeSearchRoots('douyin')
-  let candidateDir: string | null = null
-  for (const root of devRoots) {
-    if (root.toLowerCase() === targetDir.toLowerCase()) continue
-    const found = await findFile(root, [engineName()])
-    if (found) {
-      candidateDir = root
-      break
-    }
-  }
-
-  if (candidateDir) {
-    const staging = `${targetDir}.staging`
-    await rm(staging, { recursive: true, force: true }).catch(() => {})
-    await copyDirectory(candidateDir, staging)
-    onProgress(70)
-    await replaceDirectoryAtomic(staging, targetDir)
-  }
+  const { downloadRuntimeEngineFromManifest } = await import('./runtimeInstaller')
+  const installed = await downloadRuntimeEngineFromManifest('douyin', (p) => onProgress(p))
+  if (!installed) throw new Error('Không có asset Douyin phù hợp trong runtime manifest.')
 
   const path = await resolveEnginePath()
   if (!path) throw new Error('Không tìm thấy Douyin binary sau khi cài đặt.')
   if (!isWin) await chmod(path, 0o755).catch(() => {})
-  await markEngineInstalled('douyin')
   onProgress(100)
   logInfo('Douyin: đã tải xong bộ tải Douyin.')
 }

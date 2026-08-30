@@ -3,13 +3,14 @@ from pathlib import Path
 from PyInstaller.utils.hooks import collect_all
 
 SPEC_DIR = Path(SPECPATH).resolve()
-datas = []
+MODEL_DIR = SPEC_DIR / 'dia-models'
+datas = [(str(MODEL_DIR), 'dia-models')] if MODEL_DIR.exists() else []
 binaries = []
 hiddenimports = []
-for _m in ('rapidocr_onnxruntime', 'onnxruntime', 'cv2'):
-    tmp_ret = collect_all(_m)
-    datas += tmp_ret[0]; binaries += tmp_ret[1]; hiddenimports += tmp_ret[2]
 
+for _m in ('tokenizers', 'huggingface_hub', 'faster_whisper', 'ctranslate2', 'av', 'onnxruntime', 'sherpa_onnx'):
+    _r = collect_all(_m)
+    datas += _r[0]; binaries += _r[1]; hiddenimports += _r[2]
 
 a = Analysis(
     [str(SPEC_DIR / 'engine.py')],
@@ -19,7 +20,7 @@ a = Analysis(
     hiddenimports=hiddenimports,
     hookspath=[],
     hooksconfig={},
-    runtime_hooks=[],
+    runtime_hooks=[str(SPEC_DIR / 'rthook_whisper.py')],
     excludes=[],
     noarchive=False,
     optimize=0,
@@ -31,11 +32,11 @@ exe = EXE(
     a.scripts,
     [],
     exclude_binaries=True,
-    name='ocr-engine',
+    name='whisper-engine',
     debug=False,
     bootloader_ignore_signals=False,
     strip=False,
-    upx=False,
+    upx=True,
     console=True,
     disable_windowed_traceback=False,
     argv_emulation=False,
@@ -48,7 +49,7 @@ coll = COLLECT(
     a.binaries,
     a.datas,
     strip=False,
-    upx=False,
+    upx=True,
     upx_exclude=[],
-    name='ocr-engine',
+    name='whisper-engine',
 )

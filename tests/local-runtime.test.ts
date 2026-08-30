@@ -1,10 +1,11 @@
-import { mkdtemp, mkdir, readFile, rm, writeFile } from 'node:fs/promises'
+import { copyFile, mkdtemp, mkdir, readFile, rm, writeFile } from 'node:fs/promises'
 import { existsSync } from 'node:fs'
 import { spawnSync } from 'node:child_process'
 import { tmpdir } from 'node:os'
-import { dirname, join } from 'node:path'
+import { join } from 'node:path'
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
+import { createHash } from 'node:crypto'
 import {
   WHISPER_MODEL_CATALOG,
   normalizeWhisperModel,
@@ -292,16 +293,17 @@ test('AutoShort FFmpeg runner drains output and returns a bounded path-free stde
   }
 })
 
-test('AutoShort FFmpeg runner aborts a live child cleanly', { timeout: 10_000 }, async () => {
+test('AutoShort FFmpeg runner closes a live process before rejecting abort', { timeout: 10_000 }, async () => {
   const root = await mkdtemp(join(tmpdir(), 'tedia-ffmpeg-abort-'))
   const script = join(root, 'waiting-child.js')
+  const processPidPath = join(root, 'process.pid')
   const controller = new AbortController()
+  let childPid: number | undefined
   try {
     await writeFile(script, [
+      "const { writeFileSync } = require('node:fs')",
+      `writeFileSync(${JSON.stringify(processPidPath)}, String(process.pid))`,
       "process.stderr.write('started\\n')",
-      "const timer = setInterval(() => process.stderr.write('tick\\n'), 25)",
-      "process.on('SIGTERM', () => { clearInterval(timer); process.exit(0) })",
-      "process.on('SIGINT', () => { clearInterval(timer); process.exit(0) })",
       "setInterval(() => {}, 1000)"
     ].join('\n'), 'utf8')
     const running = runAutoShortBackgroundFfmpegProcess({
@@ -310,10 +312,20 @@ test('AutoShort FFmpeg runner aborts a live child cleanly', { timeout: 10_000 },
       sensitivePaths: [root],
       signal: controller.signal
     })
-    await new Promise((resolve) => setTimeout(resolve, 100))
+    const deadline = Date.now() + 5_000
+    while (!existsSync(processPidPath) && Date.now() < deadline) {
+      await new Promise((resolve) => setTimeout(resolve, 20))
+    }
+    assert.equal(existsSync(processPidPath), true, 'child process did not start')
+    childPid = Number(await readFile(processPidPath, 'utf8'))
+    assert.ok(Number.isInteger(childPid) && childPid > 0)
     controller.abort()
     await assert.rejects(running, /Đã hủy tác vụ/u)
+    assert.throws(() => process.kill(childPid!, 0), /ESRCH|not found|no such process/iu)
   } finally {
+    if (childPid) {
+      try { process.kill(childPid, 'SIGKILL') } catch { /* already stopped */ }
+    }
     await rm(root, { recursive: true, force: true })
   }
 })
@@ -348,11 +360,11 @@ function runMediaTool(command: string, args: string[]): Buffer {
   return result.stdout || Buffer.alloc(0)
 }
 
-function probeMedia(path: string): {
+function probeMedia(path: string, ffprobeCommand: string): {
   streams: Array<{ codec_type?: string; duration?: string; channels?: number; sample_rate?: string; tags?: Record<string, string> }>
   format: { duration?: string }
 } {
-  const output = runMediaTool(embeddedFfprobe, [
+  const output = runMediaTool(ffprobeCommand, [
     '-v', 'error',
     '-show_entries', 'format=duration:stream=index,codec_type,duration,channels,sample_rate:stream_tags=title',
     '-of', 'json',
@@ -387,10 +399,20 @@ test(
     const music = join(root, 'nhạc lặp.wav')
     const composed = join(root, 'tts-background-mix.wav')
     const replaceOutput = join(root, 'replace-output.mp4')
-    const previousRuntimeDir = process.env.TEDIAPROS_RUNTIME_DIR
-    process.env.TEDIAPROS_RUNTIME_DIR = dirname(embeddedFfmpeg)
+    const previousTestUserData = process.env.TEDIAPROS_TEST_USER_DATA
+    const testUserData = join(root, 'user-data')
+    const canonicalRuntimeDir = join(testUserData, 'bin', 'ffmpeg')
+    const canonicalFfmpeg = join(canonicalRuntimeDir, 'ffmpeg.exe')
+    const canonicalFfprobe = join(canonicalRuntimeDir, 'ffprobe.exe')
+    process.env.TEDIAPROS_TEST_USER_DATA = testUserData
     try {
-      runMediaTool(embeddedFfmpeg, [
+      await mkdir(canonicalRuntimeDir, { recursive: true })
+      await Promise.all([
+        copyFile(embeddedFfmpeg, canonicalFfmpeg),
+        copyFile(embeddedFfprobe, canonicalFfprobe)
+      ])
+
+      runMediaTool(canonicalFfmpeg, [
         '-y', '-hide_banner', '-loglevel', 'error',
         '-f', 'lavfi', '-i', 'color=c=blue:s=320x180:d=2:r=24',
         '-f', 'lavfi', '-i', 'sine=frequency=1500:sample_rate=44100:duration=2',
@@ -398,12 +420,12 @@ test(
         '-metadata:s:a:0', 'title=ORIGINAL_AUDIO_SENTINEL',
         sourceVideo
       ])
-      runMediaTool(embeddedFfmpeg, [
+      runMediaTool(canonicalFfmpeg, [
         '-y', '-hide_banner', '-loglevel', 'error',
         '-f', 'lavfi', '-i', 'sine=frequency=997:sample_rate=44100:duration=1,volume=6,apad=whole_dur=2,atrim=duration=2',
         '-c:a', 'pcm_s16le', narration
       ])
-      runMediaTool(embeddedFfmpeg, [
+      runMediaTool(canonicalFfmpeg, [
         '-y', '-hide_banner', '-loglevel', 'error',
         '-f', 'lavfi', '-i', 'sine=frequency=220:sample_rate=44100:duration=0.35',
         '-c:a', 'pcm_s16le', music
@@ -417,10 +439,10 @@ test(
         volume: 100
       })
 
-      const composedProbe = probeMedia(composed)
+      const composedProbe = probeMedia(composed, canonicalFfprobe)
       const composedDuration = Number(composedProbe.format.duration)
       assert.ok(Math.abs(composedDuration - 2) <= 0.02, `composed duration=${composedDuration}`)
-      const composedPcm = runMediaTool(embeddedFfmpeg, [
+      const composedPcm = runMediaTool(canonicalFfmpeg, [
         '-hide_banner', '-loglevel', 'error', '-i', composed,
         '-map', '0:a:0', '-ac', '1', '-ar', '44100', '-f', 's16le', '-'
       ])
@@ -447,7 +469,7 @@ test(
       }, () => {})
       assert.deepEqual(burnResult, { ok: true, output: replaceOutput })
 
-      const outputProbe = probeMedia(replaceOutput)
+      const outputProbe = probeMedia(replaceOutput, canonicalFfprobe)
       assert.equal(outputProbe.streams.filter((stream) => stream.codec_type === 'video').length, 1)
       assert.equal(outputProbe.streams.filter((stream) => stream.codec_type === 'audio').length, 1)
       assert.equal(
@@ -457,7 +479,7 @@ test(
       const outputDuration = Number(outputProbe.format.duration)
       assert.ok(Math.abs(outputDuration - 2) <= 0.1, `replace output duration=${outputDuration}`)
 
-      const outputPcm = runMediaTool(embeddedFfmpeg, [
+      const outputPcm = runMediaTool(canonicalFfmpeg, [
         '-hide_banner', '-loglevel', 'error', '-i', replaceOutput,
         '-map', '0:a:0', '-ac', '1', '-ar', '44100', '-f', 's16le', '-'
       ])
@@ -469,8 +491,8 @@ test(
         `duck ratio=${(musicAfterNarration / musicDuringNarration).toFixed(2)}, source/narration tone ratio=${(sourceTone / narrationTone).toFixed(4)}`
       )
     } finally {
-      if (previousRuntimeDir == null) delete process.env.TEDIAPROS_RUNTIME_DIR
-      else process.env.TEDIAPROS_RUNTIME_DIR = previousRuntimeDir
+      if (previousTestUserData == null) delete process.env.TEDIAPROS_TEST_USER_DATA
+      else process.env.TEDIAPROS_TEST_USER_DATA = previousTestUserData
       await rm(root, { recursive: true, force: true })
     }
   }
@@ -613,11 +635,33 @@ test('AutoShort rejects invalid background music modes, volumes, and nested reco
   if (!malformedResult.ok) assert.match(malformedResult.error, /cấu hình nhạc background/iu)
 })
 
+async function writeCompleteWhisperModel(modelDir: string, id: WhisperModelId): Promise<void> {
+  await mkdir(modelDir, { recursive: true })
+  const files = ['model.bin', 'config.json', 'tokenizer.json', 'vocabulary.json']
+  const entries = [] as Array<{ path: string; bytes: number; sha256: string }>
+  for (const file of files) {
+    const content = Buffer.from(`${id}-${file}-complete-model-fixture`)
+    await writeFile(join(modelDir, file), content)
+    entries.push({ path: file, bytes: content.length, sha256: createHash('sha256').update(content).digest('hex') })
+  }
+  await writeFile(join(modelDir, 'manifest.json'), JSON.stringify({
+    schemaVersion: 1,
+    id,
+    repoId: `Systran/faster-whisper-${id}`,
+    revision: WHISPER_MODEL_CATALOG[id].revision,
+    backend: 'faster-whisper',
+    format: 'ctranslate2',
+    files: entries,
+    languageFamily: 'multilingual',
+    engineProtocol: 'whisper-engine/1'
+  }))
+}
+
 test('catalog exposes exactly the three local multilingual models', () => {
   assert.deepEqual(Object.keys(WHISPER_MODEL_CATALOG), ['base', 'small', 'medium'])
   for (const id of ['base', 'small', 'medium'] as WhisperModelId[]) {
-    assert.equal(WHISPER_MODEL_CATALOG[id].backend, 'whisper.cpp')
-    assert.equal(WHISPER_MODEL_CATALOG[id].format, 'ggml')
+    assert.equal(WHISPER_MODEL_CATALOG[id].backend, 'faster-whisper')
+    assert.equal(WHISPER_MODEL_CATALOG[id].format, 'ctranslate2')
     assert.equal(WHISPER_MODEL_CATALOG[id].languageFamily, 'multilingual')
   }
 })
@@ -629,13 +673,13 @@ test('legacy model and method names migrate without prompting', () => {
   assert.equal(normalizeWhisperModel('unknown'), 'base')
 })
 
-test('engine readiness requires the local protocol and whisper.cpp backend', () => {
+test('engine readiness requires the local protocol and faster-whisper backend', () => {
   const event: WhisperVersionEvent = {
     type: 'version',
-    protocol: 'whisper-local/1',
-    engine: 'whisper.cpp',
-    version: '1.9.3',
-    features: ['probe', 'daemon', 'word_timestamps']
+    protocol: 'whisper-engine/1',
+    engine: 'faster-whisper',
+    version: '1.0.0',
+    features: ['probe', 'vad', 'word_timestamps']
   }
   assert.equal(isWhisperVersionEvent(event), true)
   assert.deepEqual(parseWhisperVersion(JSON.stringify(event)), event)
@@ -643,59 +687,41 @@ test('engine readiness requires the local protocol and whisper.cpp backend', () 
   assert.equal(isWhisperVersionEvent({ ...event, protocol: 'legacy' }), false)
 })
 
-test('model resolver prefers a valid current profile model over legacy', async () => {
+test('model resolver prefers a valid current profile model', async () => {
   const root = await mkdtemp(join(tmpdir(), 'tedia-model-test-'))
   const current = join(root, 'current')
   const legacy = join(root, 'legacy')
   const currentModel = join(current, 'base')
   const legacyModel = join(legacy, 'base')
-  await mkdir(currentModel, { recursive: true })
-  await mkdir(legacyModel, { recursive: true })
-  await writeFile(join(currentModel, 'ggml-base.bin'), Buffer.from('current'))
-  await writeFile(join(legacyModel, 'ggml-base.bin'), Buffer.from('legacy'))
-  await writeFile(join(currentModel, 'manifest.json'), JSON.stringify({
-    id: 'base', backend: 'whisper.cpp', format: 'ggml', filename: 'ggml-base.bin',
-    bytes: 7, sha256: '97b0560280ed60a5a1eaa1bc45492543c8a986ad5a25b468c427eb83c3e88191',
-    languageFamily: 'multilingual', engineProtocol: 'whisper-local/1'
-  }))
-  await writeFile(join(legacyModel, 'manifest.json'), JSON.stringify({
-    id: 'base', backend: 'whisper.cpp', format: 'ggml', filename: 'ggml-base.bin',
-    bytes: 6, sha256: 'legacy'
-  }))
+  await writeCompleteWhisperModel(currentModel, 'base')
+  await writeCompleteWhisperModel(legacyModel, 'base')
 
   const result = await findLocalWhisperModel('base', [current, legacy])
   assert.equal(result?.root, current)
-  assert.equal(result?.modelPath, join(currentModel, 'ggml-base.bin'))
+  assert.equal(result?.modelPath, currentModel)
 })
 
 test('model integrity rejects a manifest with the wrong hash', async () => {
   const root = await mkdtemp(join(tmpdir(), 'tedia-model-integrity-'))
   const modelDir = join(root, 'base')
   await mkdir(modelDir, { recursive: true })
-  await writeFile(join(modelDir, 'ggml-base.bin'), Buffer.from('actual'))
+  await writeFile(join(modelDir, 'model.bin'), Buffer.from('actual'))
   await writeFile(join(modelDir, 'manifest.json'), JSON.stringify({
-    id: 'base', backend: 'whisper.cpp', format: 'ggml', filename: 'ggml-base.bin',
+    id: 'base', backend: 'faster-whisper', format: 'ctranslate2', filename: 'model.bin',
     bytes: 6, sha256: 'not-the-file-hash', languageFamily: 'multilingual',
-    engineProtocol: 'whisper-local/1'
+    engineProtocol: 'whisper-engine/1'
   }))
   assert.equal(await isCompleteWhisperModel(modelDir, 'base'), false)
 })
 
-test('model resolver accepts the legacy tediapros native cache when current is missing', async () => {
+test('model resolver rejects a model outside the canonical profile root', async () => {
   const root = await mkdtemp(join(tmpdir(), 'tedia-model-legacy-'))
   const legacy = join(root, 'tediapros')
   const modelDir = join(legacy, 'small')
-  const bytes = Buffer.from('legacy-native-model')
-  const { createHash } = await import('node:crypto')
   await mkdir(modelDir, { recursive: true })
-  await writeFile(join(modelDir, 'ggml-small.bin'), bytes)
-  await writeFile(join(modelDir, 'manifest.json'), JSON.stringify({
-    id: 'small', backend: 'whisper.cpp', format: 'ggml', filename: 'ggml-small.bin',
-    bytes: bytes.length, sha256: createHash('sha256').update(bytes).digest('hex'),
-    languageFamily: 'multilingual', engineProtocol: 'whisper-local/1'
-  }))
-  const result = await findLocalWhisperModel('small', [join(root, 'current'), legacy])
-  assert.equal(result?.root, legacy)
+  await writeCompleteWhisperModel(modelDir, 'small')
+  const result = await findLocalWhisperModel('small', [join(root, 'current')])
+  assert.equal(result, null)
 })
 
 test('partial native model is never treated as complete', async () => {
@@ -704,12 +730,12 @@ test('partial native model is never treated as complete', async () => {
   const bytes = Buffer.from('partial-model')
   const { createHash } = await import('node:crypto')
   await mkdir(modelDir, { recursive: true })
-  await writeFile(join(modelDir, 'ggml-base.bin'), bytes)
-  await writeFile(join(modelDir, 'ggml-base.bin.partial'), Buffer.from('unfinished'))
+  await writeFile(join(modelDir, 'model.bin'), bytes)
+  await writeFile(join(modelDir, 'model.bin.partial'), Buffer.from('unfinished'))
   await writeFile(join(modelDir, 'manifest.json'), JSON.stringify({
-    id: 'base', backend: 'whisper.cpp', format: 'ggml', filename: 'ggml-base.bin',
+    id: 'base', backend: 'faster-whisper', format: 'ctranslate2', filename: 'model.bin',
     bytes: bytes.length, sha256: createHash('sha256').update(bytes).digest('hex'),
-    languageFamily: 'multilingual', engineProtocol: 'whisper-local/1'
+    languageFamily: 'multilingual', engineProtocol: 'whisper-engine/1'
   }))
   assert.equal(await isCompleteWhisperModel(modelDir, 'base'), false)
 })
@@ -744,24 +770,24 @@ test('AutoShort readiness accepts the current whisper-local protocol instead of 
   assert.doesNotMatch(source, /engine\?\.version\?\.startsWith\(['"]3\./u)
 })
 
-test('AutoShort engine policy accepts a healthy native whisper.cpp protocol', () => {
+test('AutoShort engine policy accepts a healthy Faster-Whisper protocol', () => {
   assert.equal(isAutoShortWhisperEngineReady({
     has: true,
     healthy: true,
-    protocol: 'whisper-local/1',
-    engine: 'whisper.cpp'
+    protocol: 'whisper-engine/1',
+    engine: 'faster-whisper'
   }), true)
   assert.equal(isAutoShortWhisperEngineReady({
     has: true,
     healthy: true,
     protocol: 'legacy',
-    engine: 'whisper.cpp'
+    engine: 'faster-whisper'
   }), false)
   assert.equal(isAutoShortWhisperEngineReady({
     has: true,
     healthy: false,
-    protocol: 'whisper-local/1',
-    engine: 'whisper.cpp'
+    protocol: 'whisper-engine/1',
+    engine: 'faster-whisper'
   }), false)
 })
 
@@ -870,6 +896,48 @@ test('AutoShort regression test: voice and subtitle do not spill into adjacent c
   // Cue 1 subtitle must stay at 2.0 -> 4.0
   assert.equal(plan.cues[1].subtitleStart, 2.0)
   assert.equal(plan.cues[1].subtitleEnd, 4.0)
+})
+
+test('AutoShort sync validation rejects translated target timing drift independently of source anchors', () => {
+  const sourceCues = [{ id: 'cue-0', start: 0, end: 2, text: 'source' }]
+  const targetCues = [{ id: 'cue-0', start: 0, end: 1.4, text: 'bản dịch' }]
+  const result = validateAutoShortTimelineSync(
+    sourceCues,
+    targetCues,
+    [{
+      cueId: 'cue-0',
+      renderSubtitleStart: 0,
+      renderSubtitleEnd: 2,
+      voiceStart: 0,
+      voiceEnd: 2
+    }],
+    3
+  )
+  assert.equal(result.ok, false)
+  assert.match(result.violations.join(' '), /target|đích|timing|thời gian/iu)
+})
+
+test('AutoShort validates semantic timeline with separate source and translated group inputs', async () => {
+  const source = await readFile(join(process.cwd(), 'src', 'main', 'autoshort.ts'), 'utf8')
+  assert.match(source, /synthesized\.sourceGroupInputs\s*,\s*synthesized\.targetGroupInputs/u)
+})
+
+test('Electron shutdown cancels the Auto Short job and all media child-process owners', async () => {
+  const autoshort = await readFile(join(process.cwd(), 'src', 'main', 'autoshort.ts'), 'utf8')
+  const burn = await readFile(join(process.cwd(), 'src', 'main', 'burn.ts'), 'utf8')
+  const ocr = await readFile(join(process.cwd(), 'src', 'main', 'ocr.ts'), 'utf8')
+  const runtimeProbes = await readFile(join(process.cwd(), 'src', 'main', 'runtimeProbes.ts'), 'utf8')
+  const gpu = await readFile(join(process.cwd(), 'src', 'main', 'gpu.ts'), 'utf8')
+  const index = await readFile(join(process.cwd(), 'src', 'main', 'index.ts'), 'utf8')
+  assert.match(autoshort, /export async function shutdownAutoShortRuntime/u)
+  assert.match(autoshort, /cancelOcr\(\)/u)
+  assert.match(autoshort, /cancelVideo2x\(\)/u)
+  assert.match(index, /shutdownAutoShortRuntime\(\)/u)
+  assert.match(autoshort, /terminateTrackedProcessTrees\(\)/u)
+  assert.match(burn, /terminateProcessTree/u)
+  assert.match(ocr, /terminateProcessTree/u)
+  assert.match(runtimeProbes, /trackChildProcess/u)
+  assert.match(gpu, /trackChildProcess/u)
 })
 
 test('AutoShort scene transition: gaps between non-adjacent cues are not treated as free slack for earlier voice', () => {
@@ -1058,9 +1126,10 @@ test('AutoShort clamps recognition cues that round past the video EOF', () => {
 
 test('OCR verifies runtime readiness using protocol probe and version commands', async () => {
   const source = await readFile(join(process.cwd(), 'src', 'main', 'ocr.ts'), 'utf8')
-  assert.match(source, /runCapture\(path,\s*\['--version'\]\)/u)
-  assert.match(source, /runCapture\(path,\s*\['--probe'\]\)/u)
-  assert.match(source, /ocr-local\/1/u)
+  const probeSource = await readFile(join(process.cwd(), 'src', 'main', 'runtimeProbes.ts'), 'utf8')
+  assert.match(source, /probeRuntimeExecutable\('ocr-engine',\s*path\)/u)
+  assert.doesNotMatch(source, /Legacy fallback/u)
+  assert.match(probeSource, /ocr-local\/1/u)
 })
 
 test('AutoShort requests chat completion translation so cue meaning is preserved', async () => {
@@ -1110,7 +1179,16 @@ test('AutoShort exposes the OCR region in both OCR modes', async () => {
 
 test('AutoShort CUDA readiness probes the selected Whisper model', async () => {
   const source = await readFile(join(process.cwd(), 'src', 'main', 'autoshort.ts'), 'utf8')
-  assert.match(source, /whisperCudaProbe\(config\.whisperModel \|\| 'base'\)/u)
+  assert.match(source, /whisperCudaProbe\(config\.whisperModel \|\| 'base', 'cuda'\)/u)
+  assert.match(source, /cudaProbe\?\.ready/u)
+  assert.match(source, /ocr\.healthy/u)
+})
+
+test('AutoShort keeps CPU fallback available when CUDA is unavailable', async () => {
+  const source = await readFile(join(process.cwd(), 'src', 'main', 'autoshort.ts'), 'utf8')
+  assert.match(source, /'whisper-cuda'[\s\S]{0,260}gpuReady/u)
+  assert.match(source, /effectiveDevice: useWhisper \? \(useCuda && cudaReady \? 'cuda' : 'cpu'\)/u)
+  assert.doesNotMatch(source, /đã dừng để tránh chạy CPU ngầm/u)
 })
 
 test('AutoShort Main OCR fallback matches the portrait and landscape UI defaults', async () => {
@@ -1119,7 +1197,7 @@ test('AutoShort Main OCR fallback matches the portrait and landscape UI defaults
 })
 
 test('OCR protocol rejects unprobed binaries and requires genuine model probe', async () => {
-  const source = await readFile(join(process.cwd(), 'src', 'main', 'ocr.ts'), 'utf8')
+  const source = await readFile(join(process.cwd(), 'src', 'main', 'runtimeProbes.ts'), 'utf8')
   assert.match(source, /ocr-local\/1/u)
   assert.doesNotMatch(source, /legacyCliHelp/u)
 })
@@ -1504,9 +1582,9 @@ test('isSafeExternalUrl strictly allows http, https, mailto and blocks dangerous
 })
 
 test('Whisper alignment outputs write both segments and cues for complete schema compatibility', async () => {
-  const whisperSource = await readFile(join(process.cwd(), 'src', 'main', 'whisper.ts'), 'utf8')
-  assert.match(whisperSource, /segments:\s*alignmentSegments/u)
-  assert.match(whisperSource, /cues:\s*alignmentSegments/u)
+  const engineSource = await readFile(join(process.cwd(), 'engines', 'whisper-engine', 'engine.py'), 'utf8')
+  assert.match(engineSource, /"segments":\s*segments/u)
+  assert.match(engineSource, /"cues":\s*segments/u)
 
   const autoshortSource = await readFile(join(process.cwd(), 'src', 'main', 'autoshort.ts'), 'utf8')
   assert.match(autoshortSource, /raw\.segments/u)
@@ -1522,6 +1600,8 @@ test('TTS disk write enforces positive file size check and eliminates swallowed 
 })
 
 test('Case A (fresh install): engine status reports missing clearly and does not crash when runtime is absent', async () => {
+  const { runtimeKindDir } = await import('../src/main/runtimeResolver')
+  await Promise.all(['ocr-engine', 'video2x', 'douyin', 'whisper-engine', 'whisper-cuda'].map((kind) => rm(runtimeKindDir(kind as any), { recursive: true, force: true })))
   const { ocrEngineStatus } = await import('../src/main/ocr')
   const { video2xEngineStatus } = await import('../src/main/video2x')
   const { dyEngineStatus } = await import('../src/main/douyin')
@@ -1542,22 +1622,17 @@ test('Case A (fresh install): engine status reports missing clearly and does not
   assert.equal(whisperStatus.healthy, false)
 })
 
-test('Case B (runtime installed): canonical resolver locates runtime executables across canonical and legacy roots', async () => {
-  const { resolveRuntimeExecutable, runtimeSearchRoots } = await import('../src/main/runtimeResolver')
-  const root = await mkdtemp(join(tmpdir(), 'tedia-runtime-test-'))
-  const canonicalOcrDir = join(root, 'ocr')
+test('Case B (runtime installed): canonical resolver locates runtime executables in userData', async () => {
+  const { resolveRuntimeExecutable, runtimeKindDir } = await import('../src/main/runtimeResolver')
+  const canonicalOcrDir = runtimeKindDir('ocr-engine')
   await mkdir(canonicalOcrDir, { recursive: true })
   const exeName = process.platform === 'win32' ? 'ocr-engine.exe' : 'ocr-engine'
   await writeFile(join(canonicalOcrDir, exeName), Buffer.from('test-binary'))
 
-  process.env.TEDIAPROS_RUNTIME_DIR = root
-  try {
-    const resolved = await resolveRuntimeExecutable('ocr', [exeName])
-    assert.ok(resolved)
-    assert.equal(resolved, join(canonicalOcrDir, exeName))
-  } finally {
-    delete process.env.TEDIAPROS_RUNTIME_DIR
-  }
+  const resolved = await resolveRuntimeExecutable('ocr-engine', [exeName])
+  assert.ok(resolved)
+  assert.equal(resolved, join(canonicalOcrDir, exeName))
+  await rm(canonicalOcrDir, { recursive: true, force: true })
 })
 
 test('Case C (application update): runtimeRoot and modelRoot are invariant to application version changes', async () => {
@@ -1565,15 +1640,15 @@ test('Case C (application update): runtimeRoot and modelRoot are invariant to ap
   const { whisperModelRoots } = await import('../src/main/modelStore')
 
   const rtRoot1 = runtimeRoot()
-  const mdRoot1 = modelRoot('whisper-cpp')
-  const searchRoots1 = runtimeSearchRoots('whisper-cpp')
-  const modelSearchRoots1 = whisperModelRoots('C:\\test-user-data', 'C:\\test-app-data')
+  const mdRoot1 = modelRoot()
+  const searchRoots1 = runtimeSearchRoots('whisper-engine')
+  const modelSearchRoots1 = whisperModelRoots('C:\\test-user-data')
 
   // Simulating version change
   const rtRoot2 = runtimeRoot()
-  const mdRoot2 = modelRoot('whisper-cpp')
-  const searchRoots2 = runtimeSearchRoots('whisper-cpp')
-  const modelSearchRoots2 = whisperModelRoots('C:\\test-user-data', 'C:\\test-app-data')
+  const mdRoot2 = modelRoot()
+  const searchRoots2 = runtimeSearchRoots('whisper-engine')
+  const modelSearchRoots2 = whisperModelRoots('C:\\test-user-data')
 
   assert.equal(rtRoot1, rtRoot2)
   assert.equal(mdRoot1, mdRoot2)
@@ -1599,12 +1674,10 @@ test('Case D (failed runtime update): atomic replace directory restores previous
   assert.equal(await readFile(join(dest, 'version.txt'), 'utf8'), 'new-version')
 })
 
-test('Case E (model persistence): whisperModelRoots prioritizes canonical models directory and preserves legacy paths', async () => {
+test('Case E (model persistence): whisperModelRoots exposes only the canonical models directory', async () => {
   const { whisperModelRoots } = await import('../src/main/modelStore')
-  const roots = whisperModelRoots('C:\\AppData\\Roaming\\t-blao', 'C:\\AppData\\Roaming')
-  assert.equal(roots[0], 'C:\\AppData\\Roaming\\t-blao\\models\\whisper-cpp')
-  assert.equal(roots.includes('C:\\AppData\\Roaming\\t-blao\\whisper-cpp-models'), true)
-  assert.equal(roots.includes('C:\\AppData\\Roaming\\tediapros\\whisper-cpp-models'), true)
+  const roots = whisperModelRoots('C:\\AppData\\Roaming\\t-blao')
+  assert.deepEqual(roots, ['C:\\AppData\\Roaming\\t-blao\\whisper-models'])
   assert.equal(roots.some((r) => r.includes('resources')), false)
 })
 
@@ -1639,19 +1712,21 @@ test('Runtime manifest validator: strictly validates contract and rejects malfor
 
   const validPayload = {
     schemaVersion: 1,
-    runtimeVersion: 'runtime-v1',
+    runtimeVersion: 'runtime-v2',
     platform: 'win32',
     arch: 'x64',
     assets: {
-      'whisper-cpp': {
-        version: '1.9.3+b4938',
+      'whisper-engine': {
+        version: '2.0.0',
         platform: 'win32',
         arch: 'x64',
-        asset: 'whisper-cpp-win-x64.zip',
+        asset: 'whisper-engine-win-x64.zip',
         sha256: 'a0f92b8765b729abfdfc654958c512215553f383fb9e75d1cdd0ffb73ab8c974',
         bytes: 6504960,
-        entrypoint: 'whisper-local-worker.exe',
-        protocol: 'whisper-local/1'
+        entrypoint: 'whisper-engine.exe',
+        protocol: 'whisper-engine/1',
+        capabilities: ['probe', 'cpu', 'cuda'],
+        files: ['whisper-engine.exe']
       }
     }
   }
@@ -1667,8 +1742,8 @@ test('Runtime manifest validator: strictly validates contract and rejects malfor
   const invalidSha = validateRuntimeDistributionManifest({
     ...validPayload,
     assets: {
-      'whisper-cpp': {
-        ...validPayload.assets['whisper-cpp'],
+      'whisper-engine': {
+        ...validPayload.assets['whisper-engine'],
         sha256: 'not-a-valid-sha'
       }
     }
@@ -1679,8 +1754,8 @@ test('Runtime manifest validator: strictly validates contract and rejects malfor
   const invalidEntry = validateRuntimeDistributionManifest({
     ...validPayload,
     assets: {
-      'whisper-cpp': {
-        ...validPayload.assets['whisper-cpp'],
+      'whisper-engine': {
+        ...validPayload.assets['whisper-engine'],
         entrypoint: ''
       }
     }
@@ -1706,7 +1781,9 @@ test('Package verifier: rejects packaging containing prohibited runtime binaries
   const dirtyDir = join(root, 'dirty', 'resources')
   await mkdir(dirtyDir, { recursive: true })
   await writeFile(join(dirtyDir, 'ffmpeg.exe'), Buffer.from('fake-ffmpeg'))
-  await writeFile(join(dirtyDir, 'ggml-base.bin'), Buffer.from('fake-model'))
+  const dirtyModelDir = join(root, 'dirty', 'whisper-models', 'base')
+  await mkdir(dirtyModelDir, { recursive: true })
+  await writeFile(join(dirtyModelDir, 'model.bin'), Buffer.from('fake-model'))
 
   const dirtyResult = await verifyPackagedDirectory(join(root, 'dirty'))
   assert.equal(dirtyResult.ok, false)
@@ -1839,6 +1916,192 @@ test('Video2X prevents concurrent runs and manages task cancellation cleanly', a
   const video2xSource = await readFile(join(process.cwd(), 'src', 'main', 'video2x.ts'), 'utf8')
   assert.match(video2xSource, /if\s*\(activeChild\s*!==\s*null\)\s*\{\s*return\s*\{\s*ok:\s*false,\s*error:\s*'Đang có một tiến trình Video2X khác đang chạy\.'\s*\}\s*\}/u)
   assert.match(video2xSource, /cancelVideo2x\(taskId\?: string\)/u)
+})
+
+test('Clean-Machine Test 1: Missing FFmpeg detects missing, resolves canonical path, and verifies install flow', async () => {
+  const { resolveFfmpeg, resolveFfprobe } = await import('../src/main/runtimeResolver')
+  assert.equal(await resolveFfmpeg(), null)
+  assert.equal(await resolveFfprobe(), null)
+})
+
+test('Clean-Machine Test 2: Whisper CUDA candidate dirs prioritize canonical userData whisper-cuda path', async () => {
+  const { whisperCudaCandidateDirs } = await import('../src/main/whisperPaths')
+  const candidateDirs = whisperCudaCandidateDirs('C:\\TestUserData')
+  assert.equal(candidateDirs[0], 'C:\\TestUserData\\bin\\whisper-cuda')
+})
+
+test('Clean-Machine Test 3: Whisper Model partial download resumes and validates SHA-256 integrity', async () => {
+  const root = await mkdtemp(join(tmpdir(), 'tedia-clean-model-'))
+  const modelDir = join(root, 'small')
+  await mkdir(modelDir, { recursive: true })
+  const bytes = Buffer.from('synthetic-faster-whisper-model-content-2026')
+  const { createHash } = await import('node:crypto')
+  const sha256 = createHash('sha256').update(bytes).digest('hex')
+
+  await writeCompleteWhisperModel(modelDir, 'small')
+
+  const { isCompleteWhisperModel, findLocalWhisperModel } = await import('../src/main/modelStore')
+  assert.equal(await isCompleteWhisperModel(modelDir, 'small'), true)
+  const found = await findLocalWhisperModel('small', [root])
+  assert.ok(found)
+  assert.equal(found.manifest?.backend, 'faster-whisper')
+})
+
+test('Clean-Machine Test 4: OCR Engine validates ocr-local/1 protocol and RapidOCR readiness', async () => {
+  const { ocrEngineStatus } = await import('../src/main/ocr')
+  const { runtimeKindDir } = await import('../src/main/runtimeResolver')
+  await rm(runtimeKindDir('ocr-engine'), { recursive: true, force: true })
+  const status = await ocrEngineStatus()
+  assert.equal(status.has, false)
+  assert.equal(status.healthy, false)
+})
+
+test('Clean-Machine Test 5: Video2X engine status reports missing cleanly and supports lazy install', async () => {
+  const { video2xEngineStatus } = await import('../src/main/video2x')
+  const status = await video2xEngineStatus()
+  if (process.platform === 'win32') {
+    assert.equal(status.supported, true)
+    assert.equal(status.has, false)
+  }
+})
+
+test('Clean-Machine Test 6: Douyin engine status reports missing cleanly and supports lazy install', async () => {
+  const { dyEngineStatus } = await import('../src/main/douyin')
+  const status = await dyEngineStatus()
+  assert.equal(status.has, false)
+})
+
+test('Clean-Machine Test 7: Installed runtime receipts persist across application restarts', async () => {
+  const { recordInstalledRuntimeReceipt, readInstalledRuntimeState } = await import('../src/main/runtimeResolver')
+  await recordInstalledRuntimeReceipt('video2x', {
+    version: '1.0.0',
+    sha256: 'abc123',
+    protocol: 'test-protocol/1',
+    installedAt: new Date().toISOString(),
+    activePath: 'C:\\test\\active'
+  })
+
+  const state = await readInstalledRuntimeState()
+  assert.ok(state.video2x)
+  assert.equal(state.video2x.version, '1.0.0')
+  assert.equal(state.video2x.activePath, 'C:\\test\\active')
+})
+
+test('Clean-Machine Test 8: Non-standard installation drive (e.g. D: or E:) does not break persistent userData runtime', async () => {
+  const { runtimeRoot, modelRoot } = await import('../src/main/runtimeResolver')
+  const rRoot = runtimeRoot()
+  const mRoot = modelRoot()
+  assert.ok(!rRoot.includes('Program Files') && !rRoot.includes('dist'))
+  assert.ok(!mRoot.includes('Program Files') && !mRoot.includes('dist'))
+})
+
+test('Clean-Machine Test 9: Windows paths with spaces and Unicode (e.g. Thư Mục/Người Dùng) escape properly', async () => {
+  const { escapeFfmpegFilterPath } = await import('../src/main/fonts')
+  const unicodePath = 'C:\\Người Dùng\\Tedia Pros 2026\\Video [1].ass'
+  const escaped = escapeFfmpegFilterPath(unicodePath)
+  assert.ok(escaped.includes('Người Dùng') && escaped.includes('Tedia Pros 2026'))
+})
+
+test('Clean-Machine Test 10: Production source files contain zero hardcoded developer machine paths', async () => {
+  const srcFiles = [
+    'src/main/runtimeResolver.ts',
+    'src/main/runtimeInstaller.ts',
+    'src/main/distributionConfig.ts',
+    'src/main/deps.ts',
+    'src/main/ocr.ts',
+    'src/main/video2x.ts',
+    'src/main/douyin.ts',
+    'src/main/whisper.ts',
+    'src/main/runtimeProbes.ts',
+    'src/main/burn.ts',
+    'src/main/ytdlp.ts',
+    'scripts/execute-autoshort-cli.mjs'
+  ]
+  for (const file of srcFiles) {
+    const content = await readFile(join(process.cwd(), file), 'utf8')
+    assert.doesNotMatch(content, /[A-Z]:\\[Nn]ew [Ff]older/u, `${file} contains hardcoded dev path`)
+    assert.doesNotMatch(content, /C:\\Users\\PC/u, `${file} contains hardcoded C:\\Users\\PC path`)
+  }
+})
+
+test('Clean-Machine Test 11: Checksum mismatch preserves existing working runtime without corrupting', async () => {
+  const { replaceDirectoryAtomic } = await import('../src/main/localAssets')
+  const { rm } = await import('node:fs/promises')
+  const root = await mkdtemp(join(tmpdir(), 'tedia-clean-atomic-'))
+  const activeDir = join(root, 'active')
+  const stagingDir = join(root, 'staging')
+
+  await mkdir(activeDir, { recursive: true })
+  await writeFile(join(activeDir, 'engine.exe'), Buffer.from('working-binary'))
+
+  await mkdir(stagingDir, { recursive: true })
+  await writeFile(join(stagingDir, 'engine.exe'), Buffer.from('corrupt-binary'))
+
+  // Staging is removed and active is untouched
+  await rm(stagingDir, { recursive: true, force: true })
+  assert.equal(await readFile(join(activeDir, 'engine.exe'), 'utf8'), 'working-binary')
+})
+
+test('Clean-Machine Test 12: Interrupted download staging directory is cleaned on failure', async () => {
+  const { downloadRuntimeEngineFromManifest } = await import('../src/main/runtimeInstaller')
+  const { runtimeKindDir } = await import('../src/main/runtimeResolver')
+  const { access, rm } = await import('node:fs/promises')
+  const target = runtimeKindDir('video2x')
+  const staging = `${target}.staging`
+  await rm(target, { recursive: true, force: true })
+  await rm(staging, { recursive: true, force: true })
+
+  const platform = process.platform === 'darwin' ? 'darwin' : process.platform === 'win32' ? 'win32' : 'linux'
+  const arch = process.arch === 'arm64' ? 'arm64' : process.arch === 'ia32' ? 'ia32' : 'x64'
+  const manifest = {
+    schemaVersion: 1,
+    runtimeVersion: 'runtime-v2',
+    platform,
+    arch,
+    assets: {
+      video2x: {
+        version: '6.4.0',
+        platform,
+        arch,
+        asset: 'video2x.zip',
+        sha256: createHash('sha256').update('complete archive').digest('hex'),
+        bytes: Buffer.byteLength('complete archive'),
+        entrypoint: 'video2x.exe',
+        capabilities: ['list-devices'],
+        files: ['video2x.exe']
+      }
+    }
+  }
+  let request = 0
+  await assert.rejects(downloadRuntimeEngineFromManifest('video2x', () => {}, {
+    fetch: async () => request++ === 0
+      ? new Response(JSON.stringify(manifest), { status: 200 })
+      : new Response('partial archive', { status: 200 })
+  }), /kích thước archive|archive.*size/i)
+  assert.equal(await access(staging).then(() => true).catch(() => false), false)
+  assert.equal(await access(target).then(() => true).catch(() => false), false)
+})
+
+test('Clean-Machine Test 13: Manifest validator strictly catches missing asset and malformed hash', async () => {
+  const { validateRuntimeDistributionManifest } = await import('../src/main/runtimeManifest')
+  const invalid = validateRuntimeDistributionManifest({
+    schemaVersion: 1,
+    runtimeVersion: 'runtime-v2',
+    platform: 'win32',
+    assets: {}
+  })
+  assert.equal(invalid.ok, false)
+})
+
+test('Clean-Machine Test 14: Package verification ensures zero forbidden runtime binaries or models', async () => {
+  const { findForbiddenFiles } = await import('../scripts/verify-packaged-app.mjs')
+  const root = await mkdtemp(join(tmpdir(), 'tedia-clean-pkg-'))
+  const appDir = join(root, 'resources', 'app')
+  await mkdir(appDir, { recursive: true })
+  await writeFile(join(appDir, 'package.json'), '{}')
+
+  const violations = await findForbiddenFiles(root)
+  assert.equal(violations.length, 0)
 })
 
 import './e2e-autoshort.test'

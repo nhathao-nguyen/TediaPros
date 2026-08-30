@@ -21,10 +21,10 @@ const electronMockPlugin = {
         const os = require('node:os');
         module.exports = {
           app: {
-            getPath: () => os.tmpdir(),
+            getPath: () => process.env.TEDIAPROS_TEST_USER_DATA || os.tmpdir(),
             isPackaged: false,
             getName: () => 'tedia-pros',
-            getVersion: () => '0.1.20'
+            getVersion: () => '0.1.21'
           },
           safeStorage: {
             isEncryptionAvailable: () => false,
@@ -49,7 +49,10 @@ const electronMockPlugin = {
 await build({
   entryPoints: [
     'tests/local-runtime.test.ts',
-    'tests/autoshort-comprehensive-windows.test.ts'
+    'tests/canonical-runtime-migration.test.ts',
+    'tests/autoshort-comprehensive-windows.test.ts',
+    'tests/e2e-autoshort.test.ts',
+    'tests/release-tooling.test.ts'
   ],
   bundle: true,
   platform: 'node',
@@ -61,8 +64,11 @@ await build({
 })
 
 const result1 = spawnSync(process.execPath, ['--test', join(outDir, 'local-runtime.test.js')], { stdio: 'inherit' })
-const result2 = spawnSync(process.execPath, ['--test', join(outDir, 'autoshort-comprehensive-windows.test.js')], { stdio: 'inherit' })
+const result2 = spawnSync(process.execPath, ['--test', join(outDir, 'canonical-runtime-migration.test.js')], { stdio: 'inherit' })
+const result3 = spawnSync(process.execPath, ['--test', join(outDir, 'autoshort-comprehensive-windows.test.js')], { stdio: 'inherit' })
+const result4 = spawnSync(process.execPath, ['--test', join(outDir, 'e2e-autoshort.test.js')], { stdio: 'inherit' })
+const result5 = spawnSync(process.execPath, ['--test', join(outDir, 'release-tooling.test.js')], { stdio: 'inherit' })
 
-if (result1.status !== 0 || result2.status !== 0) {
+if (result1.status !== 0 || result2.status !== 0 || result3.status !== 0 || result4.status !== 0 || result5.status !== 0) {
   process.exit(1)
 }

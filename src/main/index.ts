@@ -70,7 +70,6 @@ import {
   installCudaPack,
   whisperModelStatus,
   installWhisperModel,
-  whisperWorkerStats,
   shutdownWhisperRuntime
 } from './whisper'
 import { detectGpu } from './gpu'
@@ -128,6 +127,7 @@ import {
   cancelAutoShort,
   getAutoShortReadiness,
   installAutoShortDependencies,
+  shutdownAutoShortRuntime,
   startAutoShortJob,
   selectAutoShortVideoFiles
 } from './autoshort'
@@ -375,7 +375,10 @@ app.on('before-quit', (event) => {
   whisperShutdownStarted = true
   event.preventDefault()
   wipeLogFileSync()
-  void shutdownWhisperRuntime().finally(() => app.quit())
+  void Promise.all([
+    shutdownAutoShortRuntime(),
+    shutdownWhisperRuntime()
+  ]).finally(() => app.quit())
 })
 
 function registerIpc(): void {
@@ -959,7 +962,6 @@ function registerIpc(): void {
       return { ok: false, error: err instanceof Error ? err.message : String(err) }
     }
   })
-  ipcMain.handle('whisper:workerStats', async () => whisperWorkerStats())
   ipcMain.handle('whisper:stopWorker', async () => {
     await shutdownWhisperRuntime()
     return { ok: true }

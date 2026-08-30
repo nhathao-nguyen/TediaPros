@@ -945,9 +945,9 @@ function runCapture(
 }
 
 async function ffprobeCommand(ffmpeg: string): Promise<string> {
-  if (ffmpeg === 'ffmpeg') return 'ffprobe'
   const sibling = join(dirname(ffmpeg), isWin ? 'ffprobe.exe' : 'ffprobe')
-  return (await fileExists(sibling)) ? sibling : 'ffprobe'
+  if (!(await fileExists(sibling))) throw new Error('Không tìm thấy FFprobe trong runtime FFmpeg đã xác minh.')
+  return sibling
 }
 
 async function probeVideo(file: string, ffmpeg: string): Promise<VideoProbe> {

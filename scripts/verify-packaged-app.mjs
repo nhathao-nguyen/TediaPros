@@ -4,21 +4,17 @@ import { fileURLToPath } from 'node:url'
 
 const FORBIDDEN_PATTERNS = [
   /local-assets/i,
-  /models[\\/]whisper-cpp/i,
-  /whisper-local-worker(\.exe)?$/i,
-  /whisper-server(\.exe)?$/i,
-  /whisper-cli(\.exe)?$/i,
+  /whisper-models/i,
+  /whisper-engine(\.exe)?$/i,
   /ocr-engine(\.exe)?$/i,
   /video2x(\.exe)?$/i,
   /dy-engine(\.exe)?$/i,
   /ffmpeg(\.exe)?$/i,
   /ffprobe(\.exe)?$/i,
-  /ggml-cuda\.dll$/i,
   /cublas.*\.dll$/i,
   /cudart.*\.dll$/i,
   /nvrtc.*\.dll$/i,
   /nvblas.*\.dll$/i,
-  /ggml-(base|small|medium|large).*\.bin$/i,
   /\.zip$/i
 ]
 

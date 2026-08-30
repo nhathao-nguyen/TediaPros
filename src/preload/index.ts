@@ -61,7 +61,6 @@ import {
   WhisperProgress,
   WhisperRequest,
   WhisperResult,
-  WhisperWorkerStats,
   YtDlpCapabilityStatus,
   YtDlpErrorCode
 } from '../shared/types'
@@ -174,7 +173,6 @@ const api = {
     ipcRenderer.on('whisper:model-install-progress', listener)
     return () => ipcRenderer.removeListener('whisper:model-install-progress', listener)
   },
-  whisperWorkerStats: (): Promise<WhisperWorkerStats> => ipcRenderer.invoke('whisper:workerStats'),
   whisperStopWorker: (): Promise<{ ok: boolean }> => ipcRenderer.invoke('whisper:stopWorker'),
   whisperDetectGpu: (): Promise<GpuInfo> => ipcRenderer.invoke('whisper:detectGpu'),
 

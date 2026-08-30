@@ -1,15 +1,16 @@
-name: Build & Package App
+name: Build and release app
 
 on:
   push:
-    tags:
-      - 'v*'
-    branches:
-      - main
+    branches: [main]
+    tags: ['v*']
   workflow_dispatch:
 
+permissions:
+  contents: write
+
 concurrency:
-  group: build-app-${{ github.ref }}
+  group: app-${{ github.ref }}
   cancel-in-progress: false
 
 jobs:
@@ -28,22 +29,15 @@ jobs:
               dist/*.exe
               dist/*.blockmap
               dist/latest.yml
-          - name: macOS ARM64
-            os: macos-15
-            package_script: package:mac
-            artifact_name: build-macos-arm64
-            artifact_paths: |
-              dist/*.dmg
-              dist/*.dmg.sha256
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v7
+      - name: Checkout source
+        uses: actions/checkout@v4
 
       - name: Setup Node.js
-        uses: actions/setup-node@v7
+        uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 20.19.1
           cache: npm
           cache-dependency-path: package-lock.json
 
@@ -71,27 +65,42 @@ jobs:
         if: runner.os == 'Windows'
         run: npm run ${{ matrix.package_script }}
 
-      - name: Build macOS ARM64 DMG for manual installation
-        if: runner.os == 'macOS'
-        run: npm run ${{ matrix.package_script }}
-        env:
-          CSC_IDENTITY_AUTO_DISCOVERY: 'false'
-
-      - name: Verify macOS architecture and create checksum
-        if: runner.os == 'macOS'
-        shell: bash
-        run: |
-          app_path="$(find dist -type d -name 'TediaPros.app' -print -quit)"
-          test -n "$app_path"
-          lipo -archs "$app_path/Contents/MacOS/TediaPros" | grep -qw arm64
-          dmg="$(find dist -maxdepth 1 -type f -name 'TediaPros-*-mac-arm64.dmg' -print -quit)"
-          test -n "$dmg"
-          (cd dist && shasum -a 256 "$(basename "$dmg")" > "$(basename "$dmg").sha256")
-
-      - name: Upload build artifacts
-        uses: actions/upload-artifact@v7
+      - name: Upload branch/tag build artifacts
+        uses: actions/upload-artifact@v4
         with:
           name: ${{ matrix.artifact_name }}
           path: ${{ matrix.artifact_paths }}
           if-no-files-found: error
-          retention-days: 7
+          retention-days: 14
+
+  publish:
+    name: Publish immutable app release
+    if: startsWith(github.ref, 'refs/tags/v')
+    needs: build
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20.19.1
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Download Windows artifact
+        uses: actions/download-artifact@v4
+        with:
+          path: dist
+          merge-multiple: true
+
+      - name: Verify all release assets
+        run: node scripts/verify-release-assets.mjs dist --windows-only
+
+      - name: Create immutable GitHub release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAG: ${{ github.ref_name }}
+        run: gh release create "$TAG" --repo "${{ github.repository }}" --verify-tag --title "TediaPros $TAG" --generate-notes dist/*

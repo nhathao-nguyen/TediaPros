@@ -1,12 +1,11 @@
 import { spawn, type ChildProcess } from 'node:child_process'
-import { access, chmod, mkdir, rm } from 'node:fs/promises'
+import { access, stat } from 'node:fs/promises'
 import { constants } from 'node:fs'
 import { basename, dirname, join } from 'node:path'
-import { binDir } from './deps'
-import { engineNeedsUpdate, markEngineInstalled } from './engines-update'
-import { copyDirectory, replaceDirectoryAtomic, findFile } from './localAssets'
-import { resolveRuntimeExecutable, runtimeKindDir, runtimeSearchRoots } from './runtimeResolver'
-import { debugRaw, errLabel, logInfo } from './logger'
+import { runtimeKindDir } from './runtimeResolver'
+import { probeRuntimeExecutable } from './runtimeProbes'
+import { debugRaw, errLabel, logInfo, logWarn } from './logger'
+import { terminateProcessTree, trackChildProcess } from './processTree'
 import type {
   Video2xDevice,
   Video2xEngineStatus,
@@ -36,59 +35,11 @@ async function exists(p: string): Promise<boolean> {
   }
 }
 
-async function resolveEnginePath(): Promise<string | null> {
-  return resolveRuntimeExecutable('video2x', isWin ? ['video2x.exe'] : ['video2x'])
-}
-
-function runCapture(command: string, args: string[], timeoutMs = 20_000): Promise<{ code: number; out: string }> {
-  return new Promise((resolve) => {
-    let out = ''
-    let settled = false
-    let timer: ReturnType<typeof setTimeout> | null = null
-    const finish = (code: number): void => {
-      if (settled) return
-      settled = true
-      if (timer) clearTimeout(timer)
-      resolve({ code, out })
-    }
-    let child: ChildProcess
-    try {
-      child = spawn(command, args, { windowsHide: true, cwd: dirname(command) })
-    } catch {
-      resolve({ code: -1, out })
-      return
-    }
-    timer = setTimeout(() => {
-      try { child.kill() } catch { /* ignore */ }
-      finish(-1)
-    }, timeoutMs)
-    child.stdout?.on('data', (data: Buffer) => { out += data.toString() })
-    child.stderr?.on('data', (data: Buffer) => { out += data.toString() })
-    child.on('error', () => finish(-1))
-    child.on('close', (code) => finish(code ?? -1))
-  })
-}
-
-async function probeVideo2x(path: string): Promise<{ healthy: boolean; version: string | null; message?: string }> {
-  const version = await runCapture(path, ['--version'])
-  const versionText = version.out.trim().split(/\r?\n/).find(Boolean) || null
-  if (version.code !== 0 || !versionText) {
-    return { healthy: false, version: versionText, message: 'Video2X binary không hỗ trợ kiểm tra --version.' }
-  }
-  const probe = await new Promise<{ code: number; out: string }>((resolve) => {
-    let out = ''
-    const child = spawn(path, ['--probe'], { windowsHide: true, cwd: dirname(path) })
-    const timer = setTimeout(() => {
-      try { child.kill() } catch { /* ignore */ }
-      resolve({ code: -1, out })
-    }, 30_000)
-    child.stdout?.on('data', (data: Buffer) => { out += data.toString() })
-    child.stderr?.on('data', (data: Buffer) => { out += data.toString() })
-    child.on('error', () => { clearTimeout(timer); resolve({ code: -1, out }) })
-    child.on('close', (code) => { clearTimeout(timer); resolve({ code: code ?? -1, out }) })
-  })
-  if (probe.code !== 0) return { healthy: false, version: versionText, message: 'Video2X probe model/runtime thất bại.' }
-  return { healthy: true, version: versionText }
+/** Resolve the executable in the canonical managed runtime directory. */
+export async function resolveEnginePath(): Promise<string | null> {
+  const exeName = isWin ? 'video2x.exe' : 'video2x'
+  const candidate = join(engineDir(), exeName)
+  return (await exists(candidate)) ? candidate : null
 }
 
 export async function video2xEngineStatus(): Promise<Video2xEngineStatus> {
@@ -97,13 +48,17 @@ export async function video2xEngineStatus(): Promise<Video2xEngineStatus> {
   }
   const path = await resolveEnginePath()
   const has = Boolean(path)
-  if (!path) return { has: false, supported: true, needsUpdate: false, healthy: false, message: 'Chưa cài đặt Video2X runtime.' }
-  const probe = await probeVideo2x(path)
+  if (!path) {
+    return { has: false, supported: true, needsUpdate: false, healthy: false, message: 'Chưa cài đặt Video2X runtime.' }
+  }
+  const probe = await probeRuntimeExecutable('video2x', path)
+  const needsUp = !probe.healthy
   return {
     has,
     supported: true,
-    needsUpdate: await engineNeedsUpdate('video2x', has),
-    ...probe
+    healthy: probe.healthy,
+    needsUpdate: needsUp,
+    message: probe.message
   }
 }
 
@@ -111,38 +66,12 @@ export async function installVideo2xEngine(onProgress: (p: number) => void): Pro
   if (isMac) {
     throw new Error('Video2X chưa hỗ trợ macOS (không có bản native).')
   }
-  const targetDir = engineDir()
-  await mkdir(targetDir, { recursive: true })
-  logInfo('Nâng cấp video: đang kiểm tra và cài đặt asset Video2X…')
-  onProgress(10)
-
-  const exeName = isWin ? 'video2x.exe' : 'video2x'
-  const devRoots = runtimeSearchRoots('video2x')
-  let candidateDir: string | null = null
-  for (const root of devRoots) {
-    if (root.toLowerCase() === targetDir.toLowerCase()) continue
-    const found = await findFile(root, [exeName])
-    if (found) {
-      candidateDir = root
-      break
-    }
-  }
-
-  if (candidateDir) {
-    const staging = `${targetDir}.staging`
-    await rm(staging, { recursive: true, force: true }).catch(() => {})
-    await copyDirectory(candidateDir, staging)
-    onProgress(70)
-    await replaceDirectoryAtomic(staging, targetDir)
-  }
-
+  logInfo('Nâng cấp video: đang tải công cụ Video2X…')
+  const { downloadRuntimeEngineFromManifest } = await import('./runtimeInstaller')
+  const installed = await downloadRuntimeEngineFromManifest('video2x', (percent) => onProgress(percent))
+  if (!installed) throw new Error('Không có asset Video2X phù hợp trong runtime manifest.')
   const path = await resolveEnginePath()
-  if (!path) throw new Error('Không tìm thấy Video2X binary sau khi cài đặt.')
-  if (!isWin) await chmod(path, 0o755).catch(() => {})
-  const probe = await probeVideo2x(path)
-  if (!probe.healthy) throw new Error(probe.message || 'Video2X binary không qua probe.')
-  await markEngineInstalled('video2x')
-  onProgress(100)
+  if (!path) throw new Error('Không tìm thấy Video2X binary sau khi giải nén.')
   logInfo('Nâng cấp video: đã cài xong Video2X.')
 }
 
@@ -151,14 +80,19 @@ export async function listVideo2xDevices(): Promise<Video2xDevice[]> {
   const exe = await resolveEnginePath()
   if (!exe) return []
   return new Promise((resolve) => {
-    const p = spawn(exe, ['-l'], { windowsHide: true, cwd: dirname(exe) })
+    let p: ChildProcess
+    try {
+      p = trackChildProcess(spawn(exe, ['-l'], { windowsHide: true, cwd: dirname(exe) }))
+    } catch {
+      resolve([])
+      return
+    }
     let out = ''
     p.stdout?.on('data', (d: Buffer) => (out += d.toString()))
     p.stderr?.on('data', (d: Buffer) => (out += d.toString()))
     p.on('error', () => resolve([]))
     p.on('close', () => {
       const devices: Video2xDevice[] = []
-      // "0. NVIDIA GeForce ..."
       const re = /^(\d+)\.\s+(.+)$/gm
       let m: RegExpExecArray | null
       while ((m = re.exec(out)) !== null) {
@@ -204,7 +138,6 @@ export function buildVideo2xArgs(req: Video2xRunRequest): string[] {
   }
 
   args.push('-c', c.codec || 'libx264')
-  // Video2X 6.4 chi co 1 flag gop: --no-copy-streams (audio + subtitle).
   if (!c.copyAudio || !c.copySubtitle) args.push('--no-copy-streams')
   if (c.crf != null && c.crf >= 0) args.push('-e', `crf=${c.crf}`)
   if (c.encoderPreset) args.push('-e', `preset=${c.encoderPreset}`)
@@ -248,9 +181,9 @@ export function cancelVideo2x(taskId?: string): boolean {
   if (taskId && activeTaskId && activeTaskId !== taskId) return false
   isCancelling = true
   try {
-    activeChild.kill()
+    terminateProcessTree(activeChild)
   } catch {
-    /* bo qua */
+    /* ignore */
   }
   activeChild = null
   activeTaskId = null
@@ -270,10 +203,8 @@ export async function runVideo2x(
   }
   const exe = await resolveEnginePath()
   if (!exe) {
-    return { ok: false, error: 'Chưa có Video2X asset local có manifest. Hãy import asset trước.' }
+    return { ok: false, error: 'Chưa cài Video2X. Hãy tải công cụ trước.' }
   }
-  const ready = await probeVideo2x(exe)
-  if (!ready.healthy) return { ok: false, error: ready.message || 'Video2X chưa qua probe.' }
 
   isCancelling = false
   const currentTaskId = taskId || 'singleton'
@@ -284,11 +215,11 @@ export async function runVideo2x(
   return new Promise((resolve) => {
     let p: ChildProcess
     try {
-      p = spawn(exe, args, {
+      p = trackChildProcess(spawn(exe, args, {
         windowsHide: true,
         cwd: dirname(exe),
         env: { ...process.env }
-      })
+      }))
     } catch (err) {
       resolve({ ok: false, error: errLabel(err) })
       return
@@ -302,7 +233,6 @@ export async function runVideo2x(
     const onChunk = (buf: Buffer): void => {
       const text = buf.toString()
       errTail = (errTail + text).slice(-4000)
-      // Progress dung \r — tach theo \r hoac \n
       const parts = text.split(/\r|\n/)
       for (const part of parts) {
         const line = part.replace(/\x1b\[[0-9;]*[A-Za-z]/g, '').trim()
@@ -339,7 +269,7 @@ export async function runVideo2x(
         return
       }
       if (code === 0) {
-        const outputInfo = await import('node:fs/promises').then(({ stat }) => stat(req.output).catch(() => null))
+        const outputInfo = await stat(req.output).catch(() => null)
         if (!outputInfo || !outputInfo.isFile() || outputInfo.size <= 0) {
           resolve({ ok: false, error: 'Video2X kết thúc nhưng không tạo output hợp lệ.' })
           return

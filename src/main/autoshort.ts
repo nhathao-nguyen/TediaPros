@@ -1,9 +1,9 @@
 import { app, dialog } from 'electron'
-import { spawn } from 'node:child_process'
+import { spawn, type ChildProcess } from 'node:child_process'
 import { access, copyFile, mkdir, readFile, rm, stat, writeFile } from 'node:fs/promises'
 import { basename, dirname, join } from 'node:path'
 import { randomUUID } from 'node:crypto'
-import { resolveFfmpeg } from './deps'
+import { resolveFfmpeg, installFfmpeg } from './deps'
 import {
   isAutoShortWhisperEngineReady,
   planAutoShortVoiceTimeline,
@@ -33,7 +33,7 @@ import {
   whisperEngineStatus,
   whisperModelStatus
 } from './whisper'
-import { installOcrEngine, ocrEngineStatus, ocrVideo } from './ocr'
+import { cancelOcr, installOcrEngine, ocrEngineStatus, ocrVideo } from './ocr'
 import { detectGpu } from './gpu'
 import { translateSrt as geminiTranslateSrt } from './gemini'
 import { translateSrt as openaiTranslateSrt } from './openai'
@@ -43,6 +43,8 @@ import { burnSubtitle, cancelBurn, probeBurnMedia } from './burn'
 import { composeAutoShortBackgroundAudio } from './autoShortBackgroundAudio'
 import { validateAutoShortMusicTrack } from './autoShortMusicLibrary'
 import { sanitizeAutoShortAuditError } from './autoShortAudit'
+import { cancelVideo2x } from './video2x'
+import { terminateProcessTree, terminateTrackedProcessTrees, trackChildProcess } from './processTree'
 import { parseSrt, serializeSrt, type SubtitleCue } from '../shared/subtitles'
 import { validateAutoShortStartRequest } from '../shared/autoShortContract'
 import { fuseWhisperAndOcr, clampAlignedCueTimeline } from '../shared/autoShortAlignment'
@@ -79,6 +81,10 @@ interface AutoShortJob {
 
 let activeJob: AutoShortJob | null = null
 
+function spawnAutoShortChild(command: string, args: string[], options?: Parameters<typeof spawn>[2]): ChildProcess {
+  return trackChildProcess(spawn(command, args, options || {}))
+}
+
 function needsWhisper(method: AutoShortConfig['subtitleMethod']): boolean {
   return method !== 'ocr'
 }
@@ -113,7 +119,8 @@ function dependency(
 export async function getAutoShortReadiness(config: Pick<AutoShortConfig, 'subtitleMethod' | 'whisperModel' | 'whisperDevice'>): Promise<AutoShortReadiness> {
   const useWhisper = needsWhisper(config.subtitleMethod)
   const useCuda = needsCuda(config)
-  const [engine, model, cuda, ocr, gpu] = await Promise.all([
+  const [ff, engine, model, cuda, ocr, gpu] = await Promise.all([
+    resolveFfmpeg(),
     useWhisper ? whisperEngineStatus() : Promise.resolve(null),
     useWhisper ? whisperModelStatus(config.whisperModel || 'base') : Promise.resolve(undefined),
     useCuda ? whisperCudaStatus() : Promise.resolve(null),
@@ -121,9 +128,21 @@ export async function getAutoShortReadiness(config: Pick<AutoShortConfig, 'subti
     useCuda ? detectGpu() : Promise.resolve(null)
   ])
   const cudaProbe = useCuda && engine?.has && engine.healthy && cuda?.has
-    ? await whisperCudaProbe(config.whisperModel || 'base')
+    ? await whisperCudaProbe(config.whisperModel || 'base', 'cuda')
     : null
+  const gpuReady = Boolean(useCuda && gpu?.hasNvidia && gpu.canAccelerate)
+  const cudaReady = Boolean(useCuda && cuda?.has && cudaProbe?.ready)
   const dependencies: AutoShortDependencyStatus[] = []
+
+  dependencies.push(dependency(
+    'ffmpeg',
+    'FFmpeg',
+    true,
+    ff !== null,
+    75_000_000,
+    ff ? undefined : 'Chưa cài đặt FFmpeg.'
+  ))
+
   if (useWhisper) {
     const engineReady = isAutoShortWhisperEngineReady(engine)
     dependencies.push(dependency(
@@ -133,35 +152,34 @@ export async function getAutoShortReadiness(config: Pick<AutoShortConfig, 'subti
       engineReady,
       undefined,
       !engine?.has
-        ? 'Chưa cài Whisper engine.'
+        ? 'Chưa cài Faster-Whisper engine.'
         : engine.healthy === false
           ? 'Engine không khởi động được.'
           : !engineReady
-            ? 'Engine không trả về protocol native whisper.cpp hợp lệ.'
+            ? 'Engine không trả về protocol Faster-Whisper hợp lệ.'
             : undefined
     ))
     dependencies.push(dependency(
       'whisper-model',
       `Model Whisper ${config.whisperModel || 'base'}`,
       true,
-      Boolean(model?.complete),
+      Boolean(model?.complete || model?.installed),
       model?.downloadBytes,
       model?.message
     ))
   }
   if (useCuda) {
-    const gpuReady = Boolean(gpu?.hasNvidia && gpu.canAccelerate)
     dependencies.push(dependency(
       'whisper-cuda',
-      'Gói CUDA Fast-Whisper',
-      true,
-      Boolean(cuda?.has && gpuReady && cudaProbe?.ready),
+      'Gói CUDA Faster-Whisper',
+      gpuReady,
+      cudaReady,
       1_100_000_000,
       !gpuReady
         ? gpu?.reason || 'Không tìm thấy GPU NVIDIA tương thích.'
         : !cuda?.has
           ? 'Chưa tải gói CUDA.'
-          : cudaProbe?.message || 'CUDA chưa được engine xác nhận.'
+        : cudaProbe?.message || (gpuReady ? 'CUDA chưa được engine xác nhận.' : 'Không tìm thấy GPU NVIDIA tương thích.')
     ))
   }
   if (ocr) {
@@ -169,9 +187,9 @@ export async function getAutoShortReadiness(config: Pick<AutoShortConfig, 'subti
       'ocr-engine',
       'OCR engine',
       true,
-      ocr.has,
+      Boolean(ocr.has && ocr.healthy),
       230_000_000,
-      ocr.has ? undefined : 'Chưa cài OCR engine.'
+      !ocr.has ? 'Chưa cài OCR engine.' : !ocr.healthy ? (ocr.message || 'OCR engine probe thất bại.') : undefined
     ))
   }
   const missing = dependencies.filter((item) => item.required && !item.ready)
@@ -182,7 +200,7 @@ export async function getAutoShortReadiness(config: Pick<AutoShortConfig, 'subti
     ready: missing.length === 0,
     method: config.subtitleMethod,
     requestedDevice: useWhisper ? (useCuda ? 'cuda' : 'cpu') : null,
-    effectiveDevice: useWhisper ? (useCuda && missing.length === 0 ? 'cuda' : 'cpu') : null,
+    effectiveDevice: useWhisper ? (useCuda && cudaReady ? 'cuda' : 'cpu') : null,
     dependencies,
     model,
     message
@@ -203,6 +221,15 @@ export async function installAutoShortDependencies(
     if (signal?.aborted) throw new Error('Đã hủy tải dependency.')
   }
 
+  if (isMissing('ffmpeg')) {
+    aborted()
+    emit('ffmpeg', 'downloading', 0, 'Đang tải gói FFmpeg…')
+    await installFfmpeg((p) => {
+      emit('ffmpeg', 'downloading', p.percent < 0 ? 0 : p.percent, p.message)
+    })
+    emit('ffmpeg', 'verifying', 100, 'Đang kiểm tra FFmpeg…')
+    readiness = await getAutoShortReadiness(config)
+  }
   if (isMissing('whisper-engine')) {
     aborted()
     emit('whisper-engine', 'downloading', 0, 'Đang tải Whisper engine…')
@@ -214,7 +241,7 @@ export async function installAutoShortDependencies(
     aborted()
     const total = readiness.model?.downloadBytes
     await installWhisperModel(config.whisperModel || 'base', (progress) =>
-      emit('whisper-model', 'downloading', progress.percent, progress.message, progress.receivedBytes, progress.totalBytes || total), signal)
+      emit('whisper-model', 'downloading', progress.percent, progress.message, Math.round((progress.percent / 100) * (total || 1)), total))
     emit('whisper-model', 'verifying', 100, 'Đang kiểm tra model Whisper…')
     readiness = await getAutoShortReadiness(config)
   }
@@ -400,15 +427,15 @@ function emitTerminal(
 async function probeDuration(ffmpeg: string, input: string, signal: AbortSignal): Promise<number> {
   return new Promise((resolve, reject) => {
     const ffprobe = join(dirname(ffmpeg), process.platform === 'win32' ? 'ffprobe.exe' : 'ffprobe')
-    const child = spawn(ffprobe, ['-v', 'error', '-show_entries', 'format=duration', '-of', 'default=nw=1', input], { windowsHide: true })
+    const child = spawnAutoShortChild(ffprobe, ['-v', 'error', '-show_entries', 'format=duration', '-of', 'default=nw=1', input], { windowsHide: true })
     let output = ''
     const abort = (): void => {
-      try { child.kill() } catch { /* ignore */ }
+      terminateProcessTree(child)
       reject(new Error('Đã hủy tác vụ'))
     }
     if (signal.aborted) abort()
     else signal.addEventListener('abort', abort, { once: true })
-    child.stdout.on('data', (chunk: Buffer) => { output += chunk.toString() })
+    child.stdout?.on('data', (chunk: Buffer) => { output += chunk.toString() })
     child.on('error', (error) => {
       signal.removeEventListener('abort', abort)
       reject(error)
@@ -440,9 +467,9 @@ function tempoFilters(actual: number, target: number): string[] {
 async function runAudioFilter(ffmpeg: string, input: string, output: string, filter: string, signal: AbortSignal): Promise<void> {
   throwIfAborted(signal)
   await new Promise<void>((resolve, reject) => {
-    const child = spawn(ffmpeg, ['-y', '-i', input, '-vn', '-ac', '2', '-ar', '44100', '-filter:a', filter, output], { windowsHide: true })
+    const child = spawnAutoShortChild(ffmpeg, ['-y', '-i', input, '-vn', '-ac', '2', '-ar', '44100', '-filter:a', filter, output], { windowsHide: true })
     const abort = (): void => {
-      try { child.kill() } catch { /* ignore */ }
+      terminateProcessTree(child)
       reject(new Error('Đã hủy tác vụ'))
     }
     if (signal.aborted) abort()
@@ -517,9 +544,9 @@ async function stitchAudioTimeline(
   args.push('-filter_complex', filters.join(';'), '-map', '[a_mix]', '-ac', '2', '-ar', '44100', outputPath)
 
   await new Promise<void>((resolve, reject) => {
-    const child = spawn(ffmpeg, args, { windowsHide: true })
+    const child = spawnAutoShortChild(ffmpeg, args, { windowsHide: true })
     const abort = (): void => {
-      try { child.kill() } catch { /* ignore */ }
+      terminateProcessTree(child)
       reject(new Error('Đã hủy tác vụ'))
     }
     if (signal.aborted) abort()
@@ -755,7 +782,8 @@ async function synthesizeVoice(
   maxTempo: number
   degraded: boolean
   diagnostics: AutoShortCueDiagnostic[]
-  groupSourceInputs: AutoShortVoiceCueInput[]
+  sourceGroupInputs: AutoShortVoiceCueInput[]
+  targetGroupInputs: AutoShortVoiceCueInput[]
   artifacts: AutoShortArtifactEntry[]
 }> {
   const ffmpeg = await resolveFfmpeg()
@@ -931,13 +959,28 @@ async function synthesizeVoice(
   }
 
   // 4. Plan voice timeline for semantic groups using robust global tempo
-  const groupSourceInputs: AutoShortVoiceCueInput[] = preparedClips.map(({ group, text }) => {
+  const targetGroupInputs: AutoShortVoiceCueInput[] = preparedClips.map(({ group, text }) => {
     const start = group.start ?? group.cues[0]?.start ?? 0
     const end = group.end ?? group.cues[group.cues.length - 1]?.end ?? (start + 2.5)
     return { id: group.id, start, end, text }
   })
+  const sourceGroupInputs: AutoShortVoiceCueInput[] = preparedClips.map(({ group }) => {
+    const sourceGroupCues = group.cues
+      .map((cue, cueIndex) => sourceMap.get(cue.id || `cue-${cueIndex}`))
+      .filter((cue): cue is SubtitleCue => Boolean(cue))
+    const first = sourceGroupCues[0]
+    const last = sourceGroupCues[sourceGroupCues.length - 1]
+    const start = first?.start ?? group.start ?? group.cues[0]?.start ?? 0
+    const end = last?.end ?? group.end ?? group.cues[group.cues.length - 1]?.end ?? (start + 2.5)
+    return {
+      id: group.id,
+      start,
+      end,
+      text: sourceGroupCues.map((cue) => cue.text).join(' ')
+    }
+  })
   const timing = planAutoShortVoiceTimeline(
-    groupSourceInputs,
+    targetGroupInputs,
     preparedClips.map(({ naturalDuration }) => naturalDuration),
     videoDuration,
     AUTO_SHORT_TTS_MAX_TEMPO
@@ -980,14 +1023,18 @@ async function synthesizeVoice(
     const cutOffDetected = speechEnd > videoDuration + 0.25
     const overlap = gIndex > 0 && planned.start < timing.cues[gIndex - 1].voiceEnd - 0.001
     const effectiveTailMargin = AUTO_SHORT_TTS_TAIL_MARGIN_SECONDS / (planned.tempo > 1.001 ? planned.tempo : 1.0)
-    const srcCue = sourceMap.get(current.group.cues[0]?.id || `cue-${gIndex}`) || sourceCues[gIndex] || current.group.cues[0]
+    const sourceGroupCues = current.group.cues
+      .map((cue, cueIndex) => sourceMap.get(cue.id || `cue-${cueIndex}`))
+      .filter((cue): cue is SubtitleCue => Boolean(cue))
+    const srcCue = sourceGroupCues[0] || sourceCues[gIndex] || current.group.cues[0]
+    const srcGroupEnd = sourceGroupCues[sourceGroupCues.length - 1]?.end ?? srcCue?.end ?? planned.subtitleEnd
 
     diagnostics.push({
       cueIndex: gIndex,
       cueId: current.group.id || `group-${gIndex}`,
       sourceStart: srcCue ? srcCue.start : planned.subtitleStart,
-      sourceEnd: srcCue?.end ?? planned.subtitleEnd,
-      sourceText: current.group.cues.map((c) => c.text).join(' '),
+      sourceEnd: srcGroupEnd,
+      sourceText: sourceGroupCues.length > 0 ? sourceGroupCues.map((c) => c.text).join(' ') : current.group.cues.map((c) => c.text).join(' '),
       translatedText: current.text,
       cueStart: planned.subtitleStart,
       cueEnd: planned.subtitleEnd,
@@ -1076,7 +1123,8 @@ async function synthesizeVoice(
     maxTempo: timing.maxTempo,
     degraded: timing.degraded,
     diagnostics,
-    groupSourceInputs,
+    sourceGroupInputs,
+    targetGroupInputs,
     artifacts
   }
 }
@@ -1094,7 +1142,7 @@ async function probeOutputMediaWithFfprobe(
     let decodeError: string | null = null
     try {
       await new Promise<void>((resolve, reject) => {
-        const child = spawn(ffmpegPath, ['-v', 'error', '-i', outputPath, '-f', 'null', '-'], { windowsHide: true })
+        const child = spawnAutoShortChild(ffmpegPath, ['-v', 'error', '-i', outputPath, '-f', 'null', '-'], { windowsHide: true })
         let err = ''
         child.stderr?.on('data', (d: Buffer) => { err += d.toString() })
         child.on('error', reject)
@@ -1213,9 +1261,6 @@ async function processSingleVideo(
           emitProgress(job, item, 'extracting_sub', 5 + Math.max(0, p.percent) * 0.25, p.line || 'Đang nhận diện giọng nói…', index, total)
         }, job.controller.signal)
         if (!whisperResult.ok || !whisperResult.outputs.length) throw new Error(whisperResult.error || 'Whisper không tạo được SRT')
-        if (needsCuda(config) && whisperResult.effectiveDevice !== 'cuda') {
-          throw new Error('Whisper không xác nhận được CUDA; đã dừng để tránh chạy CPU ngầm.')
-        }
         const srtPath = whisperResult.outputs.find((path) => path.toLowerCase().endsWith('.srt')) || whisperResult.outputs[0]
         const cues = await readWhisperAlignedCues(srtPath, whisperResult.alignmentPath)
         if (cues.length === 0) throw new Error('Whisper không nhận được câu phụ đề hợp lệ')
@@ -1292,7 +1337,7 @@ async function processSingleVideo(
       emitProgress(job, item, 'generating_tts', 58, 'Đang tạo voice từ SRT đích…', index, total)
       const synthesized = await synthesizeVoice(job, item, config, targetCues, sourceCues, workDir, meta.giay, index, total, detectedSourceLanguage)
       
-      const syncValidation = validateAutoShortTimelineSync(synthesized.groupSourceInputs, synthesized.groupSourceInputs, synthesized.diagnostics, meta.giay)
+      const syncValidation = validateAutoShortTimelineSync(synthesized.sourceGroupInputs, synthesized.targetGroupInputs, synthesized.diagnostics, meta.giay)
       if (!syncValidation.ok) {
         logError(`[AutoShort] Vi phạm đồng bộ semantic timeline:\n${syncValidation.violations.join('\n')}`)
         throw new Error(`Không thể xuất video do vi phạm đồng bộ semantic timeline: ${syncValidation.violations[0]}`)
@@ -1395,7 +1440,8 @@ async function processSingleVideo(
     }
 
     // 5. Stage: Output Media Validation via FFprobe
-    const ffmpegPath = (await resolveFfmpeg()) || 'ffmpeg'
+    const ffmpegPath = await resolveFfmpeg()
+    if (!ffmpegPath) throw new Error('Thiếu FFmpeg/FFprobe đã xác minh để kiểm tra video đầu ra.')
     emitProgress(job, item, 'rendering_video', 98, 'Đang kiểm tra chất lượng video đầu ra…', index, total)
     const mediaCheck = await probeOutputMediaWithFfprobe(ffmpegPath, burnResult.output, config.ttsEnabled)
     if (!mediaCheck.ok) {
@@ -1580,6 +1626,27 @@ export async function cancelAutoShort(jobId: string): Promise<{ ok: boolean; err
   cancelBurn()
   await activeJob.done
   return { ok: true }
+}
+
+/** Stop every child-process owner used by Auto Short before Electron exits. */
+export async function shutdownAutoShortRuntime(): Promise<void> {
+  const job = activeJob
+  if (job) {
+    job.cancelled = true
+    job.controller.abort()
+  }
+  cancelBurn()
+  cancelOcr()
+  cancelVideo2x()
+  terminateTrackedProcessTrees()
+  if (job) await job.done.catch(() => undefined)
+  // A stage may have installed a child between the first cancellation and the
+  // job promise settling; repeat the cancellation after the join as a final
+  // process-cleanup barrier.
+  cancelBurn()
+  cancelOcr()
+  cancelVideo2x()
+  terminateTrackedProcessTrees()
 }
 
 export async function selectAutoShortVideoFiles(): Promise<{ ok: boolean; paths: string[] }> {

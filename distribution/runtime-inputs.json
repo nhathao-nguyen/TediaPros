@@ -1,0 +1,85 @@
+{
+  "schemaVersion": 1,
+  "runtimeVersion": "runtime-v2",
+  "platform": "win32",
+  "arch": "x64",
+  "assets": {
+    "ffmpeg": {
+      "version": "9.0.1-11-ge47273f4d9",
+      "entrypoint": "ffmpeg.exe",
+      "capabilities": ["version", "ffprobe"],
+      "source": {
+        "provider": "BtbN/FFmpeg-Builds",
+        "release": "autobuild-2026-08-29-13-12",
+        "asset": "ffmpeg-n9.0.1-11-ge47273f4d9-win64-gpl-9.0.zip",
+        "sha256": "30bac4e9cd39dbd0873077c15afec858c69a31a195b1b41388a62f4de368f3ea",
+        "url": "https://github.com/BtbN/FFmpeg-Builds/releases/download/autobuild-2026-08-29-13-12/ffmpeg-n9.0.1-11-ge47273f4d9-win64-gpl-9.0.zip"
+      }
+    },
+    "whisper-engine": {
+      "version": "1.0.0",
+      "entrypoint": "whisper-engine.exe",
+      "protocol": "whisper-engine/1",
+      "capabilities": ["probe", "faster-whisper", "ctranslate2", "vad", "word_timestamps", "local-model-path"],
+      "source": {
+        "provider": "TediaPros",
+        "path": "engines/whisper-engine",
+        "backend": "faster-whisper",
+        "modelFormat": "ctranslate2"
+      }
+    },
+    "whisper-cuda": {
+      "version": "12.9.79+9.25.1.1",
+      "entrypoint": "cudnn64_9.dll",
+      "capabilities": ["cuda12", "cublas12", "cudnn9", "cudart12"],
+      "source": {
+        "provider": "NVIDIA Python distribution packages",
+        "packages": [
+          "nvidia-cuda-runtime-cu12==12.9.79",
+          "nvidia-cublas-cu12==12.9.2.10",
+          "nvidia-cudnn-cu12==9.25.1.1"
+        ]
+      }
+    },
+    "ocr-engine": {
+      "version": "1.0.0",
+      "entrypoint": "ocr-engine.exe",
+      "protocol": "ocr-local/1",
+      "capabilities": ["probe", "rapidocr", "directml-fallback"],
+      "source": {
+        "provider": "TediaPros",
+        "path": "engines/ocr-engine",
+        "backend": "rapidocr-onnxruntime"
+      }
+    },
+    "video2x": {
+      "version": "6.4.0",
+      "entrypoint": "video2x.exe",
+      "capabilities": ["list-devices", "realesrgan", "realcugan", "rife", "libplacebo"],
+      "source": {
+        "provider": "k4yt3x/video2x",
+        "release": "6.4.0",
+        "asset": "video2x-windows-amd64.zip",
+        "bytes": 196989277,
+        "url": "https://github.com/k4yt3x/video2x/releases/download/6.4.0/video2x-windows-amd64.zip",
+        "sha256": "0337b6dcae2bad2fd13e43fbdb73ef728d2f6289f37cc3617e87ac3a1a5cf793"
+      }
+    },
+    "douyin": {
+      "version": "2.0.0",
+      "entrypoint": "dy-engine.exe",
+      "capabilities": ["version", "cookie-input", "batch-download"],
+      "source": {
+        "provider": "TediaPros",
+        "path": "engines/douyin-engine",
+        "entrypoint": "run.py"
+      }
+    }
+  },
+  "externalInputs": {
+    "python": "3.12.10",
+    "pyinstaller": "6.22.2",
+    "ffmpeg": "Use the exact URL and SHA-256 under assets.ffmpeg.source; never resolve latest.",
+    "video2x": "Use the exact 6.4.0 release asset; do not use the GUI installer."
+  }
+}

@@ -1,0 +1,196 @@
+name: Build and publish Windows runtime
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'engines/**'
+      - 'distribution/**'
+      - 'scripts/pack-runtime-release.mjs'
+      - 'scripts/verify-runtime-release.mjs'
+      - '.github/workflows/build-windows-runtime.yml'
+  workflow_dispatch:
+    inputs:
+      runtime_version:
+        description: Immutable runtime release tag
+        required: true
+        default: runtime-v2
+      publish:
+        description: Publish the verified bundle as a GitHub release
+        required: true
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+
+concurrency:
+  group: windows-runtime-${{ github.ref }}
+  cancel-in-progress: false
+
+env:
+  PYTHON_VERSION: '3.12.10'
+  RUNTIME_VERSION: ${{ github.event_name == 'workflow_dispatch' && inputs.runtime_version || 'runtime-v2' }}
+
+jobs:
+  build:
+    runs-on: windows-2025
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+
+      - name: Set up pinned Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20.19.1
+          cache: npm
+
+      - name: Install Node tooling
+        shell: pwsh
+        run: npm ci
+
+      - name: Create clean runtime staging root
+        shell: pwsh
+        run: |
+          $root = Join-Path $env:RUNNER_TEMP 'tediapros-runtime-inputs'
+          New-Item -ItemType Directory -Force -Path $root | Out-Null
+          'RUNTIME_INPUT_ROOT=' + $root | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+
+      - name: Build Faster-Whisper engine from pinned environment
+        shell: pwsh
+        run: |
+          python -m venv (Join-Path $env:RUNNER_TEMP 'whisper-build-venv')
+          $python = Join-Path $env:RUNNER_TEMP 'whisper-build-venv\Scripts\python.exe'
+          & $python -m pip install --disable-pip-version-check --no-cache-dir -r engines/whisper-engine/requirements.txt
+          & $python -m PyInstaller --clean --noconfirm (Join-Path $PWD 'engines/whisper-engine/whisper-engine.spec') --distpath (Join-Path $env:RUNNER_TEMP 'whisper-dist') --workpath (Join-Path $env:RUNNER_TEMP 'whisper-work')
+          $target = Join-Path $env:RUNTIME_INPUT_ROOT 'whisper-engine'
+          New-Item -ItemType Directory -Force -Path $target | Out-Null
+          Copy-Item -Path (Join-Path $env:RUNNER_TEMP 'whisper-dist\whisper-engine\*') -Destination $target -Recurse -Force
+
+      - name: Stage pinned CUDA 12 and cuDNN 9 libraries
+        shell: pwsh
+        run: |
+          $python = Join-Path $env:RUNNER_TEMP 'whisper-build-venv\Scripts\python.exe'
+          $cudaPackageRoot = Join-Path $env:RUNNER_TEMP 'whisper-cuda-packages'
+          New-Item -ItemType Directory -Force -Path $cudaPackageRoot | Out-Null
+          $cudaRequirements = @(
+            Get-Content -LiteralPath 'engines\whisper-engine\requirements.txt' |
+              ForEach-Object { ($_ -split ';', 2)[0].Trim() } |
+              Where-Object { $_ -match '^(nvidia-cuda-runtime-cu12|nvidia-cublas-cu12|nvidia-cudnn-cu12)==[0-9.]+$' }
+          )
+          if ($cudaRequirements.Count -ne 3) { throw 'Expected exactly three pinned NVIDIA CUDA package requirements.' }
+          & $python -m pip install --disable-pip-version-check --no-cache-dir --upgrade --no-deps --target $cudaPackageRoot $cudaRequirements
+          if ($LASTEXITCODE -ne 0) { throw 'Pinned CUDA package staging failed.' }
+          $target = Join-Path $env:RUNTIME_INPUT_ROOT 'whisper-cuda'
+          New-Item -ItemType Directory -Force -Path $target | Out-Null
+          $files = @(
+            (Join-Path $cudaPackageRoot 'nvidia\cuda_runtime\bin\cudart64_12.dll'),
+            (Join-Path $cudaPackageRoot 'nvidia\cublas\bin\cublas64_12.dll'),
+            (Join-Path $cudaPackageRoot 'nvidia\cublas\bin\cublasLt64_12.dll'),
+            (Join-Path $cudaPackageRoot 'nvidia\cudnn\bin\cudnn64_9.dll')
+          )
+          foreach ($file in $files) {
+            if (-not (Test-Path -LiteralPath $file -PathType Leaf)) { throw "Pinned CUDA file missing: $file" }
+            Copy-Item -LiteralPath $file -Destination $target -Force
+          }
+
+      - name: Build RapidOCR engine from pinned environment
+        shell: pwsh
+        run: |
+          python -m venv (Join-Path $env:RUNNER_TEMP 'ocr-build-venv')
+          $python = Join-Path $env:RUNNER_TEMP 'ocr-build-venv\Scripts\python.exe'
+          & $python -m pip install --disable-pip-version-check --no-cache-dir -r engines/ocr-engine/requirements.txt
+          & $python -m PyInstaller --clean --noconfirm (Join-Path $PWD 'engines/ocr-engine/ocr-engine.spec') --distpath (Join-Path $env:RUNNER_TEMP 'ocr-dist') --workpath (Join-Path $env:RUNNER_TEMP 'ocr-work')
+          $target = Join-Path $env:RUNTIME_INPUT_ROOT 'ocr-engine'
+          New-Item -ItemType Directory -Force -Path $target | Out-Null
+          Copy-Item -Path (Join-Path $env:RUNNER_TEMP 'ocr-dist\ocr-engine\*') -Destination $target -Recurse -Force
+
+      - name: Build Douyin engine from pinned environment
+        shell: pwsh
+        run: |
+          python -m venv (Join-Path $env:RUNNER_TEMP 'douyin-build-venv')
+          $python = Join-Path $env:RUNNER_TEMP 'douyin-build-venv\Scripts\python.exe'
+          & $python -m pip install --disable-pip-version-check --no-cache-dir -r engines/douyin-engine/requirements.txt
+          Push-Location engines/douyin-engine
+          try {
+            & $python -m PyInstaller --clean --noconfirm dy-engine.spec --distpath (Join-Path $env:RUNNER_TEMP 'douyin-dist') --workpath (Join-Path $env:RUNNER_TEMP 'douyin-work')
+          } finally { Pop-Location }
+          $target = Join-Path $env:RUNTIME_INPUT_ROOT 'douyin'
+          New-Item -ItemType Directory -Force -Path $target | Out-Null
+          Copy-Item -LiteralPath (Join-Path $env:RUNNER_TEMP 'douyin-dist\dy-engine.exe') -Destination $target -Force
+
+      - name: Download and verify pinned FFmpeg source
+        shell: pwsh
+        run: |
+          $archive = Join-Path $env:RUNNER_TEMP 'ffmpeg-pinned.zip'
+          Invoke-WebRequest -Uri 'https://github.com/BtbN/FFmpeg-Builds/releases/download/autobuild-2026-08-29-13-12/ffmpeg-n9.0.1-11-ge47273f4d9-win64-gpl-9.0.zip' -OutFile $archive
+          $hash = (Get-FileHash -LiteralPath $archive -Algorithm SHA256).Hash.ToLowerInvariant()
+          if ($hash -ne '30bac4e9cd39dbd0873077c15afec858c69a31a195b1b41388a62f4de368f3ea') { throw "FFmpeg SHA-256 mismatch: $hash" }
+          $extract = Join-Path $env:RUNNER_TEMP 'ffmpeg-pinned'
+          Expand-Archive -LiteralPath $archive -DestinationPath $extract -Force
+          $ffmpeg = Get-ChildItem -LiteralPath $extract -Filter ffmpeg.exe -Recurse | Select-Object -First 1
+          $ffprobe = Get-ChildItem -LiteralPath $extract -Filter ffprobe.exe -Recurse | Select-Object -First 1
+          if (-not $ffmpeg -or -not $ffprobe) { throw 'Pinned FFmpeg archive did not contain ffmpeg.exe and ffprobe.exe.' }
+          $target = Join-Path $env:RUNTIME_INPUT_ROOT 'ffmpeg'
+          New-Item -ItemType Directory -Force -Path $target | Out-Null
+          Copy-Item -LiteralPath $ffmpeg.FullName -Destination $target -Force
+          Copy-Item -LiteralPath $ffprobe.FullName -Destination $target -Force
+
+      - name: Download pinned Video2X release input
+        shell: pwsh
+        run: |
+          $runtimeInputs = Get-Content -LiteralPath 'distribution/runtime-inputs.json' -Raw | ConvertFrom-Json
+          $video2xSource = $runtimeInputs.assets.video2x.source
+          $archive = Join-Path $env:RUNNER_TEMP 'video2x-6.4.0.zip'
+          Invoke-WebRequest -Uri $video2xSource.url -OutFile $archive
+          if ((Get-Item -LiteralPath $archive).Length -ne [int64]$video2xSource.bytes) { throw 'Video2X release byte count changed; review the pin before rebuilding.' }
+          $expectedHash = $runtimeInputs.assets.video2x.source.sha256
+          $hash = (Get-FileHash -LiteralPath $archive -Algorithm SHA256).Hash.ToLowerInvariant()
+          if ($hash -ne $expectedHash) { throw "Video2X SHA-256 mismatch: $hash" }
+          $extract = Join-Path $env:RUNNER_TEMP 'video2x-pinned'
+          Expand-Archive -LiteralPath $archive -DestinationPath $extract -Force
+          $binary = Get-ChildItem -LiteralPath $extract -Filter video2x.exe -Recurse | Select-Object -First 1
+          if (-not $binary) { throw 'Pinned Video2X archive did not contain video2x.exe.' }
+          $target = Join-Path $env:RUNTIME_INPUT_ROOT 'video2x'
+          New-Item -ItemType Directory -Force -Path $target | Out-Null
+          Copy-Item -Path (Join-Path $binary.Directory.FullName '*') -Destination $target -Recurse -Force
+          Write-Output ('Video2X source SHA-256: ' + (Get-FileHash -LiteralPath $archive -Algorithm SHA256).Hash.ToLowerInvariant())
+
+      - name: Run native capability probes before packaging
+        shell: pwsh
+        run: |
+          $root = $env:RUNTIME_INPUT_ROOT
+          & (Join-Path $root 'whisper-engine\whisper-engine.exe') --version
+          & (Join-Path $root 'whisper-engine\whisper-engine.exe') --probe --device cpu
+          & (Join-Path $root 'ocr-engine\ocr-engine.exe') --version
+          & (Join-Path $root 'ocr-engine\ocr-engine.exe') --probe
+          & (Join-Path $root 'douyin\dy-engine.exe') --version
+          & (Join-Path $root 'video2x\video2x.exe') -l
+          & (Join-Path $root 'ffmpeg\ffmpeg.exe') -version
+          & (Join-Path $root 'ffmpeg\ffprobe.exe') -version
+
+      - name: Create and verify runtime-v2 manifest from clean artifacts
+        shell: pwsh
+        run: |
+          node scripts/pack-runtime-release.mjs --input-dir $env:RUNTIME_INPUT_ROOT --output-dir release-artifacts --runtime-version $env:RUNTIME_VERSION --platform win32 --arch x64
+          node scripts/verify-runtime-release.mjs release-artifacts
+
+      - name: Upload verified runtime bundle
+        uses: actions/upload-artifact@v4
+        with:
+          name: runtime-${{ env.RUNTIME_VERSION }}-win32-x64
+          path: release-artifacts/*
+          if-no-files-found: error
+          retention-days: 14
+
+      - name: Publish immutable runtime release
+        if: github.event_name == 'workflow_dispatch' && inputs.publish
+        shell: pwsh
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: node scripts/publish-github-release.mjs --artifacts-dir release-artifacts --token $env:GITHUB_TOKEN

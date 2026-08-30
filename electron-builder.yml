@@ -3,6 +3,11 @@ productName: TediaPros
 directories:
   buildResources: build
   output: dist
+publish:
+  provider: github
+  owner: nhathao-nguyen
+  repo: TediaPros
+  releaseType: release
 files:
   - '!**/.vscode/*'
   - '!src/*'
@@ -21,7 +26,6 @@ files:
   - '!**/*.pem'
   - '!**/*.key'
   # Engine/model and native runtime artifacts are strictly excluded from the installer.
-  - '!resources/local-assets{,/**}'
   - '!resources/models{,/**}'
   - '!native{,/**}'
   - '!repo test{,/**}'

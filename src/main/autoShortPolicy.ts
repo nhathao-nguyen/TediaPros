@@ -68,9 +68,8 @@ export function isAutoShortWhisperEngineReady(
 ): boolean {
   return Boolean(
     status?.has &&
-    status.healthy === true &&
-    status.protocol === WHISPER_PROTOCOL &&
-    status.engine === 'whisper.cpp'
+    status.healthy !== false &&
+    status.protocol === WHISPER_PROTOCOL && status.engine === 'faster-whisper'
   )
 }
 
@@ -371,10 +370,30 @@ export function validateAutoShortTimelineSync(
       violations.push(`Cue ${i + 1}: Cue ID không đồng bộ (src=${srcId}, tgt=${tgtId}, diag=${diagId}).`)
     }
 
-    const subStart = diag.renderSubtitleStart ?? src.start
-    const subEnd = diag.renderSubtitleEnd ?? src.end ?? src.start
     const srcStart = src.start
     const srcEnd = src.end ?? src.start
+    const targetStart = tgt.start
+    const targetEnd = tgt.end ?? tgt.start
+    if (Math.abs(targetStart - srcStart) > 0.05) {
+      violations.push(`Cue ${i + 1} (${diagId}): Target start (${targetStart.toFixed(3)}s) lệch khỏi source start (${srcStart.toFixed(3)}s).`)
+    }
+    if (src.end != null && tgt.end == null) {
+      violations.push(`Cue ${i + 1} (${diagId}): Target thiếu thời điểm kết thúc tương ứng với source.`)
+    } else if (src.end != null && Math.abs(targetEnd - srcEnd) > 0.05) {
+      violations.push(`Cue ${i + 1} (${diagId}): Target end (${targetEnd.toFixed(3)}s) lệch khỏi source end (${srcEnd.toFixed(3)}s).`)
+    }
+
+    const reportedSourceStart = diag.sourceStart ?? srcStart
+    const reportedSourceEnd = diag.sourceEnd ?? srcEnd
+    if (Math.abs(reportedSourceStart - srcStart) > 0.05) {
+      violations.push(`Cue ${i + 1} (${diagId}): Diagnostic source start (${reportedSourceStart.toFixed(3)}s) không khớp source (${srcStart.toFixed(3)}s).`)
+    }
+    if (src.end != null && Math.abs(reportedSourceEnd - srcEnd) > 0.05) {
+      violations.push(`Cue ${i + 1} (${diagId}): Diagnostic source end (${reportedSourceEnd.toFixed(3)}s) không khớp source (${srcEnd.toFixed(3)}s).`)
+    }
+
+    const subStart = diag.renderSubtitleStart ?? src.start
+    const subEnd = diag.renderSubtitleEnd ?? src.end ?? src.start
 
     if (Math.abs(subStart - srcStart) > 0.05) {
       violations.push(`Cue ${i + 1} (${diagId}): Subtitle start (${subStart.toFixed(3)}s) lệch khỏi source start (${srcStart.toFixed(3)}s).`)
@@ -604,7 +623,4 @@ export function validateRenderedOutputMedia(
     decodable: true
   }
 }
-
-
-
 

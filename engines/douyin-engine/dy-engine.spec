@@ -1,33 +1,31 @@
 # -*- mode: python ; coding: utf-8 -*-
+from pathlib import Path
+import sys
 from PyInstaller.utils.hooks import collect_all, collect_submodules
 
+SPEC_DIR = Path(SPECPATH).resolve()
+sys.path.insert(0, str(SPEC_DIR))
 datas = []
 binaries = []
 hiddenimports = []
-try:
-    tmp_ret = collect_all('gmssl')
-    datas += tmp_ret[0]
-    binaries += tmp_ret[1]
-    hiddenimports += tmp_ret[2]
-except Exception:
-    pass
+tmp_ret = collect_all('gmssl')
+datas += tmp_ret[0]
+binaries += tmp_ret[1]
+hiddenimports += tmp_ret[2]
 
 # Goi local (cli/core/storage/...) — bat buoc de one-file khong thieu module
 for pkg in ('cli', 'core', 'storage', 'auth', 'config', 'control', 'utils', 'server', 'tools'):
-    try:
-        hiddenimports += collect_submodules(pkg)
-    except Exception:
-        hiddenimports.append(pkg)
+    hiddenimports += collect_submodules(pkg)
 
 a = Analysis(
-    ['run.py'],
-    pathex=['.'],
+    [str(SPEC_DIR / 'run.py')],
+    pathex=[str(SPEC_DIR)],
     binaries=binaries,
     datas=datas,
     hiddenimports=hiddenimports,
     hookspath=[],
     hooksconfig={},
-    runtime_hooks=['rthook_dy.py'],
+    runtime_hooks=[str(SPEC_DIR / 'rthook_dy.py')],
     excludes=['playwright', 'fastapi', 'uvicorn', 'pytest'],
     noarchive=False,
     optimize=0,

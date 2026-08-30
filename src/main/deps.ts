@@ -1,18 +1,14 @@
 import { app } from 'electron'
+import { terminateProcessTree, trackChildProcess } from './processTree'
 import { spawn } from 'node:child_process'
 import { createHash } from 'node:crypto'
 import { createReadStream, createWriteStream } from 'node:fs'
-import { mkdir, access, rm, readdir, copyFile, chmod, rename } from 'node:fs/promises'
+import { mkdir, access, rm, copyFile, chmod, rename } from 'node:fs/promises'
 import { constants } from 'node:fs'
 import { join } from 'node:path'
 import { Readable } from 'node:stream'
 import { DepStatus, SetupProgress } from '../shared/types'
-import { devLocalAssetRoots, findFile } from './localAssets'
-import {
-  resolveFfmpeg as canonicalResolveFfmpeg,
-  resolveRuntimeExecutable,
-  runtimeKindDir
-} from './runtimeResolver'
+import { resolveFfmpeg as canonicalResolveFfmpeg } from './runtimeResolver'
 
 const isWin = process.platform === 'win32'
 const isMac = process.platform === 'darwin'
@@ -76,7 +72,7 @@ function runCapture(
     let out = ''
     let settled = false
     try {
-      const child = spawn(cmd, args, { windowsHide: true })
+      const child = trackChildProcess(spawn(cmd, args, { windowsHide: true }))
       const finish = (code: number): void => {
         if (settled) return
         settled = true
@@ -85,7 +81,7 @@ function runCapture(
       }
       const timer = setTimeout(() => {
         out += '\nQua thoi gian cho yt-dlp.'
-        child.kill()
+        terminateProcessTree(child)
         finish(-1)
       }, timeoutMs)
       child.stdout?.on('data', (d) => (out += d.toString()))
@@ -233,21 +229,74 @@ export async function downloadFile(
   })
 }
 
-/** Giai nen zip: Windows dung Expand-Archive, macOS/Linux dung unzip (co san). */
-export function extractZip(zipPath: string, destDir: string): Promise<void> {
+/** Archive entry names must remain relative to the extraction root. */
+export function isSafeRuntimeArchiveEntryPath(entry: string): boolean {
+  if (typeof entry !== 'string' || !entry.trim() || entry.includes('\0')) return false
+  const normalized = entry.replace(/\\/g, '/')
+  const withoutDirectoryMarker = normalized.replace(/\/+$/u, '')
+  if (!withoutDirectoryMarker || withoutDirectoryMarker.startsWith('/') || /^[A-Za-z]:/u.test(withoutDirectoryMarker)) return false
+  return withoutDirectoryMarker.split('/').every((part) => part.length > 0 && part !== '.' && part !== '..')
+}
+
+function captureProcess(command: string, args: string[]): Promise<string> {
   return new Promise((resolve, reject) => {
+    const child = trackChildProcess(spawn(command, args, { windowsHide: true }))
+    let stdout = ''
+    let stderr = ''
+    child.stdout?.on('data', (chunk: Buffer) => { stdout += chunk.toString() })
+    child.stderr?.on('data', (chunk: Buffer) => { stderr += chunk.toString() })
+    child.on('error', reject)
+    child.on('close', (code) => {
+      if (code === 0) resolve(stdout)
+      else reject(new Error(stderr.trim() || `Lệnh ${command} thất bại (${code ?? 'unknown'}).`))
+    })
+  })
+}
+
+function powershellLiteral(value: string): string {
+  return `'${value.replace(/'/g, "''")}'`
+}
+
+async function listRuntimeArchiveEntries(zipPath: string): Promise<string[]> {
+  const output = isWin
+    ? await captureProcess('powershell', [
+        '-NoProfile',
+        '-NonInteractive',
+        '-ExecutionPolicy',
+        'Bypass',
+        '-Command',
+        `Add-Type -AssemblyName System.IO.Compression.FileSystem; $zip = [System.IO.Compression.ZipFile]::OpenRead(${powershellLiteral(zipPath)}); try { foreach ($entry in $zip.Entries) { [Console]::Out.WriteLine($entry.FullName) } } finally { $zip.Dispose() }`
+      ])
+    : await captureProcess('unzip', ['-Z1', zipPath])
+  return output.split(/\r?\n/u).map((entry) => entry.trim()).filter(Boolean)
+}
+
+/** Validate ZIP names before any extractor is allowed to write to disk. */
+export async function validateZipArchive(zipPath: string): Promise<void> {
+  const entries = await listRuntimeArchiveEntries(zipPath)
+  if (entries.length === 0) throw new Error('Archive runtime rỗng hoặc không đọc được danh sách entry.')
+  const unsafe = entries.find((entry) => !isSafeRuntimeArchiveEntryPath(entry))
+  if (unsafe) throw new Error(`Archive runtime có entry path không an toàn: ${unsafe}`)
+}
+
+/** Giai nen zip: Windows dung Expand-Archive, macOS/Linux dung unzip (co san). */
+export async function extractZip(zipPath: string, destDir: string): Promise<void> {
+  await validateZipArchive(zipPath)
+  await new Promise<void>((resolve, reject) => {
     const child = isWin
-      ? spawn(
+      ? trackChildProcess(spawn(
           'powershell',
           [
             '-NoProfile',
             '-NonInteractive',
+            '-ExecutionPolicy',
+            'Bypass',
             '-Command',
-            `Expand-Archive -LiteralPath "${zipPath}" -DestinationPath "${destDir}" -Force`
+            `Expand-Archive -LiteralPath ${powershellLiteral(zipPath)} -DestinationPath ${powershellLiteral(destDir)} -Force`
           ],
           { windowsHide: true, stdio: 'ignore' }
-        )
-      : spawn('unzip', ['-q', '-o', zipPath, '-d', destDir], { stdio: 'ignore' })
+        ))
+      : trackChildProcess(spawn('unzip', ['-q', '-o', zipPath, '-d', destDir], { stdio: 'ignore' }))
     child.on('error', reject)
     child.on('close', (code) => (code === 0 ? resolve() : reject(new Error('Giải nén thất bại'))))
   })
@@ -420,9 +469,6 @@ async function installYtDlp(onProgress: ProgressCb): Promise<void> {
   }
 }
 
-const FFMPEG_WIN64_URL =
-  'https://github.com/yt-dlp/FFmpeg-Builds/releases/download/latest/ffmpeg-master-latest-win64-gpl.zip'
-
 export async function installFfmpeg(onProgress: ProgressCb): Promise<void> {
   onProgress({ phase: 'downloading-ffmpeg', message: 'Đang kiểm tra FFmpeg…', percent: 0 })
   const existing = await canonicalResolveFfmpeg()
@@ -431,65 +477,12 @@ export async function installFfmpeg(onProgress: ProgressCb): Promise<void> {
     return
   }
 
-  const targetDir = runtimeKindDir('ffmpeg')
-  await mkdir(targetDir, { recursive: true })
-
-  // 1. Check dev / local staging roots first
-  const devRoots = devLocalAssetRoots()
-  for (const root of devRoots) {
-    const src = await findFile(root, isWin ? ['ffmpeg.exe', 'ffmpeg'] : ['ffmpeg'])
-    if (src) {
-      await copyFile(src, join(targetDir, isWin ? 'ffmpeg.exe' : 'ffmpeg'))
-      const ffprobeSrc = await findFile(root, isWin ? ['ffprobe.exe', 'ffprobe'] : ['ffprobe'])
-      if (ffprobeSrc) {
-        await copyFile(ffprobeSrc, join(targetDir, isWin ? 'ffprobe.exe' : 'ffprobe'))
-      }
-      break
-    }
-  }
-
-  let resolved = await canonicalResolveFfmpeg()
-  if (resolved) {
-    onProgress({ phase: 'done', message: 'Đã sẵn sàng FFmpeg.', percent: 100 })
-    return
-  }
-
-  // 2. If Windows and not found locally, download official managed release
-  if (isWin) {
-    const stagingDir = `${targetDir}.staging`
-    const zipPath = join(stagingDir, 'ffmpeg.zip')
-    await rm(stagingDir, { recursive: true, force: true }).catch(() => {})
-    await mkdir(stagingDir, { recursive: true })
-
-    try {
-      onProgress({ phase: 'downloading-ffmpeg', message: 'Đang tải gói FFmpeg Windows… 0%', percent: 0 })
-      await downloadFile(FFMPEG_WIN64_URL, zipPath, (p) => {
-        onProgress({ phase: 'downloading-ffmpeg', message: `Đang tải gói FFmpeg Windows… ${p}%`, percent: Math.round(p * 0.7) })
-      })
-
-      onProgress({ phase: 'extracting', message: 'Đang giải nén FFmpeg…', percent: 75 })
-      const extractDest = join(stagingDir, 'extracted')
-      await mkdir(extractDest, { recursive: true })
-      await extractZip(zipPath, extractDest)
-
-      const foundFfmpeg = await findFile(extractDest, ['ffmpeg.exe'])
-      const foundFfprobe = await findFile(extractDest, ['ffprobe.exe'])
-      if (!foundFfmpeg) {
-        throw new Error('Gói tải về không chứa file ffmpeg.exe hợp lệ.')
-      }
-
-      await copyFile(foundFfmpeg, join(targetDir, 'ffmpeg.exe'))
-      if (foundFfprobe) {
-        await copyFile(foundFfprobe, join(targetDir, 'ffprobe.exe'))
-      }
-    } finally {
-      await rm(stagingDir, { recursive: true, force: true }).catch(() => {})
-    }
-  }
-
-  resolved = await canonicalResolveFfmpeg()
-  if (!resolved) {
-    throw new Error('Chưa tìm thấy FFmpeg. Hãy cài đặt FFmpeg trên PATH hoặc đặt binary vào thư mục runtime/ffmpeg.')
+  const { downloadRuntimeEngineFromManifest } = await import('./runtimeInstaller')
+  const installed = await downloadRuntimeEngineFromManifest('ffmpeg', (percent, message) => {
+    onProgress({ phase: percent >= 90 ? 'extracting' : 'downloading-ffmpeg', message, percent })
+  })
+  if (!installed || !(await canonicalResolveFfmpeg())) {
+    throw new Error('Không có asset FFmpeg/FFprobe hợp lệ trong runtime manifest.')
   }
   onProgress({ phase: 'done', message: 'Đã sẵn sàng FFmpeg.', percent: 100 })
 }

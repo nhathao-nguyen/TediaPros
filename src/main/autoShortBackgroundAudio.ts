@@ -2,6 +2,7 @@ import { spawn } from 'node:child_process'
 import { resolveFfmpeg } from './deps'
 import { originalAudioGain } from '../shared/audioMix'
 import { sanitizeAutoShortAuditError } from './autoShortAudit'
+import { terminateProcessTree, trackChildProcess } from './processTree'
 
 const MAX_FFMPEG_STDERR_TAIL = 8_192
 
@@ -47,13 +48,14 @@ export async function runAutoShortBackgroundFfmpegProcess(
   if (input.signal?.aborted) throw new Error('Đã hủy tác vụ')
 
   await new Promise<void>((resolve, reject) => {
-    const child = spawn(input.command, [...input.args], {
+    const child = trackChildProcess(spawn(input.command, [...input.args], {
       windowsHide: true,
       shell: false,
       stdio: ['ignore', 'ignore', 'pipe']
-    })
+    }))
     let settled = false
     let stderrTail = ''
+    let abortError: Error | undefined
     const finish = (error?: Error): void => {
       if (settled) return
       settled = true
@@ -62,8 +64,8 @@ export async function runAutoShortBackgroundFfmpegProcess(
       else resolve()
     }
     const abort = (): void => {
-      try { child.kill() } catch { /* ignore */ }
-      finish(new Error('Đã hủy tác vụ'))
+      abortError = new Error('Đã hủy tác vụ')
+      terminateProcessTree(child)
     }
     child.stderr?.on('data', (chunk: Buffer) => {
       stderrTail = appendBoundedTail(stderrTail, chunk)
@@ -71,10 +73,18 @@ export async function runAutoShortBackgroundFfmpegProcess(
     if (input.signal?.aborted) abort()
     else input.signal?.addEventListener('abort', abort, { once: true })
     child.on('error', (error) => {
+      if (abortError) {
+        finish(abortError)
+        return
+      }
       const diagnostic = sanitizeAutoShortAuditError(error, [input.command, ...input.sensitivePaths])
       finish(new Error(`Không thể khởi động FFmpeg để trộn nhạc background. ${diagnostic}`))
     })
     child.on('close', (code) => {
+      if (abortError) {
+        finish(abortError)
+        return
+      }
       if (code === 0) {
         finish()
         return
