@@ -464,8 +464,7 @@ export default function AudioText({
         {noFormat && <div className="dy-err small">Hãy chọn ít nhất 1 định dạng xuất.</div>}
 
         <div className="muted small" style={{ marginTop: 12 }}>
-          Nhận diện người nói chưa được Whisper.cpp local hỗ trợ trong bản này; ứng dụng không tạo
-          nhãn speaker giả.
+          Tính năng nhận diện người nói yêu cầu bật tùy chọn nhận diện người nói trước khi chạy.
         </div>
       </div>
 

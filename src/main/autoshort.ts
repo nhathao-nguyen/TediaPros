@@ -141,18 +141,18 @@ export async function getAutoShortReadiness(config: Pick<AutoShortConfig, 'subti
       engineReady,
       undefined,
       !engine?.has
-        ? 'Chưa cài Whisper engine.'
+        ? 'Chưa cài Faster-Whisper engine.'
         : engine.healthy === false
           ? 'Engine không khởi động được.'
           : !engineReady
-            ? 'Engine không trả về protocol native whisper.cpp hợp lệ.'
+            ? 'Engine không trả về protocol Faster-Whisper hợp lệ.'
             : undefined
     ))
     dependencies.push(dependency(
       'whisper-model',
       `Model Whisper ${config.whisperModel || 'base'}`,
       true,
-      Boolean(model?.complete),
+      Boolean(model?.complete || model?.installed),
       model?.downloadBytes,
       model?.message
     ))
@@ -161,9 +161,9 @@ export async function getAutoShortReadiness(config: Pick<AutoShortConfig, 'subti
     const gpuReady = Boolean(gpu?.hasNvidia && gpu.canAccelerate)
     dependencies.push(dependency(
       'whisper-cuda',
-      'Gói CUDA Fast-Whisper',
+      'Gói CUDA Faster-Whisper',
       true,
-      Boolean(cuda?.has && gpuReady && cudaProbe?.ready),
+      Boolean(cuda?.has && (gpuReady || cudaProbe?.ready)),
       1_100_000_000,
       !gpuReady
         ? gpu?.reason || 'Không tìm thấy GPU NVIDIA tương thích.'
@@ -231,7 +231,7 @@ export async function installAutoShortDependencies(
     aborted()
     const total = readiness.model?.downloadBytes
     await installWhisperModel(config.whisperModel || 'base', (progress) =>
-      emit('whisper-model', 'downloading', progress.percent, progress.message, progress.receivedBytes, progress.totalBytes || total), signal)
+      emit('whisper-model', 'downloading', progress.percent, progress.message, Math.round((progress.percent / 100) * (total || 1)), total))
     emit('whisper-model', 'verifying', 100, 'Đang kiểm tra model Whisper…')
     readiness = await getAutoShortReadiness(config)
   }

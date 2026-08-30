@@ -1,6 +1,6 @@
 import { createHash } from 'node:crypto'
 import { createReadStream } from 'node:fs'
-import { access, mkdir, rm, stat, writeFile, copyFile } from 'node:fs/promises'
+import { access, mkdir, rm, stat, writeFile, copyFile, readdir } from 'node:fs/promises'
 import { constants } from 'node:fs'
 import { join, resolve, dirname } from 'node:path'
 import { execFile } from 'node:child_process'
@@ -40,30 +40,31 @@ async function main() {
   await mkdir(outDir, { recursive: true })
 
   const appData = process.env.APPDATA || (process.env.USERPROFILE ? join(process.env.USERPROFILE, 'AppData', 'Roaming') : '')
-  const appDataRuntime = appData ? join(appData, 'tedia-pros', 'runtime') : ''
+  const appDataBin = appData ? join(appData, 'tedia-pros', 'bin') : ''
   const devRuntime = process.env.TEDIAPROS_RUNTIME_DIR || ''
 
   const manifestAssets = {}
 
-  // 1. Whisper.cpp
+  // 1. Faster-Whisper Engine
   const whisperSearch = [
+    resolve('engines/whisper-engine/dist/whisper-engine'),
+    resolve('dist-engine/whisper-engine'),
     process.env.WHISPER_RUNTIME_DIR,
-    devRuntime ? join(devRuntime, 'whisper-cpp') : null,
-    appDataRuntime ? join(appDataRuntime, 'whisper-cpp') : null,
-    appData ? join(appData, 'tedia-pros', 'bin', 'whisper-cpp') : null
+    devRuntime ? join(devRuntime, 'whisper-engine') : null,
+    appDataBin ? join(appDataBin, 'whisper-engine') : null
   ].filter(Boolean)
 
   let whisperDir = null
   for (const dir of whisperSearch) {
-    if (await fileExists(join(dir, 'whisper-local-worker.exe'))) {
+    if (await fileExists(join(dir, 'whisper-engine.exe'))) {
       whisperDir = dir
       break
     }
   }
 
-  const whisperZip = join(outDir, 'whisper-cpp-win32-x64.zip')
+  const whisperZip = join(outDir, 'whisper-engine-win.zip')
   if (whisperDir) {
-    console.log(`[Pack] Nén Whisper ${whisperDir} -> ${whisperZip}...`)
+    console.log(`[Pack] Nén Faster-Whisper ${whisperDir} -> ${whisperZip}...`)
     await execFileAsync('powershell', [
       '-NoProfile',
       '-NonInteractive',
@@ -75,26 +76,28 @@ async function main() {
   if (await fileExists(whisperZip)) {
     const whisperStat = await stat(whisperZip)
     const whisperHash = await sha256File(whisperZip)
-    console.log(`[Pack] whisper-cpp-win32-x64.zip: ${whisperStat.size} bytes, sha256: ${whisperHash}`)
-    manifestAssets['whisper-cpp'] = {
+    console.log(`[Pack] whisper-engine-win.zip: ${whisperStat.size} bytes, sha256: ${whisperHash}`)
+    manifestAssets['whisper'] = {
       version: '1.0.0',
       platform: 'win32',
       arch: 'x64',
-      asset: 'whisper-cpp-win32-x64.zip',
-      entrypoint: 'whisper-local-worker.exe',
+      asset: 'whisper-engine-win.zip',
+      entrypoint: 'whisper-engine.exe',
       sha256: whisperHash,
       bytes: whisperStat.size,
-      protocol: 'whisper-local/1'
+      protocol: 'whisper-engine/1'
     }
   }
 
   // 2. OCR Engine
   const ocrSearch = [
+    resolve('engines/ocr-engine/dist/ocr-engine'),
+    resolve('dist-engine/ocr-engine'),
     process.env.OCR_RUNTIME_DIR,
+    devRuntime ? join(devRuntime, 'ocr-engine') : null,
     devRuntime ? join(devRuntime, 'ocr') : null,
-    appDataRuntime ? join(appDataRuntime, 'ocr') : null,
-    appData ? join(appData, 'tedia-pros', 'bin', 'ocr-engine') : null,
-    resolve('engines/ocr-engine/dist')
+    appDataBin ? join(appDataBin, 'ocr-engine') : null,
+    appDataBin ? join(appDataBin, 'ocr') : null
   ].filter(Boolean)
 
   let ocrDir = null
@@ -105,7 +108,7 @@ async function main() {
     }
   }
 
-  const ocrZip = join(outDir, 'ocr-win32-x64.zip')
+  const ocrZip = join(outDir, 'ocr-engine-win.zip')
   if (ocrDir) {
     console.log(`[Pack] Nén OCR ${ocrDir} -> ${ocrZip}...`)
     await execFileAsync('powershell', [
@@ -119,12 +122,12 @@ async function main() {
   if (await fileExists(ocrZip)) {
     const ocrStat = await stat(ocrZip)
     const ocrHash = await sha256File(ocrZip)
-    console.log(`[Pack] ocr-win32-x64.zip: ${ocrStat.size} bytes, sha256: ${ocrHash}`)
+    console.log(`[Pack] ocr-engine-win.zip: ${ocrStat.size} bytes, sha256: ${ocrHash}`)
     manifestAssets['ocr'] = {
       version: '1.0.0',
       platform: 'win32',
       arch: 'x64',
-      asset: 'ocr-win32-x64.zip',
+      asset: 'ocr-engine-win.zip',
       entrypoint: 'ocr-engine.exe',
       sha256: ocrHash,
       bytes: ocrStat.size,
@@ -136,8 +139,8 @@ async function main() {
   const ffmpegSearch = [
     process.env.FFMPEG_DIR,
     devRuntime ? join(devRuntime, 'ffmpeg') : null,
-    appDataRuntime ? join(appDataRuntime, 'ffmpeg') : null,
-    appData ? join(appData, 'tedia-pros', 'bin', 'ffmpeg') : null
+    appDataBin ? join(appDataBin, 'ffmpeg') : null,
+    appDataBin
   ].filter(Boolean)
 
   let ffmpegDir = null
@@ -156,7 +159,7 @@ async function main() {
     }
   }
 
-  const ffmpegZip = join(outDir, 'ffmpeg-win32-x64.zip')
+  const ffmpegZip = join(outDir, 'ffmpeg-win.zip')
   if (ffmpegDir && (await fileExists(join(ffmpegDir, 'ffmpeg.exe'))) && (await fileExists(join(ffmpegDir, 'ffprobe.exe')))) {
     console.log(`[Pack] Nén FFmpeg ${ffmpegDir} -> ${ffmpegZip}...`)
     await execFileAsync('powershell', [
@@ -170,12 +173,12 @@ async function main() {
   if (await fileExists(ffmpegZip)) {
     const ffStat = await stat(ffmpegZip)
     const ffHash = await sha256File(ffmpegZip)
-    console.log(`[Pack] ffmpeg-win32-x64.zip: ${ffStat.size} bytes, sha256: ${ffHash}`)
+    console.log(`[Pack] ffmpeg-win.zip: ${ffStat.size} bytes, sha256: ${ffHash}`)
     manifestAssets['ffmpeg'] = {
       version: '7.1.0',
       platform: 'win32',
       arch: 'x64',
-      asset: 'ffmpeg-win32-x64.zip',
+      asset: 'ffmpeg-win.zip',
       entrypoint: 'ffmpeg.exe',
       sha256: ffHash,
       bytes: ffStat.size
@@ -186,8 +189,7 @@ async function main() {
   const video2xSearch = [
     process.env.VIDEO2X_RUNTIME_DIR,
     devRuntime ? join(devRuntime, 'video2x') : null,
-    appDataRuntime ? join(appDataRuntime, 'video2x') : null,
-    appData ? join(appData, 'tedia-pros', 'bin', 'video2x') : null
+    appDataBin ? join(appDataBin, 'video2x') : null
   ].filter(Boolean)
 
   let video2xDir = null
@@ -198,7 +200,7 @@ async function main() {
     }
   }
 
-  const video2xZip = join(outDir, 'video2x-win32-x64.zip')
+  const video2xZip = join(outDir, 'video2x-win.zip')
   if (video2xDir) {
     console.log(`[Pack] Nén Video2X ${video2xDir} -> ${video2xZip}...`)
     await execFileAsync('powershell', [
@@ -212,12 +214,12 @@ async function main() {
   if (await fileExists(video2xZip)) {
     const v2xStat = await stat(video2xZip)
     const v2xHash = await sha256File(video2xZip)
-    console.log(`[Pack] video2x-win32-x64.zip: ${v2xStat.size} bytes, sha256: ${v2xHash}`)
+    console.log(`[Pack] video2x-win.zip: ${v2xStat.size} bytes, sha256: ${v2xHash}`)
     manifestAssets['video2x'] = {
       version: '6.4.0',
       platform: 'win32',
       arch: 'x64',
-      asset: 'video2x-win32-x64.zip',
+      asset: 'video2x-win.zip',
       entrypoint: 'video2x.exe',
       sha256: v2xHash,
       bytes: v2xStat.size
@@ -226,11 +228,11 @@ async function main() {
 
   // 5. Douyin Engine
   const douyinSearch = [
+    resolve('engines/douyin-engine/dist/dy-engine'),
+    resolve('dist-engine/douyin-engine'),
     process.env.DOUYIN_RUNTIME_DIR,
     devRuntime ? join(devRuntime, 'douyin') : null,
-    appDataRuntime ? join(appDataRuntime, 'douyin') : null,
-    appData ? join(appData, 'tedia-pros', 'bin', 'douyin') : null,
-    resolve('engines/douyin-engine/dist')
+    appDataBin ? join(appDataBin, 'douyin') : null
   ].filter(Boolean)
 
   let douyinDir = null
@@ -241,7 +243,7 @@ async function main() {
     }
   }
 
-  const douyinZip = join(outDir, 'douyin-win32-x64.zip')
+  const douyinZip = join(outDir, 'douyin-win.zip')
   if (douyinDir) {
     console.log(`[Pack] Nén Douyin ${douyinDir} -> ${douyinZip}...`)
     await execFileAsync('powershell', [
@@ -255,18 +257,19 @@ async function main() {
   if (await fileExists(douyinZip)) {
     const dyStat = await stat(douyinZip)
     const dyHash = await sha256File(douyinZip)
-    console.log(`[Pack] douyin-win32-x64.zip: ${dyStat.size} bytes, sha256: ${dyHash}`)
+    console.log(`[Pack] douyin-win.zip: ${dyStat.size} bytes, sha256: ${dyHash}`)
     manifestAssets['douyin'] = {
       version: '1.0.0',
       platform: 'win32',
       arch: 'x64',
-      asset: 'douyin-win32-x64.zip',
+      asset: 'douyin-win.zip',
       entrypoint: 'dy-engine.exe',
       sha256: dyHash,
       bytes: dyStat.size
     }
   }
 
+  // 6. Manifest
   const manifest = {
     schemaVersion: 1,
     runtimeVersion: 'runtime-v1',
@@ -279,6 +282,16 @@ async function main() {
   await writeFile(manifestPath, JSON.stringify(manifest, null, 2), 'utf8')
   console.log(`\n[Pack] Đã ghi ${manifestPath}`)
 
+  const enginesManifest = {
+    whisper: 1,
+    ocr: 1,
+    douyin: 1,
+    video2x: 1
+  }
+  const enginesManifestPath = join(outDir, 'engines-manifest.json')
+  await writeFile(enginesManifestPath, JSON.stringify(enginesManifest, null, 2), 'utf8')
+  console.log(`[Pack] Đã ghi ${enginesManifestPath}`)
+
   console.log('\n=== TỔNG HỢP TOÀN BỘ RELEASE ARTIFACTS SẴN SÀNG UPLOAD GITHUB RELEASE ===')
   for (const [key, item] of Object.entries(manifestAssets)) {
     console.log(`• [${key}]: ${join(outDir, item.asset)} (${(item.bytes / (1024 * 1024)).toFixed(2)} MB)`)
@@ -290,4 +303,3 @@ main().catch((err) => {
   console.error('[Pack] Lỗi:', err)
   process.exit(1)
 })
-

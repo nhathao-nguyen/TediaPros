@@ -85,10 +85,17 @@ const THIRD_PARTY: ThirdParty[] = [
 
   {
     group: G_LIB,
-    name: 'whisper.cpp',
+    name: 'Faster-Whisper',
     license: 'MIT',
-    link: 'https://github.com/ggerganov/whisper.cpp',
-    copyright: 'Georgi Gerganov và cộng sự'
+    link: 'https://github.com/SYSTRAN/faster-whisper',
+    copyright: 'SYSTRAN & Guillaume Klein'
+  },
+  {
+    group: G_LIB,
+    name: 'CTranslate2',
+    license: 'MIT',
+    link: 'https://github.com/OpenNMT/CTranslate2',
+    copyright: 'OpenNMT contributors'
   },
   {
     group: G_LIB,
@@ -100,10 +107,10 @@ const THIRD_PARTY: ThirdParty[] = [
 
   {
     group: G_MODEL,
-    name: 'Whisper.cpp GGML models',
+    name: 'OpenAI Whisper Models',
     license: 'MIT',
-    link: 'https://github.com/ggerganov/whisper.cpp',
-    copyright: 'OpenAI · cộng đồng whisper.cpp'
+    link: 'https://github.com/openai/whisper',
+    copyright: 'OpenAI'
   },
   {
     group: G_GPU,
@@ -120,21 +127,28 @@ const GROUPS = [G_TOOL, G_LIB, G_MODEL, G_GPU]
 function LicCard({
   title,
   badge,
-  children,
-  defaultOpen = false
+  badgeTone = 'default',
+  defaultOpen = false,
+  children
 }: {
   title: string
-  badge: string
-  children: JSX.Element
+  badge?: string
+  badgeTone?: 'default' | 'accent'
   defaultOpen?: boolean
+  children: React.ReactNode
 }): JSX.Element {
   const [open, setOpen] = useState(defaultOpen)
   return (
     <div className={`lic-card ${open ? 'open' : ''}`}>
-      <button className="lic-card-head" onClick={() => setOpen((o) => !o)}>
-        <span className="lic-name">{title}</span>
-        <span className="lic-badge">{badge}</span>
-        <span className="lic-caret">{open ? '▴' : '▾'}</span>
+      <button
+        type="button"
+        className="lic-card-head"
+        onClick={() => setOpen((v) => !v)}
+        aria-expanded={open}
+      >
+        <span className="lic-card-title">{title}</span>
+        {badge && <span className={`lic-badge ${badgeTone}`}>{badge}</span>}
+        <span className="lic-chevron">{open ? '▲' : '▼'}</span>
       </button>
       {open && <div className="lic-card-body">{children}</div>}
     </div>
@@ -143,72 +157,84 @@ function LicCard({
 
 export default function License(): JSX.Element {
   return (
-    <div className="license-page">
-      {/* Mien tru trach nhiem */}
-      <div className="lic-disclaimer">
-        <div className="lic-disclaimer-tag">⚠️ Miễn trừ trách nhiệm</div>
-        <p>
-          Người dùng tự chịu trách nhiệm về việc tải nội dung, tuân thủ điều khoản dịch vụ của nền
-          tảng gốc và luật bản quyền tại khu vực của họ.
+    <div className="lic-view">
+      <div className="lic-intro">
+        <h2 className="lic-head">Giấy phép & Bản quyền</h2>
+        <p className="lic-lead">
+          T-blao sử dụng giấy phép nguồn mở phi thương mại cho mã nguồn chính, kết hợp với các công
+          cụ mã nguồn mở được phát hành theo các giấy phép tương ứng.
         </p>
       </div>
 
-      {/* Giay phep TediaPros */}
-      <section className="lic-section">
-        <h3>Giấy phép TediaPros</h3>
-        <p className="muted small">
-          Source-available: phi thương mại + bắt buộc ghi công. Bấm để xem tóm tắt; toàn văn trong
-          file LICENSE.
-        </p>
-        <LicCard title="TediaPros" badge="PolyForm-NC">
-          <>
-            <pre className="license-text">{POLYFORM_NC_SUMMARY}</pre>
-            <button
-              className="lic-link"
-              onClick={() =>
-                window.api.openExternal(
-                  'https://polyformproject.org/licenses/noncommercial/1.0.0'
-                )
-              }
-            >
-              https://polyformproject.org/licenses/noncommercial/1.0.0
-            </button>
-          </>
-        </LicCard>
-      </section>
+      <LicCard
+        title="T-blao — Mã nguồn chính"
+        badge="PolyForm Noncommercial 1.0.0"
+        badgeTone="accent"
+        defaultOpen={true}
+      >
+        <pre className="lic-pre">{POLYFORM_NC_SUMMARY}</pre>
+        <div className="lic-links">
+          <button
+            type="button"
+            className="lic-link-btn"
+            onClick={() =>
+              (window.api || (window as any).tblao).openExternal('https://polyformproject.org/licenses/noncommercial/1.0.0')
+            }
+          >
+            Đọc toàn văn giấy phép PolyForm Noncommercial ↗
+          </button>
+          <button
+            type="button"
+            className="lic-link-btn"
+            onClick={() => (window.api || (window as any).tblao).openExternal('https://github.com/NeeyuBL/neeyut-blao')}
+          >
+            Mã nguồn trên GitHub ↗
+          </button>
+        </div>
+      </LicCard>
 
-      {/* Thanh phan ben thu ba */}
-      <section className="lic-section">
-        <h3>Thành phần bên thứ ba</h3>
-        <p className="muted small">
-          TediaPros được dựng trên các công trình mã nguồn mở dưới đây. Bản quyền thuộc về tác giả gốc.
-          Bấm từng mục để xem chi tiết.
+      <LicCard title="Thành phần & Công cụ của bên thứ ba" defaultOpen={false}>
+        <p className="lic-sublead">
+          Các công cụ và model AI dưới đây được tải về máy theo nhu cầu khi sử dụng tính năng tương
+          ứng. Chúng tôi giữ nguyên toàn bộ thông báo bản quyền và giấy phép của tác giả gốc.
         </p>
-        {GROUPS.map((g) => (
-          <div key={g} className="lic-group">
-            <div className="lic-group-title small">{g}</div>
-            <div className="lic-list">
-              {THIRD_PARTY.filter((t) => t.group === g).map((t) => (
-                <LicCard key={t.name} title={t.name} badge={t.license}>
-                  <>
-                    {t.copyright && <div className="lic-copyright small">{t.copyright}</div>}
-                    {t.notice && <pre className="license-text lic-notice">{t.notice}</pre>}
+
+        {GROUPS.map((g) => {
+          const list = THIRD_PARTY.filter((t) => t.group === g)
+          if (list.length === 0) return null
+          return (
+            <div key={g} className="lic-group">
+              <div className="lic-group-title">{g}</div>
+              <div className="lic-grid">
+                {list.map((t) => (
+                  <div key={t.name} className="lic-item">
+                    <div className="lic-item-head">
+                      <span className="lic-item-name">{t.name}</span>
+                      <span className="lic-item-lic">{t.license}</span>
+                    </div>
+                    {t.copyright && <div className="lic-item-cr">{t.copyright}</div>}
                     {t.link && (
-                      <button className="lic-link" onClick={() => window.api.openExternal(t.link!)}>
-                        {t.link}
+                      <button
+                        type="button"
+                        className="lic-item-link"
+                        onClick={() => (window.api || (window as any).tblao).openExternal(t.link!)}
+                      >
+                        Trang chủ / Giấy phép ↗
                       </button>
                     )}
-                  </>
-                </LicCard>
-              ))}
+                    {t.notice && <pre className="lic-notice-pre">{t.notice}</pre>}
+                  </div>
+                ))}
+              </div>
             </div>
-          </div>
-        ))}
-      </section>
+          )
+        })}
 
-      <p className="lic-foot muted small">
-        Đây không phải tư vấn pháp lý. Vui lòng tham khảo luật tại khu vực của bạn khi sử dụng.
-      </p>
+        <div className="lic-footer-note">
+          Chi tiết đầy đủ xem tệp <code>THIRD-PARTY-NOTICES.txt</code> trong thư mục cài đặt ứng
+          dụng.
+        </div>
+      </LicCard>
     </div>
   )
 }

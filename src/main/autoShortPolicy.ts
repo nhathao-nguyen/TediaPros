@@ -68,9 +68,9 @@ export function isAutoShortWhisperEngineReady(
 ): boolean {
   return Boolean(
     status?.has &&
-    status.healthy === true &&
-    status.protocol === WHISPER_PROTOCOL &&
-    status.engine === 'whisper.cpp'
+    status.healthy !== false &&
+    (status.protocol === WHISPER_PROTOCOL || status.protocol === 'whisper-local/1' || status.protocol === 'whisper-engine/1') &&
+    (status.engine === 'faster-whisper' || status.engine === 'whisper.cpp')
   )
 }
 

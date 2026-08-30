@@ -55,8 +55,8 @@ import { clampAlignedCueTimeline, fuseWhisperAndOcr } from '../src/shared/autoSh
 test('catalog exposes exactly the three local multilingual models', () => {
   assert.deepEqual(Object.keys(WHISPER_MODEL_CATALOG), ['base', 'small', 'medium'])
   for (const id of ['base', 'small', 'medium'] as WhisperModelId[]) {
-    assert.equal(WHISPER_MODEL_CATALOG[id].backend, 'whisper.cpp')
-    assert.equal(WHISPER_MODEL_CATALOG[id].format, 'ggml')
+    assert.equal(WHISPER_MODEL_CATALOG[id].backend, 'faster-whisper')
+    assert.equal(WHISPER_MODEL_CATALOG[id].format, 'ctranslate2')
     assert.equal(WHISPER_MODEL_CATALOG[id].languageFamily, 'multilingual')
   }
 })
@@ -68,13 +68,13 @@ test('legacy model and method names migrate without prompting', () => {
   assert.equal(normalizeWhisperModel('unknown'), 'base')
 })
 
-test('engine readiness requires the local protocol and whisper.cpp backend', () => {
+test('engine readiness requires the local protocol and faster-whisper backend', () => {
   const event: WhisperVersionEvent = {
     type: 'version',
-    protocol: 'whisper-local/1',
-    engine: 'whisper.cpp',
-    version: '1.9.3',
-    features: ['probe', 'daemon', 'word_timestamps']
+    protocol: 'whisper-engine/1',
+    engine: 'faster-whisper',
+    version: '1.0.0',
+    features: ['probe', 'vad', 'word_timestamps']
   }
   assert.equal(isWhisperVersionEvent(event), true)
   assert.deepEqual(parseWhisperVersion(JSON.stringify(event)), event)
@@ -90,32 +90,37 @@ test('model resolver prefers a valid current profile model over legacy', async (
   const legacyModel = join(legacy, 'base')
   await mkdir(currentModel, { recursive: true })
   await mkdir(legacyModel, { recursive: true })
-  await writeFile(join(currentModel, 'ggml-base.bin'), Buffer.from('current'))
-  await writeFile(join(legacyModel, 'ggml-base.bin'), Buffer.from('legacy'))
+  const currentBytes = Buffer.from('current-faster-whisper-model-content')
+  const legacyBytes = Buffer.from('legacy-faster-whisper-model-content')
+  const { createHash } = await import('node:crypto')
+  const currentHash = createHash('sha256').update(currentBytes).digest('hex')
+
+  await writeFile(join(currentModel, 'model.bin'), currentBytes)
+  await writeFile(join(legacyModel, 'model.bin'), legacyBytes)
   await writeFile(join(currentModel, 'manifest.json'), JSON.stringify({
-    id: 'base', backend: 'whisper.cpp', format: 'ggml', filename: 'ggml-base.bin',
-    bytes: 7, sha256: '97b0560280ed60a5a1eaa1bc45492543c8a986ad5a25b468c427eb83c3e88191',
-    languageFamily: 'multilingual', engineProtocol: 'whisper-local/1'
+    id: 'base', backend: 'faster-whisper', format: 'ctranslate2', filename: 'model.bin',
+    bytes: currentBytes.length, sha256: currentHash,
+    languageFamily: 'multilingual', engineProtocol: 'whisper-engine/1'
   }))
   await writeFile(join(legacyModel, 'manifest.json'), JSON.stringify({
-    id: 'base', backend: 'whisper.cpp', format: 'ggml', filename: 'ggml-base.bin',
-    bytes: 6, sha256: 'legacy'
+    id: 'base', backend: 'faster-whisper', format: 'ctranslate2', filename: 'model.bin',
+    bytes: legacyBytes.length, sha256: 'legacy'
   }))
 
   const result = await findLocalWhisperModel('base', [current, legacy])
   assert.equal(result?.root, current)
-  assert.equal(result?.modelPath, join(currentModel, 'ggml-base.bin'))
+  assert.equal(result?.modelPath, join(currentModel, 'model.bin'))
 })
 
 test('model integrity rejects a manifest with the wrong hash', async () => {
   const root = await mkdtemp(join(tmpdir(), 'tedia-model-integrity-'))
   const modelDir = join(root, 'base')
   await mkdir(modelDir, { recursive: true })
-  await writeFile(join(modelDir, 'ggml-base.bin'), Buffer.from('actual'))
+  await writeFile(join(modelDir, 'model.bin'), Buffer.from('actual'))
   await writeFile(join(modelDir, 'manifest.json'), JSON.stringify({
-    id: 'base', backend: 'whisper.cpp', format: 'ggml', filename: 'ggml-base.bin',
+    id: 'base', backend: 'faster-whisper', format: 'ctranslate2', filename: 'model.bin',
     bytes: 6, sha256: 'not-the-file-hash', languageFamily: 'multilingual',
-    engineProtocol: 'whisper-local/1'
+    engineProtocol: 'whisper-engine/1'
   }))
   assert.equal(await isCompleteWhisperModel(modelDir, 'base'), false)
 })
@@ -124,14 +129,14 @@ test('model resolver accepts the legacy tediapros native cache when current is m
   const root = await mkdtemp(join(tmpdir(), 'tedia-model-legacy-'))
   const legacy = join(root, 'tediapros')
   const modelDir = join(legacy, 'small')
-  const bytes = Buffer.from('legacy-native-model')
+  const bytes = Buffer.from('legacy-native-model-faster-whisper-small-bin')
   const { createHash } = await import('node:crypto')
   await mkdir(modelDir, { recursive: true })
-  await writeFile(join(modelDir, 'ggml-small.bin'), bytes)
+  await writeFile(join(modelDir, 'model.bin'), bytes)
   await writeFile(join(modelDir, 'manifest.json'), JSON.stringify({
-    id: 'small', backend: 'whisper.cpp', format: 'ggml', filename: 'ggml-small.bin',
+    id: 'small', backend: 'faster-whisper', format: 'ctranslate2', filename: 'model.bin',
     bytes: bytes.length, sha256: createHash('sha256').update(bytes).digest('hex'),
-    languageFamily: 'multilingual', engineProtocol: 'whisper-local/1'
+    languageFamily: 'multilingual', engineProtocol: 'whisper-engine/1'
   }))
   const result = await findLocalWhisperModel('small', [join(root, 'current'), legacy])
   assert.equal(result?.root, legacy)
@@ -143,12 +148,12 @@ test('partial native model is never treated as complete', async () => {
   const bytes = Buffer.from('partial-model')
   const { createHash } = await import('node:crypto')
   await mkdir(modelDir, { recursive: true })
-  await writeFile(join(modelDir, 'ggml-base.bin'), bytes)
-  await writeFile(join(modelDir, 'ggml-base.bin.partial'), Buffer.from('unfinished'))
+  await writeFile(join(modelDir, 'model.bin'), bytes)
+  await writeFile(join(modelDir, 'model.bin.partial'), Buffer.from('unfinished'))
   await writeFile(join(modelDir, 'manifest.json'), JSON.stringify({
-    id: 'base', backend: 'whisper.cpp', format: 'ggml', filename: 'ggml-base.bin',
+    id: 'base', backend: 'faster-whisper', format: 'ctranslate2', filename: 'model.bin',
     bytes: bytes.length, sha256: createHash('sha256').update(bytes).digest('hex'),
-    languageFamily: 'multilingual', engineProtocol: 'whisper-local/1'
+    languageFamily: 'multilingual', engineProtocol: 'whisper-engine/1'
   }))
   assert.equal(await isCompleteWhisperModel(modelDir, 'base'), false)
 })
@@ -183,24 +188,24 @@ test('AutoShort readiness accepts the current whisper-local protocol instead of 
   assert.doesNotMatch(source, /engine\?\.version\?\.startsWith\(['"]3\./u)
 })
 
-test('AutoShort engine policy accepts a healthy native whisper.cpp protocol', () => {
+test('AutoShort engine policy accepts a healthy Faster-Whisper protocol', () => {
   assert.equal(isAutoShortWhisperEngineReady({
     has: true,
     healthy: true,
-    protocol: 'whisper-local/1',
-    engine: 'whisper.cpp'
+    protocol: 'whisper-engine/1',
+    engine: 'faster-whisper'
   }), true)
   assert.equal(isAutoShortWhisperEngineReady({
     has: true,
     healthy: true,
     protocol: 'legacy',
-    engine: 'whisper.cpp'
+    engine: 'faster-whisper'
   }), false)
   assert.equal(isAutoShortWhisperEngineReady({
     has: true,
     healthy: false,
-    protocol: 'whisper-local/1',
-    engine: 'whisper.cpp'
+    protocol: 'whisper-engine/1',
+    engine: 'faster-whisper'
   }), false)
 })
 
@@ -943,9 +948,9 @@ test('isSafeExternalUrl strictly allows http, https, mailto and blocks dangerous
 })
 
 test('Whisper alignment outputs write both segments and cues for complete schema compatibility', async () => {
-  const whisperSource = await readFile(join(process.cwd(), 'src', 'main', 'whisper.ts'), 'utf8')
-  assert.match(whisperSource, /segments:\s*alignmentSegments/u)
-  assert.match(whisperSource, /cues:\s*alignmentSegments/u)
+  const engineSource = await readFile(join(process.cwd(), 'engines', 'whisper-engine', 'engine.py'), 'utf8')
+  assert.match(engineSource, /"segments":\s*segments/u)
+  assert.match(engineSource, /"cues":\s*segments/u)
 
   const autoshortSource = await readFile(join(process.cwd(), 'src', 'main', 'autoshort.ts'), 'utf8')
   assert.match(autoshortSource, /raw\.segments/u)
@@ -1041,9 +1046,9 @@ test('Case D (failed runtime update): atomic replace directory restores previous
 test('Case E (model persistence): whisperModelRoots prioritizes canonical models directory and preserves legacy paths', async () => {
   const { whisperModelRoots } = await import('../src/main/modelStore')
   const roots = whisperModelRoots('C:\\AppData\\Roaming\\t-blao', 'C:\\AppData\\Roaming')
-  assert.equal(roots[0], 'C:\\AppData\\Roaming\\t-blao\\models\\whisper-cpp')
-  assert.equal(roots.includes('C:\\AppData\\Roaming\\t-blao\\whisper-cpp-models'), true)
-  assert.equal(roots.includes('C:\\AppData\\Roaming\\tediapros\\whisper-cpp-models'), true)
+  assert.equal(roots[0], 'C:\\AppData\\Roaming\\t-blao\\whisper-models')
+  assert.equal(roots.includes('C:\\AppData\\Roaming\\t-blao\\models\\whisper-cpp'), true)
+  assert.equal(roots.includes('C:\\AppData\\Roaming\\tediapros\\whisper-models'), true)
   assert.equal(roots.some((r) => r.includes('resources')), false)
 })
 
@@ -1300,31 +1305,31 @@ test('Clean-Machine Test 1: Missing FFmpeg detects missing, resolves canonical p
   }
 })
 
-test('Clean-Machine Test 2: Whisper Engine bundle contract mandates all 3 executables (worker, server, cli)', async () => {
+test('Clean-Machine Test 2: Whisper CUDA candidate dirs prioritize canonical userData whisper-cuda path', async () => {
   const { whisperCudaCandidateDirs } = await import('../src/main/whisperPaths')
   const candidateDirs = whisperCudaCandidateDirs('C:\\TestUserData', 'C:\\TestAppData')
-  assert.equal(candidateDirs[0], 'C:\\TestUserData\\runtime\\whisper-cpp')
+  assert.equal(candidateDirs[0], 'C:\\TestUserData\\bin\\whisper-cuda')
 })
 
 test('Clean-Machine Test 3: Whisper Model partial download resumes and validates SHA-256 integrity', async () => {
   const root = await mkdtemp(join(tmpdir(), 'tedia-clean-model-'))
   const modelDir = join(root, 'small')
   await mkdir(modelDir, { recursive: true })
-  const bytes = Buffer.from('synthetic-whisper-model-content-2026')
+  const bytes = Buffer.from('synthetic-faster-whisper-model-content-2026')
   const { createHash } = await import('node:crypto')
   const sha256 = createHash('sha256').update(bytes).digest('hex')
 
-  await writeFile(join(modelDir, 'ggml-small.bin'), bytes)
+  await writeFile(join(modelDir, 'model.bin'), bytes)
   await writeFile(join(modelDir, 'manifest.json'), JSON.stringify({
-    id: 'small', backend: 'whisper.cpp', format: 'ggml', filename: 'ggml-small.bin',
-    bytes: bytes.length, sha256, languageFamily: 'multilingual', engineProtocol: 'whisper-local/1'
+    id: 'small', backend: 'faster-whisper', format: 'ctranslate2', filename: 'model.bin',
+    bytes: bytes.length, sha256, languageFamily: 'multilingual', engineProtocol: 'whisper-engine/1'
   }))
 
   const { isCompleteWhisperModel, findLocalWhisperModel } = await import('../src/main/modelStore')
   assert.equal(await isCompleteWhisperModel(modelDir, 'small'), true)
   const found = await findLocalWhisperModel('small', [root])
   assert.ok(found)
-  assert.equal(found.manifest.sha256, sha256)
+  assert.equal(found.manifest?.sha256, sha256)
 })
 
 test('Clean-Machine Test 4: OCR Engine validates ocr-local/1 protocol and RapidOCR readiness', async () => {

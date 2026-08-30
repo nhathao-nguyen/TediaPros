@@ -17,7 +17,7 @@ function run(cmd: string, args: string[]): Promise<{ code: number; out: string }
   })
 }
 
-const CUDA_MIN = 12 // Whisper.cpp local CUDA bundle targets CUDA 12.x drivers.
+const CUDA_MIN = 12 // Faster-Whisper CUDA pack targets CUDA 12.x drivers.
 
 /**
  * Quet GPU bang `nvidia-smi` (buoc an toan truoc khi cho tai goi tang toc).

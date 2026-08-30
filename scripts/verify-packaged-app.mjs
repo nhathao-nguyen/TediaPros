@@ -4,7 +4,8 @@ import { fileURLToPath } from 'node:url'
 
 const FORBIDDEN_PATTERNS = [
   /local-assets/i,
-  /models[\\/]whisper-cpp/i,
+  /models[\\/]whisper/i,
+  /whisper-engine(\.exe)?$/i,
   /whisper-local-worker(\.exe)?$/i,
   /whisper-server(\.exe)?$/i,
   /whisper-cli(\.exe)?$/i,

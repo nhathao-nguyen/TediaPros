@@ -43,10 +43,10 @@ const cudaUserData = join('fixtures', 'tedia-pros')
 const cudaAppData = join('fixtures')
 const cudaCandidates = whisperCudaCandidateDirs(cudaUserData, cudaAppData)
 assert.deepEqual(cudaCandidates, [
-  join(cudaUserData, 'runtime', 'whisper-cpp'),
-  join(cudaUserData, 'bin', 'whisper-cpp'),
   join(cudaUserData, 'bin', 'whisper-cuda'),
-  join(cudaAppData, 'tediapros', 'bin', 'whisper-cpp'),
+  join(cudaUserData, 'runtime', 'whisper-cuda'),
+  join(cudaUserData, 'bin', 'whisper-cpp'),
+  join(cudaUserData, 'runtime', 'whisper-cpp'),
   join(cudaAppData, 'tediapros', 'bin', 'whisper-cuda')
 ])
 assert.equal(findWhisperCudaDir(cudaCandidates, (path) => path === cudaCandidates[1]), cudaCandidates[1])

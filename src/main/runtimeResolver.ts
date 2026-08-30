@@ -4,7 +4,7 @@ import { access, mkdir, readFile, writeFile, rename, rm } from 'node:fs/promises
 import { constants } from 'node:fs'
 import { join } from 'node:path'
 
-export type RuntimeEngineKind = 'ffmpeg' | 'whisper-cpp' | 'ocr' | 'video2x' | 'douyin'
+export type RuntimeEngineKind = 'ffmpeg' | 'whisper' | 'whisper-cpp' | 'whisperCuda' | 'ocr' | 'video2x' | 'douyin'
 
 export interface InstalledRuntimeReceipt {
   engine: string
@@ -45,17 +45,18 @@ function unique(paths: string[]): string[] {
 
 /** Root canonical directory for persistent managed engines outside the installer. */
 export function runtimeRoot(): string {
-  return join(app.getPath('userData'), 'runtime')
+  return join(app.getPath('userData'), 'bin')
 }
 
 /** Root canonical directory for a specific engine kind. */
 export function runtimeKindDir(kind: RuntimeEngineKind): string {
+  if (kind === 'ffmpeg') return runtimeRoot()
   return join(runtimeRoot(), kind)
 }
 
 /** Root canonical directory for persistent models outside the installer. */
-export function modelRoot(kind: 'whisper-cpp' = 'whisper-cpp'): string {
-  return join(app.getPath('userData'), 'models', kind)
+export function modelRoot(kind: 'whisper' | 'whisper-cpp' = 'whisper'): string {
+  return join(app.getPath('userData'), 'whisper-models')
 }
 
 /** Root directory for runtime state metadata and receipts. */
@@ -71,8 +72,8 @@ export function installedRuntimeReceiptPath(): string {
  * Return candidate search directories for a given runtime engine.
  * Priority:
  * 1. Explicit dev override (TEDIAPROS_RUNTIME_DIR) if configured.
- * 2. Canonical managed path in userData/runtime/<kind>.
- * 3. Legacy backward-compatible directories (userData/bin/<kind>, userData/bin, appData/tediapros/bin).
+ * 2. Canonical managed path in userData/bin/<kind> and userData/bin.
+ * 3. Legacy backward-compatible directories (userData/runtime/<kind>, userData/runtime, appData/tediapros/bin).
  *
  * Invariant: Production NEVER contains hidden fallbacks to process.resourcesPath/local-assets.
  */
@@ -85,14 +86,17 @@ export function runtimeSearchRoots(kind: RuntimeEngineKind): string[] {
     roots.push(devOverride)
   }
 
-  // Canonical managed root
-  roots.push(join(app.getPath('userData'), 'runtime', kind))
-
-  // Legacy managed roots for migration / backward-compatibility
+  // Canonical managed roots
   roots.push(join(app.getPath('userData'), 'bin', kind))
   roots.push(join(app.getPath('userData'), 'bin'))
+  roots.push(join(app.getPath('userData'), 'runtime', kind))
+  roots.push(join(app.getPath('userData'), 'runtime'))
+
+  // Legacy managed roots for migration / backward-compatibility
   roots.push(join(app.getPath('appData'), 'tediapros', 'bin', kind))
   roots.push(join(app.getPath('appData'), 'tediapros', 'bin'))
+  roots.push(join(app.getPath('appData'), 'tedia-pros', 'bin', kind))
+  roots.push(join(app.getPath('appData'), 'tedia-pros', 'bin'))
 
   return unique(roots)
 }
@@ -156,7 +160,7 @@ async function canRun(cmd: string, args: string[] = ['--version']): Promise<bool
 
 /**
  * Canonical resolver for FFmpeg.
- * Priority: managed runtime (runtime/ffmpeg, userData/bin) -> PATH.
+ * Priority: managed runtime (userData/bin, userData/runtime) -> PATH.
  */
 export async function resolveFfmpeg(): Promise<string | null> {
   const exeName = exe('ffmpeg')

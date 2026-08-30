@@ -49,7 +49,8 @@ const electronMockPlugin = {
 await build({
   entryPoints: [
     'tests/local-runtime.test.ts',
-    'tests/autoshort-comprehensive-windows.test.ts'
+    'tests/autoshort-comprehensive-windows.test.ts',
+    'tests/e2e-autoshort.test.ts'
   ],
   bundle: true,
   platform: 'node',
@@ -62,7 +63,8 @@ await build({
 
 const result1 = spawnSync(process.execPath, ['--test', join(outDir, 'local-runtime.test.js')], { stdio: 'inherit' })
 const result2 = spawnSync(process.execPath, ['--test', join(outDir, 'autoshort-comprehensive-windows.test.js')], { stdio: 'inherit' })
+const result3 = spawnSync(process.execPath, ['--test', join(outDir, 'e2e-autoshort.test.js')], { stdio: 'inherit' })
 
-if (result1.status !== 0 || result2.status !== 0) {
+if (result1.status !== 0 || result2.status !== 0 || result3.status !== 0) {
   process.exit(1)
 }

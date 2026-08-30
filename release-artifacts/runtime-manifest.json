@@ -4,34 +4,15 @@
   "platform": "win32",
   "arch": "x64",
   "assets": {
-    "whisper-cpp": {
-      "version": "1.0.0",
-      "platform": "win32",
-      "arch": "x64",
-      "asset": "whisper-cpp-win32-x64.zip",
-      "entrypoint": "whisper-local-worker.exe",
-      "sha256": "10e8ebcefee6747bdac9ffd2877d124fe4aec4d39156787573cf844d663755d3",
-      "bytes": 46255165,
-      "protocol": "whisper-local/1"
-    },
     "ocr": {
       "version": "1.0.0",
       "platform": "win32",
       "arch": "x64",
-      "asset": "ocr-win32-x64.zip",
+      "asset": "ocr-engine-win.zip",
       "entrypoint": "ocr-engine.exe",
-      "sha256": "31cc3b4346bb01a58e1207828e09b27d5b6ed9302b5a309b9e817600bdd9a8bc",
-      "bytes": 105591232,
+      "sha256": "4b02a85dede93196a2d2384bc36e259040bc411b0dd2a03f55a7d96974dfa6ce",
+      "bytes": 275618527,
       "protocol": "ocr-local/1"
-    },
-    "ffmpeg": {
-      "version": "7.1.0",
-      "platform": "win32",
-      "arch": "x64",
-      "asset": "ffmpeg-win32-x64.zip",
-      "entrypoint": "ffmpeg.exe",
-      "sha256": "3877c4f83e6843c94f412d57a6b7ede4d9e80ba27f509394c7f08e6ef44bf802",
-      "bytes": 73513031
     }
   }
 }

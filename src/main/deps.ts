@@ -16,6 +16,7 @@ import {
 
 const isWin = process.platform === 'win32'
 const isMac = process.platform === 'darwin'
+export const ASSET_BASE = 'https://github.com/NeeyuBL/neeyut-blao/releases/download/assets-v1'
 const YTDLP_RELEASE_BASE = 'https://github.com/yt-dlp/yt-dlp/releases/latest/download'
 const YTDLP_RELEASE_API = 'https://api.github.com/repos/yt-dlp/yt-dlp/releases/latest'
 let ytDlpInstallInFlight: Promise<void> | null = null
