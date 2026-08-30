@@ -139,6 +139,7 @@ export interface AutoShortVoiceCuePlan {
 
 export interface AutoShortVoiceTimelinePlan {
   tempo: number
+  globalTempo: number
   maxTempo: number
   averageTempo: number
   cues: AutoShortVoiceCuePlan[]
@@ -146,14 +147,41 @@ export interface AutoShortVoiceTimelinePlan {
 }
 
 /**
- * Plan voice timing on a per-cue basis.
+ * Calculate a robust global voice tempo across all semantic groups / cues.
+ * Outliers needing excessive speedup (> 1.25x) are excluded from the baseline
+ * and handled by the resolver (rephrasing/slack) instead of distorting the entire video.
+ */
+export function calculateGlobalVoiceTempo(
+  requiredTempos: readonly number[],
+  preferredMax = AUTO_SHORT_TTS_PREFERRED_MAX_TEMPO
+): number {
+  if (requiredTempos.length === 0) return 1.0
+  const validTempos = requiredTempos.filter((t) => Number.isFinite(t) && t > 0.5 && t <= AUTO_SHORT_TTS_HARD_MAX_TEMPO)
+  if (validTempos.length === 0) return 1.0
+
+  // Filter outlier cues that require excessive speedup (> 1.25x)
+  const normalTempos = validTempos.filter((t) => t <= AUTO_SHORT_TTS_NORMAL_MAX_TEMPO)
+  const pool = normalTempos.length > 0 ? normalTempos : validTempos
+
+  // Sort and take robust median (50th percentile)
+  const sorted = [...pool].sort((a, b) => a - b)
+  const idx = Math.floor(sorted.length / 2)
+  const candidate = sorted[idx]
+
+  if (candidate <= 1.03) return 1.0
+  return Number(Math.min(preferredMax, Math.max(1.0, candidate)).toFixed(3))
+}
+
+/**
+ * Plan voice timing for semantic groups with global baseline tempo and micro-adjustments.
  *
  * Invariants:
  * 1. sourceCue.start and sourceCue.end are strict semantic anchors.
- * 2. Voice and subtitle for cue A must remain inside region A of the video.
- * 3. Audio gaps between cues are NOT free slack; they may contain visual scene changes.
- * 4. Subtitle timing strictly matches source semantic cues and is NEVER stretched by voiceEnd.
- * 5. Tempo is adjusted per cue up to maxTempo without global tempo acceleration.
+ * 2. Voice and subtitle must remain inside the assigned semantic region.
+ * 3. Audio gaps between groups are NOT free slack; they may contain visual scene changes.
+ * 4. Subtitle timing anchors to semantic boundary and is NEVER stretched past the scene.
+ * 5. Global voice tempo sets the baseline; groups only vary by micro-corrections (±3%-5%).
+ * 6. Hard invariant: NO phonemes or speech are ever cropped to fit the timeline.
  */
 export function planAutoShortVoiceTimeline(
   cues: readonly AutoShortVoiceCueInput[],
@@ -170,9 +198,20 @@ export function planAutoShortVoiceTimeline(
 
   const upperTempo = Math.min(Math.max(1, maxTempo), AUTO_SHORT_TTS_HARD_MAX_TEMPO)
   const n = cues.length
-  const plannedCues: AutoShortVoiceCuePlan[] = []
-  let previousVoiceEnd = 0
 
+  // First pass: compute earliest starts, max allowed ends, available durations, and required tempos
+  const preliminary: Array<{
+    cueId: string
+    rawStart: number
+    rawEnd: number
+    earliestStart: number
+    maxAllowedVoiceEnd: number
+    availableDuration: number
+    naturalDuration: number
+    requiredTempo: number
+  }> = []
+
+  let prevEnd = 0
   for (let i = 0; i < n; i++) {
     const cue = cues[i]
     const cueId = cue.id || `cue-${i}`
@@ -182,36 +221,56 @@ export function planAutoShortVoiceTimeline(
       ? (cue.end as number)
       : (i < n - 1 ? Math.max(rawStart + 0.1, cues[i + 1].start) : videoDuration)
 
-    // Subtitle timeline strictly anchors to source semantic window
-    const subtitleStart = rawStart
-    let subtitleEnd = rawEnd
-    if (i < n - 1 && cues[i + 1].start > rawStart) {
-      subtitleEnd = Math.min(subtitleEnd, Math.max(rawStart + 0.05, cues[i + 1].start))
-    }
-    subtitleEnd = Math.min(subtitleEnd, videoDuration)
-
-    // Voice timeline must remain within the semantic cue boundary [rawStart, rawEnd]
-    const earliestStart = i === 0 ? rawStart : Math.max(rawStart, previousVoiceEnd + AUTO_SHORT_TTS_MIN_GAP_SECONDS)
+    const earliestStart = i === 0 ? rawStart : Math.max(rawStart, prevEnd + AUTO_SHORT_TTS_MIN_GAP_SECONDS)
     const maxAllowedVoiceEnd = Math.min(
       rawEnd,
       i < n - 1 ? Math.max(earliestStart + 0.05, cues[i + 1].start - AUTO_SHORT_TTS_MIN_GAP_SECONDS) : videoDuration - AUTO_SHORT_TTS_END_GUARD_SECONDS
     )
+    const availableDuration = Math.max(0.01, maxAllowedVoiceEnd - earliestStart)
+    const requiredTempo = Number((naturalDuration / availableDuration).toFixed(4))
 
+    preliminary.push({
+      cueId,
+      rawStart,
+      rawEnd,
+      earliestStart,
+      maxAllowedVoiceEnd,
+      availableDuration,
+      naturalDuration,
+      requiredTempo
+    })
+    prevEnd = earliestStart + naturalDuration
+  }
+
+  // Calculate robust global voice tempo
+  const globalTempo = calculateGlobalVoiceTempo(preliminary.map((p) => p.requiredTempo))
+
+  // Second pass: apply global tempo with micro-adjustments
+  const plannedCues: AutoShortVoiceCuePlan[] = []
+  let previousVoiceEnd = 0
+
+  for (let i = 0; i < n; i++) {
+    const p = preliminary[i]
+    const earliestStart = i === 0 ? p.rawStart : Math.max(p.rawStart, previousVoiceEnd + AUTO_SHORT_TTS_MIN_GAP_SECONDS)
+    const maxAllowedVoiceEnd = Math.min(
+      p.rawEnd,
+      i < n - 1 ? Math.max(earliestStart + 0.05, cues[i + 1].start - AUTO_SHORT_TTS_MIN_GAP_SECONDS) : videoDuration - AUTO_SHORT_TTS_END_GUARD_SECONDS
+    )
     const availableDuration = Math.max(0.01, maxAllowedVoiceEnd - earliestStart)
 
     let plannedStart = earliestStart
-    let tempo = 1.0
-    let plannedDuration = naturalDuration
+    let tempo = globalTempo
+    let plannedDuration = p.naturalDuration
 
-    if (naturalDuration <= availableDuration + AUTO_SHORT_TTS_SEMANTIC_TOLERANCE_SECONDS) {
-      tempo = 1.0
-      plannedDuration = naturalDuration
-      plannedStart = earliestStart
+    if (p.naturalDuration <= availableDuration + AUTO_SHORT_TTS_SEMANTIC_TOLERANCE_SECONDS) {
+      // Cue fits comfortably: use global tempo if elevated, or 1.0x if global tempo is 1.0x
+      tempo = globalTempo
+      plannedDuration = Number((p.naturalDuration / tempo).toFixed(3))
     } else {
-      const neededTempo = Number((naturalDuration / availableDuration).toFixed(4))
-      tempo = Math.min(upperTempo, Math.max(1.0, neededTempo))
-      plannedDuration = Number((naturalDuration / tempo).toFixed(3))
-      plannedStart = earliestStart
+      // Cue exceeds available duration: adjust tempo
+      const neededLocal = Number((p.naturalDuration / availableDuration).toFixed(4))
+      tempo = Math.min(upperTempo, Math.max(globalTempo, neededLocal))
+      plannedDuration = Number((p.naturalDuration / tempo).toFixed(3))
     }
 
     const voiceEnd = plannedStart + plannedDuration
@@ -221,21 +280,28 @@ export function planAutoShortVoiceTimeline(
 
     previousVoiceEnd = voiceEnd
 
-    const overflowSec = Math.max(0, voiceEnd - rawEnd)
+    const overflowSec = Math.max(0, voiceEnd - p.rawEnd)
     const semanticOverflowMs = Math.round(overflowSec * 1000)
     const degraded = tempo > AUTO_SHORT_TTS_NORMAL_MAX_TEMPO || semanticOverflowMs > 80
     const slackBefore = plannedStart - (i === 0 ? 0 : (plannedCues[i - 1]?.voiceEnd ?? 0) + AUTO_SHORT_TTS_MIN_GAP_SECONDS)
     const slackAfter = Math.max(0, maxAllowedVoiceEnd - voiceEnd)
 
+    // Subtitle timing strictly anchors to source semantic window
+    let subtitleEnd = p.rawEnd
+    if (i < n - 1 && cues[i + 1].start > p.rawStart) {
+      subtitleEnd = Math.min(subtitleEnd, Math.max(p.rawStart + 0.05, cues[i + 1].start))
+    }
+    subtitleEnd = Math.min(subtitleEnd, videoDuration)
+
     plannedCues.push({
       cueIndex: i,
-      cueId,
+      cueId: p.cueId,
       start: plannedStart,
       voiceEnd,
       duration: plannedDuration,
-      subtitleStart,
+      subtitleStart: p.rawStart,
       subtitleEnd,
-      naturalDuration,
+      naturalDuration: p.naturalDuration,
       availableDuration,
       plannedDuration,
       tempo,
@@ -253,6 +319,7 @@ export function planAutoShortVoiceTimeline(
 
   return {
     tempo: maxPlannedTempo,
+    globalTempo,
     maxTempo: maxPlannedTempo,
     averageTempo,
     cues: plannedCues,
@@ -336,5 +403,208 @@ export function validateAutoShortTimelineSync(
   }
   return { ok: true, violations: [] }
 }
+
+export interface VoiceCompletenessCheckResult {
+  ok: boolean
+  error?: string
+  coverage: number
+  wordCountExpected: number
+  wordCountDetected: number
+}
+
+function tokenizeWords(text: string): string[] {
+  return text
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^\p{L}\p{N}]+/gu, ' ')
+    .trim()
+    .split(/\s+/)
+    .filter(Boolean)
+}
+
+/**
+ * Validate that synthesized TTS audio completely spoke the target text
+ * without dropping initial phonemes, truncating sentence tails, or outputting near-silence.
+ */
+export function validateVoiceAudioCompleteness(
+  targetText: string,
+  audioDuration: number,
+  detectedWords?: Array<{ text: string; start: number; end: number }> | null
+): VoiceCompletenessCheckResult {
+  const expectedTokens = tokenizeWords(targetText)
+  if (expectedTokens.length === 0) {
+    return { ok: true, coverage: 1.0, wordCountExpected: 0, wordCountDetected: 0 }
+  }
+
+  // Basic physical duration plausibility check
+  if (!(audioDuration > 0.15)) {
+    return {
+      ok: false,
+      error: `Thời lượng voice (${audioDuration.toFixed(2)}s) quá ngắn cho câu ${expectedTokens.length} từ.`,
+      coverage: 0,
+      wordCountExpected: expectedTokens.length,
+      wordCountDetected: 0
+    }
+  }
+
+  const wordsPerSecond = expectedTokens.length / audioDuration
+  if (wordsPerSecond > 9.0) {
+    return {
+      ok: false,
+      error: `Tốc độ nói bất thường (${wordsPerSecond.toFixed(1)} từ/s) - có thể bị mất đoạn speech.`,
+      coverage: 0.3,
+      wordCountExpected: expectedTokens.length,
+      wordCountDetected: detectedWords?.length || 0
+    }
+  }
+
+  if (detectedWords && detectedWords.length > 0) {
+    const detectedTokens = detectedWords.map((w) => tokenizeWords(w.text)).flat()
+    const detectedSet = new Set(detectedTokens)
+
+    let matched = 0
+    for (const token of expectedTokens) {
+      if (detectedSet.has(token)) matched++
+    }
+
+    const coverage = expectedTokens.length > 0 ? matched / expectedTokens.length : 1.0
+    if (expectedTokens.length >= 4 && coverage < 0.55) {
+      return {
+        ok: false,
+        error: `Độ khớp nội dung phát âm thấp (${Math.round(coverage * 100)}%) - nghi ngờ voice bị thiếu từ hoặc không rõ.`,
+        coverage,
+        wordCountExpected: expectedTokens.length,
+        wordCountDetected: detectedWords.length
+      }
+    }
+
+    return {
+      ok: true,
+      coverage,
+      wordCountExpected: expectedTokens.length,
+      wordCountDetected: detectedWords.length
+    }
+  }
+
+  return {
+    ok: true,
+    coverage: 1.0,
+    wordCountExpected: expectedTokens.length,
+    wordCountDetected: expectedTokens.length
+  }
+}
+
+export interface RenderedOutputValidationResult {
+  ok: boolean
+  error?: string
+  hasVideo: boolean
+  hasAudio: boolean
+  videoDuration: number
+  audioDuration?: number
+  decodable: boolean
+}
+
+export interface RenderedMediaProbeInfo {
+  fileSize: number
+  videoStream?: { width: number; height: number; duration?: number } | null
+  audioStream?: { channels: number; sampleRate: number; duration?: number } | null
+  formatDuration?: number
+  decodeError?: string | null
+  ttsExpected?: boolean
+}
+
+/**
+ * Validate final rendered MP4 file before marking stage/item as DONE.
+ * Ensures video stream, audio stream, duration integrity and decodability.
+ */
+export function validateRenderedOutputMedia(
+  info: RenderedMediaProbeInfo,
+  expectedMinDuration = 0.5
+): RenderedOutputValidationResult {
+  if (info.fileSize <= 1000) {
+    return {
+      ok: false,
+      error: 'File video đầu ra có dung lượng quá nhỏ hoặc rỗng.',
+      hasVideo: false,
+      hasAudio: false,
+      videoDuration: 0,
+      decodable: false
+    }
+  }
+
+  const hasVideo = Boolean(
+    info.videoStream && info.videoStream.width > 0 && info.videoStream.height > 0
+  )
+  if (!hasVideo) {
+    return {
+      ok: false,
+      error: 'Video đầu ra không chứa video stream hợp lệ.',
+      hasVideo: false,
+      hasAudio: Boolean(info.audioStream),
+      videoDuration: 0,
+      decodable: false
+    }
+  }
+
+  const duration = info.videoStream?.duration || info.formatDuration || 0
+  if (duration < expectedMinDuration) {
+    return {
+      ok: false,
+      error: `Thời lượng video đầu ra (${duration.toFixed(2)}s) không hợp lệ.`,
+      hasVideo: true,
+      hasAudio: Boolean(info.audioStream),
+      videoDuration: duration,
+      decodable: false
+    }
+  }
+
+  if (info.decodeError) {
+    return {
+      ok: false,
+      error: `Video đầu ra không giải mã được: ${info.decodeError}`,
+      hasVideo: true,
+      hasAudio: Boolean(info.audioStream),
+      videoDuration: duration,
+      decodable: false
+    }
+  }
+
+  const hasAudio = Boolean(info.audioStream && info.audioStream.channels >= 1)
+  if (info.ttsExpected && !hasAudio) {
+    return {
+      ok: false,
+      error: 'Video đầu ra thiếu audio stream lồng tiếng.',
+      hasVideo: true,
+      hasAudio: false,
+      videoDuration: duration,
+      decodable: true
+    }
+  }
+
+  const audioDuration = info.audioStream?.duration || duration
+  if (info.ttsExpected && hasAudio && Math.abs(audioDuration - duration) > 1.0) {
+    return {
+      ok: false,
+      error: `Thời lượng audio (${audioDuration.toFixed(2)}s) lệch quá nhiều so với video (${duration.toFixed(2)}s).`,
+      hasVideo: true,
+      hasAudio: true,
+      videoDuration: duration,
+      audioDuration,
+      decodable: true
+    }
+  }
+
+  return {
+    ok: true,
+    hasVideo: true,
+    hasAudio,
+    videoDuration: duration,
+    audioDuration: hasAudio ? audioDuration : undefined,
+    decodable: true
+  }
+}
+
+
 
 

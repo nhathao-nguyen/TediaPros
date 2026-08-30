@@ -803,6 +803,8 @@ export default function AutoShort(): JSX.Element {
       const next = await refreshAutoShortReadiness()
       if (!next?.ready) throw new Error(next?.message || 'Dependency chưa sẵn sàng sau khi tải.')
       setShowDependencyModal(false)
+      // Tự động tiếp tục chạy flow Auto Short vừa bấm trước đó
+      void startBatch()
     } catch (error) {
       setDependencyError(error instanceof Error ? error.message : 'Không thể chuẩn bị dependency.')
     } finally {

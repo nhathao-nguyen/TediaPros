@@ -10,11 +10,16 @@ import {
   resolveAutoShortWhisperLanguage,
   validateAutoShortTtsModel,
   validateAutoShortTimelineSync,
+  validateVoiceAudioCompleteness,
+  validateRenderedOutputMedia,
+  type RenderedMediaProbeInfo,
+  type AutoShortVoiceCueInput,
   AUTO_SHORT_TTS_MAX_TEMPO,
   AUTO_SHORT_TTS_NORMAL_MAX_TEMPO,
   AUTO_SHORT_TTS_TAIL_MARGIN_SECONDS,
   buildAutoShortTtsTrimFilter
 } from './autoShortPolicy'
+import { buildSemanticGroups, joinGroupText, type SemanticGroup } from './semanticGrouping'
 import { huongDan, parseTranslationItems } from './translate-shared'
 import { resolveTranslationSourceLanguage } from './localTranslatePolicy'
 import { debugRaw, logInfo, logWarn, logError, errLabel } from './logger'
@@ -747,14 +752,13 @@ async function synthesizeVoice(
   maxTempo: number
   degraded: boolean
   diagnostics: AutoShortCueDiagnostic[]
+  groupSourceInputs: AutoShortVoiceCueInput[]
   artifacts: AutoShortArtifactEntry[]
 }> {
   const ffmpeg = await resolveFfmpeg()
   if (!ffmpeg) throw new Error('Thiếu FFmpeg để chuẩn hóa voice.')
 
   const sourceMap = new Map(sourceCues.map((c, i) => [c.id || `cue-${i}`, c]))
-  const generatedClips: Array<{ cue: SubtitleCue; path: string; rawDuration: number }> = []
-  let voice: string | undefined
   const localKey = await loadLocalKey()
   const language = resolveAutoShortTtsLanguage(config, detectedLanguage)
   if (language === 'auto' || !language) throw new Error('Không xác định được ngôn ngữ TTS; hãy chọn ngôn ngữ nguồn hoặc đích.')
@@ -783,18 +787,34 @@ async function synthesizeVoice(
     }
   }
 
-  for (let cueIndex = 0; cueIndex < cues.length; cueIndex++) {
+  // 1. Group consecutive cues into semantic groups for natural prosody
+  const semanticGroups = buildSemanticGroups(cues)
+  logInfo(`[AutoShort] Đã gom ${cues.length} cue thành ${semanticGroups.length} semantic group để lồng tiếng tự nhiên.`)
+
+  let voice: string | undefined
+  const generatedGroupClips: Array<{
+    group: SemanticGroup<SubtitleCue>
+    path: string
+    rawDuration: number
+    text: string
+  }> = []
+
+  // 2. Synthesize each semantic group with completeness validation and retry
+  for (let gIndex = 0; gIndex < semanticGroups.length; gIndex++) {
     throwIfAborted(job.controller.signal)
-    const cue = cues[cueIndex]
-    emitProgress(job, item, 'generating_tts', 58 + (cueIndex / cues.length) * 20, `Đang tạo voice ${cueIndex + 1}/${cues.length}`, index, total)
+    const group = semanticGroups[gIndex]
+    const groupText = joinGroupText(group.cues)
+    emitProgress(job, item, 'generating_tts', 58 + (gIndex / semanticGroups.length) * 20, `Đang tạo voice ${gIndex + 1}/${semanticGroups.length}`, index, total)
+    
     let lastError = 'Không tạo được voice'
     let wasGenerated = false
+
     for (let attempt = 0; attempt < 3 && !wasGenerated; attempt++) {
       try {
-        const clipPath = join(workDir, `speech-${cueIndex}.wav`)
+        const clipPath = join(workDir, `group-${gIndex}.wav`)
         const request = {
           serverUrl: config.ttsServerUrl,
-          text: cue.text,
+          text: groupText,
           language,
           model: effectiveModel,
           voice: effectiveVoice,
@@ -808,7 +828,14 @@ async function synthesizeVoice(
         if (!result.ok || !result.savedPath) throw new Error(result.error || 'Server không trả về audio')
         voice = result.voice || voice
         const rawDuration = await probeDuration(ffmpeg, result.savedPath, job.controller.signal)
-        generatedClips.push({ cue, path: result.savedPath, rawDuration })
+
+        // Validate audio completeness
+        const completeness = validateVoiceAudioCompleteness(groupText, rawDuration)
+        if (!completeness.ok) {
+          throw new Error(completeness.error || 'Audio phát âm không đầy đủ nội dung')
+        }
+
+        generatedGroupClips.push({ group, path: result.savedPath, rawDuration, text: groupText })
         wasGenerated = true
       } catch (error) {
         lastError = errLabel(error)
@@ -816,50 +843,51 @@ async function synthesizeVoice(
         if (attempt < 2) await new Promise((resolve) => setTimeout(resolve, 500 * (attempt + 1)))
       }
     }
-    if (!wasGenerated) throw new Error(`Voice câu ${cueIndex + 1} thất bại: ${lastError}`)
+    if (!wasGenerated) throw new Error(`Voice đoạn ${gIndex + 1} (${group.id}) thất bại: ${lastError}`)
   }
-  if (generatedClips.length !== cues.length) throw new Error('Số đoạn voice không khớp số câu phụ đề')
 
+  // 3. Trim outer silence and perform duration-aware rephrasing if needed
   const preparedClips: Array<{
-    cue: SubtitleCue
+    group: SemanticGroup<SubtitleCue>
     path: string
     rawPath: string
     rawDuration: number
     naturalDuration: number
     rephraseAttempted: boolean
+    text: string
   }> = []
 
-  for (let cueIndex = 0; cueIndex < generatedClips.length; cueIndex++) {
+  for (let gIndex = 0; gIndex < generatedGroupClips.length; gIndex++) {
     throwIfAborted(job.controller.signal)
-    const current = generatedClips[cueIndex]
-    const trimmedPath = join(workDir, `speech-${cueIndex}-trim.wav`)
+    const current = generatedGroupClips[gIndex]
+    const trimmedPath = join(workDir, `group-${gIndex}-trim.wav`)
     let naturalDuration = await trimVoiceClip(ffmpeg, current.path, trimmedPath, job.controller.signal)
-    if (!(naturalDuration > 0.05)) throw new Error(`Voice câu ${cueIndex + 1} không có âm thanh hợp lệ.`)
+    if (!(naturalDuration > 0.05)) throw new Error(`Voice đoạn ${gIndex + 1} không có âm thanh hợp lệ.`)
 
-    const cueNominalDuration = current.cue.end != null && current.cue.end >= current.cue.start
-      ? current.cue.end - current.cue.start
-      : 2.5
-    const availableDuration = Math.max(0.1, cueNominalDuration)
+    const gStart = current.group.start ?? current.group.cues[0]?.start ?? 0
+    const gEnd = current.group.end ?? current.group.cues[current.group.cues.length - 1]?.end ?? (gStart + 2.5)
+    const groupNominalDuration = gEnd >= gStart ? gEnd - gStart : 2.5
+    const availableDuration = Math.max(0.1, groupNominalDuration)
     let rephraseAttempted = false
+    let finalText = current.text
     let finalPath = trimmedPath
 
-    // If TTS duration exceeds mild tempo limit, attempt duration-aware rephrase
     if (naturalDuration > availableDuration * AUTO_SHORT_TTS_NORMAL_MAX_TEMPO && config.ttsEnabled) {
       rephraseAttempted = true
-      logInfo(`[AutoShort] Câu ${cueIndex + 1} (${current.cue.id || cueIndex}) có thời lượng ${naturalDuration.toFixed(2)}s vượt ${availableDuration.toFixed(2)}s. Đang rephrase ngắn gọn…`)
+      logInfo(`[AutoShort] Đoạn ${gIndex + 1} (${current.group.id}) thời lượng ${naturalDuration.toFixed(2)}s vượt ${availableDuration.toFixed(2)}s. Đang rephrase giữ trọn nghĩa…`)
       const rephrasedText = await rephraseDubbingCue(
         config,
-        current.cue.id || `cue-${cueIndex}`,
-        current.cue.text,
+        current.group.id || `group-${gIndex}`,
+        current.text,
         availableDuration,
         language,
         detectedLanguage,
         job.controller.signal
       )
-      if (rephrasedText && rephrasedText.trim() && rephrasedText.trim() !== current.cue.text.trim()) {
+      if (rephrasedText && rephrasedText.trim() && rephrasedText.trim() !== current.text.trim()) {
         try {
-          const rephraseRawPath = join(workDir, `speech-${cueIndex}-rephrase.wav`)
-          const rephraseTrimPath = join(workDir, `speech-${cueIndex}-rephrase-trim.wav`)
+          const rephraseRawPath = join(workDir, `group-${gIndex}-rephrase.wav`)
+          const rephraseTrimPath = join(workDir, `group-${gIndex}-rephrase-trim.wav`)
           const request = {
             serverUrl: config.ttsServerUrl,
             text: rephrasedText.trim(),
@@ -876,53 +904,60 @@ async function synthesizeVoice(
           if (repResult.ok && repResult.savedPath) {
             const repNatDur = await trimVoiceClip(ffmpeg, repResult.savedPath, rephraseTrimPath, job.controller.signal)
             if (repNatDur > 0.05 && repNatDur < naturalDuration) {
-              current.cue.text = rephrasedText.trim()
+              finalText = rephrasedText.trim()
               naturalDuration = repNatDur
               finalPath = rephraseTrimPath
-              logInfo(`[AutoShort] Câu ${cueIndex + 1} đã rephrase thành công (${naturalDuration.toFixed(2)}s).`)
+              logInfo(`[AutoShort] Đoạn ${gIndex + 1} đã rephrase thành công (${naturalDuration.toFixed(2)}s).`)
             }
           }
         } catch (repErr) {
-          logWarn(`[AutoShort] Rephrase audio câu ${cueIndex + 1} thất bại: ${errLabel(repErr)}`)
+          logWarn(`[AutoShort] Rephrase audio đoạn ${gIndex + 1} thất bại: ${errLabel(repErr)}`)
         }
       }
     }
 
     preparedClips.push({
-      cue: current.cue,
+      group: current.group,
       path: finalPath,
       rawPath: current.path,
       rawDuration: current.rawDuration,
       naturalDuration,
-      rephraseAttempted
+      rephraseAttempted,
+      text: finalText
     })
   }
 
+  // 4. Plan voice timeline for semantic groups using robust global tempo
+  const groupSourceInputs: AutoShortVoiceCueInput[] = preparedClips.map(({ group, text }) => {
+    const start = group.start ?? group.cues[0]?.start ?? 0
+    const end = group.end ?? group.cues[group.cues.length - 1]?.end ?? (start + 2.5)
+    return { id: group.id, start, end, text }
+  })
   const timing = planAutoShortVoiceTimeline(
-    preparedClips.map(({ cue }) => cue),
+    groupSourceInputs,
     preparedClips.map(({ naturalDuration }) => naturalDuration),
     videoDuration,
     AUTO_SHORT_TTS_MAX_TEMPO
   )
-  if (timing.maxTempo > 1.001) {
-    logInfo(`[AutoShort] Lập timeline hoàn tất. Tốc độ cao nhất: ${timing.maxTempo.toFixed(3)}x, trung bình: ${timing.averageTempo.toFixed(3)}x.`)
-  }
 
+  logInfo(`[AutoShort] Lập timeline voice hoàn tất. Global tempo: ${timing.globalTempo.toFixed(3)}x, max tempo: ${timing.maxTempo.toFixed(3)}x, avg tempo: ${timing.averageTempo.toFixed(3)}x.`)
+
+  // 5. Apply tempo speedup per group and redistribute subtitle timing to constituent cues
   const clips: Array<{ start: number; path: string }> = []
   const timedCues: SubtitleCue[] = []
   const diagnostics: AutoShortCueDiagnostic[] = []
   const artifacts: AutoShortArtifactEntry[] = []
 
-  for (let cueIndex = 0; cueIndex < preparedClips.length; cueIndex++) {
+  for (let gIndex = 0; gIndex < preparedClips.length; gIndex++) {
     throwIfAborted(job.controller.signal)
-    const current = preparedClips[cueIndex]
-    const planned = timing.cues[cueIndex]
+    const current = preparedClips[gIndex]
+    const planned = timing.cues[gIndex]
     let path = current.path
     let duration = current.naturalDuration
     let tempoPath: string | undefined
 
     if (planned.tempo > 1.001) {
-      const fittedPath = join(workDir, `speech-${cueIndex}-tempo.wav`)
+      const fittedPath = join(workDir, `group-${gIndex}-tempo.wav`)
       duration = await speedUpVoiceClip(
         ffmpeg,
         current.path,
@@ -936,21 +971,21 @@ async function synthesizeVoice(
     }
 
     const speechEnd = planned.start + duration
-    if (cueIndex === preparedClips.length - 1 && speechEnd > videoDuration + 0.25) {
+    if (gIndex === preparedClips.length - 1 && speechEnd > videoDuration + 0.25) {
       throw new Error('Voice cuối vượt thời lượng video sau khi căn tốc độ; không cắt nội dung.')
     }
     const cutOffDetected = speechEnd > videoDuration + 0.25
-    const overlap = cueIndex > 0 && planned.start < timing.cues[cueIndex - 1].voiceEnd - 0.001
+    const overlap = gIndex > 0 && planned.start < timing.cues[gIndex - 1].voiceEnd - 0.001
     const effectiveTailMargin = AUTO_SHORT_TTS_TAIL_MARGIN_SECONDS / (planned.tempo > 1.001 ? planned.tempo : 1.0)
-    const srcCue = sourceMap.get(current.cue.id || `cue-${cueIndex}`) || sourceCues[cueIndex] || current.cue
+    const srcCue = sourceMap.get(current.group.cues[0]?.id || `cue-${gIndex}`) || sourceCues[gIndex] || current.group.cues[0]
 
     diagnostics.push({
-      cueIndex,
-      cueId: current.cue.id || `cue-${cueIndex}`,
-      sourceStart: srcCue.start,
-      sourceEnd: srcCue.end ?? planned.subtitleEnd,
-      sourceText: srcCue.text,
-      translatedText: current.cue.text,
+      cueIndex: gIndex,
+      cueId: current.group.id || `group-${gIndex}`,
+      sourceStart: srcCue ? srcCue.start : planned.subtitleStart,
+      sourceEnd: srcCue?.end ?? planned.subtitleEnd,
+      sourceText: current.group.cues.map((c) => c.text).join(' '),
+      translatedText: current.text,
       cueStart: planned.subtitleStart,
       cueEnd: planned.subtitleEnd,
       rawPath: current.rawPath,
@@ -981,20 +1016,48 @@ async function synthesizeVoice(
       degraded: planned.degraded
     })
 
-    artifacts.push({ source: current.rawPath, name: `speech-${cueIndex}-raw.wav` })
-    artifacts.push({ source: current.path, name: `speech-${cueIndex}-trim.wav` })
+    artifacts.push({ source: current.rawPath, name: `group-${gIndex}-raw.wav` })
+    artifacts.push({ source: current.path, name: `group-${gIndex}-trim.wav` })
     if (tempoPath) {
-      artifacts.push({ source: tempoPath, name: `speech-${cueIndex}-tempo.wav` })
+      artifacts.push({ source: tempoPath, name: `group-${gIndex}-tempo.wav` })
     }
 
     clips.push({ start: planned.start, path })
-    timedCues.push({ ...current.cue, start: planned.subtitleStart, end: planned.subtitleEnd })
+
+    // Subtitle redistribution for multi-cue groups
+    if (current.group.cues.length <= 1) {
+      const single = current.group.cues[0] || { id: `cue-${gIndex}`, start: planned.subtitleStart, end: planned.subtitleEnd, text: current.text }
+      timedCues.push({
+        ...single,
+        text: current.text,
+        start: planned.subtitleStart,
+        end: planned.subtitleEnd
+      })
+    } else {
+      const totalWords = current.group.cues.reduce((sum, c) => sum + Math.max(1, c.text.trim().split(/\s+/).length), 0)
+      let offset = planned.subtitleStart
+      const totalSubDur = planned.subtitleEnd - planned.subtitleStart
+
+      for (let cIdx = 0; cIdx < current.group.cues.length; cIdx++) {
+        const subCue = current.group.cues[cIdx]
+        const words = Math.max(1, subCue.text.trim().split(/\s+/).length)
+        const subDur = (words / totalWords) * totalSubDur
+        const subStart = offset
+        const subEnd = cIdx === current.group.cues.length - 1 ? planned.subtitleEnd : offset + subDur
+        timedCues.push({
+          ...subCue,
+          start: Number(subStart.toFixed(3)),
+          end: Number(subEnd.toFixed(3))
+        })
+        offset = subEnd
+      }
+    }
   }
 
   const anyRephrased = preparedClips.some((c) => c.rephraseAttempted)
   if (anyRephrased) {
     const dubbingSrtPath = join(workDir, 'dubbing.srt')
-    await writeFile(dubbingSrtPath, serializeSrt(preparedClips.map((c) => c.cue)), 'utf8')
+    await writeFile(dubbingSrtPath, serializeSrt(timedCues), 'utf8')
     artifacts.push({ source: dubbingSrtPath, name: 'dubbing.srt' })
   }
 
@@ -1010,22 +1073,87 @@ async function synthesizeVoice(
     maxTempo: timing.maxTempo,
     degraded: timing.degraded,
     diagnostics,
+    groupSourceInputs,
     artifacts
   }
 }
 
-async function processSingleVideo(job: AutoShortJob, item: AutoShortQueueItemInput, config: AutoShortConfig, index: number, total: number): Promise<AutoShortItemResult> {
+async function probeOutputMediaWithFfprobe(
+  ffmpegPath: string,
+  outputPath: string,
+  ttsExpected = false
+): Promise<{ ok: boolean; error?: string }> {
+  try {
+    const meta = await probeBurnMedia(outputPath).catch(() => ({ giay: 0, w: 0, h: 0, hasAudio: false }))
+    const fileStat = await stat(outputPath).catch(() => null)
+    const fileSize = fileStat?.size || 0
+
+    let decodeError: string | null = null
+    try {
+      await new Promise<void>((resolve, reject) => {
+        const child = spawn(ffmpegPath, ['-v', 'error', '-i', outputPath, '-f', 'null', '-'], { windowsHide: true })
+        let err = ''
+        child.stderr?.on('data', (d: Buffer) => { err += d.toString() })
+        child.on('error', reject)
+        child.on('close', (code) => {
+          if (code === 0 && !err.trim()) resolve()
+          else reject(new Error(err.trim() || `ffmpeg decode exited with code ${code}`))
+        })
+      })
+    } catch (err) {
+      decodeError = errLabel(err)
+    }
+
+    const probeInfo: RenderedMediaProbeInfo = {
+      fileSize,
+      videoStream: meta.w > 0 && meta.h > 0 ? { width: meta.w, height: meta.h, duration: meta.giay } : null,
+      audioStream: meta.hasAudio ? { channels: 2, sampleRate: 44100, duration: meta.giay } : null,
+      formatDuration: meta.giay,
+      decodeError,
+      ttsExpected
+    }
+
+    const res = validateRenderedOutputMedia(probeInfo)
+    return { ok: res.ok, error: res.error }
+  } catch (error) {
+    return { ok: false, error: errLabel(error) }
+  }
+}
+
+async function processSingleVideo(
+  job: AutoShortJob,
+  item: AutoShortQueueItemInput,
+  config: AutoShortConfig,
+  index: number,
+  total: number
+): Promise<AutoShortItemResult> {
   const workDir = join(app.getPath('temp'), `tblao-autoshort-${job.id}-${item.id.slice(0, 8)}`)
+  const checkpointDir = join(app.getPath('userData'), 'autoshort-checkpoints', safeArtifactSegment(item.id))
   const artifactDir = join(config.outputDir, `.autoshort-audit-${job.id}-${safeArtifactSegment(item.id)}`)
   const artifactEntries: AutoShortArtifactEntry[] = []
   await mkdir(workDir, { recursive: true })
+  await mkdir(checkpointDir, { recursive: true })
+
+  const checkpointFile = join(checkpointDir, 'checkpoint.json')
+  let checkpoint: {
+    sourceCues?: AlignedCue[]
+    detectedSourceLanguage?: string | null
+    translatedCues?: SubtitleCue[]
+  } = {}
+  try {
+    checkpoint = JSON.parse(await readFile(checkpointFile, 'utf8'))
+  } catch {
+    checkpoint = {}
+  }
+
   let extractedCueCount: number | undefined
   let translatedCueCount: number | undefined
   let generatedVoiceCount: number | undefined
   let voice: string | undefined
-  let detectedSourceLanguage: string | null = null
+  let detectedSourceLanguage: string | null = checkpoint.detectedSourceLanguage || null
   let outputName: string | undefined
   let artifactPath: string | undefined
+
   try {
     throwIfAborted(job.controller.signal)
     const inputInfo = await stat(item.filePath).catch(() => null)
@@ -1042,95 +1170,125 @@ async function processSingleVideo(job: AutoShortJob, item: AutoShortQueueItemInp
     const subtitleRegion = normalizedToPixels(config.subRegion, meta.w, meta.h)
     const blurRegions = blurRegionsToPixels(config.blurRegions, meta.w, meta.h)
 
-    emitProgress(job, item, 'extracting_sub', 5, 'Đang tạo phụ đề SRT…', index, total)
     const rawSrtPath = join(workDir, 'source.srt')
-    const runOcr = async (): Promise<AlignedCue[]> => {
-      const ocrDir = join(workDir, 'ocr')
-      await mkdir(ocrDir, { recursive: true })
-      const ocrResult = await ocrVideo(item.filePath, ocrDir, ocrRegion.y0, ocrRegion.y1, ocrRegion.x0, ocrRegion.x1, ['.srt'], (p) => {
-        emitProgress(job, item, 'extracting_sub', 5 + Math.max(0, p.percent) * 0.25, p.text || 'Đang quét chữ trong video…', index, total)
-      }, job.controller.signal, 8)
-      if (!ocrResult.ok || !ocrResult.outputs?.length) throw new Error(ocrResult.error || 'OCR không tạo được SRT')
-      const cues = parseSrt(await readFile(ocrResult.outputs[0], 'utf8')).cues.filter((cue) => cue.text.trim())
-      if (cues.length === 0) throw new Error('OCR không nhận được câu phụ đề hợp lệ')
-      return alignedFromSrt(cues, 'ocr')
-    }
-    const runWhisper = async (): Promise<{ cues: AlignedCue[]; language: string | null }> => {
-      const whisperDir = join(workDir, 'whisper')
-      await mkdir(whisperDir, { recursive: true })
-      const whisperResult = await transcribeAudio(job.id, {
-        input: item.filePath,
-        outputDir: whisperDir,
-        model: config.whisperModel || 'base',
-        language: resolveAutoShortWhisperLanguage(config.whisperLanguage),
-        task: 'transcribe',
-        formats: ['srt'],
-        device: needsCuda(config) ? 'cuda' : 'cpu',
-        diarize: false,
-        speakers: 0
-      }, (p: WhisperProgress) => {
-        emitProgress(job, item, 'extracting_sub', 5 + Math.max(0, p.percent) * 0.25, p.line || 'Đang nhận diện giọng nói…', index, total)
-      }, job.controller.signal)
-      if (!whisperResult.ok || !whisperResult.outputs.length) throw new Error(whisperResult.error || 'Whisper không tạo được SRT')
-      if (needsCuda(config) && whisperResult.effectiveDevice !== 'cuda') {
-        throw new Error('Whisper không xác nhận được CUDA; đã dừng để tránh chạy CPU ngầm.')
-      }
-      const srtPath = whisperResult.outputs.find((path) => path.toLowerCase().endsWith('.srt')) || whisperResult.outputs[0]
-      const cues = await readWhisperAlignedCues(srtPath, whisperResult.alignmentPath)
-      if (cues.length === 0) throw new Error('Whisper không nhận được câu phụ đề hợp lệ')
-      return { cues, language: whisperResult.language || null }
-    }
-    let extracted: AlignedCue[] = []
-    if (config.subtitleMethod === 'ocr') {
-      extracted = await runOcr()
-    } else if (config.subtitleMethod === 'whisper-ocr') {
-      const [whisper, ocr] = await Promise.allSettled([runWhisper(), runOcr()])
-      if (job.controller.signal.aborted) throw new Error('Đã hủy tác vụ')
-      const speech = whisper.status === 'fulfilled' ? whisper.value.cues : []
-      const visual = ocr.status === 'fulfilled' ? ocr.value : []
-      detectedSourceLanguage = whisper.status === 'fulfilled' ? whisper.value.language : null
-      if (whisper.status === 'rejected') logWarn(`[AutoShort] Fast-Whisper không khả dụng: ${errLabel(whisper.reason)}`)
-      if (ocr.status === 'rejected') logWarn(`[AutoShort] OCR không khả dụng: ${errLabel(ocr.reason)}`)
-      extracted = speech.length && visual.length ? fuseWhisperAndOcr(speech, visual) : speech.length ? speech : visual
-      if (extracted.length === 0) {
-        throw new Error('Fast-Whisper và OCR đều không tạo được phụ đề hợp lệ.')
-      }
-      await writeFile(join(workDir, 'source.alignment.json'), JSON.stringify(extracted, null, 2), 'utf8')
-    } else {
-      const whisper = await runWhisper()
-      extracted = whisper.cues
-      detectedSourceLanguage = whisper.language
-    }
-    const boundedExtracted = clampAlignedCueTimeline(extracted, meta.giay)
-    if (boundedExtracted.length === 0) throw new Error('SRT nguồn không có câu nằm trong thời lượng video')
-    await writeFile(rawSrtPath, serializeAlignedCues(boundedExtracted), 'utf8')
-    artifactEntries.push({ source: rawSrtPath, name: 'source.srt' })
-    const sourceCues = parseSrt(await readFile(rawSrtPath, 'utf8')).cues.filter((cue) => cue.text.trim())
-    if (sourceCues.length === 0) throw new Error('SRT nguồn không có câu hợp lệ')
-    extractedCueCount = sourceCues.length
+    let sourceCues: SubtitleCue[] = []
 
+    // 1. Stage: Subtitle Extraction (check checkpoint first)
+    if (checkpoint.sourceCues && checkpoint.sourceCues.length > 0) {
+      logInfo(`[AutoShort] Phục hồi ${checkpoint.sourceCues.length} câu nguồn từ checkpoint.`)
+      await writeFile(rawSrtPath, serializeAlignedCues(checkpoint.sourceCues), 'utf8')
+      sourceCues = parseSrt(await readFile(rawSrtPath, 'utf8')).cues.filter((cue) => cue.text.trim())
+      extractedCueCount = sourceCues.length
+    } else {
+      emitProgress(job, item, 'extracting_sub', 5, 'Đang tạo phụ đề SRT…', index, total)
+      const runOcr = async (): Promise<AlignedCue[]> => {
+        const ocrDir = join(workDir, 'ocr')
+        await mkdir(ocrDir, { recursive: true })
+        const ocrResult = await ocrVideo(item.filePath, ocrDir, ocrRegion.y0, ocrRegion.y1, ocrRegion.x0, ocrRegion.x1, ['.srt'], (p) => {
+          emitProgress(job, item, 'extracting_sub', 5 + Math.max(0, p.percent) * 0.25, p.text || 'Đang quét chữ trong video…', index, total)
+        }, job.controller.signal, 8)
+        if (!ocrResult.ok || !ocrResult.outputs?.length) throw new Error(ocrResult.error || 'OCR không tạo được SRT')
+        const cues = parseSrt(await readFile(ocrResult.outputs[0], 'utf8')).cues.filter((cue) => cue.text.trim())
+        if (cues.length === 0) throw new Error('OCR không nhận được câu phụ đề hợp lệ')
+        return alignedFromSrt(cues, 'ocr')
+      }
+      const runWhisper = async (): Promise<{ cues: AlignedCue[]; language: string | null }> => {
+        const whisperDir = join(workDir, 'whisper')
+        await mkdir(whisperDir, { recursive: true })
+        const whisperResult = await transcribeAudio(job.id, {
+          input: item.filePath,
+          outputDir: whisperDir,
+          model: config.whisperModel || 'base',
+          language: resolveAutoShortWhisperLanguage(config.whisperLanguage),
+          task: 'transcribe',
+          formats: ['srt'],
+          device: needsCuda(config) ? 'cuda' : 'cpu',
+          diarize: false,
+          speakers: 0
+        }, (p: WhisperProgress) => {
+          emitProgress(job, item, 'extracting_sub', 5 + Math.max(0, p.percent) * 0.25, p.line || 'Đang nhận diện giọng nói…', index, total)
+        }, job.controller.signal)
+        if (!whisperResult.ok || !whisperResult.outputs.length) throw new Error(whisperResult.error || 'Whisper không tạo được SRT')
+        if (needsCuda(config) && whisperResult.effectiveDevice !== 'cuda') {
+          throw new Error('Whisper không xác nhận được CUDA; đã dừng để tránh chạy CPU ngầm.')
+        }
+        const srtPath = whisperResult.outputs.find((path) => path.toLowerCase().endsWith('.srt')) || whisperResult.outputs[0]
+        const cues = await readWhisperAlignedCues(srtPath, whisperResult.alignmentPath)
+        if (cues.length === 0) throw new Error('Whisper không nhận được câu phụ đề hợp lệ')
+        return { cues, language: whisperResult.language || null }
+      }
+      let extracted: AlignedCue[] = []
+      if (config.subtitleMethod === 'ocr') {
+        extracted = await runOcr()
+      } else if (config.subtitleMethod === 'whisper-ocr') {
+        const [whisper, ocr] = await Promise.allSettled([runWhisper(), runOcr()])
+        if (job.controller.signal.aborted) throw new Error('Đã hủy tác vụ')
+        const speech = whisper.status === 'fulfilled' ? whisper.value.cues : []
+        const visual = ocr.status === 'fulfilled' ? ocr.value : []
+        detectedSourceLanguage = whisper.status === 'fulfilled' ? whisper.value.language : null
+        if (whisper.status === 'rejected') logWarn(`[AutoShort] Fast-Whisper không khả dụng: ${errLabel(whisper.reason)}`)
+        if (ocr.status === 'rejected') logWarn(`[AutoShort] OCR không khả dụng: ${errLabel(ocr.reason)}`)
+        extracted = speech.length && visual.length ? fuseWhisperAndOcr(speech, visual) : speech.length ? speech : visual
+        if (extracted.length === 0) {
+          throw new Error('Fast-Whisper và OCR đều không tạo được phụ đề hợp lệ.')
+        }
+        await writeFile(join(workDir, 'source.alignment.json'), JSON.stringify(extracted, null, 2), 'utf8')
+      } else {
+        const whisper = await runWhisper()
+        extracted = whisper.cues
+        detectedSourceLanguage = whisper.language
+      }
+      const boundedExtracted = clampAlignedCueTimeline(extracted, meta.giay)
+      if (boundedExtracted.length === 0) throw new Error('SRT nguồn không có câu nằm trong thời lượng video')
+      await writeFile(rawSrtPath, serializeAlignedCues(boundedExtracted), 'utf8')
+      sourceCues = parseSrt(await readFile(rawSrtPath, 'utf8')).cues.filter((cue) => cue.text.trim())
+      if (sourceCues.length === 0) throw new Error('SRT nguồn không có câu hợp lệ')
+      extractedCueCount = sourceCues.length
+
+      checkpoint.sourceCues = boundedExtracted
+      checkpoint.detectedSourceLanguage = detectedSourceLanguage
+      await writeFile(checkpointFile, JSON.stringify(checkpoint, null, 2), 'utf8')
+    }
+
+    artifactEntries.push({ source: rawSrtPath, name: 'source.srt' })
+
+    // 2. Stage: Translation (check checkpoint first)
     let targetSrtPath = rawSrtPath
+    let targetCues: SubtitleCue[] = sourceCues
+
     if (config.translateTarget !== 'none') {
-      emitProgress(job, item, 'translating', 35, `Đang dịch phụ đề sang ${config.translateTarget}…`, index, total)
       targetSrtPath = join(workDir, 'translated.srt')
-      const sourceLanguage = resolveTranslationSourceLanguage(config.whisperLanguage, detectedSourceLanguage)
-      await translateStrict(config, rawSrtPath, targetSrtPath, (done, count) => {
-        emitProgress(job, item, 'translating', 35 + (count > 0 ? done / count : 0) * 20, `Đang dịch ${done}/${count} câu`, index, total)
-      }, job.controller.signal, sourceLanguage)
+      if (checkpoint.translatedCues && checkpoint.translatedCues.length === sourceCues.length) {
+        logInfo(`[AutoShort] Phục hồi ${checkpoint.translatedCues.length} câu dịch từ checkpoint.`)
+        await writeFile(targetSrtPath, serializeSrt(checkpoint.translatedCues), 'utf8')
+        targetCues = checkpoint.translatedCues
+        translatedCueCount = targetCues.length
+      } else {
+        emitProgress(job, item, 'translating', 35, `Đang dịch phụ đề sang ${config.translateTarget}…`, index, total)
+        const sourceLanguage = resolveTranslationSourceLanguage(config.whisperLanguage, detectedSourceLanguage)
+        await translateStrict(config, rawSrtPath, targetSrtPath, (done, count) => {
+          emitProgress(job, item, 'translating', 35 + (count > 0 ? done / count : 0) * 20, `Đang dịch ${done}/${count} câu`, index, total)
+        }, job.controller.signal, sourceLanguage)
+        targetCues = parseSrt(await readFile(targetSrtPath, 'utf8')).cues.filter((cue) => cue.text.trim())
+        if (targetCues.length !== sourceCues.length) throw new Error('SRT đích không khớp số câu SRT nguồn')
+        translatedCueCount = targetCues.length
+
+        checkpoint.translatedCues = targetCues
+        await writeFile(checkpointFile, JSON.stringify(checkpoint, null, 2), 'utf8')
+      }
       artifactEntries.push({ source: targetSrtPath, name: 'translated.srt' })
     }
-    const targetCues = parseSrt(await readFile(targetSrtPath, 'utf8')).cues.filter((cue) => cue.text.trim())
-    if (targetCues.length !== sourceCues.length) throw new Error('SRT đích không khớp số câu SRT nguồn')
-    translatedCueCount = targetCues.length
 
+    // 3. Stage: TTS Synthesis & Timeline Stitching
     let stitchedAudioPath: string | null = null
     let renderSrtPath = targetSrtPath
     let renderDisplayStyle = config.subtitleDisplayStyle || 'standard'
+
     if (config.ttsEnabled) {
       emitProgress(job, item, 'generating_tts', 58, 'Đang tạo voice từ SRT đích…', index, total)
       const synthesized = await synthesizeVoice(job, item, config, targetCues, sourceCues, workDir, meta.giay, index, total, detectedSourceLanguage)
       
-      const syncValidation = validateAutoShortTimelineSync(sourceCues, targetCues, synthesized.diagnostics, meta.giay)
+      const syncValidation = validateAutoShortTimelineSync(synthesized.groupSourceInputs, synthesized.groupSourceInputs, synthesized.diagnostics, meta.giay)
       if (!syncValidation.ok) {
         logError(`[AutoShort] Vi phạm đồng bộ semantic timeline:\n${syncValidation.violations.join('\n')}`)
         throw new Error(`Không thể xuất video do vi phạm đồng bộ semantic timeline: ${syncValidation.violations[0]}`)
@@ -1158,8 +1316,6 @@ async function processSingleVideo(job: AutoShortJob, item: AutoShortQueueItemInp
         cues: synthesized.diagnostics
       }, null, 2), 'utf8')
       artifactEntries.push({ source: timelineManifestPath, name: 'tts-timeline.json' })
-      // TTS providers currently return only total duration, not word timestamps.
-      // Use a truthful standard render instead of fabricating karaoke timing.
       if (renderDisplayStyle !== 'standard') {
         renderDisplayStyle = 'standard'
         logWarn('[AutoShort] Đã chuyển word effect sang standard vì TTS chưa trả word timestamp thật.')
@@ -1167,6 +1323,8 @@ async function processSingleVideo(job: AutoShortJob, item: AutoShortQueueItemInp
     }
 
     throwIfAborted(job.controller.signal)
+
+    // 4. Stage: Video Rendering
     emitProgress(job, item, 'rendering_video', 85, 'Đang làm mờ, gắn phụ đề và xuất video…', index, total)
     outputName = await uniqueOutputName(config.outputDir, item.filePath)
     const burnReq: BurnReq = {
@@ -1194,7 +1352,7 @@ async function processSingleVideo(job: AutoShortJob, item: AutoShortQueueItemInp
       subtitleLayoutProfile: config.subtitleLayoutProfile || 'vertical',
       subtitleAutoOptimize: config.subtitleAutoOptimize !== false,
       wordTimings: !config.ttsEnabled && config.translateTarget === 'none'
-        ? extracted
+        ? (checkpoint.sourceCues || [])
             .filter((cue) => Array.isArray(cue.words) && cue.words.length > 0)
             .map((cue) => ({ start: cue.start, end: cue.end, words: cue.words! }))
         : undefined,
@@ -1204,7 +1362,7 @@ async function processSingleVideo(job: AutoShortJob, item: AutoShortQueueItemInp
       amLuongGoc: config.audioMode === 'mix' ? config.originalAudioVolume : 0
     }
     const burnResult = await burnSubtitle(burnReq, (progress) => {
-      emitProgress(job, item, 'rendering_video', 85 + Math.max(0, progress.percent) * 0.15, `Đang xuất video… ${progress.percent}%`, index, total)
+      emitProgress(job, item, 'rendering_video', 85 + Math.max(0, progress.percent) * 0.12, `Đang xuất video… ${progress.percent}%`, index, total)
     })
     if (!burnResult.ok || !burnResult.output || !(await fileExists(burnResult.output))) {
       await Promise.all([
@@ -1213,6 +1371,17 @@ async function processSingleVideo(job: AutoShortJob, item: AutoShortQueueItemInp
       ])
       throw new Error(burnResult.error || 'Render video thất bại')
     }
+
+    // 5. Stage: Output Media Validation via FFprobe
+    const ffmpegPath = (await resolveFfmpeg()) || 'ffmpeg'
+    emitProgress(job, item, 'rendering_video', 98, 'Đang kiểm tra chất lượng video đầu ra…', index, total)
+    const mediaCheck = await probeOutputMediaWithFfprobe(ffmpegPath, burnResult.output, config.ttsEnabled)
+    if (!mediaCheck.ok) {
+      logError(`[AutoShort] Kiểm tra video xuất ra thất bại: ${mediaCheck.error}`)
+      await rm(burnResult.output, { force: true }).catch(() => {})
+      throw new Error(`Video xuất ra không đạt tiêu chuẩn kiểm duyệt: ${mediaCheck.error}`)
+    }
+
     artifactEntries.push({ source: burnResult.output, name: 'output.mp4' })
     artifactPath = await preserveAutoShortArtifacts(artifactDir, artifactEntries, {
       version: 1,
@@ -1226,6 +1395,10 @@ async function processSingleVideo(job: AutoShortJob, item: AutoShortQueueItemInp
       generatedVoiceCount,
       voice
     })
+
+    // Clean up checkpoint upon successful completion
+    await rm(checkpointDir, { recursive: true, force: true }).catch(() => {})
+
     emitProgress(job, item, 'done', 100, 'Hoàn tất xuất video', index, total, burnResult.output)
     return { itemId: item.id, filePath: item.filePath, status: 'done', outputPath: burnResult.output, artifactDir: artifactPath, extractedCueCount, translatedCueCount, generatedVoiceCount, voice }
   } catch (error) {

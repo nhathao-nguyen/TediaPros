@@ -103,11 +103,17 @@ const NHAN_LOI: [RegExp, string][] = [
  * KHONG BAO GIO tra ve nguyen van stderr.
  */
 export function errLabel(raw: unknown): string {
-  const s = raw instanceof Error ? raw.message : String(raw ?? '')
+  const s = raw instanceof Error ? raw.message : String(raw ?? '').trim()
+  if (!s) return 'lỗi không xác định'
   for (const [re, nhan] of NHAN_LOI) if (re.test(s)) return nhan
   // Process chet ma khong de lai message — it nhat giu ma thoat de ho tro.
   const ma = s.match(/(?:^|[\s:])(?:code|thoát mã)\s*(-?\d+)/i)
-  if (ma) return `lỗi không xác định (mã ${ma[1]})`
+  if (ma) return `Lỗi hệ thống (mã ${ma[1]})`
+  // Trả về thông điệp lỗi cụ thể, an toàn, không để ẩn thành 'lỗi không xác định'
+  const firstLine = s.split(/\r?\n/)[0].trim()
+  if (firstLine.length > 0) {
+    return firstLine.slice(0, 200)
+  }
   return 'lỗi không xác định'
 }
 

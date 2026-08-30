@@ -922,6 +922,9 @@ export interface AutoShortTaskItem {
 }
 
 export interface AutoShortProgress {
+  percent?: number
+  phase?: AutoShortItemStatus
+  message?: string
   type: 'item-progress'
   jobId: string
   taskId: string
@@ -952,6 +955,7 @@ export interface AutoShortItemResult {
 export type AutoShortEvent =
   | AutoShortProgress
   | ({
+    outputPath?: string
     type: 'item-done'
     jobId: string
     itemId: string

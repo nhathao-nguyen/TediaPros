@@ -407,6 +407,9 @@ export async function installWhisperEngine(onProgress: (percent: number) => void
     await copyDirectory(foundCandidate, staging)
     onProgress(80)
     await replaceDirectoryAtomic(staging, destination)
+  } else {
+    const { downloadRuntimeEngineFromManifest } = await import('./runtimeInstaller')
+    await downloadRuntimeEngineFromManifest('whisper-cpp', (p) => onProgress(p)).catch(() => {})
   }
 
   const status = await whisperEngineStatus()

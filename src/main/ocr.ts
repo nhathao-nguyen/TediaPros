@@ -120,6 +120,9 @@ export async function installOcrEngine(onProgress: (p: number) => void): Promise
     await copyDirectory(candidateDir, staging)
     onProgress(70)
     await replaceDirectoryAtomic(staging, targetDir)
+  } else {
+    const { downloadRuntimeEngineFromManifest } = await import('./runtimeInstaller')
+    await downloadRuntimeEngineFromManifest('ocr', (p) => onProgress(p)).catch(() => {})
   }
 
   const path = await resolveEnginePath()
