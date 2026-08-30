@@ -98,6 +98,7 @@ export default function AutoShort(): JSX.Element {
   const selectedTask = useMemo(() => {
     return tasks.find((t) => t.id === selectedId) || tasks[0] || null
   }, [tasks, selectedId])
+  const previewPath = selectedTask?.outputPath || selectedTask?.filePath || null
 
   // Tab công cụ Inspector
   const [tool, setTool] = useState<EditorTool>('subtitle')
@@ -117,7 +118,7 @@ export default function AutoShort(): JSX.Element {
   const [isStageFullscreen, setIsStageFullscreen] = useState(false)
 
   // Transport hook
-  const transport = useVideoTransport(videoRef, selectedTask?.filePath || null)
+  const transport = useVideoTransport(videoRef, previewPath)
 
   // Subtitle Region & Styles
   const [subtitleRegion, setSubtitleRegion] = useState<Region | undefined>()
@@ -908,7 +909,7 @@ export default function AutoShort(): JSX.Element {
                 <video
                   ref={videoRef}
                   crossOrigin="anonymous"
-                  src={localMediaSource(selectedTask.filePath)}
+                  src={previewPath ? localMediaSource(previewPath) : undefined}
                   onLoadedMetadata={(e) => {
                     const target = e.currentTarget
                     const w = target.videoWidth || 1280

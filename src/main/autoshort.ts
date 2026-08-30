@@ -785,6 +785,8 @@ async function synthesizeVoice(
   averageTempo: number
   maxTempo: number
   degraded: boolean
+  rephraseCount: number
+  splitCount: number
   diagnostics: AutoShortCueDiagnostic[]
   sourceGroupInputs: AutoShortVoiceCueInput[]
   targetGroupInputs: AutoShortVoiceCueInput[]
@@ -823,6 +825,7 @@ async function synthesizeVoice(
   }
 
   let semanticGroups = buildSemanticGroups(cues)
+  let splitCount = 0
   logInfo(`[AutoShort] Đã gom ${cues.length} cue thành ${semanticGroups.length} semantic group để lồng tiếng tự nhiên.`)
 
   let voice: string | undefined
@@ -884,7 +887,7 @@ async function synthesizeVoice(
     const groupNominalDuration = gEnd >= gStart ? gEnd - gStart : 2.5
     const availableDuration = Math.max(0.1, groupNominalDuration)
     let rephraseAttempted = false
-    let finalSpokenText = current.text
+    let finalSpokenText = current.text.trim()
     let finalPath = trimmedPath
 
     if (naturalDuration > availableDuration * AUTO_SHORT_TTS_NORMAL_MAX_TEMPO && config.ttsEnabled) {
@@ -918,7 +921,8 @@ async function synthesizeVoice(
             : await generateSpeech(request, job.controller.signal, rephraseRawPath)
           if (repResult.ok && repResult.savedPath) {
             const repNatDur = await trimVoiceClip(ffmpeg, repResult.savedPath, rephraseTrimPath, job.controller.signal)
-            if (repNatDur > 0.05 && repNatDur < naturalDuration) {
+            const repCompleteness = validateVoiceAudioCompleteness(rephrasedText.trim(), repNatDur)
+            if (repCompleteness.ok && repNatDur > 0.05 && repNatDur < naturalDuration) {
               finalSpokenText = rephrasedText.trim()
               naturalDuration = repNatDur
               finalPath = rephraseTrimPath
@@ -956,6 +960,7 @@ async function synthesizeVoice(
     if (shouldSplitAutoShortVoiceGroup(group.cues.length, prepared.naturalDuration, availableDuration, AUTO_SHORT_TTS_MAX_TEMPO)) {
       const split = splitSemanticBatch([group])
       if (split) {
+        splitCount++
         semanticGroups.splice(gIndex, 1, ...split[0], ...split[1])
         logInfo(`[AutoShort] Nhóm ${group.id} vẫn dài ${prepared.naturalDuration.toFixed(2)}s sau rephrase; tách thành ${split[0][0].id} và ${split[1][0].id} để giữ trọn nội dung.`)
         continue
@@ -1180,6 +1185,7 @@ async function synthesizeVoice(
   }
 
   const anyRephrased = dubbingUnits.some((u) => u.rephrased)
+  const rephraseCount = preparedClips.filter((clip) => clip.rephraseAttempted).length
   if (anyRephrased) {
     const dubbingSrtPath = join(workDir, 'dubbing.srt')
     await writeFile(dubbingSrtPath, serializeSrt(timedCues), 'utf8')
@@ -1259,6 +1265,8 @@ async function synthesizeVoice(
     averageTempo: timing.averageTempo,
     maxTempo: timing.maxTempo,
     degraded: timing.degraded,
+    rephraseCount,
+    splitCount,
     diagnostics,
     sourceGroupInputs,
     targetGroupInputs,
@@ -1501,6 +1509,8 @@ async function processSingleVideo(
         maxTempo: synthesized.maxTempo,
         averageTempo: synthesized.averageTempo,
         degraded: synthesized.degraded,
+        rephraseCount: synthesized.rephraseCount,
+        splitCount: synthesized.splitCount,
         cueCount: synthesized.count,
         cues: synthesized.diagnostics
       }, null, 2), 'utf8')

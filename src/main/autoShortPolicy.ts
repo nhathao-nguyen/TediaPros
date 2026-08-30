@@ -253,24 +253,22 @@ export function planAutoShortVoiceTimeline(
   const upperTempo = Math.min(Math.max(1, maxTempo), AUTO_SHORT_TTS_HARD_MAX_TEMPO)
   const n = cues.length
 
-  // First pass: compute earliest starts, max allowed ends, available durations, and required tempos
+  // First pass: derive an immutable effective window for every cue.  Do not
+  // use a prior estimate to move a later cue: the source cue boundaries are
+  // the semantic anchors and any impossible window must fail explicitly.
   const preliminary: Array<{
     cueId: string
     rawStart: number
     rawEnd: number
-    earliestStart: number
     maxAllowedVoiceEnd: number
     availableDuration: number
     naturalDuration: number
     requiredTempo: number
   }> = []
 
-  // Global estimate of speech load vs video window
+  // Estimate a global baseline from the real effective cue windows.  This is
+  // only a baseline; every cue is still checked independently below.
   const totalSpeechDuration = naturalDurations.reduce((sum, d) => sum + d, 0)
-  const totalVideoSpan = Math.max(0.1, videoDuration - cues[0].start - AUTO_SHORT_TTS_END_GUARD_SECONDS)
-  const roughGlobalRatio = Math.max(1.0, totalSpeechDuration / totalVideoSpan)
-
-  let prevEnd = 0
   for (let i = 0; i < n; i++) {
     const cue = cues[i]
     const cueId = cue.id || `cue-${i}`
@@ -279,83 +277,77 @@ export function planAutoShortVoiceTimeline(
     const rawEnd = Number.isFinite(cue.end) && (cue.end as number) >= rawStart
       ? (cue.end as number)
       : (i < n - 1 ? Math.max(rawStart + 0.1, cues[i + 1].start) : videoDuration)
-
-    const estimatedStepDuration = naturalDuration / Math.min(upperTempo, Math.max(1.0, roughGlobalRatio))
-    const earliestStart = i === 0 ? rawStart : Math.max(rawStart, prevEnd + AUTO_SHORT_TTS_MIN_GAP_SECONDS)
+    const nextCueStart = i < n - 1 ? Math.max(rawStart, cues[i + 1].start) : Number.POSITIVE_INFINITY
     const maxAllowedVoiceEnd = Math.min(
       rawEnd,
-      i < n - 1 ? Math.max(earliestStart + 0.05, cues[i + 1].start - AUTO_SHORT_TTS_MIN_GAP_SECONDS) : videoDuration - AUTO_SHORT_TTS_END_GUARD_SECONDS
+      i < n - 1 ? nextCueStart - AUTO_SHORT_TTS_MIN_GAP_SECONDS : videoDuration - AUTO_SHORT_TTS_END_GUARD_SECONDS
     )
-    const availableDuration = Math.max(0.01, maxAllowedVoiceEnd - earliestStart)
-    const requiredTempo = Number((naturalDuration / availableDuration).toFixed(4))
+    const availableDuration = maxAllowedVoiceEnd - rawStart
+    const requiredTempo = availableDuration > 0 ? naturalDuration / availableDuration : Number.POSITIVE_INFINITY
 
     preliminary.push({
       cueId,
       rawStart,
       rawEnd,
-      earliestStart,
       maxAllowedVoiceEnd,
       availableDuration,
       naturalDuration,
       requiredTempo
     })
-    prevEnd = earliestStart + estimatedStepDuration
   }
 
-  // Calculate robust global voice tempo
+  const totalAvailableDuration = preliminary.reduce(
+    (sum, item) => sum + Math.max(0, item.availableDuration),
+    0
+  )
+  const roughGlobalRatio = totalAvailableDuration > 0
+    ? totalSpeechDuration / totalAvailableDuration
+    : Number.POSITIVE_INFINITY
   const baselineCandidate = calculateGlobalVoiceTempo(preliminary.map((p) => p.requiredTempo))
-  const globalTempo = Math.min(upperTempo, Math.max(baselineCandidate, roughGlobalRatio > 1.05 ? Math.min(AUTO_SHORT_TTS_NORMAL_MAX_TEMPO, Number(roughGlobalRatio.toFixed(3))) : 1.0))
+  const globalTempo = Math.min(
+    upperTempo,
+    Math.max(
+      baselineCandidate,
+      roughGlobalRatio > 1.05
+        ? Math.min(AUTO_SHORT_TTS_NORMAL_MAX_TEMPO, Number(roughGlobalRatio.toFixed(3)))
+        : 1.0
+    )
+  )
 
-  // Second pass: apply global tempo with micro-adjustments
+  // Second pass: apply the baseline without shifting semantic anchors.  A
+  // local fit is permitted only when it remains below the hard ceiling and
+  // fully fits the cue's effective window.
   const plannedCues: AutoShortVoiceCuePlan[] = []
-  let previousVoiceEnd = 0
 
   for (let i = 0; i < n; i++) {
     const p = preliminary[i]
-    const earliestStart = i === 0 ? p.rawStart : Math.max(p.rawStart, previousVoiceEnd + AUTO_SHORT_TTS_MIN_GAP_SECONDS)
-    const maxAllowedVoiceEnd = Math.min(
-      p.rawEnd,
-      i < n - 1 ? Math.max(earliestStart + 0.05, cues[i + 1].start - AUTO_SHORT_TTS_MIN_GAP_SECONDS) : videoDuration - AUTO_SHORT_TTS_END_GUARD_SECONDS
-    )
-    const availableDuration = Math.max(0.01, maxAllowedVoiceEnd - earliestStart)
-
-    let plannedStart = earliestStart
-    let tempo = globalTempo
-    let plannedDuration = p.naturalDuration
-
-    if (p.naturalDuration <= availableDuration + AUTO_SHORT_TTS_SEMANTIC_TOLERANCE_SECONDS) {
-      // Cue fits comfortably: use global tempo if elevated, or 1.0x if global tempo is 1.0x
-      tempo = globalTempo
-      plannedDuration = Number((p.naturalDuration / tempo).toFixed(3))
-    } else {
-      // Cue exceeds available duration: adjust tempo
-      const neededLocal = Number((p.naturalDuration / availableDuration).toFixed(4))
-      tempo = Math.min(upperTempo, Math.max(globalTempo, neededLocal))
-      plannedDuration = Number((p.naturalDuration / tempo).toFixed(3))
+    if (!(p.rawEnd >= p.rawStart) || !(p.availableDuration > 0)) {
+      throw new Error(`Không thể lập timeline voice: câu ${i + 1} không có cửa sổ thời lượng hợp lệ.`)
     }
 
-    // Safety lookback adjustment if end of video is reached
-    if (i === n - 1 && plannedStart + plannedDuration > videoDuration + 0.25) {
-      const remainingTime = Math.max(0.1, videoDuration - AUTO_SHORT_TTS_END_GUARD_SECONDS - plannedStart)
-      const finalNeededTempo = Number((p.naturalDuration / remainingTime).toFixed(4))
-      if (finalNeededTempo <= upperTempo + 0.05) {
-        tempo = Math.min(upperTempo, Math.max(globalTempo, finalNeededTempo))
-        plannedDuration = Number((p.naturalDuration / tempo).toFixed(3))
-      }
+    const previous = plannedCues[i - 1]
+    if (previous && p.rawStart < previous.voiceEnd + AUTO_SHORT_TTS_MIN_GAP_SECONDS - 0.001) {
+      throw new Error(`Không thể lập timeline voice: câu ${i + 1} chồng lấn câu trước; không tự dời mốc nguồn.`)
     }
 
+    const neededLocal = p.naturalDuration / p.availableDuration
+    if (!(neededLocal <= upperTempo + 0.001)) {
+      throw new Error(`Không thể fit voice cho câu ${i + 1}: cần tempo ${neededLocal.toFixed(3)}x, vượt giới hạn ${upperTempo.toFixed(3)}x; không cắt nội dung.`)
+    }
+
+    const plannedStart = p.rawStart
+    const tempo = Number(Math.min(upperTempo, Math.max(globalTempo, neededLocal)).toFixed(4))
+    const plannedDuration = Number((p.naturalDuration / tempo).toFixed(3))
     const voiceEnd = plannedStart + plannedDuration
-    if (voiceEnd > videoDuration + 0.25) {
-      throw new Error(`Không thể lập timeline voice: câu ${i + 1} vượt thời lượng video; không cắt nội dung.`)
+    if (voiceEnd > p.maxAllowedVoiceEnd + 0.005 || voiceEnd > videoDuration - AUTO_SHORT_TTS_END_GUARD_SECONDS + 0.005) {
+      throw new Error(`Không thể lập timeline voice: câu ${i + 1} vượt cửa sổ semantic; không cắt nội dung.`)
     }
-
-    previousVoiceEnd = voiceEnd
 
     const overflowSec = Math.max(0, voiceEnd - p.rawEnd)
     const semanticOverflowMs = Math.round(overflowSec * 1000)
     const degraded = tempo > AUTO_SHORT_TTS_NORMAL_MAX_TEMPO || semanticOverflowMs > 80
     const slackBefore = plannedStart - (i === 0 ? 0 : (plannedCues[i - 1]?.voiceEnd ?? 0) + AUTO_SHORT_TTS_MIN_GAP_SECONDS)
-    const slackAfter = Math.max(0, maxAllowedVoiceEnd - voiceEnd)
+    const slackAfter = Math.max(0, p.maxAllowedVoiceEnd - voiceEnd)
 
     // Subtitle timing strictly anchors to source semantic window
     let subtitleEnd = p.rawEnd
@@ -373,7 +365,7 @@ export function planAutoShortVoiceTimeline(
       subtitleStart: p.rawStart,
       subtitleEnd,
       naturalDuration: p.naturalDuration,
-      availableDuration,
+      availableDuration: p.availableDuration,
       plannedDuration,
       tempo,
       slackBefore: Math.max(0, slackBefore),
@@ -694,14 +686,26 @@ export function validateAutoShortTimelineSync(
     const units = dubbingUnitsOrSource as readonly AutoShortDubbingUnit[]
     const videoDuration = typeof videoDurationOrTarget === 'number' ? videoDurationOrTarget : 0
     const tolerance = typeof diagnosticsOrTol === 'number' ? diagnosticsOrTol : 0.25
+    const sourceGroups = Array.isArray(diagnosticsOrTol) ? diagnosticsOrTol as readonly AutoShortVoiceCueInput[] : []
+    const targetGroups = Array.isArray(legacyVideoDuration) ? legacyVideoDuration as readonly AutoShortVoiceCueInput[] : []
+    const semanticTolerance = AUTO_SHORT_TTS_SEMANTIC_TOLERANCE_SECONDS
 
     if (units.length === 0) {
       return { ok: false, error: 'Danh sách dubbing unit rỗng.', violations: ['Danh sách dubbing unit rỗng.'] }
     }
 
+    if (sourceGroups.length > 0 && sourceGroups.length !== units.length) {
+      violations.push(`Số lượng source semantic group (${sourceGroups.length}) và dubbing unit (${units.length}) không khớp.`)
+    }
+    if (targetGroups.length > 0 && targetGroups.length !== units.length) {
+      violations.push(`Số lượng target semantic group (${targetGroups.length}) và dubbing unit (${units.length}) không khớp.`)
+    }
+
     for (let i = 0; i < units.length; i++) {
       const u = units[i]
       const unitId = u.id || `unit-${i}`
+      const sourceGroup = sourceGroups[i]
+      const targetGroup = targetGroups[i]
 
       if (!u.finalSpokenText || !u.finalSpokenText.trim()) {
         violations.push(`Unit ${i + 1} (${unitId}): finalSpokenText bị rỗng.`)
@@ -726,6 +730,43 @@ export function validateAutoShortTimelineSync(
       if (u.plannedEnd <= u.plannedStart) {
         violations.push(`Unit ${i + 1} (${unitId}): plannedEnd (${u.plannedEnd.toFixed(3)}s) <= plannedStart (${u.plannedStart.toFixed(3)}s).`)
       }
+      if (!(u.sourceEnd > u.sourceStart)) {
+        violations.push(`Unit ${i + 1} (${unitId}): source semantic window không hợp lệ (${u.sourceStart}-${u.sourceEnd}).`)
+      }
+      if (u.plannedStart < u.sourceStart - semanticTolerance) {
+        violations.push(`Unit ${i + 1} (${unitId}): voice bắt đầu trước source semantic window.`)
+      }
+      if (u.plannedEnd > u.sourceEnd + semanticTolerance) {
+        violations.push(`Unit ${i + 1} (${unitId}): voice kết thúc sau source semantic window (${u.plannedEnd.toFixed(3)}s > ${u.sourceEnd.toFixed(3)}s).`)
+      }
+      if (u.tempo <= 0 || u.tempo > AUTO_SHORT_TTS_HARD_MAX_TEMPO + 0.001) {
+        violations.push(`Unit ${i + 1} (${unitId}): tempo ${u.tempo.toFixed(3)}x vượt policy.`)
+      }
+      if (u.subtitles?.some((subtitle) => (
+        subtitle.start < u.sourceStart - semanticTolerance ||
+        subtitle.end > u.sourceEnd + semanticTolerance
+      ))) {
+        violations.push(`Unit ${i + 1} (${unitId}): subtitle vượt source semantic window.`)
+      }
+
+      if (sourceGroup) {
+        const groupId = sourceGroup.id || `group-${i}`
+        if (u.id !== groupId) {
+          violations.push(`Unit ${i + 1} (${unitId}): source group ID mismatch (${groupId} !== ${unitId}).`)
+        }
+        if (Math.abs(u.sourceStart - sourceGroup.start) > semanticTolerance || Math.abs(u.sourceEnd - (sourceGroup.end ?? sourceGroup.start)) > semanticTolerance) {
+          violations.push(`Unit ${i + 1} (${unitId}): unit không khớp source semantic group window.`)
+        }
+      }
+      if (targetGroup) {
+        const targetEnd = targetGroup.end ?? targetGroup.start
+        if (targetGroup.id && targetGroup.id !== unitId) {
+          violations.push(`Unit ${i + 1} (${unitId}): target group ID mismatch (${targetGroup.id} !== ${unitId}).`)
+        }
+        if (sourceGroup && (Math.abs(sourceGroup.start - targetGroup.start) > semanticTolerance || Math.abs((sourceGroup.end ?? sourceGroup.start) - targetEnd) > semanticTolerance)) {
+          violations.push(`Unit ${i + 1} (${unitId}): target semantic group bị drift so với source window.`)
+        }
+      }
       if (videoDuration > 0 && u.plannedEnd > videoDuration + tolerance) {
         violations.push(`Unit ${i + 1} (${unitId}): plannedEnd (${u.plannedEnd.toFixed(3)}s) vượt quá thời lượng video (${videoDuration.toFixed(3)}s).`)
       }
@@ -733,6 +774,9 @@ export function validateAutoShortTimelineSync(
       // Monotonic sequence
       if (i > 0 && u.plannedStart < units[i - 1].plannedStart) {
         violations.push(`Unit ${i + 1} (${unitId}): plannedStart (${u.plannedStart.toFixed(3)}s) bắt đầu trước unit trước (${units[i - 1].plannedStart.toFixed(3)}s).`)
+      }
+      if (i > 0 && u.plannedStart < units[i - 1].plannedEnd - 0.001) {
+        violations.push(`Unit ${i + 1} (${unitId}): voice overlap với unit trước.`)
       }
     }
   } else {

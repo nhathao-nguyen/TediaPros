@@ -295,6 +295,54 @@ test('Case B: Rephrase consistency - subtitle displays finalSpokenText and NEVER
   assert.equal(syncValidation.ok, true, `Validation failed: ${syncValidation.violations.join(', ')}`)
 })
 
+test('Case B2: Modern timeline validation enforces source/target group windows and unit overlap', () => {
+  const makeUnit = (id: string, start: number, end: number): AutoShortDubbingUnit => ({
+    id,
+    sourceCueIds: [id],
+    sourceStart: start,
+    sourceEnd: end,
+    sourceText: 'Source sentence',
+    translatedText: 'Câu đích',
+    finalSpokenText: 'Câu đích',
+    rephrased: false,
+    naturalDuration: end - start,
+    plannedStart: start,
+    plannedEnd: end,
+    plannedDuration: end - start,
+    tempo: 1.0,
+    words: [{ text: 'Câu', start, end: start + 0.4 }, { text: 'đích', start: start + 0.4, end }],
+    alignmentConfidence: 1.0,
+    alignmentQuality: 'word',
+    subtitles: [{ id: `${id}-sub`, start, end, text: 'Câu đích', sourceIndex: 0 }]
+  })
+
+  const overflow = makeUnit('group-a', 0, 2.4)
+  overflow.sourceEnd = 2.4
+  overflow.plannedEnd = 2.4
+  const sourceGroups = [{ id: 'group-a', start: 0, end: 2.0, text: 'Source sentence' }]
+  const targetGroups = [{ id: 'group-a', start: 0, end: 1.6, text: 'Câu đích' }]
+  const result = validateAutoShortTimelineSync([overflow], 10.0, sourceGroups, targetGroups)
+  assert.equal(result.ok, false)
+  assert.match(result.error || '', /source|semantic|target|subtitle|cửa sổ/iu)
+
+  const first = makeUnit('group-a', 0, 1.0)
+  const second = makeUnit('group-b', 0.8, 1.8)
+  const overlapResult = validateAutoShortTimelineSync(
+    [first, second],
+    10.0,
+    [
+      { id: 'group-a', start: 0, end: 1.0, text: 'Source A' },
+      { id: 'group-b', start: 0.8, end: 1.8, text: 'Source B' }
+    ],
+    [
+      { id: 'group-a', start: 0, end: 1.0, text: 'Câu A' },
+      { id: 'group-b', start: 0.8, end: 1.8, text: 'Câu B' }
+    ]
+  )
+  assert.equal(overlapResult.ok, false)
+  assert.match(overlapResult.error || '', /chồng|overlap|lấn/iu)
+})
+
 test('Case C: Multi-cue target group segmented cleanly by clause punctuation inside voice window', () => {
   const text = 'Bước đầu tiên, hãy mở ứng dụng. Sau đó, chọn dự án của bạn.'
   const words: AutoShortWordTiming[] = [
@@ -429,4 +477,14 @@ test('Case H: No cumulative drift across all cues in sequence', () => {
   }
 })
 
-
+test('Case I: Impossible single-cue overflow is rejected instead of shifting later units', () => {
+  const cues: AutoShortVoiceCueInput[] = [
+    { id: '1', start: 0.0, end: 1.0, text: 'First phrase' },
+    { id: '2', start: 1.05, end: 2.05, text: 'Second phrase' },
+    { id: '3', start: 2.10, end: 3.10, text: 'Third phrase' }
+  ]
+  assert.throws(
+    () => planAutoShortVoiceTimeline(cues, [1.6, 0.65, 0.65], 4.0, AUTO_SHORT_TTS_MAX_TEMPO),
+    /không thể|vượt|overflow|fit/iu
+  )
+})

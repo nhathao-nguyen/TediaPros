@@ -304,7 +304,7 @@ test('AutoShort regression test: voice and subtitle do not spill into adjacent c
     { id: 'cue-0', start: 0.0, end: 2.0, text: 'Text A' },
     { id: 'cue-1', start: 2.0, end: 4.0, text: 'Text B' }
   ]
-  const naturalDurations = [3.5, 1.8] // Cue 0 TTS is 3.5s (> 2.0s)
+  const naturalDurations = [2.2, 1.8] // Cue 0 needs a light fit inside its 2.0s source window
   const plan = planAutoShortVoiceTimeline(cues, naturalDurations, 5.0, 1.35)
 
   // Subtitle A must NOT extend into cue B
@@ -364,7 +364,7 @@ test('AutoShort scene transition: gaps between non-adjacent cues are not treated
     { id: 'cue-0', start: 0.0, end: 3.0 },
     { id: 'cue-1', start: 5.0, end: 8.0 }
   ]
-  const plan = planAutoShortVoiceTimeline(cues, [4.8, 2.0], 10.0, 1.35)
+  const plan = planAutoShortVoiceTimeline(cues, [3.6, 2.0], 10.0, 1.35)
   // Voice A available duration is 3.0s (not stretched to 5.0s or 4.8s into gap)
   assert.equal(plan.cues[0].availableDuration, 3.0)
   assert.equal(plan.cues[0].subtitleEnd, 3.0)
@@ -412,7 +412,7 @@ test('AutoShort adjusts tempo per cue without accelerating adjacent normal cues'
     { start: 2.0, end: 3.0 },
     { start: 3.0, end: 5.0 }
   ]
-  const plan = planAutoShortVoiceTimeline(cues, [1.8, 1.25, 1.5], 6.0, 1.35)
+  const plan = planAutoShortVoiceTimeline(cues, [1.8, 1.2, 1.5], 6.0, 1.35)
   assert.equal(plan.cues[0].tempo, 1.0)
   assert.ok(plan.cues[1].tempo > 1.15 && plan.cues[1].tempo <= 1.45)
   assert.equal(plan.cues[2].tempo, 1.0)
@@ -466,7 +466,7 @@ test('AutoShort validation rejects voice cue overflow or cue ID mismatch', () =>
 test('AutoShort preserves source cue boundaries and fits each voice inside safe non-overlapping timeline', () => {
   const plan = planAutoShortVoiceTimeline(
     [{ start: 0, end: 1 }, { start: 1, end: 2.5 }],
-    [1.8, 1.2],
+    [1.2, 1.0],
     3.0,
     2.0
   )
@@ -479,7 +479,7 @@ test('AutoShort preserves source cue boundaries and fits each voice inside safe 
 test('AutoShort rejects impossible voice timelines with clear diagnostic error without truncating content', () => {
   assert.throws(
     () => planAutoShortVoiceTimeline([{ start: 0 }, { start: 0.5 }], [10, 10], 2.0, 1.35),
-    /vượt quá|thời lượng video|không có khoảng trống/iu
+    /không thể|vượt quá|thời lượng video|không có khoảng trống/iu
   )
 })
 
@@ -527,6 +527,14 @@ test('AutoShort keeps translated text intact and uses one timeline tempo policy'
   assert.doesNotMatch(source, /If speech duration is longer than the gap before next cue/u)
 })
 
+test('AutoShort records final target text and bounded fit decisions for audit artifacts', async () => {
+  const source = await readFile(join(process.cwd(), 'src', 'main', 'autoshort.ts'), 'utf8')
+  assert.match(source, /finalSpokenText/u)
+  assert.match(source, /targetGroupInputs/u)
+  assert.match(source, /rephraseCount/u)
+  assert.match(source, /splitCount/u)
+})
+
 test('AutoShort trims only outer TTS silence, preserves decay and appends a safe tail margin', async () => {
   const filter = buildAutoShortTtsTrimFilter()
   assert.match(filter, /silenceremove=start_periods=1:start_duration=0\.03:start_threshold=-50dB/u)
@@ -568,6 +576,13 @@ test('AutoShort uses a wider independent OCR source window than the output safe 
   const source = await readFile(join(process.cwd(), 'src', 'renderer', 'src', 'components', 'AutoShort.tsx'), 'utf8')
   assert.match(source, /function defaultOcrRegion\(width: number, height: number\)/u)
   assert.match(source, /const ocr = ocrRegion \|\| defaultOcrRegion\(w, h\)/u)
+})
+
+test('AutoShort preview follows the rendered output artifact when one exists', async () => {
+  const source = await readFile(join(process.cwd(), 'src', 'renderer', 'src', 'components', 'AutoShort.tsx'), 'utf8')
+  assert.match(source, /const previewPath = selectedTask\?\.outputPath \|\| selectedTask\?\.filePath \|\| null/u)
+  assert.match(source, /useVideoTransport\(videoRef, previewPath\)/u)
+  assert.match(source, /localMediaSource\(previewPath\)/u)
 })
 
 test('AutoShort preserves an explicitly configured Whisper language', async () => {
@@ -1342,31 +1357,13 @@ test('OCR engine Python script uses stable frame selection and 2D line sorting w
   assert.match(engineSource, /ordered_line_texts/u)
 })
 
-test('AutoShort tempo planner strictly enforces hard max tempo ceiling at 1.35x', () => {
+test('AutoShort tempo planner rejects a cue that would exceed the hard max tempo ceiling', () => {
   const cues = [{ start: 0, end: 1.0 }]
   // Natural duration 2.5s in 1.0s window -> requires 2.5x
-  const plan = planAutoShortVoiceTimeline(cues, [2.5], 5.0, 1.35)
-  assert.equal(plan.cues[0].tempo, 1.35)
-  assert.ok(plan.cues[0].tempo <= 1.35)
-
-  // Validate sync fails because 2.5 / 1.35 = 1.85s > 1.0s window
-  const sync = validateAutoShortTimelineSync(
-    cues,
-    cues,
-    [{
-      cueId: 'cue-0',
-      sourceStart: 0,
-      sourceEnd: 1.0,
-      renderSubtitleStart: 0,
-      renderSubtitleEnd: 1.0,
-      voiceStart: plan.cues[0].start,
-      voiceEnd: plan.cues[0].voiceEnd,
-      semanticOverflowMs: plan.cues[0].semanticOverflowMs
-    }],
-    5.0
+  assert.throws(
+    () => planAutoShortVoiceTimeline(cues, [2.5], 5.0, 1.35),
+    /không thể|vượt|fit/iu
   )
-  assert.equal(sync.ok, false)
-  assert.match(sync.violations[0], /tràn quá/iu)
 })
 
 test('TTS capabilities default fail-closed for supports_voice_clone when undefined', async () => {
