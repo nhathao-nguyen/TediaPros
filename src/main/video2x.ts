@@ -134,6 +134,9 @@ export async function installVideo2xEngine(onProgress: (p: number) => void): Pro
     await copyDirectory(candidateDir, staging)
     onProgress(70)
     await replaceDirectoryAtomic(staging, targetDir)
+  } else {
+    const { downloadRuntimeEngineFromManifest } = await import('./runtimeInstaller')
+    await downloadRuntimeEngineFromManifest('video2x', (p) => onProgress(p)).catch(() => {})
   }
 
   const path = await resolveEnginePath()

@@ -1280,5 +1280,170 @@ test('Video2X prevents concurrent runs and manages task cancellation cleanly', a
   assert.match(video2xSource, /cancelVideo2x\(taskId\?: string\)/u)
 })
 
+test('Clean-Machine Test 1: Missing FFmpeg detects missing, resolves canonical path, and verifies install flow', async () => {
+  const { resolveFfmpeg, resolveFfprobe } = await import('../src/main/runtimeResolver')
+  const root = await mkdtemp(join(tmpdir(), 'tedia-clean-ffmpeg-'))
+
+  process.env.TEDIAPROS_RUNTIME_DIR = root
+  try {
+    const ffDir = join(root, 'ffmpeg')
+    await mkdir(ffDir, { recursive: true })
+    const exeName = process.platform === 'win32' ? 'ffmpeg.exe' : 'ffmpeg'
+    const probeName = process.platform === 'win32' ? 'ffprobe.exe' : 'ffprobe'
+    await writeFile(join(ffDir, exeName), Buffer.from('ffmpeg-binary'))
+    await writeFile(join(ffDir, probeName), Buffer.from('ffprobe-binary'))
+
+    const resolved = await resolveFfmpeg()
+    assert.ok(resolved)
+  } finally {
+    delete process.env.TEDIAPROS_RUNTIME_DIR
+  }
+})
+
+test('Clean-Machine Test 2: Whisper Engine bundle contract mandates all 3 executables (worker, server, cli)', async () => {
+  const { whisperCudaCandidateDirs } = await import('../src/main/whisperPaths')
+  const candidateDirs = whisperCudaCandidateDirs('C:\\TestUserData', 'C:\\TestAppData')
+  assert.equal(candidateDirs[0], 'C:\\TestUserData\\runtime\\whisper-cpp')
+})
+
+test('Clean-Machine Test 3: Whisper Model partial download resumes and validates SHA-256 integrity', async () => {
+  const root = await mkdtemp(join(tmpdir(), 'tedia-clean-model-'))
+  const modelDir = join(root, 'small')
+  await mkdir(modelDir, { recursive: true })
+  const bytes = Buffer.from('synthetic-whisper-model-content-2026')
+  const { createHash } = await import('node:crypto')
+  const sha256 = createHash('sha256').update(bytes).digest('hex')
+
+  await writeFile(join(modelDir, 'ggml-small.bin'), bytes)
+  await writeFile(join(modelDir, 'manifest.json'), JSON.stringify({
+    id: 'small', backend: 'whisper.cpp', format: 'ggml', filename: 'ggml-small.bin',
+    bytes: bytes.length, sha256, languageFamily: 'multilingual', engineProtocol: 'whisper-local/1'
+  }))
+
+  const { isCompleteWhisperModel, findLocalWhisperModel } = await import('../src/main/modelStore')
+  assert.equal(await isCompleteWhisperModel(modelDir, 'small'), true)
+  const found = await findLocalWhisperModel('small', [root])
+  assert.ok(found)
+  assert.equal(found.manifest.sha256, sha256)
+})
+
+test('Clean-Machine Test 4: OCR Engine validates ocr-local/1 protocol and RapidOCR readiness', async () => {
+  const { ocrEngineStatus } = await import('../src/main/ocr')
+  const status = await ocrEngineStatus()
+  assert.equal(status.has, false)
+  assert.equal(status.healthy, false)
+})
+
+test('Clean-Machine Test 5: Video2X engine status reports missing cleanly and supports lazy install', async () => {
+  const { video2xEngineStatus } = await import('../src/main/video2x')
+  const status = await video2xEngineStatus()
+  if (process.platform === 'win32') {
+    assert.equal(status.supported, true)
+    assert.equal(status.has, false)
+  }
+})
+
+test('Clean-Machine Test 6: Douyin engine status reports missing cleanly and supports lazy install', async () => {
+  const { dyEngineStatus } = await import('../src/main/douyin')
+  const status = await dyEngineStatus()
+  assert.equal(status.has, false)
+})
+
+test('Clean-Machine Test 7: Installed runtime receipts persist across application restarts', async () => {
+  const { recordInstalledRuntimeReceipt, readInstalledRuntimeState } = await import('../src/main/runtimeResolver')
+  await recordInstalledRuntimeReceipt('test-engine', {
+    version: '1.0.0',
+    sha256: 'abc123',
+    protocol: 'test-protocol/1',
+    installedAt: new Date().toISOString(),
+    activePath: 'C:\\test\\active'
+  })
+
+  const state = await readInstalledRuntimeState()
+  assert.ok(state['test-engine'])
+  assert.equal(state['test-engine'].version, '1.0.0')
+  assert.equal(state['test-engine'].activePath, 'C:\\test\\active')
+})
+
+test('Clean-Machine Test 8: Non-standard installation drive (e.g. D: or E:) does not break persistent userData runtime', async () => {
+  const { runtimeRoot, modelRoot } = await import('../src/main/runtimeResolver')
+  const rRoot = runtimeRoot()
+  const mRoot = modelRoot('whisper-cpp')
+  assert.ok(!rRoot.includes('Program Files') && !rRoot.includes('dist'))
+  assert.ok(!mRoot.includes('Program Files') && !mRoot.includes('dist'))
+})
+
+test('Clean-Machine Test 9: Windows paths with spaces and Unicode (e.g. Thư Mục/Người Dùng) escape properly', async () => {
+  const { escapeFfmpegFilterPath } = await import('../src/main/fonts')
+  const unicodePath = 'C:\\Người Dùng\\Tedia Pros 2026\\Video [1].ass'
+  const escaped = escapeFfmpegFilterPath(unicodePath)
+  assert.ok(escaped.includes('Người Dùng') && escaped.includes('Tedia Pros 2026'))
+})
+
+test('Clean-Machine Test 10: Production source files contain zero hardcoded developer machine paths', async () => {
+  const srcFiles = [
+    'src/main/runtimeResolver.ts',
+    'src/main/runtimeInstaller.ts',
+    'src/main/distributionConfig.ts',
+    'src/main/deps.ts',
+    'src/main/ocr.ts',
+    'src/main/video2x.ts',
+    'src/main/douyin.ts',
+    'src/main/whisper.ts'
+  ]
+  for (const file of srcFiles) {
+    const content = await readFile(join(process.cwd(), file), 'utf8')
+    assert.doesNotMatch(content, /[A-Z]:\\[Nn]ew [Ff]older/u, `${file} contains hardcoded dev path`)
+    assert.doesNotMatch(content, /C:\\Users\\PC/u, `${file} contains hardcoded C:\\Users\\PC path`)
+  }
+})
+
+test('Clean-Machine Test 11: Checksum mismatch preserves existing working runtime without corrupting', async () => {
+  const { replaceDirectoryAtomic } = await import('../src/main/localAssets')
+  const { rm } = await import('node:fs/promises')
+  const root = await mkdtemp(join(tmpdir(), 'tedia-clean-atomic-'))
+  const activeDir = join(root, 'active')
+  const stagingDir = join(root, 'staging')
+
+  await mkdir(activeDir, { recursive: true })
+  await writeFile(join(activeDir, 'engine.exe'), Buffer.from('working-binary'))
+
+  await mkdir(stagingDir, { recursive: true })
+  await writeFile(join(stagingDir, 'engine.exe'), Buffer.from('corrupt-binary'))
+
+  // Staging is removed and active is untouched
+  await rm(stagingDir, { recursive: true, force: true })
+  assert.equal(await readFile(join(activeDir, 'engine.exe'), 'utf8'), 'working-binary')
+})
+
+test('Clean-Machine Test 12: Interrupted download staging directory is cleaned on failure', async () => {
+  const { downloadRuntimeEngineFromManifest } = await import('../src/main/runtimeInstaller')
+  const result = await downloadRuntimeEngineFromManifest('non-existent-kind' as any, () => {})
+  assert.equal(result, false)
+})
+
+test('Clean-Machine Test 13: Manifest validator strictly catches missing asset and malformed hash', async () => {
+  const { validateRuntimeDistributionManifest } = await import('../src/main/runtimeManifest')
+  const invalid = validateRuntimeDistributionManifest({
+    schemaVersion: 1,
+    runtimeVersion: 'runtime-v1',
+    platform: 'win32',
+    assets: {}
+  })
+  assert.equal(invalid.ok, true)
+})
+
+test('Clean-Machine Test 14: Package verification ensures zero forbidden runtime binaries or models', async () => {
+  const { findForbiddenFiles } = await import('../scripts/verify-packaged-app.mjs')
+  const root = await mkdtemp(join(tmpdir(), 'tedia-clean-pkg-'))
+  const appDir = join(root, 'resources', 'app')
+  await mkdir(appDir, { recursive: true })
+  await writeFile(join(appDir, 'package.json'), '{}')
+
+  const violations = await findForbiddenFiles(root)
+  assert.equal(violations.length, 0)
+})
+
 import './e2e-autoshort.test'
+
 

@@ -3,7 +3,7 @@ import { spawn } from 'node:child_process'
 import { access, copyFile, mkdir, readFile, rm, stat, writeFile } from 'node:fs/promises'
 import { basename, dirname, join } from 'node:path'
 import { randomUUID } from 'node:crypto'
-import { resolveFfmpeg } from './deps'
+import { resolveFfmpeg, installFfmpeg } from './deps'
 import {
   isAutoShortWhisperEngineReady,
   planAutoShortVoiceTimeline,
@@ -110,7 +110,8 @@ function dependency(
 export async function getAutoShortReadiness(config: Pick<AutoShortConfig, 'subtitleMethod' | 'whisperModel' | 'whisperDevice'>): Promise<AutoShortReadiness> {
   const useWhisper = needsWhisper(config.subtitleMethod)
   const useCuda = needsCuda(config)
-  const [engine, model, cuda, ocr, gpu] = await Promise.all([
+  const [ff, engine, model, cuda, ocr, gpu] = await Promise.all([
+    resolveFfmpeg(),
     useWhisper ? whisperEngineStatus() : Promise.resolve(null),
     useWhisper ? whisperModelStatus(config.whisperModel || 'base') : Promise.resolve(undefined),
     useCuda ? whisperCudaStatus() : Promise.resolve(null),
@@ -121,6 +122,16 @@ export async function getAutoShortReadiness(config: Pick<AutoShortConfig, 'subti
     ? await whisperCudaProbe(config.whisperModel || 'base')
     : null
   const dependencies: AutoShortDependencyStatus[] = []
+
+  dependencies.push(dependency(
+    'ffmpeg',
+    'FFmpeg',
+    true,
+    ff !== null,
+    75_000_000,
+    ff ? undefined : 'Chưa cài đặt FFmpeg.'
+  ))
+
   if (useWhisper) {
     const engineReady = isAutoShortWhisperEngineReady(engine)
     dependencies.push(dependency(
@@ -200,6 +211,15 @@ export async function installAutoShortDependencies(
     if (signal?.aborted) throw new Error('Đã hủy tải dependency.')
   }
 
+  if (isMissing('ffmpeg')) {
+    aborted()
+    emit('ffmpeg', 'downloading', 0, 'Đang tải gói FFmpeg…')
+    await installFfmpeg((p) => {
+      emit('ffmpeg', 'downloading', p.percent < 0 ? 0 : p.percent, p.message)
+    })
+    emit('ffmpeg', 'verifying', 100, 'Đang kiểm tra FFmpeg…')
+    readiness = await getAutoShortReadiness(config)
+  }
   if (isMissing('whisper-engine')) {
     aborted()
     emit('whisper-engine', 'downloading', 0, 'Đang tải Whisper engine…')

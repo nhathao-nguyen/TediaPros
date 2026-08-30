@@ -1,7 +1,7 @@
 import { app } from 'electron'
 import { createHash } from 'node:crypto'
-import { createReadStream, createWriteStream } from 'node:fs'
-import { mkdir, rm, chmod } from 'node:fs/promises'
+import { createReadStream, createWriteStream, constants } from 'node:fs'
+import { mkdir, rm, chmod, access } from 'node:fs/promises'
 import { join } from 'node:path'
 import { Readable } from 'node:stream'
 import { getDistributionConfig } from './distributionConfig'
@@ -36,11 +36,12 @@ export async function fetchRuntimeManifest(): Promise<Record<string, RuntimeAsse
     if (!res.ok) return null
     const json = await res.json()
     const validated = validateRuntimeDistributionManifest(json)
-    if (!validated.ok) {
-      logWarn(`[RuntimeInstaller] Manifest không hợp lệ: ${validated.error}`)
-      return null
+    if (validated.ok) {
+      return validated.manifest.assets
     }
-    return validated.manifest.assets
+    const errorMsg = 'error' in validated ? (validated as { error: string }).error : 'Manifest runtime không hợp lệ.'
+    logWarn(`[RuntimeInstaller] Manifest không hợp lệ: ${errorMsg}`)
+    return null
   } catch (error) {
     logWarn(`[RuntimeInstaller] Không tải được runtime manifest: ${errLabel(error)}`)
     return null
@@ -105,7 +106,23 @@ export async function downloadRuntimeEngineFromManifest(
     await extractZip(zipPath, extractDir)
     await rm(zipPath, { force: true }).catch(() => {})
 
-    await replaceDirectoryAtomic(extractDir, targetDir)
+    // Check if entrypoint exists directly or inside a single top-level folder
+    let finalSourceDir = extractDir
+    const directEntry = join(extractDir, spec.entrypoint)
+    const existsDirect = await access(directEntry, constants.F_OK).then(() => true).catch(() => false)
+    if (!existsDirect) {
+      const { findFile } = await import('./localAssets')
+      const foundPath = await findFile(extractDir, [spec.entrypoint])
+      if (foundPath) {
+        finalSourceDir = join(foundPath, '..')
+      }
+    }
+
+    await replaceDirectoryAtomic(finalSourceDir, targetDir)
+
+    if (!isWin) {
+      await chmod(join(targetDir, spec.entrypoint), 0o755).catch(() => {})
+    }
 
     await recordInstalledRuntimeReceipt(kind, {
       version: spec.version,

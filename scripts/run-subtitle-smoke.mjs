@@ -38,6 +38,7 @@ try {
     'ES2022,DOM',
     '--types',
     'node',
+    '--strict',
     '--esModuleInterop',
     '--skipLibCheck'
   ])

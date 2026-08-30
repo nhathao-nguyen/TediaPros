@@ -1,10 +1,29 @@
+import { createHash } from 'node:crypto'
 import { createReadStream } from 'node:fs'
-import { readFile, stat } from 'node:fs/promises'
+import { access, readFile, stat } from 'node:fs/promises'
+import { constants } from 'node:fs'
 import { basename, join, resolve } from 'node:path'
 
-const owner = 'nhathao-nguyen'
-const repo = 'TediaPros'
-const tag = 'runtime-v1'
+const owner = process.env.TEDIAPROS_DISTRIBUTION_OWNER?.trim() || 'nhathao-nguyen'
+const repo = process.env.TEDIAPROS_DISTRIBUTION_REPO?.trim() || 'TediaPros'
+const tag = process.env.TEDIAPROS_RUNTIME_CHANNEL?.trim() || 'runtime-v1'
+
+async function sha256File(filePath) {
+  const hash = createHash('sha256')
+  for await (const chunk of createReadStream(filePath)) {
+    hash.update(chunk)
+  }
+  return hash.digest('hex')
+}
+
+async function fileExists(p) {
+  try {
+    await access(p, constants.F_OK)
+    return true
+  } catch {
+    return false
+  }
+}
 
 const tokenArgIdx = process.argv.indexOf('--token')
 const token = (tokenArgIdx >= 0 ? process.argv[tokenArgIdx + 1] : null) || process.env.GITHUB_TOKEN || process.env.GH_TOKEN
@@ -18,15 +37,15 @@ HƯỚNG DẪN TẠO RELEASE TRÊN GITHUB CHO REPO ${owner}/${repo}:
 Cách 1: Chạy tự động qua script (Cần GitHub Token):
   node scripts/publish-github-release.mjs --token <github_personal_access_token>
 
-Cách 2: Upload trực tiếp trên giao diện GitHub Web (1 phút):
+Cách 2: Upload trực tiếp trên giao diện GitHub Web:
   1. Mở trình duyệt vào trang:
      https://github.com/${owner}/${repo}/releases/new
   2. Điền:
-     - Tag name: runtime-v1
-     - Release title: Runtime Bundles v1
-  3. Kéo thả 2 tệp trong thư mục:
-     • D:\\nhathao\\codex\\tool\\neeyut-blao\\release-artifacts\\runtime-manifest.json
-     • D:\\nhathao\\codex\\tool\\neeyut-blao\\release-artifacts\\whisper-cpp-win32-x64.zip
+     - Tag name: ${tag}
+     - Release title: Runtime Bundles ${tag}
+  3. Kéo thả tất cả các tệp trong thư mục:
+     • release-artifacts/runtime-manifest.json
+     • và các tệp zip tương ứng trong release-artifacts/
   4. Bấm "Publish release".
 ========================================================================
 `)
@@ -60,9 +79,44 @@ async function uploadAsset(uploadUrlTemplate, filePath, fileName, token) {
 }
 
 async function main() {
-  console.log(`[Release] Đang kết nối GitHub API để tạo Release "${tag}" cho ${owner}/${repo}...`)
+  const artifactsDir = resolve('release-artifacts')
+  const manifestPath = join(artifactsDir, 'runtime-manifest.json')
 
-  // 1. Kiểm tra release đã tồn tại chưa
+  if (!(await fileExists(manifestPath))) {
+    throw new Error(`Không tìm thấy manifest tại ${manifestPath}. Hãy chạy npm run release:pack trước.`)
+  }
+
+  const manifestRaw = await readFile(manifestPath, 'utf8')
+  const manifest = JSON.parse(manifestRaw)
+
+  if (!manifest.assets || typeof manifest.assets !== 'object') {
+    throw new Error('Manifest không hợp lệ hoặc thiếu mục assets.')
+  }
+
+  const filesToUpload = [
+    { name: 'runtime-manifest.json', path: manifestPath }
+  ]
+
+  console.log('[Verify] Đang kiểm tra tính toàn vẹn của tất cả asset trước khi phát hành…')
+  for (const [kind, spec] of Object.entries(manifest.assets)) {
+    const assetPath = join(artifactsDir, spec.asset)
+    if (!(await fileExists(assetPath))) {
+      throw new Error(`Asset ${spec.asset} cho [${kind}] được khai báo trong manifest nhưng không tồn tại trên đĩa!`)
+    }
+    const info = await stat(assetPath)
+    if (spec.bytes && info.size !== spec.bytes) {
+      throw new Error(`Kích thước file ${spec.asset} (${info.size}) không khớp với manifest (${spec.bytes})!`)
+    }
+    const actualHash = await sha256File(assetPath)
+    if (actualHash.toLowerCase() !== spec.sha256.toLowerCase()) {
+      throw new Error(`Checksum SHA-256 của ${spec.asset} không khớp với manifest!`)
+    }
+    filesToUpload.push({ name: spec.asset, path: assetPath })
+    console.log(`✓ [${kind}] ${spec.asset}: ${(info.size / (1024 * 1024)).toFixed(2)} MB, SHA-256 OK`)
+  }
+
+  console.log(`\n[Release] Đang kết nối GitHub API để tạo/cập nhật Release "${tag}" cho ${owner}/${repo}...`)
+
   let release = null
   const checkRes = await fetch(`https://api.github.com/repos/${owner}/${repo}/releases/tags/${tag}`, {
     headers: {
@@ -75,7 +129,6 @@ async function main() {
     release = await checkRes.json()
     console.log(`[Release] Release "${tag}" đã tồn tại (ID: ${release.id}).`)
   } else {
-    // Tạo mới release
     const createRes = await fetch(`https://api.github.com/repos/${owner}/${repo}/releases`, {
       method: 'POST',
       headers: {
@@ -86,8 +139,8 @@ async function main() {
       body: JSON.stringify({
         tag_name: tag,
         target_commitish: 'main',
-        name: 'Runtime Bundles v1 (Whisper.cpp & Core Engines)',
-        body: 'Official lazy-install runtime bundles and manifest for TediaPros on Windows/macOS/Linux.',
+        name: `Runtime Bundles ${tag} (Engines & Manifest)`,
+        body: 'Official lazy-install runtime bundles and manifest for TediaPros.',
         draft: false,
         prerelease: false
       })
@@ -102,14 +155,7 @@ async function main() {
     console.log(`[Release] Đã tạo thành công Release "${tag}" (ID: ${release.id})!`)
   }
 
-  const artifactsDir = resolve('release-artifacts')
-  const files = [
-    { name: 'runtime-manifest.json', path: join(artifactsDir, 'runtime-manifest.json') },
-    { name: 'whisper-cpp-win32-x64.zip', path: join(artifactsDir, 'whisper-cpp-win32-x64.zip') }
-  ]
-
-  for (const f of files) {
-    // Xóa asset cũ nếu đã có trùng tên
+  for (const f of filesToUpload) {
     if (Array.isArray(release.assets)) {
       const existing = release.assets.find((a) => a.name === f.name)
       if (existing) {
@@ -127,8 +173,8 @@ async function main() {
   }
 
   console.log('\n======================================================')
-  console.log(`✓ HOÀN TẤT PHÁT HÀNH RELEASE: ${release.html_url}`)
-  console.log('Từ bây giờ bất kỳ máy mới nào clone repo hoặc cài app đều có thể tải tự động khi bấm nút [Cài đặt]!')
+  console.log(`✓ HOÀN TẤT PHÁT HÀNH RELEASE ĐỒNG BỘ: ${release.html_url}`)
+  console.log(`Đã tải lên toàn bộ ${filesToUpload.length} tệp (manifest + assets).`)
   console.log('======================================================')
 }
 

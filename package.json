@@ -21,6 +21,8 @@
     "fonts:verify": "node scripts/verify-fonts.mjs",
     "fonts:verify-packaged": "node scripts/verify-packaged-fonts.mjs",
     "test:subtitles": "node scripts/run-subtitle-smoke.mjs",
+    "release:pack": "node scripts/pack-runtime-release.mjs",
+    "release:verify-runtime": "node scripts/verify-runtime-release.mjs release-artifacts",
     "release:verify": "node scripts/verify-release.mjs",
     "release:verify-assets": "node scripts/verify-release-assets.mjs dist",
     "package:verify": "node scripts/verify-packaged-app.mjs dist",

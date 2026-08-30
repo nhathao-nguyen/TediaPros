@@ -853,7 +853,7 @@ export interface AlignedCue {
   words?: TimedWord[]
 }
 
-export type AutoShortDependencyId = 'whisper-engine' | 'whisper-model' | 'whisper-cuda' | 'ocr-engine'
+export type AutoShortDependencyId = 'ffmpeg' | 'whisper-engine' | 'whisper-model' | 'whisper-cuda' | 'ocr-engine'
 
 export interface AutoShortDependencyStatus {
   id: AutoShortDependencyId
