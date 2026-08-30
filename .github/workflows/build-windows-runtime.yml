@@ -72,7 +72,7 @@ jobs:
           python -m venv (Join-Path $env:RUNNER_TEMP 'whisper-build-venv')
           $python = Join-Path $env:RUNNER_TEMP 'whisper-build-venv\Scripts\python.exe'
           & $python -m pip install --disable-pip-version-check --no-cache-dir -r engines/whisper-engine/requirements.txt
-          & $python -m PyInstaller --clean --noconfirm engines/whisper-engine/whisper-engine.spec --distpath (Join-Path $env:RUNNER_TEMP 'whisper-dist') --workpath (Join-Path $env:RUNNER_TEMP 'whisper-work')
+          & $python -m PyInstaller --clean --noconfirm (Join-Path $PWD 'engines/whisper-engine/whisper-engine.spec') --distpath (Join-Path $env:RUNNER_TEMP 'whisper-dist') --workpath (Join-Path $env:RUNNER_TEMP 'whisper-work')
           $target = Join-Path $env:RUNTIME_INPUT_ROOT 'whisper-engine'
           New-Item -ItemType Directory -Force -Path $target | Out-Null
           Copy-Item -Path (Join-Path $env:RUNNER_TEMP 'whisper-dist\whisper-engine\*') -Destination $target -Recurse -Force
@@ -101,7 +101,7 @@ jobs:
           python -m venv (Join-Path $env:RUNNER_TEMP 'ocr-build-venv')
           $python = Join-Path $env:RUNNER_TEMP 'ocr-build-venv\Scripts\python.exe'
           & $python -m pip install --disable-pip-version-check --no-cache-dir -r engines/ocr-engine/requirements.txt
-          & $python -m PyInstaller --clean --noconfirm engines/ocr-engine/ocr-engine.spec --distpath (Join-Path $env:RUNNER_TEMP 'ocr-dist') --workpath (Join-Path $env:RUNNER_TEMP 'ocr-work')
+          & $python -m PyInstaller --clean --noconfirm (Join-Path $PWD 'engines/ocr-engine/ocr-engine.spec') --distpath (Join-Path $env:RUNNER_TEMP 'ocr-dist') --workpath (Join-Path $env:RUNNER_TEMP 'ocr-work')
           $target = Join-Path $env:RUNTIME_INPUT_ROOT 'ocr-engine'
           New-Item -ItemType Directory -Force -Path $target | Out-Null
           Copy-Item -Path (Join-Path $env:RUNNER_TEMP 'ocr-dist\ocr-engine\*') -Destination $target -Recurse -Force
@@ -140,9 +140,14 @@ jobs:
       - name: Download pinned Video2X release input
         shell: pwsh
         run: |
+          $runtimeInputs = Get-Content -LiteralPath 'distribution/runtime-inputs.json' -Raw | ConvertFrom-Json
+          $video2xSource = $runtimeInputs.assets.video2x.source
           $archive = Join-Path $env:RUNNER_TEMP 'video2x-6.4.0.zip'
-          Invoke-WebRequest -Uri 'https://github.com/k4yt3x/video2x/releases/download/6.4.0/video2x-windows-amd64.zip' -OutFile $archive
-          if ((Get-Item -LiteralPath $archive).Length -ne 196989277) { throw 'Video2X release byte count changed; review the pin before rebuilding.' }
+          Invoke-WebRequest -Uri $video2xSource.url -OutFile $archive
+          if ((Get-Item -LiteralPath $archive).Length -ne [int64]$video2xSource.bytes) { throw 'Video2X release byte count changed; review the pin before rebuilding.' }
+          $expectedHash = $runtimeInputs.assets.video2x.source.sha256
+          $hash = (Get-FileHash -LiteralPath $archive -Algorithm SHA256).Hash.ToLowerInvariant()
+          if ($hash -ne $expectedHash) { throw "Video2X SHA-256 mismatch: $hash" }
           $extract = Join-Path $env:RUNNER_TEMP 'video2x-pinned'
           Expand-Archive -LiteralPath $archive -DestinationPath $extract -Force
           $binary = Get-ChildItem -LiteralPath $extract -Filter video2x.exe -Recurse | Select-Object -First 1

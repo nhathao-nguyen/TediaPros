@@ -6,19 +6,19 @@ import { load as parseYaml } from 'js-yaml'
 
 const root = new URL('../', import.meta.url)
 const pkg = JSON.parse(await readFile(new URL('package.json', root), 'utf8'))
-const assetDir = resolve(process.argv[2] || 'dist')
+const args = process.argv.slice(2)
+const windowsOnly = args.includes('--windows-only')
+const assetDir = resolve(args.find((arg) => arg !== '--windows-only') || 'dist')
 const version = pkg.version
 const windowsExe = `TediaPros-${version}-setup.exe`
 const macBase = `TediaPros-${version}-mac-arm64`
-const required = [
+const requiredWindows = [
   windowsExe,
   `${windowsExe}.blockmap`,
-  'latest.yml',
-  `${macBase}.dmg`,
-  `${macBase}.dmg.sha256`
+  'latest.yml'
 ]
 
-for (const name of required) {
+for (const name of requiredWindows) {
   const info = await stat(join(assetDir, name)).catch(() => null)
   if (!info?.isFile() || info.size <= 0) throw new Error(`Thiếu hoặc rỗng: ${name}`)
 }
@@ -35,15 +35,21 @@ if (forbidden.length) {
   throw new Error(`Luồng macOS thủ công không được phát hành updater ZIP/metadata: ${forbidden.join(', ')}`)
 }
 
-const checksumText = (await readFile(join(assetDir, `${macBase}.dmg.sha256`), 'utf8')).trim()
-const checksumMatch = /^([a-f\d]{64})\s+\*?(.+)$/i.exec(checksumText)
-if (!checksumMatch || checksumMatch[2] !== `${macBase}.dmg`) {
-  throw new Error('File SHA-256 macOS không đúng định dạng hoặc sai tên DMG')
-}
-const hash = createHash('sha256')
-for await (const chunk of createReadStream(join(assetDir, `${macBase}.dmg`))) hash.update(chunk)
-if (hash.digest('hex') !== checksumMatch[1].toLowerCase()) {
-  throw new Error('SHA-256 của DMG macOS không khớp')
+if (!windowsOnly) {
+  for (const name of [`${macBase}.dmg`, `${macBase}.dmg.sha256`]) {
+    const info = await stat(join(assetDir, name)).catch(() => null)
+    if (!info?.isFile() || info.size <= 0) throw new Error(`Thiếu hoặc rỗng: ${name}`)
+  }
+  const checksumText = (await readFile(join(assetDir, `${macBase}.dmg.sha256`), 'utf8')).trim()
+  const checksumMatch = /^([a-f\d]{64})\s+\*?(.+)$/i.exec(checksumText)
+  if (!checksumMatch || checksumMatch[2] !== `${macBase}.dmg`) {
+    throw new Error('File SHA-256 macOS không đúng định dạng hoặc sai tên DMG')
+  }
+  const hash = createHash('sha256')
+  for await (const chunk of createReadStream(join(assetDir, `${macBase}.dmg`))) hash.update(chunk)
+  if (hash.digest('hex') !== checksumMatch[1].toLowerCase()) {
+    throw new Error('SHA-256 của DMG macOS không khớp')
+  }
 }
 
-console.log(`Release artifacts OK: ${required.length} file cho v${version}`)
+console.log(`Release artifacts OK: ${windowsOnly ? 'Windows-only' : 'Windows + macOS'} cho v${version}`)

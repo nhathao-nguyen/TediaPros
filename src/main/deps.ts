@@ -228,9 +228,58 @@ export async function downloadFile(
   })
 }
 
-/** Giai nen zip: Windows dung Expand-Archive, macOS/Linux dung unzip (co san). */
-export function extractZip(zipPath: string, destDir: string): Promise<void> {
+/** Archive entry names must remain relative to the extraction root. */
+export function isSafeRuntimeArchiveEntryPath(entry: string): boolean {
+  if (typeof entry !== 'string' || !entry.trim() || entry.includes('\0')) return false
+  const normalized = entry.replace(/\\/g, '/')
+  const withoutDirectoryMarker = normalized.replace(/\/+$/u, '')
+  if (!withoutDirectoryMarker || withoutDirectoryMarker.startsWith('/') || /^[A-Za-z]:/u.test(withoutDirectoryMarker)) return false
+  return withoutDirectoryMarker.split('/').every((part) => part.length > 0 && part !== '.' && part !== '..')
+}
+
+function captureProcess(command: string, args: string[]): Promise<string> {
   return new Promise((resolve, reject) => {
+    const child = spawn(command, args, { windowsHide: true })
+    let stdout = ''
+    let stderr = ''
+    child.stdout?.on('data', (chunk: Buffer) => { stdout += chunk.toString() })
+    child.stderr?.on('data', (chunk: Buffer) => { stderr += chunk.toString() })
+    child.on('error', reject)
+    child.on('close', (code) => {
+      if (code === 0) resolve(stdout)
+      else reject(new Error(stderr.trim() || `Lệnh ${command} thất bại (${code ?? 'unknown'}).`))
+    })
+  })
+}
+
+function powershellLiteral(value: string): string {
+  return `'${value.replace(/'/g, "''")}'`
+}
+
+async function listRuntimeArchiveEntries(zipPath: string): Promise<string[]> {
+  const output = isWin
+    ? await captureProcess('powershell', [
+        '-NoProfile',
+        '-NonInteractive',
+        '-Command',
+        `Add-Type -AssemblyName System.IO.Compression.FileSystem; $zip = [System.IO.Compression.ZipFile]::OpenRead(${powershellLiteral(zipPath)}); try { foreach ($entry in $zip.Entries) { [Console]::Out.WriteLine($entry.FullName) } } finally { $zip.Dispose() }`
+      ])
+    : await captureProcess('unzip', ['-Z1', zipPath])
+  return output.split(/\r?\n/u).map((entry) => entry.trim()).filter(Boolean)
+}
+
+/** Validate ZIP names before any extractor is allowed to write to disk. */
+export async function validateZipArchive(zipPath: string): Promise<void> {
+  const entries = await listRuntimeArchiveEntries(zipPath)
+  if (entries.length === 0) throw new Error('Archive runtime rỗng hoặc không đọc được danh sách entry.')
+  const unsafe = entries.find((entry) => !isSafeRuntimeArchiveEntryPath(entry))
+  if (unsafe) throw new Error(`Archive runtime có entry path không an toàn: ${unsafe}`)
+}
+
+/** Giai nen zip: Windows dung Expand-Archive, macOS/Linux dung unzip (co san). */
+export async function extractZip(zipPath: string, destDir: string): Promise<void> {
+  await validateZipArchive(zipPath)
+  await new Promise<void>((resolve, reject) => {
     const child = isWin
       ? spawn(
           'powershell',
@@ -238,7 +287,7 @@ export function extractZip(zipPath: string, destDir: string): Promise<void> {
             '-NoProfile',
             '-NonInteractive',
             '-Command',
-            `Expand-Archive -LiteralPath "${zipPath}" -DestinationPath "${destDir}" -Force`
+            `Expand-Archive -LiteralPath ${powershellLiteral(zipPath)} -DestinationPath ${powershellLiteral(destDir)} -Force`
           ],
           { windowsHide: true, stdio: 'ignore' }
         )

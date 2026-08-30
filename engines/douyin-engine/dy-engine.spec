@@ -1,6 +1,10 @@
 # -*- mode: python ; coding: utf-8 -*-
+from pathlib import Path
+import sys
 from PyInstaller.utils.hooks import collect_all, collect_submodules
 
+SPEC_DIR = Path(__file__).resolve().parent
+sys.path.insert(0, str(SPEC_DIR))
 datas = []
 binaries = []
 hiddenimports = []
@@ -14,14 +18,14 @@ for pkg in ('cli', 'core', 'storage', 'auth', 'config', 'control', 'utils', 'ser
     hiddenimports += collect_submodules(pkg)
 
 a = Analysis(
-    ['run.py'],
-    pathex=['.'],
+    [str(SPEC_DIR / 'run.py')],
+    pathex=[str(SPEC_DIR)],
     binaries=binaries,
     datas=datas,
     hiddenimports=hiddenimports,
     hookspath=[],
     hooksconfig={},
-    runtime_hooks=['rthook_dy.py'],
+    runtime_hooks=[str(SPEC_DIR / 'rthook_dy.py')],
     excludes=['playwright', 'fastapi', 'uvicorn', 'pytest'],
     noarchive=False,
     optimize=0,

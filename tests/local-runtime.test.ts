@@ -316,6 +316,39 @@ test('AutoShort regression test: voice and subtitle do not spill into adjacent c
   assert.equal(plan.cues[1].subtitleEnd, 4.0)
 })
 
+test('AutoShort sync validation rejects translated target timing drift independently of source anchors', () => {
+  const sourceCues = [{ id: 'cue-0', start: 0, end: 2, text: 'source' }]
+  const targetCues = [{ id: 'cue-0', start: 0, end: 1.4, text: 'bản dịch' }]
+  const result = validateAutoShortTimelineSync(
+    sourceCues,
+    targetCues,
+    [{
+      cueId: 'cue-0',
+      renderSubtitleStart: 0,
+      renderSubtitleEnd: 2,
+      voiceStart: 0,
+      voiceEnd: 2
+    }],
+    3
+  )
+  assert.equal(result.ok, false)
+  assert.match(result.violations.join(' '), /target|đích|timing|thời gian/iu)
+})
+
+test('AutoShort validates semantic timeline with separate source and translated group inputs', async () => {
+  const source = await readFile(join(process.cwd(), 'src', 'main', 'autoshort.ts'), 'utf8')
+  assert.match(source, /synthesized\.sourceGroupInputs\s*,\s*synthesized\.targetGroupInputs/u)
+})
+
+test('Electron shutdown cancels the Auto Short job and all media child-process owners', async () => {
+  const autoshort = await readFile(join(process.cwd(), 'src', 'main', 'autoshort.ts'), 'utf8')
+  const index = await readFile(join(process.cwd(), 'src', 'main', 'index.ts'), 'utf8')
+  assert.match(autoshort, /export async function shutdownAutoShortRuntime/u)
+  assert.match(autoshort, /cancelOcr\(\)/u)
+  assert.match(autoshort, /cancelVideo2x\(\)/u)
+  assert.match(index, /shutdownAutoShortRuntime\(\)/u)
+})
+
 test('AutoShort scene transition: gaps between non-adjacent cues are not treated as free slack for earlier voice', () => {
   const cues = [
     { id: 'cue-0', start: 0.0, end: 3.0 },

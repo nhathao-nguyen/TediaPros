@@ -1,4 +1,4 @@
-import { mkdtemp, mkdir, writeFile, rm } from 'node:fs/promises'
+import { mkdtemp, mkdir, readFile, writeFile, rm } from 'node:fs/promises'
 import { createHash } from 'node:crypto'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
@@ -77,6 +77,76 @@ test('pinned engine dependency inputs do not reintroduce the retired Whisper bac
   }
   assert.doesNotMatch(douyinProject, /openai-whisper|\[project\.optional-dependencies\][\s\S]*transcribe/iu)
   for (const spec of [whisperSpec, ocrSpec, douyinSpec]) assert.doesNotMatch(spec, /except\s+Exception\s*:\s*\n\s+pass/u)
+})
+
+test('PyInstaller specs resolve entrypoints and hooks from the spec directory, not the process CWD', async () => {
+  const { readFile } = await import('node:fs/promises')
+  const specs = [
+    ['engines/whisper-engine/whisper-engine.spec', 'engine.py'],
+    ['engines/ocr-engine/ocr-engine.spec', 'engine.py'],
+    ['engines/douyin-engine/dy-engine.spec', 'run.py']
+  ] as const
+  for (const [file, entrypoint] of specs) {
+    const source = await readFile(join(process.cwd(), file), 'utf8')
+    assert.match(source, /Path\(__file__\)\.resolve\(\)\.parent/u, `${file} must derive its directory from __file__`)
+    assert.match(source, new RegExp(`Analysis\\(\\s*\\[\\s*str\\(SPEC_DIR\\s*\\/\\s*['"]${entrypoint}['"]\\)`), `${file} must use an absolute entrypoint`)
+    assert.doesNotMatch(source, new RegExp(`Analysis\\(\\s*\\[\\s*['"]${entrypoint}['"]`), `${file} still depends on CWD`)
+  }
+})
+
+test('runtime input spec pins the Video2X archive with a SHA-256 digest', async () => {
+  const inputSpec = JSON.parse(await readFile(join(process.cwd(), 'distribution', 'runtime-inputs.json'), 'utf8'))
+  const video2x = inputSpec.assets?.video2x?.source
+  assert.match(video2x?.sha256 || '', /^[a-f0-9]{64}$/iu)
+  assert.doesNotMatch(video2x?.verification || '', /recorded in runtime-manifest/iu)
+  const workflow = await readFile(join(process.cwd(), '.github', 'workflows', 'build-windows-runtime.yml'), 'utf8')
+  assert.match(workflow, /assets\.video2x\.source\.sha256/u)
+})
+
+test('runtime archive safety policy rejects traversal and absolute entry names', async () => {
+  const { isSafeRuntimeArchiveEntryPath } = await import('../src/main/runtimeInstaller')
+  assert.equal(isSafeRuntimeArchiveEntryPath('bin/engine.exe'), true)
+  for (const entry of ['../engine.exe', '..\\engine.exe', 'bin/../../engine.exe', '/absolute.exe', 'C:\\absolute.exe', 'bin//engine.exe']) {
+    assert.equal(isSafeRuntimeArchiveEntryPath(entry), false, `unsafe archive entry accepted: ${entry}`)
+  }
+})
+
+test('runtime archive validator reads real ZIP entries before extraction', async () => {
+  if (process.platform !== 'win32') return
+  const { extractZip, validateZipArchive } = await import('../src/main/deps')
+  const root = await mkdtemp(join(tmpdir(), 'tedia-zip-safety-'))
+  try {
+    const source = join(root, 'engine.exe')
+    const safeZip = join(root, 'safe.zip')
+    await writeFile(source, 'safe')
+    const psLiteral = (value: string): string => `'${value.replace(/'/g, "''")}'`
+    const safeResult = spawnSync('powershell', [
+      '-NoProfile', '-NonInteractive', '-Command',
+      `Compress-Archive -LiteralPath ${psLiteral(source)} -DestinationPath ${psLiteral(safeZip)} -Force`
+    ], { encoding: 'utf8', windowsHide: true })
+    assert.equal(safeResult.status, 0, safeResult.stderr)
+    await validateZipArchive(safeZip)
+    const extracted = join(root, 'extracted')
+    await extractZip(safeZip, extracted)
+    assert.equal(await readFile(join(extracted, 'engine.exe'), 'utf8'), 'safe')
+
+    const unsafeZip = join(root, 'unsafe.zip')
+    const unsafeResult = spawnSync('powershell', [
+      '-NoProfile', '-NonInteractive', '-Command',
+      `Add-Type -AssemblyName System.IO.Compression; Add-Type -AssemblyName System.IO.Compression.FileSystem; $zip = [System.IO.Compression.ZipFile]::Open(${psLiteral(unsafeZip)}, [System.IO.Compression.ZipArchiveMode]::Create); try { $entry = $zip.CreateEntry("../escape.exe"); $stream = $entry.Open(); $stream.WriteByte(120); $stream.Dispose() } finally { $zip.Dispose() }`
+    ], { encoding: 'utf8', windowsHide: true })
+    assert.equal(unsafeResult.status, 0, unsafeResult.stderr)
+    await assert.rejects(validateZipArchive(unsafeZip), /path không an toàn|unsafe|escape/iu)
+  } finally {
+    await rm(root, { recursive: true, force: true })
+  }
+})
+
+test('Windows app release verification has an explicit Windows-only mode', async () => {
+  const workflow = await readFile(join(process.cwd(), '.github', 'workflows', 'release-app.yml'), 'utf8')
+  const verifier = await readFile(join(process.cwd(), 'scripts', 'verify-release-assets.mjs'), 'utf8')
+  assert.match(workflow, /--windows-only/u)
+  assert.match(verifier, /windows-only|windowsOnly/u)
 })
 
 test('release tooling has no developer-machine or destructive re-upload fallback', async () => {

@@ -1,8 +1,10 @@
 # -*- mode: python ; coding: utf-8 -*-
+from pathlib import Path
 from PyInstaller.utils.hooks import collect_all
-import os
 
-datas = [('dia-models', 'dia-models')] if os.path.exists('dia-models') else []
+SPEC_DIR = Path(__file__).resolve().parent
+MODEL_DIR = SPEC_DIR / 'dia-models'
+datas = [(str(MODEL_DIR), 'dia-models')] if MODEL_DIR.exists() else []
 binaries = []
 hiddenimports = []
 
@@ -11,14 +13,14 @@ for _m in ('tokenizers', 'huggingface_hub', 'faster_whisper', 'ctranslate2', 'av
     datas += _r[0]; binaries += _r[1]; hiddenimports += _r[2]
 
 a = Analysis(
-    ['engine.py'],
-    pathex=[],
+    [str(SPEC_DIR / 'engine.py')],
+    pathex=[str(SPEC_DIR)],
     binaries=binaries,
     datas=datas,
     hiddenimports=hiddenimports,
     hookspath=[],
     hooksconfig={},
-    runtime_hooks=['rthook_whisper.py'],
+    runtime_hooks=[str(SPEC_DIR / 'rthook_whisper.py')],
     excludes=[],
     noarchive=False,
     optimize=0,

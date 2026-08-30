@@ -127,6 +127,7 @@ import {
   cancelAutoShort,
   getAutoShortReadiness,
   installAutoShortDependencies,
+  shutdownAutoShortRuntime,
   startAutoShortJob,
   selectAutoShortVideoFiles
 } from './autoshort'
@@ -373,7 +374,10 @@ app.on('before-quit', (event) => {
   whisperShutdownStarted = true
   event.preventDefault()
   wipeLogFileSync()
-  void shutdownWhisperRuntime().finally(() => app.quit())
+  void Promise.all([
+    shutdownAutoShortRuntime(),
+    shutdownWhisperRuntime()
+  ]).finally(() => app.quit())
 })
 
 function registerIpc(): void {

@@ -1,6 +1,8 @@
 # -*- mode: python ; coding: utf-8 -*-
+from pathlib import Path
 from PyInstaller.utils.hooks import collect_all
 
+SPEC_DIR = Path(__file__).resolve().parent
 datas = []
 binaries = []
 hiddenimports = []
@@ -10,8 +12,8 @@ for _m in ('rapidocr_onnxruntime', 'onnxruntime', 'cv2'):
 
 
 a = Analysis(
-    ['engine.py'],
-    pathex=[],
+    [str(SPEC_DIR / 'engine.py')],
+    pathex=[str(SPEC_DIR)],
     binaries=binaries,
     datas=datas,
     hiddenimports=hiddenimports,

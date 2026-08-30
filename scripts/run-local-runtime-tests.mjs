@@ -24,7 +24,7 @@ const electronMockPlugin = {
             getPath: () => os.tmpdir(),
             isPackaged: false,
             getName: () => 'tedia-pros',
-            getVersion: () => '0.1.20'
+            getVersion: () => '0.1.21'
           },
           safeStorage: {
             isEncryptionAvailable: () => false,

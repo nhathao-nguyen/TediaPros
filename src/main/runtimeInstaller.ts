@@ -6,7 +6,7 @@ import { Readable } from 'node:stream'
 import { pipeline } from 'node:stream/promises'
 import { getDistributionConfig } from './distributionConfig'
 import { validateRuntimeDistributionManifest, type RuntimeAssetSpec, type RuntimeDistributionManifest } from './runtimeManifest'
-import { extractZip } from './deps'
+import { extractZip, validateZipArchive, isSafeRuntimeArchiveEntryPath } from './deps'
 import { findFile, replaceDirectoryAtomic } from './localAssets'
 import { recordInstalledRuntimeReceipt, runtimeKindDir, type RuntimeEngineKind } from './runtimeResolver'
 import { probeRuntimeAsset, type RuntimeProbeResult } from './runtimeProbes'
@@ -20,6 +20,8 @@ export interface RuntimeInstallerHooks {
 }
 
 const isWin = process.platform === 'win32'
+
+export { isSafeRuntimeArchiveEntryPath }
 
 async function sha256File(path: string): Promise<string> {
   const hash = createHash('sha256')
@@ -118,6 +120,7 @@ export async function downloadRuntimeEngineFromManifest(
       throw new Error(`Checksum SHA-256 của ${kind} không khớp.`)
     }
     onProgress(70, `Đang giải nén ${kind}…`)
+    if (!hooks.extract) await validateZipArchive(archivePath)
     await (hooks.extract || extractZip)(archivePath, extractDir)
     const sourceDir = await findArchiveRoot(extractDir, spec)
     await verifyFiles(sourceDir, spec)

@@ -62,7 +62,7 @@
         "asset": "video2x-windows-amd64.zip",
         "bytes": 196989277,
         "url": "https://github.com/k4yt3x/video2x/releases/download/6.4.0/video2x-windows-amd64.zip",
-        "verification": "archive SHA-256 is recorded in runtime-manifest.json after clean CI download"
+        "sha256": "0337b6dcae2bad2fd13e43fbdb73ef728d2f6289f37cc3617e87ac3a1a5cf793"
       }
     },
     "douyin": {

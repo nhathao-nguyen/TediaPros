@@ -33,13 +33,14 @@ import {
   whisperEngineStatus,
   whisperModelStatus
 } from './whisper'
-import { installOcrEngine, ocrEngineStatus, ocrVideo } from './ocr'
+import { cancelOcr, installOcrEngine, ocrEngineStatus, ocrVideo } from './ocr'
 import { detectGpu } from './gpu'
 import { translateSrt as geminiTranslateSrt } from './gemini'
 import { translateSrt as openaiTranslateSrt } from './openai'
 import { localTranslateSrt, loadLocalKey, checkLocalTranslateKey } from './localTranslate'
 import { generateSpeech, generateVoiceClone, getTtsModels, checkTtsServerHealth } from './tts'
 import { burnSubtitle, cancelBurn, probeBurnMedia } from './burn'
+import { cancelVideo2x } from './video2x'
 import { parseSrt, serializeSrt, type SubtitleCue } from '../shared/subtitles'
 import { validateAutoShortStartRequest } from '../shared/autoShortContract'
 import { fuseWhisperAndOcr, clampAlignedCueTimeline } from '../shared/autoShortAlignment'
@@ -773,7 +774,8 @@ async function synthesizeVoice(
   maxTempo: number
   degraded: boolean
   diagnostics: AutoShortCueDiagnostic[]
-  groupSourceInputs: AutoShortVoiceCueInput[]
+  sourceGroupInputs: AutoShortVoiceCueInput[]
+  targetGroupInputs: AutoShortVoiceCueInput[]
   artifacts: AutoShortArtifactEntry[]
 }> {
   const ffmpeg = await resolveFfmpeg()
@@ -949,13 +951,28 @@ async function synthesizeVoice(
   }
 
   // 4. Plan voice timeline for semantic groups using robust global tempo
-  const groupSourceInputs: AutoShortVoiceCueInput[] = preparedClips.map(({ group, text }) => {
+  const targetGroupInputs: AutoShortVoiceCueInput[] = preparedClips.map(({ group, text }) => {
     const start = group.start ?? group.cues[0]?.start ?? 0
     const end = group.end ?? group.cues[group.cues.length - 1]?.end ?? (start + 2.5)
     return { id: group.id, start, end, text }
   })
+  const sourceGroupInputs: AutoShortVoiceCueInput[] = preparedClips.map(({ group }) => {
+    const sourceGroupCues = group.cues
+      .map((cue, cueIndex) => sourceMap.get(cue.id || `cue-${cueIndex}`))
+      .filter((cue): cue is SubtitleCue => Boolean(cue))
+    const first = sourceGroupCues[0]
+    const last = sourceGroupCues[sourceGroupCues.length - 1]
+    const start = first?.start ?? group.start ?? group.cues[0]?.start ?? 0
+    const end = last?.end ?? group.end ?? group.cues[group.cues.length - 1]?.end ?? (start + 2.5)
+    return {
+      id: group.id,
+      start,
+      end,
+      text: sourceGroupCues.map((cue) => cue.text).join(' ')
+    }
+  })
   const timing = planAutoShortVoiceTimeline(
-    groupSourceInputs,
+    targetGroupInputs,
     preparedClips.map(({ naturalDuration }) => naturalDuration),
     videoDuration,
     AUTO_SHORT_TTS_MAX_TEMPO
@@ -998,14 +1015,18 @@ async function synthesizeVoice(
     const cutOffDetected = speechEnd > videoDuration + 0.25
     const overlap = gIndex > 0 && planned.start < timing.cues[gIndex - 1].voiceEnd - 0.001
     const effectiveTailMargin = AUTO_SHORT_TTS_TAIL_MARGIN_SECONDS / (planned.tempo > 1.001 ? planned.tempo : 1.0)
-    const srcCue = sourceMap.get(current.group.cues[0]?.id || `cue-${gIndex}`) || sourceCues[gIndex] || current.group.cues[0]
+    const sourceGroupCues = current.group.cues
+      .map((cue, cueIndex) => sourceMap.get(cue.id || `cue-${cueIndex}`))
+      .filter((cue): cue is SubtitleCue => Boolean(cue))
+    const srcCue = sourceGroupCues[0] || sourceCues[gIndex] || current.group.cues[0]
+    const srcGroupEnd = sourceGroupCues[sourceGroupCues.length - 1]?.end ?? srcCue?.end ?? planned.subtitleEnd
 
     diagnostics.push({
       cueIndex: gIndex,
       cueId: current.group.id || `group-${gIndex}`,
       sourceStart: srcCue ? srcCue.start : planned.subtitleStart,
-      sourceEnd: srcCue?.end ?? planned.subtitleEnd,
-      sourceText: current.group.cues.map((c) => c.text).join(' '),
+      sourceEnd: srcGroupEnd,
+      sourceText: sourceGroupCues.length > 0 ? sourceGroupCues.map((c) => c.text).join(' ') : current.group.cues.map((c) => c.text).join(' '),
       translatedText: current.text,
       cueStart: planned.subtitleStart,
       cueEnd: planned.subtitleEnd,
@@ -1094,7 +1115,8 @@ async function synthesizeVoice(
     maxTempo: timing.maxTempo,
     degraded: timing.degraded,
     diagnostics,
-    groupSourceInputs,
+    sourceGroupInputs,
+    targetGroupInputs,
     artifacts
   }
 }
@@ -1306,7 +1328,7 @@ async function processSingleVideo(
       emitProgress(job, item, 'generating_tts', 58, 'Đang tạo voice từ SRT đích…', index, total)
       const synthesized = await synthesizeVoice(job, item, config, targetCues, sourceCues, workDir, meta.giay, index, total, detectedSourceLanguage)
       
-      const syncValidation = validateAutoShortTimelineSync(synthesized.groupSourceInputs, synthesized.groupSourceInputs, synthesized.diagnostics, meta.giay)
+      const syncValidation = validateAutoShortTimelineSync(synthesized.sourceGroupInputs, synthesized.targetGroupInputs, synthesized.diagnostics, meta.giay)
       if (!syncValidation.ok) {
         logError(`[AutoShort] Vi phạm đồng bộ semantic timeline:\n${syncValidation.violations.join('\n')}`)
         throw new Error(`Không thể xuất video do vi phạm đồng bộ semantic timeline: ${syncValidation.violations[0]}`)
@@ -1566,6 +1588,25 @@ export async function cancelAutoShort(jobId: string): Promise<{ ok: boolean; err
   cancelBurn()
   await activeJob.done
   return { ok: true }
+}
+
+/** Stop every child-process owner used by Auto Short before Electron exits. */
+export async function shutdownAutoShortRuntime(): Promise<void> {
+  const job = activeJob
+  if (job) {
+    job.cancelled = true
+    job.controller.abort()
+  }
+  cancelBurn()
+  cancelOcr()
+  cancelVideo2x()
+  if (job) await job.done.catch(() => undefined)
+  // A stage may have installed a child between the first cancellation and the
+  // job promise settling; repeat the cancellation after the join as a final
+  // process-cleanup barrier.
+  cancelBurn()
+  cancelOcr()
+  cancelVideo2x()
 }
 
 export async function selectAutoShortVideoFiles(): Promise<{ ok: boolean; paths: string[] }> {
