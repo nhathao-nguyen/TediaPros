@@ -224,7 +224,8 @@ export default function AutoShort(): JSX.Element {
         setBackgroundMusicError(result.error)
       }
     }).catch(() => {
-      if (active) setBackgroundMusicError('Không thể quét folder nhạc.')
+      if (!active || backgroundMusicScanTokenRef.current !== scanToken || backgroundMusicScanFolderRef.current !== folderPath) return
+      setBackgroundMusicError('Không thể quét folder nhạc.')
     })
     return () => {
       active = false

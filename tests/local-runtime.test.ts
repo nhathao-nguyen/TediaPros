@@ -118,6 +118,7 @@ test('AutoShort invalidates stale background music folder rescans before applyin
   assert.match(source, /const scanToken = \+\+backgroundMusicScanTokenRef\.current/u)
   assert.match(source, /backgroundMusicScanTokenRef\.current !== scanToken/u)
   assert.match(source, /backgroundMusicScanTokenRef\.current\+\+\s*\n\s*const result = await window\.api\.autoShortSelectMusicFolder/u)
+  assert.match(source, /\}\)\.catch\(\(\) => \{\s*if \(!active \|\| backgroundMusicScanTokenRef\.current !== scanToken \|\| backgroundMusicScanFolderRef\.current !== folderPath\) return\s*setBackgroundMusicError/u)
 })
 
 test('AutoShort background music assigns one selected track to every queue item', () => {
