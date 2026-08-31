@@ -18,6 +18,7 @@ const PROVIDERS = new Set(['gemini', 'openai', 'local'])
 const DISPLAY_STYLES = new Set<SubtitleDisplayStyle>(['standard', 'word-reveal', 'word-highlight'])
 const LAYOUTS = new Set<SubtitleLayoutProfile>(['readable', 'social', 'vertical'])
 const MODELS = new Set(['base', 'small', 'medium'])
+const PACE_MODES = new Set(['source-adaptive', 'fixed'])
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return Boolean(value) && typeof value === 'object' && !Array.isArray(value)
@@ -106,7 +107,8 @@ function migrateLegacyConfig(raw: Record<string, unknown>): Record<string, unkno
     subtitleMethod,
     whisperModel,
     whisperDevice,
-    voiceOverMode: typeof raw.voiceOverMode === 'boolean' ? raw.voiceOverMode : false
+    voiceOverMode: typeof raw.voiceOverMode === 'boolean' ? raw.voiceOverMode : false,
+    paceMode: raw.paceMode === 'fixed' ? 'fixed' : 'source-adaptive'
   }
 }
 
@@ -208,6 +210,7 @@ function validateConfigRecord(raw: Record<string, unknown>): AutoShortConfig | s
     const error = numberIn(raw.ttsSpeed, 'Tốc độ TTS', 0.5, 2)
     if (error) return error
   }
+  if (!PACE_MODES.has(raw.paceMode as string)) return 'Chế độ nhịp đọc không hợp lệ.'
   if (raw.ttsOptions != null && !isRecord(raw.ttsOptions)) return 'Tùy chọn TTS không hợp lệ.'
   if (raw.audioMode !== 'replace' && raw.audioMode !== 'mix') return 'Chế độ âm thanh không hợp lệ.'
   const outputError = absolutePath(raw.outputDir, 'Thư mục đầu ra')

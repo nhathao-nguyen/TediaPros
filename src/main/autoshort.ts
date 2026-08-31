@@ -2,29 +2,34 @@ import { app, dialog } from 'electron'
 import { spawn, type ChildProcess } from 'node:child_process'
 import { access, copyFile, mkdir, readFile, rm, stat, writeFile } from 'node:fs/promises'
 import { basename, dirname, join } from 'node:path'
-import { randomUUID } from 'node:crypto'
+import { createHash, randomUUID } from 'node:crypto'
 import { resolveFfmpeg, installFfmpeg } from './deps'
 import {
   isAutoShortWhisperEngineReady,
+  calculateSourceAdaptiveTempo,
+  deriveAutoShortCueWindows,
   planAutoShortVoiceTimeline,
-  alignKnownTextWithAsrWords,
-  segmentDubbingSubtitles,
+  segmentScheduledDubbingSubtitles,
   resolveAutoShortWhisperLanguage,
+  selectCompatibleAutoShortTtsModel,
   validateAutoShortTtsModel,
   validateAutoShortTimelineSync,
-  shouldSplitAutoShortVoiceGroup,
   validateVoiceAudioCompleteness,
   validateRenderedOutputMedia,
   type RenderedMediaProbeInfo,
   type AutoShortVoiceCueInput,
   type AutoShortDubbingUnit,
-  type AutoShortWordTiming,
   AUTO_SHORT_TTS_MAX_TEMPO,
-  AUTO_SHORT_TTS_NORMAL_MAX_TEMPO,
   AUTO_SHORT_TTS_TAIL_MARGIN_SECONDS,
   buildAutoShortTtsTrimFilter
 } from './autoShortPolicy'
-import { buildSemanticGroups, joinGroupText, splitSemanticBatch, type SemanticGroup } from './semanticGrouping'
+import { buildSemanticGroups, joinGroupText, type SemanticGroup } from './semanticGrouping'
+import { createDurationPredictor, durationProfileKey } from './dubbingDuration'
+import { loadDurationProfile, saveDurationProfile } from './dubbing/profileStore'
+import { applyDubbingTranslations } from './dubbing/translation'
+import { buildTtsCacheKey } from './dubbing/cache'
+import { synthesizeDubbingPlan } from './dubbing/synthesis'
+import { DUBBING_PLAN_VERSION, buildDubbingPlan as buildPlan, validateDubbingPlan, type DubbingPlan } from './dubbing/plan'
 import { huongDan, parseTranslationItems } from './translate-shared'
 import { resolveTranslationSourceLanguage } from './localTranslatePolicy'
 import { debugRaw, logInfo, logWarn, logError, errLabel } from './logger'
@@ -79,9 +84,42 @@ interface AutoShortJob {
   emit: (event: AutoShortEvent) => void
   done: Promise<AutoShortBatchResult>
   cancelled: boolean
+  ttsCapabilities?: Awaited<ReturnType<typeof getTtsModels>>
+  ttsCapabilitiesUrl?: string
 }
 
 let activeJob: AutoShortJob | null = null
+
+const AUTO_SHORT_CHECKPOINT_VERSION = 3
+
+function buildAutoShortCheckpointFingerprint(
+  filePath: string,
+  inputInfo: { size: number; mtimeMs: number },
+  config: AutoShortConfig
+): string {
+  return createHash('sha256').update(stableJson({
+    version: AUTO_SHORT_CHECKPOINT_VERSION,
+    translationPromptVersion: 'dubbing-target-language-v3',
+    input: { filePath, size: inputInfo.size, mtimeMs: inputInfo.mtimeMs },
+    subtitleMethod: config.subtitleMethod,
+    whisperModel: config.whisperModel,
+    whisperDevice: config.whisperDevice,
+    whisperLanguage: config.whisperLanguage,
+    ocrRegion: config.ocrRegion,
+    translateTarget: config.translateTarget,
+    translateProvider: config.translateProvider,
+    translateServerUrl: config.translateServerUrl,
+    paceMode: config.paceMode || 'source-adaptive',
+    ttsServerUrl: config.ttsServerUrl,
+    ttsModel: config.ttsModel,
+    ttsVoice: config.ttsVoice,
+    ttsLanguage: config.ttsLanguage,
+    ttsSpeed: config.ttsSpeed,
+    ttsOptions: config.ttsOptions,
+    ttsRefAudioPath: config.ttsRefAudioPath,
+    ttsRefTranscript: config.ttsRefTranscript
+  })).digest('hex')
+}
 
 function spawnAutoShortChild(command: string, args: string[], options?: Parameters<typeof spawn>[2]): ChildProcess {
   return trackChildProcess(spawn(command, args, options || {}))
@@ -588,8 +626,69 @@ async function requestTranslation(
   if (translated.length === 0 || (result.count != null && result.count !== translated.length) || translated.some((cue) => !cue.text.trim())) {
     throw new Error('SRT dịch không đầy đủ hoặc có câu rỗng')
   }
+  assertTranslatedLanguageShift(parseSrt(await readFile(input, 'utf8')).cues, translated, sourceLanguage, config.translateTarget)
 }
 
+function scriptMatcher(script: string): RegExp | null {
+  switch (script) {
+    case 'Latn': return /\p{Script=Latin}/u
+    case 'Hans':
+    case 'Hant':
+    case 'Hani': return /\p{Script=Han}/u
+    case 'Cyrl': return /\p{Script=Cyrillic}/u
+    case 'Arab': return /\p{Script=Arabic}/u
+    case 'Deva': return /\p{Script=Devanagari}/u
+    case 'Hang': return /\p{Script=Hangul}/u
+    case 'Thai': return /\p{Script=Thai}/u
+    case 'Grek': return /\p{Script=Greek}/u
+    default: return null
+  }
+}
+
+function scriptCount(text: string, matcher: RegExp): number {
+  return Array.from(text).filter((character) => matcher.test(character)).length
+}
+
+function letterCount(text: string): number {
+  return Array.from(text).filter((character) => /\p{L}/u.test(character)).length
+}
+
+/** Fail before TTS when a provider clearly returned source-script text. */
+function assertTranslatedLanguageShift(
+  source: readonly SubtitleCue[],
+  translated: readonly SubtitleCue[],
+  sourceLanguage?: string | null,
+  targetLanguage?: string
+): void {
+  if (!sourceLanguage || !targetLanguage || targetLanguage === 'none') return
+  try {
+    const sourceScript = new Intl.Locale(sourceLanguage).maximize().script
+    const targetScript = new Intl.Locale(targetLanguage).maximize().script
+    if (!sourceScript || !targetScript || sourceScript === targetScript) return
+    const sourceMatcher = scriptMatcher(sourceScript)
+    const targetMatcher = scriptMatcher(targetScript)
+    if (!sourceMatcher || !targetMatcher) return
+
+    const sourceText = source.map((cue) => cue.text).join(' ')
+    const translatedText = translated.map((cue) => cue.text).join(' ')
+    const sourceLetters = letterCount(sourceText)
+    const translatedLetters = letterCount(translatedText)
+    const sourceScriptLetters = scriptCount(sourceText, sourceMatcher)
+    const translatedSourceScriptLetters = scriptCount(translatedText, sourceMatcher)
+    const translatedTargetScriptLetters = scriptCount(translatedText, targetMatcher)
+    if (
+      sourceLetters >= 12 &&
+      translatedLetters >= 12 &&
+      sourceScriptLetters / sourceLetters >= 0.65 &&
+      translatedSourceScriptLetters >= Math.max(12, translatedTargetScriptLetters * 1.5)
+    ) {
+      throw new Error(`Bản dịch vẫn chủ yếu ở hệ chữ nguồn (${sourceScript}), không đạt ngôn ngữ đích ${targetLanguage}; dừng trước khi sinh voice.`)
+    }
+  } catch (error) {
+    if (error instanceof Error && /Bản dịch vẫn chủ yếu/u.test(error.message)) throw error
+    // Unknown/unsupported locale tags should not block a valid translation.
+  }
+}
 async function translateStrict(
   config: AutoShortConfig,
   input: string,
@@ -601,16 +700,24 @@ async function translateStrict(
   await requestTranslation(config, input, output, onProgress, signal, sourceLanguage)
   const source = parseSrt(await readFile(input, 'utf8')).cues
   const translated = parseSrt(await readFile(output, 'utf8')).cues
-  if (source.length !== translated.length) throw new Error('SRT dịch không khớp SRT nguồn')
-  // Providers return only the translated text for each numbered cue. Reapply
-  // the source timeline locally so a provider cannot silently reorder or move
-  // cues while preserving the full translated text.
-  const mapped = translated.map((cue, index) => ({
+  let effectiveTranslated = translated
+  if (source.length !== translated.length) {
+    logWarn(`[AutoShort] SRT dịch trả về ${translated.length} câu, nguồn có ${source.length} câu. Đang tự động căn chỉnh và bổ sung...`)
+    effectiveTranslated = source.map((srcCue, index) => {
+      const match = translated[index]
+      return {
+        ...srcCue,
+        text: match?.text?.trim() || srcCue.text
+      }
+    })
+  }
+  const mapped = effectiveTranslated.map((cue, index) => ({
     ...cue,
     id: source[index].id,
     sourceIndex: source[index].sourceIndex,
     start: source[index].start,
-    end: source[index].end
+    end: source[index].end,
+    text: cue.text.trim() || source[index].text
   }))
   await writeFile(output, serializeSrt(mapped), 'utf8')
 }
@@ -661,6 +768,12 @@ function safeArtifactSegment(value: string): string {
   return value.replace(/[^a-z0-9_-]/gi, '_').slice(0, 48) || 'item'
 }
 
+function spokenTextWithoutSpeakerLabel(text: string): string {
+  const clean = text.trim()
+  const withoutLabel = clean.replace(/^\s*\[SPEAKER_\d+\]\s*/iu, '').trim()
+  return withoutLabel || clean
+}
+
 async function preserveAutoShortArtifacts(
   artifactDir: string,
   entries: readonly AutoShortArtifactEntry[],
@@ -686,14 +799,39 @@ async function preserveAutoShortArtifacts(
   return artifactDir
 }
 
-function extractRephrasedText(rawContent: string, cueId: string): string | null {
+function extractRephrasedTexts(rawContent: string, cueId: string): string[] {
   const items = parseTranslationItems(rawContent)
-  const found = items.find((item) => item.id === cueId || item.id.toLowerCase() === cueId.toLowerCase())
-  if (found?.text?.trim()) return found.text.trim()
-  if (items.length === 1 && items[0].text?.trim()) return items[0].text.trim()
+  const normalizedId = cueId.trim().toLowerCase()
+  const found = items
+    .filter((item) => {
+      const id = item.id.trim().toLowerCase()
+      return id === normalizedId || id.startsWith(`${normalizedId}:`) || id.startsWith(`${normalizedId}-`)
+    })
+    .map((item) => spokenTextWithoutSpeakerLabel(item.text))
+    .filter(Boolean)
+  if (found.length > 0) return [...new Set(found)].slice(0, 3)
+
+  const lineAlternatives = rawContent
+    .split(/\r?\n/u)
+    .map((line) => /^\s*\[([^\]]+)\]\s*(.*?)\s*$/u.exec(line))
+    .filter((match): match is RegExpExecArray => Boolean(match))
+    .filter((match) => {
+      const id = match[1].trim().toLowerCase()
+      return id === normalizedId || id.startsWith(`${normalizedId}:`) || id.startsWith(`${normalizedId}-`)
+    })
+    .map((match) => spokenTextWithoutSpeakerLabel(match[2]))
+    .filter(Boolean)
+  if (lineAlternatives.length > 0) return [...new Set(lineAlternatives)].slice(0, 3)
+
   const cleaned = rawContent.replace(/^\[.*?\]\s*/u, '').replace(/^\s*\((?:thời lượng|duration|time)[\s\S]*?\)\s*/iu, '').trim()
-  if (cleaned && !cleaned.includes('\n')) return cleaned
-  return null
+  const normalized = spokenTextWithoutSpeakerLabel(cleaned)
+  return normalized && !normalized.includes('\n') ? [normalized] : []
+}
+
+function rephraseGraphemeBudget(targetDuration: number): number {
+  // This is only a provider hint, not a correctness gate.  The actual audio
+  // duration remains authoritative after synthesis.
+  return Math.max(8, Math.ceil(Math.max(0.2, targetDuration) * 14))
 }
 
 async function rephraseDubbingCue(
@@ -704,7 +842,7 @@ async function rephraseDubbingCue(
   targetLanguage: string,
   sourceLanguage?: string | null,
   signal?: AbortSignal
-): Promise<string | null> {
+): Promise<string[]> {
   try {
     const durationStr = Math.max(0.2, targetDuration).toFixed(1)
     const systemPrompt = huongDan(targetLanguage, { mode: 'dubbing', sourceLanguage })
@@ -717,7 +855,8 @@ async function rephraseDubbingCue(
       '2. Giữ nguyên trọn vẹn ý nghĩa cốt lõi, không làm mất hoặc sai lệch thông tin quan trọng.',
       '3. Giữ nguyên chủ thể, đối tượng, số liệu và quan hệ hành động; không thêm đại từ hoặc tác nhân không xuất hiện trong câu hiện tại hoặc nguồn. Nếu chủ thể được lược bỏ trong bản gốc, không tự suy ra chủ thể mới.',
       '4. Không thêm bớt thông tin ngoài lề.',
-      `5. Trả về đúng định dạng: [${cueId}] câu_viết_lại_ngắn_gọn`
+      `5. Mỗi phương án không quá ${rephraseGraphemeBudget(targetDuration)} grapheme (không tính khoảng trắng) nếu vẫn giữ đủ nghĩa.`,
+      `6. Trả về tối đa 3 phương án, mỗi phương án một dòng theo định dạng [${cueId}:1] câu_viết_lại_ngắn_gọn (đánh số :1, :2, :3). Không giải thích thêm.`
     ].join('\n')
 
     if (config.translateProvider === 'local') {
@@ -740,29 +879,168 @@ async function rephraseDubbingCue(
         }),
         signal
       })
-      if (!res.ok) return null
+      if (!res.ok) return []
       const data = (await res.json()) as { choices?: Array<{ message?: { content?: string } }> }
       const content = data.choices?.[0]?.message?.content?.trim()
-      if (!content) return null
-      return extractRephrasedText(content, cueId)
+      if (!content) return []
+      return extractRephrasedTexts(content, cueId)
     } else if (config.translateProvider === 'gemini') {
       const { rephraseGeminiCue } = await import('./gemini')
       const text = await rephraseGeminiCue(systemPrompt, userPrompt, signal)
-      if (!text) return null
-      return extractRephrasedText(text, cueId)
+      if (!text) return []
+      return extractRephrasedTexts(text, cueId)
     } else if (config.translateProvider === 'openai') {
       const { rephraseOpenaiCue } = await import('./openai')
       const text = await rephraseOpenaiCue(systemPrompt, userPrompt, signal)
-      if (!text) return null
-      return extractRephrasedText(text, cueId)
+      if (!text) return []
+      return extractRephrasedTexts(text, cueId)
     }
   } catch (error) {
     logWarn(`[AutoShort] Rephrase cue ${cueId} không thành công: ${errLabel(error)}`)
   }
-  return null
+  return []
 }
 
-async function synthesizeVoice(
+interface DubbingRephraseRequest {
+  cueId: string
+  currentText: string
+  targetDuration: number
+}
+
+/**
+ * Rephrase all predictor outliers in one supplemental translation pass. The
+ * local server is commonly CPU-bound, so issuing one request per cue can
+ * serialize dozens of expensive calls and make the job appear stuck.
+ */
+async function rephraseDubbingCues(
+  config: AutoShortConfig,
+  requests: readonly DubbingRephraseRequest[],
+  targetLanguage: string,
+  sourceLanguage?: string | null,
+  signal?: AbortSignal
+): Promise<Map<string, string[]>> {
+  const result = new Map<string, string[]>()
+  if (requests.length === 0) return result
+
+  if (config.translateProvider !== 'local') {
+    for (const request of requests) {
+      result.set(request.cueId, await rephraseDubbingCue(
+        config,
+        request.cueId,
+        request.currentText,
+        request.targetDuration,
+        targetLanguage,
+        sourceLanguage,
+        signal
+      ))
+    }
+    return result
+  }
+
+  try {
+    const systemPrompt = huongDan(targetLanguage, { mode: 'dubbing', sourceLanguage })
+    const userPrompt = [
+      `Có ${requests.length} câu phụ đề/lồng tiếng cần diễn đạt lại để nói vừa thời lượng mục tiêu.`,
+      'Xử lý từng cue độc lập, không chuyển nội dung giữa các cue và không đổi ID nguồn.',
+      '',
+      'Yêu cầu chung:',
+      `1. Viết lại bằng ${targetLanguage} tự nhiên, súc tích, ngắn gọn hơn nếu cần.`,
+      '2. Giữ nguyên ý nghĩa cốt lõi, chủ thể, đối tượng, số liệu, tên riêng và phủ định.',
+      '3. Không thêm bớt thông tin ngoài lề hoặc tự suy ra chủ thể mới.',
+      '4. Mỗi phương án không quá số grapheme được ghi ở từng cue (không tính khoảng trắng) nếu vẫn giữ đủ nghĩa.',
+      '5. Trả về tối đa 3 phương án cho mỗi cue, mỗi phương án một dòng theo định dạng [cue-id:1] câu viết lại (đánh số :1, :2, :3). Không giải thích thêm.',
+      '',
+      '[Các cue cần xử lý] ',
+      ...requests.map((request) => `[${request.cueId}] (tối đa ${Math.max(0.2, request.targetDuration).toFixed(1)} giây, không quá ${rephraseGraphemeBudget(request.targetDuration)} grapheme) ${request.currentText}`)
+    ].join('\n')
+    const localKey = await loadLocalKey()
+    const serverUrl = config.translateServerUrl || DEFAULT_AI_SERVER_URL
+    const base = serverUrl.replace(/\/+$/u, '')
+    const requestSignal = signal
+      ? AbortSignal.any([signal, AbortSignal.timeout(90_000)])
+      : AbortSignal.timeout(90_000)
+    const res = await fetch(`${base}/v1/chat/completions`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        ...(localKey ? { Authorization: `Bearer ${localKey}` } : {})
+      },
+      body: JSON.stringify({
+        model: 'llm-default',
+        messages: [
+          { role: 'system', content: systemPrompt },
+          { role: 'user', content: userPrompt }
+        ],
+        temperature: 0.3
+      }),
+      signal: requestSignal
+    })
+    if (!res.ok) return result
+    const data = await res.json() as { choices?: Array<{ message?: { content?: string } }> }
+    const content = data.choices?.[0]?.message?.content?.trim() || ''
+    for (const request of requests) {
+      result.set(request.cueId, content ? extractRephrasedTexts(content, request.cueId) : [])
+    }
+  } catch (error) {
+    if (!isAbortError(error) || !signal?.aborted) {
+      logWarn(`[AutoShort] Batch rephrase ${requests.length} cue không thành công: ${errLabel(error)}`)
+    }
+    for (const request of requests) result.set(request.cueId, [])
+  }
+  return result
+}
+
+function stableJson(value: unknown): string {
+  if (value == null || typeof value !== 'object') return JSON.stringify(value)
+  if (Array.isArray(value)) return `[${value.map((item) => stableJson(item)).join(',')}]`
+  const record = value as Record<string, unknown>
+  return `{${Object.keys(record).sort().map((key) => `${JSON.stringify(key)}:${stableJson(record[key])}`).join(',')}}`
+}
+
+async function buildAutoShortTtsCacheKey(input: {
+  serverUrl?: string
+  text: string
+  language: string
+  model: string
+  voice?: string
+  speed: number
+  options?: Record<string, unknown>
+  referenceAudioPath?: string
+  referenceTranscript?: string
+}): Promise<string> {
+  let referenceStat: { size: number; mtimeMs: number } | null = null
+  if (input.referenceAudioPath) {
+    const info = await stat(input.referenceAudioPath).catch(() => null)
+    if (info) referenceStat = { size: info.size, mtimeMs: info.mtimeMs }
+  }
+  return createHash('sha256').update(stableJson({
+    version: 1,
+    serverUrl: input.serverUrl || '',
+    text: input.text,
+    language: input.language,
+    model: input.model,
+    voice: input.voice || '',
+    speed: input.speed,
+    options: input.options || {},
+    referenceAudioPath: input.referenceAudioPath || '',
+    referenceTranscript: input.referenceTranscript || '',
+    referenceStat
+  })).digest('hex')
+}
+
+function chooseShortestPredictedRephrase(
+  candidates: readonly string[],
+  estimate: (text: string) => number,
+  maxSeconds: number
+): string | null {
+  const unique = [...new Set(candidates.map((text) => text.trim()).filter(Boolean))]
+  const ranked = unique
+    .map((text) => ({ text, seconds: estimate(text) }))
+    .sort((a, b) => a.seconds - b.seconds)
+  return ranked.find((item) => item.seconds <= maxSeconds)?.text || ranked[0]?.text || null
+}
+
+async function legacySynthesizeVoice(
   job: AutoShortJob,
   item: AutoShortQueueItemInput,
   config: AutoShortConfig,
@@ -788,6 +1066,10 @@ async function synthesizeVoice(
   degraded: boolean
   rephraseCount: number
   splitCount: number
+  paceMode: 'source-adaptive' | 'fixed'
+  predictorSamples: number
+  fitFirstPassRatio: number
+  predictorResidualP90: number
   diagnostics: AutoShortCueDiagnostic[]
   sourceGroupInputs: AutoShortVoiceCueInput[]
   targetGroupInputs: AutoShortVoiceCueInput[]
@@ -800,10 +1082,13 @@ async function synthesizeVoice(
   const localKey = await loadLocalKey()
   const language = resolveAutoShortTtsLanguage(config, detectedLanguage)
   if (language === 'auto' || !language) throw new Error('Không xác định được ngôn ngữ TTS; hãy chọn ngôn ngữ nguồn hoặc đích.')
-  const models = await getTtsModels(config.ttsServerUrl, localKey)
-  const selectedModel = config.ttsModel
-    ? models.models.find((model: TtsModelInfo) => model.id === config.ttsModel)
-    : (models.models.find((m) => m.available !== false) || models.models[0])
+  const capabilityUrl = config.ttsServerUrl || ''
+  const models = job.ttsCapabilities && job.ttsCapabilitiesUrl === capabilityUrl
+    ? job.ttsCapabilities
+    : await getTtsModels(config.ttsServerUrl, localKey)
+  job.ttsCapabilities = models
+  job.ttsCapabilitiesUrl = capabilityUrl
+  const selectedModel = selectCompatibleAutoShortTtsModel(models.models, config.ttsModel, language)
   if (!selectedModel) {
     throw new Error(config.ttsModel ? `Model TTS "${config.ttsModel}" không tồn tại trên server.` : 'Không tìm thấy model TTS khả dụng trên server.')
   }
@@ -825,9 +1110,76 @@ async function synthesizeVoice(
     }
   }
 
-  let semanticGroups = buildSemanticGroups(cues)
+  // Semantic groups remain useful to the translator, but they must not become
+  // one audio clip: every source cue keeps its own start anchor and hard end.
+  const semanticGroups = buildSemanticGroups(cues)
+  const ttsGroups: SemanticGroup<SubtitleCue>[] = cues.map((cue, cueIndex) => ({
+    id: cue.id || `cue-${cueIndex}`,
+    cues: [cue],
+    text: cue.text,
+    start: cue.start,
+    end: cue.end
+  }))
+  const paceMode = config.paceMode || 'source-adaptive'
+  const synthesisSpeed = paceMode === 'source-adaptive' ? 1 : (config.ttsSpeed || 1)
+  const cueWindows = deriveAutoShortCueWindows(cues, videoDuration)
+  const predictor = createDurationPredictor()
+  const predictedDurations = ttsGroups.map((group, cueIndex) => {
+    const sourceCue = sourceMap.get(group.cues[0]?.id || `cue-${cueIndex}`) || group.cues[0]
+    const sourceDuration = Math.max(0.1, (sourceCue?.end ?? group.end ?? videoDuration) - (sourceCue?.start ?? group.start ?? 0))
+    return predictor.estimate(spokenTextWithoutSpeakerLabel(joinGroupText(group.cues)), {
+      sourceText: sourceCue?.text,
+      sourceDuration,
+      speed: synthesisSpeed
+    }).seconds
+  })
+  const selectedGlobalTempo = paceMode === 'source-adaptive'
+    ? calculateSourceAdaptiveTempo(predictedDurations, cueWindows)
+    : 1
+  const preflightTextOverrides = new Map<string, string>()
+  const preflightRephraseApplied = new Set<string>()
+  let preflightCompleted = false
+  const bootstrapSampleCount = Math.min(3, ttsGroups.length)
+  const applyPreflightRephrase = async (startIndex: number): Promise<void> => {
+    if (preflightCompleted) return
+    preflightCompleted = true
+    const requests: DubbingRephraseRequest[] = []
+    for (let cueIndex = startIndex; cueIndex < ttsGroups.length; cueIndex++) {
+      const group = ttsGroups[cueIndex]
+      const window = cueWindows[cueIndex]
+      const currentText = spokenTextWithoutSpeakerLabel(joinGroupText(group.cues))
+      const predicted = predictor.estimate(currentText, { locale: language }).seconds
+      const localCeiling = Math.min(AUTO_SHORT_TTS_MAX_TEMPO, selectedGlobalTempo + 0.03)
+      if (!(predicted > window.availableDuration * localCeiling)) continue
+      requests.push({
+        cueId: group.id,
+        currentText,
+        targetDuration: Math.max(0.2, window.availableDuration * localCeiling)
+      })
+    }
+    if (requests.length === 0) return
+    const rephraseResults = await rephraseDubbingCues(
+      config,
+      requests,
+      language,
+      detectedLanguage,
+      job.controller.signal
+    )
+    for (const request of requests) {
+      const rephrasedText = chooseShortestPredictedRephrase(
+        rephraseResults.get(request.cueId) || [],
+        (text) => predictor.estimate(text, { locale: language }).seconds,
+        request.targetDuration
+      )
+      if (rephrasedText && rephrasedText.trim() !== request.currentText.trim()) {
+        preflightTextOverrides.set(request.cueId, rephrasedText.trim())
+        preflightRephraseApplied.add(request.cueId)
+        logInfo(`[AutoShort] Đã điều chỉnh trước TTS cue ${request.cueId} theo duration predictor.`)
+      }
+    }
+  }
   let splitCount = 0
-  logInfo(`[AutoShort] Đã gom ${cues.length} cue thành ${semanticGroups.length} semantic group để lồng tiếng tự nhiên.`)
+  logInfo(`[AutoShort] Dịch theo ${semanticGroups.length} semantic group; TTS giữ ${ttsGroups.length} mốc cue nguồn.`)
 
   let voice: string | undefined
   const preparedClips: Array<{
@@ -842,10 +1194,12 @@ async function synthesizeVoice(
   }> = []
 
   const synthesizeGroup = async (group: SemanticGroup<SubtitleCue>, gIndex: number) => {
-    const groupText = joinGroupText(group.cues)
-    emitProgress(job, item, 'generating_tts', 58 + (gIndex / Math.max(1, semanticGroups.length)) * 20, `Đang tạo voice ${gIndex + 1}/${semanticGroups.length}`, index, total)
+    const translatedGroupText = joinGroupText(group.cues)
+    const groupText = preflightTextOverrides.get(group.id) || spokenTextWithoutSpeakerLabel(translatedGroupText)
+    emitProgress(job, item, 'generating_tts', 58 + (gIndex / Math.max(1, ttsGroups.length)) * 20, `Đang tạo voice ${gIndex + 1}/${ttsGroups.length}`, index, total)
 
     let lastError = 'Không tạo được voice'
+    let cachedPathForAttempt: string | null = null
     for (let attempt = 0; attempt < 3; attempt++) {
       try {
         const clipPath = join(workDir, `group-${gIndex}.wav`)
@@ -855,21 +1209,51 @@ async function synthesizeVoice(
           language,
           model: effectiveModel,
           voice: effectiveVoice,
-          speed: config.ttsSpeed || 1,
+          speed: synthesisSpeed,
           apiKey: localKey,
           options: config.ttsOptions
         }
-        const result = config.ttsRefAudioPath
-          ? await generateVoiceClone({ ...request, referenceAudioPath: config.ttsRefAudioPath, referenceTranscript: config.ttsRefTranscript }, job.controller.signal, clipPath)
-          : await generateSpeech(request, job.controller.signal, clipPath)
-        if (!result.ok || !result.savedPath) throw new Error(result.error || 'Server không trả về audio')
-        voice = result.voice || voice
-        const rawDuration = await probeDuration(ffmpeg, result.savedPath, job.controller.signal)
+        const cacheRoot = join(app.getPath('userData'), 'autoshort-tts-cache-v1')
+        const cacheKey = await buildAutoShortTtsCacheKey({
+          serverUrl: config.ttsServerUrl,
+          text: groupText,
+          language,
+          model: effectiveModel,
+          voice: effectiveVoice,
+          speed: synthesisSpeed,
+          options: config.ttsOptions,
+          referenceAudioPath: config.ttsRefAudioPath,
+          referenceTranscript: config.ttsRefTranscript
+        })
+        const cachedPath = join(cacheRoot, `${cacheKey}.wav`)
+        cachedPathForAttempt = cachedPath
+        let savedPath = clipPath
+        let resultVoice: string | undefined
+        if (await fileExists(cachedPath)) {
+          await copyFile(cachedPath, clipPath)
+        } else {
+          await mkdir(cacheRoot, { recursive: true })
+          const result = config.ttsRefAudioPath
+            ? await generateVoiceClone({ ...request, referenceAudioPath: config.ttsRefAudioPath, referenceTranscript: config.ttsRefTranscript }, job.controller.signal, clipPath)
+            : await generateSpeech(request, job.controller.signal, clipPath)
+          if (!result.ok || !result.savedPath) throw new Error(result.error || 'Server không trả về audio')
+          savedPath = result.savedPath
+          resultVoice = result.voice
+          await copyFile(savedPath, cachedPath)
+        }
+        voice = resultVoice || voice
+        const rawDuration = await probeDuration(ffmpeg, savedPath, job.controller.signal)
         const completeness = validateVoiceAudioCompleteness(groupText, rawDuration)
         if (!completeness.ok) throw new Error(completeness.error || 'Audio phát âm không đầy đủ nội dung')
-        return { group, path: result.savedPath, rawDuration, text: groupText }
+        return { group, path: savedPath, rawDuration, text: groupText }
       } catch (error) {
         lastError = errLabel(error)
+        // Never retry a corrupt cache entry forever. A server can return a
+        // header-only WAV on a failed synthesis; remove it before the next
+        // attempt so a fresh request gets a chance to recover.
+        if (cachedPathForAttempt) {
+          await rm(cachedPathForAttempt, { force: true }).catch(() => undefined)
+        }
         if (isAbortError(error)) throw error
         if (attempt < 2) await new Promise((resolve) => setTimeout(resolve, 500 * (attempt + 1)))
       }
@@ -883,27 +1267,33 @@ async function synthesizeVoice(
     let naturalDuration = await trimVoiceClip(ffmpeg, current.path, trimmedPath, job.controller.signal)
     if (!(naturalDuration > 0.05)) throw new Error(`Voice đoạn ${gIndex + 1} không có âm thanh hợp lệ.`)
 
-    const gStart = current.group.start ?? current.group.cues[0]?.start ?? 0
-    const gEnd = current.group.end ?? current.group.cues[current.group.cues.length - 1]?.end ?? (gStart + 2.5)
-    const groupNominalDuration = gEnd >= gStart ? gEnd - gStart : 2.5
-    const availableDuration = Math.max(0.1, groupNominalDuration)
-    let rephraseAttempted = false
+    const window = cueWindows[gIndex]
+    const availableDuration = window.availableDuration
+    const localCeiling = Math.min(AUTO_SHORT_TTS_MAX_TEMPO, selectedGlobalTempo + 0.03)
+    let rephraseAttempted = preflightRephraseApplied.has(current.group.id)
+    let postTtsRephraseAttempted = false
     let finalSpokenText = current.text.trim()
     let finalPath = trimmedPath
 
-    if (naturalDuration > availableDuration * AUTO_SHORT_TTS_NORMAL_MAX_TEMPO && config.ttsEnabled) {
+    if (naturalDuration > availableDuration * localCeiling && config.ttsEnabled && !postTtsRephraseAttempted) {
+      postTtsRephraseAttempted = true
       rephraseAttempted = true
       logInfo(`[AutoShort] Đoạn ${gIndex + 1} (${current.group.id}) thời lượng ${naturalDuration.toFixed(2)}s vượt ${availableDuration.toFixed(2)}s. Đang rephrase giữ trọn nghĩa…`)
-      const rephrasedText = await rephraseDubbingCue(
+      const rephraseCandidates = await rephraseDubbingCue(
         config,
         current.group.id || `group-${gIndex}`,
         current.text,
-        availableDuration,
+        availableDuration * localCeiling,
         language,
         detectedLanguage,
         job.controller.signal
       )
-      if (rephrasedText && rephrasedText.trim() && rephrasedText.trim() !== current.text.trim()) {
+      const rephrasedText = chooseShortestPredictedRephrase(
+        rephraseCandidates,
+        (text) => predictor.estimate(text).seconds,
+        availableDuration * localCeiling
+      )
+      if (rephrasedText && rephrasedText.trim() !== current.text.trim()) {
         try {
           const rephraseRawPath = join(workDir, `group-${gIndex}-rephrase.wav`)
           const rephraseTrimPath = join(workDir, `group-${gIndex}-rephrase-trim.wav`)
@@ -913,15 +1303,36 @@ async function synthesizeVoice(
             language,
             model: effectiveModel,
             voice: effectiveVoice,
-            speed: config.ttsSpeed || 1,
+            speed: synthesisSpeed,
             apiKey: localKey,
             options: config.ttsOptions
           }
-          const repResult = config.ttsRefAudioPath
-            ? await generateVoiceClone({ ...request, referenceAudioPath: config.ttsRefAudioPath, referenceTranscript: config.ttsRefTranscript }, job.controller.signal, rephraseRawPath)
-            : await generateSpeech(request, job.controller.signal, rephraseRawPath)
-          if (repResult.ok && repResult.savedPath) {
-            const repNatDur = await trimVoiceClip(ffmpeg, repResult.savedPath, rephraseTrimPath, job.controller.signal)
+          const rephraseCacheKey = await buildAutoShortTtsCacheKey({
+            serverUrl: config.ttsServerUrl,
+            text: rephrasedText.trim(),
+            language,
+            model: effectiveModel,
+            voice: effectiveVoice,
+            speed: synthesisSpeed,
+            options: config.ttsOptions,
+            referenceAudioPath: config.ttsRefAudioPath,
+            referenceTranscript: config.ttsRefTranscript
+          })
+          const rephraseCachePath = join(app.getPath('userData'), 'autoshort-tts-cache-v1', `${rephraseCacheKey}.wav`)
+          let rephraseSavedPath = rephraseRawPath
+          if (await fileExists(rephraseCachePath)) {
+            await copyFile(rephraseCachePath, rephraseRawPath)
+          } else {
+            await mkdir(dirname(rephraseCachePath), { recursive: true })
+            const repResult = config.ttsRefAudioPath
+              ? await generateVoiceClone({ ...request, referenceAudioPath: config.ttsRefAudioPath, referenceTranscript: config.ttsRefTranscript }, job.controller.signal, rephraseRawPath)
+              : await generateSpeech(request, job.controller.signal, rephraseRawPath)
+            if (!repResult.ok || !repResult.savedPath) throw new Error(repResult.error || 'Server không trả về audio rephrase')
+            rephraseSavedPath = repResult.savedPath
+            await copyFile(rephraseSavedPath, rephraseCachePath)
+          }
+          if (rephraseSavedPath) {
+            const repNatDur = await trimVoiceClip(ffmpeg, rephraseSavedPath, rephraseTrimPath, job.controller.signal)
             const repCompleteness = validateVoiceAudioCompleteness(rephrasedText.trim(), repNatDur)
             if (repCompleteness.ok && repNatDur > 0.05 && repNatDur < naturalDuration) {
               finalSpokenText = rephrasedText.trim()
@@ -936,6 +1347,10 @@ async function synthesizeVoice(
       }
     }
 
+    // Calibrate with the duration that will actually enter the timeline after
+    // conservative silence handling, not the server's untrimmed response.
+    predictor.addSample(finalSpokenText, naturalDuration)
+
     return {
       group: current.group,
       path: finalPath,
@@ -943,31 +1358,22 @@ async function synthesizeVoice(
       rawDuration: current.rawDuration,
       naturalDuration,
       rephraseAttempted,
-      translatedText: current.text,
+      translatedText: joinGroupText(current.group.cues),
       finalSpokenText
     }
   }
 
   let gIndex = 0
-  while (gIndex < semanticGroups.length) {
+  while (gIndex < ttsGroups.length) {
     throwIfAborted(job.controller.signal)
-    const group = semanticGroups[gIndex]
+    if (gIndex === bootstrapSampleCount) {
+      // Let up to three real, reusable clips calibrate the endpoint/voice
+      // profile before deciding which later cues need a text-only repair.
+      await applyPreflightRephrase(gIndex)
+    }
+    const group = ttsGroups[gIndex]
     const current = await synthesizeGroup(group, gIndex)
     const prepared = await prepareGroup(current, gIndex)
-    const groupStart = group.start ?? group.cues[0]?.start ?? 0
-    const groupEnd = group.end ?? group.cues[group.cues.length - 1]?.end ?? (groupStart + 2.5)
-    const availableDuration = Math.max(0.1, groupEnd >= groupStart ? groupEnd - groupStart : 2.5)
-
-    if (shouldSplitAutoShortVoiceGroup(group.cues.length, prepared.naturalDuration, availableDuration, AUTO_SHORT_TTS_MAX_TEMPO)) {
-      const split = splitSemanticBatch([group])
-      if (split) {
-        splitCount++
-        semanticGroups.splice(gIndex, 1, ...split[0], ...split[1])
-        logInfo(`[AutoShort] Nhóm ${group.id} vẫn dài ${prepared.naturalDuration.toFixed(2)}s sau rephrase; tách thành ${split[0][0].id} và ${split[1][0].id} để giữ trọn nội dung.`)
-        continue
-      }
-    }
-
     preparedClips.push(prepared)
     gIndex++
   }
@@ -996,16 +1402,16 @@ async function synthesizeVoice(
     targetGroupInputs,
     preparedClips.map(({ naturalDuration }) => naturalDuration),
     videoDuration,
-    AUTO_SHORT_TTS_MAX_TEMPO
+    AUTO_SHORT_TTS_MAX_TEMPO,
+    {
+      paceMode,
+      globalTempo: selectedGlobalTempo,
+      fixedTempo: paceMode === 'fixed' ? 1 : undefined,
+      localTempoDelta: 0.03
+    }
   )
 
   logInfo(`[AutoShort] Lập timeline voice hoàn tất. Global tempo: ${timing.globalTempo.toFixed(3)}x, max tempo: ${timing.maxTempo.toFixed(3)}x, avg tempo: ${timing.averageTempo.toFixed(3)}x.`)
-
-  const [engineStat, modelStat] = await Promise.all([
-    whisperEngineStatus().catch(() => null),
-    whisperModelStatus(config.whisperModel || 'base').catch(() => null)
-  ])
-  const canUseWhisperAlignment = Boolean(isAutoShortWhisperEngineReady(engineStat) && (modelStat?.complete || modelStat?.installed))
 
   const clips: Array<{ start: number; path: string }> = []
   const dubbingUnits: AutoShortDubbingUnit[] = []
@@ -1021,7 +1427,7 @@ async function synthesizeVoice(
     let duration = current.naturalDuration
     let tempoPath: string | undefined
 
-    if (planned.tempo > 1.001) {
+    if (Math.abs(planned.tempo - 1) > 0.001) {
       const fittedPath = join(workDir, `group-${gIndex}-tempo.wav`)
       duration = await speedUpVoiceClip(
         ffmpeg,
@@ -1048,68 +1454,17 @@ async function synthesizeVoice(
     const srcCue = sourceGroupCues[0] || sourceCues[gIndex] || current.group.cues[0]
     const srcGroupEnd = sourceGroupCues[sourceGroupCues.length - 1]?.end ?? srcCue?.end ?? planned.subtitleEnd
 
-    let asrWords: AutoShortWordTiming[] = []
-    if (canUseWhisperAlignment) {
-      try {
-        const alignDir = join(workDir, `align-${gIndex}`)
-        await mkdir(alignDir, { recursive: true })
-        const alignResult = await transcribeAudio(
-          `${job.id}-align-${gIndex}`,
-          {
-            input: path,
-            outputDir: alignDir,
-            model: config.whisperModel || 'base',
-            language: resolveAutoShortWhisperLanguage(language),
-            task: 'transcribe',
-            formats: ['json'],
-            device: 'cpu',
-            diarize: false,
-            speakers: 0
-          },
-          () => {},
-          job.controller.signal
-        )
-        if (alignResult.ok && alignResult.alignmentPath && (await fileExists(alignResult.alignmentPath))) {
-          const alignData = JSON.parse(await readFile(alignResult.alignmentPath, 'utf8')) as {
-            segments?: Array<{ words?: Array<{ text: string; start: number; end: number; probability?: number }> }>
-          }
-          if (Array.isArray(alignData.segments)) {
-            for (const seg of alignData.segments) {
-              if (Array.isArray(seg.words)) {
-                for (const w of seg.words) {
-                  if (w.text && Number.isFinite(w.start) && Number.isFinite(w.end)) {
-                    asrWords.push({
-                      text: w.text.trim(),
-                      start: Number(w.start),
-                      end: Number(w.end),
-                      probability: Number(w.probability ?? 1.0)
-                    })
-                  }
-                }
-              }
-            }
-          }
-        }
-      } catch (alignErr) {
-        logWarn(`[AutoShort] Không lấy được ASR word timestamps cho đoạn ${gIndex + 1}: ${errLabel(alignErr)}`)
-      }
+    if (speechEnd > planned.hardEnd + 0.01) {
+      throw new Error(`Voice cue ${current.group.id} vượt hardEnd ${planned.hardEnd.toFixed(3)}s; không cắt lời.`)
     }
 
-    const alignResult = alignKnownTextWithAsrWords(
-      current.finalSpokenText,
-      asrWords,
-      planned.start,
-      duration,
-      true
-    )
-
-    const unitSubtitles = segmentDubbingSubtitles({
+    const unitSubtitles = segmentScheduledDubbingSubtitles({
       id: current.group.id || `group-${gIndex}`,
       sourceCueIds: sourceGroupCues.map((c, idx) => c.id || `cue-${idx}`),
       finalSpokenText: current.finalSpokenText,
-      words: alignResult.words,
       plannedStart: planned.start,
-      plannedEnd: speechEnd
+      actualDuration: duration,
+      hardEnd: planned.hardEnd
     })
 
     const dubbingUnit: AutoShortDubbingUnit = {
@@ -1131,9 +1486,11 @@ async function synthesizeVoice(
       plannedEnd: speechEnd,
       plannedDuration: planned.plannedDuration,
       tempo: planned.tempo,
-      words: alignResult.words,
-      alignmentConfidence: alignResult.confidence,
-      alignmentQuality: alignResult.quality,
+      preferredEnd: planned.preferredEnd,
+      hardEnd: planned.hardEnd,
+      words: [],
+      alignmentConfidence: 0,
+      alignmentQuality: 'cue',
       subtitles: unitSubtitles
     }
     dubbingUnits.push(dubbingUnit)
@@ -1185,8 +1542,40 @@ async function synthesizeVoice(
     clips.push({ start: planned.start, path })
   }
 
+  const legacyDubbingPlan = {
+    version: DUBBING_PLAN_VERSION,
+    paceMode,
+    globalTempo: timing.globalTempo,
+    createdAt: new Date().toISOString(),
+    cues: dubbingUnits.map((unit, unitIndex) => ({
+      id: unit.id,
+      sourceCueIds: unit.sourceCueIds,
+      sourceText: unit.sourceText,
+      translatedText: unit.translatedText,
+      finalSpokenText: unit.finalSpokenText,
+      sourceStart: unit.sourceStart,
+      preferredEnd: unit.preferredEnd ?? timing.cues[unitIndex].preferredEnd,
+      hardEnd: unit.hardEnd ?? timing.cues[unitIndex].hardEnd,
+      predictedDuration: predictedDurations[unitIndex] ?? unit.naturalDuration,
+      predictionUncertainty: predictor.estimate(unit.finalSpokenText).uncertaintySeconds,
+      naturalDuration: unit.naturalDuration,
+      actualDuration: unit.finalDuration,
+      tempo: unit.tempo,
+      localTempoAdjustment: Number((unit.tempo - timing.globalTempo).toFixed(4)),
+      audioPath: unit.finalAudioPath,
+      subtitles: unit.subtitles,
+      timing: timing.cues[unitIndex]
+    }))
+  }
+  const dubbingPlanArtifactPath = join(workDir, 'dubbing-plan.json')
+  await writeFile(dubbingPlanArtifactPath, JSON.stringify(legacyDubbingPlan, null, 2), 'utf8')
+  artifacts.push({ source: dubbingPlanArtifactPath, name: 'dubbing-plan.json' })
+
   const anyRephrased = dubbingUnits.some((u) => u.rephrased)
   const rephraseCount = preparedClips.filter((clip) => clip.rephraseAttempted).length
+  const fitFirstPassRatio = preparedClips.length > 0
+    ? Number(((preparedClips.length - rephraseCount) / preparedClips.length).toFixed(3))
+    : 1
   if (anyRephrased) {
     const dubbingSrtPath = join(workDir, 'dubbing.srt')
     await writeFile(dubbingSrtPath, serializeSrt(timedCues), 'utf8')
@@ -1268,6 +1657,10 @@ async function synthesizeVoice(
     degraded: timing.degraded,
     rephraseCount,
     splitCount,
+    paceMode,
+    predictorSamples: predictor.profile.samples,
+    fitFirstPassRatio,
+    predictorResidualP90: predictor.profile.residualP90,
     diagnostics,
     sourceGroupInputs,
     targetGroupInputs,
@@ -1275,13 +1668,298 @@ async function synthesizeVoice(
   }
 }
 
+/** The coordinator adapter for the source-anchored dubbing modules. */
+async function synthesizeVoice(
+  job: AutoShortJob,
+  item: AutoShortQueueItemInput,
+  config: AutoShortConfig,
+  cues: SubtitleCue[],
+  sourceCues: SubtitleCue[],
+  workDir: string,
+  videoDuration: number,
+  index: number,
+  total: number,
+  detectedLanguage?: string | null
+): Promise<{
+  path: string
+  clips: Array<{ start: number; path: string }>
+  cues: SubtitleCue[]
+  dubbingUnits: AutoShortDubbingUnit[]
+  wordTimings?: Array<{ start: number; end: number; words: Array<{ text: string; start: number; end: number; probability?: number | null }> }>
+  count: number
+  voice?: string
+  language: string
+  tempo: number
+  averageTempo: number
+  maxTempo: number
+  degraded: boolean
+  rephraseCount: number
+  splitCount: number
+  paceMode: 'source-adaptive' | 'fixed'
+  predictorSamples: number
+  fitFirstPassRatio: number
+  predictorResidualP90: number
+  diagnostics: AutoShortCueDiagnostic[]
+  sourceGroupInputs: AutoShortVoiceCueInput[]
+  targetGroupInputs: AutoShortVoiceCueInput[]
+  artifacts: AutoShortArtifactEntry[]
+}> {
+  const ffmpeg = await resolveFfmpeg()
+  if (!ffmpeg) throw new Error('Thiếu FFmpeg để chuẩn hóa voice.')
+  const language = resolveAutoShortTtsLanguage(config, detectedLanguage)
+  if (!language || language === 'auto') throw new Error('Không xác định được ngôn ngữ TTS; hãy chọn ngôn ngữ nguồn hoặc đích.')
+  const localKey = await loadLocalKey()
+  const capabilityUrl = config.ttsServerUrl || ''
+  const models = job.ttsCapabilities && job.ttsCapabilitiesUrl === capabilityUrl
+    ? job.ttsCapabilities
+    : await getTtsModels(config.ttsServerUrl, localKey)
+  job.ttsCapabilities = models
+  job.ttsCapabilitiesUrl = capabilityUrl
+  const selectedModel = selectCompatibleAutoShortTtsModel(models.models, config.ttsModel, language)
+  if (!selectedModel) throw new Error(config.ttsModel ? `Model TTS "${config.ttsModel}" không tồn tại trên server.` : 'Không tìm thấy model TTS khả dụng trên server.')
+  if (config.ttsModel && selectedModel.id !== config.ttsModel) {
+    logWarn(`[AutoShort] Model TTS đã lưu "${config.ttsModel}" không phù hợp ngôn ngữ ${language}; dùng capability tương thích "${selectedModel.id}".`)
+  }
+  const capabilityError = validateAutoShortTtsModel(selectedModel, language)
+  if (capabilityError) throw new Error(capabilityError)
+  const effectiveVoice = selectedModel.supports_named_voice === false
+    ? undefined
+    : config.ttsVoice && config.ttsVoice !== 'default'
+      ? config.ttsVoice
+      : selectedModel.default_voice
+  const stableSourceCues = sourceCues.map((cue, cueIndex) => ({
+    id: cue.id?.trim() || `cue-${cue.sourceIndex ?? cueIndex}`,
+    start: cue.start,
+    end: cue.end,
+    text: cue.text
+  }))
+  const sourcePlan = buildPlan({ videoDuration, paceMode: config.paceMode || 'source-adaptive', cues: stableSourceCues })
+  const targetById = new Map(cues.map((cue, cueIndex) => [cue.id?.trim() || `cue-${cue.sourceIndex ?? cueIndex}`, cue]))
+  const targetItems = sourcePlan.cues.map((cue, cueIndex) => {
+    const target = targetById.get(cue.id) || cues[cueIndex]
+    if (!target || !target.text.trim()) throw new Error(`Không tìm thấy text dịch cho cue ${cue.id}.`)
+    return { id: cue.id, text: spokenTextWithoutSpeakerLabel(target.text) }
+  })
+  const translatedPlan = applyDubbingTranslations(sourcePlan, targetItems)
+  const referenceInfo = config.ttsRefAudioPath
+    ? await stat(config.ttsRefAudioPath).then((info) => ({ path: config.ttsRefAudioPath, size: info.size, mtimeMs: info.mtimeMs })).catch(() => ({ path: config.ttsRefAudioPath, size: 0, mtimeMs: 0 }))
+    : null
+  const profileKey = durationProfileKey({
+    endpoint: config.ttsServerUrl,
+    model: selectedModel.id,
+    voice: effectiveVoice,
+    language,
+    options: config.ttsOptions,
+    referenceAudio: referenceInfo
+  })
+  const profileRoot = join(app.getPath('userData'), 'autoshort-duration-profiles')
+  const predictor = createDurationPredictor(await loadDurationProfile(profileRoot, profileKey))
+  const cacheRoot = join(app.getPath('userData'), 'autoshort-tts-cache-v2')
+  const attemptByCue = new Map<string, number>()
+  const adapter: Parameters<typeof synthesizeDubbingPlan>[0]['tts'] = {
+    async synthesize(request, signal) {
+      const attempt = (attemptByCue.get(request.cueId) || 0) + 1
+      attemptByCue.set(request.cueId, attempt)
+      const safeId = safeArtifactSegment(request.cueId)
+      const outputPath = join(workDir, `cue-${safeId}-${attempt}.wav`)
+      const cacheKey = buildTtsCacheKey({
+        endpoint: config.ttsServerUrl,
+        finalSpokenText: request.text,
+        language: request.language,
+        model: request.model,
+        voice: request.voice,
+        serverSpeed: 1,
+        options: request.options,
+        referenceAudio: referenceInfo,
+        referenceTranscript: config.ttsRefTranscript
+      })
+      const cachedPath = join(cacheRoot, `${cacheKey}.wav`)
+      if (request.cacheMode !== 'bypass' && await fileExists(cachedPath)) {
+        await copyFile(cachedPath, outputPath)
+        return { path: outputPath, voice: effectiveVoice, fromCache: true }
+      }
+      await mkdir(cacheRoot, { recursive: true })
+      const requestInput = {
+        serverUrl: config.ttsServerUrl,
+        text: request.text,
+        language: request.language,
+        model: request.model,
+        voice: request.voice || undefined,
+        speed: 1,
+        apiKey: localKey,
+        options: request.options
+      }
+      const result = config.ttsRefAudioPath
+        ? await generateVoiceClone({ ...requestInput, referenceAudioPath: config.ttsRefAudioPath, referenceTranscript: config.ttsRefTranscript }, signal, outputPath)
+        : await generateSpeech(requestInput, signal, outputPath)
+      if (!result.ok || !result.savedPath) throw new Error(result.error || `TTS không trả audio cho cue ${request.cueId}.`)
+      await copyFile(result.savedPath, cachedPath)
+      return { path: result.savedPath, voice: result.voice || effectiveVoice, fromCache: false }
+    }
+  }
+  const audioAdapter: Parameters<typeof synthesizeDubbingPlan>[0]['audio'] = {
+    async trim(inputPath, outputHint, signal) {
+      const outputPath = join(workDir, `${safeArtifactSegment(outputHint)}.wav`)
+      const duration = await trimVoiceClip(ffmpeg, inputPath, outputPath, signal)
+      return { path: outputPath, duration }
+    },
+    async applyTempo(inputPath, outputHint, targetDuration, signal) {
+      const outputPath = join(workDir, `${safeArtifactSegment(outputHint)}.wav`)
+      const actualDuration = await speedUpVoiceClip(ffmpeg, inputPath, outputPath, await probeDuration(ffmpeg, inputPath, signal), targetDuration, signal)
+      return { path: outputPath, duration: actualDuration }
+    }
+  }
+  const synthesized = await synthesizeDubbingPlan({
+    plan: translatedPlan,
+    language,
+    model: selectedModel.id,
+    voice: effectiveVoice,
+    options: config.ttsOptions,
+    fixedTempo: config.ttsSpeed || 1,
+    predictor,
+    tts: adapter,
+    audio: audioAdapter,
+    rephrase: (request, signal) => rephraseDubbingCue(config, request.cueId, request.currentText, request.targetDuration, language, detectedLanguage, signal),
+    signal: job.controller.signal,
+    onProgress: (completed, count, cueId) => emitProgress(job, item, 'generating_tts', 58 + (completed / Math.max(1, count)) * 20, `Đang tạo voice ${completed}/${count} (${cueId})`, index, total)
+  })
+  await saveDurationProfile(profileRoot, profileKey, predictor.profile).catch((error) => {
+    logWarn(`[AutoShort] Không lưu được duration profile: ${errLabel(error)}`)
+  })
+  const validation = validateDubbingPlan(synthesized.plan)
+  if (!validation.ok) throw new Error(`DubbingPlan không hợp lệ: ${validation.violations[0]}`)
+  const artifacts: AutoShortArtifactEntry[] = []
+  const dubbingUnits: AutoShortDubbingUnit[] = synthesized.plan.cues.map((cue, cueIndex) => {
+    const subtitles = cue.subtitles as SubtitleCue[]
+    const unit: AutoShortDubbingUnit = {
+      id: cue.id,
+      sourceCueIds: [...cue.sourceCueIds],
+      sourceStart: cue.sourceStart,
+      sourceEnd: cue.sourceEnd,
+      sourceText: cue.sourceText,
+      translatedText: cue.translatedText,
+      finalSpokenText: cue.finalSpokenText,
+      rephrased: cue.rephrased,
+      rawAudioPath: undefined,
+      rawDuration: cue.naturalDuration || undefined,
+      trimmedAudioPath: cue.audioPath || undefined,
+      naturalDuration: cue.naturalDuration || 0,
+      finalAudioPath: cue.audioPath || undefined,
+      finalDuration: cue.actualDuration || undefined,
+      plannedStart: cue.start,
+      plannedEnd: cue.voiceEnd || cue.start,
+      plannedDuration: cue.plannedDuration || cue.actualDuration || 0,
+      tempo: cue.tempo,
+      preferredEnd: cue.preferredEnd,
+      hardEnd: cue.hardEnd,
+      words: [],
+      alignmentConfidence: 0,
+      alignmentQuality: 'cue',
+      subtitles
+    }
+    if (cue.audioPath) artifacts.push({ source: cue.audioPath, name: `cue-${cueIndex}-audio.wav` })
+    return unit
+  })
+  const diagnostics: AutoShortCueDiagnostic[] = dubbingUnits.map((unit, cueIndex) => {
+    const cue = synthesized.plan.cues[cueIndex]
+    const end = unit.plannedEnd
+    return {
+      cueIndex,
+      cueId: unit.id,
+      sourceStart: unit.sourceStart,
+      sourceEnd: unit.sourceEnd,
+      sourceText: unit.sourceText,
+      translatedText: unit.finalSpokenText,
+      naturalDuration: unit.naturalDuration,
+      tempo: unit.tempo,
+      plannedVoiceStart: unit.plannedStart,
+      plannedVoiceEnd: end,
+      renderSubtitleStart: unit.subtitles[0]?.start ?? unit.plannedStart,
+      renderSubtitleEnd: unit.subtitles[unit.subtitles.length - 1]?.end ?? end,
+      semanticOverflowMs: 0,
+      rephraseAttempted: unit.rephrased,
+      degraded: synthesized.metrics.degraded,
+      cueStart: unit.plannedStart,
+      cueEnd: end,
+      rawPath: unit.rawAudioPath,
+      rawDuration: unit.rawDuration,
+      trimmedPath: unit.trimmedAudioPath,
+      trimmedDuration: unit.naturalDuration,
+      tempoPath: unit.finalAudioPath,
+      tempoDuration: unit.finalDuration,
+      voiceStart: unit.plannedStart,
+      voiceEnd: end,
+      availableDuration: cue.availableDuration,
+      plannedDuration: unit.plannedDuration,
+      plannedStart: unit.plannedStart,
+      plannedEnd: end,
+      slackBefore: 0,
+      slackAfter: Math.max(0, cue.hardEnd - end),
+      tailMarginSeconds: 0,
+      cutOffDetected: false,
+      overlap: false
+    }
+  })
+  const planArtifact = join(workDir, 'dubbing-plan.json')
+  await writeFile(planArtifact, JSON.stringify(synthesized.plan, null, 2), 'utf8')
+  artifacts.push({ source: planArtifact, name: 'dubbing-plan.json' })
+  const textArtifact = join(workDir, 'final-spoken-text.json')
+  await writeFile(textArtifact, JSON.stringify(synthesized.plan.cues.map((cue) => ({
+    id: cue.id,
+    sourceCueIds: cue.sourceCueIds,
+    sourceStart: cue.sourceStart,
+    sourceEnd: cue.sourceEnd,
+    sourceText: cue.sourceText,
+    translatedText: cue.translatedText,
+    finalSpokenText: cue.finalSpokenText,
+    rephrased: cue.rephrased
+  })), null, 2), 'utf8')
+  artifacts.push({ source: textArtifact, name: 'final-spoken-text.json' })
+  return {
+    path: join(workDir, 'tts-timeline.wav'),
+    clips: synthesized.clips,
+    cues: synthesized.subtitles as SubtitleCue[],
+    dubbingUnits,
+    wordTimings: undefined,
+    count: synthesized.clips.length,
+    voice: synthesized.voice,
+    language,
+    tempo: synthesized.metrics.globalTempo,
+    averageTempo: synthesized.metrics.averageTempo,
+    maxTempo: synthesized.metrics.maxTempo,
+    degraded: synthesized.metrics.degraded,
+    rephraseCount: synthesized.metrics.rephraseCount,
+    splitCount: 0,
+    paceMode: translatedPlan.paceMode,
+    predictorSamples: synthesized.metrics.predictorSamples,
+    fitFirstPassRatio: synthesized.metrics.fitFirstPassRatio,
+    predictorResidualP90: synthesized.metrics.predictorResidualP90,
+    diagnostics,
+    sourceGroupInputs: dubbingUnits.map((unit) => ({ id: unit.id, start: unit.sourceStart, end: unit.sourceEnd, text: unit.sourceText })),
+    targetGroupInputs: dubbingUnits.map((unit) => ({ id: unit.id, start: unit.sourceStart, end: unit.sourceEnd, text: unit.finalSpokenText })),
+    artifacts
+  }
+}
+
 async function probeOutputMediaWithFfprobe(
   ffmpegPath: string,
   outputPath: string,
-  ttsExpected = false
+  ttsExpected = false,
+  expectedVideoDuration?: number,
+  expectedFrameRate?: number
 ): Promise<{ ok: boolean; error?: string }> {
   try {
-    const meta = await probeBurnMedia(outputPath).catch(() => ({ giay: 0, w: 0, h: 0, hasAudio: false }))
+    const meta = await probeBurnMedia(outputPath).catch(() => ({
+      giay: 0,
+      w: 0,
+      h: 0,
+      hasAudio: false,
+      videoDuration: 0,
+      audioDuration: 0,
+      frameRate: 0,
+      videoStart: 0,
+      audioStart: 0
+    }))
     const fileStat = await stat(outputPath).catch(() => null)
     const fileSize = fileStat?.size || 0
 
@@ -1303,14 +1981,25 @@ async function probeOutputMediaWithFfprobe(
 
     const probeInfo: RenderedMediaProbeInfo = {
       fileSize,
-      videoStream: meta.w > 0 && meta.h > 0 ? { width: meta.w, height: meta.h, duration: meta.giay } : null,
-      audioStream: meta.hasAudio ? { channels: 2, sampleRate: 44100, duration: meta.giay } : null,
+      videoStream: meta.w > 0 && meta.h > 0 ? { width: meta.w, height: meta.h, duration: meta.videoDuration && meta.videoDuration > 0 ? meta.videoDuration : undefined, startTime: meta.videoStart } : null,
+      audioStream: meta.hasAudio ? { channels: 2, sampleRate: 44100, duration: meta.audioDuration && meta.audioDuration > 0 ? meta.audioDuration : undefined, startTime: meta.audioStart } : null,
       formatDuration: meta.giay,
       decodeError,
       ttsExpected
     }
 
     const res = validateRenderedOutputMedia(probeInfo)
+    const actualVideoDuration = meta.videoDuration && meta.videoDuration > 0 ? meta.videoDuration : 0
+    const maxDurationDelta = Math.max(0.35, (1 / (expectedFrameRate || 30)) * 8)
+    if (res.ok && expectedVideoDuration != null && Math.abs(actualVideoDuration - expectedVideoDuration) > maxDurationDelta) {
+      return {
+        ok: false,
+        error: `Thời lượng video đầu ra (${actualVideoDuration.toFixed(3)}s) lệch nguồn (${expectedVideoDuration.toFixed(3)}s) quá giới hạn cho phép (${maxDurationDelta.toFixed(3)}s).`
+      }
+    }
+    if (res.ok && expectedFrameRate != null && meta.frameRate != null && Math.abs(meta.frameRate - expectedFrameRate) > 0.1) {
+      logWarn(`[AutoShort] FPS đầu ra (${meta.frameRate.toFixed(3)}) lệch FPS nguồn (${expectedFrameRate.toFixed(3)}).`)
+    }
     return { ok: res.ok, error: res.error }
   } catch (error) {
     return { ok: false, error: errLabel(error) }
@@ -1333,6 +2022,8 @@ async function processSingleVideo(
 
   const checkpointFile = join(checkpointDir, 'checkpoint.json')
   let checkpoint: {
+    version?: number
+    fingerprint?: string
     sourceCues?: AlignedCue[]
     detectedSourceLanguage?: string | null
     translatedCues?: SubtitleCue[]
@@ -1355,6 +2046,16 @@ async function processSingleVideo(
     throwIfAborted(job.controller.signal)
     const inputInfo = await stat(item.filePath).catch(() => null)
     if (!inputInfo?.isFile() || inputInfo.size <= 0) throw new Error(`Video không hợp lệ: ${basename(item.filePath)}`)
+    const checkpointFingerprint = buildAutoShortCheckpointFingerprint(item.filePath, inputInfo, config)
+    if (checkpoint.version !== AUTO_SHORT_CHECKPOINT_VERSION || checkpoint.fingerprint !== checkpointFingerprint) {
+      if (checkpoint.sourceCues?.length || checkpoint.translatedCues?.length) {
+        logInfo('[AutoShort] Bỏ checkpoint cũ vì không khớp fingerprint input/cấu hình hiện tại.')
+      }
+      checkpoint = {}
+      detectedSourceLanguage = null
+    }
+    checkpoint.version = AUTO_SHORT_CHECKPOINT_VERSION
+    checkpoint.fingerprint = checkpointFingerprint
     const meta = await probeBurnMedia(item.filePath)
     if (!(meta.giay > 0) || !(meta.w > 0) || !(meta.h > 0)) throw new Error('Video không có metadata hợp lệ')
     const portrait = meta.h > meta.w
@@ -1506,12 +2207,16 @@ async function processSingleVideo(
       await writeFile(timelineManifestPath, JSON.stringify({
         language: synthesized.language,
         voice: synthesized.voice,
+        paceMode: synthesized.paceMode,
         tempo: synthesized.tempo,
         maxTempo: synthesized.maxTempo,
         averageTempo: synthesized.averageTempo,
         degraded: synthesized.degraded,
         rephraseCount: synthesized.rephraseCount,
         splitCount: synthesized.splitCount,
+        predictorSamples: synthesized.predictorSamples,
+        fitFirstPassRatio: synthesized.fitFirstPassRatio,
+        predictorResidualP90: synthesized.predictorResidualP90,
         cueCount: synthesized.count,
         cues: synthesized.diagnostics
       }, null, 2), 'utf8')
@@ -1578,7 +2283,13 @@ async function processSingleVideo(
     const ffmpegPath = await resolveFfmpeg()
     if (!ffmpegPath) throw new Error('Thiếu FFmpeg/FFprobe đã xác minh để kiểm tra video đầu ra.')
     emitProgress(job, item, 'rendering_video', 98, 'Đang kiểm tra chất lượng video đầu ra…', index, total)
-    const mediaCheck = await probeOutputMediaWithFfprobe(ffmpegPath, burnResult.output, config.ttsEnabled)
+    const mediaCheck = await probeOutputMediaWithFfprobe(
+      ffmpegPath,
+      burnResult.output,
+      config.ttsEnabled,
+      meta.giay,
+      meta.frameRate
+    )
     if (!mediaCheck.ok) {
       logError(`[AutoShort] Kiểm tra video xuất ra thất bại: ${mediaCheck.error}`)
       await rm(burnResult.output, { force: true }).catch(() => {})
@@ -1665,16 +2376,18 @@ async function preflight(job: AutoShortJob): Promise<void> {
     const health = await preflightStep<TtsServerHealth>('kiểm tra TTS', () => checkTtsServerHealth(config.ttsServerUrl, key))
     if (!health.ok) throw new Error(health.error || 'Không kết nối được server TTS')
     const models = await preflightStep<{ ok: boolean; models: TtsModelInfo[]; error?: string }>('đọc danh sách model TTS', () => getTtsModels(config.ttsServerUrl, key))
-    const selectedModel = config.ttsModel
-      ? models.models.find((model: TtsModelInfo) => model.id === config.ttsModel)
-      : (models.models.find((m) => m.available !== false) || models.models[0])
+    if (models.ok) {
+      job.ttsCapabilities = models
+      job.ttsCapabilitiesUrl = config.ttsServerUrl || ''
+    }
+    const ttsLanguage = resolveAutoShortTtsLanguage(config)
+    const selectedModel = selectCompatibleAutoShortTtsModel(models.models, config.ttsModel, ttsLanguage)
     if (!models.ok || !selectedModel) {
       throw new Error(models.error || (config.ttsModel ? `Model TTS "${config.ttsModel}" không tồn tại trên server.` : 'Không tìm thấy model TTS khả dụng trên server.'))
     }
     if (selectedModel.available === false) {
       throw new Error(`Model TTS ${selectedModel.id} hiện không khả dụng trên server.`)
     }
-    const ttsLanguage = resolveAutoShortTtsLanguage(config)
     const ttsCapabilityError = validateAutoShortTtsModel(selectedModel, ttsLanguage)
     if (ttsCapabilityError) throw new Error(ttsCapabilityError)
     if (config.ttsRefAudioPath && !(await fileExists(config.ttsRefAudioPath))) throw new Error('File voice clone không tồn tại')

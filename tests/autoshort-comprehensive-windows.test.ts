@@ -5,7 +5,9 @@ import { tmpdir } from 'node:os'
 import { mkdir, rm, writeFile, readFile, stat } from 'node:fs/promises'
 import {
   calculateGlobalVoiceTempo,
+  deriveAutoShortCueWindows,
   planAutoShortVoiceTimeline,
+  segmentScheduledDubbingSubtitles,
   validateVoiceAudioCompleteness,
   validateRenderedOutputMedia,
   validateAutoShortTimelineSync,
@@ -17,6 +19,7 @@ import {
   AUTO_SHORT_TTS_MAX_TEMPO,
   AUTO_SHORT_TTS_HARD_MAX_TEMPO
 } from '../src/main/autoShortPolicy'
+import { createDurationPredictor } from '../src/main/dubbingDuration'
 import { buildSemanticGroups, joinGroupText } from '../src/main/semanticGrouping'
 import { parseSrt, serializeSrt, type SubtitleCue } from '../src/shared/subtitles'
 import { taoFilterComplex, taoAss, boCuc } from '../src/main/burn'
@@ -98,7 +101,7 @@ test('Case 7: Zero speech crop invariant - voice overflow is resolved through te
   const plan = planAutoShortVoiceTimeline(cues, naturalDurations, 5.0, 1.35)
 
   assert.equal(plan.cues.length, 1)
-  assert.ok(plan.cues[0].duration > 1.7 && plan.cues[0].duration < 2.1)
+  assert.ok(plan.cues[0].duration > 2.3 && plan.cues[0].duration < 2.8)
   assert.ok(plan.cues[0].tempo <= AUTO_SHORT_TTS_HARD_MAX_TEMPO)
   // Subtitle anchor strictly preserved
   assert.equal(plan.cues[0].subtitleStart, 0.0)
@@ -414,11 +417,12 @@ test('Case E: Voice timeline lookahead budgeting prevents end-of-video overflow'
     { id: '5', start: 20.0, end: 24.5, text: 'Câu năm phân tích sâu hơn' },
     { id: '6', start: 25.0, end: 29.5, text: 'Câu sáu kết luận toàn bộ video' }
   ]
-  // Slightly longer natural durations (e.g. 4.8s each in 4.5s windows)
+  // Slightly longer natural durations in source windows; explicitly choose
+  // the common pace that the predictor would have selected before TTS.
   const naturalDurations = [4.8, 4.8, 4.9, 4.8, 4.8, 4.8]
   const videoDuration = 30.0
 
-  const timing = planAutoShortVoiceTimeline(cues, naturalDurations, videoDuration, AUTO_SHORT_TTS_MAX_TEMPO)
+  const timing = planAutoShortVoiceTimeline(cues, naturalDurations, videoDuration, AUTO_SHORT_TTS_MAX_TEMPO, { globalTempo: 1.2 })
 
   // Last cue voiceEnd MUST strictly finish within videoDuration + 0.05s
   const lastCue = timing.cues[timing.cues.length - 1]
@@ -487,4 +491,50 @@ test('Case I: Impossible single-cue overflow is rejected instead of shifting lat
     () => planAutoShortVoiceTimeline(cues, [1.6, 0.65, 0.65], 4.0, AUTO_SHORT_TTS_MAX_TEMPO),
     /không thể|vượt|overflow|fit/iu
   )
+})
+
+test('Auto Short source-anchored windows borrow only the gap and keep the next cue start', () => {
+  const cues: AutoShortVoiceCueInput[] = [
+    { id: 'cue-10', start: 10, end: 12, text: 'Câu đầu' },
+    { id: 'cue-14', start: 14, end: 16, text: 'Câu sau' }
+  ]
+  const windows = deriveAutoShortCueWindows(cues, 20)
+  assert.equal(windows[0].sourceStart, 10)
+  assert.equal(windows[0].preferredEnd, 12)
+  assert.equal(windows[0].hardEnd, 13.5)
+
+  const plan = planAutoShortVoiceTimeline(cues, [3.2, 1.5], 20, 1.35, {
+    paceMode: 'source-adaptive',
+    globalTempo: 1
+  })
+  assert.equal(plan.cues[0].start, 10)
+  assert.equal(plan.cues[0].voiceEnd, 13.2)
+  assert.equal(plan.cues[1].start, 14)
+  assert.ok(plan.cues[0].voiceEnd <= windows[0].hardEnd + 0.001)
+})
+
+test('Auto Short scheduled subtitle uses final spoken text and actual voice window without Whisper', () => {
+  const subtitles = segmentScheduledDubbingSubtitles({
+    id: 'cue-10',
+    sourceCueIds: ['cue-10'],
+    finalSpokenText: 'Bản dịch cuối cùng',
+    plannedStart: 10,
+    actualDuration: 3.2,
+    hardEnd: 13.5
+  })
+  assert.equal(subtitles.length, 1)
+  assert.equal(subtitles[0].text, 'Bản dịch cuối cùng')
+  assert.equal(subtitles[0].start, 10)
+  assert.equal(subtitles[0].end, 13.2)
+})
+
+test('Auto Short predictor learns a per-profile duration estimate from reusable TTS samples', () => {
+  const predictor = createDurationPredictor()
+  predictor.addSample('Một câu ngắn.', 1.2)
+  predictor.addSample('Đây là một câu có độ dài trung bình.', 2.4)
+  predictor.addSample('Đây là một câu dài hơn có nhiều thông tin để đọc.', 3.7)
+  const estimate = predictor.estimate('Đây là một câu có độ dài trung bình.')
+  assert.ok(estimate.seconds > 0)
+  assert.ok(estimate.uncertaintySeconds >= 0)
+  assert.equal(predictor.profile.samples, 3)
 })

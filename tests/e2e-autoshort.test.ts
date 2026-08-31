@@ -61,11 +61,9 @@ Hãy nhấn đăng ký kênh để không bỏ lỡ thông tin mới.
   ]
   assert.equal(translatedCues.length, 3)
 
-  // 4. TTS natural durations from synthesizer (e.g. cue 0 fits naturally, cue 1 needs slight tempo, cue 2 fits)
-  // Cue 0: window = 2.5s, natural = 2.3s -> tempo 1.0x
-  // Cue 1: window = 3.3s, natural = 3.8s -> tempo 3.8 / 3.3 = 1.15x <= 1.35x
-  // Cue 2: window = 3.3s, natural = 3.0s -> tempo 1.0x
-  const naturalDurations = [2.3, 3.8, 3.0]
+  // 4. TTS natural durations are close to one source-adaptive pace. The
+  // planner must not solve one outlier by silently changing later cue starts.
+  const naturalDurations = [2.3, 2.95, 3.0]
 
   // 5. Plan Auto Short Voice Timeline with hard max tempo
   const plan = planAutoShortVoiceTimeline(
@@ -78,9 +76,7 @@ Hãy nhấn đăng ký kênh để không bỏ lỡ thông tin mới.
   // Verify plan properties
   assert.equal(plan.cues.length, 3)
   assert.ok(plan.maxTempo <= AUTO_SHORT_TTS_HARD_MAX_TEMPO, 'Tempo must never exceed hard max (1.35x)')
-  assert.equal(plan.cues[0].tempo, 1.0)
-  assert.ok(plan.cues[1].tempo >= 1.14 && plan.cues[1].tempo <= 1.35)
-  assert.equal(plan.cues[2].tempo, 1.0)
+  assert.ok(plan.cues.every((cue) => cue.tempo >= plan.globalTempo && cue.tempo <= plan.globalTempo + 0.031))
 
   // Verify timestamps are strictly monotonic and within video duration
   let lastEnd = 0

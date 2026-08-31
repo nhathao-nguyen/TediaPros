@@ -1,7 +1,7 @@
 import { app, dialog } from 'electron'
 import { mkdir, readFile, writeFile, stat } from 'node:fs/promises'
 import { basename, dirname, join } from 'node:path'
-import { randomUUID } from 'node:crypto'
+import { createHash, randomUUID } from 'node:crypto'
 import { logInfo, logWarn, errLabel } from './logger'
 import {
   DEFAULT_AI_SERVER_URL,
@@ -109,10 +109,21 @@ export async function checkTtsServerHealth(
   }
 }
 
-export async function getTtsModels(
+type TtsModelsResult = { ok: boolean; models: TtsModelInfo[]; error?: string }
+
+const ttsModelsInFlight = new Map<string, Promise<TtsModelsResult>>()
+
+function ttsModelsRequestKey(serverUrl?: string, apiKey?: string): string {
+  const keyFingerprint = apiKey?.trim()
+    ? createHash('sha256').update(apiKey.trim()).digest('hex')
+    : 'anonymous'
+  return `${normalizeUrl(serverUrl)}|${keyFingerprint}`
+}
+
+async function loadTtsModels(
   serverUrl?: string,
   apiKey?: string
-): Promise<{ ok: boolean; models: TtsModelInfo[]; error?: string }> {
+): Promise<TtsModelsResult> {
   const base = normalizeUrl(serverUrl)
   try {
     const res = await fetch(`${base}/v1/models`, {
@@ -191,6 +202,26 @@ export async function getTtsModels(
     logWarn(`[TTS] Could not load models from ${base}: ${errLabel(err)}`)
     return { ok: false, models: [], error: `Không thể tải capability TTS: ${errLabel(err)}` }
   }
+}
+
+/**
+ * Share an in-flight capability request between the renderer and an Auto
+ * Short job. A cold CPU TTS server may take tens of seconds to enumerate
+ * models; duplicate requests can otherwise queue behind one another and make
+ * a healthy server look like a timeout.
+ */
+export function getTtsModels(serverUrl?: string, apiKey?: string): Promise<TtsModelsResult> {
+  const requestKey = ttsModelsRequestKey(serverUrl, apiKey)
+  const existing = ttsModelsInFlight.get(requestKey)
+  if (existing) return existing
+
+  const request = loadTtsModels(serverUrl, apiKey).finally(() => {
+    if (ttsModelsInFlight.get(requestKey) === request) {
+      ttsModelsInFlight.delete(requestKey)
+    }
+  })
+  ttsModelsInFlight.set(requestKey, request)
+  return request
 }
 
 function cleanOptions(options?: Record<string, any>, supportedOptions?: string[]): Record<string, any> {

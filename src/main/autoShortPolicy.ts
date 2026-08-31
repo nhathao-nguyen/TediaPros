@@ -1,12 +1,29 @@
 import { WHISPER_PROTOCOL } from './engineProtocol'
 import type { SubtitleCue, TtsModelInfo, WhisperEngineStatus } from '../shared/types'
+export {
+  DUBBING_ADAPTIVE_MAX_TEMPO,
+  DUBBING_ADAPTIVE_MIN_TEMPO,
+  DUBBING_FINAL_GUARD_SECONDS,
+  DUBBING_FIXED_MAX_TEMPO,
+  DUBBING_FIXED_MIN_TEMPO,
+  DUBBING_LOCAL_TEMPO_DELTA,
+  DUBBING_PROTECTED_GAP_SECONDS,
+  deriveDubbingWindows,
+  planDubbingAudioWindows,
+  selectFixedPace,
+  selectSourceAdaptivePace,
+  validateDubbingPlanTiming,
+  type DubbingTimingInput,
+  type DubbingTimingPlan
+} from './dubbing/policy'
 
-export const AUTO_SHORT_TTS_MIN_GAP_SECONDS = 0.08
+/** Minimum protected gap before the next source cue. */
+export const AUTO_SHORT_TTS_MIN_GAP_SECONDS = 0.50
 export const AUTO_SHORT_TTS_TAIL_SECONDS = 0.50
 export const AUTO_SHORT_TTS_END_GUARD_SECONDS = 0.12
 export const AUTO_SHORT_TTS_PREFERRED_MAX_TEMPO = 1.10
 export const AUTO_SHORT_TTS_NORMAL_MAX_TEMPO = 1.25
-export const AUTO_SHORT_TTS_HARD_MAX_TEMPO = 1.35
+export const AUTO_SHORT_TTS_HARD_MAX_TEMPO = 1.45
 export const AUTO_SHORT_TTS_MAX_TEMPO = AUTO_SHORT_TTS_HARD_MAX_TEMPO
 export const AUTO_SHORT_TTS_SEMANTIC_TOLERANCE_SECONDS = 0.06
 
@@ -129,11 +146,43 @@ export function validateAutoShortTtsModel(
   return undefined
 }
 
+/**
+ * Resolve a persisted model against the server's current capabilities and
+ * the language used by this job. A stale-but-present model is replaced only
+ * when the capability response provides a compatible alternative; a missing
+ * persisted model remains an error so configuration drift is visible.
+ */
+export function selectCompatibleAutoShortTtsModel<T extends TtsModelInfo>(
+  models: readonly T[],
+  requestedId: string | undefined,
+  language: string
+): T | undefined {
+  const requested = requestedId?.trim()
+    ? models.find((model) => model.id === requestedId.trim())
+    : undefined
+  if (requestedId?.trim() && !requested) return undefined
+  if (requested && !validateAutoShortTtsModel(requested, language)) return requested
+
+  const compatible = models.find((model) => !validateAutoShortTtsModel(model, language))
+  return compatible || requested || models.find((model) => model.available !== false) || models[0]
+}
+
 export interface AutoShortVoiceCueInput {
   id?: string
   start: number
   end?: number
   text?: string
+}
+
+export type AutoShortPaceMode = 'source-adaptive' | 'fixed'
+
+export interface AutoShortCueWindow {
+  cueIndex: number
+  cueId: string
+  sourceStart: number
+  preferredEnd: number
+  hardEnd: number
+  availableDuration: number
 }
 
 export interface AutoShortVoiceCuePlan {
@@ -151,6 +200,8 @@ export interface AutoShortVoiceCuePlan {
   slackBefore: number
   slackAfter: number
   semanticOverflowMs: number
+  preferredEnd: number
+  hardEnd: number
   degraded: boolean
 }
 
@@ -193,10 +244,12 @@ export interface AutoShortDubbingUnit {
   plannedEnd: number
   plannedDuration: number
   tempo: number
+  preferredEnd?: number
+  hardEnd?: number
 
   words: AutoShortWordTiming[]
   alignmentConfidence: number
-  alignmentQuality: 'word' | 'fallback'
+  alignmentQuality: 'word' | 'fallback' | 'cue'
 
   subtitles: SubtitleCue[]
 }
@@ -227,6 +280,99 @@ export function calculateGlobalVoiceTempo(
 }
 
 /**
+ * Select the source-adaptive pace from predictor output before TTS starts.
+ * Longer windows have more influence, while the selected value is immutable
+ * for the rest of the job.
+ */
+export function calculateSourceAdaptiveTempo(
+  predictedDurations: readonly number[],
+  windows: readonly Pick<AutoShortCueWindow, 'availableDuration'>[],
+  minTempo = 0.9,
+  maxTempo = 1.25
+): number {
+  const ratios: Array<{ value: number; weight: number }> = []
+  for (let i = 0; i < Math.min(predictedDurations.length, windows.length); i++) {
+    const predicted = predictedDurations[i]
+    const available = windows[i].availableDuration
+    if (predicted > 0 && available > 0 && Number.isFinite(predicted) && Number.isFinite(available)) {
+      ratios.push({ value: predicted / available, weight: Math.max(0.05, available) })
+    }
+  }
+  if (ratios.length === 0) return 1
+  ratios.sort((a, b) => a.value - b.value)
+  const totalWeight = ratios.reduce((sum, item) => sum + item.weight, 0)
+  let accumulated = 0
+  let median = ratios[ratios.length - 1].value
+  for (const item of ratios) {
+    accumulated += item.weight
+    if (accumulated >= totalWeight / 2) {
+      median = item.value
+      break
+    }
+  }
+  return Number(Math.max(minTempo, Math.min(maxTempo, median)).toFixed(4))
+}
+
+/**
+ * Derive immutable source-anchored windows.  The original cue end is a soft
+ * preference: translated speech may use the following gap, but it may never
+ * enter the protected 500ms before the next source cue (or the final guard).
+ */
+export function deriveAutoShortCueWindows(
+  cues: readonly AutoShortVoiceCueInput[],
+  videoDuration: number,
+  protectedGap = AUTO_SHORT_TTS_MIN_GAP_SECONDS,
+  finalGuard = AUTO_SHORT_TTS_END_GUARD_SECONDS
+): AutoShortCueWindow[] {
+  if (!(videoDuration > 0) || !Number.isFinite(videoDuration)) {
+    throw new Error('Không thể lập timeline voice: thời lượng video không hợp lệ.')
+  }
+  return cues.map((cue, index) => {
+    const sourceStart = Math.max(0, cue.start)
+    const nextStart = index < cues.length - 1
+      ? Math.max(sourceStart, cues[index + 1].start)
+      : Number.POSITIVE_INFINITY
+    const sourceEnd = Number.isFinite(cue.end) && (cue.end as number) >= sourceStart
+      ? cue.end as number
+      : (Number.isFinite(nextStart) ? nextStart : videoDuration)
+
+    let hardEnd: number
+    if (index < cues.length - 1) {
+      const rawGap = nextStart - sourceStart
+      const effectiveGap = rawGap >= protectedGap + 0.05
+        ? protectedGap
+        : Math.min(protectedGap, Math.max(0.02, rawGap * 0.15))
+      hardEnd = Math.min(
+        videoDuration - finalGuard,
+        Math.max(sourceStart + Math.min(0.1, rawGap * 0.5), nextStart - effectiveGap)
+      )
+    } else {
+      hardEnd = Math.max(sourceStart + 0.05, videoDuration - finalGuard)
+    }
+    // preferredEnd is informational and remains the source cue's end.
+    const preferredEnd = Math.max(sourceStart, sourceEnd)
+    return {
+      cueIndex: index,
+      cueId: cue.id || `cue-${index}`,
+      sourceStart,
+      preferredEnd,
+      hardEnd,
+      availableDuration: Math.max(0.05, hardEnd - sourceStart)
+    }
+  })
+}
+
+export interface AutoShortVoiceTimelineOptions {
+  paceMode?: AutoShortPaceMode
+  /** Preselected pace from the duration predictor; does not change mid-job. */
+  globalTempo?: number
+  /** Fixed user-selected pace. Used only when paceMode is fixed. */
+  fixedTempo?: number
+  /** Maximum absolute local correction around the selected global pace. */
+  localTempoDelta?: number
+}
+
+/**
  * Plan voice timing for semantic groups with global baseline tempo and lookahead budgeting.
  *
  * Invariants:
@@ -241,7 +387,8 @@ export function planAutoShortVoiceTimeline(
   cues: readonly AutoShortVoiceCueInput[],
   naturalDurations: readonly number[],
   videoDuration: number,
-  maxTempo = AUTO_SHORT_TTS_MAX_TEMPO
+  maxTempo = AUTO_SHORT_TTS_MAX_TEMPO,
+  options: AutoShortVoiceTimelineOptions = {}
 ): AutoShortVoiceTimelinePlan {
   if (cues.length === 0 || cues.length !== naturalDurations.length) {
     throw new Error('Không thể lập timeline voice: số cue và số audio không khớp.')
@@ -252,6 +399,7 @@ export function planAutoShortVoiceTimeline(
 
   const upperTempo = Math.min(Math.max(1, maxTempo), AUTO_SHORT_TTS_HARD_MAX_TEMPO)
   const n = cues.length
+  const windows = deriveAutoShortCueWindows(cues, videoDuration)
 
   // First pass: derive an immutable effective window for every cue.  Do not
   // use a prior estimate to move a later cue: the source cue boundaries are
@@ -268,21 +416,15 @@ export function planAutoShortVoiceTimeline(
 
   // Estimate a global baseline from the real effective cue windows.  This is
   // only a baseline; every cue is still checked independently below.
-  const totalSpeechDuration = naturalDurations.reduce((sum, d) => sum + d, 0)
   for (let i = 0; i < n; i++) {
     const cue = cues[i]
     const cueId = cue.id || `cue-${i}`
     const naturalDuration = naturalDurations[i]
-    const rawStart = Math.max(0, cue.start)
-    const rawEnd = Number.isFinite(cue.end) && (cue.end as number) >= rawStart
-      ? (cue.end as number)
-      : (i < n - 1 ? Math.max(rawStart + 0.1, cues[i + 1].start) : videoDuration)
-    const nextCueStart = i < n - 1 ? Math.max(rawStart, cues[i + 1].start) : Number.POSITIVE_INFINITY
-    const maxAllowedVoiceEnd = Math.min(
-      rawEnd,
-      i < n - 1 ? nextCueStart - AUTO_SHORT_TTS_MIN_GAP_SECONDS : videoDuration - AUTO_SHORT_TTS_END_GUARD_SECONDS
-    )
-    const availableDuration = maxAllowedVoiceEnd - rawStart
+    const window = windows[i]
+    const rawStart = window.sourceStart
+    const rawEnd = Number.isFinite(cue.end) && (cue.end as number) >= rawStart ? cue.end as number : window.preferredEnd
+    const maxAllowedVoiceEnd = window.hardEnd
+    const availableDuration = window.availableDuration
     const requiredTempo = availableDuration > 0 ? naturalDuration / availableDuration : Number.POSITIVE_INFINITY
 
     preliminary.push({
@@ -296,23 +438,24 @@ export function planAutoShortVoiceTimeline(
     })
   }
 
-  const totalAvailableDuration = preliminary.reduce(
-    (sum, item) => sum + Math.max(0, item.availableDuration),
-    0
+  const baselineCandidate = calculateSourceAdaptiveTempo(
+    preliminary.map((p) => p.naturalDuration),
+    windows,
+    0.9,
+    Math.min(1.25, upperTempo)
   )
-  const roughGlobalRatio = totalAvailableDuration > 0
-    ? totalSpeechDuration / totalAvailableDuration
-    : Number.POSITIVE_INFINITY
-  const baselineCandidate = calculateGlobalVoiceTempo(preliminary.map((p) => p.requiredTempo))
-  const globalTempo = Math.min(
-    upperTempo,
-    Math.max(
-      baselineCandidate,
-      roughGlobalRatio > 1.05
-        ? Math.min(AUTO_SHORT_TTS_NORMAL_MAX_TEMPO, Number(roughGlobalRatio.toFixed(3)))
-        : 1.0
-    )
-  )
+  const paceMode = options.paceMode || 'source-adaptive'
+  const requestedGlobal = options.globalTempo ?? (paceMode === 'fixed' ? options.fixedTempo : undefined)
+  const globalTempo = requestedGlobal != null && Number.isFinite(requestedGlobal)
+    ? Number(Math.min(
+      upperTempo,
+      paceMode === 'source-adaptive'
+        ? Math.max(0.9, Math.min(1.25, requestedGlobal))
+        : Math.max(0.5, requestedGlobal)
+    ).toFixed(4))
+    : baselineCandidate
+  const localTempoDelta = Math.max(0, options.localTempoDelta ?? 0.03)
+  const localTempoCeiling = Math.min(upperTempo, globalTempo + localTempoDelta)
 
   // Second pass: apply the baseline without shifting semantic anchors.  A
   // local fit is permitted only when it remains below the hard ceiling and
@@ -331,12 +474,12 @@ export function planAutoShortVoiceTimeline(
     }
 
     const neededLocal = p.naturalDuration / p.availableDuration
-    if (!(neededLocal <= upperTempo + 0.001)) {
-      throw new Error(`Không thể fit voice cho câu ${i + 1}: cần tempo ${neededLocal.toFixed(3)}x, vượt giới hạn ${upperTempo.toFixed(3)}x; không cắt nội dung.`)
+    if (!(neededLocal <= localTempoCeiling + 0.001)) {
+      throw new Error(`Không thể fit voice cho câu ${i + 1}: cần tempo ${neededLocal.toFixed(3)}x, vượt nhịp cục bộ cho phép ${localTempoCeiling.toFixed(3)}x; cần rephrase, không cắt nội dung.`)
     }
 
     const plannedStart = p.rawStart
-    const tempo = Number(Math.min(upperTempo, Math.max(globalTempo, neededLocal)).toFixed(4))
+    const tempo = Number(Math.min(localTempoCeiling, Math.max(globalTempo, neededLocal)).toFixed(4))
     const plannedDuration = Number((p.naturalDuration / tempo).toFixed(3))
     const voiceEnd = plannedStart + plannedDuration
     if (voiceEnd > p.maxAllowedVoiceEnd + 0.005 || voiceEnd > videoDuration - AUTO_SHORT_TTS_END_GUARD_SECONDS + 0.005) {
@@ -371,6 +514,8 @@ export function planAutoShortVoiceTimeline(
       slackBefore: Math.max(0, slackBefore),
       slackAfter,
       semanticOverflowMs,
+      preferredEnd: windows[i].preferredEnd,
+      hardEnd: windows[i].hardEnd,
       degraded
     })
   }
@@ -657,6 +802,31 @@ export function segmentDubbingSubtitles(
   return subtitles
 }
 
+/**
+ * Build normal TTS subtitles from the final text and the scheduled audio
+ * window.  This is deliberately cue-level timing: it does not invent word
+ * timestamps and therefore does not need a second Whisper pass.
+ */
+export function segmentScheduledDubbingSubtitles(input: {
+  id: string
+  sourceCueIds: string[]
+  finalSpokenText: string
+  plannedStart: number
+  actualDuration: number
+  hardEnd: number
+}): SubtitleCue[] {
+  const start = Math.max(0, input.plannedStart)
+  const end = Math.min(input.hardEnd, start + Math.max(0, input.actualDuration))
+  if (!(end > start) || !input.finalSpokenText.trim()) return []
+  return [{
+    id: `${input.id}-sub-0`,
+    sourceIndex: 1,
+    start: Number(start.toFixed(3)),
+    end: Number(end.toFixed(3)),
+    text: input.finalSpokenText.trim()
+  }]
+}
+
 export interface TimelineSyncValidationResult {
   ok: boolean
   error?: string
@@ -736,15 +906,16 @@ export function validateAutoShortTimelineSync(
       if (u.plannedStart < u.sourceStart - semanticTolerance) {
         violations.push(`Unit ${i + 1} (${unitId}): voice bắt đầu trước source semantic window.`)
       }
-      if (u.plannedEnd > u.sourceEnd + semanticTolerance) {
-        violations.push(`Unit ${i + 1} (${unitId}): voice kết thúc sau source semantic window (${u.plannedEnd.toFixed(3)}s > ${u.sourceEnd.toFixed(3)}s).`)
+      const voiceHardEnd = Number.isFinite(u.hardEnd) ? u.hardEnd as number : u.sourceEnd
+      if (u.plannedEnd > voiceHardEnd + semanticTolerance) {
+        violations.push(`Unit ${i + 1} (${unitId}): voice kết thúc sau hardEnd (${u.plannedEnd.toFixed(3)}s > ${voiceHardEnd.toFixed(3)}s).`)
       }
-      if (u.tempo <= 0 || u.tempo > AUTO_SHORT_TTS_HARD_MAX_TEMPO + 0.001) {
+      if (u.tempo <= 0 || u.tempo > AUTO_SHORT_TTS_HARD_MAX_TEMPO + 0.05) {
         violations.push(`Unit ${i + 1} (${unitId}): tempo ${u.tempo.toFixed(3)}x vượt policy.`)
       }
       if (u.subtitles?.some((subtitle) => (
         subtitle.start < u.sourceStart - semanticTolerance ||
-        subtitle.end > u.sourceEnd + semanticTolerance
+        subtitle.end > voiceHardEnd + semanticTolerance
       ))) {
         violations.push(`Unit ${i + 1} (${unitId}): subtitle vượt source semantic window.`)
       }
@@ -931,8 +1102,8 @@ export interface RenderedOutputValidationResult {
 
 export interface RenderedMediaProbeInfo {
   fileSize: number
-  videoStream?: { width: number; height: number; duration?: number } | null
-  audioStream?: { channels: number; sampleRate: number; duration?: number } | null
+  videoStream?: { width: number; height: number; duration?: number; startTime?: number } | null
+  audioStream?: { channels: number; sampleRate: number; duration?: number; startTime?: number } | null
   formatDuration?: number
   decodeError?: string | null
   ttsExpected?: boolean
@@ -1006,8 +1177,8 @@ export function validateRenderedOutputMedia(
     }
   }
 
-  const audioDuration = info.audioStream?.duration || duration
-  if (info.ttsExpected && hasAudio && Math.abs(audioDuration - duration) > 1.0) {
+  const audioDuration = info.audioStream?.duration
+  if (info.ttsExpected && hasAudio && audioDuration != null && Math.abs(audioDuration - duration) > 1.0) {
     return {
       ok: false,
       error: `Thời lượng audio (${audioDuration.toFixed(2)}s) lệch quá nhiều so với video (${duration.toFixed(2)}s).`,

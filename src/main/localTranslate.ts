@@ -9,6 +9,7 @@ import {
   parseSrt,
   parseTranslationItems,
   validateTranslationItems,
+  type TranslationItem,
   type TranslationMode
 } from './translate-shared'
 import {
@@ -103,6 +104,77 @@ const LOCAL_TRANSLATION_MAX_ATTEMPTS = 3
 const LOCAL_TRANSLATION_RETRY_DELAYS_MS = [800, 1600]
 const LOCAL_TRANSLATION_RESPONSE_MAX_ATTEMPTS = 2
 
+function scriptMatcher(script: string): RegExp | null {
+  switch (script) {
+    case 'Latn': return /\p{Script=Latin}/u
+    case 'Hans': return /\p{Script=Han}/u
+    case 'Hant': return /\p{Script=Han}/u
+    case 'Jpan': return /[\p{Script=Han}\p{Script=Hiragana}\p{Script=Katakana}]/u
+    case 'Kore': return /[\p{Script=Hangul}\p{Script=Han}]/u
+    case 'Cyrl': return /\p{Script=Cyrillic}/u
+    case 'Arab': return /\p{Script=Arabic}/u
+    case 'Deva': return /\p{Script=Devanagari}/u
+    default: return null
+  }
+}
+
+function scriptCount(text: string, matcher: RegExp): number {
+  return Array.from(text).filter((character) => matcher.test(character)).length
+}
+
+function letterCount(text: string): number {
+  return Array.from(text).filter((character) => /\p{L}/u.test(character)).length
+}
+
+/** Detect a valid-looking response that simply copied the source script. */
+function isLikelySourceScriptEcho(
+  source: readonly SrtBlock[],
+  translated: readonly TranslationItem[],
+  sourceLanguage: string,
+  targetLanguage: string
+): boolean {
+  try {
+    const sourceScript = new Intl.Locale(sourceLanguage).maximize().script
+    const targetScript = new Intl.Locale(targetLanguage).maximize().script
+    if (!sourceScript || !targetScript || sourceScript === targetScript) return false
+    const sourceMatcher = scriptMatcher(sourceScript)
+    const targetMatcher = scriptMatcher(targetScript)
+    if (!sourceMatcher || !targetMatcher) return false
+    const sourceById = new Map(source.map((cue) => [cue.id || '', cue.text]))
+    const sourceText = source.map((cue) => cue.text).join(' ')
+    const translatedText = translated.map((cue) => cue.text).join(' ')
+    const sourceLetters = letterCount(sourceText)
+    const translatedLetters = letterCount(translatedText)
+    if (sourceLetters < 12 || translatedLetters < 12) return false
+
+    const translatedSourceScriptLetters = scriptCount(translatedText, sourceMatcher)
+    const translatedTargetScriptLetters = scriptCount(translatedText, targetMatcher)
+    const aggregateEcho =
+      translatedSourceScriptLetters >= Math.max(12, translatedTargetScriptLetters * 1.5) &&
+      translatedSourceScriptLetters / translatedLetters >= 0.65
+    if (aggregateEcho) return true
+
+    let comparable = 0
+    let echoCount = 0
+    for (const item of translated) {
+      const sourceTextForCue = sourceById.get(item.id)
+      if (!sourceTextForCue || sourceTextForCue.trim() === item.text.trim()) continue
+      const sourceCueLetters = letterCount(sourceTextForCue)
+      const translatedCueLetters = letterCount(item.text)
+      if (sourceCueLetters < 8 || translatedCueLetters < 8) continue
+      comparable++
+      const sourceCueScript = scriptCount(item.text, sourceMatcher)
+      const targetCueScript = scriptCount(item.text, targetMatcher)
+      if (sourceCueScript >= Math.max(8, targetCueScript * 1.5) && sourceCueScript / translatedCueLetters >= 0.65) {
+        echoCount++
+      }
+    }
+    return comparable >= 2 && echoCount / comparable >= 0.75
+  } catch {
+    return false
+  }
+}
+
 async function waitForLocalTranslationRetry(delayMs: number, signal?: AbortSignal): Promise<void> {
   await new Promise<void>((resolve, reject) => {
     if (signal?.aborted) {
@@ -166,7 +238,7 @@ export async function checkLocalTranslateKey(
         model: 'llm-default',
         messages: [{ role: 'user', content: 'health-check' }]
       }),
-      signal: AbortSignal.timeout(10_000)
+      signal: AbortSignal.timeout(30_000)
     })
 
     if (!res.ok) {
@@ -238,7 +310,7 @@ export async function localTranslateSrt(
     const systemPrompt = huongDan(targetLanguage, { mode, sourceLanguage })
     let userPrompt: string
     if (mode === 'dubbing') {
-      userPrompt = buildDubbingTranslationPayload(batchCues, sourceBlocks, options.contextRadius)
+      userPrompt = buildDubbingTranslationPayload(batchCues, sourceBlocks, options.contextRadius, targetLanguage)
     } else {
       const radius = Number.isInteger(options.contextRadius)
         ? Math.max(0, Math.min(3, options.contextRadius!))
@@ -298,7 +370,10 @@ export async function localTranslateSrt(
             { role: 'system', content: systemPrompt },
             { role: 'user', content: activeUserPrompt }
           ],
-          temperature: DEFAULT_LOCAL_TRANSLATION_TEMPERATURE
+          temperature: DEFAULT_LOCAL_TRANSLATION_TEMPERATURE,
+          // The gateway maps this to Ollama's num_predict. A bounded budget
+          // avoids a long batch being cut off before every cue is returned.
+          max_tokens: Math.min(8_192, Math.max(512, expectedIds.length * 64))
         })
       }, options.signal)
 
@@ -317,6 +392,12 @@ export async function localTranslateSrt(
       const candidate = parseTranslationItems(transText)
       try {
         validateTranslationItems(candidate, expectedIds)
+        if (isLikelySourceScriptEcho(sourceBlocks, candidate, sourceLanguage, targetLanguage)) {
+          invalidResponseReason = 'nội dung phản hồi vẫn ở hệ chữ nguồn'
+          // Do not spend another request repeating the same oversized prompt;
+          // the bounded semantic split below is the recovery path.
+          break
+        }
         resultMap = new Map(candidate.map((item) => [item.id, item.text]))
         break
       } catch (error) {

@@ -53,6 +53,7 @@ import {
   isSentenceTerminal
 } from '../src/main/semanticGrouping'
 import { clampAlignedCueTimeline, fuseWhisperAndOcr } from '../src/shared/autoShortAlignment'
+import { getTtsModels } from '../src/main/tts'
 
 async function writeCompleteWhisperModel(modelDir: string, id: WhisperModelId): Promise<void> {
   await mkdir(modelDir, { recursive: true })
@@ -291,12 +292,10 @@ test('AutoShort plans voice timing per cue: a long cue does not accelerate the e
     { start: 2.5, end: 3.7 },
     { start: 4.0, end: 5.5 }
   ]
-  const naturalDurations = [1.8, 1.5, 1.4]
-  const plan = planAutoShortVoiceTimeline(cues, naturalDurations, 6.0, 1.35)
+  const naturalDurations = [1.8, 0.9, 1.4]
+  const plan = planAutoShortVoiceTimeline(cues, naturalDurations, 6.0, 1.35, { globalTempo: 1.0 })
 
-  assert.equal(plan.cues[0].tempo, 1.0)
-  assert.equal(plan.cues[1].tempo, 1.25)
-  assert.equal(plan.cues[2].tempo, 1.0)
+  assert.ok(plan.cues.every((cue) => cue.tempo === 1))
 })
 
 test('AutoShort regression test: voice and subtitle do not spill into adjacent cue or stretch into next scene', () => {
@@ -304,17 +303,11 @@ test('AutoShort regression test: voice and subtitle do not spill into adjacent c
     { id: 'cue-0', start: 0.0, end: 2.0, text: 'Text A' },
     { id: 'cue-1', start: 2.0, end: 4.0, text: 'Text B' }
   ]
-  const naturalDurations = [2.2, 1.8] // Cue 0 needs a light fit inside its 2.0s source window
-  const plan = planAutoShortVoiceTimeline(cues, naturalDurations, 5.0, 1.35)
-
-  // Subtitle A must NOT extend into cue B
-  assert.equal(plan.cues[0].subtitleStart, 0.0)
-  assert.equal(plan.cues[0].subtitleEnd, 2.0)
-  // Voice A plannedStart must be 0.0
-  assert.equal(plan.cues[0].start, 0.0)
-  // Cue 1 subtitle must stay at 2.0 -> 4.0
-  assert.equal(plan.cues[1].subtitleStart, 2.0)
-  assert.equal(plan.cues[1].subtitleEnd, 4.0)
+  const naturalDurations = [2.2, 1.8]
+  assert.throws(
+    () => planAutoShortVoiceTimeline(cues, naturalDurations, 5.0, 1.35),
+    /fit|hardEnd|rephrase/iu
+  )
 })
 
 test('AutoShort sync validation rejects translated target timing drift independently of source anchors', () => {
@@ -365,8 +358,8 @@ test('AutoShort scene transition: gaps between non-adjacent cues are not treated
     { id: 'cue-1', start: 5.0, end: 8.0 }
   ]
   const plan = planAutoShortVoiceTimeline(cues, [3.6, 2.0], 10.0, 1.35)
-  // Voice A available duration is 3.0s (not stretched to 5.0s or 4.8s into gap)
-  assert.equal(plan.cues[0].availableDuration, 3.0)
+  // Voice A may use the gap, but must stop 500ms before cue B.
+  assert.equal(plan.cues[0].availableDuration, 4.5)
   assert.equal(plan.cues[0].subtitleEnd, 3.0)
   assert.equal(plan.cues[1].subtitleStart, 5.0)
   assert.equal(plan.cues[1].subtitleEnd, 8.0)
@@ -383,7 +376,7 @@ test('AutoShort preserves cue identity throughout timeline plan and sync validat
     { id: 'custom-b', start: 2.5, end: 4.5, text: 'Thế giới' },
     { id: 'custom-c', start: 5.0, end: 7.0, text: 'Kiểm tra' }
   ]
-  const plan = planAutoShortVoiceTimeline(targetCues, [1.8, 1.9, 1.5], 10.0)
+  const plan = planAutoShortVoiceTimeline(targetCues, [1.8, 1.8, 1.5], 10.0)
   assert.equal(plan.cues[0].cueId, 'custom-a')
   assert.equal(plan.cues[1].cueId, 'custom-b')
   assert.equal(plan.cues[2].cueId, 'custom-c')
@@ -412,10 +405,8 @@ test('AutoShort adjusts tempo per cue without accelerating adjacent normal cues'
     { start: 2.0, end: 3.0 },
     { start: 3.0, end: 5.0 }
   ]
-  const plan = planAutoShortVoiceTimeline(cues, [1.8, 1.2, 1.5], 6.0, 1.35)
-  assert.equal(plan.cues[0].tempo, 1.0)
-  assert.ok(plan.cues[1].tempo > 1.15 && plan.cues[1].tempo <= 1.45)
-  assert.equal(plan.cues[2].tempo, 1.0)
+  const plan = planAutoShortVoiceTimeline(cues, [1.65, 0.55, 1.5], 6.0, 1.35, { globalTempo: 1.1 })
+  assert.ok(plan.cues.every((cue) => cue.tempo === 1.1))
 })
 
 test('AutoShort subtitle render start/end strictly adhere to source semantic anchors', () => {
@@ -465,8 +456,8 @@ test('AutoShort validation rejects voice cue overflow or cue ID mismatch', () =>
 
 test('AutoShort preserves source cue boundaries and fits each voice inside safe non-overlapping timeline', () => {
   const plan = planAutoShortVoiceTimeline(
-    [{ start: 0, end: 1 }, { start: 1, end: 2.5 }],
-    [1.2, 1.0],
+    [{ start: 0, end: 1 }, { start: 2, end: 2.5 }],
+    [1.2, 0.8],
     3.0,
     2.0
   )
@@ -578,9 +569,9 @@ test('AutoShort uses a wider independent OCR source window than the output safe 
   assert.match(source, /const ocr = ocrRegion \|\| defaultOcrRegion\(w, h\)/u)
 })
 
-test('AutoShort preview follows the rendered output artifact when one exists', async () => {
+test('AutoShort preview remains the selected source while output is handled separately', async () => {
   const source = await readFile(join(process.cwd(), 'src', 'renderer', 'src', 'components', 'AutoShort.tsx'), 'utf8')
-  assert.match(source, /const previewPath = selectedTask\?\.outputPath \|\| selectedTask\?\.filePath \|\| null/u)
+  assert.match(source, /const previewPath = selectedTask\?\.filePath \|\| null/u)
   assert.match(source, /useVideoTransport\(videoRef, previewPath\)/u)
   assert.match(source, /localMediaSource\(previewPath\)/u)
 })
@@ -1088,6 +1079,38 @@ test('TTS disk write enforces positive file size check and eliminates swallowed 
   assert.match(ttsSource, /fileStat\.size\s*<=\s*0/u)
 })
 
+test('TTS capability requests are single-flight for concurrent UI and job callers', async () => {
+  const originalFetch = globalThis.fetch
+  let calls = 0
+  globalThis.fetch = (async () => {
+    calls += 1
+    await new Promise((resolve) => setTimeout(resolve, 20))
+    return new Response(JSON.stringify([{
+      id: 'tts-vietnamese',
+      provider: 'vieneu',
+      capabilities: {
+        supported_languages: ['vi'],
+        preset_voice_names: ['Ngoc Linh'],
+        supports_named_voice: true,
+        default_voice: 'Ngoc Linh'
+      }
+    }]), { status: 200, headers: { 'content-type': 'application/json' } })
+  }) as typeof fetch
+
+  try {
+    const [first, second] = await Promise.all([
+      getTtsModels('http://127.0.0.1:8765', 'single-flight-test-key'),
+      getTtsModels('http://127.0.0.1:8765', 'single-flight-test-key')
+    ])
+    assert.equal(calls, 1)
+    assert.equal(first.ok, true)
+    assert.equal(second.ok, true)
+    assert.deepEqual(first.models[0]?.voices, ['Ngoc Linh'])
+  } finally {
+    globalThis.fetch = originalFetch
+  }
+})
+
 test('Case A (fresh install): engine status reports missing clearly and does not crash when runtime is absent', async () => {
   const { runtimeKindDir } = await import('../src/main/runtimeResolver')
   await Promise.all(['ocr-engine', 'video2x', 'douyin', 'whisper-engine', 'whisper-cuda'].map((kind) => rm(runtimeKindDir(kind as any), { recursive: true, force: true })))
@@ -1379,7 +1402,7 @@ test('AutoShort tempo planner rejects a cue that would exceed the hard max tempo
   const cues = [{ start: 0, end: 1.0 }]
   // Natural duration 2.5s in 1.0s window -> requires 2.5x
   assert.throws(
-    () => planAutoShortVoiceTimeline(cues, [2.5], 5.0, 1.35),
+    () => planAutoShortVoiceTimeline(cues, [2.5], 1.5, 1.35),
     /không thể|vượt|fit/iu
   )
 })

@@ -1,5 +1,9 @@
 import { app, shell, BrowserWindow, ipcMain, dialog, protocol } from 'electron'
 import { basename, extname, join } from 'node:path'
+
+app.setName('tedia-pros')
+app.setPath('userData', join(app.getPath('appData'), 'tedia-pros'))
+
 import { createReadStream } from 'node:fs'
 import { stat } from 'node:fs/promises'
 import { Readable } from 'node:stream'
