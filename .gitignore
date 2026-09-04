@@ -5,6 +5,7 @@ node_modules/
 out/
 dist/
 dist-engine/
+build/
 *.tsbuildinfo
 /release-artifacts/
 

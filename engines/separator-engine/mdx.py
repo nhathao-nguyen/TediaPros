@@ -57,7 +57,7 @@ def run_mdx_inference(
     on_progress=None
 ) -> np.ndarray:
     """
-    Minimal MDX inference using pure NumPy STFT and ONNX Runtime.
+    MDX inference using pure NumPy STFT and ONNX Runtime.
     audio: float32 array of shape (N, 2)
     mdx_meta: dict with nFft, hopLength, dimF, dimT, segmentSamples
     """
@@ -65,77 +65,89 @@ def run_mdx_inference(
     hop_length = int(mdx_meta.get("hopLength", 1024))
     dim_f = int(mdx_meta.get("dimF", 3072))
     dim_t = int(mdx_meta.get("dimT", 256))
-    segment_samples = int(mdx_meta.get("segmentSamples", dim_t * hop_length))
+
+    input_name = session.get_inputs()[0].name
+    input_shape = session.get_inputs()[0].shape
+
+    chunk_size = hop_length * (dim_t - 1)
+    trim = n_fft // 2
+    gen_size = chunk_size - 2 * trim
 
     total_samples = len(audio)
-    starts = overlap_starts(total_samples, segment_samples, overlap)
-    output_audio = np.zeros_like(audio, dtype=np.float32)
-    weight_accum = np.zeros((total_samples, 1), dtype=np.float32)
+    mix = audio.T.astype(np.float32)
 
-    window = np.hanning(segment_samples).astype(np.float32)[:, None]
-    input_name = session.get_inputs()[0].name
+    pad = gen_size + trim - (mix.shape[-1] % gen_size)
+    padded_mix = np.pad(mix, ((0, 0), (trim, pad)), mode='constant')
 
-    for idx, start in enumerate(starts):
-        end = min(start + segment_samples, total_samples)
-        chunk = np.zeros((segment_samples, 2), dtype=np.float32)
+    step = int((1.0 - overlap) * chunk_size)
+    if step <= 0:
+        step = 1
+
+    result = np.zeros_like(padded_mix, dtype=np.float32)
+    divider = np.zeros_like(padded_mix, dtype=np.float32)
+    hann_window = 0.5 * (1.0 - np.cos(2.0 * np.pi * np.arange(n_fft) / n_fft)).astype(np.float32)
+    pad_center = n_fft // 2
+
+    total_chunks = (padded_mix.shape[-1] + step - 1) // step
+    chunk_idx = 0
+
+    for i in range(0, padded_mix.shape[-1], step):
+        chunk_idx += 1
+        start = i
+        end = min(i + chunk_size, padded_mix.shape[-1])
         actual_len = end - start
-        chunk[:actual_len] = audio[start:end]
 
-        # STFT on channels
-        # chunk shape: (segment_samples, 2) -> transpose to (2, segment_samples)
-        # We prepare the model input tensor
-        # MDX models typically expect (1, 2, dim_f, dim_t) or similar
-        input_shape = session.get_inputs()[0].shape
-        # Check model input dimension
-        if len(input_shape) == 4:
-            # Frequency domain model: (batch=1, channels=2, freq, time)
-            # Compute STFT
-            spec_complex = []
-            for ch in range(2):
-                frames = []
-                for t_idx in range(0, segment_samples - n_fft + 1, hop_length):
-                    frame = chunk[t_idx : t_idx + n_fft, ch] * np.hanning(n_fft)
-                    fft_res = np.fft.rfft(frame, n=n_fft)
-                    frames.append(fft_res[:dim_f])
-                spec_complex.append(np.stack(frames, axis=-1)) # (dim_f, dim_t)
-            spec_arr = np.stack(spec_complex, axis=0)[None, ...] # (1, 2, dim_f, dim_t)
-            spec_real = np.abs(spec_arr).astype(np.float32)
+        chunk = np.zeros((2, chunk_size), dtype=np.float32)
+        chunk[:, :actual_len] = padded_mix[:, start:end]
 
-            res = session.run(None, {input_name: spec_real})[0]
-            # Invert back to audio
-            # res shape (1, 2, dim_f, dim_t)
-            chunk_out = np.zeros((segment_samples, 2), dtype=np.float32)
-            # Reconstruct with original phase
-            for ch in range(2):
-                mag = res[0, ch]
-                phase = np.angle(spec_complex[ch])
-                recon_spec = mag * np.exp(1j * phase)
-                rec_audio = np.zeros(segment_samples, dtype=np.float32)
-                rec_weights = np.zeros(segment_samples, dtype=np.float32)
-                fft_pad = np.zeros(n_fft // 2 + 1, dtype=np.complex64)
-                for t_idx, f_idx in enumerate(range(0, segment_samples - n_fft + 1, hop_length)):
-                    fft_pad[:dim_f] = recon_spec[:, t_idx]
-                    time_frame = np.fft.irfft(fft_pad, n=n_fft) * np.hanning(n_fft)
-                    rec_audio[f_idx : f_idx + n_fft] += time_frame
-                    rec_weights[f_idx : f_idx + n_fft] += np.hanning(n_fft) ** 2
-                valid_mask = rec_weights > 1e-6
-                rec_audio[valid_mask] /= rec_weights[valid_mask]
-                chunk_out[:, ch] = rec_audio
-        else:
-            # Time-domain model: (1, 2, segment_samples)
-            inp = chunk.T[None, :, :].astype(np.float32)
-            res = session.run(None, {input_name: inp})[0]
-            chunk_out = res[0].T
+        stft_padded = np.pad(chunk, ((0, 0), (pad_center, pad_center)), mode='reflect')
+        frames_real, frames_imag = [], []
+        for ch in range(2):
+            ch_real, ch_imag = [], []
+            for t in range(dim_t):
+                st = t * hop_length
+                segment = stft_padded[ch, st:st + n_fft] * hann_window
+                fft_res = np.fft.rfft(segment, n=n_fft)[:dim_f]
+                ch_real.append(fft_res.real.astype(np.float32))
+                ch_imag.append(fft_res.imag.astype(np.float32))
+            frames_real.append(np.stack(ch_real, axis=-1))
+            frames_imag.append(np.stack(ch_imag, axis=-1))
 
-        output_audio[start:end] += (chunk_out[:actual_len] * window[:actual_len])
-        weight_accum[start:end] += window[:actual_len]
+        spec = np.stack([frames_real[0], frames_imag[0], frames_real[1], frames_imag[1]], axis=0)[None, ...]
+        spec[:, :, :3, :] = 0.0
+        pred = session.run(None, {input_name: spec})[0]
+
+        num_bins = n_fft // 2 + 1
+        pred_padded = np.pad(pred[0], ((0, 0), (0, num_bins - dim_f), (0, 0)))
+        l_spec = pred_padded[0] + 1j * pred_padded[1]
+        r_spec = pred_padded[2] + 1j * pred_padded[3]
+
+        full_len = chunk_size + 2 * pad_center
+        time_buf = np.zeros((2, full_len), dtype=np.float32)
+        time_weights = np.zeros(full_len, dtype=np.float32)
+        for t in range(dim_t):
+            st = t * hop_length
+            time_buf[0, st:st + n_fft] += np.fft.irfft(l_spec[:, t], n=n_fft) * hann_window
+            time_buf[1, st:st + n_fft] += np.fft.irfft(r_spec[:, t], n=n_fft) * hann_window
+            time_weights[st:st + n_fft] += hann_window ** 2
+
+        valid_mask = time_weights > 1e-6
+        time_buf[:, valid_mask] /= time_weights[valid_mask]
+        chunk_out = time_buf[:, pad_center:pad_center + chunk_size]
+
+        chunk_window = np.hanning(actual_len).astype(np.float32) if overlap > 0 else np.ones(actual_len, dtype=np.float32)
+        result[:, start:end] += chunk_out[:, :actual_len] * chunk_window[None, :]
+        divider[:, start:end] += chunk_window[None, :]
 
         if on_progress:
-            percent = int(((idx + 1) / len(starts)) * 100)
-            on_progress(percent)
+            percent = int((chunk_idx / total_chunks) * 100)
+            on_progress(min(percent, 100))
 
-    valid = weight_accum > 1e-6
-    output_audio[valid[:, 0]] /= weight_accum[valid[:, 0]]
+    valid_div = divider > 1e-6
+    result[valid_div] /= divider[valid_div]
+    output_mix = result[:, trim:trim + total_samples]
+    output_audio = output_mix.T.astype(np.float32)
+
     if not np.isfinite(output_audio).all():
         raise EngineError("non_finite_output", "MDX inference generated non-finite samples.", False)
 
