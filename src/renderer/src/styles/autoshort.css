@@ -621,3 +621,109 @@
     animation-iteration-count: 1 !important;
   }
 }
+
+/* ==================== AUTO SHORT VOCAL SEPARATION ==================== */
+.autoshort-separation-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px;
+  background: var(--panel-2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+}
+
+.separation-provider-badge {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 3px 8px;
+  background: rgba(110, 161, 255, 0.12);
+  color: var(--primary);
+  border: 1px solid rgba(110, 161, 255, 0.25);
+  border-radius: 999px;
+  white-space: nowrap;
+}
+
+.separation-presets-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+}
+
+@media (max-width: 768px) {
+  .separation-presets-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.separation-preset-card {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 10px;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  cursor: pointer;
+  transition: border-color 0.15s ease, background 0.15s ease;
+  user-select: none;
+}
+
+.separation-preset-card:hover {
+  border-color: var(--primary);
+}
+
+.separation-preset-card:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}
+
+.separation-preset-card.selected {
+  border-color: var(--primary);
+  background: rgba(110, 161, 255, 0.08);
+}
+
+.preset-card-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 4px;
+}
+
+.preset-card-name {
+  font-weight: 600;
+  font-size: 12px;
+  color: var(--text);
+}
+
+.preset-card-desc {
+  margin: 0;
+  font-size: 11px;
+  color: var(--muted);
+  line-height: 1.35;
+}
+
+.separation-status-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 6px 10px;
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 4px;
+  font-size: 11px;
+}
+
+.separation-status-item {
+  display: flex;
+  gap: 4px;
+}
+
+.separation-status-item .label {
+  color: var(--muted);
+}
+
+.separation-status-item .value {
+  font-weight: 600;
+  color: var(--text);
+}

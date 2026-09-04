@@ -3,6 +3,8 @@ import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } fr
 import {
   DEFAULT_AI_SERVER_URL,
   DICH_LANGS,
+  type AutoShortAudioMode,
+  type AutoShortSeparationPreset,
   type AutoShortConfig,
   type AutoShortBackgroundMusicConfig,
   type AutoShortBackgroundMusicMode,
@@ -50,6 +52,13 @@ const SOURCE_LANGS = [
   { code: 'auto', label: 'Tự động (Whisper)' },
   ...DICH_LANGS
 ]
+
+const SEPARATION_MESSAGES = {
+  extracting: 'Đang trích audio',
+  separating: 'Đang tách thoại',
+  cpuRetry: 'Đang thử lại bằng CPU',
+  mixing: 'Đang trộn TTS'
+} as const
 
 const baseName = (path: string): string => path.split(/[\\/]/).pop() || path
 
@@ -212,7 +221,8 @@ export default function AutoShort(): JSX.Element {
   const [serverOnline, setServerOnline] = useState<boolean | null>(null)
   const [ttsModels, setTtsModels] = useState<TtsModelInfo[]>([])
   const [voiceOverMode, setVoiceOverMode] = usePersistedState('tblao.autoshort.voiceOverMode', false)
-  const [audioMode, setAudioMode] = usePersistedState<'replace' | 'mix'>('tblao.autoshort.audioMode', 'replace')
+  const [audioMode, setAudioMode] = usePersistedState<AutoShortAudioMode>('tblao.autoshort.audioMode', 'replace')
+  const [separationPreset, setSeparationPreset] = usePersistedState<AutoShortSeparationPreset>('tblao.autoshort.separationPreset', 'balanced')
   const [originalAudioVolume, setOriginalAudioVolume] = usePersistedState('tblao.autoshort.origVol', 20)
   const [backgroundMusicEnabled, setBackgroundMusicEnabled] = usePersistedState('tblao.autoshort.bgMusic.enabled', false)
   const [backgroundMusicFolder, setBackgroundMusicFolder] = usePersistedState('tblao.autoshort.bgMusic.folder', '')
@@ -228,6 +238,12 @@ export default function AutoShort(): JSX.Element {
   const selectedModelInfo = ttsModels.find((m) => m.id === ttsModel) || ttsModels[0]
   const modelVoices = selectedModelInfo?.voices || []
   const defaultVoice = selectedModelInfo?.default_voice || (modelVoices[0] || 'default')
+
+  useEffect(() => {
+    if (!ttsEnabled && audioMode === 'separate-vocals') {
+      setAudioMode('replace')
+    }
+  }, [ttsEnabled, audioMode, setAudioMode])
 
   useEffect(() => {
     let active = true
@@ -438,14 +454,20 @@ export default function AutoShort(): JSX.Element {
 
   const refreshAutoShortReadiness = useCallback(async (): Promise<AutoShortReadiness | null> => {
     try {
-      const next = await window.api.autoShortGetReadiness({ subtitleMethod, whisperModel: selectedWhisperModel, whisperDevice })
+      const next = await window.api.autoShortGetReadiness({
+        subtitleMethod,
+        whisperModel: selectedWhisperModel,
+        whisperDevice,
+        audioMode,
+        separationPreset
+      })
       setReadiness(next)
       return next
     } catch {
       setReadiness(null)
       return null
     }
-  }, [selectedWhisperModel, subtitleMethod, whisperDevice])
+  }, [selectedWhisperModel, subtitleMethod, whisperDevice, audioMode, separationPreset])
 
   useEffect(() => {
     let active = true
@@ -867,6 +889,7 @@ export default function AutoShort(): JSX.Element {
       paceMode,
       voiceOverMode,
       audioMode,
+      separationPreset: audioMode === 'separate-vocals' ? separationPreset : undefined,
       originalAudioVolume,
       backgroundMusic: backgroundMusicConfig,
       outputDir
@@ -902,7 +925,13 @@ export default function AutoShort(): JSX.Element {
     setDependencyError(null)
     setDependencyProgress({})
     try {
-      const result = await window.api.autoShortInstallDependencies({ subtitleMethod, whisperModel: selectedWhisperModel, whisperDevice })
+      const result = await window.api.autoShortInstallDependencies({
+        subtitleMethod,
+        whisperModel: selectedWhisperModel,
+        whisperDevice,
+        audioMode,
+        separationPreset
+      })
       if (!result.ok) throw new Error(result.error || 'Không thể chuẩn bị dependency.')
       const next = await refreshAutoShortReadiness()
       if (!next?.ready) throw new Error(next?.message || 'Dependency chưa sẵn sàng sau khi tải.')
@@ -1821,8 +1850,158 @@ export default function AutoShort(): JSX.Element {
                         />
                         <span>Trộn với âm thanh / nhạc nền gốc</span>
                       </label>
+                      <label className={`radio-pill ${audioMode === 'separate-vocals' ? 'active' : ''} ${!ttsEnabled ? 'disabled' : ''}`}>
+                        <input
+                          type="radio"
+                          name="audioMode"
+                          value="separate-vocals"
+                          disabled={!ttsEnabled}
+                          checked={audioMode === 'separate-vocals'}
+                          onChange={() => setAudioMode('separate-vocals')}
+                        />
+                        <span>Tách thoại gốc, giữ nhạc & SFX</span>
+                      </label>
                     </div>
+                    {!ttsEnabled && (
+                      <small className="muted" style={{ display: 'block', marginTop: 4 }}>
+                        Tách thoại yêu cầu bật Lồng tiếng AI (TTS).
+                      </small>
+                    )}
                   </label>
+
+                  {audioMode === 'separate-vocals' && (
+                    <div className="autoshort-separation-panel" style={{ marginTop: 10 }}>
+                      <div className="editor-section-head">
+                        <div>
+                          <strong>Tách thoại gốc, giữ nhạc & SFX</strong>
+                          <small>Tách bỏ giọng nói gốc, giữ lại nhạc nền và hiệu ứng âm thanh để lồng tiếng AI đè lên.</small>
+                        </div>
+                        <span className="separation-provider-badge">
+                          {readiness?.separation?.effectiveProvider === 'directml'
+                            ? 'DirectML · NVIDIA/AMD/Intel'
+                            : 'CPU fallback'}
+                        </span>
+                      </div>
+
+                      <div className="separation-presets-grid" style={{ marginTop: 8 }}>
+                        {(() => {
+                          const preset = separationPreset
+                          return (
+                            <>
+                              <div
+                                role="button"
+                                tabIndex={0}
+                                className={`separation-preset-card ${preset === 'fast' ? 'selected' : ''}`}
+                                onClick={() => setSeparationPreset('fast')}
+                                onKeyDown={(e) => {
+                                  if (e.key === ' ' || e.key === 'Enter') {
+                                    e.preventDefault()
+                                    setSeparationPreset('fast')
+                                  }
+                                }}
+                              >
+                                <div className="preset-card-head">
+                                  <span className="preset-card-name">Nhanh</span>
+                                  <input
+                                    type="radio"
+                                    name="separationPreset"
+                                    value="fast"
+                                    checked={preset === 'fast'}
+                                    onChange={() => setSeparationPreset('fast')}
+                                  />
+                                </div>
+                                <p className="preset-card-desc">Model gọn nhẹ, tốc độ tách nhanh nhất.</p>
+                              </div>
+
+                              <div
+                                role="button"
+                                tabIndex={0}
+                                className={`separation-preset-card ${preset === 'balanced' ? 'selected' : ''}`}
+                                onClick={() => setSeparationPreset('balanced')}
+                                onKeyDown={(e) => {
+                                  if (e.key === ' ' || e.key === 'Enter') {
+                                    e.preventDefault()
+                                    setSeparationPreset('balanced')
+                                  }
+                                }}
+                              >
+                                <div className="preset-card-head">
+                                  <span className="preset-card-name">Cân bằng — khuyên dùng</span>
+                                  <input
+                                    type="radio"
+                                    name="separationPreset"
+                                    value="balanced"
+                                    checked={preset === 'balanced'}
+                                    onChange={() => setSeparationPreset('balanced')}
+                                  />
+                                </div>
+                                <p className="preset-card-desc">Model gọn nhẹ, cân bằng tối ưu giữa chất lượng và thời gian xử lý.</p>
+                              </div>
+
+                              <div
+                                role="button"
+                                tabIndex={0}
+                                className={`separation-preset-card ${preset === 'quality' ? 'selected' : ''}`}
+                                onClick={() => setSeparationPreset('quality')}
+                                onKeyDown={(e) => {
+                                  if (e.key === ' ' || e.key === 'Enter') {
+                                    e.preventDefault()
+                                    setSeparationPreset('quality')
+                                  }
+                                }}
+                              >
+                                <div className="preset-card-head">
+                                  <span className="preset-card-name">Chất lượng cao</span>
+                                  <input
+                                    type="radio"
+                                    name="separationPreset"
+                                    value="quality"
+                                    checked={preset === 'quality'}
+                                    onChange={() => setSeparationPreset('quality')}
+                                  />
+                                </div>
+                                <p className="preset-card-desc">Model chuyên sâu, tách sạch chi tiết hơn, thời gian xử lý lâu hơn.</p>
+                              </div>
+                            </>
+                          )
+                        })()}
+                      </div>
+
+                      <div className="separation-status-bar" style={{ marginTop: 10 }}>
+                        <div className="separation-status-item">
+                          <span className="label">Trạng thái: </span>
+                          <span className="value">
+                            {(() => {
+                              const sepDep = readiness?.dependencies?.find((d) => d.id === 'separator-model' || d.id === 'separator-engine')
+                              const prog = dependencyProgress['separator-model'] || dependencyProgress['separator-engine']
+                              if (prog && prog.phase === 'downloading') {
+                                return `Đang tải (${prog.percent}%)`
+                              }
+                              if (readiness?.separation?.offlineReady) {
+                                return 'Sẵn sàng'
+                              }
+                              if (sepDep && !sepDep.ready) {
+                                const bytes = sepDep.downloadBytes ? ` (${(sepDep.downloadBytes / (1024 * 1024)).toFixed(1)} MB)` : ''
+                                return `Chưa cài${bytes}`
+                              }
+                              return 'Sẵn sàng'
+                            })()}
+                          </span>
+                        </div>
+                        <div className="separation-status-item">
+                          <span className="label">Tăng tốc: </span>
+                          <span className="value">
+                            {readiness?.separation?.effectiveProvider === 'directml'
+                              ? 'DirectML · NVIDIA/AMD/Intel'
+                              : 'CPU fallback'}
+                          </span>
+                        </div>
+                      </div>
+                      <small className="muted" style={{ display: 'block', marginTop: 6 }}>
+                        Sau khi cài model có thể xử lý offline
+                      </small>
+                    </div>
+                  )}
 
                   {audioMode === 'mix' && (
                     <label className="field editor-field" style={{ marginTop: 8 }}>

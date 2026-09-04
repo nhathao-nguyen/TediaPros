@@ -2221,4 +2221,42 @@ test('Clean-Machine Test 14: Package verification ensures zero forbidden runtime
   assert.equal(violations.length, 0)
 })
 
+test('AutoShort renderer wiring: audio mode state and separation presets contract', async () => {
+  const source = await readFile(join(process.cwd(), 'src', 'renderer', 'src', 'components', 'AutoShort.tsx'), 'utf8')
+
+  // the audio mode state uses AutoShortAudioMode
+  assert.match(source, /usePersistedState<AutoShortAudioMode>\(\s*['"]tblao\.autoshort\.audioMode['"]/u)
+
+  // balanced is the persisted default for the new preset
+  assert.match(source, /usePersistedState<AutoShortSeparationPreset>\(\s*['"]tblao\.autoshort\.separationPreset['"],\s*['"]balanced['"]\)/u)
+
+  // exactly three audio-mode choices and exactly three preset choices exist
+  assert.match(source, /value="replace"/u)
+  assert.match(source, /value="mix"/u)
+  assert.match(source, /value="separate-vocals"/u)
+  assert.match(source, /preset === 'fast'/u)
+  assert.match(source, /preset === 'balanced'/u)
+  assert.match(source, /preset === 'quality'/u)
+
+  // Cân bằng — khuyên dùng is the default label
+  assert.match(source, /Cân bằng — khuyên dùng/u)
+
+  // new mode is disabled when TTS is off
+  assert.match(source, /disabled=\{!ttsEnabled\}/u)
+
+  // background-music controls render only for replace
+  assert.match(source, /ttsEnabled && audioMode === 'replace' &&/u)
+
+  // the request includes separationPreset only for separate-vocals
+  assert.match(source, /separationPreset:\s*audioMode === 'separate-vocals' \? separationPreset : undefined/u)
+
+  // readiness/install calls include audioMode and separationPreset
+  assert.match(source, /autoShortGetReadiness\(\{[\s\S]*?audioMode[\s\S]*?separationPreset[\s\S]*?\}\)/u)
+  assert.match(source, /autoShortInstallDependencies\(\{[\s\S]*?audioMode[\s\S]*?separationPreset[\s\S]*?\}\)/u)
+
+  // no model URL/path/provider override exists in renderer state
+  assert.doesNotMatch(source, /separatorModelUrl|github\.com.*onnx/iu)
+  assert.doesNotMatch(source, /setEffectiveProvider|setProviderOverride/iu)
+})
+
 import './e2e-autoshort.test'
