@@ -53,7 +53,8 @@ await build({
     'tests/e2e-autoshort.test.ts',
     'tests/release-tooling.test.ts',
     'tests/dubbing-plan.test.ts',
-    'tests/separator-contract.test.ts'
+    'tests/separator-contract.test.ts',
+    'tests/separator-runtime.test.ts'
   ],
   bundle: true,
   platform: 'node',
@@ -70,7 +71,8 @@ const result4 = spawnSync(process.execPath, ['--test', join(outDir, 'e2e-autosho
 const result5 = spawnSync(process.execPath, ['--test', join(outDir, 'release-tooling.test.js')], { stdio: 'inherit' })
 const result6 = spawnSync(process.execPath, ['--test', join(outDir, 'dubbing-plan.test.js')], { stdio: 'inherit' })
 const result7 = spawnSync(process.execPath, ['--test', join(outDir, 'separator-contract.test.js')], { stdio: 'inherit' })
+const result8 = spawnSync(process.execPath, ['--test', join(outDir, 'separator-runtime.test.js')], { stdio: 'inherit' })
 
-if (result1.status !== 0 || result2.status !== 0 || result4.status !== 0 || result5.status !== 0 || result6.status !== 0 || result7.status !== 0) {
+if (result1.status !== 0 || result2.status !== 0 || result4.status !== 0 || result5.status !== 0 || result6.status !== 0 || result7.status !== 0 || result8.status !== 0) {
   process.exit(1)
 }
