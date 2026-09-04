@@ -12,6 +12,8 @@ export type RuntimeEngineKind =
   | 'ocr-engine'
   | 'video2x'
   | 'douyin'
+  | 'separator-engine'
+
 
 export interface InstalledRuntimeReceipt {
   engine: RuntimeEngineKind
@@ -134,6 +136,10 @@ export async function resolveFfmpeg(): Promise<string | null> {
 export async function resolveFfprobe(): Promise<string | null> {
   const ffmpeg = await resolveFfmpeg()
   return ffmpeg ? join(runtimeKindDir('ffmpeg'), exe('ffprobe')) : null
+}
+
+export async function resolveSeparatorEngine(): Promise<string | null> {
+  return resolveRuntimeExecutable('separator-engine', ['separator-engine.exe', 'separator-engine'])
 }
 
 export async function readInstalledRuntimeState(): Promise<InstalledRuntimeState> {

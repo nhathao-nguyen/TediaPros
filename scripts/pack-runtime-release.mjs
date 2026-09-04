@@ -8,7 +8,7 @@ import { promisify } from 'node:util'
 import { fileURLToPath } from 'node:url'
 
 const execFileAsync = promisify(execFile)
-const REQUIRED_KINDS = ['ffmpeg', 'whisper-engine', 'whisper-cuda', 'ocr-engine', 'video2x', 'douyin']
+const REQUIRED_KINDS = ['ffmpeg', 'whisper-engine', 'whisper-cuda', 'ocr-engine', 'video2x', 'douyin', 'separator-engine']
 const LEGACY_INPUT_ENV = [
   'TEDIAPROS_RUNTIME_DIR',
   'WHISPER_RUNTIME_DIR',

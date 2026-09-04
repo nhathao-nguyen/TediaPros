@@ -7,6 +7,7 @@ import assert from 'node:assert/strict'
 import { app } from 'electron'
 import {
   resolveRuntimeExecutable,
+  resolveSeparatorEngine,
   runtimeKindDir,
   runtimeSearchRoots
 } from '../src/main/runtimeResolver'
@@ -282,4 +283,40 @@ test('runtime installer leaves the active tree untouched when the real probe fai
   }))
   assert.equal(await readFile(join(target, 'version.txt'), 'utf8'), 'old-runtime')
   await rm(target, { recursive: true, force: true })
+})
+
+test('runtime manifest accepts the separator protocol on runtime-v4', () => {
+  const result = validateRuntimeDistributionManifest({
+    schemaVersion: 1,
+    runtimeVersion: 'runtime-v4',
+    platform: 'win32',
+    arch: 'x64',
+    assets: {
+      'separator-engine': {
+        version: '1.0.0',
+        platform: 'win32',
+        arch: 'x64',
+        asset: 'separator-engine-1.0.0-win32-x64.zip',
+        sha256: 'a'.repeat(64),
+        bytes: 1024,
+        entrypoint: 'separator-engine.exe',
+        capabilities: ['directml', 'cpu', 'mdx-two-stem'],
+        files: ['separator-engine.exe'],
+        protocol: 'separator-engine/1'
+      }
+    }
+  })
+  assert.equal(result.ok, true)
+})
+
+test('resolveSeparatorEngine resolves only canonical userData path', async () => {
+  const target = join(app.getPath('userData'), 'bin', 'separator-engine', 'separator-engine.exe')
+  await mkdir(join(app.getPath('userData'), 'bin', 'separator-engine'), { recursive: true })
+  await writeFile(target, 'placeholder')
+  try {
+    const resolved = await resolveSeparatorEngine()
+    assert.equal(resolved, target)
+  } finally {
+    await rm(target, { force: true }).catch(() => {})
+  }
 })

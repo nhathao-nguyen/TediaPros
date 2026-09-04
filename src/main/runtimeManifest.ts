@@ -31,8 +31,10 @@ const RUNTIME_KINDS = new Set<RuntimeEngineKind>([
   'whisper-cuda',
   'ocr-engine',
   'video2x',
-  'douyin'
+  'douyin',
+  'separator-engine'
 ])
+
 
 export function isValidSha256(hash: unknown): hash is string {
   return typeof hash === 'string' && /^[a-f0-9]{64}$/i.test(hash)

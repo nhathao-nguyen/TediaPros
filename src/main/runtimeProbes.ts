@@ -151,6 +151,29 @@ export async function probeRuntimeAsset(
       ? { healthy: true }
       : { healthy: false, message: 'FFmpeg/FFprobe version probe thất bại.' }
   }
+  if (kind === 'separator-engine') {
+    const result = await run(executable, ['--version'], dirname(executable), 30_000)
+    if (result.code !== 0) {
+      return { healthy: false, message: 'Separator engine version probe thất bại.' }
+    }
+    try {
+      const line = result.output.trim().split('\n').pop() || ''
+      const parsed = JSON.parse(line)
+      if (
+        parsed.type === 'version' &&
+        parsed.protocol === 'separator-engine/1' &&
+        parsed.engine === 'mdx-onnx' &&
+        Array.isArray(parsed.features) &&
+        parsed.features.includes('directml') &&
+        parsed.features.includes('cpu')
+      ) {
+        return { healthy: true, version: parsed.version, protocol: parsed.protocol }
+      }
+      return { healthy: false, message: 'Separator engine protocol không hợp lệ.' }
+    } catch {
+      return { healthy: false, message: 'Không thể đọc output version từ separator engine.' }
+    }
+  }
   const args = kind === 'video2x' ? ['-l'] : ['--version']
   const result = await run(executable, args, dirname(executable))
   return result.code === 0

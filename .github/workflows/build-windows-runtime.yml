@@ -14,7 +14,7 @@ on:
       runtime_version:
         description: Immutable runtime release tag
         required: true
-        default: runtime-v3
+        default: runtime-v4
       publish:
         description: Publish the verified bundle as a GitHub release
         required: true
@@ -30,7 +30,7 @@ concurrency:
 
 env:
   PYTHON_VERSION: '3.12.10'
-  RUNTIME_VERSION: ${{ github.event_name == 'workflow_dispatch' && inputs.runtime_version || 'runtime-v3' }}
+  RUNTIME_VERSION: ${{ github.event_name == 'workflow_dispatch' && inputs.runtime_version || 'runtime-v4' }}
 
 jobs:
   build:
@@ -161,6 +161,18 @@ jobs:
           Copy-Item -Path (Join-Path $binary.Directory.FullName '*') -Destination $target -Recurse -Force
           Write-Output ('Video2X source SHA-256: ' + (Get-FileHash -LiteralPath $archive -Algorithm SHA256).Hash.ToLowerInvariant())
 
+      - name: Build separator engine from pinned environment
+        shell: pwsh
+        run: |
+          python -m venv (Join-Path $env:RUNNER_TEMP 'separator-build-venv')
+          $python = Join-Path $env:RUNNER_TEMP 'separator-build-venv\Scripts\python.exe'
+          & $python -m pip install --disable-pip-version-check --no-cache-dir -r engines/separator-engine/requirements.txt
+          & $python -m unittest discover -s engines/separator-engine/tests -p 'test_*.py' -v
+          & $python -m PyInstaller --clean --noconfirm engines/separator-engine/separator-engine.spec --distpath (Join-Path $env:RUNNER_TEMP 'separator-dist') --workpath (Join-Path $env:RUNNER_TEMP 'separator-work')
+          $target = Join-Path $env:RUNTIME_INPUT_ROOT 'separator-engine'
+          New-Item -ItemType Directory -Force -Path $target | Out-Null
+          Copy-Item -Path (Join-Path $env:RUNNER_TEMP 'separator-dist\separator-engine\*') -Destination $target -Recurse -Force
+
       - name: Run native capability probes before packaging
         shell: pwsh
         run: |
@@ -183,8 +195,9 @@ jobs:
           Invoke-NativeProbe (Join-Path $root 'video2x\video2x.exe') @('--version')
           Invoke-NativeProbe (Join-Path $root 'ffmpeg\ffmpeg.exe') @('-version')
           Invoke-NativeProbe (Join-Path $root 'ffmpeg\ffprobe.exe') @('-version')
+          Invoke-NativeProbe (Join-Path $root 'separator-engine\separator-engine.exe') @('--version')
 
-      - name: Create and verify runtime-v3 manifest from clean artifacts
+      - name: Create and verify runtime-v4 manifest from clean artifacts
         shell: pwsh
         run: |
           node scripts/pack-runtime-release.mjs --input-dir $env:RUNTIME_INPUT_ROOT --output-dir release-artifacts --runtime-version $env:RUNTIME_VERSION --platform win32 --arch x64

@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "runtimeVersion": "runtime-v3",
+  "runtimeVersion": "runtime-v4",
   "platform": "win32",
   "arch": "x64",
   "assets": {
@@ -73,6 +73,18 @@
         "provider": "TediaPros",
         "path": "engines/douyin-engine",
         "entrypoint": "run.py"
+      }
+    },
+    "separator-engine": {
+      "version": "1.0.0",
+      "entrypoint": "separator-engine.exe",
+      "protocol": "separator-engine/1",
+      "capabilities": ["directml", "cpu", "mdx-two-stem"],
+      "files": ["separator-engine.exe"],
+      "source": {
+        "kind": "repository-build",
+        "path": "engines/separator-engine",
+        "python": "3.12.10"
       }
     }
   },

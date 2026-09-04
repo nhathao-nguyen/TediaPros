@@ -260,7 +260,7 @@ test('release tooling has no developer-machine or destructive re-upload fallback
   assert.doesNotMatch(packer, /where\.exe|findInPath|process\.env\.PATH/u)
   assert.doesNotMatch(publisher, /method:\s*['"]DELETE['"]/u)
   assert.doesNotMatch(verifier, /containsEntrypoint\s*=\s*true/u)
-  assert.match(publisher, /runtime-v3/u)
+  assert.match(publisher, /runtime-v4/u)
   assert.match(publisher, /manifest\.runtimeVersion/u)
   assert.match(publisher, /different runtime version|runtimeVersion/u)
   assert.match(publisher, /draft:\s*true/u)
@@ -288,8 +288,8 @@ test('runtime packer archives every canonical kind and verifies the generated ma
       arch: inputSpec.arch,
       inputSpecPath
     })
-    assert.equal(Object.keys(result.manifest.assets).length, 6)
-    assert.equal((await readFile(join(root, 'release', 'runtime-provenance.json'), 'utf8')).includes('runtime-v3'), true)
+    assert.equal(Object.keys(result.manifest.assets).length, 7)
+    assert.equal((await readFile(join(root, 'release', 'runtime-provenance.json'), 'utf8')).includes('runtime-v4'), true)
   } finally {
     await rm(root, { recursive: true, force: true })
   }

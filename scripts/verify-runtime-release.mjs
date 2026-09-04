@@ -6,7 +6,7 @@ import { join, resolve } from 'node:path'
 import { spawnSync } from 'node:child_process'
 import { fileURLToPath } from 'node:url'
 
-const SUPPORTED_KINDS = new Set(['ffmpeg', 'whisper-engine', 'whisper-cuda', 'ocr-engine', 'video2x', 'douyin'])
+const SUPPORTED_KINDS = new Set(['ffmpeg', 'whisper-engine', 'whisper-cuda', 'ocr-engine', 'video2x', 'douyin', 'separator-engine'])
 const SUPPORTED_PLATFORMS = new Set(['win32', 'darwin', 'linux'])
 const SUPPORTED_ARCHES = new Set(['x64', 'arm64', 'ia32'])
 
