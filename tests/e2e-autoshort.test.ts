@@ -140,3 +140,36 @@ Hãy nhấn đăng ký kênh để không bỏ lỡ thông tin mới.
   assert.equal(reparsedTimedSrt.cues[1].text, translatedCues[1].text)
   assert.equal(reparsedTimedSrt.cues[2].text, translatedCues[2].text)
 })
+
+test('E2E AutoShort Pipeline: Separate-vocals burn filter omits source audio and routes composite bed track', () => {
+  const videoMeta = {
+    w: 1080,
+    h: 1920,
+    giay: 15.5,
+    hasAudio: true
+  }
+
+  // separate-vocals sets batAmThanh=true, hasAudioFile=true (the composite tts-bed-mix.wav), audioVolume=0 (original audio muted)
+  const sepFilterArgs = taoFilterComplex(
+    videoMeta,
+    [],
+    false,
+    false,
+    'sub.ass',
+    true, // batAmThanh
+    true, // hasAudioFile (composite tts-bed-mix.wav)
+    0     // amLuongGoc: 0
+  )
+  const filterStr = sepFilterArgs.join(' ')
+
+  // Must completely omit [0:a] (no sidechaincompress, no amix with [0:a], no [0:a] references)
+  assert.ok(!filterStr.includes('[0:a]'), 'separate-vocals must not route original source audio [0:a]')
+  assert.ok(!filterStr.includes('sidechaincompress'), 'separate-vocals must not apply sidechain compression against [0:a]')
+  assert.ok(!filterStr.includes('amix'), 'separate-vocals must not mix [0:a] with [1:a]')
+
+  // Must route [1:a] as the direct narration+bed composite with limiter
+  assert.match(filterStr, /\[1:a\]asetpts=PTS-STARTPTS,aresample=44100:async=1,aformat=channel_layouts=stereo:sample_rates=44100,volume=1\.0/u)
+  assert.match(filterStr, /apad=whole_dur=15\.500/u)
+  assert.match(filterStr, /atrim=duration=15\.500/u)
+  assert.match(filterStr, /alimiter=limit=-1dB:attack=5:release=50:level=false\[a_mix\]/u)
+})

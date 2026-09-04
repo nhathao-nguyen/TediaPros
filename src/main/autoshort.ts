@@ -58,14 +58,19 @@ import { terminateProcessTree, terminateTrackedProcessTrees, trackChildProcess }
 import { parseSrt, serializeSrt, type SubtitleCue } from '../shared/subtitles'
 import { validateAutoShortStartRequest } from '../shared/autoShortContract'
 import { fuseWhisperAndOcr, clampAlignedCueTimeline } from '../shared/autoShortAlignment'
-import { resolveSeparatorEngine } from './runtimeResolver'
+import { resolveSeparatorEngine, resolveFfprobe } from './runtimeResolver'
 import { probeRuntimeExecutable } from './runtimeProbes'
 import { resolveInstalledSeparatorModel } from './separation/modelStore'
 import { probeSeparatorModel } from './separation/runner'
 import { fetchSeparatorModelManifest, installSeparatorModel } from './separation/modelInstaller'
 import { fetchRuntimeManifest, downloadRuntimeEngineFromManifest } from './runtimeInstaller'
-import { modelIdForSeparationPreset } from '../shared/autoShortSeparation'
+import { modelIdForSeparationPreset, separationPresetConfig, type SeparationPresetConfig } from '../shared/autoShortSeparation'
 import { loadSeparatorReleaseStatus, separatorFeatureEnabled } from './separation/releaseGate'
+import { validateSeparatorStem } from './separation/media'
+import { separateSourceAudio, type SeparatorProviderState } from './separation/pipeline'
+import { requiredSeparationWorkspaceBytes } from './separation/disk'
+import { composeAutoShortNarratedAudio } from './autoShortNarratedAudio'
+import type { InstalledSeparatorModel } from './separation/modelStore'
 import type {
   AutoShortDependencyConfig,
   AutoShortSeparationPreset,
@@ -94,6 +99,15 @@ import {
   WhisperProgress
 } from '../shared/types'
 
+export interface PreparedAutoShortSeparation {
+  enginePath: string
+  engineVersion: string
+  engineProtocol: 'separator-engine/1'
+  model: InstalledSeparatorModel
+  preset: AutoShortSeparationPreset
+  presetConfig: SeparationPresetConfig
+}
+
 interface AutoShortJob {
   id: string
   request: AutoShortStartRequest
@@ -103,16 +117,19 @@ interface AutoShortJob {
   cancelled: boolean
   ttsCapabilities?: Awaited<ReturnType<typeof getTtsModels>>
   ttsCapabilitiesUrl?: string
+  separation?: PreparedAutoShortSeparation
+  separationProviderState: SeparatorProviderState
 }
 
 let activeJob: AutoShortJob | null = null
 
-const AUTO_SHORT_CHECKPOINT_VERSION = 3
+const AUTO_SHORT_CHECKPOINT_VERSION = 4
 
 function buildAutoShortCheckpointFingerprint(
   filePath: string,
   inputInfo: { size: number; mtimeMs: number },
-  config: AutoShortConfig
+  config: AutoShortConfig,
+  separation?: PreparedAutoShortSeparation
 ): string {
   return createHash('sha256').update(stableJson({
     version: AUTO_SHORT_CHECKPOINT_VERSION,
@@ -134,7 +151,19 @@ function buildAutoShortCheckpointFingerprint(
     ttsSpeed: config.ttsSpeed,
     ttsOptions: config.ttsOptions,
     ttsRefAudioPath: config.ttsRefAudioPath,
-    ttsRefTranscript: config.ttsRefTranscript
+    ttsRefTranscript: config.ttsRefTranscript,
+    audioMode: config.audioMode,
+    separation: separation ? {
+      engineVersion: separation.engineVersion,
+      engineProtocol: separation.engineProtocol,
+      modelId: separation.model.id,
+      modelSha256: separation.model.spec.model.sha256,
+      catalogSchema: 1,
+      preset: separation.preset,
+      overlap: separation.presetConfig.overlap,
+      batch: 1,
+      audio: { codec: 'pcm_s16le', sampleRate: 44100, channels: 2 }
+    } : null
   })).digest('hex')
 }
 
@@ -2152,7 +2181,8 @@ async function probeOutputMediaWithFfprobe(
   outputPath: string,
   ttsExpected = false,
   expectedVideoDuration?: number,
-  expectedFrameRate?: number
+  expectedFrameRate?: number,
+  maxDurationFrames = 8
 ): Promise<{ ok: boolean; error?: string }> {
   try {
     const meta = await probeBurnMedia(outputPath).catch(() => ({
@@ -2196,7 +2226,7 @@ async function probeOutputMediaWithFfprobe(
 
     const res = validateRenderedOutputMedia(probeInfo)
     const actualVideoDuration = meta.videoDuration && meta.videoDuration > 0 ? meta.videoDuration : 0
-    const maxDurationDelta = Math.max(0.35, (1 / (expectedFrameRate || 30)) * 8)
+    const maxDurationDelta = Math.max(0.001, maxDurationFrames / (expectedFrameRate || 30))
     if (res.ok && expectedVideoDuration != null && Math.abs(actualVideoDuration - expectedVideoDuration) > maxDurationDelta) {
       return {
         ok: false,
@@ -2233,6 +2263,7 @@ async function processSingleVideo(
     sourceCues?: AlignedCue[]
     detectedSourceLanguage?: string | null
     translatedCues?: SubtitleCue[]
+    instrumentalPath?: string
   } = {}
   try {
     checkpoint = JSON.parse(await readFile(checkpointFile, 'utf8'))
@@ -2248,16 +2279,29 @@ async function processSingleVideo(
   let outputName: string | undefined
   let selectedBackgroundMusicPath: string | undefined
   let artifactPath: string | undefined
+  let separationAuditMetadata: {
+    audioMode: 'separate-vocals'
+    separationPreset: AutoShortSeparationPreset
+    separatorModelId: string
+    separatorModelSha256: string
+    separatorEngineVersion: string
+    requestedProvider: 'auto'
+    effectiveProvider: SeparatorProvider
+    fallbackReasonCode?: string
+    separationElapsedMs: number
+  } | undefined
 
   try {
     throwIfAborted(job.controller.signal)
     const inputInfo = await stat(item.filePath).catch(() => null)
     if (!inputInfo?.isFile() || inputInfo.size <= 0) throw new Error(`Video không hợp lệ: ${basename(item.filePath)}`)
-    const checkpointFingerprint = buildAutoShortCheckpointFingerprint(item.filePath, inputInfo, config)
+    const checkpointFingerprint = buildAutoShortCheckpointFingerprint(item.filePath, inputInfo, config, job.separation)
     if (checkpoint.version !== AUTO_SHORT_CHECKPOINT_VERSION || checkpoint.fingerprint !== checkpointFingerprint) {
-      if (checkpoint.sourceCues?.length || checkpoint.translatedCues?.length) {
+      if (checkpoint.sourceCues?.length || checkpoint.translatedCues?.length || checkpoint.instrumentalPath) {
         logInfo('[AutoShort] Bỏ checkpoint cũ vì không khớp fingerprint input/cấu hình hiện tại.')
       }
+      await rm(checkpointDir, { recursive: true, force: true }).catch(() => {})
+      await mkdir(checkpointDir, { recursive: true })
       checkpoint = {}
       detectedSourceLanguage = null
     }
@@ -2380,6 +2424,102 @@ async function processSingleVideo(
       artifactEntries.push({ source: targetSrtPath, name: 'translated.srt' })
     }
 
+    let separatedInstrumentalPath: string | null = null
+
+    if (config.audioMode === 'separate-vocals') {
+      throwIfAborted(job.controller.signal)
+      if (!meta.hasAudio) {
+        logInfo('[AutoShort] Video nguồn không có audio; sẽ xuất TTS-only.')
+        emitProgress(job, item, 'separating_audio', 45, 'Video nguồn không có audio; sẽ xuất TTS-only.', index, total)
+      } else {
+        if (!job.separation) throw new Error('Chưa chuẩn bị tài nguyên tách nhạc.')
+        emitProgress(job, item, 'separating_audio', 45, 'Đang chuẩn bị tách nhạc nền…', index, total)
+
+        const sepDir = join(workDir, 'separation')
+        await mkdir(sepDir, { recursive: true })
+
+        const ckptSepDir = join(checkpointDir, 'separation')
+        const checkpointInstrumental = join(ckptSepDir, 'instrumental.wav')
+        let reusedFromCheckpoint = false
+        if (checkpoint.instrumentalPath) {
+          try {
+            const ffprobe = await resolveFfprobe()
+            if (ffprobe) {
+              await validateSeparatorStem({
+                stemPath: checkpointInstrumental,
+                expectedDurationSeconds: meta.giay,
+                ffprobePath: ffprobe,
+                signal: job.controller.signal
+              })
+              logInfo('[AutoShort] Phục hồi instrumental từ checkpoint.')
+              separatedInstrumentalPath = join(sepDir, 'instrumental.wav')
+              await copyFile(checkpointInstrumental, separatedInstrumentalPath)
+              reusedFromCheckpoint = true
+            }
+          } catch {
+            logInfo('[AutoShort] Checkpoint instrumental không hợp lệ, tiến hành tách lại.')
+            await rm(checkpointInstrumental, { force: true }).catch(() => {})
+          }
+        }
+
+        if (!reusedFromCheckpoint) {
+          const ffmpeg = await resolveFfmpeg()
+          const ffprobe = await resolveFfprobe()
+          if (!ffmpeg || !ffprobe) throw new Error('Thiếu FFmpeg hoặc FFprobe để tách âm thanh.')
+
+          const sepResult = await separateSourceAudio({
+            sourcePath: item.filePath,
+            videoDurationSeconds: meta.giay,
+            workDir: sepDir,
+            ffmpegPath: ffmpeg,
+            ffprobePath: ffprobe,
+            enginePath: job.separation.enginePath,
+            model: job.separation.model,
+            preset: job.separation.preset,
+            providerState: job.separationProviderState,
+            signal: job.controller.signal,
+            onProgress: (event) => {
+              const text = event.stage === 'extracting'
+                ? 'Đang trích xuất audio nguồn…'
+                : event.stage === 'cpu-retry'
+                  ? 'Đang thử lại bằng CPU…'
+                  : event.stage === 'normalizing'
+                    ? 'Đang chuẩn hóa track instrumental…'
+                    : `Đang tách thoại (${event.percent}%)…`
+              emitProgress(job, item, 'separating_audio', 45 + (event.percent / 100) * 12, text, index, total)
+            }
+          })
+
+          if (sepResult.kind === 'no-audio') {
+            logInfo(`[AutoShort] ${sepResult.warning}`)
+          } else {
+            separatedInstrumentalPath = sepResult.instrumentalPath
+            separationAuditMetadata = {
+              audioMode: 'separate-vocals',
+              separationPreset: job.separation.preset,
+              separatorModelId: job.separation.model.id,
+              separatorModelSha256: job.separation.model.spec.model.sha256,
+              separatorEngineVersion: job.separation.engineVersion,
+              requestedProvider: 'auto',
+              effectiveProvider: sepResult.effectiveProvider,
+              fallbackReasonCode: sepResult.fallbackReasonCode,
+              separationElapsedMs: sepResult.elapsedMs
+            }
+
+            // Clean up temporary stems & extracted audio immediately
+            await rm(sepResult.vocalsPath, { force: true }).catch(() => {})
+            await rm(join(sepDir, 'source.wav'), { force: true }).catch(() => {})
+
+            // Save instrumental to checkpoint
+            await mkdir(ckptSepDir, { recursive: true })
+            await copyFile(separatedInstrumentalPath, checkpointInstrumental)
+            checkpoint.instrumentalPath = checkpointInstrumental
+            await writeFile(checkpointFile, JSON.stringify(checkpoint, null, 2), 'utf8')
+          }
+        }
+      }
+    }
+
     let stitchedAudioPath: string | null = null
     let renderSrtPath = targetSrtPath
     let renderDisplayStyle = config.subtitleDisplayStyle || 'standard'
@@ -2438,8 +2578,24 @@ async function processSingleVideo(
     }
 
     let outputAudioPath = stitchedAudioPath
-    const backgroundMusic = config.backgroundMusic
-    if (backgroundMusic) {
+    if (config.audioMode === 'separate-vocals' && separatedInstrumentalPath && stitchedAudioPath) {
+      const ffmpeg = await resolveFfmpeg()
+      if (!ffmpeg) throw new Error('Thiếu FFmpeg để trộn âm thanh nền với giọng lồng tiếng.')
+      outputAudioPath = join(workDir, 'tts-bed-mix.wav')
+      artifactEntries.push({ source: outputAudioPath, name: 'tts-bed-mix.wav' })
+      emitProgress(job, item, 'stitching_audio', 83, 'Đang trộn âm thanh nền với giọng lồng tiếng…', index, total)
+      await composeAutoShortNarratedAudio({
+        ffmpegPath: ffmpeg,
+        bedPath: separatedInstrumentalPath,
+        narrationPath: stitchedAudioPath,
+        outputPath: outputAudioPath,
+        durationSeconds: meta.giay,
+        bedMode: 'finite-source',
+        bedVolume: 100,
+        signal: job.controller.signal
+      })
+    } else if (config.backgroundMusic) {
+      const backgroundMusic = config.backgroundMusic
       const assignedMusicPath = backgroundMusic.assignments[item.id]
       selectedBackgroundMusicPath = await validateAutoShortMusicTrack(backgroundMusic.folderPath, assignedMusicPath)
       outputAudioPath = join(workDir, 'tts-background-mix.wav')
@@ -2447,7 +2603,7 @@ async function processSingleVideo(
       emitProgress(job, item, 'stitching_audio', 83, 'Đang trộn nhạc background với giọng lồng tiếng…', index, total)
       await composeAutoShortBackgroundAudio({
         musicPath: selectedBackgroundMusicPath,
-        narrationPath: stitchedAudioPath,
+        narrationPath: stitchedAudioPath!,
         outputPath: outputAudioPath,
         duration: meta.giay,
         volume: backgroundMusic.volume,
@@ -2513,7 +2669,8 @@ async function processSingleVideo(
       burnResult.output,
       config.ttsEnabled,
       meta.giay,
-      meta.frameRate
+      meta.frameRate,
+      config.audioMode === 'separate-vocals' ? 1 : 8
     )
     if (!mediaCheck.ok) {
       logError(`[AutoShort] Kiểm tra video xuất ra thất bại: ${mediaCheck.error}`)
@@ -2535,7 +2692,8 @@ async function processSingleVideo(
       voice,
       backgroundMusicMode: config.backgroundMusic?.mode,
       backgroundMusicFile: selectedBackgroundMusicPath ? basename(selectedBackgroundMusicPath) : undefined,
-      backgroundMusicVolume: config.backgroundMusic?.volume
+      backgroundMusicVolume: config.backgroundMusic?.volume,
+      ...(separationAuditMetadata || {})
     })
 
     // Clean up checkpoint upon successful completion
@@ -2571,7 +2729,8 @@ async function processSingleVideo(
         voice,
         backgroundMusicMode: config.backgroundMusic?.mode,
         backgroundMusicFile: selectedBackgroundMusicPath ? basename(selectedBackgroundMusicPath) : undefined,
-        backgroundMusicVolume: config.backgroundMusic?.volume
+        backgroundMusicVolume: config.backgroundMusic?.volume,
+        ...(separationAuditMetadata || {})
       })
     } catch (preserveError) {
       logWarn(`[AutoShort] Không thể lưu failure artifacts: ${errLabel(preserveError)}`)
@@ -2601,6 +2760,26 @@ async function preflight(job: AutoShortJob): Promise<void> {
   const readiness = await getAutoShortReadiness(config)
   if (!readiness.ready) {
     throw new Error(readiness.message || 'Dependency Auto Short chưa sẵn sàng. Hãy tải các thành phần được yêu cầu trước.')
+  }
+  if (config.audioMode === 'separate-vocals') {
+    const preset = config.separationPreset || 'balanced'
+    const modelId = modelIdForSeparationPreset(preset)
+    const enginePath = await resolveSeparatorEngine()
+    if (!enginePath) throw new Error('Thiếu Separator engine.')
+    const probe = await probeRuntimeExecutable('separator-engine', enginePath)
+    if (!probe.healthy || !probe.version) throw new Error(probe.message || 'Separator engine probe thất bại.')
+    const model = await resolveInstalledSeparatorModel(modelId)
+    if (!model) throw new Error(`Model tách nhạc ${modelId} chưa được cài đặt hoặc bị lỗi.`)
+    const presetConfig = separationPresetConfig(preset)
+
+    job.separation = {
+      enginePath,
+      engineVersion: probe.version,
+      engineProtocol: 'separator-engine/1',
+      model,
+      preset,
+      presetConfig
+    }
   }
   if (config.translateTarget !== 'none' && config.translateProvider === 'local') {
     const key = await loadLocalKey()
@@ -2682,6 +2861,7 @@ export function startAutoShortJob(raw: unknown, onEvent: (event: AutoShortEvent)
     controller: new AbortController(),
     emit: onEvent,
     cancelled: false,
+    separationProviderState: { mode: 'auto' },
     done: Promise.resolve({ ok: false, completedCount: 0, totalCount: validation.value.items.length })
   }
   job.done = executeJob(job).finally(() => {
