@@ -1,6 +1,7 @@
 import { spawn, type ChildProcess } from 'node:child_process'
-import { dirname } from 'node:path'
+import { dirname, isAbsolute, relative, resolve } from 'node:path'
 import { trackChildProcess, terminateProcessTree } from '../processTree'
+import { separationPresetConfig } from '../../shared/autoShortSeparation'
 import type { AutoShortSeparationPreset, SeparatorModelId, SeparatorProvider } from '../../shared/types'
 import type { InstalledSeparatorModel } from './modelStore'
 
@@ -36,6 +37,11 @@ function sanitizeDiagnostics(text: string): string {
   return text.replace(/[A-Za-z]:\\[^\s:"]+/g, '<redacted_path>')
 }
 
+function isInsideDirectory(filePath: string, dir: string): boolean {
+  const rel = relative(resolve(dir), resolve(filePath)).replace(/\\/g, '/')
+  return !rel.startsWith('..') && !rel.startsWith('/') && !/^[A-Za-z]:\//.test(rel)
+}
+
 export async function probeSeparatorModel(input: {
   executablePath: string
   model: InstalledSeparatorModel
@@ -53,7 +59,7 @@ export async function probeSeparatorModel(input: {
     model.manifestPath
   ]
 
-  return new Promise((resolve) => {
+  return new Promise((resolveResult) => {
     let child: ChildProcess | null = null
     let stdoutBuffer = ''
     let stderrBuffer = ''
@@ -67,7 +73,7 @@ export async function probeSeparatorModel(input: {
       if (resolved) return
       resolved = true
       cleanup()
-      resolve(res)
+      resolveResult(res)
     }
 
     const onAbort = (): void => {
@@ -120,7 +126,6 @@ export async function probeSeparatorModel(input: {
 
       child.on('close', (code) => {
         if (code !== 0) {
-          // Attempt to parse probe event or error event from stdout
           try {
             const lines = stdoutBuffer.trim().split('\n')
             for (const line of lines) {
@@ -189,6 +194,190 @@ export async function probeSeparatorModel(input: {
         modelId: model.id,
         message: `Lỗi spawn separator engine: ${err instanceof Error ? err.message : String(err)}`
       })
+    }
+  })
+}
+
+export async function runSeparatorEngine(input: RunSeparatorEngineInput): Promise<SeparatorRunResult> {
+  const {
+    executablePath,
+    inputPath,
+    outputDir,
+    model,
+    preset,
+    provider,
+    signal,
+    timeoutMs,
+    onProgress,
+    spawnChild = spawn
+  } = input
+
+  const presetConf = separationPresetConfig(preset)
+  const args = [
+    '--separate',
+    '--input',
+    inputPath,
+    '--output-dir',
+    outputDir,
+    '--model',
+    model.modelPath,
+    '--model-manifest',
+    model.manifestPath,
+    '--model-id',
+    model.id,
+    '--preset',
+    preset,
+    '--overlap',
+    String(presetConf.overlap),
+    '--batch',
+    '1',
+    '--provider',
+    provider
+  ]
+
+  return new Promise((resolveResult, reject) => {
+    if (signal.aborted) return reject(new Error('Đã hủy tác vụ.'))
+
+    let child: ChildProcess | null = null
+    let stdoutBuffer = ''
+    let stderrBuffer = ''
+    let settled = false
+    let lastProgress = -1
+    let terminalEventSeen = false
+    let resultPayload: SeparatorRunResult | null = null
+    let timer: NodeJS.Timeout | null = null
+
+    const cleanup = (): void => {
+      if (timer) clearTimeout(timer)
+      signal.removeEventListener('abort', onAbort)
+    }
+
+    const finishSuccess = (res: SeparatorRunResult): void => {
+      if (settled) return
+      settled = true
+      cleanup()
+      resolveResult(res)
+    }
+
+    const finishError = (err: Error): void => {
+      if (settled) return
+      settled = true
+      cleanup()
+      if (child) {
+        try {
+          terminateProcessTree(child)
+        } catch {
+          // ignore
+        }
+      }
+      reject(err)
+    }
+
+    const onAbort = (): void => {
+      finishError(new Error('Đã hủy tác vụ.'))
+    }
+    signal.addEventListener('abort', onAbort)
+
+    if (timeoutMs > 0) {
+      timer = setTimeout(() => {
+        finishError(new Error(`Separator engine timed out after ${timeoutMs}ms.`))
+      }, timeoutMs)
+    }
+
+    try {
+      child = spawnChild(executablePath, args, {
+        cwd: dirname(executablePath),
+        windowsHide: true,
+        shell: false
+      })
+      trackChildProcess(child)
+
+      child.stdout?.on('data', (chunk: Buffer) => {
+        stdoutBuffer += chunk.toString('utf8')
+        const lines = stdoutBuffer.split('\n')
+        stdoutBuffer = lines.pop() || '' // keep partial line
+
+        for (const line of lines) {
+          const trimmed = line.trim()
+          if (!trimmed) continue
+
+          if (terminalEventSeen) {
+            return finishError(new Error('Separator engine emitted data after terminal event.'))
+          }
+
+          let event: Record<string, unknown>
+          try {
+            event = JSON.parse(trimmed)
+          } catch {
+            return finishError(new Error(`Separator engine emitted malformed JSON: ${sanitizeDiagnostics(trimmed)}`))
+          }
+
+          if (event.type === 'progress') {
+            const percent = typeof event.percent === 'number' ? event.percent : 0
+            const phase = event.phase as 'loading' | 'separating' | 'writing'
+            if (percent < lastProgress || percent < 0 || percent > 100) {
+              return finishError(new Error(`Non-monotonic progress emitted: ${percent} after ${lastProgress}`))
+            }
+            lastProgress = percent
+            if (onProgress) onProgress(percent, phase)
+          } else if (event.type === 'result') {
+            terminalEventSeen = true
+            const vocalsPath = String(event.vocalsPath || '')
+            const instrumentalPath = String(event.instrumentalPath || '')
+            const prov = event.provider === 'directml' ? 'directml' : 'cpu'
+            const elapsedMs = typeof event.elapsedMs === 'number' ? event.elapsedMs : 0
+
+            if (!vocalsPath || !instrumentalPath) {
+              return finishError(new Error('Result event missing vocalsPath or instrumentalPath.'))
+            }
+
+            if (!isInsideDirectory(vocalsPath, outputDir) || !isInsideDirectory(instrumentalPath, outputDir)) {
+              return finishError(new Error('Result path escapes the requested output directory.'))
+            }
+
+            resultPayload = {
+              vocalsPath,
+              instrumentalPath,
+              provider: prov,
+              elapsedMs
+            }
+          } else if (event.type === 'error') {
+            terminalEventSeen = true
+            const err = new Error(String(event.message || event.code || 'Engine error'))
+            ;(err as unknown as { retryable: boolean; code: string }).retryable = Boolean(event.retryable)
+            ;(err as unknown as { retryable: boolean; code: string }).code = String(event.code || '')
+            return finishError(err)
+          }
+        }
+      })
+
+      child.stderr?.on('data', (chunk: Buffer) => {
+        stderrBuffer += chunk.toString('utf8')
+        if (stderrBuffer.length > 64 * 1024) {
+          stderrBuffer = stderrBuffer.slice(-64 * 1024)
+        }
+      })
+
+      child.on('error', (err) => {
+        finishError(err)
+      })
+
+      child.on('close', (code) => {
+        if (settled) return
+        if (code !== 0 && !resultPayload) {
+          const err = new Error(
+            `Separator engine failed (exit ${code}): ${sanitizeDiagnostics(stderrBuffer || 'Unknown error')}`
+          )
+          return finishError(err)
+        }
+        if (resultPayload) {
+          resultPayload.stderrTail = sanitizeDiagnostics(stderrBuffer)
+          return finishSuccess(resultPayload)
+        }
+        finishError(new Error('Separator engine closed without emitting result event.'))
+      })
+    } catch (err) {
+      finishError(err instanceof Error ? err : new Error(String(err)))
     }
   })
 }
