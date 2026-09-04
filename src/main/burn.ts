@@ -788,7 +788,7 @@ export function taoFilterComplex(
           audioFilter = `[1:a]asetpts=PTS-STARTPTS,aresample=44100:async=1,aformat=channel_layouts=stereo:sample_rates=44100,volume=1.0,apad=whole_dur=${outputDuration},atrim=duration=${outputDuration},alimiter=limit=-1dB:attack=5:release=50:level=false[a_mix]`
         } else {
           // MIX mode: Dynamic ducking narration over background audio + limiter
-          audioFilter = `[0:a]asetpts=PTS-STARTPTS,aresample=44100:async=1,aformat=channel_layouts=stereo:sample_rates=44100,volume=${volRatio}[bg];[1:a]asetpts=PTS-STARTPTS,aresample=44100:async=1,aformat=channel_layouts=stereo:sample_rates=44100,volume=1.0[narr];[bg][narr]sidechaincompress=threshold=0.06:ratio=4:attack=15:release=200[ducked_bg];[ducked_bg][narr]amix=inputs=2:duration=longest:dropout_transition=2:normalize=0[a_sum];[a_sum]alimiter=limit=-1dB:attack=5:release=50,apad=whole_dur=${outputDuration},atrim=duration=${outputDuration}[a_mix]`
+          audioFilter = `[0:a]asetpts=PTS-STARTPTS,aresample=44100:async=1,aformat=channel_layouts=stereo:sample_rates=44100,volume=${volRatio}[bg];[1:a]asetpts=PTS-STARTPTS,aresample=44100:async=1,aformat=channel_layouts=stereo:sample_rates=44100,volume=1.0,asplit=2[narr_sc][narr_mix];[bg][narr_sc]sidechaincompress=threshold=0.06:ratio=4:attack=15:release=200[ducked_bg];[ducked_bg][narr_mix]amix=inputs=2:duration=longest:dropout_transition=2:normalize=0[a_sum];[a_sum]alimiter=limit=-1dB:attack=5:release=50,apad=whole_dur=${outputDuration},atrim=duration=${outputDuration}[a_mix]`
         }
       } else {
         // Không nhạc nền + có âm thanh gốc -> Chỉ chỉnh âm lượng gốc

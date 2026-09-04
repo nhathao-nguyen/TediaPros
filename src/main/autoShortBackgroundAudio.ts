@@ -29,7 +29,7 @@ export function buildAutoShortBackgroundAudioArgs(input: Omit<AutoShortBackgroun
   if (input.narrationPath) args.push('-i', input.narrationPath)
   const music = `[0:a]asetpts=PTS-STARTPTS,aresample=44100:async=1,aformat=channel_layouts=stereo:sample_rates=44100,volume=${gain}[music]`
   const graph = input.narrationPath
-    ? `${music};[1:a]asetpts=PTS-STARTPTS,aresample=44100:async=1,aformat=channel_layouts=stereo:sample_rates=44100,volume=1.0[narr];[music][narr]sidechaincompress=threshold=0.06:ratio=4:attack=15:release=200[ducked_music];[ducked_music][narr]amix=inputs=2:duration=longest:dropout_transition=2:normalize=0[a_sum];[a_sum]alimiter=limit=-1dB:attack=5:release=50:level=false,apad=whole_dur=${duration},atrim=duration=${duration}[a_mix]`
+    ? `${music};[1:a]asetpts=PTS-STARTPTS,aresample=44100:async=1,aformat=channel_layouts=stereo:sample_rates=44100,volume=1.0,asplit=2[narr_sc][narr_mix];[music][narr_sc]sidechaincompress=threshold=0.06:ratio=4:attack=15:release=200[ducked_music];[ducked_music][narr_mix]amix=inputs=2:duration=longest:dropout_transition=2:normalize=0[a_sum];[a_sum]alimiter=limit=-1dB:attack=5:release=50:level=false,apad=whole_dur=${duration},atrim=duration=${duration}[a_mix]`
     : `${music};[music]apad=whole_dur=${duration},atrim=duration=${duration},alimiter=limit=-1dB:attack=5:release=50:level=false[a_mix]`
   args.push('-filter_complex', graph, '-map', '[a_mix]', '-c:a', 'pcm_s16le', '-ac', '2', '-ar', '44100', input.outputPath)
   return args

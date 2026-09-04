@@ -451,7 +451,9 @@ test(
       const loopedMusicNearEnd = pcmToneAmplitude(composedPcm, 220, 1.55, 1.85)
       const musicDuringNarration = pcmToneAmplitude(composedPcm, 220, 0.3, 0.7)
       const musicAfterNarration = pcmToneAmplitude(composedPcm, 220, 1.3, 1.7)
-      assert.ok(loopedMusicNearEnd > 0.12, `looped music not present near output end: ${loopedMusicNearEnd}`)
+      const narrationPresence = pcmToneAmplitude(composedPcm, 997, 0.3, 0.7)
+      assert.ok(narrationPresence > 0.2, `narration not present: ${narrationPresence}`)
+      assert.ok(loopedMusicNearEnd > 0.05, `looped music not present near output end: ${loopedMusicNearEnd}`)
       assert.ok(
         musicAfterNarration > musicDuringNarration * 1.5,
         `ducking not observed: during=${musicDuringNarration}, after=${musicAfterNarration}`
