@@ -432,8 +432,12 @@ Before render, mask validation requires:
 
 - exactly one decodable video stream and no audio stream;
 - width and height exactly equal to canonical display-space dimensions;
-- time base 1/sampleFps, first PTS zero, and finite positive frame rate equal to
-  the declared sample rate;
+- a finite positive muxer time base, first PTS zero, finite positive frame rate
+  equal to the declared sample rate, and decoded frame timestamps exactly
+  following k/sampleFps within half one muxer tick. The pinned FFV1/Matroska
+  muxer reports time_base=1/1000 even when encoding at 8 fps (PTS 0, 125, 250,
+  ... ms), so validation checks the represented cadence rather than requiring
+  the literal container value 1/8;
 - activeFrameCount = ceil(videoDuration*sampleFps) raster frames plus one
   guaranteed terminal black frame;
 - frame k represents [k/sampleFps, (k+1)/sampleFps), and a padded visual segment
