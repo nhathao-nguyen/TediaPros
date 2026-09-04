@@ -911,6 +911,15 @@ export interface AutoShortReadiness {
   message?: string
 }
 
+export type AutoShortDependencyConfig = Pick<
+  AutoShortConfig,
+  'subtitleMethod' | 'whisperModel'
+> & {
+  whisperDevice?: WhisperDevice
+  audioMode?: AutoShortAudioMode
+  separationPreset?: AutoShortSeparationPreset
+}
+
 export interface AutoShortDependencyProgress {
   id: AutoShortDependencyId
   phase: 'downloading' | 'installing' | 'verifying' | 'done' | 'error'

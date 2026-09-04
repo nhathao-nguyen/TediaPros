@@ -136,6 +136,7 @@ import {
   selectAutoShortVideoFiles
 } from './autoshort'
 import { listAutoShortMusicTracks } from './autoShortMusicLibrary'
+import { isAutoShortSeparationPreset } from '../shared/autoShortSeparation'
 import type {
   DichProvider,
   DouyinRequest,
@@ -143,6 +144,7 @@ import type {
   TtsCloneRequest,
   TtsSpeechRequest,
   AutoShortConfig,
+  AutoShortDependencyConfig,
   Video2xRunRequest,
   WhisperRequest,
   DownloadRequest,
@@ -951,11 +953,41 @@ function registerIpc(): void {
     }
     return listAutoShortMusicTracks(folderPath)
   })
-  ipcMain.handle('autoshort:getReadiness', async (_event, raw: Pick<AutoShortConfig, 'subtitleMethod' | 'whisperModel' | 'whisperDevice'>) => {
-    if (!raw || typeof raw !== 'object' || typeof raw.subtitleMethod !== 'string' || typeof raw.whisperModel !== 'string') {
+  const parseAutoShortDependencyConfig = (raw: unknown): AutoShortDependencyConfig => {
+    if (!raw || typeof raw !== 'object') {
       throw new Error('Yêu cầu kiểm tra dependency Auto Short không hợp lệ.')
     }
-    return getAutoShortReadiness({ ...raw, whisperDevice: raw.whisperDevice || 'cpu' })
+    const r = raw as Record<string, unknown>
+    if (typeof r.subtitleMethod !== 'string' || typeof r.whisperModel !== 'string') {
+      throw new Error('Yêu cầu kiểm tra dependency Auto Short không hợp lệ.')
+    }
+    if (r.audioMode !== undefined && r.audioMode !== 'replace' && r.audioMode !== 'mix' && r.audioMode !== 'separate-vocals') {
+      throw new Error('Chế độ âm thanh không hợp lệ.')
+    }
+    if (r.separationPreset !== undefined && !isAutoShortSeparationPreset(r.separationPreset)) {
+      throw new Error('Chất lượng tách thoại không hợp lệ.')
+    }
+    if (
+      'modelUrl' in r ||
+      'modelPath' in r ||
+      'enginePath' in r ||
+      'providerOverride' in r ||
+      'provider' in r
+    ) {
+      throw new Error('Yêu cầu chứa tham số không được phép.')
+    }
+    return {
+      subtitleMethod: r.subtitleMethod as AutoShortConfig['subtitleMethod'],
+      whisperModel: r.whisperModel as AutoShortConfig['whisperModel'],
+      whisperDevice: (r.whisperDevice as AutoShortConfig['whisperDevice']) || 'cpu',
+      audioMode: (r.audioMode as AutoShortConfig['audioMode']) || 'replace',
+      separationPreset: r.separationPreset as AutoShortConfig['separationPreset']
+    }
+  }
+
+  ipcMain.handle('autoshort:getReadiness', async (_event, raw: unknown) => {
+    const config = parseAutoShortDependencyConfig(raw)
+    return getAutoShortReadiness(config)
   })
   ipcMain.handle('whisper:modelStatus', async (_event, model: string) => whisperModelStatus(model))
   ipcMain.handle('whisper:installModel', async (event, model: string) => {
@@ -970,13 +1002,14 @@ function registerIpc(): void {
     await shutdownWhisperRuntime()
     return { ok: true }
   })
-  ipcMain.handle('autoshort:installDependencies', async (event, raw: Pick<AutoShortConfig, 'subtitleMethod' | 'whisperModel' | 'whisperDevice'>) => {
+  ipcMain.handle('autoshort:installDependencies', async (event, raw: unknown) => {
+    const config = parseAutoShortDependencyConfig(raw)
     const key = event.sender.id
     if (autoShortDependencyInstalls.has(key)) return { ok: false, error: 'Đang tải dependency Auto Short.' }
     const controller = new AbortController()
     autoShortDependencyInstalls.set(key, controller)
     try {
-      const readiness = await installAutoShortDependencies({ ...raw, whisperDevice: raw.whisperDevice || 'cpu' }, (progress) => {
+      const readiness = await installAutoShortDependencies(config, (progress) => {
         try { event.sender.send('autoshort:dependencyProgress', progress) } catch { /* renderer closed */ }
       }, controller.signal)
       return { ok: true, readiness }

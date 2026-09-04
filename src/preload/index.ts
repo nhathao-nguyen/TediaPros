@@ -1,6 +1,7 @@
 import { contextBridge, ipcRenderer } from 'electron'
 import {
   AutoShortEvent,
+  AutoShortDependencyConfig,
   AutoShortDependencyProgress,
   AutoShortReadiness,
   AutoShortStartRequest,
@@ -377,9 +378,9 @@ const api = {
     ipcRenderer.invoke('autoshort:selectMusicFolder'),
   autoShortListMusicTracks: (folderPath: string): Promise<AutoShortMusicLibraryResult> =>
     ipcRenderer.invoke('autoshort:listMusicTracks', folderPath),
-  autoShortGetReadiness: (config: Pick<AutoShortStartRequest['config'], 'subtitleMethod' | 'whisperModel' | 'whisperDevice'>): Promise<AutoShortReadiness> =>
+  autoShortGetReadiness: (config: AutoShortDependencyConfig): Promise<AutoShortReadiness> =>
     ipcRenderer.invoke('autoshort:getReadiness', config),
-  autoShortInstallDependencies: (config: Pick<AutoShortStartRequest['config'], 'subtitleMethod' | 'whisperModel' | 'whisperDevice'>): Promise<{ ok: boolean; readiness?: AutoShortReadiness; error?: string }> =>
+  autoShortInstallDependencies: (config: AutoShortDependencyConfig): Promise<{ ok: boolean; readiness?: AutoShortReadiness; error?: string }> =>
     ipcRenderer.invoke('autoshort:installDependencies', config),
   autoShortCancelDependencyInstall: (): Promise<{ ok: boolean; error?: string }> =>
     ipcRenderer.invoke('autoshort:cancelDependencyInstall'),

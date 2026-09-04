@@ -58,6 +58,20 @@ import { terminateProcessTree, terminateTrackedProcessTrees, trackChildProcess }
 import { parseSrt, serializeSrt, type SubtitleCue } from '../shared/subtitles'
 import { validateAutoShortStartRequest } from '../shared/autoShortContract'
 import { fuseWhisperAndOcr, clampAlignedCueTimeline } from '../shared/autoShortAlignment'
+import { resolveSeparatorEngine } from './runtimeResolver'
+import { probeRuntimeExecutable } from './runtimeProbes'
+import { resolveInstalledSeparatorModel } from './separation/modelStore'
+import { probeSeparatorModel } from './separation/runner'
+import { fetchSeparatorModelManifest, installSeparatorModel } from './separation/modelInstaller'
+import { fetchRuntimeManifest, downloadRuntimeEngineFromManifest } from './runtimeInstaller'
+import { modelIdForSeparationPreset } from '../shared/autoShortSeparation'
+import { loadSeparatorReleaseStatus, separatorFeatureEnabled } from './separation/releaseGate'
+import type {
+  AutoShortDependencyConfig,
+  AutoShortSeparationPreset,
+  AutoShortSeparationReadiness,
+  SeparatorProvider
+} from '../shared/types'
 import {
   DEFAULT_AI_SERVER_URL,
   type AutoShortBatchResult,
@@ -154,21 +168,54 @@ function dependency(
   return { id, label, required, ready, downloadBytes, message }
 }
 
+export interface AutoShortReadinessHooks {
+  resolveSeparatorEngine?: typeof resolveSeparatorEngine
+  probeRuntimeExecutable?: typeof probeRuntimeExecutable
+  resolveInstalledSeparatorModel?: typeof resolveInstalledSeparatorModel
+  probeSeparatorModel?: typeof probeSeparatorModel
+  fetchSeparatorModelManifest?: typeof fetchSeparatorModelManifest
+  fetchRuntimeManifest?: typeof fetchRuntimeManifest
+  detectGpu?: typeof detectGpu
+}
+
+export interface AutoShortInstallHooks {
+  downloadRuntimeEngine?: typeof downloadRuntimeEngineFromManifest
+  installSeparatorModel?: typeof installSeparatorModel
+  readinessHooks?: AutoShortReadinessHooks
+}
+
 /**
  * A single source of truth for the Auto Short dependency modal and the batch
  * preflight. It checks the current Electron userData folder, so dev, packaged
  * and migrated profiles cannot accidentally borrow one another's readiness.
  */
-export async function getAutoShortReadiness(config: Pick<AutoShortConfig, 'subtitleMethod' | 'whisperModel' | 'whisperDevice'>): Promise<AutoShortReadiness> {
+export async function getAutoShortReadiness(
+  config: AutoShortDependencyConfig,
+  hooks: AutoShortReadinessHooks = {}
+): Promise<AutoShortReadiness> {
+  const resolveSepEngine = hooks.resolveSeparatorEngine || resolveSeparatorEngine
+  const probeRuntimeExe = hooks.probeRuntimeExecutable || probeRuntimeExecutable
+  const resolveInstalledModel = hooks.resolveInstalledSeparatorModel || resolveInstalledSeparatorModel
+  const probeSepModel = hooks.probeSeparatorModel || probeSeparatorModel
+  const fetchSepModelManifest = hooks.fetchSeparatorModelManifest || fetchSeparatorModelManifest
+  const fetchRtManifest = hooks.fetchRuntimeManifest || fetchRuntimeManifest
+  const getGpu = hooks.detectGpu || detectGpu
+
   const useWhisper = needsWhisper(config.subtitleMethod)
   const useCuda = needsCuda(config)
-  const [ff, engine, model, cuda, ocr, gpu] = await Promise.all([
+  const useSeparation = config.audioMode === 'separate-vocals'
+  const preset: AutoShortSeparationPreset = config.separationPreset || 'balanced'
+  const modelId = modelIdForSeparationPreset(preset)
+
+  const [ff, engine, model, cuda, ocr, gpu, sepEnginePath, sepInstalledModel] = await Promise.all([
     resolveFfmpeg(),
     useWhisper ? whisperEngineStatus() : Promise.resolve(null),
     useWhisper ? whisperModelStatus(config.whisperModel || 'base') : Promise.resolve(undefined),
     useCuda ? whisperCudaStatus() : Promise.resolve(null),
     config.subtitleMethod === 'ocr' || config.subtitleMethod === 'whisper-ocr' ? ocrEngineStatus() : Promise.resolve(null),
-    useCuda ? detectGpu() : Promise.resolve(null)
+    useCuda || useSeparation ? getGpu() : Promise.resolve(null),
+    useSeparation ? resolveSepEngine() : Promise.resolve(null),
+    useSeparation ? resolveInstalledModel(modelId) : Promise.resolve(null)
   ])
   const cudaProbe = useCuda && engine?.has && engine.healthy && cuda?.has
     ? await whisperCudaProbe(config.whisperModel || 'base', 'cuda')
@@ -235,6 +282,122 @@ export async function getAutoShortReadiness(config: Pick<AutoShortConfig, 'subti
       !ocr.has ? 'Chưa cài OCR engine.' : !ocr.healthy ? (ocr.message || 'OCR engine probe thất bại.') : undefined
     ))
   }
+
+  let separationReadiness: AutoShortSeparationReadiness | undefined
+  if (useSeparation) {
+    const releaseStatus = loadSeparatorReleaseStatus()
+    let engineHealthy = false
+    let engineMessage: string | undefined
+    if (sepEnginePath) {
+      const probe = await probeRuntimeExe('separator-engine', sepEnginePath)
+      engineHealthy = probe.healthy
+      if (!probe.healthy) engineMessage = probe.message || 'Separator engine probe thất bại.'
+    } else {
+      engineMessage = 'Chưa cài đặt Separator engine.'
+    }
+
+    let sepEngineDownloadBytes: number | undefined
+    if (!engineHealthy) {
+      try {
+        const manifest = await fetchRtManifest()
+        sepEngineDownloadBytes = manifest?.assets?.['separator-engine']?.bytes
+      } catch {
+        // offline
+      }
+    }
+
+    const modelReady = sepInstalledModel !== null
+    let modelDownloadBytes: number | undefined
+    let modelMessage: string | undefined
+    if (!modelReady) {
+      modelMessage = 'Chưa tải model tách nhạc.'
+      try {
+        const modelManifest = await fetchSepModelManifest()
+        modelDownloadBytes = modelManifest?.models?.[modelId]?.archiveBytes
+      } catch {
+        // offline
+      }
+    }
+
+    const sepEngineDep = dependency(
+      'separator-engine',
+      'Separator engine',
+      true,
+      engineHealthy,
+      sepEngineDownloadBytes,
+      engineMessage
+    )
+    const sepModelDep = dependency(
+      'separator-model',
+      `Model tách nhạc ${modelId}`,
+      true,
+      modelReady,
+      modelDownloadBytes,
+      modelMessage
+    )
+    dependencies.push(sepEngineDep, sepModelDep)
+
+    if (engineHealthy && modelReady && sepEnginePath && sepInstalledModel) {
+      let effectiveProvider: SeparatorProvider | null = null
+      let sepProbeMessage: string | undefined
+
+      const dmlProbe = await probeSepModel({
+        executablePath: sepEnginePath,
+        model: sepInstalledModel,
+        provider: 'directml'
+      })
+
+      if (dmlProbe.ready) {
+        effectiveProvider = 'directml'
+      } else {
+        const cpuProbe = await probeSepModel({
+          executablePath: sepEnginePath,
+          model: sepInstalledModel,
+          provider: 'cpu'
+        })
+        if (cpuProbe.ready) {
+          effectiveProvider = 'cpu'
+          sepProbeMessage = dmlProbe.message ? `DirectML không khả dụng, sử dụng CPU (${dmlProbe.message})` : undefined
+        } else {
+          effectiveProvider = null
+          sepProbeMessage = `Cả DirectML và CPU đều không khả dụng: ${dmlProbe.message || ''} / ${cpuProbe.message || ''}`.trim()
+          sepEngineDep.ready = false
+          sepEngineDep.message = sepProbeMessage
+        }
+      }
+
+      let releaseTier: 'verified' | 'beta' | 'development' = 'development'
+      if (effectiveProvider === 'cpu') {
+        const v = releaseStatus.vendors.cpu
+        releaseTier = v === 'verified' ? 'verified' : v === 'beta' ? 'beta' : 'development'
+      } else if (effectiveProvider === 'directml') {
+        const vendor = gpu?.hasNvidia ? 'nvidia' : 'amd'
+        const v = releaseStatus.vendors[vendor]
+        releaseTier = v === 'verified' ? 'verified' : v === 'beta' ? 'beta' : 'development'
+      }
+
+      separationReadiness = {
+        preset,
+        modelId,
+        providerPolicy: 'auto',
+        effectiveProvider,
+        offlineReady: true,
+        releaseTier,
+        message: sepProbeMessage
+      }
+    } else {
+      separationReadiness = {
+        preset,
+        modelId,
+        providerPolicy: 'auto',
+        effectiveProvider: null,
+        offlineReady: modelReady,
+        releaseTier: 'development',
+        message: engineMessage || modelMessage
+      }
+    }
+  }
+
   const missing = dependencies.filter((item) => item.required && !item.ready)
   const message = missing.length
     ? `Cần chuẩn bị: ${missing.map((item) => item.label).join(', ')}.`
@@ -246,18 +409,27 @@ export async function getAutoShortReadiness(config: Pick<AutoShortConfig, 'subti
     effectiveDevice: useWhisper ? (useCuda && cudaReady ? 'cuda' : 'cpu') : null,
     dependencies,
     model,
+    separation: separationReadiness,
     message
   }
 }
 
 export async function installAutoShortDependencies(
-  config: Pick<AutoShortConfig, 'subtitleMethod' | 'whisperModel' | 'whisperDevice'>,
+  config: AutoShortDependencyConfig,
   onProgress: (progress: AutoShortDependencyProgress) => void,
-  signal?: AbortSignal
+  signal?: AbortSignal,
+  hooks: AutoShortInstallHooks = {}
 ): Promise<AutoShortReadiness> {
-  const emit = (id: AutoShortDependencyStatus['id'], phase: AutoShortDependencyProgress['phase'], percent: number, message: string, receivedBytes?: number, totalBytes?: number): void =>
-    onProgress({ id, phase, percent, message, receivedBytes, totalBytes })
-  let readiness = await getAutoShortReadiness(config)
+  const emit = (
+    id: AutoShortDependencyStatus['id'],
+    phase: AutoShortDependencyProgress['phase'],
+    percent: number,
+    message: string,
+    receivedBytes?: number,
+    totalBytes?: number
+  ): void => onProgress({ id, phase, percent, message, receivedBytes, totalBytes })
+
+  let readiness = await getAutoShortReadiness(config, hooks.readinessHooks)
   const isMissing = (id: AutoShortDependencyStatus['id']): boolean =>
     readiness.dependencies.some((item) => item.id === id && item.required && !item.ready)
   const aborted = (): void => {
@@ -271,14 +443,14 @@ export async function installAutoShortDependencies(
       emit('ffmpeg', 'downloading', p.percent < 0 ? 0 : p.percent, p.message)
     })
     emit('ffmpeg', 'verifying', 100, 'Đang kiểm tra FFmpeg…')
-    readiness = await getAutoShortReadiness(config)
+    readiness = await getAutoShortReadiness(config, hooks.readinessHooks)
   }
   if (isMissing('whisper-engine')) {
     aborted()
     emit('whisper-engine', 'downloading', 0, 'Đang tải Whisper engine…')
     await installWhisperEngine((percent) => emit('whisper-engine', 'downloading', percent, 'Đang tải Whisper engine…'))
     emit('whisper-engine', 'verifying', 100, 'Đang kiểm tra Whisper engine…')
-    readiness = await getAutoShortReadiness(config)
+    readiness = await getAutoShortReadiness(config, hooks.readinessHooks)
   }
   if (isMissing('whisper-model')) {
     aborted()
@@ -286,7 +458,7 @@ export async function installAutoShortDependencies(
     await installWhisperModel(config.whisperModel || 'base', (progress) =>
       emit('whisper-model', 'downloading', progress.percent, progress.message, Math.round((progress.percent / 100) * (total || 1)), total))
     emit('whisper-model', 'verifying', 100, 'Đang kiểm tra model Whisper…')
-    readiness = await getAutoShortReadiness(config)
+    readiness = await getAutoShortReadiness(config, hooks.readinessHooks)
   }
   if (isMissing('whisper-cuda')) {
     aborted()
@@ -295,14 +467,38 @@ export async function installAutoShortDependencies(
     emit('whisper-cuda', 'downloading', 0, 'Đang tải gói CUDA Fast-Whisper…')
     await installCudaPack((percent) => emit('whisper-cuda', 'downloading', percent, 'Đang tải gói CUDA Fast-Whisper…'))
     emit('whisper-cuda', 'verifying', 100, 'Đang kiểm tra CUDA Fast-Whisper…')
-    readiness = await getAutoShortReadiness(config)
+    readiness = await getAutoShortReadiness(config, hooks.readinessHooks)
   }
   if (isMissing('ocr-engine')) {
     aborted()
     emit('ocr-engine', 'downloading', 0, 'Đang tải OCR engine…')
     await installOcrEngine((percent) => emit('ocr-engine', 'downloading', percent, 'Đang tải OCR engine…'))
     emit('ocr-engine', 'verifying', 100, 'Đang kiểm tra OCR engine…')
-    readiness = await getAutoShortReadiness(config)
+    readiness = await getAutoShortReadiness(config, hooks.readinessHooks)
+  }
+  if (isMissing('separator-engine')) {
+    aborted()
+    emit('separator-engine', 'downloading', 0, 'Đang tải Separator engine…')
+    const downloadEngine = hooks.downloadRuntimeEngine || downloadRuntimeEngineFromManifest
+    await downloadEngine('separator-engine', (percent, message) => {
+      emit('separator-engine', 'downloading', percent, message)
+    })
+    emit('separator-engine', 'verifying', 100, 'Đang kiểm tra Separator engine…')
+    readiness = await getAutoShortReadiness(config, hooks.readinessHooks)
+  }
+  if (isMissing('separator-model')) {
+    aborted()
+    const preset = config.separationPreset || 'balanced'
+    const modelId = modelIdForSeparationPreset(preset)
+    emit('separator-model', 'downloading', 0, `Đang tải model tách nhạc ${modelId}…`)
+    const installModel = hooks.installSeparatorModel || installSeparatorModel
+    await installModel(
+      modelId,
+      (p) => emit('separator-model', p.phase, p.percent, p.message, p.receivedBytes, p.totalBytes),
+      signal
+    )
+    emit('separator-model', 'verifying', 100, 'Đang kiểm tra model tách nhạc…')
+    readiness = await getAutoShortReadiness(config, hooks.readinessHooks)
   }
   if (!readiness.ready) throw new Error(readiness.message || 'Dependency chưa sẵn sàng.')
   readiness.dependencies.forEach((item) => emit(item.id, 'done', 100, `${item.label} đã sẵn sàng.`))
