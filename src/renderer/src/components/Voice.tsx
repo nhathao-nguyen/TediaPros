@@ -3,9 +3,11 @@ import { useEffect, useRef, useState } from 'react'
 import {
   DEFAULT_AI_SERVER_URL,
   type ClonedVoice,
+  type EdgeVoiceDefinition,
   type TtsCloneRequest,
   type TtsGenerateResult,
   type TtsModelInfo,
+  type TtsProvider,
   type TtsServerHealth,
   type TtsSpeechRequest
 } from '../../../shared/types'
@@ -35,6 +37,9 @@ export const SUPPORTED_LANGUAGES: LanguageOption[] = [
   { code: 'nl', name: 'Nederlands (Hà Lan)', flag: '🇳🇱' },
   { code: 'pl', name: 'Polski (Ba Lan)', flag: '🇵🇱' },
   { code: 'tr', name: 'Türkçe (Thổ Nhĩ Kỳ)', flag: '🇹🇷' },
+  { code: 'th', name: 'ไทย (Tiếng Thái)', flag: '🇹🇭' },
+  { code: 'id', name: 'Bahasa Indonesia (Indo)', flag: '🇮🇩' },
+  { code: 'fil', name: 'Filipino (Philippines)', flag: '🇵🇭' },
   { code: 'ms', name: 'Bahasa Melayu (Mã Lai)', flag: '🇲🇾' },
   { code: 'sv', name: 'Svenska (Thụy Điển)', flag: '🇸🇪' },
   { code: 'no', name: 'Norsk (Na Uy)', flag: '🇳🇴' },
@@ -121,6 +126,27 @@ export default function Voice(): JSX.Element {
   }, [])
 
   // Mode and form state
+  const [ttsProvider, setTtsProvider] = usePersistedState<TtsProvider>('tblao.voice.provider', 'local-tts')
+  const [selectedEdgeVoice, setSelectedEdgeVoice] = usePersistedState('tblao.voice.edgeVoice', 'vi-VN-HoaiMyNeural')
+  const [edgePitch, setEdgePitch] = usePersistedState('tblao.voice.edgePitch', '+0Hz')
+  const [edgeVoices, setEdgeVoices] = useState<EdgeVoiceDefinition[]>([])
+
+  useEffect(() => {
+    let active = true
+    window.api
+      .ttsGetEdgeVoices()
+      .then((voices) => {
+        if (active && Array.isArray(voices) && voices.length > 0) {
+          setEdgeVoices(voices)
+        }
+      })
+      .catch(() => {
+        /* ignore */
+      })
+    return () => {
+      active = false
+    }
+  }, [])
   const [mode, setMode] = useState<'speech' | 'clone'>('speech')
   const [selectedModel, setSelectedModel] = usePersistedState('tblao.tts.model', 'tts-vietnamese')
   const [selectedLanguage, setSelectedLanguage] = usePersistedState('tblao.tts.lang', 'vi')
@@ -266,6 +292,19 @@ export default function Voice(): JSX.Element {
     }
   }, [selectedModelInfo?.id])
 
+  // Save API key
+  const handleSaveApiKey = async (): Promise<void> => {
+    if (!apiKey.trim()) return
+    try {
+      await window.api.translateSaveKey('local', apiKey.trim())
+      setHasStoredKey(true)
+      setSaveSuccessMsg('Đã lưu API Key bảo mật thành công')
+      setTimeout(() => setSaveSuccessMsg(null), 3000)
+    } catch (err: any) {
+      setError(err?.message || 'Không thể lưu API Key')
+    }
+  }
+
   // Select reference audio file
   const handleSelectRefAudio = async (): Promise<void> => {
     const res = await window.api.ttsSelectRefAudio()
@@ -283,6 +322,53 @@ export default function Voice(): JSX.Element {
     const cleanText = text.trim()
     if (!cleanText) {
       setError('Vui lòng nhập văn bản cần đọc')
+      return
+    }
+
+    if (ttsProvider === 'edge-tts') {
+      setLoading(true)
+      setError(null)
+      setSaveSuccessMsg(null)
+      try {
+        const req: TtsSpeechRequest = {
+          provider: 'edge-tts',
+          text: cleanText,
+          language: selectedLanguage,
+          voice: selectedEdgeVoice,
+          speed,
+          options: {
+            pitch: edgePitch !== '+0Hz' ? edgePitch : undefined
+          }
+        }
+        const res = await window.api.ttsGenerateSpeech(req)
+        if (!res.ok || !res.audioBase64) {
+          setError(res.error || 'Quá trình tạo giọng nói Edge-TTS thất bại.')
+          return
+        }
+        setLastResult(res)
+        const playUrl = res.savedPath
+          ? localMediaSource(res.savedPath)
+          : `data:${res.audioMimeType || 'audio/mpeg'};base64,${res.audioBase64}`
+        setCurrentAudioUrl(playUrl)
+        setHistory((prev) => [
+          {
+            id: crypto.randomUUID(),
+            text: cleanText,
+            voice: selectedEdgeVoice,
+            model: 'Microsoft Edge-TTS',
+            durationMs: res.durationMs || 0,
+            generationMs: res.generationMs || 0,
+            audioBase64: res.audioBase64!,
+            savedPath: res.savedPath,
+            createdAt: new Date().toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' })
+          },
+          ...prev.slice(0, 9)
+        ])
+      } catch (err: any) {
+        setError(err?.message || 'Lỗi khi gọi Microsoft Edge-TTS')
+      } finally {
+        setLoading(false)
+      }
       return
     }
 
@@ -436,7 +522,8 @@ export default function Voice(): JSX.Element {
     if (!data) return
     setSavingAudio(true)
     setSaveSuccessMsg(null)
-    const fileName = `voice-${Date.now()}.wav`
+    const isMp3 = lastResult?.audioMimeType?.includes('mpeg') || ttsProvider === 'edge-tts'
+    const fileName = `voice-${Date.now()}.${isMp3 ? 'mp3' : 'wav'}`
     const res = await window.api.ttsSaveAudio(data, fileName)
     setSavingAudio(false)
     if (res.ok && res.path) {
@@ -450,82 +537,139 @@ export default function Voice(): JSX.Element {
   const applySample = (sample: typeof SAMPLE_TEXTS[0]): void => {
     setText(sample.text)
     setSelectedLanguage(sample.lang)
-    const matchingModel = ttsModels.find((m) => m.id === sample.model)
-    if (matchingModel) {
-      setSelectedModel(matchingModel.id)
-      const matchingVoice = matchingModel.voices?.find((v) => v === sample.voice)
-      setSelectedVoice(matchingVoice || matchingModel.default_voice || 'default')
+    if (ttsProvider === 'edge-tts') {
+      if (sample.lang === 'vi') {
+        setSelectedEdgeVoice('vi-VN-HoaiMyNeural')
+      } else if (sample.lang === 'en') {
+        setSelectedEdgeVoice('en-US-JennyNeural')
+      }
+    } else {
+      const matchingModel = ttsModels.find((m) => m.id === sample.model)
+      if (matchingModel) {
+        setSelectedModel(matchingModel.id)
+        const matchingVoice = matchingModel.voices?.find((v) => v === sample.voice)
+        setSelectedVoice(matchingVoice || matchingModel.default_voice || 'default')
+      }
     }
     setError(null)
   }
 
   return (
     <div className="voice-container">
-      {/* 1. SERVER CONNECTION STRIP */}
-      <div className="voice-server-strip card">
-        <div className="voice-server-grid">
-          <div className="voice-server-field">
-            <label className="voice-label">Địa chỉ AI Server (tts-server):</label>
-            <div className="voice-input-group">
-              <input
-                type="text"
-                className="voice-input"
-                value={serverUrl}
-                onChange={(e) => setServerUrl(e.target.value)}
-                placeholder="http://127.0.0.1:8000"
-              />
+      {/* 0. ENGINE PROVIDER SWITCH STRIP */}
+      <div className="voice-server-strip card" style={{ padding: '12px 16px', marginBottom: 12 }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 10 }}>
+          <div>
+            <strong>Động cơ giọng đọc (TTS Engine)</strong>
+            <div className="muted small" style={{ marginTop: 2 }}>
+              {ttsProvider === 'edge-tts'
+                ? 'Microsoft Edge-TTS trực tuyến: Tự nhiên, miễn phí, không yêu cầu bật tts-server hay GPU'
+                : 'Local AI Server: Chạy tts-server nội bộ trên máy (Chatterbox, Vieneu, Voice Clone)'}
             </div>
           </div>
-
-          <div className="voice-server-field">
-            <label className="voice-label">API Key (tùy chọn, lưu an toàn):</label>
-            <div className="voice-input-group">
+          <div className="radio-pill-group">
+            <label className={`radio-pill ${ttsProvider === 'edge-tts' ? 'active' : ''}`}>
               <input
-                type={showApiKey ? 'text' : 'password'}
-                className="voice-input"
-                value={apiKey}
-                onChange={(e) => {
-                  const val = e.target.value
-                  setApiKey(val)
-                  void window.api.translateSaveKey('local', val).then(() => window.api.translateHasKey('local')).then(setHasStoredKey)
-                }}
-                placeholder={hasStoredKey ? '•••••••• (Đã lưu an toàn)' : 'ai_sk_... (nếu bật bảo vệ)'}
+                type="radio"
+                name="voiceEngineProvider"
+                value="edge-tts"
+                checked={ttsProvider === 'edge-tts'}
+                onChange={() => setTtsProvider('edge-tts')}
               />
+              <span>Microsoft Edge-TTS</span>
+            </label>
+            <label className={`radio-pill ${ttsProvider === 'local-tts' ? 'active' : ''}`}>
+              <input
+                type="radio"
+                name="voiceEngineProvider"
+                value="local-tts"
+                checked={ttsProvider === 'local-tts'}
+                onChange={() => setTtsProvider('local-tts')}
+              />
+              <span>Local AI Server</span>
+            </label>
+          </div>
+        </div>
+      </div>
+
+      {/* 1. SERVER CONNECTION STRIP (Only for Local AI Server) */}
+      {ttsProvider === 'local-tts' && (
+        <div className="voice-server-strip card">
+          <div className="voice-server-grid">
+            <div className="voice-server-field">
+              <label className="voice-label">Địa chỉ AI Server (tts-server):</label>
+              <div className="voice-input-group">
+                <input
+                  type="text"
+                  className="voice-input"
+                  value={serverUrl}
+                  onChange={(e) => setServerUrl(e.target.value)}
+                  placeholder="http://127.0.0.1:8000"
+                />
+              </div>
+            </div>
+
+            <div className="voice-server-field">
+              <label className="voice-label">API Key (nếu có):</label>
+              <div className="voice-input-group">
+                <input
+                  type={showApiKey ? 'text' : 'password'}
+                  className="voice-input"
+                  value={apiKey}
+                  onChange={(e) => setApiKey(e.target.value)}
+                  placeholder={hasStoredKey ? '•••••••••••• (Đã lưu key)' : 'Dán API Key nếu server yêu cầu'}
+                />
+                <button
+                  type="button"
+                  className="voice-icon-btn"
+                  onClick={() => setShowApiKey(!showApiKey)}
+                  title={showApiKey ? 'Ẩn API Key' : 'Hiện API Key'}
+                >
+                  {showApiKey ? '👁️' : '🔒'}
+                </button>
+                <button
+                  type="button"
+                  className="voice-btn is-secondary"
+                  disabled={!apiKey.trim()}
+                  onClick={() => void handleSaveApiKey()}
+                >
+                  Lưu Key
+                </button>
+              </div>
+            </div>
+
+            <div className="voice-server-actions">
               <button
                 type="button"
-                className="btn voice-btn-icon"
-                onClick={() => setShowApiKey(!showApiKey)}
-                title={showApiKey ? 'Ẩn API Key' : 'Hiện API Key'}
+                className="voice-btn is-primary"
+                onClick={() => void checkConnection(serverUrl, apiKey)}
               >
-                {showApiKey ? '🙈' : '👁️'}
+                🔄 Kiểm tra kết nối
               </button>
             </div>
           </div>
 
-          <div className="voice-server-actions">
-            <button
-              type="button"
-              className="btn primary voice-btn-connect"
-              onClick={() => void checkConnection(serverUrl, apiKey)}
-              disabled={serverStatus === 'checking'}
-            >
-              {serverStatus === 'checking' ? '⏳ Đang kiểm tra…' : '🔄 Kết nối / Tải lại'}
-            </button>
-            <div className={`voice-status-badge is-${serverStatus}`}>
-              <span className="status-dot" />
-              {serverStatus === 'online' && 'Đang hoạt động (Online)'}
-              {serverStatus === 'offline' && 'Chưa kết nối'}
-              {serverStatus === 'checking' && 'Đang kết nối...'}
-            </div>
+          <div className="voice-status-line">
+            <span className={`voice-badge is-${serverStatus}`}>
+              {serverStatus === 'checking' && '⏳ Đang kiểm tra…'}
+              {serverStatus === 'online' && '🟢 Server Sẵn Sàng (Live)'}
+              {serverStatus === 'offline' && '🔴 Không Thể Kết Nối'}
+            </span>
+
+            {healthData?.gpu && (
+              <span className="voice-pill">
+                🚀 GPU: <b>{healthData.gpu}</b> {healthData.vram ? `(${healthData.vram})` : ''}
+              </span>
+            )}
+
+            {ttsModels.length > 0 && (
+              <span className="voice-pill">
+                📦 <b>{ttsModels.length}</b> Model TTS khả dụng
+              </span>
+            )}
           </div>
         </div>
-
-        {healthData?.gpu && (
-          <div className="voice-gpu-hint muted small">
-            ⚡ GPU: <strong>{healthData.gpu}</strong> {healthData.vram ? `· VRAM: ${healthData.vram}` : ''}
-          </div>
-        )}
-      </div>
+      )}
 
       {/* 2. ERROR BANNER */}
       {error && (
@@ -551,246 +695,459 @@ export default function Voice(): JSX.Element {
       <div className="voice-workspace-grid">
         {/* LEFT COLUMN: CONFIGURATION & SETTINGS */}
         <div className="voice-config-card card">
-          <div className="voice-mode-toggle">
-            <button
-              type="button"
-              className={`voice-mode-btn ${mode === 'speech' ? 'active' : ''}`}
-              onClick={() => setMode('speech')}
-            >
-              🎙️ Văn bản thành giọng nói
-            </button>
-            <button
-              type="button"
-              className={`voice-mode-btn ${mode === 'clone' ? 'active' : ''}`}
-              onClick={() => setMode('clone')}
-            >
-              ✨ Clone giọng nói (Tham chiếu)
-            </button>
-          </div>
+          {ttsProvider === 'edge-tts' ? (
+            <>
+              <div className="voice-status-line" style={{ marginBottom: 14 }}>
+                <span className="voice-badge is-online">🟢 Edge-TTS (Trực tuyến)</span>
+                <span className="voice-pill">⚡ Miễn phí · Không cần AI Server / GPU</span>
+              </div>
 
-          <div className="voice-form-section">
-            <label className="voice-label">Mô hình AI (Model):</label>
-            <select
-              className="voice-select"
-              value={selectedModelInfo?.id || ''}
-              disabled={ttsModels.length === 0}
-              onChange={(e) => {
-                const next = e.target.value
-                const nextInfo = ttsModels.find((model) => model.id === next)
-                if (!nextInfo) return
-                setSelectedModel(next)
-                const nextLanguages = nextInfo.languages || []
-                setSelectedLanguage(nextLanguages.includes(selectedLanguage) ? selectedLanguage : (nextLanguages[0] || ''))
-                setSelectedVoice(nextInfo.default_voice || nextInfo.voices?.[0] || 'default')
-              }}
-            >
-              {ttsModels.length === 0 ? (
-                <option value="" disabled>Chưa tải capability từ tts-server</option>
-              ) : (
-                ttsModels.map((model) => (
-                  <option key={model.id} value={model.id} disabled={model.available === false}>
-                    {model.name || model.id}{model.available === false ? ' (không khả dụng)' : ''}
-                  </option>
-                ))
-              )}
-            </select>
-          </div>
-
-          <div className="voice-form-row">
-            <div className="voice-form-section flex-1">
-              <label className="voice-label">
-                Ngôn ngữ ({languageOptions.length} ngôn ngữ):
-              </label>
-              <select
-                className="voice-select"
-                value={selectedLanguage}
-                onChange={(e) => setSelectedLanguage(e.target.value)}
-              >
-                {languageOptions.map((lang) => (
-                  <option key={lang.code} value={lang.code}>
-                    {lang.flag} {lang.name} ({lang.code})
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            {mode === 'speech' && (
-              <div className="voice-form-section flex-1">
-                <label className="voice-label">
-                  Giọng đọc ({displayedVoices.length + clonedVoices.length}):
-                </label>
+              <div className="voice-form-section">
+                <label className="voice-label">Giọng đọc Microsoft Edge-TTS:</label>
                 <select
                   className="voice-select"
-                  value={selectedVoice}
-                  onChange={(e) => setSelectedVoice(e.target.value)}
+                  value={selectedEdgeVoice}
+                  onChange={(e) => {
+                    const voiceId = e.target.value
+                    setSelectedEdgeVoice(voiceId)
+                    const voiceObj = edgeVoices.find((v) => v.id === voiceId)
+                    if (voiceObj?.language) {
+                      setSelectedLanguage(voiceObj.language)
+                    }
+                  }}
                 >
-                  {modelVoices.length > 0 ? (
-                    <optgroup label={`Giọng mẫu (${selectedModelInfo?.name || selectedModelInfo?.id || 'Mô hình'})`}>
-                      {modelVoices.map((voice) => (
-                        <option key={voice} value={voice}>
-                          {voice}
-                        </option>
-                      ))}
-                    </optgroup>
-                  ) : (
-                    <optgroup label="Giọng mặc định">
-                      <option value={defaultModelVoice}>
-                        {defaultModelVoice} (Mặc định)
-                      </option>
-                    </optgroup>
-                  )}
-
-                  {clonedVoices.length > 0 && (
-                    <optgroup label={`✨ Giọng Clone đã lưu (${clonedVoices.length})`}>
-                      {clonedVoices.map((cv) => (
-                        <option key={cv.id} value={`clone:${cv.id}`}>
-                          ✨ {cv.name} ({cv.language || 'vi'} · Clone)
-                        </option>
-                      ))}
+                  <optgroup label="Tiếng Việt (Khuyên dùng)">
+                    <option value="vi-VN-HoaiMyNeural">🇻🇳 Hoài My (Nữ · Chuẩn miền Bắc)</option>
+                    <option value="vi-VN-NamMinhNeural">🇻🇳 Nam Minh (Nam · Chuẩn miền Bắc)</option>
+                  </optgroup>
+                  <optgroup label="Tiếng Anh - Mỹ (English US)">
+                    <option value="en-US-JennyNeural">🇺🇸 Jenny (US · Nữ · Tự nhiên)</option>
+                    <option value="en-US-GuyNeural">🇺🇸 Guy (US · Nam · Truyền cảm)</option>
+                    <option value="en-US-AriaNeural">🇺🇸 Aria (US · Nữ · Sôi nổi)</option>
+                  </optgroup>
+                  <optgroup label="Tiếng Anh - Anh (English UK)">
+                    <option value="en-GB-SoniaNeural">🇬🇧 Sonia (UK · Nữ · London)</option>
+                    <option value="en-GB-RyanNeural">🇬🇧 Ryan (UK · Nam · Trầm ấm)</option>
+                  </optgroup>
+                  <optgroup label="Tiếng Anh - Úc (English Australia)">
+                    <option value="en-AU-NatashaNeural">🇦🇺 Natasha (Úc · Nữ · Tự nhiên)</option>
+                    <option value="en-AU-WilliamMultilingualNeural">🇦🇺 William (Úc · Nam · Đa ngữ)</option>
+                  </optgroup>
+                  <optgroup label="Đức, Ý, Tây Ban Nha">
+                    <option value="de-DE-KatjaNeural">🇩🇪 Katja (Đức · Nữ)</option>
+                    <option value="de-DE-ConradNeural">🇩🇪 Conrad (Đức · Nam)</option>
+                    <option value="it-IT-ElsaNeural">🇮🇹 Elsa (Ý · Nữ)</option>
+                    <option value="it-IT-DiegoNeural">🇮🇹 Diego (Ý · Nam)</option>
+                    <option value="es-ES-ElviraNeural">🇪🇸 Elvira (Tây Ban Nha · Nữ)</option>
+                    <option value="es-ES-AlvaroNeural">🇪🇸 Alvaro (Tây Ban Nha · Nam)</option>
+                  </optgroup>
+                  <optgroup label="Bồ Đào Nha & Brazil">
+                    <option value="pt-BR-FranciscaNeural">🇧🇷 Francisca (Brazil · Nữ)</option>
+                    <option value="pt-BR-AntonioNeural">🇧🇷 Antonio (Brazil · Nam)</option>
+                    <option value="pt-PT-RaquelNeural">🇵🇹 Raquel (Bồ Đào Nha · Nữ)</option>
+                    <option value="pt-PT-DuarteNeural">🇵🇹 Duarte (Bồ Đào Nha · Nam)</option>
+                  </optgroup>
+                  <optgroup label="Đông Á: Hàn, Nhật, Trung">
+                    <option value="ko-KR-SunHiNeural">🇰🇷 SunHi (Hàn · Nữ)</option>
+                    <option value="ko-KR-InJoonNeural">🇰🇷 InJoon (Hàn · Nam)</option>
+                    <option value="ja-JP-NanamiNeural">🇯🇵 Nanami (Nhật · Nữ)</option>
+                    <option value="ja-JP-KeitaNeural">🇯🇵 Keita (Nhật · Nam)</option>
+                    <option value="zh-CN-XiaoxiaoNeural">🇨🇳 Xiaoxiao (Trung · Nữ)</option>
+                    <option value="zh-CN-YunxiNeural">🇨🇳 Yunxi (Trung · Nam)</option>
+                  </optgroup>
+                  <optgroup label="Đông Nam Á: Thái, Indo, Philippines">
+                    <option value="th-TH-PremwadeeNeural">🇹🇭 Premwadee (Thái · Nữ)</option>
+                    <option value="th-TH-NiwatNeural">🇹🇭 Niwat (Thái · Nam)</option>
+                    <option value="id-ID-GadisNeural">🇮🇩 Gadis (Indo · Nữ)</option>
+                    <option value="id-ID-ArdiNeural">🇮🇩 Ardi (Indo · Nam)</option>
+                    <option value="fil-PH-BlessicaNeural">🇵🇭 Blessica (Philippines · Nữ)</option>
+                    <option value="fil-PH-AngeloNeural">🇵🇭 Angelo (Philippines · Nam)</option>
+                  </optgroup>
+                  <optgroup label="Pháp & Nga">
+                    <option value="fr-FR-DeniseNeural">🇫🇷 Denise (Pháp · Nữ)</option>
+                    <option value="fr-FR-HenriNeural">🇫🇷 Henri (Pháp · Nam)</option>
+                    <option value="ru-RU-SvetlanaNeural">🇷🇺 Svetlana (Nga · Nữ)</option>
+                    <option value="ru-RU-DmitryNeural">🇷🇺 Dmitry (Nga · Nam)</option>
+                  </optgroup>
+                  {edgeVoices.filter(
+                    (v) =>
+                      ![
+                        'vi-VN-HoaiMyNeural',
+                        'vi-VN-NamMinhNeural',
+                        'en-US-JennyNeural',
+                        'en-US-GuyNeural',
+                        'en-US-AriaNeural',
+                        'en-GB-SoniaNeural',
+                        'en-GB-RyanNeural',
+                        'en-AU-NatashaNeural',
+                        'en-AU-WilliamMultilingualNeural',
+                        'de-DE-KatjaNeural',
+                        'de-DE-ConradNeural',
+                        'it-IT-ElsaNeural',
+                        'it-IT-DiegoNeural',
+                        'es-ES-ElviraNeural',
+                        'es-ES-AlvaroNeural',
+                        'pt-BR-FranciscaNeural',
+                        'pt-BR-AntonioNeural',
+                        'pt-PT-RaquelNeural',
+                        'pt-PT-DuarteNeural',
+                        'ko-KR-SunHiNeural',
+                        'ko-KR-InJoonNeural',
+                        'ja-JP-NanamiNeural',
+                        'ja-JP-KeitaNeural',
+                        'zh-CN-XiaoxiaoNeural',
+                        'zh-CN-YunxiNeural',
+                        'th-TH-PremwadeeNeural',
+                        'th-TH-NiwatNeural',
+                        'id-ID-GadisNeural',
+                        'id-ID-ArdiNeural',
+                        'fil-PH-BlessicaNeural',
+                        'fil-PH-AngeloNeural',
+                        'fr-FR-DeniseNeural',
+                        'fr-FR-HenriNeural',
+                        'ru-RU-SvetlanaNeural',
+                        'ru-RU-DmitryNeural'
+                      ].includes(v.id)
+                  ).length > 0 && (
+                    <optgroup label="Các giọng quốc tế khác (hơn 300+ giọng)">
+                      {edgeVoices
+                        .filter(
+                          (v) =>
+                            ![
+                              'vi-VN-HoaiMyNeural',
+                              'vi-VN-NamMinhNeural',
+                              'en-US-JennyNeural',
+                              'en-US-GuyNeural',
+                              'en-US-AriaNeural',
+                              'en-GB-SoniaNeural',
+                              'en-GB-RyanNeural',
+                              'en-AU-NatashaNeural',
+                              'en-AU-WilliamMultilingualNeural',
+                              'de-DE-KatjaNeural',
+                              'de-DE-ConradNeural',
+                              'it-IT-ElsaNeural',
+                              'it-IT-DiegoNeural',
+                              'es-ES-ElviraNeural',
+                              'es-ES-AlvaroNeural',
+                              'pt-BR-FranciscaNeural',
+                              'pt-BR-AntonioNeural',
+                              'pt-PT-RaquelNeural',
+                              'pt-PT-DuarteNeural',
+                              'ko-KR-SunHiNeural',
+                              'ko-KR-InJoonNeural',
+                              'ja-JP-NanamiNeural',
+                              'ja-JP-KeitaNeural',
+                              'zh-CN-XiaoxiaoNeural',
+                              'zh-CN-YunxiNeural',
+                              'th-TH-PremwadeeNeural',
+                              'th-TH-NiwatNeural',
+                              'id-ID-GadisNeural',
+                              'id-ID-ArdiNeural',
+                              'fil-PH-BlessicaNeural',
+                              'fil-PH-AngeloNeural',
+                              'fr-FR-DeniseNeural',
+                              'fr-FR-HenriNeural',
+                              'ru-RU-SvetlanaNeural',
+                              'ru-RU-DmitryNeural'
+                            ].includes(v.id)
+                        )
+                        .map((v) => (
+                          <option key={v.id} value={v.id}>
+                            {v.name} ({v.locale})
+                          </option>
+                        ))}
                     </optgroup>
                   )}
                 </select>
               </div>
-            )}
-          </div>
-
-          {/* VOICE CLONE INPUTS */}
-          {mode === 'clone' && (
-            <div className="voice-clone-box">
-              <div className="voice-form-section">
-                <label className="voice-label">Tên giọng Clone (để lưu vào danh sách chọn giọng):</label>
-                <input
-                  type="text"
-                  className="voice-input"
-                  value={cloneVoiceName}
-                  onChange={(e) => setCloneVoiceName(e.target.value)}
-                  placeholder="Ví dụ: Giọng MC Lan, Giọng Thuyết Minh..."
-                />
-              </div>
-
-              <div className="voice-form-section">
-                <label className="voice-label">File âm thanh mẫu (Reference Audio):</label>
-                <div className="voice-file-picker">
-                  <button type="button" className="btn" onClick={handleSelectRefAudio}>
-                    📁 Chọn file âm thanh mẫu
-                  </button>
-                  <span className="voice-file-name" title={refAudioPath || 'Chưa chọn file'}>
-                    {refAudioPath ? refAudioPath.split(/[\\/]/).pop() : 'Chưa chọn file (.wav, .mp3, .flac...)'}
-                  </span>
-                </div>
-              </div>
-
-              <div className="voice-clone-transcript">
-                <label className="voice-label">Transcript của file mẫu (không bắt buộc):</label>
-                <input
-                  type="text"
-                  className="voice-input"
-                  value={refTranscript}
-                  onChange={(e) => setRefTranscript(e.target.value)}
-                  placeholder="Nhập nội dung lời nói trong file mẫu nếu có..."
-                />
-              </div>
-
-              {/* DANH SÁCH GIỌNG CLONE ĐÃ LƯU */}
-              {clonedVoices.length > 0 && (
-                <div className="voice-cloned-library">
-                  <div className="voice-cloned-head">
-                    <span className="voice-label">✨ Danh sách giọng Clone đã lưu ({clonedVoices.length}):</span>
-                  </div>
-                  <div className="voice-cloned-grid">
-                    {clonedVoices.map((cv) => (
-                      <div key={cv.id} className="voice-cloned-card">
-                        <div className="voice-cloned-card-info">
-                          <span className="voice-cloned-card-title">✨ {cv.name}</span>
-                          <span className="voice-cloned-card-meta muted small" title={cv.referenceAudioPath}>
-                            📁 {cv.referenceAudioPath.split(/[\\/]/).pop()} · {cv.createdAt}
-                          </span>
-                        </div>
-                        <div className="voice-cloned-card-actions">
-                          <button
-                            type="button"
-                            className="btn small primary"
-                            onClick={() => {
-                              setSelectedVoice(`clone:${cv.id}`)
-                              setMode('speech')
-                            }}
-                            title="Chọn giọng này để đọc văn bản"
-                          >
-                            Dùng giọng này
-                          </button>
-                          <button
-                            type="button"
-                            className="btn small danger"
-                            onClick={() => {
-                              setClonedVoices((prev) => prev.filter((item) => item.id !== cv.id))
-                              if (selectedVoice === `clone:${cv.id}`) {
-                                setSelectedVoice(defaultModelVoice)
-                              }
-                            }}
-                            title="Xóa giọng clone"
-                          >
-                            🗑️
-                          </button>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-            </div>
-          )}
-
-          {/* ADVANCED COLLAPSIBLE */}
-          <div className="voice-advanced-toggle">
-            <button
-              type="button"
-              className="voice-link-btn"
-              onClick={() => setShowAdvanced(!showAdvanced)}
-            >
-              {showAdvanced ? '▼ Thu gọn tùy chọn nâng cao' : '▶ Tùy chọn nâng cao (Khử ồn, Nhiệt độ...)'}
-            </button>
-          </div>
-
-          {showAdvanced && (
-            <div className="voice-advanced-panel">
-              {(!selectedModelInfo?.supported_options || selectedModelInfo.supported_options.includes('denoise')) && (
-                <div className="voice-form-row">
-                  <label className="voice-checkbox-label">
-                    <input
-                      type="checkbox"
-                      checked={denoise}
-                      onChange={(e) => setDenoise(e.target.checked)}
-                    />
-                    <span>Khử nhiễu nền (Denoise - VieNeu)</span>
-                  </label>
-                </div>
-              )}
 
               <div className="voice-form-row">
                 <div className="voice-form-section flex-1">
-                  <label className="voice-label">Temperature: {temperature}</label>
-                  <input
-                    type="range"
-                    min="0.1"
-                    max="1.5"
-                    step="0.05"
-                    value={temperature}
-                    onChange={(e) => setTemperature(parseFloat(e.target.value))}
-                  />
+                  <label className="voice-label">Tông giọng (Pitch):</label>
+                  <select
+                    className="voice-select"
+                    value={edgePitch}
+                    onChange={(e) => setEdgePitch(e.target.value)}
+                  >
+                    <option value="-20Hz">Rất trầm (-20Hz)</option>
+                    <option value="-10Hz">Trầm (-10Hz)</option>
+                    <option value="+0Hz">Mặc định (+0Hz)</option>
+                    <option value="+10Hz">Cao (+10Hz)</option>
+                    <option value="+20Hz">Rất cao (+20Hz)</option>
+                  </select>
                 </div>
                 <div className="voice-form-section flex-1">
-                  <label className="voice-label">Top-P: {topP}</label>
+                  <label className="voice-label">Tốc độ đọc: {speed.toFixed(1)}x</label>
                   <input
                     type="range"
-                    min="0.1"
-                    max="1.0"
-                    step="0.05"
-                    value={topP}
-                    onChange={(e) => setTopP(parseFloat(e.target.value))}
+                    min="0.5"
+                    max="2.0"
+                    step="0.1"
+                    value={speed}
+                    onChange={(e) => setSpeed(parseFloat(e.target.value))}
                   />
                 </div>
               </div>
-            </div>
+            </>
+          ) : (
+            <>
+              {/* Mode Switcher */}
+              <div className="voice-mode-switch">
+                <button
+                  type="button"
+                  className={`voice-mode-btn ${mode === 'speech' ? 'active' : ''}`}
+                  onClick={() => setMode('speech')}
+                >
+                  🎙️ Văn bản thành giọng nói
+                </button>
+                <button
+                  type="button"
+                  className={`voice-mode-btn ${mode === 'clone' ? 'active' : ''}`}
+                  onClick={() => setMode('clone')}
+                >
+                  ✨ Clone giọng nói (Tham chiếu)
+                </button>
+              </div>
+
+              <div className="voice-form-section">
+                <label className="voice-label">Mô hình AI (Model):</label>
+                <select
+                  className="voice-select"
+                  value={selectedModelInfo?.id || ''}
+                  disabled={ttsModels.length === 0}
+                  onChange={(e) => {
+                    const next = e.target.value
+                    const nextInfo = ttsModels.find((model) => model.id === next)
+                    if (!nextInfo) return
+                    setSelectedModel(next)
+                    const nextLanguages = nextInfo.languages || []
+                    setSelectedLanguage(nextLanguages.includes(selectedLanguage) ? selectedLanguage : (nextLanguages[0] || ''))
+                    setSelectedVoice(nextInfo.default_voice || nextInfo.voices?.[0] || 'default')
+                  }}
+                >
+                  {ttsModels.length === 0 ? (
+                    <option value="" disabled>Chưa tải capability từ tts-server</option>
+                  ) : (
+                    ttsModels.map((model) => (
+                      <option key={model.id} value={model.id} disabled={model.available === false}>
+                        {model.name || model.id}{model.available === false ? ' (không khả dụng)' : ''}
+                      </option>
+                    ))
+                  )}
+                </select>
+              </div>
+
+              <div className="voice-form-row">
+                <div className="voice-form-section flex-1">
+                  <label className="voice-label">
+                    Ngôn ngữ ({languageOptions.length} ngôn ngữ):
+                  </label>
+                  <select
+                    className="voice-select"
+                    value={selectedLanguage}
+                    onChange={(e) => setSelectedLanguage(e.target.value)}
+                  >
+                    {languageOptions.map((lang) => (
+                      <option key={lang.code} value={lang.code}>
+                        {lang.flag} {lang.name} ({lang.code})
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                {mode === 'speech' && (
+                  <div className="voice-form-section flex-1">
+                    <label className="voice-label">
+                      Giọng đọc ({displayedVoices.length + clonedVoices.length}):
+                    </label>
+                    <select
+                      className="voice-select"
+                      value={selectedVoice}
+                      onChange={(e) => setSelectedVoice(e.target.value)}
+                    >
+                      {modelVoices.length > 0 ? (
+                        <optgroup label={`Giọng mẫu (${selectedModelInfo?.name || selectedModelInfo?.id || 'Mô hình'})`}>
+                          {modelVoices.map((voice) => (
+                            <option key={voice} value={voice}>
+                              {voice}
+                            </option>
+                          ))}
+                        </optgroup>
+                      ) : (
+                        <optgroup label="Giọng mặc định">
+                          <option value={defaultModelVoice}>
+                            {defaultModelVoice} (Mặc định)
+                          </option>
+                        </optgroup>
+                      )}
+
+                      {clonedVoices.length > 0 && (
+                        <optgroup label={`✨ Giọng Clone đã lưu (${clonedVoices.length})`}>
+                          {clonedVoices.map((cv) => (
+                            <option key={cv.id} value={`clone:${cv.id}`}>
+                              ✨ {cv.name} ({cv.language || 'vi'} · Clone)
+                            </option>
+                          ))}
+                        </optgroup>
+                      )}
+                    </select>
+                  </div>
+                )}
+              </div>
+
+              <div className="voice-form-row">
+                <div className="voice-form-section flex-1">
+                  <label className="voice-label">Tốc độ đọc: {speed.toFixed(1)}x</label>
+                  <input
+                    type="range"
+                    min="0.5"
+                    max="2.0"
+                    step="0.1"
+                    value={speed}
+                    onChange={(e) => setSpeed(parseFloat(e.target.value))}
+                  />
+                </div>
+              </div>
+
+              {/* VOICE CLONE INPUTS */}
+              {mode === 'clone' && (
+                <div className="voice-clone-box">
+                  <div className="voice-form-section">
+                    <label className="voice-label">Tên giọng Clone (để lưu vào danh sách chọn giọng):</label>
+                    <input
+                      type="text"
+                      className="voice-input"
+                      value={cloneVoiceName}
+                      onChange={(e) => setCloneVoiceName(e.target.value)}
+                      placeholder="Ví dụ: Giọng MC Lan, Giọng Thuyết Minh..."
+                    />
+                  </div>
+
+                  <div className="voice-form-section">
+                    <label className="voice-label">File âm thanh mẫu (Reference Audio):</label>
+                    <div className="voice-file-picker">
+                      <button type="button" className="btn" onClick={handleSelectRefAudio}>
+                        📁 Chọn file âm thanh mẫu
+                      </button>
+                      <span className="voice-file-name" title={refAudioPath || 'Chưa chọn file'}>
+                        {refAudioPath ? refAudioPath.split(/[\\/]/).pop() : 'Chưa chọn file (.wav, .mp3, .flac...)'}
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="voice-clone-transcript">
+                    <label className="voice-label">Transcript của file mẫu (không bắt buộc):</label>
+                    <input
+                      type="text"
+                      className="voice-input"
+                      value={refTranscript}
+                      onChange={(e) => setRefTranscript(e.target.value)}
+                      placeholder="Nhập nội dung lời nói trong file mẫu nếu có..."
+                    />
+                  </div>
+
+                  {/* DANH SÁCH GIỌNG CLONE ĐÃ LƯU */}
+                  {clonedVoices.length > 0 && (
+                    <div className="voice-cloned-library">
+                      <div className="voice-cloned-head">
+                        <span className="voice-label">✨ Danh sách giọng Clone đã lưu ({clonedVoices.length}):</span>
+                      </div>
+                      <div className="voice-cloned-grid">
+                        {clonedVoices.map((cv) => (
+                          <div key={cv.id} className="voice-cloned-card">
+                            <div className="voice-cloned-card-info">
+                              <span className="voice-cloned-card-title">✨ {cv.name}</span>
+                              <span className="voice-cloned-card-meta muted small" title={cv.referenceAudioPath}>
+                                📁 {cv.referenceAudioPath.split(/[\\/]/).pop()} · {cv.createdAt}
+                              </span>
+                            </div>
+                            <div className="voice-cloned-card-actions">
+                              <button
+                                type="button"
+                                className="btn small primary"
+                                onClick={() => {
+                                  setSelectedVoice(`clone:${cv.id}`)
+                                  setMode('speech')
+                                }}
+                                title="Chọn giọng này để đọc văn bản"
+                              >
+                                Dùng giọng này
+                              </button>
+                              <button
+                                type="button"
+                                className="btn small danger"
+                                onClick={() => {
+                                  setClonedVoices((prev) => prev.filter((item) => item.id !== cv.id))
+                                  if (selectedVoice === `clone:${cv.id}`) {
+                                    setSelectedVoice(defaultModelVoice)
+                                  }
+                                }}
+                                title="Xóa giọng clone"
+                              >
+                                🗑️
+                              </button>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* ADVANCED COLLAPSIBLE */}
+              <div className="voice-advanced-toggle">
+                <button
+                  type="button"
+                  className="voice-link-btn"
+                  onClick={() => setShowAdvanced(!showAdvanced)}
+                >
+                  {showAdvanced ? '▼ Thu gọn tùy chọn nâng cao' : '▶ Tùy chọn nâng cao (Khử ồn, Nhiệt độ...)'}
+                </button>
+              </div>
+
+              {showAdvanced && (
+                <div className="voice-advanced-panel">
+                  {(!selectedModelInfo?.supported_options || selectedModelInfo.supported_options.includes('denoise')) && (
+                    <div className="voice-form-row">
+                      <label className="voice-checkbox-label">
+                        <input
+                          type="checkbox"
+                          checked={denoise}
+                          onChange={(e) => setDenoise(e.target.checked)}
+                        />
+                        <span>Khử nhiễu nền (Denoise - VieNeu)</span>
+                      </label>
+                    </div>
+                  )}
+
+                  <div className="voice-form-row">
+                    <div className="voice-form-section flex-1">
+                      <label className="voice-label">Temperature: {temperature}</label>
+                      <input
+                        type="range"
+                        min="0.1"
+                        max="1.5"
+                        step="0.05"
+                        value={temperature}
+                        onChange={(e) => setTemperature(parseFloat(e.target.value))}
+                      />
+                    </div>
+                    <div className="voice-form-section flex-1">
+                      <label className="voice-label">Top-P: {topP}</label>
+                      <input
+                        type="range"
+                        min="0.1"
+                        max="1.0"
+                        step="0.05"
+                        value={topP}
+                        onChange={(e) => setTopP(parseFloat(e.target.value))}
+                      />
+                    </div>
+                  </div>
+                </div>
+              )}
+            </>
           )}
 
           {/* SAMPLE PRESETS BAR */}
@@ -891,7 +1248,7 @@ export default function Voice(): JSX.Element {
                     onClick={() => handleSaveAudio()}
                     disabled={savingAudio}
                   >
-                    {savingAudio ? 'Đang lưu…' : '💾 Lưu file âm thanh (.wav)'}
+                    {savingAudio ? 'Đang lưu…' : `💾 Lưu file âm thanh (${ttsProvider === 'edge-tts' ? '.mp3' : '.wav'})`}
                   </button>
                 </div>
               </div>

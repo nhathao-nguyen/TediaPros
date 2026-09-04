@@ -48,7 +48,7 @@ import { detectGpu } from './gpu'
 import { translateSrt as geminiTranslateSrt } from './gemini'
 import { translateSrt as openaiTranslateSrt } from './openai'
 import { localTranslateSrt, loadLocalKey, checkLocalTranslateKey } from './localTranslate'
-import { generateSpeech, generateVoiceClone, getTtsModels, checkTtsServerHealth } from './tts'
+import { generateSpeech, generateVoiceClone, getTtsModels, checkTtsServerHealth, getEdgeTtsModelInfo } from './tts'
 import { burnSubtitle, cancelBurn, probeBurnMedia } from './burn'
 import { cancelVideo2x } from './video2x'
 import { terminateProcessTree, terminateTrackedProcessTrees, trackChildProcess } from './processTree'
@@ -998,6 +998,7 @@ function stableJson(value: unknown): string {
 }
 
 async function buildAutoShortTtsCacheKey(input: {
+  provider?: string
   serverUrl?: string
   text: string
   language: string
@@ -1015,6 +1016,7 @@ async function buildAutoShortTtsCacheKey(input: {
   }
   return createHash('sha256').update(stableJson({
     version: 1,
+    provider: input.provider || 'local-tts',
     serverUrl: input.serverUrl || '',
     text: input.text,
     language: input.language,
@@ -1082,10 +1084,13 @@ async function legacySynthesizeVoice(
   const localKey = await loadLocalKey()
   const language = resolveAutoShortTtsLanguage(config, detectedLanguage)
   if (language === 'auto' || !language) throw new Error('Không xác định được ngôn ngữ TTS; hãy chọn ngôn ngữ nguồn hoặc đích.')
-  const capabilityUrl = config.ttsServerUrl || ''
-  const models = job.ttsCapabilities && job.ttsCapabilitiesUrl === capabilityUrl
-    ? job.ttsCapabilities
-    : await getTtsModels(config.ttsServerUrl, localKey)
+  const isEdgeTts = config.ttsProvider === 'edge-tts'
+  const capabilityUrl = isEdgeTts ? 'edge-tts' : (config.ttsServerUrl || '')
+  const models = isEdgeTts
+    ? { ok: true, models: [getEdgeTtsModelInfo()] }
+    : (job.ttsCapabilities && job.ttsCapabilitiesUrl === capabilityUrl
+        ? job.ttsCapabilities
+        : await getTtsModels(config.ttsServerUrl, localKey))
   job.ttsCapabilities = models
   job.ttsCapabilitiesUrl = capabilityUrl
   const selectedModel = selectCompatibleAutoShortTtsModel(models.models, config.ttsModel, language)
@@ -1204,6 +1209,7 @@ async function legacySynthesizeVoice(
       try {
         const clipPath = join(workDir, `group-${gIndex}.wav`)
         const request = {
+          provider: config.ttsProvider,
           serverUrl: config.ttsServerUrl,
           text: groupText,
           language,
@@ -1215,6 +1221,7 @@ async function legacySynthesizeVoice(
         }
         const cacheRoot = join(app.getPath('userData'), 'autoshort-tts-cache-v1')
         const cacheKey = await buildAutoShortTtsCacheKey({
+          provider: config.ttsProvider,
           serverUrl: config.ttsServerUrl,
           text: groupText,
           language,
@@ -1298,6 +1305,7 @@ async function legacySynthesizeVoice(
           const rephraseRawPath = join(workDir, `group-${gIndex}-rephrase.wav`)
           const rephraseTrimPath = join(workDir, `group-${gIndex}-rephrase-trim.wav`)
           const request = {
+            provider: config.ttsProvider,
             serverUrl: config.ttsServerUrl,
             text: rephrasedText.trim(),
             language,
@@ -1308,6 +1316,7 @@ async function legacySynthesizeVoice(
             options: config.ttsOptions
           }
           const rephraseCacheKey = await buildAutoShortTtsCacheKey({
+            provider: config.ttsProvider,
             serverUrl: config.ttsServerUrl,
             text: rephrasedText.trim(),
             language,
@@ -1709,10 +1718,13 @@ async function synthesizeVoice(
   const language = resolveAutoShortTtsLanguage(config, detectedLanguage)
   if (!language || language === 'auto') throw new Error('Không xác định được ngôn ngữ TTS; hãy chọn ngôn ngữ nguồn hoặc đích.')
   const localKey = await loadLocalKey()
-  const capabilityUrl = config.ttsServerUrl || ''
-  const models = job.ttsCapabilities && job.ttsCapabilitiesUrl === capabilityUrl
-    ? job.ttsCapabilities
-    : await getTtsModels(config.ttsServerUrl, localKey)
+  const isEdgeTts = config.ttsProvider === 'edge-tts'
+  const capabilityUrl = isEdgeTts ? 'edge-tts' : (config.ttsServerUrl || '')
+  const models = isEdgeTts
+    ? { ok: true, models: [getEdgeTtsModelInfo()] }
+    : (job.ttsCapabilities && job.ttsCapabilitiesUrl === capabilityUrl
+        ? job.ttsCapabilities
+        : await getTtsModels(config.ttsServerUrl, localKey))
   job.ttsCapabilities = models
   job.ttsCapabilitiesUrl = capabilityUrl
   const selectedModel = selectCompatibleAutoShortTtsModel(models.models, config.ttsModel, language)
@@ -1745,7 +1757,7 @@ async function synthesizeVoice(
     ? await stat(config.ttsRefAudioPath).then((info) => ({ path: config.ttsRefAudioPath, size: info.size, mtimeMs: info.mtimeMs })).catch(() => ({ path: config.ttsRefAudioPath, size: 0, mtimeMs: 0 }))
     : null
   const profileKey = durationProfileKey({
-    endpoint: config.ttsServerUrl,
+    endpoint: isEdgeTts ? 'edge-tts' : config.ttsServerUrl,
     model: selectedModel.id,
     voice: effectiveVoice,
     language,
@@ -1763,7 +1775,7 @@ async function synthesizeVoice(
       const safeId = safeArtifactSegment(request.cueId)
       const outputPath = join(workDir, `cue-${safeId}-${attempt}.wav`)
       const cacheKey = buildTtsCacheKey({
-        endpoint: config.ttsServerUrl,
+        endpoint: isEdgeTts ? 'edge-tts' : config.ttsServerUrl,
         finalSpokenText: request.text,
         language: request.language,
         model: request.model,
@@ -1780,6 +1792,7 @@ async function synthesizeVoice(
       }
       await mkdir(cacheRoot, { recursive: true })
       const requestInput = {
+        provider: config.ttsProvider,
         serverUrl: config.ttsServerUrl,
         text: request.text,
         language: request.language,
@@ -1789,7 +1802,7 @@ async function synthesizeVoice(
         apiKey: localKey,
         options: request.options
       }
-      const result = config.ttsRefAudioPath
+      const result = config.ttsRefAudioPath && !isEdgeTts
         ? await generateVoiceClone({ ...requestInput, referenceAudioPath: config.ttsRefAudioPath, referenceTranscript: config.ttsRefTranscript }, signal, outputPath)
         : await generateSpeech(requestInput, signal, outputPath)
       if (!result.ok || !result.savedPath) throw new Error(result.error || `TTS không trả audio cho cue ${request.cueId}.`)
@@ -2379,25 +2392,31 @@ async function preflight(job: AutoShortJob): Promise<void> {
     if (!health.ok) throw new Error(health.message || 'Không kết nối được server dịch nội bộ')
   }
   if (config.ttsEnabled) {
-    const key = await loadLocalKey()
-    const health = await preflightStep<TtsServerHealth>('kiểm tra TTS', () => checkTtsServerHealth(config.ttsServerUrl, key))
-    if (!health.ok) throw new Error(health.error || 'Không kết nối được server TTS')
-    const models = await preflightStep<{ ok: boolean; models: TtsModelInfo[]; error?: string }>('đọc danh sách model TTS', () => getTtsModels(config.ttsServerUrl, key))
-    if (models.ok) {
-      job.ttsCapabilities = models
-      job.ttsCapabilitiesUrl = config.ttsServerUrl || ''
+    if (config.ttsProvider === 'edge-tts') {
+      const edgeModel = getEdgeTtsModelInfo()
+      job.ttsCapabilities = { ok: true, models: [edgeModel] }
+      job.ttsCapabilitiesUrl = 'edge-tts'
+    } else {
+      const key = await loadLocalKey()
+      const health = await preflightStep<TtsServerHealth>('kiểm tra TTS', () => checkTtsServerHealth(config.ttsServerUrl, key))
+      if (!health.ok) throw new Error(health.error || 'Không kết nối được server TTS')
+      const models = await preflightStep<{ ok: boolean; models: TtsModelInfo[]; error?: string }>('đọc danh sách model TTS', () => getTtsModels(config.ttsServerUrl, key))
+      if (models.ok) {
+        job.ttsCapabilities = models
+        job.ttsCapabilitiesUrl = config.ttsServerUrl || ''
+      }
+      const ttsLanguage = resolveAutoShortTtsLanguage(config)
+      const selectedModel = selectCompatibleAutoShortTtsModel(models.models, config.ttsModel, ttsLanguage)
+      if (!models.ok || !selectedModel) {
+        throw new Error(models.error || (config.ttsModel ? `Model TTS "${config.ttsModel}" không tồn tại trên server.` : 'Không tìm thấy model TTS khả dụng trên server.'))
+      }
+      if (selectedModel.available === false) {
+        throw new Error(`Model TTS ${selectedModel.id} hiện không khả dụng trên server.`)
+      }
+      const ttsCapabilityError = validateAutoShortTtsModel(selectedModel, ttsLanguage)
+      if (ttsCapabilityError) throw new Error(ttsCapabilityError)
+      if (config.ttsRefAudioPath && !(await fileExists(config.ttsRefAudioPath))) throw new Error('File voice clone không tồn tại')
     }
-    const ttsLanguage = resolveAutoShortTtsLanguage(config)
-    const selectedModel = selectCompatibleAutoShortTtsModel(models.models, config.ttsModel, ttsLanguage)
-    if (!models.ok || !selectedModel) {
-      throw new Error(models.error || (config.ttsModel ? `Model TTS "${config.ttsModel}" không tồn tại trên server.` : 'Không tìm thấy model TTS khả dụng trên server.'))
-    }
-    if (selectedModel.available === false) {
-      throw new Error(`Model TTS ${selectedModel.id} hiện không khả dụng trên server.`)
-    }
-    const ttsCapabilityError = validateAutoShortTtsModel(selectedModel, ttsLanguage)
-    if (ttsCapabilityError) throw new Error(ttsCapabilityError)
-    if (config.ttsRefAudioPath && !(await fileExists(config.ttsRefAudioPath))) throw new Error('File voice clone không tồn tại')
   }
 }
 

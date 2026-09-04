@@ -16,6 +16,8 @@ import {
   type SubtitleDisplayStyle,
   type SubtitleLayoutProfile,
   type TtsModelInfo,
+  type TtsProvider,
+  type EdgeVoiceDefinition,
   type WhisperDevice
 } from '../../../shared/types'
 import { localMediaSource } from '../lib/localMedia'
@@ -198,6 +200,7 @@ export default function AutoShort(): JSX.Element {
 
   // TTS AI Voice
   const [ttsEnabled, setTtsEnabled] = usePersistedState('tblao.autoshort.ttsEnabled', true)
+  const [ttsProvider, setTtsProvider] = usePersistedState<TtsProvider>('tblao.autoshort.ttsProvider', 'edge-tts')
   const [ttsServerUrl, setTtsServerUrl] = usePersistedState('tblao.ai.serverUrl', DEFAULT_AI_SERVER_URL)
   const [ttsModel, setTtsModel] = usePersistedState('tblao.autoshort.ttsModel', '')
   const [ttsVoice, setTtsVoice] = usePersistedState('tblao.autoshort.ttsVoice', '')
@@ -209,6 +212,22 @@ export default function AutoShort(): JSX.Element {
   const [voiceOverMode, setVoiceOverMode] = usePersistedState('tblao.autoshort.voiceOverMode', false)
   const [audioMode, setAudioMode] = usePersistedState<'replace' | 'mix'>('tblao.autoshort.audioMode', 'replace')
   const [originalAudioVolume, setOriginalAudioVolume] = usePersistedState('tblao.autoshort.origVol', 20)
+  const [edgeVoices, setEdgeVoices] = useState<EdgeVoiceDefinition[]>([])
+
+  useEffect(() => {
+    let isCancelled = false
+    window.api
+      .ttsGetEdgeVoices()
+      .then((voices) => {
+        if (!isCancelled && Array.isArray(voices) && voices.length > 0) {
+          setEdgeVoices(voices)
+        }
+      })
+      .catch(() => {})
+    return () => {
+      isCancelled = true
+    }
+  }, [])
 
   const selectedModelInfo = ttsModels.find((m) => m.id === ttsModel) || ttsModels[0]
   const modelVoices = selectedModelInfo?.voices || []
@@ -761,11 +780,14 @@ export default function AutoShort(): JSX.Element {
       translateProvider,
       translateServerUrl: ttsServerUrl,
       ttsEnabled,
-      ttsServerUrl,
-      ttsModel,
-      ttsVoice: activeClonedVoice ? activeClonedVoice.name : ttsVoice,
-      ttsRefAudioPath: activeClonedVoice ? activeClonedVoice.referenceAudioPath : undefined,
-      ttsRefTranscript: activeClonedVoice ? activeClonedVoice.referenceTranscript : undefined,
+      ttsProvider,
+      ttsServerUrl: ttsProvider === 'local-tts' ? ttsServerUrl : undefined,
+      ttsModel: ttsProvider === 'edge-tts' ? 'edge-tts' : ttsModel,
+      ttsVoice: ttsProvider === 'edge-tts'
+        ? (ttsVoice || (translateTarget === 'en' ? 'en-US-JennyNeural' : 'vi-VN-HoaiMyNeural'))
+        : (activeClonedVoice ? activeClonedVoice.name : ttsVoice),
+      ttsRefAudioPath: ttsProvider === 'local-tts' && activeClonedVoice ? activeClonedVoice.referenceAudioPath : undefined,
+      ttsRefTranscript: ttsProvider === 'local-tts' && activeClonedVoice ? activeClonedVoice.referenceTranscript : undefined,
       ttsLanguage: translateTarget !== 'none' ? translateTarget : whisperLanguage.trim() || undefined,
       ttsSpeed,
       paceMode,
@@ -1601,80 +1623,270 @@ export default function AutoShort(): JSX.Element {
                   </div>
 
                   <label className="field editor-field">
-                    <span>Địa chỉ server AI (dịch/TTS)</span>
-                    <input
-                      type="url"
-                      value={ttsServerUrl}
-                      onChange={(e) => setTtsServerUrl(e.target.value)}
-                      placeholder="http://127.0.0.1:8000"
-                    />
+                    <span>Động cơ giọng đọc (TTS Provider)</span>
+                    <div className="radio-pill-group" style={{ marginTop: 6 }}>
+                      <label className={`radio-pill ${ttsProvider === 'edge-tts' ? 'active' : ''}`}>
+                        <input
+                          type="radio"
+                          name="ttsProvider"
+                          value="edge-tts"
+                          checked={ttsProvider === 'edge-tts'}
+                          onChange={() => setTtsProvider('edge-tts')}
+                        />
+                        <span>Microsoft Edge-TTS (Trực tuyến · Miễn phí)</span>
+                      </label>
+                      <label className={`radio-pill ${ttsProvider === 'local-tts' ? 'active' : ''}`}>
+                        <input
+                          type="radio"
+                          name="ttsProvider"
+                          value="local-tts"
+                          checked={ttsProvider === 'local-tts'}
+                          onChange={() => setTtsProvider('local-tts')}
+                        />
+                        <span>Local AI Server (Chatterbox / TTS-Server)</span>
+                      </label>
+                    </div>
                   </label>
 
-                  <div className="server-status-pill" style={{ margin: '6px 0' }}>
-                    <span className={`status-dot ${serverOnline ? 'online' : 'offline'}`} />
-                    <span className="small">
-                      Server AI: <code>{ttsServerUrl}</code> ({serverOnline ? 'Sẵn sàng' : 'Chưa kết nối'})
-                    </span>
-                  </div>
+                  {ttsProvider === 'edge-tts' ? (
+                    <>
+                      <div className="server-status-pill" style={{ margin: '6px 0' }}>
+                        <span className="status-dot online" />
+                        <span className="small">
+                          Động cơ: <strong>Microsoft Edge Read Aloud API</strong> (Trực tuyến · Miễn phí · Không cần bật AI Server)
+                        </span>
+                      </div>
 
-                  <label className="field editor-field">
-                    <span>Mô hình giọng đọc</span>
-                    <select
-                      value={selectedModelInfo?.id || ttsModel}
-                      disabled={ttsModels.length === 0}
-                      onChange={(e) => {
-                        const next = e.target.value
-                        setTtsModel(next)
-                        const nextInfo = ttsModels.find((m) => m.id === next)
-                        if (nextInfo && !ttsVoice.startsWith('clone:')) {
-                          setTtsVoice(nextInfo.default_voice || (nextInfo.voices && nextInfo.voices[0]) || 'default')
-                        }
-                      }}
-                    >
-                      {ttsModels.length > 0 ? (
-                        ttsModels.map((m) => (
-                          <option key={m.id} value={m.id} disabled={m.available === false}>
-                            {m.name || m.id}{m.available === false ? ' (không khả dụng)' : ''}
-                          </option>
-                        ))
-                      ) : (
-                        <option value="" disabled>
-                          {serverOnline === false ? 'Server AI chưa kết nối' : 'Đang tải danh sách mô hình…'}
-                        </option>
-                      )}
-                    </select>
-                  </label>
+                      <label className="field editor-field">
+                        <span>Giọng đọc Edge-TTS</span>
+                        <select
+                          value={ttsVoice || (translateTarget === 'en' ? 'en-US-JennyNeural' : 'vi-VN-HoaiMyNeural')}
+                          onChange={(e) => setTtsVoice(e.target.value)}
+                        >
+                          <optgroup label="Tiếng Việt (Khuyên dùng)">
+                            <option value="vi-VN-HoaiMyNeural">🇻🇳 Hoài My (Nữ · Miền Bắc - Mặc định)</option>
+                            <option value="vi-VN-NamMinhNeural">🇻🇳 Nam Minh (Nam · Miền Bắc)</option>
+                          </optgroup>
+                          <optgroup label="Tiếng Anh - Mỹ (English US)">
+                            <option value="en-US-JennyNeural">🇺🇸 Jenny (US · Nữ · Tự nhiên - Mặc định)</option>
+                            <option value="en-US-GuyNeural">🇺🇸 Guy (US · Nam · Truyền cảm)</option>
+                            <option value="en-US-AriaNeural">🇺🇸 Aria (US · Nữ · Tươi vui)</option>
+                          </optgroup>
+                          <optgroup label="Tiếng Anh - Anh (English UK)">
+                            <option value="en-GB-SoniaNeural">🇬🇧 Sonia (UK · Nữ · Chuẩn London)</option>
+                            <option value="en-GB-RyanNeural">🇬🇧 Ryan (UK · Nam · Trầm ấm)</option>
+                          </optgroup>
+                          <optgroup label="Tiếng Anh - Úc (English Australia)">
+                            <option value="en-AU-NatashaNeural">🇦🇺 Natasha (Úc · Nữ · Tự nhiên)</option>
+                            <option value="en-AU-WilliamMultilingualNeural">🇦🇺 William (Úc · Nam · Đa ngữ)</option>
+                          </optgroup>
+                          <optgroup label="Đức, Ý, Tây Ban Nha">
+                            <option value="de-DE-KatjaNeural">🇩🇪 Katja (Đức · Nữ)</option>
+                            <option value="de-DE-ConradNeural">🇩🇪 Conrad (Đức · Nam)</option>
+                            <option value="it-IT-ElsaNeural">🇮🇹 Elsa (Ý · Nữ)</option>
+                            <option value="it-IT-DiegoNeural">🇮🇹 Diego (Ý · Nam)</option>
+                            <option value="es-ES-ElviraNeural">🇪🇸 Elvira (Tây Ban Nha · Nữ)</option>
+                            <option value="es-ES-AlvaroNeural">🇪🇸 Alvaro (Tây Ban Nha · Nam)</option>
+                          </optgroup>
+                          <optgroup label="Bồ Đào Nha & Brazil">
+                            <option value="pt-BR-FranciscaNeural">🇧🇷 Francisca (Brazil · Nữ)</option>
+                            <option value="pt-BR-AntonioNeural">🇧🇷 Antonio (Brazil · Nam)</option>
+                            <option value="pt-PT-RaquelNeural">🇵🇹 Raquel (Bồ Đào Nha · Nữ)</option>
+                            <option value="pt-PT-DuarteNeural">🇵🇹 Duarte (Bồ Đào Nha · Nam)</option>
+                          </optgroup>
+                          <optgroup label="Đông Á: Hàn, Nhật, Trung">
+                            <option value="ko-KR-SunHiNeural">🇰🇷 SunHi (Hàn · Nữ)</option>
+                            <option value="ko-KR-InJoonNeural">🇰🇷 InJoon (Hàn · Nam)</option>
+                            <option value="ja-JP-NanamiNeural">🇯🇵 Nanami (Nhật · Nữ)</option>
+                            <option value="ja-JP-KeitaNeural">🇯🇵 Keita (Nhật · Nam)</option>
+                            <option value="zh-CN-XiaoxiaoNeural">🇨🇳 Xiaoxiao (Trung · Nữ)</option>
+                            <option value="zh-CN-YunxiNeural">🇨🇳 Yunxi (Trung · Nam)</option>
+                          </optgroup>
+                          <optgroup label="Đông Nam Á: Thái, Indo, Philippines">
+                            <option value="th-TH-PremwadeeNeural">🇹🇭 Premwadee (Thái · Nữ)</option>
+                            <option value="th-TH-NiwatNeural">🇹🇭 Niwat (Thái · Nam)</option>
+                            <option value="id-ID-GadisNeural">🇮🇩 Gadis (Indo · Nữ)</option>
+                            <option value="id-ID-ArdiNeural">🇮🇩 Ardi (Indo · Nam)</option>
+                            <option value="fil-PH-BlessicaNeural">🇵🇭 Blessica (Philippines · Nữ)</option>
+                            <option value="fil-PH-AngeloNeural">🇵🇭 Angelo (Philippines · Nam)</option>
+                          </optgroup>
+                          <optgroup label="Pháp & Nga">
+                            <option value="fr-FR-DeniseNeural">🇫🇷 Denise (Pháp · Nữ)</option>
+                            <option value="fr-FR-HenriNeural">🇫🇷 Henri (Pháp · Nam)</option>
+                            <option value="ru-RU-SvetlanaNeural">🇷🇺 Svetlana (Nga · Nữ)</option>
+                            <option value="ru-RU-DmitryNeural">🇷🇺 Dmitry (Nga · Nam)</option>
+                          </optgroup>
+                          {edgeVoices.filter(
+                            (v) =>
+                              ![
+                                'vi-VN-HoaiMyNeural',
+                                'vi-VN-NamMinhNeural',
+                                'en-US-JennyNeural',
+                                'en-US-GuyNeural',
+                                'en-US-AriaNeural',
+                                'en-GB-SoniaNeural',
+                                'en-GB-RyanNeural',
+                                'en-AU-NatashaNeural',
+                                'en-AU-WilliamMultilingualNeural',
+                                'de-DE-KatjaNeural',
+                                'de-DE-ConradNeural',
+                                'it-IT-ElsaNeural',
+                                'it-IT-DiegoNeural',
+                                'es-ES-ElviraNeural',
+                                'es-ES-AlvaroNeural',
+                                'pt-BR-FranciscaNeural',
+                                'pt-BR-AntonioNeural',
+                                'pt-PT-RaquelNeural',
+                                'pt-PT-DuarteNeural',
+                                'ko-KR-SunHiNeural',
+                                'ko-KR-InJoonNeural',
+                                'ja-JP-NanamiNeural',
+                                'ja-JP-KeitaNeural',
+                                'zh-CN-XiaoxiaoNeural',
+                                'zh-CN-YunxiNeural',
+                                'th-TH-PremwadeeNeural',
+                                'th-TH-NiwatNeural',
+                                'id-ID-GadisNeural',
+                                'id-ID-ArdiNeural',
+                                'fil-PH-BlessicaNeural',
+                                'fil-PH-AngeloNeural',
+                                'fr-FR-DeniseNeural',
+                                'fr-FR-HenriNeural',
+                                'ru-RU-SvetlanaNeural',
+                                'ru-RU-DmitryNeural'
+                              ].includes(v.id)
+                          ).length > 0 && (
+                            <optgroup label="Các giọng quốc tế khác (300+ giọng)">
+                              {edgeVoices
+                                .filter(
+                                  (v) =>
+                                    ![
+                                      'vi-VN-HoaiMyNeural',
+                                      'vi-VN-NamMinhNeural',
+                                      'en-US-JennyNeural',
+                                      'en-US-GuyNeural',
+                                      'en-US-AriaNeural',
+                                      'en-GB-SoniaNeural',
+                                      'en-GB-RyanNeural',
+                                      'en-AU-NatashaNeural',
+                                      'en-AU-WilliamMultilingualNeural',
+                                      'de-DE-KatjaNeural',
+                                      'de-DE-ConradNeural',
+                                      'it-IT-ElsaNeural',
+                                      'it-IT-DiegoNeural',
+                                      'es-ES-ElviraNeural',
+                                      'es-ES-AlvaroNeural',
+                                      'pt-BR-FranciscaNeural',
+                                      'pt-BR-AntonioNeural',
+                                      'pt-PT-RaquelNeural',
+                                      'pt-PT-DuarteNeural',
+                                      'ko-KR-SunHiNeural',
+                                      'ko-KR-InJoonNeural',
+                                      'ja-JP-NanamiNeural',
+                                      'ja-JP-KeitaNeural',
+                                      'zh-CN-XiaoxiaoNeural',
+                                      'zh-CN-YunxiNeural',
+                                      'th-TH-PremwadeeNeural',
+                                      'th-TH-NiwatNeural',
+                                      'id-ID-GadisNeural',
+                                      'id-ID-ArdiNeural',
+                                      'fil-PH-BlessicaNeural',
+                                      'fil-PH-AngeloNeural',
+                                      'fr-FR-DeniseNeural',
+                                      'fr-FR-HenriNeural',
+                                      'ru-RU-SvetlanaNeural',
+                                      'ru-RU-DmitryNeural'
+                                    ].includes(v.id)
+                                )
+                                .map((v) => (
+                                  <option key={v.id} value={v.id}>
+                                    {v.name} ({v.locale})
+                                  </option>
+                                ))}
+                            </optgroup>
+                          )}
+                        </select>
+                      </label>
+                    </>
+                  ) : (
+                    <>
+                      <label className="field editor-field">
+                        <span>Địa chỉ server AI (dịch/TTS)</span>
+                        <input
+                          type="url"
+                          value={ttsServerUrl}
+                          onChange={(e) => setTtsServerUrl(e.target.value)}
+                          placeholder="http://127.0.0.1:8000"
+                        />
+                      </label>
 
-                  <label className="field editor-field">
-                    <span>Giọng đọc</span>
-                    <select value={ttsVoice} onChange={(e) => setTtsVoice(e.target.value)}>
-                      {modelVoices.length > 0 ? (
-                        <optgroup label={`Giọng mẫu (${selectedModelInfo?.name || selectedModelInfo?.id || 'Mô hình'})`}>
-                          {modelVoices.map((v) => (
-                            <option key={v} value={v}>
-                              {v}
+                      <div className="server-status-pill" style={{ margin: '6px 0' }}>
+                        <span className={`status-dot ${serverOnline ? 'online' : 'offline'}`} />
+                        <span className="small">
+                          Server AI: <code>{ttsServerUrl}</code> ({serverOnline ? 'Sẵn sàng' : 'Chưa kết nối'})
+                        </span>
+                      </div>
+
+                      <label className="field editor-field">
+                        <span>Mô hình giọng đọc</span>
+                        <select
+                          value={selectedModelInfo?.id || ttsModel}
+                          disabled={ttsModels.length === 0}
+                          onChange={(e) => {
+                            const next = e.target.value
+                            setTtsModel(next)
+                            const nextInfo = ttsModels.find((m) => m.id === next)
+                            if (nextInfo && !ttsVoice.startsWith('clone:')) {
+                              setTtsVoice(nextInfo.default_voice || (nextInfo.voices && nextInfo.voices[0]) || 'default')
+                            }
+                          }}
+                        >
+                          {ttsModels.length > 0 ? (
+                            ttsModels.map((m) => (
+                              <option key={m.id} value={m.id} disabled={m.available === false}>
+                                {m.name || m.id}{m.available === false ? ' (không khả dụng)' : ''}
+                              </option>
+                            ))
+                          ) : (
+                            <option value="" disabled>
+                              {serverOnline === false ? 'Server AI chưa kết nối' : 'Đang tải danh sách mô hình…'}
                             </option>
-                          ))}
-                        </optgroup>
-                      ) : (
-                        <optgroup label="Giọng mẫu chuẩn">
-                          <option value={selectedModelInfo?.default_voice || 'default'}>
-                            {selectedModelInfo?.default_voice || 'default'} (Mặc định)
-                          </option>
-                        </optgroup>
-                      )}
+                          )}
+                        </select>
+                      </label>
 
-                      {clonedVoices.length > 0 && (
-                        <optgroup label={`✨ Giọng Clone đã lưu (${clonedVoices.length})`}>
-                          {clonedVoices.map((cv) => (
-                            <option key={cv.id} value={`clone:${cv.id}`}>
-                              ✨ {cv.name} ({cv.language || 'vi'} · Clone)
-                            </option>
-                          ))}
-                        </optgroup>
-                      )}
-                    </select>
-                  </label>
+                      <label className="field editor-field">
+                        <span>Giọng đọc</span>
+                        <select value={ttsVoice} onChange={(e) => setTtsVoice(e.target.value)}>
+                          {modelVoices.length > 0 ? (
+                            <optgroup label={`Giọng mẫu (${selectedModelInfo?.name || selectedModelInfo?.id || 'Mô hình'})`}>
+                              {modelVoices.map((v) => (
+                                <option key={v} value={v}>
+                                  {v}
+                                </option>
+                              ))}
+                            </optgroup>
+                          ) : (
+                            <optgroup label="Giọng mẫu chuẩn">
+                              <option value={selectedModelInfo?.default_voice || 'default'}>
+                                {selectedModelInfo?.default_voice || 'default'} (Mặc định)
+                              </option>
+                            </optgroup>
+                          )}
+
+                          {clonedVoices.length > 0 && (
+                            <optgroup label={`✨ Giọng Clone đã lưu (${clonedVoices.length})`}>
+                              {clonedVoices.map((cv) => (
+                                <option key={cv.id} value={`clone:${cv.id}`}>
+                                  ✨ {cv.name} ({cv.language || 'vi'} · Clone)
+                                </option>
+                              ))}
+                            </optgroup>
+                          )}
+                        </select>
+                      </label>
+                    </>
+                  )}
 
                   <label className="field editor-field">
                     <span>Tốc độ đọc · {ttsSpeed.toFixed(2)}x</span>

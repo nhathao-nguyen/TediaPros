@@ -19,6 +19,7 @@ const DISPLAY_STYLES = new Set<SubtitleDisplayStyle>(['standard', 'word-reveal',
 const LAYOUTS = new Set<SubtitleLayoutProfile>(['readable', 'social', 'vertical'])
 const MODELS = new Set(['base', 'small', 'medium'])
 const PACE_MODES = new Set(['source-adaptive', 'fixed'])
+const TTS_PROVIDERS = new Set(['local-tts', 'edge-tts'])
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return Boolean(value) && typeof value === 'object' && !Array.isArray(value)
@@ -183,6 +184,7 @@ function validateConfigRecord(raw: Record<string, unknown>): AutoShortConfig | s
   if (typeof raw.lamMo !== 'boolean' || typeof raw.ttsEnabled !== 'boolean' || typeof raw.voiceOverMode !== 'boolean') return 'Cấu hình bật/tắt không hợp lệ.'
   if (typeof raw.translateTarget !== 'string' || !raw.translateTarget.trim() || raw.translateTarget.length > 64) return 'Ngôn ngữ đích không hợp lệ.'
   if (!PROVIDERS.has(raw.translateProvider as string)) return 'Nhà cung cấp dịch không hợp lệ.'
+  if (raw.ttsProvider != null && !TTS_PROVIDERS.has(raw.ttsProvider as string)) return 'Nhà cung cấp giọng đọc TTS không hợp lệ.'
   if (raw.translateServerUrl != null) {
     const error = url(raw.translateServerUrl, 'Server dịch')
     if (error) return error

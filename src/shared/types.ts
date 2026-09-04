@@ -676,6 +676,17 @@ export interface Video2xRunResult {
 }
 
 // ---- TTS Server (Voice) ----
+export type TtsProvider = 'local-tts' | 'edge-tts'
+
+export interface EdgeVoiceDefinition {
+  id: string
+  name: string
+  gender: 'female' | 'male'
+  language: string
+  locale: string
+  isDefault?: boolean
+}
+
 export interface TtsServerHealth {
   ok: boolean
   status?: string
@@ -701,6 +712,7 @@ export interface TtsModelInfo {
 }
 
 export interface TtsSpeechRequest {
+  provider?: TtsProvider
   serverUrl?: string
   apiKey?: string
   text: string
@@ -810,6 +822,7 @@ export interface AutoShortConfig {
   translateProvider: DichProvider
   translateServerUrl?: string
   ttsEnabled: boolean
+  ttsProvider?: TtsProvider
   ttsServerUrl?: string
   ttsModel?: string
   ttsVoice?: string
