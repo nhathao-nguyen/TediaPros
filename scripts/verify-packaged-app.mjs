@@ -15,7 +15,14 @@ const FORBIDDEN_PATTERNS = [
   /cudart.*\.dll$/i,
   /nvrtc.*\.dll$/i,
   /nvblas.*\.dll$/i,
-  /\.zip$/i
+  /\.zip$/i,
+  /separator-engine(\.exe)?$/i,
+  /separator-models/i,
+  /\.onnx$/i,
+  /separator-model-manifest\.json$/i,
+  /separator-model-inputs\.json$/i,
+  /separator-benchmark-results/i,
+  /tests[\\/]fixtures[\\/]separator/i
 ]
 
 export async function findForbiddenFiles(dir) {

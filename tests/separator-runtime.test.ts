@@ -245,10 +245,11 @@ test('loadSeparatorReleaseStatus validates bundled status and separatorFeatureEn
   assert.equal(status.schemaVersion, 1)
   assert.equal(status.qualificationPassed, true)
 
-  // Default is not enabledByDefault
-  assert.equal(separatorFeatureEnabled(status, {}), false)
+  assert.equal(separatorFeatureEnabled(status, {}), status.enabledByDefault)
+  const disabledStatus = { ...status, enabledByDefault: false }
+  assert.equal(separatorFeatureEnabled(disabledStatus, {}), false)
   // Enabled via env override
-  assert.equal(separatorFeatureEnabled(status, { TEDIAPROS_ENABLE_SEPARATOR: '1' }), true)
+  assert.equal(separatorFeatureEnabled(disabledStatus, { TEDIAPROS_ENABLE_SEPARATOR: '1' }), true)
   // Unqualified cannot be enabled even with env override
   const unqualified = { ...status, qualificationPassed: false }
   assert.equal(separatorFeatureEnabled(unqualified, { TEDIAPROS_ENABLE_SEPARATOR: '1' }), false)

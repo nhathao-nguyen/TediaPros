@@ -294,3 +294,53 @@ test('runtime packer archives every canonical kind and verifies the generated ma
     await rm(root, { recursive: true, force: true })
   }
 })
+
+test('packaged app verifier and builder configuration strictly exclude separator assets', async () => {
+  const { findForbiddenFiles } = await import('../scripts/verify-packaged-app.mjs')
+  const root = await mkdtemp(join(tmpdir(), 'tedia-sep-pkg-'))
+  try {
+    const forbiddenRelPaths = [
+      'separator-engine.exe',
+      join('separator-models', 'model.onnx'),
+      'model.onnx',
+      'separator-model-manifest.json',
+      'separator-model-inputs.json',
+      join('separator-benchmark-results', 'summary.json'),
+      join('tests', 'fixtures', 'separator', 'test.wav')
+    ]
+    for (const rel of forbiddenRelPaths) {
+      const full = join(root, rel)
+      await mkdir(join(full, '..'), { recursive: true })
+      await writeFile(full, 'fake')
+    }
+
+    const violations = await findForbiddenFiles(root)
+    for (const rel of forbiddenRelPaths) {
+      assert.ok(violations.some((v) => v.includes(rel)), `Must detect violation for ${rel}`)
+    }
+
+    // Builder configuration
+    const builderYml = await readFile(join(process.cwd(), 'electron-builder.yml'), 'utf8')
+    assert.match(builderYml, /!\*\*\/\*\.onnx/u)
+    assert.match(builderYml, /!separator-models/u)
+    assert.match(builderYml, /!separator-engine/u)
+    assert.match(builderYml, /!separator-model-manifest\.json/u)
+    assert.match(builderYml, /!separator-model-inputs\.json/u)
+    assert.match(builderYml, /!separator-benchmark-results/u)
+    assert.match(builderYml, /!tests\/fixtures\/separator/u)
+
+    // Licensing notices
+    const notices = await readFile(join(process.cwd(), 'THIRD-PARTY-NOTICES.txt'), 'utf8')
+    const licenseView = await readFile(join(process.cwd(), 'src', 'renderer', 'src', 'components', 'License.tsx'), 'utf8')
+
+    for (const text of [notices, licenseView]) {
+      assert.match(text, /separator-fast-balanced-v1/u)
+      assert.match(text, /separator-quality-v1/u)
+      assert.match(text, /ONNX Runtime/iu)
+      assert.match(text, /DirectML/iu)
+      assert.match(text, /separator-engine|Ultimate Vocal Remover|MDX/iu)
+    }
+  } finally {
+    await rm(root, { recursive: true, force: true })
+  }
+})

@@ -106,11 +106,39 @@ const THIRD_PARTY: ThirdParty[] = [
   },
 
   {
+    group: G_TOOL,
+    name: 'Separator Engine (MDX-Net / UVR ONNX inference)',
+    license: 'MIT',
+    link: 'https://github.com/Anjok07/ultimatevocalremovergui',
+    copyright: 'Anjok07, UVR Team, Kuielab'
+  },
+  {
+    group: G_LIB,
+    name: 'ONNX Runtime DirectML',
+    license: 'MIT',
+    link: 'https://github.com/microsoft/onnxruntime',
+    copyright: 'Microsoft Corporation'
+  },
+  {
     group: G_MODEL,
     name: 'OpenAI Whisper Models',
     license: 'MIT',
     link: 'https://github.com/openai/whisper',
     copyright: 'OpenAI'
+  },
+  {
+    group: G_MODEL,
+    name: 'separator-fast-balanced-v1 (UVR-MDX-NET-Inst_3)',
+    license: 'MIT / Open Model Redistribution Grant',
+    link: 'https://github.com/Anjok07/ultimatevocalremovergui',
+    copyright: 'UVR Team / Kuielab'
+  },
+  {
+    group: G_MODEL,
+    name: 'separator-quality-v1 (UVR-MDX-NET-Inst_HQ_3)',
+    license: 'MIT / Open Model Redistribution Grant',
+    link: 'https://github.com/Anjok07/ultimatevocalremovergui',
+    copyright: 'UVR Team / Kuielab'
   },
   {
     group: G_GPU,

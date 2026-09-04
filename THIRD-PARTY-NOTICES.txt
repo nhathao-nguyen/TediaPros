@@ -13,7 +13,8 @@ MỤC LỤC
   B. Thư viện trong bộ xử lý âm thanh
   C. Model nhận dạng & tách người nói
   D. Gói tăng tốc GPU (chỉ máy NVIDIA)
-  E. Toàn văn giấy phép
+  E. Bộ tách thoại khỏi nhạc nền (Vocal Separation)
+  F. Toàn văn giấy phép
 
 
 ==========================================================================
@@ -152,8 +153,6 @@ Chi tiết: https://github.com/modelscope/3D-Speaker
 ==========================================================================
 D. GÓI TĂNG TỐC GPU  (chỉ tải trên máy NVIDIA)
 ==========================================================================
-
---------------------------------------------------------------------------
 D1) Thư viện NVIDIA cuBLAS và cuDNN
 --------------------------------------------------------------------------
 Vai trò: tăng tốc nhận dạng giọng nói bằng GPU NVIDIA.
@@ -165,11 +164,48 @@ Chi tiết: https://docs.nvidia.com/cuda/eula/
 
 
 ==========================================================================
-E. TOÀN VĂN GIẤY PHÉP
+E. BỘ TÁCH THOẠI KHỎI NHẠC NỀN (VOCAL SEPARATION)
+==========================================================================
+Tách thoại (vocal separation) được xử lý hoàn toàn offline cục bộ trên máy người dùng sau khi cài đặt tài nguyên (model & engine). Hành vi kết nối mạng của các dịch vụ dịch thuật và TTS hiện tại không thay đổi.
+
+--------------------------------------------------------------------------
+E1) Separator Engine — MIT License
+--------------------------------------------------------------------------
+Vai trò: thực thi tách nguồn âm thanh (vocal / instrumental) cục bộ qua MDX-Net ONNX inference.
+Mã nguồn suy luận: Dựa trên kiến trúc MDX-Net từ Ultimate Vocal Remover GUI (UVR) và Kuielab.
+Bản quyền: Copyright (c) 2026 Anjok07, UVR Team, Kuielab.
+Chi tiết: https://github.com/Anjok07/ultimatevocalremovergui
+
+--------------------------------------------------------------------------
+E2) ONNX Runtime DirectML — MIT License
+--------------------------------------------------------------------------
+Vai trò: bộ thực thi suy luận mạng nơ-ron DirectML trên GPU DirectX 12 (NVIDIA, AMD, Intel) và CPU.
+Bản quyền: Copyright (c) Microsoft Corporation.
+Chi tiết: https://github.com/microsoft/onnxruntime
+
+--------------------------------------------------------------------------
+E3) separator-fast-balanced-v1 (UVR-MDX-NET-Inst_3) — MIT License
+--------------------------------------------------------------------------
+Vai trò: model compact cho preset Nhanh và Cân bằng.
+Tác giả / Bản quyền: UVR Team / Kuielab.
+Giấy phép: MIT License / Open Model Redistribution Grant.
+Chi tiết: https://github.com/Anjok07/ultimatevocalremovergui
+
+--------------------------------------------------------------------------
+E4) separator-quality-v1 (UVR-MDX-NET-Inst_HQ_3) — MIT License
+--------------------------------------------------------------------------
+Vai trò: model HQ cho preset Chất lượng cao.
+Tác giả / Bản quyền: UVR Team / Kuielab.
+Giấy phép: MIT License / Open Model Redistribution Grant.
+Chi tiết: https://github.com/Anjok07/ultimatevocalremovergui
+
+
+==========================================================================
+F. TOÀN VĂN GIẤY PHÉP
 ==========================================================================
 
 --------------------------------------------------------------------------
-E1) MIT License — Bộ tải Douyin
+F1) MIT License — Bộ tải Douyin
 --------------------------------------------------------------------------
 MIT License
 

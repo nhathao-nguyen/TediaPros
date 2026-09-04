@@ -34,6 +34,13 @@ files:
   - '!**/*.zip'
   - '!**/*.dll'
   - '!**/*.exe'
+  - '!**/*.onnx'
+  - '!separator-models{,/**}'
+  - '!separator-engine{,/**}'
+  - '!separator-model-manifest.json'
+  - '!separator-model-inputs.json'
+  - '!separator-benchmark-results{,/**}'
+  - '!tests/fixtures/separator{,/**}'
   - '!**/node_modules/*/{CHANGELOG.md,README.md,README,readme.md,readme}'
   - '!**/node_modules/*/{test,__tests__,tests,powered-test,example,examples}'
 extraResources:

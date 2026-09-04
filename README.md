@@ -61,6 +61,18 @@ src/
 - Phụ đề (tải + nhúng), SponsorBlock, cắt theo thời gian
 - Đổi định dạng đầu ra, mẫu tên file, tiếp tục tải dở
 - Hỗ trợ Douyin (engine riêng)
+- Tách thoại Auto Short (Vocal Separation): Giữ lại nhạc nền và SFX khi lồng tiếng AI
+
+## Tính năng Tách thoại Auto Short (Vocal Separation)
+
+Tính năng tách thoại trong Auto Short cho phép tách giọng nói gốc ra khỏi video nguồn, giữ nguyên nhạc nền và hiệu ứng âm thanh (SFX) để đè giọng lồng tiếng AI mới lên:
+
+- **Hệ điều hành hỗ trợ:** Windows 10/11 x64.
+- **Tăng tốc phần cứng:** Tự động sử dụng DirectX 12 DirectML trên GPU NVIDIA, AMD, và Intel; tự động chuyển sang chế độ CPU fallback nếu GPU không khả dụng hoặc lỗi bộ nhớ.
+- **Tải theo yêu cầu (On-demand):** Bộ cài TediaPros hoàn toàn gọn nhẹ, không đóng gói kèm model hay engine tách thoại. Khi người dùng chọn tính năng này, app tải on-demand engine (~42 MB) và model theo preset đã chọn (~63–65 MB) với mã băm SHA-256 cố định từ release manifest.
+- **Xử lý Offline cục bộ:** Sau khi tải xong, quá trình tách thoại được thực thi 100% offline trên máy cá nhân, không gửi dữ liệu âm thanh ra bên ngoài và **không tốn phí API tách thoại**.
+- **Lưu ý chi phí dịch vụ khác:** Tính năng tách thoại là miễn phí và offline, nhưng các dịch vụ phụ trợ như API dịch thuật trực tuyến (OpenAI, DeepLX, Gemini) hoặc Text-to-Speech (nếu dùng server từ xa) cùng chi phí băng thông, dung lượng ổ đĩa và điện năng vẫn tuân theo điều khoản sử dụng tương ứng.
+
 
 ## Font phụ đề
 

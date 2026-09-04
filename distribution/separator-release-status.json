@@ -1,12 +1,12 @@
 {
   "schemaVersion": 1,
   "qualificationPassed": true,
-  "enabledByDefault": false,
+  "enabledByDefault": true,
   "vendors": {
-    "nvidia": "pending",
-    "amd": "pending",
-    "intel": "pending",
-    "cpu": "pending"
+    "nvidia": "verified",
+    "amd": "beta",
+    "intel": "beta",
+    "cpu": "verified"
   },
-  "qualificationReport": "docs/benchmarks/2026-09-04-separator-model-qualification.md"
+  "qualificationReport": "docs/benchmarks/2026-09-04-separator-hardware-acceptance.md"
 }
