@@ -66,6 +66,25 @@ function formatBytes(bytes: number | undefined): string {
   return `${Math.ceil(bytes / 1_000_000)} MB`
 }
 
+function normalizeTtsLanguageCode(code: string): string {
+  const value = code.trim().toLowerCase().split(/[-_]/u)[0]
+  const aliases: Record<string, string> = {
+    vie: 'vi',
+    zho: 'zh',
+    chi: 'zh',
+    eng: 'en',
+    jpn: 'ja',
+    kor: 'ko',
+    fra: 'fr',
+    fre: 'fr',
+    deu: 'de',
+    ger: 'de',
+    spa: 'es',
+    rus: 'ru'
+  }
+  return aliases[value] || value
+}
+
 function defaultSubtitleRegion(width: number, height: number): Region {
   const portrait = height > width
   return {
@@ -103,6 +122,9 @@ export default function AutoShort(): JSX.Element {
   const selectedTask = useMemo(() => {
     return tasks.find((t) => t.id === selectedId) || tasks[0] || null
   }, [tasks, selectedId])
+  // Preview remains the selected source; the exported artifact is verified and
+  // opened explicitly after render instead of silently replacing the preview.
+  const previewPath = selectedTask?.filePath || null
 
   // Tab công cụ Inspector
   const [tool, setTool] = useState<EditorTool>('subtitle')
@@ -122,7 +144,7 @@ export default function AutoShort(): JSX.Element {
   const [isStageFullscreen, setIsStageFullscreen] = useState(false)
 
   // Transport hook
-  const transport = useVideoTransport(videoRef, selectedTask?.filePath || null)
+  const transport = useVideoTransport(videoRef, previewPath)
 
   // Subtitle Region & Styles
   const [subtitleRegion, setSubtitleRegion] = useState<Region | undefined>()
@@ -182,9 +204,10 @@ export default function AutoShort(): JSX.Element {
   // TTS AI Voice
   const [ttsEnabled, setTtsEnabled] = usePersistedState('tblao.autoshort.ttsEnabled', true)
   const [ttsServerUrl, setTtsServerUrl] = usePersistedState('tblao.ai.serverUrl', DEFAULT_AI_SERVER_URL)
-  const [ttsModel, setTtsModel] = usePersistedState('tblao.autoshort.ttsModel', 'tts-vietnamese')
-  const [ttsVoice, setTtsVoice] = usePersistedState('tblao.autoshort.ttsVoice', 'Minh Đức')
+  const [ttsModel, setTtsModel] = usePersistedState('tblao.autoshort.ttsModel', '')
+  const [ttsVoice, setTtsVoice] = usePersistedState('tblao.autoshort.ttsVoice', '')
   const [ttsSpeed, setTtsSpeed] = usePersistedState('tblao.autoshort.ttsSpeed', 1.0)
+  const [paceMode, setPaceMode] = usePersistedState<'source-adaptive' | 'fixed'>('tblao.autoshort.paceMode', 'source-adaptive')
   const [clonedVoices] = usePersistedState<ClonedVoice[]>('tblao.tts.clonedVoices', [])
   const [serverOnline, setServerOnline] = useState<boolean | null>(null)
   const [ttsModels, setTtsModels] = useState<TtsModelInfo[]>([])
@@ -271,10 +294,20 @@ export default function AutoShort(): JSX.Element {
                   m.provider === 'chatterbox' ||
                   m.logical_model?.startsWith('tts'))
             )
-            setTtsModels(availableTts)
-            const matching = availableTts.find((m) => m.id === ttsModel)
-            if (!matching && availableTts.length > 0) {
-              const fallback = availableTts.find((m) => m.available !== false) || availableTts[0]
+            const requestedLanguage = normalizeTtsLanguageCode(
+              translateTarget !== 'none' ? translateTarget : whisperLanguage
+            )
+            const compatibleTts = requestedLanguage && requestedLanguage !== 'auto'
+              ? availableTts.filter((model) => {
+                const languages = model.languages || []
+                return languages.length === 0 || languages.some((language) => normalizeTtsLanguageCode(language) === requestedLanguage)
+              })
+              : availableTts
+            const selectableTts = compatibleTts.length > 0 ? compatibleTts : availableTts
+            setTtsModels(selectableTts)
+            const matching = selectableTts.find((m) => m.id === ttsModel)
+            if (!matching && selectableTts.length > 0) {
+              const fallback = selectableTts.find((m) => m.available !== false) || selectableTts[0]
               setTtsModel(fallback.id)
               const fallbackVoice = fallback.default_voice || fallback.voices?.[0] || 'default'
               if (!ttsVoice.startsWith('clone:')) {
@@ -296,7 +329,7 @@ export default function AutoShort(): JSX.Element {
     return () => {
       isCancelled = true
     }
-  }, [ttsServerUrl])
+  }, [ttsServerUrl, translateTarget, whisperLanguage])
 
   // Batch Execution State
   const [isRunning, setIsRunning] = useState(false)
@@ -386,33 +419,6 @@ export default function AutoShort(): JSX.Element {
       active = false
     }
   }, [translateProvider])
-
-  // Check TTS server health and load capabilities
-  useEffect(() => {
-    let active = true
-    const check = async (): Promise<void> => {
-      try {
-        const h = await window.api.ttsCheckHealth(ttsServerUrl)
-        if (active) setServerOnline(h.ok)
-        if (h.ok) {
-          const mRes = await window.api.ttsGetModels(ttsServerUrl)
-          if (active && mRes.ok && mRes.models.length > 0) {
-            setTtsModels(mRes.models)
-          }
-        }
-      } catch {
-        if (active) setServerOnline(false)
-      }
-    }
-    void check()
-    const timer = setInterval(() => {
-      void check()
-    }, 10000)
-    return () => {
-      active = false
-      clearInterval(timer)
-    }
-  }, [ttsServerUrl])
 
   useEffect(() => {
     if (!selectedModelInfo) return
@@ -858,6 +864,7 @@ export default function AutoShort(): JSX.Element {
       ttsRefTranscript: activeClonedVoice ? activeClonedVoice.referenceTranscript : undefined,
       ttsLanguage: translateTarget !== 'none' ? translateTarget : whisperLanguage.trim() || undefined,
       ttsSpeed,
+      paceMode,
       voiceOverMode,
       audioMode,
       originalAudioVolume,
@@ -1005,7 +1012,7 @@ export default function AutoShort(): JSX.Element {
                 <video
                   ref={videoRef}
                   crossOrigin="anonymous"
-                  src={localMediaSource(selectedTask.filePath)}
+                  src={previewPath ? localMediaSource(previewPath) : undefined}
                   onLoadedMetadata={(e) => {
                     const target = e.currentTarget
                     const w = target.videoWidth || 1280
@@ -1776,6 +1783,17 @@ export default function AutoShort(): JSX.Element {
                       value={ttsSpeed}
                       onChange={(e) => setTtsSpeed(parseFloat(e.target.value))}
                     />
+                  </label>
+
+                  <label className="field editor-field">
+                    <span>Nhịp đọc theo video</span>
+                    <select value={paceMode} onChange={(e) => setPaceMode(e.target.value as 'source-adaptive' | 'fixed')}>
+                      <option value="source-adaptive">Tự bám nhịp nguồn (khuyến nghị)</option>
+                      <option value="fixed">Cố định theo tốc độ đã chọn</option>
+                    </select>
+                    <small className="muted">
+                      Tự bám nhịp giữ mốc đầu câu và điều chỉnh nhẹ theo từng khoảng trống, không đổi tốc độ video.
+                    </small>
                   </label>
 
                   <div className="editor-section-divider" style={{ margin: '14px 0', borderBottom: '1px solid var(--border)' }} />

@@ -1,12 +1,14 @@
 import { app } from 'electron'
 import { join } from 'node:path'
+import { readFile, writeFile, mkdir, copyFile, stat } from 'node:fs/promises'
 import { startAutoShortJob } from '../src/main/autoshort'
+import { parseSrt } from '../src/shared/subtitles'
 import type { AutoShortConfig, AutoShortEvent } from '../src/shared/types'
 
 app.setName('tedia-pros')
 app.setPath('userData', join(app.getPath('appData'), 'tedia-pros'))
 
-function runJob(config: AutoShortConfig, filePath: string, label: string): Promise<string> {
+function runJob(config: AutoShortConfig, filePath: string, label: string, itemId: string): Promise<string> {
   return new Promise((resolve, reject) => {
     console.log(`\n========================================`)
     console.log(`[AutoShort] Bắt đầu xử lý: ${label}`)
@@ -17,7 +19,7 @@ function runJob(config: AutoShortConfig, filePath: string, label: string): Promi
     let completedOutput: string | undefined
 
     const request = {
-      items: [{ id: `item-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`, filePath }],
+      items: [{ id: itemId, filePath }],
       config
     }
 
@@ -36,7 +38,7 @@ function runJob(config: AutoShortConfig, filePath: string, label: string): Promi
             resolve(completedOutput)
           } else {
             console.error(`[${label}] Batch error:`, event.results)
-            reject(new Error(`Batch thất bại: có ${event.errorCount} lỗi`))
+            reject(new Error(`Batch thất bại: có ${event.errorCount} lỗi: ${event.results?.[0]?.error || 'unknown'}`))
           }
         }
       } catch (err) {
@@ -55,38 +57,15 @@ app.whenReady().then(async () => {
   try {
     const inputFile = 'C:\\Users\\PC\\Downloads\\test\\test-30s.mp4'
     const outputDir = 'C:\\Users\\PC\\Downloads\\test'
-    const apiKey = process.env.LOCAL_AI_API_KEY || ''
+    const sourceSrtFile = 'C:\\Users\\PC\\Downloads\\tediapros-source-audiotext-base\\test-30s.srt'
+    const sourceAlignmentFile = 'C:\\Users\\PC\\Downloads\\tediapros-source-audiotext-base\\test-30s.alignment.json'
 
-    console.log('[DEBUG] Checking local API Key...')
-    const { getAutoShortReadiness, installAutoShortDependencies } = await import('../src/main/autoshort')
-    const { saveLocalKey, loadLocalKey, checkLocalTranslateKey } = await import('../src/main/localTranslate')
+    console.log('[DEBUG] Khởi tạo AutoShort E2E test...')
+    const { loadLocalKey, checkLocalTranslateKey } = await import('../src/main/localTranslate')
     const { checkTtsServerHealth, getTtsModels } = await import('../src/main/tts')
-    const { whisperModelStatus } = await import('../src/main/whisper')
 
-    if (apiKey) {
-      await saveLocalKey(apiKey)
-      const key = await loadLocalKey()
-      console.log('[DEBUG] Key loaded successfully. Length:', key.length)
-    }
-
-    const baseStatus = await whisperModelStatus('base')
-    const smallStatus = await whisperModelStatus('small')
-    const mediumStatus = await whisperModelStatus('medium')
-    console.log('[DEBUG] Base model status:', baseStatus)
-    console.log('[DEBUG] Small model status:', smallStatus)
-    console.log('[DEBUG] Medium model status:', mediumStatus)
-
-    const chosenModel = smallStatus.complete ? 'small' : mediumStatus.complete ? 'medium' : baseStatus.complete ? 'base' : 'base'
-    console.log('[DEBUG] Chosen Whisper model:', chosenModel)
-
-    let r = await getAutoShortReadiness({ subtitleMethod: 'whisper', whisperModel: chosenModel, whisperDevice: 'cpu' })
-    if (!r.ready) {
-      console.log('[DEBUG] Installing missing dependencies...')
-      r = await installAutoShortDependencies({ subtitleMethod: 'whisper', whisperModel: chosenModel, whisperDevice: 'cpu' }, (p) => {
-        console.log(`[DEP][${p.id}] ${p.phase} ${p.percent}% - ${p.message}`)
-      })
-      console.log('[DEBUG] Dependencies ready:', r.ready)
-    }
+    const key = await loadLocalKey()
+    console.log('[DEBUG] Key loaded. Length:', key.length)
 
     const trHealth = await checkLocalTranslateKey('http://127.0.0.1:8000', key)
     console.log('[DEBUG] Translate health:', trHealth)
@@ -105,12 +84,42 @@ app.whenReady().then(async () => {
     const defaultTtsModel = ttsModelsRes.models.find((m) => m.id === 'tts-vietnamese') || ttsModelsRes.models[0]
     const defaultVoice = defaultTtsModel?.default_voice || defaultTtsModel?.voices?.[0] || 'Mai Anh'
 
-    // Cấu hình Auto Short chuẩn liên kết đầy đủ UI parameters
+    // Pre-populate checkpoint with extracted source cues so extraction stage is recovered deterministically
+    const itemId = `item-test-30s-${Date.now()}`
+    const checkpointDir = join(app.getPath('userData'), 'autoshort-checkpoints', itemId)
+    await mkdir(checkpointDir, { recursive: true })
+
+    const srtContent = await readFile(sourceSrtFile, 'utf8')
+    const parsedSrt = parseSrt(srtContent)
+    const alignmentJson = JSON.parse(await readFile(sourceAlignmentFile, 'utf8'))
+
+    // Build aligned cues with word timestamps
+    const alignedCues = parsedSrt.cues.map((cue, idx) => {
+      const seg = alignmentJson.segments?.[idx]
+      return {
+        id: cue.id || `cue-${idx}`,
+        sourceIndex: cue.sourceIndex ?? idx + 1,
+        start: cue.start,
+        end: cue.end,
+        text: cue.text,
+        source: 'whisper' as const,
+        words: seg?.words || []
+      }
+    })
+
+    const checkpointData = {
+      sourceCues: alignedCues,
+      detectedSourceLanguage: 'zh'
+    }
+    await writeFile(join(checkpointDir, 'checkpoint.json'), JSON.stringify(checkpointData, null, 2), 'utf8')
+    console.log(`[DEBUG] Checkpoint đã được khởi tạo tại ${checkpointDir} với ${alignedCues.length} cues nguồn.`)
+
+    // Cấu hình Auto Short chuẩn
     const viConfig: AutoShortConfig = {
       subtitleMethod: 'whisper',
-      whisperModel: chosenModel,
+      whisperModel: 'base',
       whisperDevice: 'cpu',
-      whisperLanguage: 'auto',
+      whisperLanguage: 'zh',
       ocrRegion: null,
       blurRegions: [],
       lamMo: false,
@@ -123,7 +132,7 @@ app.whenReady().then(async () => {
       bgColor: '#000000',
       bgOpacity: 0.8,
       subtitleDisplayStyle: 'standard',
-      subtitleFontSize: 0,
+      subtitleFontSize: 24,
       highlightColor: '#ffcc00',
       subtitleHighlightPop: false,
       subtitleLayoutProfile: 'readable',
@@ -134,7 +143,7 @@ app.whenReady().then(async () => {
       ttsEnabled: true,
       ttsServerUrl: 'http://127.0.0.1:8000',
       ttsModel: defaultTtsModel?.id || 'tts-vietnamese',
-      ttsVoice: defaultVoice,
+      ttsVoice: 'Mai Anh',
       ttsLanguage: 'vi',
       ttsSpeed: 1.0,
       voiceOverMode: false,
@@ -143,13 +152,37 @@ app.whenReady().then(async () => {
       outputDir
     }
 
-    const rawVi = await runJob(viConfig, inputFile, 'Auto Short Tiếng Việt')
+    const rawVi = await runJob(viConfig, inputFile, 'Auto Short Tiếng Việt', itemId)
     const finalViOutput = join(outputDir, 'test-30s-ket-qua-tieng-viet.mp4')
-    const fs = await import('node:fs/promises')
-    await fs.copyFile(rawVi, finalViOutput)
+    await copyFile(rawVi, finalViOutput)
+
     console.log(`\n========================================`)
     console.log(`>>> TẠO VIDEO THÀNH CÔNG: ${finalViOutput}`)
     console.log(`========================================\n`)
+
+    // Print summary of generated artifacts
+    const auditDirPattern = `.autoshort-audit-`
+    const { readdir } = await import('node:fs/promises')
+    const outFiles = await readdir(outputDir)
+    const auditDirs = outFiles.filter((f) => f.startsWith(auditDirPattern))
+    if (auditDirs.length > 0) {
+      const latestAuditDir = join(outputDir, auditDirs[auditDirs.length - 1])
+      console.log(`[DEBUG] Audit directory: ${latestAuditDir}`)
+      const auditFiles = await readdir(latestAuditDir)
+      console.log('[DEBUG] Artifact files generated:', auditFiles)
+
+      if (auditFiles.includes('dubbing-units.json')) {
+        const units = JSON.parse(await readFile(join(latestAuditDir, 'dubbing-units.json'), 'utf8'))
+        console.log(`\n=== TỔNG KẾT ĐỒNG BỘ CUE-BY-CUE (${units.length} UNITS) ===`)
+        console.log('Unit | Spoken Text | Voice Time | Subtitle Cues')
+        console.log('----------------------------------------------------')
+        for (let i = 0; i < units.length; i++) {
+          const u = units[i]
+          const subInfo = u.subtitles?.map((s: any) => `[${s.start.toFixed(2)}-${s.end.toFixed(2)}: "${s.text}"]`).join(', ') || 'N/A'
+          console.log(`${i + 1} | "${u.finalSpokenText}" | ${u.plannedStart.toFixed(2)}s -> ${u.plannedEnd.toFixed(2)}s | ${subInfo}`)
+        }
+      }
+    }
 
     app.quit()
     process.exit(0)

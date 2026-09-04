@@ -838,6 +838,8 @@ export interface AutoShortConfig {
   ttsOptions?: Record<string, unknown>
   ttsRefAudioPath?: string
   ttsRefTranscript?: string
+  /** Voice pacing policy. Old saved settings migrate to source-adaptive. */
+  paceMode?: 'source-adaptive' | 'fixed'
   voiceOverMode: boolean
   audioMode: 'replace' | 'mix'
   originalAudioVolume: number

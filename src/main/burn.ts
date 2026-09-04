@@ -137,6 +137,10 @@ export interface Meta {
   h: number
   giay: number
   hasAudio: boolean
+  /** Actual per-stream durations; giay remains the container duration. */
+  videoDuration?: number
+  audioDuration?: number
+  frameRate?: number
   rotation?: number
   sampleAspectRatio?: string
   videoStart?: number
@@ -181,7 +185,7 @@ async function doVideo(ffprobe: string, video: string): Promise<Meta> {
       ffprobe,
       [
         '-v', 'error',
-        '-show_entries', 'stream=index,codec_type,width,height,start_time,duration,sample_aspect_ratio:stream_tags=rotate:stream_side_data=rotation',
+        '-show_entries', 'stream=index,codec_type,width,height,start_time,duration,r_frame_rate,sample_aspect_ratio:stream_tags=rotate:stream_side_data=rotation',
         '-show_entries', 'format=duration,start_time',
         '-of', 'json',
         video
@@ -198,6 +202,8 @@ async function doVideo(ffprobe: string, video: string): Promise<Meta> {
               width?: number
               height?: number
               start_time?: string
+              duration?: string
+              r_frame_rate?: string
               sample_aspect_ratio?: string
               tags?: { rotate?: string }
               side_data_list?: Array<{ rotation?: number }>
@@ -216,6 +222,7 @@ async function doVideo(ffprobe: string, video: string): Promise<Meta> {
           const rotationRaw = videoStream?.side_data_list?.find((item) => Number.isFinite(item.rotation))?.rotation
             ?? Number(videoStream?.tags?.rotate || 0)
           const rotation = ((Math.round(rotationRaw || 0) % 360) + 360) % 360
+          const [fpsNum, fpsDen] = (videoStream?.r_frame_rate || '').split('/').map(Number)
           const displayWidth = Math.max(1, Math.round(codedWidth * sarNum / sarDen))
           const displayHeight = codedHeight
           const rotateSwap = rotation === 90 || rotation === 270
@@ -224,6 +231,9 @@ async function doVideo(ffprobe: string, video: string): Promise<Meta> {
             h: rotateSwap ? displayWidth : displayHeight,
             giay: Number(parsed.format?.duration) || 0,
             hasAudio: Boolean(audioStream),
+            videoDuration: Number(videoStream?.duration) || 0,
+            audioDuration: Number(audioStream?.duration) || 0,
+            frameRate: Number.isFinite(fpsNum) && fpsNum > 0 && Number.isFinite(fpsDen) && fpsDen > 0 ? fpsNum / fpsDen : undefined,
             rotation,
             sampleAspectRatio: sar,
             videoStart: Number(videoStream?.start_time) || Number(parsed.format?.start_time) || 0,
