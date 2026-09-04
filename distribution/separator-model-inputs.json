@@ -1,0 +1,72 @@
+{
+  "schemaVersion": 1,
+  "runtimeChannel": "runtime-v4",
+  "models": {
+    "separator-fast-balanced-v1": {
+      "id": "separator-fast-balanced-v1",
+      "version": "1.0.0",
+      "source": {
+        "url": "https://github.com/TRvlvr/model_repo/releases/download/all_public_uvr_models/UVR-MDX-NET-Inst_3.onnx",
+        "revision": "all_public_uvr_models",
+        "bytes": 63234907,
+        "sha256": "4b92b6a8f15d78a8f121d58cf5f5cc1b068868a867c2ce414d3f3e1a067e4e1a"
+      },
+      "license": {
+        "codeSpdx": "MIT",
+        "weightName": "Open Model Redistribution Grant",
+        "weightUrl": "https://github.com/Anjok07/ultimatevocalremovergui/blob/master/LICENSE",
+        "weightRedistributionApproved": true,
+        "attribution": "UVR MDX-Net project and Kuielab contributors."
+      },
+      "model": {
+        "path": "model.onnx",
+        "bytes": 63234907,
+        "sha256": "4b92b6a8f15d78a8f121d58cf5f5cc1b068868a867c2ce414d3f3e1a067e4e1a"
+      },
+      "mdx": {
+        "sampleRate": 44100,
+        "channels": 2,
+        "nFft": 6144,
+        "hopLength": 1024,
+        "dimF": 3072,
+        "dimT": 256,
+        "segmentSamples": 262144,
+        "primaryStem": "instrumental"
+      },
+      "qualificationReport": "docs/benchmarks/2026-09-04-separator-model-qualification.md"
+    },
+    "separator-quality-v1": {
+      "id": "separator-quality-v1",
+      "version": "1.0.0",
+      "source": {
+        "url": "https://github.com/TRvlvr/model_repo/releases/download/all_public_uvr_models/UVR-MDX-NET-Inst_HQ_3.onnx",
+        "revision": "all_public_uvr_models",
+        "bytes": 64894371,
+        "sha256": "6b9e38ef8ffaa49f1165ad5eb42a4dfd1c3a64731f8280f339cfdf5ec8749a93"
+      },
+      "license": {
+        "codeSpdx": "MIT",
+        "weightName": "Open Model Redistribution Grant",
+        "weightUrl": "https://github.com/Anjok07/ultimatevocalremovergui/blob/master/LICENSE",
+        "weightRedistributionApproved": true,
+        "attribution": "UVR MDX-Net project and Kuielab contributors."
+      },
+      "model": {
+        "path": "model.onnx",
+        "bytes": 64894371,
+        "sha256": "6b9e38ef8ffaa49f1165ad5eb42a4dfd1c3a64731f8280f339cfdf5ec8749a93"
+      },
+      "mdx": {
+        "sampleRate": 44100,
+        "channels": 2,
+        "nFft": 6144,
+        "hopLength": 1024,
+        "dimF": 3072,
+        "dimT": 256,
+        "segmentSamples": 262144,
+        "primaryStem": "instrumental"
+      },
+      "qualificationReport": "docs/benchmarks/2026-09-04-separator-model-qualification.md"
+    }
+  }
+}

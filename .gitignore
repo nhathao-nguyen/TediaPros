@@ -90,3 +90,8 @@ run.bat
 # Douyin runtime source package (required by the packaged CLI; not generated data).
 !engines/douyin-engine/storage/
 !engines/douyin-engine/storage/*.py
+
+# Separator fixtures and benchmark artifacts
+tests/fixtures/separator/generated/
+tests/fixtures/separator/private/
+separator-benchmark-results/
