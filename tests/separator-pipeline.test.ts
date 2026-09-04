@@ -9,6 +9,7 @@ import { runSeparatorEngine } from '../src/main/separation/runner'
 import { requiredSeparationWorkspaceBytes } from '../src/main/separation/disk'
 import { separateSourceAudio, type SeparatorProviderState } from '../src/main/separation/pipeline'
 import type { InstalledSeparatorModel } from '../src/main/separation/modelStore'
+import { buildAutoShortNarratedAudioArgs } from '../src/main/autoShortNarratedAudio'
 
 class MockChildProcess extends EventEmitter {
   stdout = new EventEmitter()
@@ -187,4 +188,31 @@ test('separateSourceAudio retries on CPU once after DirectML provider failure', 
   // Verify provider state transitions to 'cpu' when fallback occurs
   assert.equal(providerState.mode, 'auto')
   await rm(root, { recursive: true, force: true })
+})
+
+test('buildAutoShortNarratedAudioArgs with finite-source omits loop, applies 1.0 gain, and never references source video', () => {
+  const args = buildAutoShortNarratedAudioArgs({
+    bedPath: 'C:\\separated\\instrumental.wav',
+    narrationPath: 'C:\\tts\\speech.wav',
+    outputPath: 'C:\\out\\tts-bed-mix.wav',
+    durationSeconds: 15.5,
+    bedMode: 'finite-source',
+    bedVolume: 100
+  })
+
+  assert.ok(!args.includes('-stream_loop'), 'Should omit -stream_loop for finite-source bed')
+  assert.ok(args.includes('-i'), 'Should include input flag')
+  assert.equal(args[args.indexOf('-i') + 1], 'C:\\separated\\instrumental.wav')
+  assert.equal(args[args.lastIndexOf('-i') + 1], 'C:\\tts\\speech.wav')
+
+  const graph = args[args.indexOf('-filter_complex') + 1]
+  assert.match(graph, /volume=1\.0/u, 'Should apply nominal bed gain 1.0')
+  assert.match(graph, /asplit=2\[narr_sc\]\[narr_mix\]/u, 'Should split narration for sidechain and mix')
+  assert.match(graph, /sidechaincompress=threshold=0\.06:ratio=4:attack=15:release=200/u)
+  assert.match(graph, /amix=inputs=2:duration=longest:dropout_transition=2:normalize=0/u)
+  assert.match(graph, /alimiter=limit=-1dB:attack=5:release=50:level=false/u)
+  assert.match(graph, /apad=whole_dur=15\.500,atrim=duration=15\.500/u)
+  assert.ok(args.includes('pcm_s16le'))
+  assert.ok(args.includes('44100'))
+  assert.equal(args.at(-1), 'C:\\out\\tts-bed-mix.wav')
 })
