@@ -799,6 +799,22 @@ export type AutoShortMusicLibraryResult =
   | { ok: true; folderPath: string; tracks: AutoShortMusicTrack[] }
   | { ok: false; tracks: []; error: string }
 
+export type AutoShortAudioMode = 'replace' | 'mix' | 'separate-vocals'
+export type AutoShortSeparationPreset = 'fast' | 'balanced' | 'quality'
+export type SeparatorModelId = 'separator-fast-balanced-v1' | 'separator-quality-v1'
+export type SeparatorProvider = 'directml' | 'cpu'
+export type SeparatorProviderPolicy = 'auto'
+
+export interface AutoShortSeparationReadiness {
+  preset: AutoShortSeparationPreset
+  modelId: SeparatorModelId
+  providerPolicy: SeparatorProviderPolicy
+  effectiveProvider: SeparatorProvider | null
+  offlineReady: boolean
+  releaseTier: 'verified' | 'beta' | 'development'
+  message?: string
+}
+
 export interface AutoShortConfig {
   subtitleMethod: AutoShortSubtitleMethod
   whisperModel: string
@@ -841,7 +857,8 @@ export interface AutoShortConfig {
   /** Voice pacing policy. Old saved settings migrate to source-adaptive. */
   paceMode?: 'source-adaptive' | 'fixed'
   voiceOverMode: boolean
-  audioMode: 'replace' | 'mix'
+  audioMode: AutoShortAudioMode
+  separationPreset?: AutoShortSeparationPreset
   originalAudioVolume: number
   backgroundMusic?: AutoShortBackgroundMusicConfig
   outputDir: string
@@ -865,7 +882,14 @@ export interface AlignedCue {
   words?: TimedWord[]
 }
 
-export type AutoShortDependencyId = 'ffmpeg' | 'whisper-engine' | 'whisper-model' | 'whisper-cuda' | 'ocr-engine'
+export type AutoShortDependencyId =
+  | 'ffmpeg'
+  | 'whisper-engine'
+  | 'whisper-model'
+  | 'whisper-cuda'
+  | 'ocr-engine'
+  | 'separator-engine'
+  | 'separator-model'
 
 export interface AutoShortDependencyStatus {
   id: AutoShortDependencyId
@@ -883,6 +907,7 @@ export interface AutoShortReadiness {
   effectiveDevice: WhisperDevice | null
   dependencies: AutoShortDependencyStatus[]
   model?: WhisperModelStatus
+  separation?: AutoShortSeparationReadiness
   message?: string
 }
 
@@ -909,6 +934,7 @@ export type AutoShortItemStatus =
   | 'queued'
   | 'extracting_sub'
   | 'translating'
+  | 'separating_audio'
   | 'generating_tts'
   | 'stitching_audio'
   | 'rendering_video'

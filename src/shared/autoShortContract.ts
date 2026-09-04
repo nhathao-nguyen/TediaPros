@@ -9,6 +9,7 @@ import type {
   SubtitleDisplayStyle,
   SubtitleLayoutProfile
 } from './types'
+import { isAutoShortSeparationPreset } from './autoShortSeparation'
 
 export type AutoShortValidation =
   | { ok: true; value: AutoShortStartRequest }
@@ -104,14 +105,25 @@ function migrateLegacyConfig(raw: Record<string, unknown>): Record<string, unkno
     : oldMethod === 'fast-whisper' || oldMethod === 'whisper-ocr'
       ? 'cuda'
       : 'cpu'
-  return {
-    ...raw,
+
+  const { separationPreset: legacyPreset, ...restRaw } = raw
+  const base = {
+    ...restRaw,
     subtitleMethod,
     whisperModel,
     whisperDevice,
     voiceOverMode: typeof raw.voiceOverMode === 'boolean' ? raw.voiceOverMode : false,
     paceMode: raw.paceMode === 'fixed' ? 'fixed' : 'source-adaptive'
   }
+
+  if (raw.audioMode === 'separate-vocals') {
+    return {
+      ...base,
+      separationPreset: legacyPreset ?? 'balanced'
+    }
+  }
+
+  return base
 }
 
 function validateConfig(raw: unknown): AutoShortConfig | string {
@@ -214,7 +226,18 @@ function validateConfigRecord(raw: Record<string, unknown>): AutoShortConfig | s
   }
   if (!PACE_MODES.has(raw.paceMode as string)) return 'Chế độ nhịp đọc không hợp lệ.'
   if (raw.ttsOptions != null && !isRecord(raw.ttsOptions)) return 'Tùy chọn TTS không hợp lệ.'
-  if (raw.audioMode !== 'replace' && raw.audioMode !== 'mix') return 'Chế độ âm thanh không hợp lệ.'
+  if (raw.audioMode !== 'replace' && raw.audioMode !== 'mix' && raw.audioMode !== 'separate-vocals') {
+    return 'Chế độ âm thanh không hợp lệ.'
+  }
+  if (raw.audioMode === 'separate-vocals') {
+    if (raw.ttsEnabled !== true) return 'Tách thoại gốc cần bật lồng tiếng AI.'
+    if (!isAutoShortSeparationPreset(raw.separationPreset)) {
+      return 'Chất lượng tách thoại không hợp lệ.'
+    }
+    if (raw.backgroundMusic != null) {
+      return 'Không dùng nhạc background riêng khi giữ nhạc và SFX từ video nguồn.'
+    }
+  }
   if (raw.backgroundMusic != null) {
     if (!isRecord(raw.backgroundMusic)) return 'Cấu hình nhạc background không hợp lệ.'
     const backgroundMusic = raw.backgroundMusic
