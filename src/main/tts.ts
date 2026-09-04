@@ -191,13 +191,27 @@ export async function getTtsModels(
   }
 }
 
-function cleanOptions(options?: Record<string, any>, supportedOptions?: string[]): Record<string, any> {
+export function cleanOptions(
+  options?: Record<string, any>,
+  supportedOptions?: string[],
+  modelOrProvider?: string
+): Record<string, any> {
   if (!options || typeof options !== 'object') return {}
   const clean: Record<string, any> = {}
   const allowed = supportedOptions && supportedOptions.length > 0 ? new Set(supportedOptions) : null
 
   for (const [key, value] of Object.entries(options)) {
     if (allowed && !allowed.has(key)) continue
+    if (key === 'denoise' && !allowed && modelOrProvider) {
+      const lower = modelOrProvider.toLowerCase()
+      if (
+        lower === 'chatterbox' ||
+        lower === 'tts-multilingual' ||
+        (!lower.includes('vieneu') && !lower.includes('tts-vietnamese'))
+      ) {
+        continue
+      }
+    }
     if (typeof value === 'boolean') {
       clean[key] = value
     } else if (typeof value === 'number' && Number.isFinite(value)) {
@@ -220,7 +234,7 @@ export async function generateSpeech(
     return { ok: false, error: 'Văn bản không được để trống' }
   }
 
-  const cleanOpts = cleanOptions(req.options)
+  const cleanOpts = cleanOptions(req.options, req.supportedOptions, req.model)
   const safeSpeed = Number.isFinite(req.speed) ? Math.min(2, Math.max(0.5, req.speed!)) : 1.0
   const payload: Record<string, any> = {
     input: text,
@@ -307,7 +321,7 @@ export async function generateVoiceClone(
     const fileName = basename(req.referenceAudioPath)
     const blob = new Blob([audioFileBuffer], { type: audioMimeType(fileName) })
 
-    const cleanOpts = cleanOptions(req.options)
+    const cleanOpts = cleanOptions(req.options, req.supportedOptions, req.model)
 
     const form = new FormData()
     form.append('text', text)

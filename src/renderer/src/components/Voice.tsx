@@ -316,11 +316,28 @@ export default function Voice(): JSX.Element {
     setSaveSuccessMsg(null)
 
     try {
-      const options: Record<string, any> = {
+      const rawOptions: Record<string, any> = {
         denoise,
         temperature,
         top_p: topP,
         repetition_penalty: repetitionPenalty
+      }
+
+      const supported = selectedModelInfo?.supported_options
+      const allowed = Array.isArray(supported) && supported.length > 0 ? new Set(supported) : null
+      const options: Record<string, any> = {}
+
+      for (const [key, value] of Object.entries(rawOptions)) {
+        if (allowed) {
+          if (allowed.has(key)) {
+            options[key] = value
+          }
+        } else {
+          if (key === 'denoise' && selectedModelInfo?.provider !== 'vieneu') {
+            continue
+          }
+          options[key] = value
+        }
       }
 
       let res: TtsGenerateResult
@@ -346,7 +363,8 @@ export default function Voice(): JSX.Element {
           speed,
           referenceAudioPath: audioPath,
           referenceTranscript: transcript,
-          options
+          options,
+          supportedOptions: selectedModelInfo?.supported_options
         }
         res = await window.api.ttsGenerateClone(req)
 
@@ -380,7 +398,8 @@ export default function Voice(): JSX.Element {
           model: selectedModel,
           voice: isNamed && selectedVoice !== 'default' ? selectedVoice : undefined,
           speed,
-          options
+          options,
+          supportedOptions: selectedModelInfo?.supported_options
         }
         res = await window.api.ttsGenerateSpeech(req)
       }
@@ -753,7 +772,7 @@ export default function Voice(): JSX.Element {
 
           {showAdvanced && (
             <div className="voice-advanced-panel">
-              {(!selectedModelInfo?.supported_options || selectedModelInfo.supported_options.includes('denoise')) && (
+              {(selectedModelInfo?.supported_options ? selectedModelInfo.supported_options.includes('denoise') : selectedModelInfo?.provider === 'vieneu') && (
                 <div className="voice-form-row">
                   <label className="voice-checkbox-label">
                     <input

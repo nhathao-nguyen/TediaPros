@@ -1883,6 +1883,33 @@ test('AutoShort component does not hardcode static fallback options in TTS model
   assert.doesNotMatch(autoShortSource, /<option value="tts-multilingual">/u)
 })
 
+test('cleanOptions strictly filters unsupported options and prevents denoise from reaching chatterbox', async () => {
+  const { cleanOptions } = await import('../src/main/tts')
+  const allOpts = { denoise: true, temperature: 0.8, top_p: 0.95, repetition_penalty: 1.2 }
+
+  // 1. Model with explicit supported_options excluding denoise
+  const filtered1 = cleanOptions(allOpts, ['temperature', 'top_p', 'repetition_penalty'])
+  assert.deepEqual(filtered1, { temperature: 0.8, top_p: 0.95, repetition_penalty: 1.2 })
+  assert.equal('denoise' in filtered1, false)
+
+  // 2. Chatterbox without explicit supported_options (fallback filtering)
+  const filtered2 = cleanOptions(allOpts, undefined, 'tts-multilingual')
+  assert.equal('denoise' in filtered2, false)
+  assert.equal(filtered2.temperature, 0.8)
+
+  // 3. VieNeu model preserving denoise
+  const filtered3 = cleanOptions(allOpts, ['denoise', 'temperature'], 'tts-vietnamese')
+  assert.equal(filtered3.denoise, true)
+  assert.equal(filtered3.temperature, 0.8)
+
+  // 4. Source code contracts: Voice.tsx passes supportedOptions, tts.ts cleans with model/supportedOptions
+  const voiceSource = await readFile(join(process.cwd(), 'src', 'renderer', 'src', 'components', 'Voice.tsx'), 'utf8')
+  assert.match(voiceSource, /supportedOptions:\s*selectedModelInfo\?\.supported_options/u)
+
+  const ttsSource = await readFile(join(process.cwd(), 'src', 'main', 'tts.ts'), 'utf8')
+  assert.match(ttsSource, /cleanOptions\(req\.options,\s*req\.supportedOptions,\s*req\.model\)/u)
+})
+
 test('OCR engine Python script uses stable frame selection and 2D line sorting without scope errors', async () => {
   const engineSource = await readFile(join(process.cwd(), 'engines', 'ocr-engine', 'engine.py'), 'utf8')
   assert.doesNotMatch(engineSource, /files\[i\]/u)

@@ -709,6 +709,7 @@ export interface TtsSpeechRequest {
   voice?: string
   speed?: number
   options?: Record<string, any>
+  supportedOptions?: string[]
 }
 
 export interface TtsCloneRequest {
@@ -722,6 +723,7 @@ export interface TtsCloneRequest {
   referenceAudioPath: string
   referenceTranscript?: string
   options?: Record<string, any>
+  supportedOptions?: string[]
 }
 
 export interface TtsGenerateResult {
