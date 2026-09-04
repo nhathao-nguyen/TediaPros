@@ -39,6 +39,7 @@ export interface DubbingSynthesisInput {
   voice?: string | null
   options?: Record<string, unknown>
   fixedTempo?: number
+  localTempoDelta?: number
   predictor?: DurationPredictor
   tts: DubbingTtsAdapter
   audio: DubbingAudioAdapter
@@ -211,7 +212,8 @@ export async function synthesizeDubbingPlan(input: DubbingSynthesisInput): Promi
     if (current.voice) voice = current.voice
 
     const window = windows[index]
-    const localCeiling = globalTempo + DUBBING_LOCAL_TEMPO_DELTA
+    const localDelta = Math.max(0, input.localTempoDelta ?? DUBBING_LOCAL_TEMPO_DELTA)
+    const localCeiling = globalTempo + localDelta
     if (current.naturalDuration / window.availableDuration > localCeiling + DUBBING_TIMING_TOLERANCE_SECONDS) {
       if (input.rephrase) {
         const candidates = await input.rephrase({

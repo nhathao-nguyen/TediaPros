@@ -30,7 +30,7 @@ import { applyDubbingTranslations } from './dubbing/translation'
 import { buildTtsCacheKey } from './dubbing/cache'
 import { synthesizeDubbingPlan } from './dubbing/synthesis'
 import { DUBBING_PLAN_VERSION, buildDubbingPlan as buildPlan, validateDubbingPlan, type DubbingPlan } from './dubbing/plan'
-import { huongDan, parseTranslationItems } from './translate-shared'
+import { huongDan, parseTranslationItems, stripOuterQuotes } from './translate-shared'
 import { resolveTranslationSourceLanguage } from './localTranslatePolicy'
 import { debugRaw, logInfo, logWarn, logError, errLabel } from './logger'
 import {
@@ -771,7 +771,7 @@ function safeArtifactSegment(value: string): string {
 function spokenTextWithoutSpeakerLabel(text: string): string {
   const clean = text.trim()
   const withoutLabel = clean.replace(/^\s*\[SPEAKER_\d+\]\s*/iu, '').trim()
-  return withoutLabel || clean
+  return stripOuterQuotes(withoutLabel || clean)
 }
 
 async function preserveAutoShortArtifacts(
@@ -1809,6 +1809,10 @@ async function synthesizeVoice(
       return { path: outputPath, duration: actualDuration }
     }
   }
+  const allowDynamicRephrase = config.translateProvider !== 'local'
+  if (!allowDynamicRephrase) {
+    logInfo('[AutoShort] Chế độ dịch Local: Vô hiệu hóa LLM rephrase trong giai đoạn TTS để tránh model thrashing / nghẽn VRAM. Sử dụng FFmpeg DSP co giãn nhịp tự động.')
+  }
   const synthesized = await synthesizeDubbingPlan({
     plan: translatedPlan,
     language,
@@ -1816,10 +1820,13 @@ async function synthesizeVoice(
     voice: effectiveVoice,
     options: config.ttsOptions,
     fixedTempo: config.ttsSpeed || 1,
+    localTempoDelta: allowDynamicRephrase ? undefined : 0.15,
     predictor,
     tts: adapter,
     audio: audioAdapter,
-    rephrase: (request, signal) => rephraseDubbingCue(config, request.cueId, request.currentText, request.targetDuration, language, detectedLanguage, signal),
+    rephrase: allowDynamicRephrase
+      ? (request, signal) => rephraseDubbingCue(config, request.cueId, request.currentText, request.targetDuration, language, detectedLanguage, signal)
+      : undefined,
     signal: job.controller.signal,
     onProgress: (completed, count, cueId) => emitProgress(job, item, 'generating_tts', 58 + (completed / Math.max(1, count)) * 20, `Đang tạo voice ${completed}/${count} (${cueId})`, index, total)
   })

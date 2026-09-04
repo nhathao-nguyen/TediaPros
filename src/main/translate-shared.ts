@@ -77,6 +77,14 @@ export function buildTranslationBatches<T extends SrtBlock>(
 }
 
 /**
+ * Estimate the target character/grapheme budget for a cue based on its duration.
+ * Based on ~13 graphemes per second (natural speaking rate of ~3.5-4 words/sec).
+ */
+export function estimateCueCharBudget(durationInSeconds: number): number {
+  return Math.max(8, Math.round(durationInSeconds * 13))
+}
+
+/**
  * Build the provider-neutral request body for dubbing translation. The model
  * sees a complete semantic group and its source-time budget, while context
  * cues remain explicitly read-only and are never valid response items.
@@ -111,6 +119,7 @@ export function buildDubbingTranslationPayload<T extends SrtBlock>(
     `Bắt buộc: mọi cue trong phần Nội dung cần dịch phải được viết bằng ${targetLanguage}; không được lặp lại ngôn ngữ nguồn trừ tên riêng/thuật ngữ cần giữ.`,
     'Đọc toàn bộ từng nhóm như một utterance liền mạch trước khi dịch. Sau đó trả về đúng một bản dịch cho từng cue ID hiện tại.',
     'Bản dịch phải là lời nói tự nhiên, súc tích, giữ đủ ý nghĩa và thông tin quan trọng; chỉ bỏ redundancy ngôn ngữ đích, không được tự ý lược ý.',
+    'Bắt buộc vừa vặn thời lượng: Mỗi câu dịch phải nói vừa trong thời lượng và không vượt quá số ký tự ước tính được ghi ở từng cue để giọng đọc (TTS) không bị tràn timeline.',
     'Chỉ các cue trong mục Nội dung cần dịch là đầu ra hợp lệ. Các cue trong mục Ngữ cảnh chỉ để hiểu nghĩa, không được trả về.',
     ''
   ]
@@ -133,7 +142,9 @@ export function buildDubbingTranslationPayload<T extends SrtBlock>(
     lines.push(`Hiểu và tối ưu cả nhóm trong ngân sách thời lượng ${groupDuration}, nhưng vẫn giữ đủ nghĩa.`)
     for (const cue of group.cues) {
       const duration = cueDuration(cue)
-      const durationLabel = duration != null ? ` (thời lượng cue: ${duration.toFixed(2)}s)` : ''
+      const durationLabel = duration != null
+        ? ` (thời lượng cue: ${duration.toFixed(2)}s, tối đa ~${estimateCueCharBudget(duration)} ký tự)`
+        : ''
       lines.push(`[${cue.id}]${durationLabel} ${cue.text}`)
     }
     if (groupIndex < groups.length - 1) lines.push('')
@@ -178,6 +189,17 @@ export function validateTranslationItems(
   if (seen.size !== expected.size) throw new Error('Kết quả dịch thiếu cue nguồn.')
 }
 
+/**
+ * Strip outer matching quotation marks ("", '', “”, «», etc.) from translated lines.
+ */
+export function stripOuterQuotes(text: string): string {
+  let s = text.trim()
+  while (/^["'“”«»]([\s\S]*)["'“”«»]$/u.test(s)) {
+    s = s.slice(1, -1).trim()
+  }
+  return s
+}
+
 /** Parse the provider-neutral `[cue-id] translation` line format or JSON items. */
 export function parseTranslationItems(raw: string): TranslationItem[] {
   const text = raw.trim()
@@ -192,7 +214,7 @@ export function parseTranslationItems(raw: string): TranslationItem[] {
       return candidate.map((value) => {
         const record = value && typeof value === 'object' ? value as Record<string, unknown> : {}
         const rawT = typeof record.t === 'string' ? record.t.trim() : typeof record.text === 'string' ? record.text.trim() : ''
-        const cleanT = rawT.replace(/^\s*\((?:thời lượng|duration|time)[\s\S]*?\)\s*/iu, '').trim()
+        const cleanT = stripOuterQuotes(rawT.replace(/^\s*\((?:thời lượng|duration|time)[\s\S]*?\)\s*/iu, '').trim())
         return { id: typeof record.id === 'string' ? record.id.trim() : '', text: cleanT }
       })
     }
@@ -205,7 +227,7 @@ export function parseTranslationItems(raw: string): TranslationItem[] {
   for (const line of text.replace(/\r\n/g, '\n').split('\n')) {
     const match = pattern.exec(line)
     if (!match) continue
-    const cleanT = match[2].trim().replace(/^\s*\((?:thời lượng|duration|time)[\s\S]*?\)\s*/iu, '').trim()
+    const cleanT = stripOuterQuotes(match[2].trim().replace(/^\s*\((?:thời lượng|duration|time)[\s\S]*?\)\s*/iu, '').trim())
     items.push({ id: match[1].trim(), text: cleanT })
   }
   return items

@@ -10,6 +10,7 @@ import {
   chia,
   huongDan,
   parseSrt,
+  stripOuterQuotes,
   validateTranslationItems
 } from './translate-shared'
 
@@ -285,7 +286,7 @@ export async function translateSrt(
       const rawItems = Array.isArray(parsed) ? parsed : (parsed.items ?? [])
       arr = rawItems.map((item) => {
         const rawT = typeof item.t === 'string' ? item.t.trim() : ''
-        const cleanT = rawT.replace(/^\s*\((?:thời lượng|duration|time)[\s\S]*?\)\s*/iu, '').trim()
+        const cleanT = stripOuterQuotes(rawT.replace(/^\s*\((?:thời lượng|duration|time)[\s\S]*?\)\s*/iu, '').trim())
         return {
           id: typeof item.id === 'string' ? item.id.trim() : '',
           t: cleanT
