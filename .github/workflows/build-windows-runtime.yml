@@ -14,7 +14,7 @@ on:
       runtime_version:
         description: Immutable runtime release tag
         required: true
-        default: runtime-v2
+        default: runtime-v3
       publish:
         description: Publish the verified bundle as a GitHub release
         required: true
@@ -30,7 +30,7 @@ concurrency:
 
 env:
   PYTHON_VERSION: '3.12.10'
-  RUNTIME_VERSION: ${{ github.event_name == 'workflow_dispatch' && inputs.runtime_version || 'runtime-v2' }}
+  RUNTIME_VERSION: ${{ github.event_name == 'workflow_dispatch' && inputs.runtime_version || 'runtime-v3' }}
 
 jobs:
   build:
@@ -165,16 +165,26 @@ jobs:
         shell: pwsh
         run: |
           $root = $env:RUNTIME_INPUT_ROOT
-          & (Join-Path $root 'whisper-engine\whisper-engine.exe') --version
-          & (Join-Path $root 'whisper-engine\whisper-engine.exe') --probe --device cpu
-          & (Join-Path $root 'ocr-engine\ocr-engine.exe') --version
-          & (Join-Path $root 'ocr-engine\ocr-engine.exe') --probe
-          & (Join-Path $root 'douyin\dy-engine.exe') --version
-          & (Join-Path $root 'video2x\video2x.exe') -l
-          & (Join-Path $root 'ffmpeg\ffmpeg.exe') -version
-          & (Join-Path $root 'ffmpeg\ffprobe.exe') -version
+          function Invoke-NativeProbe([string] $Executable, [string[]] $Arguments) {
+            & $Executable @Arguments
+            if ($LASTEXITCODE -ne 0) {
+              throw "Native capability probe failed ($LASTEXITCODE): $Executable $($Arguments -join ' ')"
+            }
+          }
+          Invoke-NativeProbe (Join-Path $root 'whisper-engine\whisper-engine.exe') @('--version')
+          Invoke-NativeProbe (Join-Path $root 'whisper-engine\whisper-engine.exe') @('--probe', '--device', 'cpu')
+          Invoke-NativeProbe (Join-Path $root 'ocr-engine\ocr-engine.exe') @('--version')
+          Invoke-NativeProbe (Join-Path $root 'ocr-engine\ocr-engine.exe') @('--probe')
+          Invoke-NativeProbe (Join-Path $root 'douyin\dy-engine.exe') @('--version')
+          # The hosted Windows runner is headless and has no Vulkan GPU.  A
+          # device-list probe would therefore reject a valid Video2X binary
+          # before packaging; --version verifies the exact native executable
+          # without requiring hardware that CI does not provide.
+          Invoke-NativeProbe (Join-Path $root 'video2x\video2x.exe') @('--version')
+          Invoke-NativeProbe (Join-Path $root 'ffmpeg\ffmpeg.exe') @('-version')
+          Invoke-NativeProbe (Join-Path $root 'ffmpeg\ffprobe.exe') @('-version')
 
-      - name: Create and verify runtime-v2 manifest from clean artifacts
+      - name: Create and verify runtime-v3 manifest from clean artifacts
         shell: pwsh
         run: |
           node scripts/pack-runtime-release.mjs --input-dir $env:RUNTIME_INPUT_ROOT --output-dir release-artifacts --runtime-version $env:RUNTIME_VERSION --platform win32 --arch x64

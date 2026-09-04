@@ -80,10 +80,14 @@ async function verifyFiles(root: string, spec: RuntimeAssetSpec): Promise<void> 
   for (const file of spec.files) {
     const path = join(root, ...file.split('/'))
     const info = await stat(path).catch(() => null)
-    if (!info?.isFile() || info.size <= 0) throw new Error(`Archive thiếu file bắt buộc ${file}.`)
+    // Package metadata files (for example PyAV's __init__.pxd) may be
+    // intentionally empty. Presence and regular-file type are the contract;
+    // only the executable entrypoint must contain bytes.
+    if (!info?.isFile()) throw new Error(`Archive thiếu file bắt buộc ${file}.`)
   }
   const entrypoint = join(root, ...spec.entrypoint.split('/'))
-  if (!(await access(entrypoint, constants.F_OK).then(() => true).catch(() => false))) {
+  const entrypointInfo = await stat(entrypoint).catch(() => null)
+  if (!entrypointInfo?.isFile() || entrypointInfo.size <= 0) {
     throw new Error(`Archive thiếu entrypoint ${spec.entrypoint}.`)
   }
 }

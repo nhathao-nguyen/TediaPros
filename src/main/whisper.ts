@@ -186,7 +186,8 @@ export async function whisperModelStatus(rawModel: string): Promise<WhisperModel
         complete: false,
         valid: false,
         downloadBytes: spec.downloadBytes,
-        path: null
+        path: null,
+        message: `Model ${modelId} chưa được cài.`
       }
 }
 

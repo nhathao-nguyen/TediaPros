@@ -11,6 +11,24 @@ export const AUTO_SHORT_TTS_MAX_TEMPO = AUTO_SHORT_TTS_HARD_MAX_TEMPO
 export const AUTO_SHORT_TTS_SEMANTIC_TOLERANCE_SECONDS = 0.06
 
 /**
+ * Decide whether a semantic group should be split before timeline planning.
+ *
+ * A multi-cue group can be safely split at a cue boundary when its complete
+ * narration cannot fit at the hard tempo limit. A single cue must remain an
+ * explicit failure so content is never silently discarded.
+ */
+export function shouldSplitAutoShortVoiceGroup(
+  cueCount: number,
+  naturalDuration: number,
+  availableDuration: number,
+  maxTempo = AUTO_SHORT_TTS_MAX_TEMPO
+): boolean {
+  if (cueCount < 2 || !(naturalDuration > 0) || !(availableDuration > 0)) return false
+  const upperTempo = Math.min(Math.max(1, maxTempo), AUTO_SHORT_TTS_HARD_MAX_TEMPO)
+  return naturalDuration > availableDuration * upperTempo + AUTO_SHORT_TTS_SEMANTIC_TOLERANCE_SECONDS
+}
+
+/**
  * Policy constants for TTS voice audio processing.
  * All thresholds and durations are language-independent and physically calibrated:
  *
@@ -623,4 +641,3 @@ export function validateRenderedOutputMedia(
     decodable: true
   }
 }
-

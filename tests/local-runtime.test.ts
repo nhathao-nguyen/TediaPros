@@ -25,6 +25,7 @@ import {
   planAutoShortVoiceTimeline,
   validateAutoShortTtsModel,
   validateAutoShortTimelineSync,
+  shouldSplitAutoShortVoiceGroup,
   resolveAutoShortWhisperLanguage,
   buildAutoShortTtsTrimFilter,
   AUTO_SHORT_TTS_MIN_GAP_SECONDS,
@@ -1064,6 +1065,12 @@ test('AutoShort rejects impossible voice timelines with clear diagnostic error w
   )
 })
 
+test('AutoShort splits an overlong multi-cue voice group but never hides an impossible single cue', () => {
+  assert.equal(shouldSplitAutoShortVoiceGroup(3, 6.2, 4.5, 1.35), true)
+  assert.equal(shouldSplitAutoShortVoiceGroup(1, 6.2, 4.5, 1.35), false)
+  assert.equal(shouldSplitAutoShortVoiceGroup(3, 5.9, 4.5, 1.35), false)
+})
+
 test('AutoShort audio REPLACE mode isolates narration track without mixing original stream', () => {
   const meta = { w: 1280, h: 720, giay: 10, fps: 30, hasAudio: true }
   const filters = taoFilterComplex(meta, [], false, false, 'sub.ass', true, true, 0)
@@ -1620,6 +1627,18 @@ test('Case A (fresh install): engine status reports missing clearly and does not
   const whisperStatus = await whisperEngineStatus()
   assert.equal(whisperStatus.has, false)
   assert.equal(whisperStatus.healthy, false)
+})
+
+test('FFmpeg setup is single-flight so Windows runtime promotion cannot race', async () => {
+  const source = await readFile(join(process.cwd(), 'src', 'main', 'deps.ts'), 'utf8')
+  assert.match(source, /let\s+ffmpegInstallInFlight:\s*Promise<void>\s*\|\s*null\s*=\s*null/u)
+  assert.match(source, /if\s*\(ffmpegInstallInFlight\)\s*return\s+ffmpegInstallInFlight/u)
+  assert.match(source, /ffmpegInstallInFlight\s*=\s*doInstallFfmpeg\(onProgress\)/u)
+})
+
+test('Missing Whisper models report an actionable status instead of looking stuck', async () => {
+  const source = await readFile(join(process.cwd(), 'src', 'main', 'whisper.ts'), 'utf8')
+  assert.match(source, /installed:\s*false,\s*complete:\s*false,\s*valid:\s*false,\s*downloadBytes:\s*spec\.downloadBytes,\s*path:\s*null,\s*message:\s*`Model \$\{modelId\} chưa được cài\.`/u)
 })
 
 test('Case B (runtime installed): canonical resolver locates runtime executables in userData', async () => {

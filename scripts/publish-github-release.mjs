@@ -8,7 +8,7 @@ import { verifyRuntimeReleaseDirectory } from './verify-runtime-release.mjs'
 
 const owner = process.env.TEDIAPROS_DISTRIBUTION_OWNER?.trim() || 'nhathao-nguyen'
 const repo = process.env.TEDIAPROS_DISTRIBUTION_REPO?.trim() || 'TediaPros'
-const DEFAULT_RUNTIME_CHANNEL = 'runtime-v2'
+const DEFAULT_RUNTIME_CHANNEL = 'runtime-v3'
 const requestedTag = process.env.TEDIAPROS_RUNTIME_CHANNEL?.trim() || process.env.RUNTIME_VERSION?.trim() || DEFAULT_RUNTIME_CHANNEL
 let tag = null
 const tokenArg = process.argv.indexOf('--token')
