@@ -10,6 +10,8 @@
 
 **Spec:** `docs/superpowers/specs/2026-09-04-autoshort-ocr-timed-text-blur-design.md`
 
+**Detailed execution runbook:** `docs/superpowers/plans/2026-09-05-autoshort-ocr-timed-text-blur-detailed.md` (authoritative for task ordering, exact RED/GREEN checks, runtime proof, acceptance, and cleanup procedure).
+
 ## Global Constraints
 
 - At execution time, use `superpowers:using-git-worktrees` from the latest commit containing this plan and the approved spec. Do not stash, delete, stage, or modify the unrelated `SESSION_CHAT_LOG.md` in the original checkout.
