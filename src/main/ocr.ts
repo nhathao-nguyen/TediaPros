@@ -13,19 +13,20 @@ async function resolveEnginePath(): Promise<string | null> {
   return resolveRuntimeExecutable('ocr-engine', isWin ? ['ocr-engine.exe'] : ['ocr-engine'])
 }
 
-async function probeOcr(path: string): Promise<{ healthy: boolean; version: string | null; protocol: string | null; message?: string }> {
+async function probeOcr(path: string): Promise<{ healthy: boolean; version: string | null; protocol: string | null; features: string[]; message?: string }> {
   const result = await probeRuntimeExecutable('ocr-engine', path)
   return {
     healthy: result.healthy,
     version: result.version || null,
     protocol: result.protocol || null,
+    features: result.features || [],
     message: result.message
   }
 }
 
 export async function ocrEngineStatus(): Promise<OcrEngineStatus> {
   const path = await resolveEnginePath()
-  if (!path) return { has: false, healthy: false, needsUpdate: false, message: 'Chưa cài đặt OCR runtime.' }
+  if (!path) return { has: false, healthy: false, needsUpdate: false, features: [], message: 'Chưa cài đặt OCR runtime.' }
   const probe = await probeOcr(path)
   return { has: true, needsUpdate: !probe.healthy, ...probe }
 }

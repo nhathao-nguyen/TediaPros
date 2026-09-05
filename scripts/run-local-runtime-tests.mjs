@@ -46,17 +46,26 @@ const electronMockPlugin = {
   }
 }
 
+const knownTests = [
+  'local-runtime.test',
+  'canonical-runtime-migration.test',
+  'e2e-autoshort.test',
+  'release-tooling.test',
+  'dubbing-plan.test',
+  'separator-contract.test',
+  'separator-runtime.test',
+  'separator-pipeline.test',
+  'autoshort-ocr-contract.test'
+]
+
+const requestedTests = process.argv.slice(2).map((name) => name.replace(/\.(ts|js)$/, ''))
+const selectedTests = requestedTests.length > 0 ? requestedTests : knownTests
+for (const testName of selectedTests) {
+  if (!knownTests.includes(testName)) throw new Error(`Unknown local-runtime test: ${testName}`)
+}
+
 await build({
-  entryPoints: [
-    'tests/local-runtime.test.ts',
-    'tests/canonical-runtime-migration.test.ts',
-    'tests/e2e-autoshort.test.ts',
-    'tests/release-tooling.test.ts',
-    'tests/dubbing-plan.test.ts',
-    'tests/separator-contract.test.ts',
-    'tests/separator-runtime.test.ts',
-    'tests/separator-pipeline.test.ts'
-  ],
+  entryPoints: selectedTests.map((testName) => `tests/${testName}.ts`),
   bundle: true,
   platform: 'node',
   format: 'cjs',
@@ -66,15 +75,7 @@ await build({
   plugins: [electronMockPlugin]
 })
 
-const result1 = spawnSync(process.execPath, ['--test', join(outDir, 'local-runtime.test.js')], { stdio: 'inherit' })
-const result2 = spawnSync(process.execPath, ['--test', join(outDir, 'canonical-runtime-migration.test.js')], { stdio: 'inherit' })
-const result4 = spawnSync(process.execPath, ['--test', join(outDir, 'e2e-autoshort.test.js')], { stdio: 'inherit' })
-const result5 = spawnSync(process.execPath, ['--test', join(outDir, 'release-tooling.test.js')], { stdio: 'inherit' })
-const result6 = spawnSync(process.execPath, ['--test', join(outDir, 'dubbing-plan.test.js')], { stdio: 'inherit' })
-const result7 = spawnSync(process.execPath, ['--test', join(outDir, 'separator-contract.test.js')], { stdio: 'inherit' })
-const result8 = spawnSync(process.execPath, ['--test', join(outDir, 'separator-runtime.test.js')], { stdio: 'inherit' })
-const result9 = spawnSync(process.execPath, ['--test', join(outDir, 'separator-pipeline.test.js')], { stdio: 'inherit' })
-
-if (result1.status !== 0 || result2.status !== 0 || result4.status !== 0 || result5.status !== 0 || result6.status !== 0 || result7.status !== 0 || result8.status !== 0 || result9.status !== 0) {
-  process.exit(1)
-}
+const results = selectedTests.map((testName) =>
+  spawnSync(process.execPath, ['--test', join(outDir, `${testName}.js`)], { stdio: 'inherit' })
+)
+if (results.some((result) => result.status !== 0)) process.exit(1)

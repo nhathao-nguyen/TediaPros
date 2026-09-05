@@ -148,7 +148,7 @@ export async function createSupportReport(): Promise<SupportReport> {
     safeValue(detectGpu(), null),
     safeValue(dyEngineStatus(), { has: false }),
     safeValue(whisperEngineStatus(), { has: false }),
-    safeValue(ocrEngineStatus(), { has: false }),
+    safeValue(ocrEngineStatus(), { has: false, features: [] }),
     safeValue(video2xEngineStatus(), { has: false, supported: process.platform !== 'darwin' }),
     ffmpegCommand ? captureVersion(ffmpegCommand, ['-version']) : Promise.resolve(null)
   ])

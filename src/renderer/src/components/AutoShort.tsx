@@ -5,6 +5,8 @@ import {
   DICH_LANGS,
   type AutoShortAudioMode,
   type AutoShortSeparationPreset,
+  type AutoShortBlurMode,
+  type AutoShortOcrBlurProfile,
   type AutoShortConfig,
   type AutoShortBackgroundMusicConfig,
   type AutoShortBackgroundMusicMode,
@@ -23,6 +25,7 @@ import {
   type TtsModelInfo,
   type WhisperDevice
 } from '../../../shared/types'
+import { normalizeAutoShortBlurMode, normalizeAutoShortOcrBlurProfile } from '../../../shared/autoShortOcrBlur'
 import { createAutoShortMusicAssignments } from '../../../shared/autoShortBackgroundMusic'
 import { localMediaSource } from '../lib/localMedia'
 import { useTabOutputDir } from '../lib/outputDir'
@@ -207,8 +210,25 @@ export default function AutoShort(): JSX.Element {
 
   // Blur Regions
   const [blurEnabled, setBlurEnabled] = useState(true)
+  const [blurModeRaw, setBlurModeRaw] = usePersistedState<AutoShortBlurMode>(
+    'tblao.autoshort.blurMode',
+    'manual'
+  )
+  const [ocrBlurProfileRaw, setOcrBlurProfileRaw] = usePersistedState<AutoShortOcrBlurProfile>(
+    'tblao.autoshort.ocrBlurProfile',
+    'accurate'
+  )
+  const blurMode = normalizeAutoShortBlurMode(blurModeRaw)
+  const ocrBlurProfile = normalizeAutoShortOcrBlurProfile(ocrBlurProfileRaw)
+
+  useEffect(() => {
+    if (blurModeRaw !== blurMode) setBlurModeRaw(blurMode)
+    if (ocrBlurProfileRaw !== ocrBlurProfile) setOcrBlurProfileRaw(ocrBlurProfile)
+  }, [blurMode, blurModeRaw, ocrBlurProfile, ocrBlurProfileRaw, setBlurModeRaw, setOcrBlurProfileRaw])
+
   const [blurRegions, setBlurRegions] = useState<BlurRegion[]>([])
   const [activeBlurId, setActiveBlurId] = useState<string | null>(null)
+
 
   // TTS AI Voice
   const [ttsEnabled, setTtsEnabled] = usePersistedState('tblao.autoshort.ttsEnabled', true)
@@ -458,6 +478,9 @@ export default function AutoShort(): JSX.Element {
         subtitleMethod,
         whisperModel: selectedWhisperModel,
         whisperDevice,
+        lamMo: blurEnabled,
+        blurMode,
+        ocrBlurProfile,
         audioMode,
         separationPreset
       })
@@ -467,7 +490,7 @@ export default function AutoShort(): JSX.Element {
       setReadiness(null)
       return null
     }
-  }, [selectedWhisperModel, subtitleMethod, whisperDevice, audioMode, separationPreset])
+  }, [selectedWhisperModel, subtitleMethod, whisperDevice, blurEnabled, blurMode, ocrBlurProfile, audioMode, separationPreset])
 
   useEffect(() => {
     let active = true
@@ -859,6 +882,8 @@ export default function AutoShort(): JSX.Element {
       }),
       blurRegions: clampedBlurs.map((region) => ({ ...toNormalized(region), id: region.id, color: region.color })),
       lamMo: blurEnabled,
+      blurMode,
+      ocrBlurProfile,
       subRegion: toNormalized(clampedSub),
       fontId: fontId === 'auto' ? null : fontId,
       textColor,
@@ -929,6 +954,9 @@ export default function AutoShort(): JSX.Element {
         subtitleMethod,
         whisperModel: selectedWhisperModel,
         whisperDevice,
+        lamMo: blurEnabled,
+        blurMode,
+        ocrBlurProfile,
         audioMode,
         separationPreset
       })

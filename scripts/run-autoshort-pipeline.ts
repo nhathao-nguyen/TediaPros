@@ -123,6 +123,8 @@ app.whenReady().then(async () => {
       ocrRegion: null,
       blurRegions: [],
       lamMo: false,
+      blurMode: 'manual',
+      ocrBlurProfile: 'accurate',
       subRegion: null,
       fontId: 'auto',
       textColor: '#ffffff',

@@ -551,6 +551,8 @@ const autoShortBackgroundRequest = (): AutoShortStartRequest => ({
     whisperDevice: 'cpu',
     blurRegions: [],
     lamMo: false,
+    blurMode: 'manual',
+    ocrBlurProfile: 'accurate',
     translateTarget: 'none',
     translateProvider: 'local',
     ttsEnabled: true,

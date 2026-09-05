@@ -12,6 +12,7 @@ export interface RuntimeProbeResult {
   healthy: boolean
   version?: string | null
   protocol?: string | null
+  features?: string[]
   message?: string
 }
 

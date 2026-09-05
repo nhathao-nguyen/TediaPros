@@ -112,6 +112,8 @@ function migrateLegacyConfig(raw: Record<string, unknown>): Record<string, unkno
     subtitleMethod,
     whisperModel,
     whisperDevice,
+    blurMode: raw.blurMode === undefined ? 'manual' : raw.blurMode,
+    ocrBlurProfile: raw.ocrBlurProfile === undefined ? 'accurate' : raw.ocrBlurProfile,
     voiceOverMode: typeof raw.voiceOverMode === 'boolean' ? raw.voiceOverMode : false,
     paceMode: raw.paceMode === 'fixed' ? 'fixed' : 'source-adaptive'
   }
@@ -138,7 +140,19 @@ function validateConfigRecord(raw: Record<string, unknown>): AutoShortConfig | s
   if (raw.whisperLanguage != null && optionalString(raw.whisperLanguage, 'Ngôn ngữ Whisper', 32)) {
     return 'Ngôn ngữ Whisper không hợp lệ.'
   }
+  if (raw.blurMode !== 'manual' && raw.blurMode !== 'ocr-auto') {
+    return 'Chế độ làm mờ không hợp lệ.'
+  }
+  if (raw.ocrBlurProfile !== 'accurate' && raw.ocrBlurProfile !== 'fast') {
+    return 'Hồ sơ quét OCR không hợp lệ.'
+  }
+  if (raw.lamMo === true && raw.blurMode === 'ocr-auto') {
+    if (!isRecord(raw.ocrRegion) || region(raw.ocrRegion, 'Vùng OCR') !== null) {
+      return 'Tự động OCR cần một vùng OCR hợp lệ.'
+    }
+  }
   if (!Array.isArray(raw.blurRegions) || raw.blurRegions.length > 32) return 'Danh sách vùng làm mờ không hợp lệ.'
+
   for (const [index, item] of raw.blurRegions.entries()) {
     const error = blurRegion(item, index)
     if (error) return error

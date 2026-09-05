@@ -276,6 +276,7 @@ export interface OcrEngineStatus {
   healthy?: boolean
   protocol?: string | null
   version?: string | null
+  features: string[]
   message?: string
 }
 export interface OcrProgress {
@@ -288,6 +289,14 @@ export interface Region {
   x0: number // mep TRAI
   x1: number // mep PHAI
 }
+
+export interface PixelRegion {
+  x0: number
+  y0: number
+  x1: number
+  y1: number
+}
+
 
 export interface BlurRegion {
   id: string
@@ -815,6 +824,9 @@ export interface AutoShortSeparationReadiness {
   message?: string
 }
 
+export type AutoShortBlurMode = 'manual' | 'ocr-auto'
+export type AutoShortOcrBlurProfile = 'accurate' | 'fast'
+
 export interface AutoShortConfig {
   subtitleMethod: AutoShortSubtitleMethod
   whisperModel: string
@@ -824,6 +836,8 @@ export interface AutoShortConfig {
   ocrRegion?: AutoShortNormalizedRegion | null
   blurRegions: AutoShortBlurRegion[]
   lamMo: boolean
+  blurMode: AutoShortBlurMode
+  ocrBlurProfile: AutoShortOcrBlurProfile
   /** Vùng phụ đề đầu ra, tọa độ chuẩn hóa 0..1. */
   subRegion?: AutoShortNormalizedRegion | null
   fontId?: string | null
@@ -913,7 +927,7 @@ export interface AutoShortReadiness {
 
 export type AutoShortDependencyConfig = Pick<
   AutoShortConfig,
-  'subtitleMethod' | 'whisperModel'
+  'subtitleMethod' | 'whisperModel' | 'lamMo' | 'blurMode' | 'ocrBlurProfile'
 > & {
   whisperDevice?: WhisperDevice
   audioMode?: AutoShortAudioMode
