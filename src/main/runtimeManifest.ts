@@ -129,6 +129,9 @@ export function validateRuntimeDistributionManifest(
       ? item.capabilities.map((cap) => (cap as string).trim())
       : null
     if (!capabilities) return { ok: false, error: `Asset ${kind} có capabilities không hợp lệ.` }
+    if (new Set(capabilities).size !== capabilities.length) {
+      return { ok: false, error: `Asset ${kind} có capabilities trùng lặp.` }
+    }
     if (item.protocol !== undefined && (typeof item.protocol !== 'string' || !item.protocol.trim())) {
       return { ok: false, error: `Asset ${kind} có protocol không hợp lệ.` }
     }

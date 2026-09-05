@@ -58,6 +58,7 @@ export function validateRuntimeReleaseManifest(manifest) {
     if (!files.includes(spec.entrypoint.replace(/\\/g, '/'))) return `${kind}.entrypoint must be in files`
     if (new Set(files).size !== files.length) return `${kind}.files contains duplicates`
     if (!Array.isArray(spec.capabilities) || spec.capabilities.length === 0 || !spec.capabilities.every((cap) => typeof cap === 'string' && cap.trim())) return `${kind}.capabilities is required`
+    if (new Set(spec.capabilities).size !== spec.capabilities.length) return `${kind}.capabilities contains duplicates`
     if (spec.protocol !== undefined && (typeof spec.protocol !== 'string' || !spec.protocol.trim())) return `${kind}.protocol is invalid`
   }
   return null
@@ -94,6 +95,52 @@ function listArchiveEntries(assetFile) {
 function archiveContains(entries, expected) {
   const target = expected.replace(/\\/g, '/').toLowerCase()
   return entries.some((entry) => entry === target || entry.endsWith(`/${target}`))
+}
+
+export function sha256ArchiveEntry(archivePath, normalizedEntrypoint) {
+  const target = normalizedEntrypoint.replace(/\\/g, '/').toLowerCase()
+  const isWindows = process.platform === 'win32'
+  if (isWindows) {
+    const script = `
+      Add-Type -AssemblyName System.IO.Compression.FileSystem
+      $zip = [System.IO.Compression.ZipFile]::OpenRead('${escapePowerShellString(archivePath)}')
+      try {
+        $entry = $zip.Entries | Where-Object { $_.FullName.Replace('\\', '/').ToLower() -eq '${escapePowerShellString(target)}' } | Select-Object -First 1
+        if (-not $entry) { throw "entry not found in archive" }
+        $stream = $entry.Open()
+        try {
+          $sha = [System.Security.Cryptography.SHA256]::Create()
+          $hashBytes = $sha.ComputeHash($stream)
+          [System.BitConverter]::ToString($hashBytes).Replace('-', '').ToLower()
+        } finally {
+          $stream.Dispose()
+        }
+      } finally {
+        $zip.Dispose()
+      }
+    `
+    const res = spawnSync('powershell', [
+      '-NoProfile',
+      '-NonInteractive',
+      '-ExecutionPolicy',
+      'Bypass',
+      '-Command',
+      script
+    ], { encoding: 'utf8', windowsHide: true })
+    if (res.error || res.status !== 0) {
+      throw new Error(`Failed to compute hash of entry ${normalizedEntrypoint} in ${archivePath}: ${res.stderr || res.error}`)
+    }
+    const lines = res.stdout.trim().split(/\r?\n/).map((l) => l.trim()).filter(Boolean)
+    const hash = lines[lines.length - 1]
+    if (!/^[a-f0-9]{64}$/i.test(hash)) throw new Error(`Invalid entry hash computed: ${hash}`)
+    return hash.toLowerCase()
+  } else {
+    const res = spawnSync('unzip', ['-p', archivePath, normalizedEntrypoint], { maxBuffer: 500 * 1024 * 1024 })
+    if (res.error || res.status !== 0) {
+      throw new Error(`Failed to extract entry ${normalizedEntrypoint} from ${archivePath}`)
+    }
+    return createHash('sha256').update(res.stdout).digest('hex').toLowerCase()
+  }
 }
 
 export function isSafeRuntimeReleaseArchiveEntry(entry) {
@@ -141,6 +188,65 @@ export async function verifyRuntimeReleaseDirectory(artifactsDir) {
     if (unsafeEntry) return { ok: false, error: `${spec.asset} contains unsafe archive entry: ${unsafeEntry}` }
     const missingFiles = spec.files.filter((file) => !archiveContains(inspected.entries, file))
     if (missingFiles.length > 0) return { ok: false, error: `${spec.asset} is missing required files: ${missingFiles.join(', ')}` }
+  }
+
+  // Verify nativeCapabilityProofs for ffmpeg if present or required
+  const ffmpegSpec = manifest.assets['ffmpeg']
+  const hasOcrMask = Boolean(ffmpegSpec?.capabilities?.includes('ocr-mask-v1'))
+  const manifestProof = manifest.provenance?.nativeCapabilityProofs?.ffmpegOcrMask
+  const standaloneProof = provenance.nativeCapabilityProofs?.ffmpegOcrMask
+
+  if (!hasOcrMask) {
+    if (manifestProof || standaloneProof) {
+      return { ok: false, error: 'stray ffmpegOcrMask proof present when ocr-mask-v1 capability is absent' }
+    }
+  } else {
+    if (!manifestProof || !standaloneProof) {
+      return { ok: false, error: 'missing required ffmpegOcrMask native proof in manifest or provenance' }
+    }
+    if (JSON.stringify(manifestProof) !== JSON.stringify(standaloneProof)) {
+      return { ok: false, error: 'embedded manifest proof does not match standalone runtime-provenance.json' }
+    }
+    if (
+      manifestProof.schemaVersion !== 1 ||
+      manifestProof.capability !== 'ocr-mask-v1' ||
+      manifestProof.native !== true ||
+      manifestProof.passed !== true ||
+      manifestProof.runtimeVersion !== manifest.runtimeVersion ||
+      manifestProof.platform !== manifest.platform ||
+      manifestProof.arch !== manifest.arch ||
+      manifestProof.asset !== ffmpegSpec.asset ||
+      manifestProof.entrypoint !== ffmpegSpec.entrypoint
+    ) {
+      return { ok: false, error: 'invalid metadata in ffmpegOcrMask proof' }
+    }
+    try {
+      const parsedDate = new Date(manifestProof.executedAt)
+      if (parsedDate.toISOString() !== manifestProof.executedAt) {
+        return { ok: false, error: 'executedAt must be a valid round-tripping ISO timestamp' }
+      }
+    } catch {
+      return { ok: false, error: 'executedAt must be a valid ISO timestamp' }
+    }
+
+    const expectedCases = [
+      'appear-disappear',
+      'terminal-black-frame',
+      'moving-resize',
+      'moving-resize-with-narration'
+    ]
+    if (
+      !Array.isArray(manifestProof.cases) ||
+      manifestProof.cases.length !== 4 ||
+      manifestProof.cases.some((c, i) => c.id !== expectedCases[i] || c.passed !== true)
+    ) {
+      return { ok: false, error: 'proof cases must contain the exact four passed test case IDs' }
+    }
+
+    const entryHash = sha256ArchiveEntry(join(artifactsDir, ffmpegSpec.asset), ffmpegSpec.entrypoint)
+    if (entryHash.toLowerCase() !== manifestProof.ffmpegExecutableSha256.toLowerCase()) {
+      return { ok: false, error: `archived ffmpeg entry SHA-256 (${entryHash}) does not match proof (${manifestProof.ffmpegExecutableSha256})` }
+    }
   }
 
   return { ok: true, manifest }

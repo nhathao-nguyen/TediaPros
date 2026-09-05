@@ -260,7 +260,7 @@ test('release tooling has no developer-machine or destructive re-upload fallback
   assert.doesNotMatch(packer, /where\.exe|findInPath|process\.env\.PATH/u)
   assert.doesNotMatch(publisher, /method:\s*['"]DELETE['"]/u)
   assert.doesNotMatch(verifier, /containsEntrypoint\s*=\s*true/u)
-  assert.match(publisher, /runtime-v4/u)
+  assert.match(publisher, /runtime-v5/u)
   assert.match(publisher, /manifest\.runtimeVersion/u)
   assert.match(publisher, /different runtime version|runtimeVersion/u)
   assert.match(publisher, /draft:\s*true/u)
@@ -274,6 +274,7 @@ test('runtime packer archives every canonical kind and verifies the generated ma
   try {
     const inputSpecPath = join(root, 'runtime-inputs.json')
     const inputSpec = JSON.parse(await readFile(join(process.cwd(), 'distribution', 'runtime-inputs.json'), 'utf8'))
+    inputSpec.assets['ffmpeg'].capabilities = ['version', 'ffprobe']
     await writeFile(inputSpecPath, JSON.stringify(inputSpec))
     for (const [kind, metadata] of Object.entries(inputSpec.assets)) {
       const dir = join(root, 'inputs', kind)
@@ -289,7 +290,7 @@ test('runtime packer archives every canonical kind and verifies the generated ma
       inputSpecPath
     })
     assert.equal(Object.keys(result.manifest.assets).length, 7)
-    assert.equal((await readFile(join(root, 'release', 'runtime-provenance.json'), 'utf8')).includes('runtime-v4'), true)
+    assert.equal((await readFile(join(root, 'release', 'runtime-provenance.json'), 'utf8')).includes('runtime-v5'), true)
   } finally {
     await rm(root, { recursive: true, force: true })
   }
@@ -340,6 +341,306 @@ test('packaged app verifier and builder configuration strictly exclude separator
       assert.match(text, /DirectML/iu)
       assert.match(text, /separator-engine|Ultimate Vocal Remover|MDX/iu)
     }
+  } finally {
+    await rm(root, { recursive: true, force: true })
+  }
+})
+
+export const V4_SEPARATOR_BASELINE = {
+  'separator-fast-balanced-v1': {
+    id: 'separator-fast-balanced-v1',
+    version: '1.0.0',
+    source: {
+      url: 'https://github.com/TRvlvr/model_repo/releases/download/all_public_uvr_models/UVR-MDX-NET-Inst_3.onnx',
+      revision: 'all_public_uvr_models',
+      bytes: 63234907,
+      sha256: '4b92b6a8f15d78a8f121d58cf5f5cc1b068868a867c2ce414d3f3e1a067e4e1a'
+    },
+    license: {
+      codeSpdx: 'MIT',
+      weightName: 'Open Model Redistribution Grant',
+      weightUrl: 'https://github.com/Anjok07/ultimatevocalremovergui/blob/master/LICENSE',
+      weightRedistributionApproved: true,
+      attribution: 'UVR MDX-Net project and Kuielab contributors.'
+    },
+    model: {
+      path: 'model.onnx',
+      bytes: 63234907,
+      sha256: '4b92b6a8f15d78a8f121d58cf5f5cc1b068868a867c2ce414d3f3e1a067e4e1a'
+    },
+    mdx: {
+      sampleRate: 44100,
+      channels: 2,
+      nFft: 6144,
+      hopLength: 1024,
+      dimF: 3072,
+      dimT: 256,
+      segmentSamples: 262144,
+      primaryStem: 'instrumental'
+    },
+    qualificationReport: 'docs/benchmarks/2026-09-04-separator-model-qualification.md'
+  },
+  'separator-quality-v1': {
+    id: 'separator-quality-v1',
+    version: '1.0.0',
+    source: {
+      url: 'https://github.com/TRvlvr/model_repo/releases/download/all_public_uvr_models/UVR-MDX-NET-Inst_HQ_3.onnx',
+      revision: 'all_public_uvr_models',
+      bytes: 64894371,
+      sha256: '6b9e38ef8ffaa49f1165ad5eb42a4dfd1c3a64731f8280f339cfdf5ec8749a93'
+    },
+    license: {
+      codeSpdx: 'MIT',
+      weightName: 'Open Model Redistribution Grant',
+      weightUrl: 'https://github.com/Anjok07/ultimatevocalremovergui/blob/master/LICENSE',
+      weightRedistributionApproved: true,
+      attribution: 'UVR MDX-Net project and Kuielab contributors.'
+    },
+    model: {
+      path: 'model.onnx',
+      bytes: 64894371,
+      sha256: '6b9e38ef8ffaa49f1165ad5eb42a4dfd1c3a64731f8280f339cfdf5ec8749a93'
+    },
+    mdx: {
+      sampleRate: 44100,
+      channels: 2,
+      nFft: 6144,
+      hopLength: 1024,
+      dimF: 3072,
+      dimT: 256,
+      segmentSamples: 262144,
+      primaryStem: 'instrumental'
+    },
+    qualificationReport: 'docs/benchmarks/2026-09-04-separator-model-qualification.md'
+  }
+} as const
+
+test('Task 11.1: Separator model baseline deep-equals current catalog omitting runtimeChannel', async () => {
+  const currentInputs = JSON.parse(await readFile(join(process.cwd(), 'distribution', 'separator-model-inputs.json'), 'utf8'))
+  const { runtimeChannel: _, ...rest } = currentInputs
+  assert.deepEqual(rest.models, V4_SEPARATOR_BASELINE)
+})
+
+test('Task 11.2: runtime-v5 default is used across all distribution configs, workflows, and packers', async () => {
+  const distConfig = await readFile(join(process.cwd(), 'src', 'main', 'distributionConfig.ts'), 'utf8')
+  assert.match(distConfig, /runtime-v5/u)
+
+  const runtimeInputs = JSON.parse(await readFile(join(process.cwd(), 'distribution', 'runtime-inputs.json'), 'utf8'))
+  assert.equal(runtimeInputs.runtimeVersion, 'runtime-v5')
+
+  const separatorInputs = JSON.parse(await readFile(join(process.cwd(), 'distribution', 'separator-model-inputs.json'), 'utf8'))
+  assert.equal(separatorInputs.runtimeChannel, 'runtime-v5')
+
+  const workflow = await readFile(join(process.cwd(), '.github', 'workflows', 'build-windows-runtime.yml'), 'utf8')
+  assert.match(workflow, /default:\s*runtime-v5/u)
+
+  const publisher = await readFile(join(process.cwd(), 'scripts', 'publish-github-release.mjs'), 'utf8')
+  assert.match(publisher, /DEFAULT_RUNTIME_CHANNEL\s*=\s*['"]runtime-v5['"]/u)
+
+  const separatorPacker = await readFile(join(process.cwd(), 'scripts', 'pack-separator-model-release.mjs'), 'utf8')
+  assert.match(separatorPacker, /runtimeVersion\s*\|\|\s*['"]runtime-v5['"]/u)
+})
+
+test('Task 11.3: OCR capability requires 1.1.0, ocr-local/1, and exact capabilities without duplicates', async () => {
+  const runtimeInputs = JSON.parse(await readFile(join(process.cwd(), 'distribution', 'runtime-inputs.json'), 'utf8'))
+  const ocr = runtimeInputs.assets['ocr-engine']
+  assert.equal(ocr.version, '1.1.0')
+  assert.equal(ocr.protocol, 'ocr-local/1')
+  assert.deepEqual(ocr.capabilities, ['probe', 'rapidocr', 'directml-fallback', 'visual-cues-v1'])
+})
+
+test('Task 11.4: FFmpeg ocr-mask-v1 packaging and proof verification test matrix', async () => {
+  const { buildRuntimeRelease, deriveFfmpegOcrMaskProof } = await import('../scripts/pack-runtime-release.mjs')
+  const { verifyRuntimeReleaseDirectory } = await import('../scripts/verify-runtime-release.mjs')
+
+  const sampleCases = [
+    { id: 'appear-disappear', passed: true },
+    { id: 'terminal-black-frame', passed: true },
+    { id: 'moving-resize', passed: true },
+    { id: 'moving-resize-with-narration', passed: true }
+  ]
+
+  // Pure helper tests
+  // 1. Success with native: true
+  const proof = deriveFfmpegOcrMaskProof({
+    probeResult: {
+      healthy: true,
+      features: ['ocr-mask-v1'],
+      cases: sampleCases,
+      ffmpegExecutableSha256: 'deadbeef'
+    },
+    expectedExecutableSha256: 'deadbeef',
+    runtimeVersion: 'runtime-v5',
+    platform: 'win32',
+    arch: 'x64',
+    asset: 'tediapros-ffmpeg-win32-x64.zip',
+    entrypoint: 'ffmpeg.exe',
+    isNative: true,
+    now: () => '2026-09-05T12:00:00.000Z'
+  })
+  assert.equal(proof.schemaVersion, 1)
+  assert.equal(proof.capability, 'ocr-mask-v1')
+  assert.equal(proof.native, true)
+  assert.equal(proof.passed, true)
+  assert.equal(proof.executedAt, '2026-09-05T12:00:00.000Z')
+  assert.equal(proof.ffmpegExecutableSha256, 'deadbeef')
+
+  // 2. Pure helper: failed/missing case throws
+  assert.throws(() => {
+    deriveFfmpegOcrMaskProof({
+      probeResult: {
+        healthy: true,
+        features: ['ocr-mask-v1'],
+        cases: sampleCases.slice(0, 3)
+      },
+      expectedExecutableSha256: 'deadbeef',
+      runtimeVersion: 'runtime-v5',
+      platform: 'win32',
+      arch: 'x64',
+      asset: 'tediapros-ffmpeg-win32-x64.zip',
+      entrypoint: 'ffmpeg.exe'
+    })
+  }, /all required test cases/i)
+
+  // 3. Pure helper: hash mismatch throws
+  assert.throws(() => {
+    deriveFfmpegOcrMaskProof({
+      probeResult: {
+        healthy: true,
+        features: ['ocr-mask-v1'],
+        cases: sampleCases,
+        ffmpegExecutableSha256: 'otherhash'
+      },
+      expectedExecutableSha256: 'deadbeef',
+      runtimeVersion: 'runtime-v5',
+      platform: 'win32',
+      arch: 'x64',
+      asset: 'tediapros-ffmpeg-win32-x64.zip',
+      entrypoint: 'ffmpeg.exe'
+    })
+  }, /does not match expected/i)
+
+  // Integration matrix
+  const root = await mkdtemp(join(tmpdir(), 'tedia-task11-4-'))
+  try {
+    const baseSpec = JSON.parse(await readFile(join(process.cwd(), 'distribution', 'runtime-inputs.json'), 'utf8'))
+    const inputsDir = join(root, 'inputs')
+    for (const [kind, metadata] of Object.entries(baseSpec.assets) as [string, any][]) {
+      const dir = join(inputsDir, kind)
+      await mkdir(dir, { recursive: true })
+      await writeFile(join(dir, metadata.entrypoint), Buffer.from(`staged-${kind}`))
+    }
+
+    // Branch 1: no ocr-mask-v1 -> success, feature absent, proof absent
+    const noOcrSpec = JSON.parse(JSON.stringify(baseSpec))
+    noOcrSpec.assets['ffmpeg'].capabilities = ['version', 'ffprobe']
+    const noOcrSpecPath = join(root, 'no-ocr-spec.json')
+    await writeFile(noOcrSpecPath, JSON.stringify(noOcrSpec))
+    let probeCalled = false
+    const res1 = await buildRuntimeRelease({
+      inputDir: inputsDir,
+      outputDir: join(root, 'release-no-ocr'),
+      runtimeVersion: 'runtime-v5',
+      platform: 'win32',
+      arch: 'x64',
+      inputSpecPath: noOcrSpecPath,
+      probeFfmpegOcrMask: async () => {
+        probeCalled = true
+        throw new Error('should not be called')
+      }
+    })
+    assert.equal(probeCalled, false)
+    assert.equal(res1.manifest.assets['ffmpeg'].capabilities.includes('ocr-mask-v1'), false)
+    assert.equal(res1.manifest.provenance?.nativeCapabilityProofs?.ffmpegOcrMask, undefined)
+
+    // Branch 2: requests feature + injected hook (non-native) -> pack fails release verification because native !== true
+    const ocrSpec = JSON.parse(JSON.stringify(baseSpec))
+    const ocrSpecPath = join(root, 'ocr-spec.json')
+    await writeFile(ocrSpecPath, JSON.stringify(ocrSpec))
+
+    await assert.rejects(async () => {
+      await buildRuntimeRelease({
+        inputDir: inputsDir,
+        outputDir: join(root, 'release-hook-reject'),
+        runtimeVersion: 'runtime-v5',
+        platform: 'win32',
+        arch: 'x64',
+        inputSpecPath: ocrSpecPath,
+        probeFfmpegOcrMask: async (execPath) => {
+          const { createHash } = await import('node:crypto')
+          const { readFile } = await import('node:fs/promises')
+          const hash = createHash('sha256').update(await readFile(execPath)).digest('hex')
+          return {
+            healthy: true,
+            features: ['ocr-mask-v1'],
+            cases: sampleCases,
+            ffmpegExecutableSha256: hash
+          }
+        }
+      })
+    }, /invalid metadata in ffmpegOcrMask proof|verification/i)
+
+    // Branch 3: requests feature + hook returns failed/unhealthy -> pack rejects
+    await assert.rejects(async () => {
+      await buildRuntimeRelease({
+        inputDir: inputsDir,
+        outputDir: join(root, 'release-failed-case'),
+        runtimeVersion: 'runtime-v5',
+        platform: 'win32',
+        arch: 'x64',
+        inputSpecPath: ocrSpecPath,
+        probeFfmpegOcrMask: async () => ({
+          healthy: false,
+          features: [],
+          message: 'ffmpeg failed'
+        })
+      })
+    }, /FFmpeg OCR mask probe failed/i)
+
+    // Branch 4: requests feature + hook returns hash mismatch -> pack rejects
+    await assert.rejects(async () => {
+      await buildRuntimeRelease({
+        inputDir: inputsDir,
+        outputDir: join(root, 'release-hash-mismatch'),
+        runtimeVersion: 'runtime-v5',
+        platform: 'win32',
+        arch: 'x64',
+        inputSpecPath: ocrSpecPath,
+        probeFfmpegOcrMask: async () => ({
+          healthy: true,
+          features: ['ocr-mask-v1'],
+          cases: sampleCases,
+          ffmpegExecutableSha256: '0000000000000000000000000000000000000000000000000000000000000000'
+        })
+      })
+    }, /does not match expected/i)
+
+    // Branch 5: tamper test on verified release
+    // Manually create a release directory with invalid proof and verify verification rejects
+    const testDir = join(root, 'release-no-ocr')
+    const manifestPath = join(testDir, 'runtime-manifest.json')
+    const manifest = JSON.parse(await readFile(manifestPath, 'utf8'))
+    // Tampers: add stray proof when ocr-mask-v1 is absent
+    manifest.provenance.nativeCapabilityProofs = {
+      ffmpegOcrMask: {
+        schemaVersion: 1,
+        capability: 'ocr-mask-v1',
+        native: true,
+        passed: true,
+        runtimeVersion: 'runtime-v5',
+        platform: 'win32',
+        arch: 'x64',
+        asset: manifest.assets['ffmpeg'].asset,
+        entrypoint: 'ffmpeg.exe',
+        ffmpegExecutableSha256: 'somehash',
+        executedAt: new Date().toISOString(),
+        cases: sampleCases
+      }
+    }
+    await writeFile(manifestPath, JSON.stringify(manifest))
+    const verif = await verifyRuntimeReleaseDirectory(testDir)
+    assert.equal(verif.ok, false)
+    assert.match(verif.error, /stray ffmpegOcrMask proof|does not match/i)
   } finally {
     await rm(root, { recursive: true, force: true })
   }

@@ -56,7 +56,7 @@ export async function packSeparatorModelRelease(options) {
   const inputDir = resolve(options.inputDir)
   const outputDir = resolve(options.outputDir)
   const modelInputsPath = resolve(options.modelInputs)
-  const runtimeVersion = options.runtimeVersion || 'runtime-v4'
+  const runtimeVersion = options.runtimeVersion || 'runtime-v5'
 
   const inputs = JSON.parse(await readFile(modelInputsPath, 'utf8'))
   const models = inputs.models || {}

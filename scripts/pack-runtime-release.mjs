@@ -7,6 +7,10 @@ import { execFile } from 'node:child_process'
 import { promisify } from 'node:util'
 import { fileURLToPath } from 'node:url'
 
+import { randomUUID } from 'node:crypto'
+import { rename } from 'node:fs/promises'
+import { sha256ArchiveEntry } from './verify-runtime-release.mjs'
+
 const execFileAsync = promisify(execFile)
 const REQUIRED_KINDS = ['ffmpeg', 'whisper-engine', 'whisper-cuda', 'ocr-engine', 'video2x', 'douyin', 'separator-engine']
 const LEGACY_INPUT_ENV = [
@@ -17,6 +21,64 @@ const LEGACY_INPUT_ENV = [
   'VIDEO2X_RUNTIME_DIR',
   'DOUYIN_RUNTIME_DIR'
 ]
+
+export async function runNativeFfmpegOcrMaskProbe(ffmpegExecutablePath) {
+  const probeScript = resolve('scripts/run-ffmpeg-ocr-mask-probe.mjs')
+  const { stdout } = await execFileAsync(process.execPath, [probeScript, '--ffmpeg', resolve(ffmpegExecutablePath)], {
+    timeout: 120_000,
+    maxBuffer: 10 * 1024 * 1024,
+    windowsHide: true
+  })
+  return JSON.parse(stdout.trim())
+}
+
+export function deriveFfmpegOcrMaskProof({
+  probeResult,
+  expectedExecutableSha256,
+  runtimeVersion,
+  platform,
+  arch,
+  asset,
+  entrypoint,
+  isNative = true,
+  now = () => new Date().toISOString()
+}) {
+  if (!probeResult || typeof probeResult !== 'object') {
+    throw new Error('FFmpeg OCR mask probe returned invalid result')
+  }
+  if (!probeResult.healthy || !Array.isArray(probeResult.features) || !probeResult.features.includes('ocr-mask-v1')) {
+    throw new Error(`FFmpeg OCR mask probe failed: ${probeResult.message || 'unhealthy'}`)
+  }
+  const expectedCases = [
+    'appear-disappear',
+    'terminal-black-frame',
+    'moving-resize',
+    'moving-resize-with-narration'
+  ]
+  if (!Array.isArray(probeResult.cases) || probeResult.cases.length !== 4 || probeResult.cases.some((c, i) => c.id !== expectedCases[i] || c.passed !== true)) {
+    throw new Error('FFmpeg OCR mask probe did not pass all required test cases')
+  }
+  if (probeResult.ffmpegExecutableSha256 && probeResult.ffmpegExecutableSha256.toLowerCase() !== expectedExecutableSha256.toLowerCase()) {
+    throw new Error(`Probed executable SHA-256 (${probeResult.ffmpegExecutableSha256}) does not match expected (${expectedExecutableSha256})`)
+  }
+
+  const executedAt = typeof now === 'function' ? now() : new Date().toISOString()
+
+  return {
+    schemaVersion: 1,
+    capability: 'ocr-mask-v1',
+    native: Boolean(isNative),
+    passed: true,
+    runtimeVersion,
+    platform,
+    arch,
+    asset,
+    entrypoint,
+    ffmpegExecutableSha256: expectedExecutableSha256.toLowerCase(),
+    executedAt,
+    cases: expectedCases.map((id) => ({ id, passed: true }))
+  }
+}
 
 async function fileExists(filePath) {
   try {
@@ -122,6 +184,10 @@ function validateAssetMetadata(kind, metadata) {
   if (!Array.isArray(metadata.capabilities) || metadata.capabilities.length === 0 || !metadata.capabilities.every((value) => typeof value === 'string' && value.trim())) {
     throw new Error(`${kind}.capabilities is required`)
   }
+  const capSet = new Set(metadata.capabilities)
+  if (capSet.size !== metadata.capabilities.length) {
+    throw new Error(`${kind}.capabilities must not contain duplicates`)
+  }
   if (metadata.protocol !== undefined && (typeof metadata.protocol !== 'string' || !metadata.protocol.trim())) {
     throw new Error(`${kind}.protocol is invalid`)
   }
@@ -132,7 +198,16 @@ function validateAssetMetadata(kind, metadata) {
   return { ...metadata, entrypoint }
 }
 
-export async function buildRuntimeRelease({ inputDir, outputDir, runtimeVersion, platform = currentPlatform(), arch = currentArch(), inputSpecPath = resolve('distribution/runtime-inputs.json') }) {
+export async function buildRuntimeRelease({
+  inputDir,
+  outputDir,
+  runtimeVersion,
+  platform = currentPlatform(),
+  arch = currentArch(),
+  inputSpecPath = resolve('distribution/runtime-inputs.json'),
+  probeFfmpegOcrMask = runNativeFfmpegOcrMaskProbe,
+  now = () => new Date().toISOString()
+}) {
   ensureCleanInputEnvironment()
   if (!inputDir) throw new Error('An explicit --input-dir is required; no developer or APPDATA discovery is allowed.')
   if (!runtimeVersion) throw new Error('An explicit --runtime-version is required.')
@@ -146,52 +221,116 @@ export async function buildRuntimeRelease({ inputDir, outputDir, runtimeVersion,
   if (inputSpec.runtimeVersion !== runtimeVersion || inputSpec.platform !== platform || inputSpec.arch !== arch) {
     throw new Error('Runtime input specification does not match the requested version/platform/architecture.')
   }
-  await mkdir(outputRoot, { recursive: true })
-  const assets = {}
-  const provenanceAssets = {}
-  for (const kind of REQUIRED_KINDS) {
-    const sourceDir = ensureInside(inputRoot, join(inputRoot, kind))
-    const metadata = validateAssetMetadata(kind, inputSpec.assets[kind])
-    if (!(await stat(sourceDir).catch(() => null))?.isDirectory()) throw new Error(`Missing clean runtime input: ${sourceDir}`)
-    const files = await collectFiles(sourceDir)
-    if (files.length === 0) throw new Error(`Runtime input is empty: ${kind}`)
-    if (!files.includes(metadata.entrypoint)) throw new Error(`${kind} input does not contain entrypoint ${metadata.entrypoint}`)
-    const asset = `tediapros-${kind}-${platform}-${arch}.zip`
-    const archivePath = join(outputRoot, asset)
-    await archiveDirectory(sourceDir, archivePath)
-    const info = await stat(archivePath)
-    assets[kind] = {
-      version: metadata.version,
-      platform,
-      arch,
-      asset,
-      sha256: await sha256File(archivePath),
-      bytes: info.size,
-      entrypoint: metadata.entrypoint,
-      ...(metadata.protocol ? { protocol: metadata.protocol } : {}),
-      capabilities: metadata.capabilities,
-      files
-    }
-    provenanceAssets[kind] = metadata.source || null
+
+  if (await fileExists(outputRoot)) {
+    throw new Error(`Output directory already exists: ${outputRoot}`)
   }
 
-  const provenance = {
-    schemaVersion: 1,
-    runtimeVersion,
-    platform,
-    arch,
-    sourceRevision: process.env.GITHUB_SHA || null,
-    generatedBy: 'scripts/pack-runtime-release.mjs',
-    assets: provenanceAssets,
-    externalInputs: inputSpec.externalInputs || {}
+  const stagingDir = resolve(join(outputRoot, '..', `.${relative(join(outputRoot, '..'), outputRoot)}.${randomUUID()}.partial`))
+  await mkdir(stagingDir, { recursive: true })
+
+  try {
+    const assets = {}
+    const provenanceAssets = {}
+    let ffmpegProof = null
+
+    for (const kind of REQUIRED_KINDS) {
+      const sourceDir = ensureInside(inputRoot, join(inputRoot, kind))
+      const metadata = validateAssetMetadata(kind, inputSpec.assets[kind])
+      if (!(await stat(sourceDir).catch(() => null))?.isDirectory()) throw new Error(`Missing clean runtime input: ${sourceDir}`)
+      const files = await collectFiles(sourceDir)
+      if (files.length === 0) throw new Error(`Runtime input is empty: ${kind}`)
+      if (!files.includes(metadata.entrypoint)) throw new Error(`${kind} input does not contain entrypoint ${metadata.entrypoint}`)
+
+      let finalCapabilities = [...metadata.capabilities]
+
+      if (kind === 'ffmpeg') {
+        const wantsOcrMask = metadata.capabilities.includes('ocr-mask-v1')
+        finalCapabilities = metadata.capabilities.filter((c) => c !== 'ocr-mask-v1')
+
+        if (wantsOcrMask) {
+          const stagedExecutablePath = ensureInside(sourceDir, join(sourceDir, metadata.entrypoint))
+          const executableStat = await stat(stagedExecutablePath)
+          if (!executableStat.isFile()) throw new Error(`FFmpeg entrypoint is not a regular file: ${stagedExecutablePath}`)
+          const stagedSha256 = await sha256File(stagedExecutablePath)
+
+          const isNativeRunner = probeFfmpegOcrMask === runNativeFfmpegOcrMaskProbe
+          const probeResult = await probeFfmpegOcrMask(stagedExecutablePath)
+
+          const asset = `tediapros-${kind}-${platform}-${arch}.zip`
+          ffmpegProof = deriveFfmpegOcrMaskProof({
+            probeResult,
+            expectedExecutableSha256: stagedSha256,
+            runtimeVersion,
+            platform,
+            arch,
+            asset,
+            entrypoint: metadata.entrypoint,
+            isNative: isNativeRunner,
+            now
+          })
+
+          finalCapabilities.push('ocr-mask-v1')
+        }
+      }
+
+      const asset = `tediapros-${kind}-${platform}-${arch}.zip`
+      const archivePath = join(stagingDir, asset)
+      await archiveDirectory(sourceDir, archivePath)
+      const info = await stat(archivePath)
+
+      if (kind === 'ffmpeg' && ffmpegProof) {
+        const archivedEntrySha256 = sha256ArchiveEntry(archivePath, metadata.entrypoint)
+        if (archivedEntrySha256.toLowerCase() !== ffmpegProof.ffmpegExecutableSha256.toLowerCase()) {
+          throw new Error(`Archived FFmpeg entry hash (${archivedEntrySha256}) does not match probed executable hash (${ffmpegProof.ffmpegExecutableSha256})`)
+        }
+      }
+
+      assets[kind] = {
+        version: metadata.version,
+        platform,
+        arch,
+        asset,
+        sha256: await sha256File(archivePath),
+        bytes: info.size,
+        entrypoint: metadata.entrypoint,
+        ...(metadata.protocol ? { protocol: metadata.protocol } : {}),
+        capabilities: finalCapabilities,
+        files
+      }
+      provenanceAssets[kind] = metadata.source || null
+    }
+
+    const nativeCapabilityProofs = ffmpegProof ? { ffmpegOcrMask: ffmpegProof } : undefined
+
+    const provenance = {
+      schemaVersion: 1,
+      runtimeVersion,
+      platform,
+      arch,
+      sourceRevision: process.env.GITHUB_SHA || null,
+      generatedBy: 'scripts/pack-runtime-release.mjs',
+      assets: provenanceAssets,
+      externalInputs: inputSpec.externalInputs || {},
+      ...(nativeCapabilityProofs ? { nativeCapabilityProofs } : {})
+    }
+    const manifest = { schemaVersion: 1, runtimeVersion, platform, arch, assets, provenance }
+    await writeFile(join(stagingDir, 'runtime-manifest.json'), `${JSON.stringify(manifest, null, 2)}\n`, 'utf8')
+    await writeFile(join(stagingDir, 'runtime-provenance.json'), `${JSON.stringify(provenance, null, 2)}\n`, 'utf8')
+
+    const { verifyRuntimeReleaseDirectory } = await import('./verify-runtime-release.mjs')
+    const verification = await verifyRuntimeReleaseDirectory(stagingDir)
+    if (!verification.ok) throw new Error(`Generated runtime release failed verification: ${verification.error}`)
+
+    if (await fileExists(outputRoot)) {
+      throw new Error(`Refusing to overwrite existing output directory: ${outputRoot}`)
+    }
+    await rename(stagingDir, outputRoot)
+
+    return { outputDir: outputRoot, manifest, provenance }
+  } finally {
+    await rm(stagingDir, { recursive: true, force: true }).catch(() => {})
   }
-  const manifest = { schemaVersion: 1, runtimeVersion, platform, arch, assets, provenance }
-  await writeFile(join(outputRoot, 'runtime-manifest.json'), `${JSON.stringify(manifest, null, 2)}\n`, 'utf8')
-  await writeFile(join(outputRoot, 'runtime-provenance.json'), `${JSON.stringify(provenance, null, 2)}\n`, 'utf8')
-  const { verifyRuntimeReleaseDirectory } = await import('./verify-runtime-release.mjs')
-  const verification = await verifyRuntimeReleaseDirectory(outputRoot)
-  if (!verification.ok) throw new Error(`Generated runtime release failed verification: ${verification.error}`)
-  return { outputDir: outputRoot, manifest, provenance }
 }
 
 async function main() {

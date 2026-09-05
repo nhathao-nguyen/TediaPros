@@ -1,13 +1,13 @@
 {
   "schemaVersion": 1,
-  "runtimeVersion": "runtime-v4",
+  "runtimeVersion": "runtime-v5",
   "platform": "win32",
   "arch": "x64",
   "assets": {
     "ffmpeg": {
       "version": "9.0.1-11-ge47273f4d9",
       "entrypoint": "ffmpeg.exe",
-      "capabilities": ["version", "ffprobe"],
+      "capabilities": ["version", "ffprobe", "ocr-mask-v1"],
       "source": {
         "provider": "BtbN/FFmpeg-Builds",
         "release": "autobuild-2026-08-29-13-12",
@@ -42,10 +42,10 @@
       }
     },
     "ocr-engine": {
-      "version": "1.0.0",
+      "version": "1.1.0",
       "entrypoint": "ocr-engine.exe",
       "protocol": "ocr-local/1",
-      "capabilities": ["probe", "rapidocr", "directml-fallback"],
+      "capabilities": ["probe", "rapidocr", "directml-fallback", "visual-cues-v1"],
       "source": {
         "provider": "TediaPros",
         "path": "engines/ocr-engine",

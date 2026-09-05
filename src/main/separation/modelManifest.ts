@@ -32,7 +32,7 @@ export interface SeparatorModelReleaseSpec {
 
 export interface SeparatorModelReleaseManifest {
   schemaVersion: 1
-  runtimeChannel: 'runtime-v4'
+  runtimeChannel: 'runtime-v4' | 'runtime-v5'
   models: Record<SeparatorModelId, SeparatorModelReleaseSpec>
 }
 
@@ -60,18 +60,18 @@ function isSafeRelativePath(val: unknown): val is string {
     normalized.split('/').every((p) => p && p !== '.' && p !== '..')
 }
 
-export function validateSeparatorModelReleaseManifest(
-  raw: unknown
-): { ok: true; manifest: SeparatorModelReleaseManifest } | { ok: false; error: string } {
+export function validateSeparatorModelReleaseManifest(raw: unknown):
+  | { ok: true; manifest: SeparatorModelReleaseManifest }
+  | { ok: false; error: string } {
   if (!raw || typeof raw !== 'object' || Array.isArray(raw)) {
-    return { ok: false, error: 'Manifest separator-model không phải object hợp lệ.' }
+    return { ok: false, error: 'Model manifest không phải là object hợp lệ.' }
   }
   const obj = raw as Record<string, unknown>
   if (obj.schemaVersion !== 1) {
     return { ok: false, error: 'schemaVersion của model manifest phải là 1.' }
   }
-  if (obj.runtimeChannel !== 'runtime-v4') {
-    return { ok: false, error: 'runtimeChannel của model manifest phải là runtime-v4.' }
+  if (obj.runtimeChannel !== 'runtime-v4' && obj.runtimeChannel !== 'runtime-v5') {
+    return { ok: false, error: 'runtimeChannel của model manifest phải là runtime-v4 hoặc runtime-v5.' }
   }
   if (!obj.models || typeof obj.models !== 'object' || Array.isArray(obj.models)) {
     return { ok: false, error: 'models trong manifest không hợp lệ.' }
@@ -96,49 +96,46 @@ export function validateSeparatorModelReleaseManifest(
       return { ok: false, error: `Model ${key} thiếu version.` }
     }
     if (typeof m.asset !== 'string' || !isSafeRelativePath(m.asset) || !m.asset.endsWith('.zip')) {
-      return { ok: false, error: `Model ${key} có asset archive không an toàn hoặc không hợp lệ.` }
+      return { ok: false, error: `Model ${key} asset phải là safe relative path đuôi .zip.` }
+    }
+    if (typeof m.archiveBytes !== 'number' || m.archiveBytes <= 0 || !Number.isInteger(m.archiveBytes)) {
+      return { ok: false, error: `Model ${key} archiveBytes không hợp lệ.` }
+    }
+    if (typeof m.expandedBytes !== 'number' || m.expandedBytes <= 0 || !Number.isInteger(m.expandedBytes)) {
+      return { ok: false, error: `Model ${key} expandedBytes không hợp lệ.` }
     }
     if (!isSha256(m.archiveSha256)) {
       return { ok: false, error: `Model ${key} archiveSha256 không hợp lệ.` }
     }
-    if (typeof m.archiveBytes !== 'number' || m.archiveBytes <= 0 || !Number.isSafeInteger(m.archiveBytes)) {
-      return { ok: false, error: `Model ${key} archiveBytes phải là số nguyên dương.` }
-    }
-    if (typeof m.expandedBytes !== 'number' || m.expandedBytes <= 0 || !Number.isSafeInteger(m.expandedBytes)) {
-      return { ok: false, error: `Model ${key} expandedBytes phải là số nguyên dương.` }
-    }
+
     if (!m.model || typeof m.model !== 'object') {
-      return { ok: false, error: `Model ${key} thiếu cấu hình file model.` }
+      return { ok: false, error: `Model ${key} thiếu model metadata.` }
     }
-    const mf = m.model as Record<string, unknown>
-    if (mf.path !== 'model.onnx') {
-      return { ok: false, error: `Model ${key} path phải là model.onnx.` }
+    const innerModel = m.model as Record<string, unknown>
+    if (innerModel.path !== 'model.onnx') {
+      return { ok: false, error: `Model ${key} model.path phải là "model.onnx".` }
     }
-    if (!isSha256(mf.sha256)) {
+    if (typeof innerModel.bytes !== 'number' || innerModel.bytes <= 0 || !Number.isInteger(innerModel.bytes)) {
+      return { ok: false, error: `Model ${key} model.bytes không hợp lệ.` }
+    }
+    if (!isSha256(innerModel.sha256)) {
       return { ok: false, error: `Model ${key} model.sha256 không hợp lệ.` }
-    }
-    if (typeof mf.bytes !== 'number' || mf.bytes <= 0 || !Number.isSafeInteger(mf.bytes)) {
-      return { ok: false, error: `Model ${key} model.bytes phải là số nguyên dương.` }
     }
 
     if (!m.mdx || typeof m.mdx !== 'object') {
-      return { ok: false, error: `Model ${key} thiếu cấu hình mdx dimensions.` }
+      return { ok: false, error: `Model ${key} thiếu MDX metadata.` }
     }
     const mdx = m.mdx as Record<string, unknown>
     if (mdx.sampleRate !== 44100 || mdx.channels !== 2) {
-      return { ok: false, error: `Model ${key} mdx sampleRate phải là 44100 và channels phải là 2.` }
+      return { ok: false, error: `Model ${key} MDX sampleRate phải là 44100 và channels là 2.` }
     }
-    if (
-      typeof mdx.nFft !== 'number' || mdx.nFft <= 0 ||
-      typeof mdx.hopLength !== 'number' || mdx.hopLength <= 0 ||
-      typeof mdx.dimF !== 'number' || mdx.dimF <= 0 ||
-      typeof mdx.dimT !== 'number' || mdx.dimT <= 0 ||
-      typeof mdx.segmentSamples !== 'number' || mdx.segmentSamples <= 0
-    ) {
-      return { ok: false, error: `Model ${key} có tham số mdx không hợp lệ.` }
+    for (const f of ['nFft', 'hopLength', 'dimF', 'dimT', 'segmentSamples']) {
+      if (typeof mdx[f] !== 'number' || (mdx[f] as number) <= 0 || !Number.isInteger(mdx[f])) {
+        return { ok: false, error: `Model ${key} MDX ${f} không hợp lệ.` }
+      }
     }
     if (mdx.primaryStem !== 'vocals' && mdx.primaryStem !== 'instrumental') {
-      return { ok: false, error: `Model ${key} mdx.primaryStem phải là 'vocals' hoặc 'instrumental'.` }
+      return { ok: false, error: `Model ${key} primaryStem phải là vocals hoặc instrumental.` }
     }
 
     if (!m.source || typeof m.source !== 'object') {
@@ -173,7 +170,7 @@ export function validateSeparatorModelReleaseManifest(
     ok: true,
     manifest: {
       schemaVersion: 1,
-      runtimeChannel: 'runtime-v4',
+      runtimeChannel: obj.runtimeChannel as 'runtime-v4' | 'runtime-v5',
       models: validatedModels
     }
   }
