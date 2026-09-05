@@ -1056,3 +1056,9 @@ export interface AutoShortBatchResult {
   totalCount: number
   error?: string
 }
+
+export type {
+  OcrVisualBox,
+  OcrVisualSegment,
+  OcrVisualTimeline
+} from './ocrVisualTimeline'
