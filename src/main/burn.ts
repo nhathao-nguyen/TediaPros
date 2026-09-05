@@ -1,6 +1,6 @@
 import { spawn, type ChildProcess } from 'node:child_process'
 import { basename, dirname, isAbsolute, join } from 'node:path'
-import { mkdir, copyFile, readFile, writeFile, stat, rm } from 'node:fs/promises'
+import { mkdir, copyFile, readFile, writeFile, stat, rm, rename } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { resolveFfmpeg } from './deps'
 import {
@@ -50,6 +50,20 @@ import { planSubtitleLayout } from '../shared/subtitleLayout'
 import { AUDIO_MIX_DROPOUT_TRANSITION_SECONDS, originalAudioGain } from '../shared/audioMix'
 import { resolveSubtitlePlanFont } from './subtitlePlanner'
 import { terminateProcessTree, trackChildProcess } from './processTree'
+import {
+  blurSigmaForDisplayHeight,
+  planBurnInputs,
+  type BurnInputPlan
+} from './burnInputPlanner'
+import type { TimedOcrBlurMask } from './ocrMask'
+import { assertContainedRegularFile } from './safeContainedPath'
+import { randomUUID } from 'node:crypto'
+import {
+  generateVideoTitle,
+  reserveVideoTitleOutputDir,
+  validateVideoTitleConfig,
+  writeVideoTitle
+} from './videoTitle'
 
 /** Parse #RGB / #RRGGBB -> { r,g,b } hoac null. */
 function parseHexColor(hex: string | undefined | null): { r: number; g: number; b: number } | null {
@@ -115,6 +129,7 @@ function styleFromReq(req: BurnReq, fallbackVien: number): SubStyle {
 let child: ChildProcess | null = null
 let daHuy = false
 let burnInFlight = false
+let burnAbortController: AbortController | null = null
 const burnChildren = new Set<ChildProcess>()
 
 function spawnBurnChild<T extends ChildProcess>(process: T): T {
@@ -128,6 +143,7 @@ function spawnBurnChild<T extends ChildProcess>(process: T): T {
 /** Huy giua chung: giet ffmpeg. child.kill() thoat ma null -> hieu la huy, khong loi. */
 export function cancelBurn(): void {
   daHuy = true
+  burnAbortController?.abort()
   for (const process of [...burnChildren]) terminateProcessTree(process)
   terminateProcessTree(child)
   child = null
@@ -661,6 +677,56 @@ export function taoAss(
   ].join('\n')
 }
 
+export interface AudioFilterResult {
+  filter: string | null
+  mapArgs: string[]
+}
+
+export function buildAudioFilter(
+  meta: Meta,
+  narrationAudioIndex: number | null,
+  batAmThanh: boolean,
+  audioVolume: number
+): AudioFilterResult {
+  if (!batAmThanh) {
+    return {
+      filter: null,
+      mapArgs: ['-map', '0:a?']
+    }
+  }
+
+  const durationSec = meta.videoDurationSeconds ?? meta.videoDuration ?? meta.giay
+  const outputDuration = Math.max(0.1, durationSec).toFixed(3)
+
+  if (meta.hasAudio) {
+    const volRatio = originalAudioGain(audioVolume)
+    if (narrationAudioIndex != null) {
+      if (volRatio <= 0.0001) {
+        // REPLACE mode: Completely bypass original audio stream; direct narration track
+        const filter = `[${narrationAudioIndex}:a]asetpts=PTS-STARTPTS,aresample=44100:async=1,aformat=channel_layouts=stereo:sample_rates=44100,volume=1.0,apad=whole_dur=${outputDuration},atrim=duration=${outputDuration},alimiter=limit=-1dB:attack=5:release=50:level=false[a_mix]`
+        return { filter, mapArgs: ['-map', '[a_mix]'] }
+      } else {
+        // MIX mode: Dynamic ducking narration over background audio + limiter
+        const filter = `[0:a]asetpts=PTS-STARTPTS,aresample=44100:async=1,aformat=channel_layouts=stereo:sample_rates=44100,volume=${volRatio}[bg];[${narrationAudioIndex}:a]asetpts=PTS-STARTPTS,aresample=44100:async=1,aformat=channel_layouts=stereo:sample_rates=44100,volume=1.0,asplit=2[narr_sc][narr_mix];[bg][narr_sc]sidechaincompress=threshold=0.06:ratio=4:attack=15:release=200[ducked_bg];[ducked_bg][narr_mix]amix=inputs=2:duration=longest:dropout_transition=2:normalize=0[a_sum];[a_sum]alimiter=limit=-1dB:attack=5:release=50,apad=whole_dur=${outputDuration},atrim=duration=${outputDuration}[a_mix]`
+        return { filter, mapArgs: ['-map', '[a_mix]'] }
+      }
+    } else {
+      // Không nhạc nền + có âm thanh gốc -> Chỉ chỉnh âm lượng gốc
+      const filter = `[0:a]asetpts=PTS-STARTPTS,volume=${volRatio},apad=whole_dur=${outputDuration},atrim=duration=${outputDuration}[a_mix]`
+      return { filter, mapArgs: ['-map', '[a_mix]'] }
+    }
+  } else {
+    // Video gốc câm (không âm thanh)
+    if (narrationAudioIndex != null) {
+      const filter = `[${narrationAudioIndex}:a]asetpts=PTS-STARTPTS,aresample=44100:async=1,aformat=channel_layouts=stereo:sample_rates=44100,apad=whole_dur=${outputDuration},atrim=duration=${outputDuration},alimiter=limit=-1dB:attack=5:release=50:level=false[a_mix]`
+      return { filter, mapArgs: ['-map', '[a_mix]'] }
+    } else {
+      // Không nhạc nền -> Không cần âm thanh
+      return { filter: null, mapArgs: [] }
+    }
+  }
+}
+
 /**
  * Cac tham so filter cho ffmpeg. Supports N blur regions using split=N+1 stream architecture.
  */
@@ -675,7 +741,7 @@ export function taoFilterComplex(
   audioVolume = 100,
   fontsDir: string | null = null
 ): string[] {
-  const sigma = Math.max(8, Math.round((meta.h > 0 ? meta.h : 720) * 0.03))
+  const sigma = blurSigmaForDisplayHeight(meta.h)
   const validRegions = lamMo ? regions.filter((r) => r.x1 > r.x0 && r.y1 > r.y0) : []
   const lines: string[] = []
   const canonicalFilter = canonicalDisplayVideoFilter(meta)
@@ -747,58 +813,64 @@ export function taoFilterComplex(
   }
 
   // Phối trộn âm thanh
-  if (batAmThanh) {
-    if (meta.hasAudio) {
-      const volRatio = originalAudioGain(audioVolume)
-      const outputDuration = Math.max(0.1, meta.giay).toFixed(3)
-      let audioFilter = ''
-      if (hasAudioFile) {
-        if (volRatio <= 0.0001) {
-          // REPLACE mode: Completely bypass original audio stream; direct narration track
-          audioFilter = `[1:a]asetpts=PTS-STARTPTS,aresample=44100:async=1,aformat=channel_layouts=stereo:sample_rates=44100,volume=1.0,apad=whole_dur=${outputDuration},atrim=duration=${outputDuration},alimiter=limit=-1dB:attack=5:release=50:level=false[a_mix]`
-        } else {
-          // MIX mode: Dynamic ducking narration over background audio + limiter
-          audioFilter = `[0:a]asetpts=PTS-STARTPTS,aresample=44100:async=1,aformat=channel_layouts=stereo:sample_rates=44100,volume=${volRatio}[bg];[1:a]asetpts=PTS-STARTPTS,aresample=44100:async=1,aformat=channel_layouts=stereo:sample_rates=44100,volume=1.0,asplit=2[narr_sc][narr_mix];[bg][narr_sc]sidechaincompress=threshold=0.06:ratio=4:attack=15:release=200[ducked_bg];[ducked_bg][narr_mix]amix=inputs=2:duration=longest:dropout_transition=2:normalize=0[a_sum];[a_sum]alimiter=limit=-1dB:attack=5:release=50,apad=whole_dur=${outputDuration},atrim=duration=${outputDuration}[a_mix]`
-        }
-      } else {
-        // Không nhạc nền + có âm thanh gốc -> Chỉ chỉnh âm lượng gốc
-        audioFilter = `[0:a]asetpts=PTS-STARTPTS,volume=${volRatio},apad=whole_dur=${outputDuration},atrim=duration=${outputDuration}[a_mix]`
-      }
-      
-      if (hasVideoFilters) {
-        lines.push(audioFilter)
-        return ['-filter_complex', lines.join(';'), '-map', '[out]', '-map', '[a_mix]']
-      } else {
-        return ['-filter_complex', audioFilter, '-map', '0:v', '-map', '[a_mix]']
-      }
-    } else {
-      // Video gốc câm (không âm thanh)
-      if (hasAudioFile) {
-        // Có nhạc nền -> reset PTS and bound the result to the video timeline.
-        const outputDuration = Math.max(0.1, meta.giay).toFixed(3)
-        const audioFilter = `[1:a]asetpts=PTS-STARTPTS,aresample=44100:async=1,aformat=channel_layouts=stereo:sample_rates=44100,apad=whole_dur=${outputDuration},atrim=duration=${outputDuration},alimiter=limit=-1dB:attack=5:release=50:level=false[a_mix]`
-        if (hasVideoFilters) {
-          return ['-filter_complex', [...lines, audioFilter].join(';'), '-map', '[out]', '-map', '[a_mix]']
-        } else {
-          return ['-filter_complex', audioFilter, '-map', '0:v', '-map', '[a_mix]']
-        }
-      } else {
-        // Không nhạc nền -> Không cần âm thanh
-        if (hasVideoFilters) {
-          return ['-filter_complex', lines.join(';'), '-map', '[out]']
-        } else {
-          return []
-        }
-      }
-    }
+  const audio = buildAudioFilter(meta, hasAudioFile ? 1 : null, batAmThanh, audioVolume)
+  if (hasVideoFilters) {
+    if (audio.filter) lines.push(audio.filter)
+    return ['-filter_complex', lines.join(';'), '-map', '[out]', ...audio.mapArgs]
   } else {
-    // Không bật cấu hình âm thanh
-    if (hasVideoFilters) {
-      return ['-filter_complex', lines.join(';'), '-map', '[out]', '-map', '0:a?']
-    } else {
-      return []
+    if (audio.filter) {
+      return ['-filter_complex', audio.filter, '-map', '0:v', ...audio.mapArgs]
     }
+    return []
   }
+}
+
+/**
+ * Filter complex for automatic OCR mask blur.
+ */
+export function taoFilterComplexAutomatic(
+  meta: Meta,
+  plan: BurnInputPlan,
+  coAss: boolean,
+  assName: string,
+  batAmThanh = false,
+  audioVolume = 100,
+  fontsDir: string | null = null
+): string[] {
+  if (plan.maskVideoIndex == null) {
+    throw new Error('Cần có mask index cho automatic filter complex.')
+  }
+  const sigma = blurSigmaForDisplayHeight(meta.h)
+  const lines: string[] = []
+  const canonicalFilter = canonicalDisplayVideoFilter(meta)
+  if (canonicalFilter) {
+    lines.push(`[0:v]${canonicalFilter}[display]`)
+  } else {
+    lines.push('[0:v]null[display]')
+  }
+
+  lines.push('[display]split=2[base][blur_source]')
+  lines.push(`[blur_source]gblur=sigma=${sigma}:steps=3[blurred]`)
+  lines.push(`[${plan.maskVideoIndex}:v]format=gray,settb=AVTB,setpts=PTS-STARTPTS[mask]`)
+
+  const durationSec = meta.videoDurationSeconds ?? meta.videoDuration ?? meta.giay
+  const durationStr = Math.max(0.1, durationSec).toFixed(3)
+  lines.push(`[base][blurred][mask]maskedmerge,trim=duration=${durationStr}[masked]`)
+
+  if (coAss) {
+    const assFilter = fontsDir
+      ? `ass=${assName}:fontsdir=${escapeFfmpegFilterPath(fontsDir)}`
+      : `ass=${assName}`
+    lines.push(`[masked]${assFilter}[out]`)
+  } else {
+    lines.push('[masked]null[out]')
+  }
+
+  const audio = buildAudioFilter(meta, plan.narrationAudioIndex, batAmThanh, audioVolume)
+  if (audio.filter) {
+    lines.push(audio.filter)
+  }
+  return ['-filter_complex', lines.join(';'), '-map', '[out]', ...audio.mapArgs]
 }
 
 /** Chay 1 lan ffmpeg, bao tien do theo `time=` tren stderr. */
@@ -807,12 +879,21 @@ async function chay(
   args: string[],
   cwd: string,
   meta: Meta,
-  onProgress: (p: BurnProgress) => void
+  onProgress: (p: BurnProgress) => void,
+  signal?: AbortSignal
 ): Promise<number | null> {
+  if (daHuy || signal?.aborted) return null
   return new Promise((resolve) => {
-    const p = spawnBurnChild(spawn(ff, args, { cwd, windowsHide: true }))
+    const p = spawnBurnChild(spawn(ff, args, { cwd, windowsHide: true, shell: false }))
     child = p
     let errTail = ''
+    const onAbort = () => {
+      terminateProcessTree(p)
+      resolve(null)
+    }
+    if (signal) {
+      signal.addEventListener('abort', onAbort, { once: true })
+    }
     p.stderr.on('data', (d: Buffer) => {
       const s = d.toString()
       const lines = s.split(/\r?\n/)
@@ -843,12 +924,16 @@ async function chay(
       if (last) errTail = last
     })
     p.on('error', (err) => {
+      if (signal) signal.removeEventListener('abort', onAbort)
       debugRaw('burn spawn', err)
-      child = null
+      if (child === p) child = null
+      burnChildren.delete(p)
       resolve(-1)
     })
     p.on('close', (code) => {
-      child = null
+      if (signal) signal.removeEventListener('abort', onAbort)
+      if (child === p) child = null
+      burnChildren.delete(p)
       if (code !== 0 && errTail) debugRaw('burn close', errTail)
       resolve(code)
     })
@@ -863,6 +948,183 @@ async function duLon(f: string): Promise<boolean> {
   }
 }
 
+function burnOutputName(req: BurnReq): string {
+  const sourceName = basename(req.video).replace(/\.[^.]+$/, '')
+  return req.outputName?.trim() || `${sourceName}${req.mode === 'burn' ? '-phude' : '-phude-mem'}.mp4`
+}
+
+export interface RunBurnSubtitleLowerOptions {
+  outputPath: string
+  plan: BurnInputPlan
+  timedMask?: TimedOcrBlurMask | null
+  ffmpegPath?: string
+  ffprobePath?: string
+  signal?: AbortSignal
+  cwd?: string
+}
+
+/**
+ * Main-only lower rendering function.
+ */
+export async function runBurnSubtitleLower(
+  req: BurnReq,
+  options: RunBurnSubtitleLowerOptions,
+  onProgress: (p: BurnProgress) => void
+): Promise<BurnResult> {
+  const ff = options.ffmpegPath || (await resolveFfmpeg())
+  if (!ff) return { ok: false, error: 'Thiếu ffmpeg. Hãy chạy lại bước cài đặt.' }
+
+  const hasSrt = Boolean(req.srt && req.srt.trim())
+  const regions = req.blurRegions || []
+  const hasBlur = Boolean(req.lamMo && regions.length > 0)
+  const hasTimedMask = Boolean(options.timedMask)
+  const hasAudioFile = Boolean(req.batAmThanh && req.amThanhFile)
+
+  if (!hasSrt && !hasBlur && !hasTimedMask && !req.batAmThanh) {
+    return { ok: false, error: 'Vui lòng chọn ít nhất 1 vùng làm mờ, tải lên tệp phụ đề hoặc bật cấu hình âm thanh.' }
+  }
+
+  const output = options.outputPath
+  const tam = options.cwd || join(tmpdir(), 'tblao-burn')
+  await mkdir(tam, { recursive: true })
+  const srtTam = join(tam, `sub-${randomUUID()}.srt`)
+  const duongAss = join(tam, `sub-${randomUUID()}.ass`)
+  const assBaseName = basename(duongAss)
+
+  if (hasSrt && req.srt) {
+    await copyFile(req.srt, srtTam)
+  }
+
+  try {
+    const ffprobe = options.ffprobePath || duongFfprobe(ff)
+    const meta = await doVideo(ffprobe, req.video)
+    let bc: BoCuc | null = null
+    let resolvedFont = resolveBurnFont(req.fontId)
+    let picked = resolvedFont?.entry ?? null
+    let fontsDir = resolvedFont?.fontsDir ?? null
+    let subStyle: SubStyle | null = null
+
+    if (hasSrt) {
+      const srtRaw = docFileSrt(srtTam)
+      const cues = docSrt(srtRaw)
+      if (cues.length === 0) {
+        return { ok: false, error: 'File phụ đề không có câu nào với mốc thời gian hợp lệ.' }
+      }
+      const effectReq = req as BurnReq & {
+        subtitleDisplayStyle?: SubtitleDisplayStyle
+        highlightColor?: string
+        subtitleHighlightPop?: boolean
+      }
+      const explicitFontId = req.fontId?.trim()
+      if (explicitFontId && explicitFontId !== 'auto' && !resolvedFont) {
+        return {
+          ok: false,
+          error: 'Font phụ đề đã chọn không còn khả dụng. Hãy chọn lại font.'
+        }
+      }
+      if (!resolvedFont) {
+        resolvedFont = resolveAutomaticSubtitleFont(cues)
+        picked = resolvedFont?.entry ?? null
+        fontsDir = resolvedFont?.fontsDir ?? null
+      }
+      if (resolvedFont) {
+        try {
+          await readBurnFontPreview(resolvedFont.entry.id)
+        } catch {
+          return {
+            ok: false,
+            error: 'File font phụ đề đã thay đổi hoặc không còn tồn tại. Hãy chọn lại font.'
+          }
+        }
+      }
+      logInfo(`Dịch màn hình: đọc được ${cues.length} câu phụ đề.`)
+      bc = boCuc(meta, req.subRegion, req.lamMo, req.subtitleFontSize)
+      subStyle = styleFromReq(req, bc.vien)
+      await writeFile(
+        duongAss,
+        taoAss(cues, meta, bc, picked?.family ?? null, subStyle, picked, {
+          displayStyle: effectReq.subtitleDisplayStyle,
+          highlightColor: effectReq.highlightColor,
+          highlightPop: effectReq.subtitleHighlightPop,
+          layoutProfile: effectReq.subtitleLayoutProfile,
+          autoOptimize: effectReq.subtitleAutoOptimize,
+          wordTimings: effectReq.wordTimings,
+          requireWordTimings: effectReq.requireWordTimings
+        }),
+        'utf8'
+      )
+      if (picked) {
+        logInfo(`Dịch màn hình: font phụ đề «${picked.label}» (${picked.family}).`)
+      }
+    }
+
+    let filterArgs: string[] = []
+    if (hasTimedMask) {
+      filterArgs = taoFilterComplexAutomatic(
+        meta,
+        options.plan,
+        hasSrt,
+        assBaseName,
+        req.batAmThanh ?? false,
+        req.amLuongGoc ?? 100,
+        fontsDir
+      )
+    } else {
+      filterArgs = taoFilterComplex(
+        meta,
+        regions,
+        req.lamMo ?? false,
+        hasSrt,
+        assBaseName,
+        req.batAmThanh ?? false,
+        hasAudioFile,
+        req.amLuongGoc ?? 100,
+        fontsDir
+      )
+    }
+
+    logInfo(`Dịch màn hình: đang xử lý video ${basename(req.video)}…`)
+    if (filterArgs.length > 0) {
+      debugRaw('burn filter_complex', filterArgs.join(' '))
+    }
+
+    const encoders: Array<{ ten: string; gpu: boolean; args: string[] }> = [
+      { ten: 'h264_nvenc', gpu: true, args: ['-c:v', 'h264_nvenc', '-preset', 'p4', '-cq', '23'] },
+      { ten: 'h264_amf', gpu: true, args: ['-c:v', 'h264_amf', '-quality', 'balanced', '-rc', 'cqp', '-qp_i', '23', '-qp_p', '23'] },
+      { ten: 'h264_qsv', gpu: true, args: ['-c:v', 'h264_qsv', '-global_quality', '23'] },
+      { ten: 'libx264', gpu: false, args: ['-c:v', 'libx264', '-preset', 'medium', '-crf', '20'] }
+    ]
+
+    for (const enc of encoders) {
+      if (daHuy || options.signal?.aborted) break
+
+      const inputArgs = ['-y', ...options.plan.inputArgs]
+      const dungFilterAudio = req.batAmThanh && (meta.hasAudio || hasAudioFile)
+      const audioCodecArgs = dungFilterAudio ? ['-c:a', 'aac'] : ['-c:a', 'copy']
+
+      const args = filterArgs.length > 0
+        ? [...inputArgs, ...filterArgs, ...enc.args, ...audioCodecArgs, output]
+        : [...inputArgs, ...enc.args, ...audioCodecArgs, output]
+
+      const code = await chay(ff, args, tam, meta, onProgress, options.signal)
+      if (daHuy || options.signal?.aborted) {
+        return { ok: false, error: 'Đã huỷ.' }
+      }
+      if (code === 0 && (await duLon(output))) {
+        logInfo(`Dịch màn hình: xử lý video xong${enc.gpu ? ' (tăng tốc GPU)' : ''}.`)
+        return { ok: true, output }
+      }
+    }
+
+    return { ok: false, error: 'Xử lý video thất bại.' }
+  } finally {
+    if (hasSrt) {
+      await rm(srtTam, { force: true }).catch(() => {})
+      await rm(duongAss, { force: true }).catch(() => {})
+    }
+  }
+}
+
 /**
  * Ghep phu de / Lam mo video.
  */
@@ -870,7 +1132,6 @@ async function runBurnSubtitle(
   req: BurnReq,
   onProgress: (p: BurnProgress) => void
 ): Promise<BurnResult> {
-  daHuy = false
   const ff = await resolveFfmpeg()
   if (!ff) return { ok: false, error: 'Thiếu ffmpeg. Hãy chạy lại bước cài đặt.' }
 
@@ -883,12 +1144,7 @@ async function runBurnSubtitle(
     return { ok: false, error: 'Vui lòng chọn ít nhất 1 vùng làm mờ, tải lên tệp phụ đề hoặc bật cấu hình âm thanh.' }
   }
 
-  const goc = basename(req.video).replace(/\.[^.]+$/, '')
-  const outputName = req.outputName?.trim()
-  const output = join(
-    req.outputDir,
-    outputName || `${goc}${req.mode === 'burn' ? '-phude' : '-phude-mem'}.mp4`
-  )
+  const output = join(req.outputDir, burnOutputName(req))
 
   const tam = join(tmpdir(), 'tblao-burn')
   await mkdir(tam, { recursive: true })
@@ -978,125 +1234,305 @@ async function runBurnSubtitle(
     return { ok: false, error: 'Ghép phụ đề thất bại.' }
   }
 
-  // ---- Dot chet (Render lai video) ----
-  const meta = await doVideo(duongFfprobe(ff), req.video)
-  let bc: BoCuc | null = null
-  const duongAss = join(tam, 'sub.ass')
-  let resolvedFont = resolveBurnFont(req.fontId)
-  let picked = resolvedFont?.entry ?? null
-  let fontsDir = resolvedFont?.fontsDir ?? null
-  let subStyle: SubStyle | null = null
+  // Hard burn path:
+  const plan = planBurnInputs({
+    sourceVideo: req.video,
+    narrationAudio: hasAudioFile ? req.amThanhFile! : undefined
+  })
 
-  if (hasSrt) {
-    const srtRaw = docFileSrt(srtTam)
-    const cues = docSrt(srtRaw)
-    if (cues.length === 0) {
-      await rm(srtTam, { force: true })
-      return { ok: false, error: 'File phụ đề không có câu nào với mốc thời gian hợp lệ.' }
-    }
-    const effectReq = req as BurnReq & {
-      subtitleDisplayStyle?: SubtitleDisplayStyle
-      highlightColor?: string
-      subtitleHighlightPop?: boolean
-    }
-    const explicitFontId = req.fontId?.trim()
-    if (explicitFontId && explicitFontId !== 'auto' && !resolvedFont) {
-      await rm(srtTam, { force: true })
-      return {
-        ok: false,
-        error: 'Font phụ đề đã chọn không còn khả dụng. Hãy chọn lại font.'
-      }
-    }
-    if (!resolvedFont) {
-      resolvedFont = resolveAutomaticSubtitleFont(cues)
-      picked = resolvedFont?.entry ?? null
-      fontsDir = resolvedFont?.fontsDir ?? null
-    }
-    if (resolvedFont) {
-      try {
-        // Re-check checksum immediately before FFmpeg uses the same physical file.
-        await readBurnFontPreview(resolvedFont.entry.id)
-      } catch {
-        await rm(srtTam, { force: true })
-        return {
-          ok: false,
-          error: 'File font phụ đề đã thay đổi hoặc không còn tồn tại. Hãy chọn lại font.'
-        }
-      }
-    }
-    logInfo(`Dịch màn hình: đọc được ${cues.length} câu phụ đề.`)
-    bc = boCuc(meta, req.subRegion, req.lamMo, req.subtitleFontSize)
-    subStyle = styleFromReq(req, bc.vien)
-    await writeFile(
-      duongAss,
-      taoAss(cues, meta, bc, picked?.family ?? null, subStyle, picked, {
-        displayStyle: effectReq.subtitleDisplayStyle,
-        highlightColor: effectReq.highlightColor,
-        highlightPop: effectReq.subtitleHighlightPop,
-        layoutProfile: effectReq.subtitleLayoutProfile,
-        autoOptimize: effectReq.subtitleAutoOptimize,
-        wordTimings: effectReq.wordTimings,
-        requireWordTimings: effectReq.requireWordTimings
-      }),
-      'utf8'
-    )
-    if (picked) {
-      logInfo(`Dịch màn hình: font phụ đề «${picked.label}» (${picked.family}).`)
-    }
-  }
-
-  // FFmpeg chay voi cwd = tam nen chi can ten tuong doi 'sub.ass'
-  const filterArgs = taoFilterComplex(
-    meta,
-    regions,
-    req.lamMo ?? false,
-    hasSrt,
-    'sub.ass',
-    req.batAmThanh ?? false,
-    hasAudioFile,
-    req.amLuongGoc ?? 100,
-    fontsDir
+  return runBurnSubtitleLower(
+    req,
+    {
+      outputPath: output,
+      plan,
+      cwd: tam
+    },
+    onProgress
   )
-  logInfo(`Dịch màn hình: đang xử lý video ${basename(req.video)}…`)
-  if (filterArgs.length > 0) {
-    debugRaw('burn filter_complex', filterArgs.join(' '))
+}
+
+export async function validateRenderedMedia(
+  filePath: string,
+  expected: {
+    durationSeconds: number
+    frameRate?: number
+    requireAudio: boolean
+    durationToleranceFrames: number
+  },
+  ffmpegPath: string,
+  ffprobePath: string,
+  signal?: AbortSignal
+): Promise<void> {
+  if (signal?.aborted) throw new Error('Đã huỷ.')
+
+  const fileStat = await stat(filePath)
+  if (fileStat.size <= 4096) {
+    throw new Error(`File video quá nhỏ hoặc rỗng (${fileStat.size} bytes).`)
   }
 
-  const encoders: Array<{ ten: string; gpu: boolean; args: string[] }> = [
-    { ten: 'h264_nvenc', gpu: true, args: ['-c:v', 'h264_nvenc', '-preset', 'p4', '-cq', '23'] },
-    { ten: 'h264_amf', gpu: true, args: ['-c:v', 'h264_amf', '-quality', 'balanced', '-rc', 'cqp', '-qp_i', '23', '-qp_p', '23'] },
-    { ten: 'h264_qsv', gpu: true, args: ['-c:v', 'h264_qsv', '-global_quality', '23'] },
-    { ten: 'libx264', gpu: false, args: ['-c:v', 'libx264', '-preset', 'medium', '-crf', '20'] }
-  ]
-
-  for (const enc of encoders) {
-    if (daHuy) break
-
-    const inputArgs = hasAudioFile
-      ? ['-y', '-i', req.video, '-i', req.amThanhFile!]
-      : ['-y', '-i', req.video]
-
-    const dungFilterAudio = req.batAmThanh && (meta.hasAudio || hasAudioFile)
-    const audioCodecArgs = dungFilterAudio ? ['-c:a', 'aac'] : ['-c:a', 'copy']
-
-    const args = filterArgs.length > 0
-      ? [...inputArgs, ...filterArgs, ...enc.args, ...audioCodecArgs, output]
-      : [...inputArgs, ...enc.args, ...audioCodecArgs, output]
-
-    const code = await chay(ff, args, tam, meta, onProgress)
-    if (daHuy) {
-      if (hasSrt) await rm(srtTam, { force: true })
-      return { ok: false, error: 'Đã huỷ.' }
+  // 1. Decode test: ffmpeg -v error -i <filePath> -map 0:v:0 -f null -
+  await new Promise<void>((resolve, reject) => {
+    if (signal?.aborted) return reject(new Error('Đã huỷ.'))
+    const p = spawnBurnChild(
+      spawn(
+        ffmpegPath,
+        ['-v', 'error', '-i', filePath, '-map', '0:v:0', '-f', 'null', '-'],
+        { windowsHide: true, shell: false }
+      )
+    )
+    let stderr = ''
+    const onAbort = () => {
+      terminateProcessTree(p)
+      reject(new Error('Đã huỷ.'))
     }
-    if (code === 0 && (await duLon(output))) {
-      if (hasSrt) await rm(srtTam, { force: true })
-      logInfo(`Dịch màn hình: xử lý video xong${enc.gpu ? ' (tăng tốc GPU)' : ''}.`)
-      return { ok: true, output }
+    if (signal) signal.addEventListener('abort', onAbort, { once: true })
+    p.stderr.on('data', (d: Buffer) => {
+      stderr = (stderr + d.toString()).slice(-1000)
+    })
+    p.on('close', (code) => {
+      if (signal) signal.removeEventListener('abort', onAbort)
+      burnChildren.delete(p)
+      if (code === 0) resolve()
+      else reject(new Error(`Giải mã video kiểm tra thất bại (code ${code}): ${stderr}`))
+    })
+    p.on('error', (err) => {
+      if (signal) signal.removeEventListener('abort', onAbort)
+      burnChildren.delete(p)
+      reject(new Error(`Không thể chạy kiểm tra giải mã video: ${err.message}`))
+    })
+  })
+
+  if (signal?.aborted) throw new Error('Đã huỷ.')
+
+  // 2. FFprobe inspection
+  const probeData = await new Promise<{ streams: any[]; format: any }>((resolve, reject) => {
+    if (signal?.aborted) return reject(new Error('Đã huỷ.'))
+    const p = spawnBurnChild(
+      spawn(
+        ffprobePath,
+        [
+          '-v', 'error',
+          '-show_entries', 'stream=index,codec_type,duration,r_frame_rate',
+          '-show_entries', 'format=duration',
+          '-of', 'json',
+          filePath
+        ],
+        { windowsHide: true, shell: false }
+      )
+    )
+    let stdout = ''
+    let stderr = ''
+    const onAbort = () => {
+      terminateProcessTree(p)
+      reject(new Error('Đã huỷ.'))
+    }
+    if (signal) signal.addEventListener('abort', onAbort, { once: true })
+    p.stdout.on('data', (d: Buffer) => {
+      stdout += d.toString()
+    })
+    p.stderr.on('data', (d: Buffer) => {
+      stderr += d.toString()
+    })
+    p.on('close', (code) => {
+      if (signal) signal.removeEventListener('abort', onAbort)
+      burnChildren.delete(p)
+      if (code === 0) {
+        try {
+          resolve(JSON.parse(stdout))
+        } catch (e: any) {
+          reject(new Error(`Không thể phân tích dữ liệu ffprobe: ${e.message}`))
+        }
+      } else {
+        reject(new Error(`Kiểm tra thông tin video thất bại (code ${code}): ${stderr}`))
+      }
+    })
+    p.on('error', (err) => {
+      if (signal) signal.removeEventListener('abort', onAbort)
+      burnChildren.delete(p)
+      reject(new Error(`Không thể chạy ffprobe: ${err.message}`))
+    })
+  })
+
+  // Validate streams
+  const videoStreams = probeData.streams?.filter((s) => s.codec_type === 'video') ?? []
+  if (videoStreams.length !== 1) {
+    throw new Error(`Video xuất phải có đúng 1 luồng video, phát hiện ${videoStreams.length} luồng.`)
+  }
+
+  if (expected.requireAudio) {
+    const audioStreams = probeData.streams?.filter((s) => s.codec_type === 'audio') ?? []
+    if (audioStreams.length < 1) {
+      throw new Error('Video xuất thiếu luồng âm thanh theo yêu cầu.')
     }
   }
 
-  if (hasSrt) await rm(srtTam, { force: true })
-  return { ok: false, error: 'Xử lý video thất bại.' }
+  // Duration tolerance check
+  const vStream = videoStreams[0]
+  const probedDuration = Number(vStream.duration) || Number(probeData.format?.duration) || 0
+  if (probedDuration <= 0) {
+    throw new Error('Không thể xác định thời lượng video xuất.')
+  }
+
+  const durationTolerance = expected.frameRate && expected.frameRate > 0
+    ? expected.durationToleranceFrames / expected.frameRate
+    : 0.10
+  if (Math.abs(probedDuration - expected.durationSeconds) > durationTolerance) {
+    throw new Error(`Thời lượng video xuất (${probedDuration.toFixed(3)}s) lệch quá mức so với dự kiến (${expected.durationSeconds.toFixed(3)}s).`)
+  }
+
+  // Frame rate check
+  if (expected.frameRate && expected.frameRate > 0 && vStream.r_frame_rate) {
+    const [num, den] = vStream.r_frame_rate.split('/').map(Number)
+    if (num && den && den > 0) {
+      const actualFps = num / den
+      if (Math.abs(actualFps - expected.frameRate) > 0.1) {
+        throw new Error(`Tốc độ khung hình (${actualFps.toFixed(2)} fps) lệch quá mức so với dự kiến (${expected.frameRate.toFixed(2)} fps).`)
+      }
+    }
+  }
+}
+
+export interface AutoShortBurnExecutionOptions {
+  timedOcrBlurMask?: TimedOcrBlurMask | null
+  ffmpegPath: string
+  ffprobePath: string
+  finalOutputPath: string
+  itemWorkDir: string
+  expectedMedia: {
+    durationSeconds: number
+    frameRate?: number
+    requireAudio: boolean
+    durationToleranceFrames: number
+  }
+  signal: AbortSignal
+}
+
+export async function burnAutoShort(
+  request: Omit<BurnReq, 'outputDir' | 'outputName'>,
+  options: AutoShortBurnExecutionOptions,
+  onProgress: (progress: BurnProgress) => void
+): Promise<BurnResult> {
+  if (options.signal?.aborted) {
+    throw new Error('Đã huỷ.')
+  }
+
+  if (request.mode !== 'burn') {
+    throw new Error('Chế độ xuất video không hợp lệ.')
+  }
+
+  if (!isAbsolute(options.finalOutputPath) || !options.finalOutputPath.endsWith('.mp4')) {
+    throw new Error('Đường dẫn file đầu ra phải là đường dẫn tuyệt đối với đuôi .mp4.')
+  }
+
+  const finalDir = dirname(options.finalOutputPath)
+  const finalDirStat = await stat(finalDir)
+  if (!finalDirStat.isDirectory()) {
+    throw new Error('Thư mục lưu file đầu ra không tồn tại.')
+  }
+
+  // Pre-existing final check (no-clobber)
+  try {
+    await stat(options.finalOutputPath)
+    throw new Error(`File đích đã tồn tại: ${options.finalOutputPath}`)
+  } catch (err: any) {
+    if (err.code !== 'ENOENT') throw err
+  }
+
+  // Reject simultaneous timed mask and active manual rectangles
+  const hasManualRects = Boolean(
+    request.lamMo &&
+    request.blurRegions &&
+    request.blurRegions.some((r) => r.x1 > r.x0 && r.y1 > r.y0)
+  )
+  if (options.timedOcrBlurMask && (hasManualRects || (request.blurRegions && request.blurRegions.length > 0))) {
+    throw new Error('Không thể kết hợp mặt nạ OCR tự động và vùng làm mờ thủ công.')
+  }
+
+  if (!isAbsolute(options.itemWorkDir)) {
+    throw new Error('Thư mục làm việc phải là đường dẫn tuyệt đối.')
+  }
+  const workDirStat = await stat(options.itemWorkDir)
+  if (!workDirStat.isDirectory()) {
+    throw new Error('Thư mục làm việc không tồn tại.')
+  }
+
+  if (options.timedOcrBlurMask) {
+    await assertContainedRegularFile(options.timedOcrBlurMask.path, options.itemWorkDir, 'Mặt nạ OCR')
+  }
+
+  if (burnInFlight) {
+    throw new Error('Một video khác đang được xuất. Hãy chờ hoàn tất hoặc dừng tác vụ đó.')
+  }
+
+  burnInFlight = true
+  const finalStem = basename(options.finalOutputPath, '.mp4')
+  const partialName = `.${finalStem}.${randomUUID()}.partial.mp4`
+  const partialPath = join(finalDir, partialName)
+
+  try {
+    if (options.signal?.aborted) throw new Error('Đã huỷ.')
+
+    const plan = planBurnInputs({
+      sourceVideo: request.video,
+      narrationAudio: request.batAmThanh && request.amThanhFile ? request.amThanhFile : undefined,
+      timedMask: options.timedOcrBlurMask?.path
+    })
+
+    const renderReq: BurnReq = {
+      ...request,
+      outputDir: finalDir,
+      outputName: partialName
+    }
+
+    const renderRes = await runBurnSubtitleLower(
+      renderReq,
+      {
+        outputPath: partialPath,
+        plan,
+        timedMask: options.timedOcrBlurMask,
+        ffmpegPath: options.ffmpegPath,
+        ffprobePath: options.ffprobePath,
+        signal: options.signal,
+        cwd: options.itemWorkDir
+      },
+      onProgress
+    )
+
+    if (!renderRes.ok) {
+      throw new Error(renderRes.error || 'Xử lý video thất bại.')
+    }
+
+    if (options.signal?.aborted) throw new Error('Đã huỷ.')
+
+    // Media pre-promotion validation
+    await validateRenderedMedia(
+      partialPath,
+      options.expectedMedia,
+      options.ffmpegPath,
+      options.ffprobePath,
+      options.signal
+    )
+
+    if (options.signal?.aborted) throw new Error('Đã huỷ.')
+
+    // Re-verify final path still does not exist before atomic rename
+    try {
+      await stat(options.finalOutputPath)
+      throw new Error(`File đích đã tồn tại: ${options.finalOutputPath}`)
+    } catch (err: any) {
+      if (err.code !== 'ENOENT') throw err
+    }
+
+    await rename(partialPath, options.finalOutputPath)
+    return { ok: true, output: options.finalOutputPath }
+  } finally {
+    burnInFlight = false
+    try {
+      await rm(partialPath, { force: true })
+    } catch {
+      // ignore
+    }
+  }
 }
 
 type BurnValidation = { ok: true; req: BurnReq } | { ok: false; error: string }
@@ -1124,8 +1560,16 @@ function validateRegion(value: unknown, label: string): string | null {
   return null
 }
 
-async function validateBurnRequest(raw: unknown): Promise<BurnValidation> {
+export async function validateBurnRequest(raw: unknown): Promise<BurnValidation> {
   if (!isRecord(raw)) return { ok: false, error: 'Yêu cầu xuất video không hợp lệ.' }
+
+  const sensitiveKeys = ['timedOcrBlurMask', 'maskPath', 'visualCuesPath', 'visualTimeline']
+  for (const key of sensitiveKeys) {
+    if (key in raw) {
+      return { ok: false, error: `Tham số ${key} không được phép gửi qua yêu cầu render.` }
+    }
+  }
+
   if (raw.mode !== 'burn' && raw.mode !== 'soft') {
     return { ok: false, error: 'Chế độ xuất video không hợp lệ.' }
   }
@@ -1158,6 +1602,21 @@ async function validateBurnRequest(raw: unknown): Promise<BurnValidation> {
       }
     } catch {
       return { ok: false, error: 'File phụ đề không còn tồn tại.' }
+    }
+  }
+
+  if (raw.videoTitle != null) {
+    const titleConfigError = validateVideoTitleConfig(raw.videoTitle)
+    if (titleConfigError) return { ok: false, error: titleConfigError }
+    if (!subtitlePath) {
+      return { ok: false, error: 'Cần chọn file SRT để AI tạo tiêu đề cho video.' }
+    }
+    try {
+      if (docSrt(docFileSrt(subtitlePath)).length === 0) {
+        return { ok: false, error: 'File SRT chưa có nội dung hợp lệ để AI tạo tiêu đề.' }
+      }
+    } catch {
+      return { ok: false, error: 'Không thể đọc file SRT để AI tạo tiêu đề.' }
     }
   }
 
@@ -1208,7 +1667,14 @@ async function validateBurnRequest(raw: unknown): Promise<BurnValidation> {
   const boundedNumbers: Array<[keyof BurnReq, number, number]> = [
     ['amLuongGoc', 0, 100],
     ['outlinePx', 0, 8],
-    ['bgOpacity', 0, 100]
+    ['bgOpacity', 0, 100],
+    ['subtitleFontSize', 1, 500],
+    ['subtitleFontScale', 0.1, 10],
+    ['outlineScale', 0, 10],
+    ['bandTop', 0, 10000],
+    ['bandBot', 0, 10000],
+    ['bandLeft', 0, 10000],
+    ['bandRight', 0, 10000]
   ]
   for (const [key, minimum, maximum] of boundedNumbers) {
     const value = raw[key]
@@ -1257,13 +1723,105 @@ async function validateBurnRequest(raw: unknown): Promise<BurnValidation> {
     return { ok: false, error: 'Tên file đầu ra không hợp lệ.' }
   }
 
+  const req: BurnReq = {
+    video: raw.video as string,
+    srt: subtitlePath || null,
+    outputDir: raw.outputDir as string,
+    mode: raw.mode as 'burn' | 'soft',
+    ...(raw.outputName != null ? { outputName: raw.outputName as string } : {}),
+    ...(raw.bandTop != null ? { bandTop: raw.bandTop as number } : {}),
+    ...(raw.bandBot != null ? { bandBot: raw.bandBot as number } : {}),
+    ...(raw.bandLeft != null ? { bandLeft: raw.bandLeft as number } : {}),
+    ...(raw.bandRight != null ? { bandRight: raw.bandRight as number } : {}),
+    ...(raw.blurRegions != null ? { blurRegions: raw.blurRegions as BlurRegion[] } : {}),
+    ...(raw.lamMo != null ? { lamMo: raw.lamMo as boolean } : {}),
+    ...(raw.subRegion != null ? { subRegion: raw.subRegion as any } : {}),
+    ...(raw.catSrt != null ? { catSrt: raw.catSrt as boolean } : {}),
+    ...(raw.batAmThanh != null ? { batAmThanh: raw.batAmThanh as boolean } : {}),
+    amThanhFile: audioPath || null,
+    ...(raw.amLuongGoc != null ? { amLuongGoc: raw.amLuongGoc as number } : {}),
+    ...(raw.fontId != null ? { fontId: raw.fontId as string } : {}),
+    ...(raw.textColor != null ? { textColor: raw.textColor as string } : {}),
+    ...(raw.outlineColor != null ? { outlineColor: raw.outlineColor as string } : {}),
+    ...(raw.outlinePx != null ? { outlinePx: raw.outlinePx as number } : {}),
+    ...(raw.bgEnabled != null ? { bgEnabled: raw.bgEnabled as boolean } : {}),
+    ...(raw.bgColor != null ? { bgColor: raw.bgColor as string } : {}),
+    ...(raw.bgOpacity != null ? { bgOpacity: raw.bgOpacity as number } : {}),
+    ...(raw.subtitleDisplayStyle != null ? { subtitleDisplayStyle: raw.subtitleDisplayStyle as SubtitleDisplayStyle } : {}),
+    ...(raw.highlightColor != null ? { highlightColor: raw.highlightColor as string } : {}),
+    ...(raw.subtitleHighlightPop != null ? { subtitleHighlightPop: raw.subtitleHighlightPop as boolean } : {}),
+    ...(raw.subtitleLayoutProfile != null ? { subtitleLayoutProfile: raw.subtitleLayoutProfile as SubtitleLayoutProfile } : {}),
+    ...(raw.subtitleAutoOptimize != null ? { subtitleAutoOptimize: raw.subtitleAutoOptimize as boolean } : {}),
+    ...(raw.subtitleFontSize != null ? { subtitleFontSize: raw.subtitleFontSize as number } : {}),
+    ...(raw.wordTimings != null ? { wordTimings: raw.wordTimings as any } : {}),
+    ...(raw.requireWordTimings != null ? { requireWordTimings: raw.requireWordTimings as boolean } : {}),
+    ...(raw.subtitleFontScale != null ? { subtitleFontScale: raw.subtitleFontScale as number } : {}),
+    ...(raw.outlineScale != null ? { outlineScale: raw.outlineScale as number } : {}),
+    ...(raw.videoTitle != null ? { videoTitle: raw.videoTitle as any } : {})
+  }
+
   return {
     ok: true,
-    req: {
-      ...(raw as unknown as BurnReq),
-      srt: subtitlePath || null,
-      amThanhFile: audioPath || null
+    req
+  }
+}
+
+interface BurnVideoTitleDependencies {
+  probe: typeof probeBurnMedia
+  readSubtitle: typeof docFileSrt
+  generate: typeof generateVideoTitle
+  write: typeof writeVideoTitle
+}
+
+/** Complete an already rendered video without losing it if the optional title fails. */
+export async function completeBurnVideoTitle(
+  result: BurnResult,
+  req: BurnReq,
+  onProgress: (p: BurnProgress) => void,
+  signal: AbortSignal,
+  dependencies: Partial<BurnVideoTitleDependencies> = {}
+): Promise<BurnResult> {
+  if (!result.ok || !result.output || !req.videoTitle) return result
+  const io: BurnVideoTitleDependencies = {
+    probe: probeBurnMedia,
+    readSubtitle: docFileSrt,
+    generate: generateVideoTitle,
+    write: writeVideoTitle,
+    ...dependencies
+  }
+  let stage: 'subtitle' | 'generate' | 'write' = 'subtitle'
+  try {
+    signal.throwIfAborted()
+    onProgress({ percent: 99, message: 'Video đã render xong, AI đang tạo tiêu đề từ SRT…' })
+    const outputMeta = await io.probe(result.output)
+    signal.throwIfAborted()
+    // Soft subtitles can extend container duration beyond the actual video stream.
+    const duration = [outputMeta.videoDurationSeconds, outputMeta.videoDuration, outputMeta.giay]
+      .find((value): value is number => typeof value === 'number' && Number.isFinite(value) && value > 0)
+    if (duration == null || !req.srt) {
+      return { ...result, titleError: 'Video đã xuất thành công nhưng chưa xác định được nội dung SRT theo thời lượng video để tạo tiêu đề.' }
     }
+    const cues = trimSubtitleCues(docSrt(io.readSubtitle(req.srt)), duration)
+    if (cues.length === 0) {
+      return { ...result, titleError: 'Video đã xuất thành công nhưng SRT không có nội dung trong thời lượng video để tạo tiêu đề.' }
+    }
+    stage = 'generate'
+    const title = (await io.generate(cues, req.videoTitle, signal)).trim()
+    signal.throwIfAborted()
+    if (!title) throw new Error('Empty video title')
+    stage = 'write'
+    const titlePath = await io.write(result.output, title)
+    return { ...result, title, titlePath }
+  } catch {
+    if (signal.aborted) {
+      return { ...result, titleError: 'Video đã xuất thành công. Đã dừng tạo tiêu đề; chưa lưu tieude.txt.' }
+    }
+    const titleError = stage === 'write'
+      ? 'Video đã xuất thành công nhưng không lưu được tieude.txt. Hãy kiểm tra quyền ghi và file tiêu đề đã có trong thư mục video.'
+      : stage === 'generate'
+        ? 'Video đã xuất thành công nhưng AI chưa tạo được tiêu đề. Hãy kiểm tra cấu hình AI và kết nối rồi thử lại.'
+        : 'Video đã xuất thành công nhưng không đọc được SRT hoặc thời lượng video để tạo tiêu đề.'
+    return { ...result, titleError }
   }
 }
 
@@ -1275,12 +1833,28 @@ export async function burnSubtitle(
   if (burnInFlight) {
     return { ok: false, error: 'Một video khác đang được xuất. Hãy chờ hoàn tất hoặc dừng tác vụ đó.' }
   }
-  const validation = await validateBurnRequest(req as unknown)
-  if (validation.ok === false) return { ok: false, error: validation.error }
   burnInFlight = true
+  daHuy = false
+  const controller = new AbortController()
+  burnAbortController = controller
   try {
-    return await runBurnSubtitle(validation.req, onProgress)
+    const validation = await validateBurnRequest(req as unknown)
+    if (validation.ok === false) return { ok: false, error: validation.error }
+    if (controller.signal.aborted) return { ok: false, error: 'Đã huỷ.' }
+    let renderReq = validation.req
+    if (renderReq.videoTitle) {
+      try {
+        const outputDir = await reserveVideoTitleOutputDir(renderReq.outputDir, burnOutputName(renderReq))
+        renderReq = { ...renderReq, outputDir }
+      } catch {
+        return { ok: false, error: 'Không tạo được thư mục riêng để lưu video và tieude.txt. Hãy kiểm tra thư mục lưu đã chọn.' }
+      }
+      if (controller.signal.aborted) return { ok: false, error: 'Đã huỷ.' }
+    }
+    const result = await runBurnSubtitle(renderReq, onProgress)
+    return await completeBurnVideoTitle(result, renderReq, onProgress, controller.signal)
   } finally {
+    burnAbortController = null
     burnInFlight = false
   }
 }

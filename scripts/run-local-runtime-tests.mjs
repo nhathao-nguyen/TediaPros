@@ -60,6 +60,7 @@ const knownTests = [
   'ocr-visual-timeline.test',
   'autoshort-ocr-runtime.test',
   'ocr-mask.test',
+  'autoshort-ocr-burn.test',
   'video-title.test',
   'burn-video-title.test',
   'autoshort-video-title.test'
