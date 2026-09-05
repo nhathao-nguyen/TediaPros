@@ -55,7 +55,8 @@ const knownTests = [
   'separator-contract.test',
   'separator-runtime.test',
   'separator-pipeline.test',
-  'autoshort-ocr-contract.test'
+  'autoshort-ocr-contract.test',
+  'canonical-display-geometry.test'
 ]
 
 const requestedTests = process.argv.slice(2).map((name) => name.replace(/\.(ts|js)$/, ''))

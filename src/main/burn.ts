@@ -11,6 +11,11 @@ import {
 } from './fonts'
 import { createTextMeasurer } from './fontMeasure'
 import { debugRaw, logInfo } from './logger'
+import {
+  type CanonicalDisplayGeometry,
+  canonicalBurnDisplayFilter,
+  parseCanonicalMediaMetadata
+} from './canonicalDisplayGeometry'
 import type {
   BlurRegion,
   BurnFontEntry,
@@ -137,6 +142,9 @@ export interface Meta {
   h: number
   giay: number
   hasAudio: boolean
+  geometry?: CanonicalDisplayGeometry
+  videoDurationSeconds?: number | null
+  containerDurationSeconds?: number
   /** Actual per-stream durations; giay remains the container duration. */
   videoDuration?: number
   audioDuration?: number
@@ -159,6 +167,9 @@ function evenDimension(value: number, fallback: number): number {
  * square pixels and timestamps are rebased only when the source starts late.
  */
 export function canonicalDisplayVideoFilter(meta: Meta): string | null {
+  if (meta.geometry) {
+    return canonicalBurnDisplayFilter(meta.geometry)
+  }
   const sar = meta.sampleAspectRatio || '1:1'
   const [sarNumRaw, sarDenRaw] = sar.split(':').map(Number)
   const sarNum = Number.isFinite(sarNumRaw) && sarNumRaw > 0 ? sarNumRaw : 1
@@ -196,54 +207,13 @@ async function doVideo(ffprobe: string, video: string): Promise<Meta> {
       p.stdout.on('data', (d: Buffer) => (out += d.toString()))
       p.on('close', () => {
         try {
-          const parsed = JSON.parse(out) as {
-            streams?: Array<{
-              codec_type?: string
-              width?: number
-              height?: number
-              start_time?: string
-              duration?: string
-              r_frame_rate?: string
-              sample_aspect_ratio?: string
-              tags?: { rotate?: string }
-              side_data_list?: Array<{ rotation?: number }>
-            }>
-            format?: { duration?: string; start_time?: string }
-          }
-          const streams = Array.isArray(parsed.streams) ? parsed.streams : []
-          const videoStream = streams.find((stream) => stream.codec_type === 'video')
-          const audioStream = streams.find((stream) => stream.codec_type === 'audio')
-          const codedWidth = Number(videoStream?.width) || 0
-          const codedHeight = Number(videoStream?.height) || 0
-          const sar = videoStream?.sample_aspect_ratio || '1:1'
-          const [sarNumRaw, sarDenRaw] = sar.split(':').map(Number)
-          const sarNum = Number.isFinite(sarNumRaw) && sarNumRaw > 0 ? sarNumRaw : 1
-          const sarDen = Number.isFinite(sarDenRaw) && sarDenRaw > 0 ? sarDenRaw : 1
-          const rotationRaw = videoStream?.side_data_list?.find((item) => Number.isFinite(item.rotation))?.rotation
-            ?? Number(videoStream?.tags?.rotate || 0)
-          const rotation = ((Math.round(rotationRaw || 0) % 360) + 360) % 360
-          const [fpsNum, fpsDen] = (videoStream?.r_frame_rate || '').split('/').map(Number)
-          const displayWidth = Math.max(1, Math.round(codedWidth * sarNum / sarDen))
-          const displayHeight = codedHeight
-          const rotateSwap = rotation === 90 || rotation === 270
-          resolve({
-            w: rotateSwap ? displayHeight : displayWidth,
-            h: rotateSwap ? displayWidth : displayHeight,
-            giay: Number(parsed.format?.duration) || 0,
-            hasAudio: Boolean(audioStream),
-            videoDuration: Number(videoStream?.duration) || 0,
-            audioDuration: Number(audioStream?.duration) || 0,
-            frameRate: Number.isFinite(fpsNum) && fpsNum > 0 && Number.isFinite(fpsDen) && fpsDen > 0 ? fpsNum / fpsDen : undefined,
-            rotation,
-            sampleAspectRatio: sar,
-            videoStart: Number(videoStream?.start_time) || Number(parsed.format?.start_time) || 0,
-            audioStart: Number(audioStream?.start_time) || 0
-          })
+          const parsed = JSON.parse(out)
+          resolve(parseCanonicalMediaMetadata(parsed))
         } catch {
-          resolve({ w: 0, h: 0, giay: 0, hasAudio: false })
+          resolve({ w: 0, h: 0, giay: 0, hasAudio: false, videoDurationSeconds: null, containerDurationSeconds: 0 })
         }
       })
-    p.on('error', () => resolve({ w: 0, h: 0, giay: 0, hasAudio: false }))
+    p.on('error', () => resolve({ w: 0, h: 0, giay: 0, hasAudio: false, videoDurationSeconds: null, containerDurationSeconds: 0 }))
   })
 }
 

@@ -57,6 +57,11 @@ import { cancelVideo2x } from './video2x'
 import { terminateProcessTree, terminateTrackedProcessTrees, trackChildProcess } from './processTree'
 import { parseSrt, serializeSrt, type SubtitleCue } from '../shared/subtitles'
 import { validateAutoShortStartRequest } from '../shared/autoShortContract'
+import {
+  deriveCanonicalDisplayGeometry,
+  normalizedRegionToDisplayPixels,
+  type CanonicalDisplayGeometry
+} from './canonicalDisplayGeometry'
 import { fuseWhisperAndOcr, clampAlignedCueTimeline } from '../shared/autoShortAlignment'
 import { resolveSeparatorEngine, resolveFfprobe } from './runtimeResolver'
 import { probeRuntimeExecutable } from './runtimeProbes'
@@ -550,20 +555,25 @@ function isAbortError(error: unknown): boolean {
   return error instanceof Error && (error.name === 'AbortError' || /hủy tác vụ/i.test(error.message))
 }
 
-function normalizedToPixels(region: AutoShortNormalizedRegion | null | undefined, width: number, height: number) {
+function normalizedToPixels(
+  region: AutoShortNormalizedRegion | null | undefined,
+  geometry: CanonicalDisplayGeometry
+) {
   if (!region) return undefined
-  return {
-    x0: Math.round(region.x0 * width),
-    y0: Math.round(region.y0 * height),
-    x1: Math.round(region.x1 * width),
-    y1: Math.round(region.y1 * height)
-  }
+  return normalizedRegionToDisplayPixels(region, geometry)
 }
 
-function blurRegionsToPixels(regions: AutoShortBlurRegion[], width: number, height: number) {
+function blurRegionsToPixels(
+  regions: AutoShortBlurRegion[],
+  geometry: CanonicalDisplayGeometry
+) {
   return regions.flatMap((region) => {
-    const pixels = normalizedToPixels(region, width, height)
-    return pixels ? [{ ...pixels, id: region.id, color: region.color }] : []
+    try {
+      const pixels = normalizedToPixels(region, geometry)
+      return pixels ? [{ ...pixels, id: region.id, color: region.color }] : []
+    } catch {
+      return []
+    }
   })
 }
 
@@ -2309,15 +2319,22 @@ async function processSingleVideo(
     checkpoint.fingerprint = checkpointFingerprint
     const meta = await probeBurnMedia(item.filePath)
     if (!(meta.giay > 0) || !(meta.w > 0) || !(meta.h > 0)) throw new Error('Video không có metadata hợp lệ')
+    const geometry = meta.geometry ?? deriveCanonicalDisplayGeometry({
+      codedWidth: meta.w,
+      codedHeight: meta.h,
+      rotation: meta.rotation,
+      sampleAspectRatio: meta.sampleAspectRatio,
+      videoStart: meta.videoStart
+    })
     const portrait = meta.h > meta.w
-    const ocrRegion = normalizedToPixels(config.ocrRegion, meta.w, meta.h) || {
+    const ocrRegion = (config.ocrRegion ? normalizedToPixels(config.ocrRegion, geometry) : undefined) || {
       x0: 0,
-      y0: Math.round(meta.h * (portrait ? 0.72 : 0.74)),
-      x1: meta.w,
-      y1: Math.round(meta.h * (portrait ? 0.92 : 0.94))
+      y0: Math.round(geometry.displayHeight * (portrait ? 0.72 : 0.74)),
+      x1: geometry.displayWidth,
+      y1: Math.round(geometry.displayHeight * (portrait ? 0.92 : 0.94))
     }
-    const subtitleRegion = normalizedToPixels(config.subRegion, meta.w, meta.h)
-    const blurRegions = blurRegionsToPixels(config.blurRegions, meta.w, meta.h)
+    const subtitleRegion = normalizedToPixels(config.subRegion, geometry)
+    const blurRegions = blurRegionsToPixels(config.blurRegions, geometry)
 
     const rawSrtPath = join(workDir, 'source.srt')
     let sourceCues: SubtitleCue[] = []
