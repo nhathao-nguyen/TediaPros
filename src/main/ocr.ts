@@ -1,12 +1,30 @@
 import { spawn, type ChildProcess } from 'node:child_process'
-import { chmod, readFile, writeFile, rm } from 'node:fs/promises'
+import { randomUUID } from 'node:crypto'
+import { chmod, readFile, writeFile, rm, mkdir, stat } from 'node:fs/promises'
 import { basename, join } from 'node:path'
 import { resolveFfmpeg } from './deps'
 import { resolveRuntimeExecutable, runtimeKindDir } from './runtimeResolver'
 import { probeRuntimeExecutable } from './runtimeProbes'
 import { debugRaw, errLabel, logError, logInfo } from './logger'
 import { terminateProcessTree, trackChildProcess } from './processTree'
-import type { OcrEngineStatus, OcrProgress, OcrResult } from '../shared/types'
+import { assertContainedParentDirectory, assertContainedRegularFile } from './safeContainedPath'
+import type { CanonicalDisplayGeometry } from './canonicalDisplayGeometry'
+import {
+  validateOcrVisualTimeline,
+  stabilizeSingleSampleGaps,
+  projectOcrTimelineToSubtitleCues,
+  OCR_VISUAL_MAX_BYTES
+} from '../shared/ocrVisualTimeline'
+import type {
+  AutoShortOcrBlurProfile,
+  OcrEngineStatus,
+  OcrProgress,
+  OcrResult,
+  OcrVisualTimeline,
+  PixelRegion
+} from '../shared/types'
+
+export { assertContainedRegularFile } from './safeContainedPath'
 
 const isWin = process.platform === 'win32'
 async function resolveEnginePath(): Promise<string | null> {
@@ -286,4 +304,255 @@ export async function ocrVideo(
       resolve({ ok: false, error: nhan })
     })
   })
+}
+
+export interface AutoShortOcrVideoOptions {
+  input: string
+  outputDir: string
+  scanRegion: PixelRegion
+  profile: AutoShortOcrBlurProfile
+  geometry: CanonicalDisplayGeometry
+  videoDurationSeconds: number
+  sampleFps: 8
+  signal: AbortSignal
+  spawnChild?: typeof spawn
+  engineExecutable?: string
+  ffmpegExecutable?: string
+}
+
+export interface AutoShortOcrVideoResult {
+  timeline: OcrVisualTimeline
+  sourceSrtPath: string
+  sidecarPath: string
+  engineVersion: string
+  engineProtocol: 'ocr-local/1'
+  visualSegmentCount: number
+  boxSegmentCount: number
+}
+
+function formatSrtFromCues(cues: { id?: string | number; start: number; end: number; text: string }[]): string {
+  const formatTime = (secs: number): string => {
+    const h = Math.floor(secs / 3600)
+    const m = Math.floor((secs % 3600) / 60)
+    const s = Math.floor(secs % 60)
+    const ms = Math.min(999, Math.round((secs - Math.floor(secs)) * 1000))
+    const pad = (n: number, z = 2): string => String(n).padStart(z, '0')
+    return `${pad(h)}:${pad(m)}:${pad(s)},${pad(ms, 3)}`
+  }
+  return cues
+    .map((cue, idx) => `${idx + 1}\n${formatTime(cue.start)} --> ${formatTime(cue.end)}\n${cue.text.trim()}\n`)
+    .join('\n') + (cues.length > 0 ? '\n' : '')
+}
+
+export async function ocrVideoWithVisualTimeline(
+  options: AutoShortOcrVideoOptions,
+  onProgress?: (progress: OcrProgress) => void
+): Promise<AutoShortOcrVideoResult> {
+  if (options.signal?.aborted) {
+    throw new Error('Tiến trình OCR đã bị huỷ trước khi bắt đầu.')
+  }
+
+  const ocrDir = join(options.outputDir, `ocr-${randomUUID()}`)
+  await mkdir(ocrDir, { recursive: true })
+  await assertContainedParentDirectory(ocrDir, options.outputDir, 'Thư mục tạm OCR')
+
+  const engineSrtPath = join(ocrDir, 'source.engine.srt')
+  const sidecarPath = join(ocrDir, 'visual-cues.json')
+  const authoritativeSrtPath = join(ocrDir, 'source.srt')
+
+  const executable = options.engineExecutable || (await resolveEnginePath())
+  if (!executable) {
+    throw new Error('Chưa có OCR asset local có manifest. Hãy import asset trước.')
+  }
+  const ffmpeg = options.ffmpegExecutable || (await resolveFfmpeg())
+  if (!ffmpeg) {
+    throw new Error('Thiếu ffmpeg. Hãy chạy lại bước cài đặt.')
+  }
+
+  const args = [
+    '--input', options.input,
+    '--output', engineSrtPath,
+    '--visual-cues-output', sidecarPath,
+    '--scan-profile', options.profile,
+    '--display-width', String(options.geometry.displayWidth),
+    '--display-height', String(options.geometry.displayHeight),
+    '--geometry-fingerprint', options.geometry.fingerprint,
+    '--x0', String(options.scanRegion.x0),
+    '--y0', String(options.scanRegion.y0),
+    '--x1', String(options.scanRegion.x1),
+    '--y1', String(options.scanRegion.y1),
+    '--fps', '8',
+    '--ffmpeg', ffmpeg
+  ]
+
+  const spawnFn = options.spawnChild || spawn
+
+  let doneEvent: {
+    type?: string
+    output?: string
+    visual_cues?: string
+    version?: string
+    count?: number
+    segment_count?: number
+    box_count?: number
+  } | null = null
+
+  let engineError: string | null = null
+  let errTail = ''
+
+  await new Promise<void>((resolve, reject) => {
+    let p: ChildProcess
+    try {
+      p = trackChildProcess(spawnFn(executable, args, {
+        windowsHide: true,
+        shell: false,
+        env: { ...process.env, PYTHONUTF8: '1', PYTHONIOENCODING: 'utf-8' }
+      }))
+    } catch (err) {
+      reject(new Error(`Không thể khởi chạy OCR engine: ${(err as Error).message}`))
+      return
+    }
+
+    let settled = false
+    const abortHandler = (): void => {
+      terminateProcessTree(p)
+    }
+
+    if (options.signal.aborted) {
+      abortHandler()
+    } else {
+      options.signal.addEventListener('abort', abortHandler, { once: true })
+    }
+
+    let buf = ''
+    let stdoutBytes = 0
+
+    p.stdout?.on('data', (chunk: Buffer) => {
+      stdoutBytes += chunk.length
+      if (stdoutBytes > 256 * 1024) {
+        // limit retained stdout buffer
+      }
+      buf += chunk.toString('utf8')
+      const lines = buf.split(/\r?\n/)
+      buf = lines.pop() ?? ''
+      for (const line of lines) {
+        if (line.length > 64 * 1024) continue
+        const trimmed = line.trim()
+        if (!trimmed || trimmed[0] !== '{') continue
+        try {
+          const parsed = JSON.parse(trimmed) as Record<string, unknown>
+          if (parsed.type === 'progress' && typeof parsed.percent === 'number') {
+            onProgress?.({ percent: parsed.percent, text: '' })
+          } else if (parsed.type === 'done') {
+            doneEvent = parsed as typeof doneEvent
+          } else if (parsed.type === 'error' && typeof parsed.message === 'string') {
+            engineError = parsed.message
+          }
+        } catch {
+          // ignore malformed JSON line
+        }
+      }
+    })
+
+    p.stderr?.on('data', (chunk: Buffer) => {
+      const text = chunk.toString('utf8')
+      errTail = (errTail + text).slice(-8192)
+    })
+
+    p.on('error', (err) => {
+      if (settled) return
+      settled = true
+      options.signal.removeEventListener('abort', abortHandler)
+      reject(err)
+    })
+
+    p.on('close', (code) => {
+      if (settled) return
+      settled = true
+      options.signal.removeEventListener('abort', abortHandler)
+      if (options.signal.aborted) {
+        reject(new Error('Tiến trình OCR đã bị huỷ.'))
+        return
+      }
+      if (code !== 0) {
+        const detail = engineError || errTail.trim().split(/\r?\n/).pop() || `mã thoát ${code ?? '?'}`
+        reject(new Error(`OCR engine thất bại: ${errLabel(detail)}`))
+        return
+      }
+      resolve()
+    })
+  })
+
+  const finalDone = doneEvent as {
+    type?: string
+    output?: string
+    visual_cues?: string
+    version?: string
+    count?: number
+    segment_count?: number
+    box_count?: number
+  } | null
+
+  if (!finalDone) {
+    throw new Error('OCR engine không trả về thông tin hoàn thành (done event).')
+  }
+
+  // Exact path equality checks
+  if (finalDone.output !== engineSrtPath || finalDone.visual_cues !== sidecarPath) {
+    throw new Error('Đường dẫn kết quả OCR từ engine không khớp chính xác với đường dẫn mong đợi.')
+  }
+
+  // Contained regular file check
+  await assertContainedRegularFile(sidecarPath, ocrDir, 'Visual timeline')
+
+  // Check file size cap <= 64 MiB
+  const sidecarStat = await stat(sidecarPath)
+  if (sidecarStat.size > OCR_VISUAL_MAX_BYTES) {
+    throw new Error(`File visual cues timeline vượt quá dung lượng tối đa 64MB (${sidecarStat.size} bytes).`)
+  }
+
+  const rawJson = await readFile(sidecarPath, 'utf8')
+  let parsedJson: unknown
+  try {
+    parsedJson = JSON.parse(rawJson)
+  } catch (err) {
+    throw new Error(`Nội dung JSON visual cues không hợp lệ: ${(err as Error).message}`)
+  }
+
+  const validatedTimeline = validateOcrVisualTimeline(parsedJson, {
+    width: options.geometry.displayWidth,
+    height: options.geometry.displayHeight,
+    durationSeconds: options.videoDurationSeconds,
+    sampleFps: 8,
+    geometryFingerprint: options.geometry.fingerprint,
+    scanRegion: options.scanRegion
+  })
+
+  const stabilized = stabilizeSingleSampleGaps(validatedTimeline)
+
+  if (stabilized.segments.length === 0) {
+    throw new Error('Timeline OCR không chứa segment hợp lệ nào.')
+  }
+  const totalBoxes = stabilized.segments.reduce((acc, s) => acc + s.boxes.length, 0)
+  if (totalBoxes === 0) {
+    throw new Error('Timeline OCR không chứa bounding box hợp lệ nào.')
+  }
+
+  // Authoritative SRT write
+  const cues = projectOcrTimelineToSubtitleCues(stabilized)
+  const srtContent = formatSrtFromCues(cues)
+  await writeFile(authoritativeSrtPath, srtContent, 'utf8')
+
+  // Clean engine SRT
+  await rm(engineSrtPath, { force: true }).catch(() => {})
+
+  return {
+    timeline: stabilized,
+    sourceSrtPath: authoritativeSrtPath,
+    sidecarPath,
+    engineVersion: typeof finalDone.version === 'string' ? finalDone.version : '1.1.0',
+    engineProtocol: 'ocr-local/1',
+    visualSegmentCount: stabilized.segments.length,
+    boxSegmentCount: totalBoxes
+  }
 }

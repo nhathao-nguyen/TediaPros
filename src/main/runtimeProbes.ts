@@ -49,7 +49,13 @@ function run(command: string, args: string[], cwd: string, timeoutMs = 30_000): 
       finish(-1)
     }, timeoutMs)
     try {
-      child = trackChildProcess(spawn(command, args, { cwd, windowsHide: true }))
+      const isCmd = process.platform === 'win32' && (command.endsWith('.cmd') || command.endsWith('.bat'))
+      if (isCmd) {
+        const comSpec = process.env.ComSpec || 'cmd.exe'
+        child = trackChildProcess(spawn(comSpec, ['/d', '/s', '/c', command, ...args], { cwd, windowsHide: true }))
+      } else {
+        child = trackChildProcess(spawn(command, args, { cwd, windowsHide: true }))
+      }
     } catch {
       finish(-1)
       return
@@ -117,18 +123,75 @@ async function probeOcr(root: string, spec: RuntimeAssetSpec): Promise<RuntimePr
   if (version.code !== 0 || versionJson?.protocol !== 'ocr-local/1' || versionJson.engine !== 'rapidocr') {
     return { healthy: false, message: 'OCR version probe không đúng protocol ocr-local/1.' }
   }
+
+  const rawVersionFeatures = Array.isArray(versionJson.features)
+    ? versionJson.features.filter((f): f is string => typeof f === 'string' && f.trim().length > 0)
+    : []
+
   const probe = await run(executable, ['--probe'], root, 120_000)
-  const ready = probe.output.split(/\r?\n/).some((line) => {
+  let probeJson: Record<string, unknown> | null = null
+  for (const line of probe.output.split(/\r?\n/).map((l) => l.trim()).filter(Boolean)) {
     try {
-      const value = JSON.parse(line) as Record<string, unknown>
-      return value.type === 'probe' && value.ready === true && value.protocol === 'ocr-local/1'
-    } catch { return false }
-  })
+      const parsed = JSON.parse(line) as Record<string, unknown>
+      if (parsed?.type === 'probe' && parsed?.protocol === 'ocr-local/1') {
+        probeJson = parsed
+        break
+      }
+    } catch {
+      /* continue */
+    }
+  }
+
+  const ready = probeJson?.ready === true
+  const rawProbeFeatures = Array.isArray(probeJson?.features)
+    ? (probeJson.features as unknown[]).filter((f): f is string => typeof f === 'string' && f.trim().length > 0)
+    : []
+
+  const verifiedFeatures = [...new Set(rawVersionFeatures)]
+    .filter((feature) => rawProbeFeatures.includes(feature))
+    .sort()
+
   const reportedVersion = typeof versionJson.version === 'string' ? versionJson.version : null
-  if (spec.version !== 'installed' && reportedVersion !== spec.version) return { healthy: false, version: reportedVersion, protocol: 'ocr-local/1', message: `OCR version ${reportedVersion || '(trống)'} không khớp manifest ${spec.version}.` }
-  return ready
-    ? { healthy: true, version: reportedVersion, protocol: 'ocr-local/1' }
-    : { healthy: false, version: reportedVersion, protocol: 'ocr-local/1', message: 'OCR model probe thất bại.' }
+
+  if (probe.code !== 0 || !ready) {
+    return {
+      healthy: false,
+      version: reportedVersion,
+      protocol: 'ocr-local/1',
+      features: verifiedFeatures,
+      message: 'OCR model probe thất bại.'
+    }
+  }
+
+  if (Array.isArray(spec.capabilities) && spec.capabilities.length > 0) {
+    const missing = spec.capabilities.filter((c) => !verifiedFeatures.includes(c))
+    if (missing.length > 0) {
+      return {
+        healthy: false,
+        version: reportedVersion,
+        protocol: 'ocr-local/1',
+        features: verifiedFeatures,
+        message: `OCR thiếu capabilities bắt buộc từ manifest: ${missing.join(', ')}.`
+      }
+    }
+  }
+
+  if (spec.version !== 'installed' && reportedVersion !== spec.version) {
+    return {
+      healthy: false,
+      version: reportedVersion,
+      protocol: 'ocr-local/1',
+      features: verifiedFeatures,
+      message: `OCR version ${reportedVersion || '(trống)'} không khớp manifest ${spec.version}.`
+    }
+  }
+
+  return {
+    healthy: true,
+    version: reportedVersion,
+    protocol: 'ocr-local/1',
+    features: verifiedFeatures
+  }
 }
 
 export async function probeRuntimeAsset(
