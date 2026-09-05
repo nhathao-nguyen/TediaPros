@@ -727,3 +727,119 @@
   font-weight: 600;
   color: var(--text);
 }
+
+/* AUTO SHORT BLUR MODE & PROFILE CONTROLS */
+.autoshort-blur-mode-group {
+  display: flex;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.autoshort-blur-mode-option {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 8px 12px;
+  background: var(--panel-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--muted);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.autoshort-blur-mode-option:hover {
+  border-color: var(--primary);
+  color: var(--text);
+}
+
+.autoshort-blur-mode-option.selected {
+  border-color: var(--primary);
+  background: rgba(110, 161, 255, 0.12);
+  color: var(--primary);
+}
+
+.autoshort-blur-mode-option input[type="radio"] {
+  accent-color: var(--primary);
+}
+
+.autoshort-ocr-blur-settings {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 4px;
+}
+
+.autoshort-ocr-profile-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.autoshort-ocr-profile-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 10px 12px;
+  background: var(--panel-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.autoshort-ocr-profile-card:hover {
+  border-color: var(--primary);
+}
+
+.autoshort-ocr-profile-card.selected {
+  border-color: var(--primary);
+  background: rgba(110, 161, 255, 0.08);
+}
+
+.autoshort-ocr-profile-card input[type="radio"] {
+  margin-top: 2px;
+  accent-color: var(--primary);
+}
+
+.autoshort-ocr-profile-content {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.autoshort-ocr-profile-content strong {
+  font-size: 13px;
+  color: var(--text);
+}
+
+.autoshort-ocr-profile-content small {
+  font-size: 11.5px;
+  color: var(--muted);
+  line-height: 1.35;
+}
+
+.autoshort-ocr-blur-explain {
+  padding: 10px 12px;
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: var(--radius);
+  font-size: 12px;
+  color: var(--muted);
+  line-height: 1.45;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.autoshort-ocr-blur-explain p {
+  margin: 0;
+}
+
+.autoshort-ocr-blur-warn {
+  color: var(--warn);
+  font-weight: 500;
+}

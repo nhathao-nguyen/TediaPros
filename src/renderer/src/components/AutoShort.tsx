@@ -34,6 +34,7 @@ import { fitVideoInBounds } from '../lib/videoGeometry'
 import { useVideoTransport } from '../hooks/useVideoTransport'
 import { runLatestAutoShortMusicFolderRequest } from '../lib/latestAutoShortMusicFolderRequest'
 import RegionBox, { type Region } from './RegionBox'
+import VideoTitleSettings from './VideoTitleSettings'
 
 const PALETTE = [
   '#e8a13c',
@@ -198,6 +199,9 @@ export default function AutoShort(): JSX.Element {
   const selectedWhisperModel = whisperModel === 'small' || whisperModel === 'medium' ? whisperModel : 'base'
   const [whisperLanguage, setWhisperLanguage] = usePersistedState('tblao.autoshort.whisperLanguage', 'auto')
   const [translateTarget, setTranslateTarget] = usePersistedState('tblao.autoshort.transLang', 'none')
+  const [titleEnabled, setTitleEnabled] = usePersistedState('tblao.autoshort.videoTitle', false)
+  const [titleProvider] = usePersistedState<DichProvider>('tblao.videoTitle.provider', 'gemini')
+  const [titleServerUrl] = usePersistedState('tblao.videoTitle.serverUrl', DEFAULT_AI_SERVER_URL)
   const [translateProvider, setTranslateProvider] = usePersistedState<DichProvider>(
     'tblao.autoshort.transProvider',
     'local'
@@ -228,6 +232,11 @@ export default function AutoShort(): JSX.Element {
 
   const [blurRegions, setBlurRegions] = useState<BlurRegion[]>([])
   const [activeBlurId, setActiveBlurId] = useState<string | null>(null)
+
+  const automaticBlur = blurEnabled && blurMode === 'ocr-auto'
+  const subtitleUsesOcr = subtitleMethod === 'ocr' || subtitleMethod === 'whisper-ocr'
+  const visibleManualBlurRegions = blurEnabled && blurMode === 'manual' ? blurRegions : []
+  const showOcrScanRegion = subtitleUsesOcr || automaticBlur
 
 
   // TTS AI Voice
@@ -404,14 +413,19 @@ export default function AutoShort(): JSX.Element {
         ...item,
         status: result.status,
         percent: result.status === 'done' ? 100 : item.percent,
-        currentStepMessage: result.status === 'done' ? 'Hoàn tất xuất video' : result.error || (result.status === 'cancelled' ? 'Đã hủy tác vụ' : 'Xử lý thất bại'),
+        currentStepMessage: result.status === 'done'
+          ? result.titleError ? 'Video đã xuất, chưa tạo được tiêu đề' : result.titlePath ? 'Đã xuất video và tieude.txt' : 'Hoàn tất xuất video'
+          : result.error || (result.status === 'cancelled' ? 'Đã hủy tác vụ' : 'Xử lý thất bại'),
         outputPath: result.outputPath || item.outputPath,
         artifactDir: result.artifactDir || item.artifactDir,
         error: result.error,
         extractedCueCount: result.extractedCueCount,
         translatedCueCount: result.translatedCueCount,
         generatedVoiceCount: result.generatedVoiceCount,
-        voice: result.voice
+        voice: result.voice,
+        title: result.title,
+        titlePath: result.titlePath,
+        titleError: result.titleError
       } : item))
       return
     }
@@ -837,6 +851,12 @@ export default function AutoShort(): JSX.Element {
         ...t,
         status: 'queued',
         percent: 0,
+        outputPath: undefined,
+        artifactDir: undefined,
+        error: undefined,
+        title: undefined,
+        titlePath: undefined,
+        titleError: undefined,
         currentStepMessage: 'Đang trong hàng đợi…'
       }))
     )
@@ -903,6 +923,11 @@ export default function AutoShort(): JSX.Element {
       translateTarget,
       translateProvider,
       translateServerUrl: ttsServerUrl,
+      videoTitle: titleEnabled ? {
+        provider: titleProvider,
+        language: translateTarget !== 'none' ? translateTarget : 'auto',
+        serverUrl: titleProvider === 'local' ? titleServerUrl : undefined
+      } : undefined,
       ttsEnabled,
       ttsServerUrl,
       ttsModel,
@@ -1088,17 +1113,18 @@ export default function AutoShort(): JSX.Element {
 
                 {videoH > 0 && previewStageSize.width > 0 && (
                   <RegionBox
-                    regions={blurEnabled ? blurRegions : []}
+                    regions={visibleManualBlurRegions}
                     activeId={activeBlurId}
                     setActiveId={setActiveBlurId}
                     updateRegion={updateBlurRegion}
                     removeRegion={removeBlurRegion}
-                    blurInteractive={tool === 'blur'}
+                    blurInteractive={tool === 'blur' && blurMode === 'manual'}
                     hienSubBox={true}
                     subInteractive={tool === 'subtitle'}
                     subRegion={subtitleRegion || defaultSubtitleRegion(videoW, videoH)}
                     setSubRegion={updateSubRegionClamped}
-                    hienOcrBox={subtitleMethod === 'ocr' || subtitleMethod === 'whisper-ocr'}
+                    hienOcrBox={showOcrScanRegion}
+                    ocrInteractive={(tool === 'blur' && automaticBlur) || (tool === 'subtitle' && subtitleUsesOcr)}
                     ocrRegion={ocrRegion || defaultOcrRegion(videoW, videoH)}
                     setOcrRegion={(region) => {
                       const w = videoW > 0 ? videoW : 1280
@@ -1353,10 +1379,13 @@ export default function AutoShort(): JSX.Element {
                     <small className="muted">Dùng cho nhận diện, dịch và chọn ngôn ngữ TTS khi không có ngôn ngữ đích.</small>
                   </label>
 
+                  <VideoTitleSettings enabled={titleEnabled} onEnabledChange={setTitleEnabled}
+                    language={translateTarget !== 'none' ? translateTarget : 'auto'} disabled={isRunning} />
+
                   {translateTarget !== 'none' && (
                     <>
                       <label className="field editor-field">
-                        <span>Bộ dịch AI</span>
+                        <span>AI dịch phụ đề</span>
                         <select
                           value={translateProvider}
                           onChange={(e) => setTranslateProvider(e.target.value as DichProvider)}
@@ -1366,6 +1395,13 @@ export default function AutoShort(): JSX.Element {
                           <option value="openai">OpenAI (ChatGPT)</option>
                         </select>
                       </label>
+
+                      {translateProvider === 'local' && <label className="field editor-field">
+                        <span>Địa chỉ server AI</span>
+                        <input type="url" value={ttsServerUrl} disabled={isRunning}
+                          onChange={(event) => setTtsServerUrl(event.target.value)}
+                          placeholder={DEFAULT_AI_SERVER_URL} />
+                      </label>}
 
                       <div className="autoshort-key-card">
                         <div className="autoshort-key-header">
@@ -1695,42 +1731,108 @@ export default function AutoShort(): JSX.Element {
                     </label>
                   </div>
 
-                  <button className="btn editor-wide-action" onClick={addBlurRegion} type="button">
-                    + Thêm vùng làm mờ
-                  </button>
-
-                  <div className="blur-list">
-                    {blurRegions.length === 0 ? (
-                      <div className="muted small" style={{ padding: '12px 0', textAlign: 'center' }}>
-                        Chưa có vùng làm mờ nào. Nhấp "+ Thêm vùng làm mờ" để tạo vùng che.
-                      </div>
-                    ) : (
-                      blurRegions.map((region, index) => (
-                        <button
-                          key={region.id}
-                          className={`blur-item ${activeBlurId === region.id ? 'active' : ''}`}
-                          onClick={() => setActiveBlurId(region.id)}
-                          type="button"
-                        >
-                          <span className="blur-color-badge" style={{ background: region.color || PALETTE[0] }} />
-                          <span className="blur-toado">
-                            <b>Vùng {index + 1}</b>
-                            <span className="blur-coords">{region.x0},{region.y0} → {region.x1},{region.y1}</span>
-                          </span>
-                          <span
-                            className="blur-del-btn"
-                            onClick={(e) => {
-                              e.stopPropagation()
-                              removeBlurRegion(region.id)
-                            }}
-                            title="Xóa vùng này"
-                          >
-                            ×
-                          </span>
-                        </button>
-                      ))
-                    )}
+                  <div className="autoshort-blur-mode-group" role="radiogroup" aria-label="Chế độ làm mờ">
+                    <label className={`autoshort-blur-mode-option ${blurMode === 'manual' ? 'selected' : ''}`}>
+                      <input
+                        type="radio"
+                        name="autoshort-blur-mode"
+                        value="manual"
+                        checked={blurMode === 'manual'}
+                        onChange={() => setBlurModeRaw('manual')}
+                      />
+                      <span>Thủ công</span>
+                    </label>
+                    <label className={`autoshort-blur-mode-option ${blurMode === 'ocr-auto' ? 'selected' : ''}`}>
+                      <input
+                        type="radio"
+                        name="autoshort-blur-mode"
+                        value="ocr-auto"
+                        checked={blurMode === 'ocr-auto'}
+                        onChange={() => setBlurModeRaw('ocr-auto')}
+                      />
+                      <span>Tự động OCR</span>
+                    </label>
                   </div>
+
+                  {blurMode === 'ocr-auto' ? (
+                    <div className="autoshort-ocr-blur-settings">
+                      <div className="autoshort-ocr-profile-group" role="radiogroup" aria-label="Cấu hình quét OCR">
+                        <label className={`autoshort-ocr-profile-card ${ocrBlurProfile === 'accurate' ? 'selected' : ''}`}>
+                          <input
+                            type="radio"
+                            name="autoshort-ocr-profile"
+                            value="accurate"
+                            checked={ocrBlurProfile === 'accurate'}
+                            onChange={() => setOcrBlurProfileRaw('accurate')}
+                          />
+                          <div className="autoshort-ocr-profile-content">
+                            <strong>Chính xác — khuyên dùng</strong>
+                            <small>Quét toàn diện từng khung hình, nhận diện viền chữ đầy đủ nhất.</small>
+                          </div>
+                        </label>
+                        <label className={`autoshort-ocr-profile-card ${ocrBlurProfile === 'fast' ? 'selected' : ''}`}>
+                          <input
+                            type="radio"
+                            name="autoshort-ocr-profile"
+                            value="fast"
+                            checked={ocrBlurProfile === 'fast'}
+                            onChange={() => setOcrBlurProfileRaw('fast')}
+                          />
+                          <div className="autoshort-ocr-profile-content">
+                            <strong>Nhanh</strong>
+                            <small>Giảm tần suất mẫu khung để tăng tốc độ xử lý hàng loạt.</small>
+                          </div>
+                        </label>
+                      </div>
+
+                      <div className="autoshort-ocr-blur-explain">
+                        <p>Mọi chữ OCR phát hiện trong vùng nét đứt sẽ được làm mờ đúng thời gian xuất hiện, cộng biên an toàn 1 khung OCR. Ứng dụng tự render ngay sau khi quét.</p>
+                        <p>Không phát hiện vùng chữ hợp lệ sẽ dừng video này.</p>
+                        {ocrBlurProfile === 'fast' && (
+                          <p className="autoshort-ocr-blur-warn">Chế độ Nhanh có thể bỏ sót chữ rất nhỏ hoặc xuất hiện quá ngắn.</p>
+                        )}
+                      </div>
+                    </div>
+                  ) : (
+                    <>
+                      <button className="btn editor-wide-action" onClick={addBlurRegion} type="button">
+                        + Thêm vùng làm mờ
+                      </button>
+
+                      <div className="blur-list">
+                        {blurRegions.length === 0 ? (
+                          <div className="muted small" style={{ padding: '12px 0', textAlign: 'center' }}>
+                            Chưa có vùng làm mờ nào. Nhấp "+ Thêm vùng làm mờ" để tạo vùng che.
+                          </div>
+                        ) : (
+                          blurRegions.map((region, index) => (
+                            <button
+                              key={region.id}
+                              className={`blur-item ${activeBlurId === region.id ? 'active' : ''}`}
+                              onClick={() => setActiveBlurId(region.id)}
+                              type="button"
+                            >
+                              <span className="blur-color-badge" style={{ background: region.color || PALETTE[0] }} />
+                              <span className="blur-toado">
+                                <b>Vùng {index + 1}</b>
+                                <span className="blur-coords">{region.x0},{region.y0} → {region.x1},{region.y1}</span>
+                              </span>
+                              <span
+                                className="blur-del-btn"
+                                onClick={(e) => {
+                                  e.stopPropagation()
+                                  removeBlurRegion(region.id)
+                                }}
+                                title="Xóa vùng này"
+                              >
+                                ×
+                              </span>
+                            </button>
+                          ))
+                        )}
+                      </div>
+                    </>
+                  )}
                 </>
               )}
 
@@ -2166,6 +2268,14 @@ export default function AutoShort(): JSX.Element {
                               {task.percent > 0 && ` (${task.percent}%)`}
                             </div>
                             {task.error && <div className="queue-item-msg" style={{ color: 'var(--danger)' }}>{task.error}</div>}
+                            {task.title && <div className="queue-item-msg small" style={{ whiteSpace: 'normal', overflowWrap: 'anywhere' }}>Tiêu đề: {task.title}</div>}
+                            {task.titleError && <div className="queue-item-msg small" role="status" style={{ color: 'var(--danger)', whiteSpace: 'normal', overflowWrap: 'anywhere' }}>
+                              Chưa có tieude.txt: {task.titleError}
+                            </div>}
+                            {task.titlePath && <button type="button" className="btn ghost sm"
+                              onClick={(event) => { event.stopPropagation(); void window.api.openPath(task.titlePath!) }}>
+                              Mở tieude.txt
+                            </button>}
                             {task.status === 'done' && (
                               <div className="queue-item-msg small" style={{ color: 'var(--success)' }}>
                                 OCR {task.extractedCueCount ?? 0} cue · Dịch {task.translatedCueCount ?? 0} cue · TTS {task.generatedVoiceCount ?? 0} cue · Voice {task.voice || 'không xác định'} · Render FFmpeg hoàn tất

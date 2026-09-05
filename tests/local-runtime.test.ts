@@ -1191,7 +1191,7 @@ test('AutoShort exposes only native Whisper models and the selected device', asy
 
 test('AutoShort exposes the OCR region in both OCR modes', async () => {
   const renderer = await readFile(join(process.cwd(), 'src', 'renderer', 'src', 'components', 'AutoShort.tsx'), 'utf8')
-  assert.match(renderer, /hienOcrBox=\{subtitleMethod === 'ocr' \|\| subtitleMethod === 'whisper-ocr'\}/u)
+  assert.match(renderer, /hienOcrBox=\{showOcrScanRegion\}/u)
 })
 
 test('AutoShort CUDA readiness probes the selected Whisper model', async () => {
@@ -2259,6 +2259,47 @@ test('AutoShort renderer wiring: audio mode state and separation presets contrac
   // no model URL/path/provider override exists in renderer state
   assert.doesNotMatch(source, /separatorModelUrl|github\.com.*onnx/iu)
   assert.doesNotMatch(source, /setEffectiveProvider|setProviderOverride/iu)
+})
+
+test('AutoShort renderer wiring: OCR blur mode, profile selector, and boundary isolation', async () => {
+  const source = await readFile(join(process.cwd(), 'src', 'renderer', 'src', 'components', 'AutoShort.tsx'), 'utf8')
+  const preload = await readFile(join(process.cwd(), 'src', 'preload', 'index.ts'), 'utf8')
+
+  // Storage keys and normalizers
+  assert.match(source, /usePersistedState<AutoShortBlurMode>\(\s*['"]tblao\.autoshort\.blurMode['"]/u)
+  assert.match(source, /usePersistedState<AutoShortOcrBlurProfile>\(\s*['"]tblao\.autoshort\.ocrBlurProfile['"]/u)
+  assert.match(source, /normalizeAutoShortBlurMode/u)
+  assert.match(source, /normalizeAutoShortOcrBlurProfile/u)
+
+  // Exactly four approved option labels
+  assert.match(source, /Thủ công/u)
+  assert.match(source, /Tự động OCR/u)
+  assert.match(source, /Chính xác — khuyên dùng/u)
+  assert.match(source, /Nhanh/u)
+
+  // Derived expressions
+  assert.match(source, /const automaticBlur = blurEnabled && blurMode === 'ocr-auto'/u)
+  assert.match(source, /const subtitleUsesOcr = subtitleMethod === 'ocr' \|\| subtitleMethod === 'whisper-ocr'/u)
+  assert.match(source, /const visibleManualBlurRegions = blurEnabled && blurMode === 'manual' \? blurRegions : \[\]/u)
+  assert.match(source, /const showOcrScanRegion = subtitleUsesOcr \|\| automaticBlur/u)
+
+  // RegionBox props wiring
+  assert.match(source, /regions=\{visibleManualBlurRegions\}/u)
+  assert.match(source, /hienOcrBox=\{showOcrScanRegion\}/u)
+  assert.match(source, /ocrInteractive=\{\(tool === 'blur' && automaticBlur\) \|\| \(tool === 'subtitle' && subtitleUsesOcr\)\}/u)
+
+  // Readiness, install, and start payloads send safe dependency fields
+  assert.match(source, /autoShortGetReadiness\(\{[\s\S]*?lamMo:\s*blurEnabled[\s\S]*?blurMode[\s\S]*?ocrBlurProfile[\s\S]*?\}\)/u)
+  assert.match(source, /autoShortInstallDependencies\(\{[\s\S]*?lamMo:\s*blurEnabled[\s\S]*?blurMode[\s\S]*?ocrBlurProfile[\s\S]*?\}\)/u)
+  assert.match(source, /lamMo:\s*blurEnabled[\s\S]*?blurMode[\s\S]*?ocrBlurProfile/u)
+
+  // Boundary isolation: renderer & preload must contain zero internal mask/timeline contracts
+  for (const fileSource of [source, preload]) {
+    assert.doesNotMatch(fileSource, /timedOcrBlurMask/u)
+    assert.doesNotMatch(fileSource, /visualTimeline/u)
+    assert.doesNotMatch(fileSource, /visualCuesPath/u)
+    assert.doesNotMatch(fileSource, /source\.engine\.srt/u)
+  }
 })
 
 import './e2e-autoshort.test'

@@ -60,6 +60,8 @@ interface Props {
   hienOcrBox?: boolean
   ocrRegion?: Region
   setOcrRegion?: (v: Region) => void
+  /** Khoa tay nam va keo OCR khi khong o cong cu hoac che do phu hop. */
+  ocrInteractive?: boolean
   videoH: number
   videoW: number
   boxH: number
@@ -103,6 +105,7 @@ export default function RegionBox({
   hienOcrBox = false,
   ocrRegion,
   setOcrRegion,
+  ocrInteractive = true,
   videoH,
   videoW,
   boxH,
@@ -589,25 +592,29 @@ export default function RegionBox({
       {/* Khung Quét OCR (Kéo di chuyển & co giãn) */}
       {hienOcrBox && ocrRegion && (
         <div
-          className="rbox rbox-ocr"
+          className={`rbox rbox-ocr ${ocrInteractive ? '' : 'rbox-passive'}`}
           style={{
             top: pct(ocrRegion.y0),
             height: pct(ocrRegion.y1 - ocrRegion.y0),
             left: pctX(ocrRegion.x0),
             width: pctX(ocrRegion.x1 - ocrRegion.x0)
           }}
-          onMouseDown={batOcr('move')}
+          onMouseDown={ocrInteractive ? batOcr('move') : undefined}
           title="Khung đọc chữ: kéo để di chuyển, kéo các cạnh để thay đổi kích thước"
         >
           {/* Nút kéo góc & cạnh */}
-          <div className="rbox-tay rbox-goc-tl" onMouseDown={batOcr('top-left')} />
-          <div className="rbox-tay rbox-goc-tr" onMouseDown={batOcr('top-right')} />
-          <div className="rbox-tay rbox-goc-bl" onMouseDown={batOcr('bot-left')} />
-          <div className="rbox-tay rbox-goc-br" onMouseDown={batOcr('bot-right')} />
-          <div className="rbox-tay rbox-tren" onMouseDown={batOcr('top')} />
-          <div className="rbox-tay rbox-duoi" onMouseDown={batOcr('bot')} />
-          <div className="rbox-tay rbox-trai" onMouseDown={batOcr('left')} />
-          <div className="rbox-tay rbox-phai" onMouseDown={batOcr('right')} />
+          {ocrInteractive && (
+            <>
+              <div className="rbox-tay rbox-goc-tl" onMouseDown={batOcr('top-left')} />
+              <div className="rbox-tay rbox-goc-tr" onMouseDown={batOcr('top-right')} />
+              <div className="rbox-tay rbox-goc-bl" onMouseDown={batOcr('bot-left')} />
+              <div className="rbox-tay rbox-goc-br" onMouseDown={batOcr('bot-right')} />
+              <div className="rbox-tay rbox-tren" onMouseDown={batOcr('top')} />
+              <div className="rbox-tay rbox-duoi" onMouseDown={batOcr('bot')} />
+              <div className="rbox-tay rbox-trai" onMouseDown={batOcr('left')} />
+              <div className="rbox-tay rbox-phai" onMouseDown={batOcr('right')} />
+            </>
+          )}
 
           <div className="rbox-nhan rbox-nhan-ocr">
             Khung đọc chữ
