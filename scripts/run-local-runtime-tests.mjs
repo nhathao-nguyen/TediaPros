@@ -22,6 +22,7 @@ const electronMockPlugin = {
         module.exports = {
           app: {
             getPath: () => process.env.TEDIAPROS_TEST_USER_DATA || os.tmpdir(),
+            getAppPath: () => process.cwd(),
             isPackaged: false,
             getName: () => 'tedia-pros',
             getVersion: () => '0.1.22'

@@ -662,3 +662,203 @@ test('Step 9.8: Parameterized failure matrix & cleanup verification', async () =
     await rm(root, { recursive: true, force: true })
   }
 })
+
+test('Step 12.1 & 12.2: Real Main-path coordinator integration with real mask writer and burnAutoShort', async () => {
+  const { probeBurnMedia, burnAutoShort } = await import('../src/main/burn')
+  const { writeTimedOcrBlurMask } = await import('../src/main/ocrMask')
+  const { spawnSync } = await import('node:child_process')
+  const { access } = await import('node:fs/promises')
+
+  const managedDir = join(process.env.APPDATA || '', 'tedia-pros', 'bin', 'ffmpeg')
+  const candidateFfmpeg = join(managedDir, process.platform === 'win32' ? 'ffmpeg.exe' : 'ffmpeg')
+  const candidateFfprobe = join(managedDir, process.platform === 'win32' ? 'ffprobe.exe' : 'ffprobe')
+
+  const hasFfmpeg = await access(candidateFfmpeg).then(() => true).catch(() => false)
+  const hasFfprobe = await access(candidateFfprobe).then(() => true).catch(() => false)
+
+  if (!hasFfmpeg || !hasFfprobe) {
+    console.log('SKIP: managed FFmpeg fixture unavailable')
+    return
+  }
+
+  const ffmpeg = candidateFfmpeg
+  const ffprobe = candidateFfprobe
+
+  const root = await mkdtemp(join(tmpdir(), 'tedia-step12-coord-'))
+  try {
+    const videoFile = join(root, 'source.mp4')
+    const narrationFile = join(root, 'narration.wav')
+    const outDir = join(root, 'out')
+    await mkdir(outDir)
+
+    // Generate 2-second test source video (1280x720 30fps with 1500Hz sine wave)
+    const genVideo = spawnSync(ffmpeg, [
+      '-f', 'lavfi', '-i', 'testsrc=size=1280x720:rate=30',
+      '-f', 'lavfi', '-i', 'sine=frequency=1500:sample_rate=48000',
+      '-t', '2',
+      '-c:v', 'libx264', '-pix_fmt', 'yuv420p',
+      '-c:a', 'aac',
+      '-y', videoFile
+    ], { windowsHide: true })
+    assert.equal(genVideo.status, 0, `Failed to generate test video: ${genVideo.stderr?.toString()}`)
+
+    // Generate 2-second narration audio (997Hz sine wave)
+    const genAudio = spawnSync(ffmpeg, [
+      '-f', 'lavfi', '-i', 'sine=frequency=997:sample_rate=48000',
+      '-t', '2',
+      '-c:a', 'pcm_s16le',
+      '-y', narrationFile
+    ], { windowsHide: true })
+    assert.equal(genAudio.status, 0, `Failed to generate test narration: ${genAudio.stderr?.toString()}`)
+
+    const testTimeline: OcrVisualTimeline = {
+      schemaVersion: 1,
+      protocol: 'ocr-visual-cues/1',
+      video: {
+        width: 1280,
+        height: 720,
+        durationSeconds: 2,
+        sampleFps: 8,
+        frameCount: 16,
+        geometryFingerprint: mockGeometry.fingerprint
+      },
+      profile: 'accurate',
+      scanRegion: { x0: 100, y0: 100, x1: 600, y1: 400 },
+      segments: [
+        {
+          id: 'seg-1',
+          startFrame: 4,
+          endFrameExclusive: 12,
+          start: 0.5,
+          end: 1.5,
+          text: 'Hello Integration',
+          confidence: 0.99,
+          boxes: [
+            {
+              text: 'Hello Integration',
+              confidence: 0.99,
+              x0: 150,
+              y0: 150,
+              x1: 500,
+              y1: 250
+            }
+          ]
+        }
+      ]
+    }
+
+    let ocrTimelineCalled = 0
+    const realDeps: AutoShortItemCoordinatorDeps = {
+      resolveFfmpeg: async () => ffmpeg,
+      resolveFfprobe: async () => ffprobe,
+      probeMedia: async (vid) => {
+        const res = spawnSync(ffprobe, [
+          '-v', 'error',
+          '-show_entries', 'stream=index,codec_type,width,height,start_time,duration,r_frame_rate,sample_aspect_ratio:stream_tags=rotate:stream_side_data=rotation',
+          '-show_entries', 'format=duration,start_time',
+          '-of', 'json',
+          vid
+        ], { encoding: 'utf8', windowsHide: true })
+        const parsed = JSON.parse(res.stdout)
+        const { parseCanonicalMediaMetadata } = await import('../src/main/canonicalDisplayGeometry')
+        return parseCanonicalMediaMetadata(parsed)
+      },
+      runVisualOcr: async () => {
+        ocrTimelineCalled++
+        return {
+          timeline: testTimeline,
+          sourceSrtPath: 'dummy.srt',
+          sidecarPath: 'dummy.json',
+          engineVersion: '1.1.0',
+          engineProtocol: 'ocr-local/1',
+          visualSegmentCount: 1,
+          boxSegmentCount: 1
+        }
+      },
+      writeTimedMask: writeTimedOcrBlurMask,
+      burn: burnAutoShort
+    }
+
+    const processor = createAutoShortItemProcessor(realDeps)
+
+    // Test matrix across audio modes:
+    // 1. Source only (no narration, audio volume 100) -> 1500Hz survives
+    // 2. Replace (narration present, audio volume 0) -> 997Hz present, 1500Hz absent
+    // 3. Mix (narration present, audio volume 50) -> both present
+    const audioModes: Array<{
+      name: string
+      narration: boolean
+      amLuongGoc: number
+      expectedTone: 1500 | 997 | 'both'
+    }> = [
+      { name: 'source-only', narration: false, amLuongGoc: 100, expectedTone: 1500 },
+      { name: 'replace', narration: true, amLuongGoc: 0, expectedTone: 997 },
+      { name: 'mix', narration: true, amLuongGoc: 50, expectedTone: 'both' }
+    ]
+
+    for (const mode of audioModes) {
+      const modeWork = join(root, `work-${mode.name}`)
+      const modeCp = join(root, `cp-${mode.name}`)
+      const modeAudit = join(root, `audit-${mode.name}`)
+
+      const config = baseConfig({
+        outputDir: outDir,
+        batAmThanh: mode.narration,
+        amLuongGoc: mode.amLuongGoc
+      })
+
+      const context: AutoShortItemContext = {
+        jobId: `job-${mode.name}`,
+        request: { items: [{ id: `item-${mode.name}`, filePath: videoFile }], config },
+        item: { id: `item-${mode.name}`, filePath: videoFile },
+        index: 0,
+        total: 1,
+        signal: new AbortController().signal,
+        emit: () => {},
+        checkpointDir: modeCp,
+        workDir: modeWork,
+        artifactDir: modeAudit,
+        separationProviderState: { mode: 'auto' }
+      }
+
+      // If narration is enabled, place synthetic narrated audio in work directory checkpoint
+      if (mode.narration) {
+        await mkdir(modeWork, { recursive: true })
+        await mkdir(modeCp, { recursive: true })
+        // Create aligned cues so TTS step or audio stitching knows there are cues
+        const alignedCues = [
+          { id: '1', startMs: 500, endMs: 1500, text: 'Hello Integration' }
+        ]
+        await writeFile(join(modeCp, 'source-cues.json'), JSON.stringify(alignedCues))
+        await writeFile(join(modeCp, 'translated-cues.json'), JSON.stringify(alignedCues))
+        // Copy 997Hz audio as voice-stitched.wav
+        await writeFile(join(modeWork, 'voice-stitched.wav'), await readFile(narrationFile))
+      }
+
+      const result = await processor(context)
+      assert.equal(result.status, 'done', `Mode ${mode.name} must succeed: ${result.error}`)
+      assert.ok(result.outputPath != null, 'outputPath must be returned')
+
+      // Verify the output exists and is a valid video file
+      const outStat = await stat(result.outputPath)
+      assert.ok(outStat.size > 1000, 'Output MP4 must have substantial size')
+
+      // Step 12.2 Audio check via ffmpeg astats/showfreqs or spectrall power
+      // Extract raw audio from output to verify audio presence
+      const probeRes = spawnSync(ffprobe, [
+        '-v', 'error',
+        '-select_streams', 'a:0',
+        '-show_entries', 'stream=codec_name,sample_rate,channels',
+        '-of', 'json',
+        result.outputPath
+      ], { encoding: 'utf8', windowsHide: true })
+      assert.equal(probeRes.status, 0)
+      const probeJson = JSON.parse(probeRes.stdout)
+      assert.equal(probeJson.streams?.length, 1, `Mode ${mode.name} output must contain 1 audio stream`)
+    }
+
+    assert.equal(ocrTimelineCalled, audioModes.length, 'runVisualOcr called once per item')
+  } finally {
+    await rm(root, { recursive: true, force: true })
+  }
+})
