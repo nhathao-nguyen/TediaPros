@@ -470,12 +470,21 @@ async function installYtDlp(onProgress: ProgressCb): Promise<void> {
   }
 }
 
+export interface FfmpegInstallOptions {
+  forceCapabilityReinstall?: 'ocr-mask-v1'
+}
+
+let activeFfmpegInstallOptions: FfmpegInstallOptions | undefined
+
 async function doInstallFfmpeg(onProgress: ProgressCb): Promise<void> {
+  const options = activeFfmpegInstallOptions
   onProgress({ phase: 'downloading-ffmpeg', message: 'Đang kiểm tra FFmpeg…', percent: 0 })
-  const existing = await canonicalResolveFfmpeg()
-  if (existing) {
-    onProgress({ phase: 'done', message: 'Đã sẵn sàng FFmpeg.', percent: 100 })
-    return
+  if (options?.forceCapabilityReinstall !== 'ocr-mask-v1') {
+    const existing = await canonicalResolveFfmpeg()
+    if (existing) {
+      onProgress({ phase: 'done', message: 'Đã sẵn sàng FFmpeg.', percent: 100 })
+      return
+    }
   }
 
   const { downloadRuntimeEngineFromManifest } = await import('./runtimeInstaller')
@@ -488,13 +497,15 @@ async function doInstallFfmpeg(onProgress: ProgressCb): Promise<void> {
   onProgress({ phase: 'done', message: 'Đã sẵn sàng FFmpeg.', percent: 100 })
 }
 
-export async function installFfmpeg(onProgress: ProgressCb): Promise<void> {
+export async function installFfmpeg(onProgress: ProgressCb, options?: FfmpegInstallOptions): Promise<void> {
   if (ffmpegInstallInFlight) return ffmpegInstallInFlight
+  activeFfmpegInstallOptions = options
   ffmpegInstallInFlight = doInstallFfmpeg(onProgress)
   try {
     await ffmpegInstallInFlight
   } finally {
     ffmpegInstallInFlight = null
+    activeFfmpegInstallOptions = undefined
   }
 }
 

@@ -245,12 +245,22 @@ export async function probeRuntimeAsset(
     : { healthy: false, message: `${basename(executable)} capability probe thất bại.` }
 }
 
-/** Probe an already-installed executable when a release manifest is not needed for status. */
 export async function probeRuntimeExecutable(
   kind: RuntimeEngineKind,
-  executableOrDirectory: string
+  executableOrDirectory: string,
+  options?: { capabilities?: string[] }
 ): Promise<RuntimeProbeResult> {
   if (kind === 'whisper-cuda') return probeCuda(executableOrDirectory)
+  if (kind === 'ffmpeg' && options?.capabilities?.includes('ocr-mask-v1')) {
+    const { probeFfmpegOcrMaskCapability } = await import('./ffmpegOcrMaskProbe')
+    const maskProbe = await probeFfmpegOcrMaskCapability(executableOrDirectory)
+    if (!maskProbe.healthy || !maskProbe.features.includes('ocr-mask-v1')) {
+      return {
+        healthy: false,
+        message: maskProbe.message || 'FFmpeg hiện tại chưa qua kiểm tra mặt nạ OCR.'
+      }
+    }
+  }
   const spec = {
     version: 'installed',
     platform: process.platform === 'darwin' ? 'darwin' : process.platform === 'win32' ? 'win32' : 'linux',
@@ -259,7 +269,7 @@ export async function probeRuntimeExecutable(
     sha256: '0'.repeat(64),
     bytes: 1,
     entrypoint: basename(executableOrDirectory),
-    capabilities: [],
+    capabilities: options?.capabilities || [],
     files: [basename(executableOrDirectory)]
   } as RuntimeAssetSpec
   return probeRuntimeAsset(kind, dirname(executableOrDirectory), spec)

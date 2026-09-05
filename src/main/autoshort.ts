@@ -63,6 +63,8 @@ import {
   type CanonicalDisplayGeometry
 } from './canonicalDisplayGeometry'
 import { fuseWhisperAndOcr, clampAlignedCueTimeline } from '../shared/autoShortAlignment'
+import { isAutomaticOcrBlur, autoShortNeedsOcr } from '../shared/autoShortOcrBlur'
+import { probeFfmpegOcrMaskCapability } from './ffmpegOcrMaskProbe'
 import { resolveSeparatorEngine, resolveFfprobe } from './runtimeResolver'
 import { probeRuntimeExecutable } from './runtimeProbes'
 import { resolveInstalledSeparatorModel } from './separation/modelStore'
@@ -203,6 +205,11 @@ function dependency(
 }
 
 export interface AutoShortReadinessHooks {
+  resolveFfmpeg?: typeof resolveFfmpeg
+  ocrEngineStatus?: typeof ocrEngineStatus
+  probeFfmpegOcrMaskCapability?: typeof probeFfmpegOcrMaskCapability
+  whisperEngineStatus?: typeof whisperEngineStatus
+  whisperModelStatus?: typeof whisperModelStatus
   resolveSeparatorEngine?: typeof resolveSeparatorEngine
   probeRuntimeExecutable?: typeof probeRuntimeExecutable
   resolveInstalledSeparatorModel?: typeof resolveInstalledSeparatorModel
@@ -213,6 +220,8 @@ export interface AutoShortReadinessHooks {
 }
 
 export interface AutoShortInstallHooks {
+  installFfmpeg?: typeof installFfmpeg
+  installOcrEngine?: typeof installOcrEngine
   downloadRuntimeEngine?: typeof downloadRuntimeEngineFromManifest
   installSeparatorModel?: typeof installSeparatorModel
   readinessHooks?: AutoShortReadinessHooks
@@ -227,6 +236,11 @@ export async function getAutoShortReadiness(
   config: AutoShortDependencyConfig,
   hooks: AutoShortReadinessHooks = {}
 ): Promise<AutoShortReadiness> {
+  const getFfmpeg = hooks.resolveFfmpeg || resolveFfmpeg
+  const getOcr = hooks.ocrEngineStatus || ocrEngineStatus
+  const probeFfmpegMask = hooks.probeFfmpegOcrMaskCapability || probeFfmpegOcrMaskCapability
+  const getWhisperEngine = hooks.whisperEngineStatus || whisperEngineStatus
+  const getWhisperModel = hooks.whisperModelStatus || whisperModelStatus
   const resolveSepEngine = hooks.resolveSeparatorEngine || resolveSeparatorEngine
   const probeRuntimeExe = hooks.probeRuntimeExecutable || probeRuntimeExecutable
   const resolveInstalledModel = hooks.resolveInstalledSeparatorModel || resolveInstalledSeparatorModel
@@ -235,6 +249,8 @@ export async function getAutoShortReadiness(
   const fetchRtManifest = hooks.fetchRuntimeManifest || fetchRuntimeManifest
   const getGpu = hooks.detectGpu || detectGpu
 
+  const automaticBlur = isAutomaticOcrBlur(config)
+  const needsOcr = autoShortNeedsOcr(config)
   const useWhisper = needsWhisper(config.subtitleMethod)
   const useCuda = needsCuda(config)
   const useSeparation = config.audioMode === 'separate-vocals'
@@ -242,15 +258,42 @@ export async function getAutoShortReadiness(
   const modelId = modelIdForSeparationPreset(preset)
 
   const [ff, engine, model, cuda, ocr, gpu, sepEnginePath, sepInstalledModel] = await Promise.all([
-    resolveFfmpeg(),
-    useWhisper ? whisperEngineStatus() : Promise.resolve(null),
-    useWhisper ? whisperModelStatus(config.whisperModel || 'base') : Promise.resolve(undefined),
+    getFfmpeg(),
+    useWhisper ? getWhisperEngine() : Promise.resolve(null),
+    useWhisper ? getWhisperModel(config.whisperModel || 'base') : Promise.resolve(undefined),
     useCuda ? whisperCudaStatus() : Promise.resolve(null),
-    config.subtitleMethod === 'ocr' || config.subtitleMethod === 'whisper-ocr' ? ocrEngineStatus() : Promise.resolve(null),
+    needsOcr ? getOcr() : Promise.resolve(null),
     useCuda || useSeparation ? getGpu() : Promise.resolve(null),
     useSeparation ? resolveSepEngine() : Promise.resolve(null),
     useSeparation ? resolveInstalledModel(modelId) : Promise.resolve(null)
   ])
+
+  let ffmpegMaskHealthy = false
+  let ffmpegMaskMessage: string | undefined
+  if (ff) {
+    if (automaticBlur) {
+      try {
+        const maskProbe = await probeFfmpegMask(ff)
+        ffmpegMaskHealthy = Boolean(maskProbe.healthy && maskProbe.features?.includes('ocr-mask-v1'))
+        if (!ffmpegMaskHealthy) {
+          ffmpegMaskMessage = 'FFmpeg hiện tại chưa qua kiểm tra mặt nạ OCR.'
+        }
+      } catch {
+        ffmpegMaskHealthy = false
+        ffmpegMaskMessage = 'FFmpeg hiện tại chưa qua kiểm tra mặt nạ OCR.'
+      }
+    } else {
+      ffmpegMaskHealthy = true
+    }
+  }
+
+  const ffmpegReady = ff !== null && (!automaticBlur || ffmpegMaskHealthy)
+  const ffmpegMessage = !ff
+    ? 'Chưa cài đặt FFmpeg.'
+    : !ffmpegReady
+      ? (ffmpegMaskMessage || 'FFmpeg hiện tại chưa qua kiểm tra mặt nạ OCR.')
+      : undefined
+
   const cudaProbe = useCuda && engine?.has && engine.healthy && cuda?.has
     ? await whisperCudaProbe(config.whisperModel || 'base', 'cuda')
     : null
@@ -262,9 +305,9 @@ export async function getAutoShortReadiness(
     'ffmpeg',
     'FFmpeg',
     true,
-    ff !== null,
+    ffmpegReady,
     75_000_000,
-    ff ? undefined : 'Chưa cài đặt FFmpeg.'
+    ffmpegMessage
   ))
 
   if (useWhisper) {
@@ -306,14 +349,27 @@ export async function getAutoShortReadiness(
         : cudaProbe?.message || (gpuReady ? 'CUDA chưa được engine xác nhận.' : 'Không tìm thấy GPU NVIDIA tương thích.')
     ))
   }
-  if (ocr) {
+  if (needsOcr) {
+    const ocrVisualReady = Boolean(
+      ocr?.has &&
+      ocr.healthy &&
+      (!automaticBlur || ocr.features?.includes('visual-cues-v1'))
+    )
+    const ocrMessage = !ocr?.has
+      ? 'Chưa cài OCR engine.'
+      : !ocr.healthy
+        ? (ocr.message || 'OCR engine probe thất bại.')
+        : automaticBlur && !ocr.features?.includes('visual-cues-v1')
+          ? 'OCR engine cần cập nhật để tạo vùng làm mờ theo chữ.'
+          : undefined
+
     dependencies.push(dependency(
       'ocr-engine',
       'OCR engine',
       true,
-      Boolean(ocr.has && ocr.healthy),
+      ocrVisualReady,
       230_000_000,
-      !ocr.has ? 'Chưa cài OCR engine.' : !ocr.healthy ? (ocr.message || 'OCR engine probe thất bại.') : undefined
+      ocrMessage
     ))
   }
 
@@ -470,12 +526,16 @@ export async function installAutoShortDependencies(
     if (signal?.aborted) throw new Error('Đã hủy tải dependency.')
   }
 
+  const doInstallFfmpeg = hooks.installFfmpeg || installFfmpeg
+  const doInstallOcr = hooks.installOcrEngine || installOcrEngine
+  const automaticBlur = isAutomaticOcrBlur(config)
+
   if (isMissing('ffmpeg')) {
     aborted()
     emit('ffmpeg', 'downloading', 0, 'Đang tải gói FFmpeg…')
-    await installFfmpeg((p) => {
+    await doInstallFfmpeg((p) => {
       emit('ffmpeg', 'downloading', p.percent < 0 ? 0 : p.percent, p.message)
-    })
+    }, automaticBlur ? { forceCapabilityReinstall: 'ocr-mask-v1' } : undefined)
     emit('ffmpeg', 'verifying', 100, 'Đang kiểm tra FFmpeg…')
     readiness = await getAutoShortReadiness(config, hooks.readinessHooks)
   }
@@ -506,7 +566,7 @@ export async function installAutoShortDependencies(
   if (isMissing('ocr-engine')) {
     aborted()
     emit('ocr-engine', 'downloading', 0, 'Đang tải OCR engine…')
-    await installOcrEngine((percent) => emit('ocr-engine', 'downloading', percent, 'Đang tải OCR engine…'))
+    await doInstallOcr((percent) => emit('ocr-engine', 'downloading', percent, 'Đang tải OCR engine…'))
     emit('ocr-engine', 'verifying', 100, 'Đang kiểm tra OCR engine…')
     readiness = await getAutoShortReadiness(config, hooks.readinessHooks)
   }
@@ -534,7 +594,12 @@ export async function installAutoShortDependencies(
     emit('separator-model', 'verifying', 100, 'Đang kiểm tra model tách nhạc…')
     readiness = await getAutoShortReadiness(config, hooks.readinessHooks)
   }
-  if (!readiness.ready) throw new Error(readiness.message || 'Dependency chưa sẵn sàng.')
+  if (!readiness.ready) {
+    if (automaticBlur) {
+      throw new Error('Sau khi cài đặt FFmpeg/OCR engine, môi trường vẫn chưa hỗ trợ tính năng làm mờ chữ tự động.')
+    }
+    throw new Error(readiness.message || 'Dependency chưa sẵn sàng.')
+  }
   readiness.dependencies.forEach((item) => emit(item.id, 'done', 100, `${item.label} đã sẵn sàng.`))
   return readiness
 }
@@ -2637,6 +2702,10 @@ async function processSingleVideo(
       srt: renderSrtPath,
       outputDir: config.outputDir,
       outputName,
+      videoTitle: config.videoTitle ? {
+        ...config.videoTitle,
+        language: config.translateTarget !== 'none' ? config.translateTarget : 'auto'
+      } : undefined,
       mode: 'burn',
       blurRegions,
       lamMo: config.lamMo,
@@ -2667,11 +2736,11 @@ async function processSingleVideo(
       amLuongGoc: config.audioMode === 'mix' ? config.originalAudioVolume : 0
     }
     const burnResult = await burnSubtitle(burnReq, (progress) => {
-      emitProgress(job, item, 'rendering_video', 85 + Math.max(0, progress.percent) * 0.12, `Đang xuất video… ${progress.percent}%`, index, total)
+      emitProgress(job, item, 'rendering_video', 85 + Math.max(0, progress.percent) * 0.12, progress.message || `Đang xuất video… ${progress.percent}%`, index, total)
     })
     if (!burnResult.ok || !burnResult.output || !(await fileExists(burnResult.output))) {
       await Promise.all([
-        rm(join(config.outputDir, outputName), { force: true }),
+        config.videoTitle ? Promise.resolve() : rm(join(config.outputDir, outputName), { force: true }),
         burnResult.output ? rm(burnResult.output, { force: true }) : Promise.resolve()
       ])
       throw new Error(burnResult.error || 'Render video thất bại')
@@ -2692,15 +2761,19 @@ async function processSingleVideo(
     if (!mediaCheck.ok) {
       logError(`[AutoShort] Kiểm tra video xuất ra thất bại: ${mediaCheck.error}`)
       await rm(burnResult.output, { force: true }).catch(() => {})
+      if (burnResult.titlePath) await rm(burnResult.titlePath, { force: true }).catch(() => {})
       throw new Error(`Video xuất ra không đạt tiêu chuẩn kiểm duyệt: ${mediaCheck.error}`)
     }
 
     artifactEntries.push({ source: burnResult.output, name: 'output.mp4' })
+    if (burnResult.titlePath) artifactEntries.push({ source: burnResult.titlePath, name: 'tieude.txt' })
     artifactPath = await preserveAutoShortArtifacts(artifactDir, artifactEntries, {
       version: 1,
       status: 'done',
       sourceFile: basename(item.filePath),
       outputFile: outputName,
+      titleFile: burnResult.titlePath ? 'tieude.txt' : undefined,
+      titleError: burnResult.titleError,
       sourceLanguage: resolveTranslationSourceLanguage(config.whisperLanguage, detectedSourceLanguage),
       targetLanguage: config.translateTarget,
       extractedCueCount,
@@ -2716,8 +2789,11 @@ async function processSingleVideo(
     // Clean up checkpoint upon successful completion
     await rm(checkpointDir, { recursive: true, force: true }).catch(() => {})
 
-    emitProgress(job, item, 'done', 100, 'Hoàn tất xuất video', index, total, burnResult.output)
-    return { itemId: item.id, filePath: item.filePath, status: 'done', outputPath: burnResult.output, artifactDir: artifactPath, extractedCueCount, translatedCueCount, generatedVoiceCount, voice }
+    const completionMessage = burnResult.titleError ? 'Video đã xuất, chưa tạo được tiêu đề'
+      : burnResult.titlePath ? 'Đã xuất video và tieude.txt' : 'Hoàn tất xuất video'
+    emitProgress(job, item, 'done', 100, completionMessage, index, total, burnResult.output)
+    return { itemId: item.id, filePath: item.filePath, status: 'done', outputPath: burnResult.output, artifactDir: artifactPath, extractedCueCount, translatedCueCount, generatedVoiceCount, voice,
+      title: burnResult.title, titlePath: burnResult.titlePath, titleError: burnResult.titleError }
   } catch (error) {
     const rawMessage = sanitizeAutoShortAuditError(error, [
       item.filePath,

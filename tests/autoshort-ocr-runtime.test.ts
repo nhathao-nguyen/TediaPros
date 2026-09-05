@@ -2,7 +2,7 @@ import assert from 'node:assert/strict'
 import { EventEmitter } from 'node:events'
 import { mkdtemp, mkdir, rm, writeFile, symlink } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
-import { join } from 'node:path'
+import { join, dirname } from 'node:path'
 import { test } from 'node:test'
 import type { ChildProcess } from 'node:child_process'
 import {
@@ -16,7 +16,19 @@ import {
 import { probeRuntimeAsset, probeRuntimeExecutable } from '../src/main/runtimeProbes'
 import type { RuntimeAssetSpec } from '../src/main/runtimeManifest'
 import type { CanonicalDisplayGeometry } from '../src/main/canonicalDisplayGeometry'
-import type { PixelRegion } from '../src/shared/types'
+import type { AutoShortDependencyConfig, PixelRegion } from '../src/shared/types'
+import {
+  getAutoShortReadiness,
+  installAutoShortDependencies,
+  type AutoShortReadinessHooks,
+  type AutoShortInstallHooks
+} from '../src/main/autoshort'
+import {
+  probeFfmpegOcrMaskCapability,
+  clearFfmpegOcrMaskProbeCache,
+  getFfmpegOcrMaskProbeCacheSize,
+  type FfmpegInstallOptions
+} from '../src/main/ffmpegOcrMaskProbe'
 
 class MockChildProcess extends EventEmitter {
   stdout = new EventEmitter()
@@ -482,4 +494,287 @@ test('ocrVideoWithVisualTimeline rejects sidecar with empty segments or geometry
   } finally {
     await rm(root, { recursive: true, force: true })
   }
+})
+
+test('getAutoShortReadiness evaluates readiness matrix for automatic and manual OCR blur', async () => {
+  // Row 1: ocr-auto + accurate + lamMo: true + mask probe ok + ocr ok => ready: true
+  const baseHooks: AutoShortReadinessHooks = {
+    resolveFfmpeg: async () => 'C:\\mock\\ffmpeg.exe',
+    ocrEngineStatus: async () => ({
+      has: true,
+      healthy: true,
+      needsUpdate: false,
+      version: '1.1.0',
+      protocol: 'ocr-local/1',
+      engine: 'rapidocr',
+      features: ['visual-cues-v1', 'rapidocr']
+    }),
+    probeFfmpegOcrMaskCapability: async () => ({
+      healthy: true,
+      features: ['ocr-mask-v1'],
+      probeSchemaVersion: 1
+    }),
+    whisperEngineStatus: async () => ({
+      has: true,
+      healthy: true,
+      needsUpdate: false,
+      version: '1.0.0',
+      protocol: 'whisper-engine/1',
+      engine: 'faster-whisper',
+      features: ['probe']
+    }),
+    whisperModelStatus: async () => ({
+      model: 'base',
+      installed: true,
+      complete: true
+    })
+  }
+
+  const row1Config: AutoShortDependencyConfig = {
+    subtitleMethod: 'ocr',
+    blurMode: 'ocr-auto',
+    ocrScanProfile: 'accurate',
+    lamMo: true
+  }
+  const res1 = await getAutoShortReadiness(row1Config, baseHooks)
+  assert.equal(res1.ready, true)
+  assert.equal(res1.dependencies.find((d) => d.id === 'ffmpeg')?.ready, true)
+  assert.equal(res1.dependencies.find((d) => d.id === 'ocr-engine')?.ready, true)
+
+  // Row 2: ocr-auto + accurate + lamMo: true + mask probe failing + ocr ok => ready: false (ffmpeg missing mask capability)
+  const row2Hooks: AutoShortReadinessHooks = {
+    ...baseHooks,
+    probeFfmpegOcrMaskCapability: async () => ({
+      healthy: false,
+      features: [],
+      probeSchemaVersion: 1,
+      message: 'Probe failed'
+    })
+  }
+  const res2 = await getAutoShortReadiness(row1Config, row2Hooks)
+  assert.equal(res2.ready, false)
+  const ffDep2 = res2.dependencies.find((d) => d.id === 'ffmpeg')
+  assert.equal(ffDep2?.ready, false)
+  assert.equal(ffDep2?.message, 'FFmpeg hiện tại chưa qua kiểm tra mặt nạ OCR.')
+
+  // Row 3: ocr-auto + accurate + lamMo: true + mask probe ok + ocr missing visual-cues-v1 => ready: false (ocr needs update)
+  const row3Hooks: AutoShortReadinessHooks = {
+    ...baseHooks,
+    ocrEngineStatus: async () => ({
+      has: true,
+      healthy: true,
+      needsUpdate: false,
+      version: '1.0.0',
+      protocol: 'ocr-local/1',
+      engine: 'rapidocr',
+      features: ['rapidocr']
+    })
+  }
+  const res3 = await getAutoShortReadiness(row1Config, row3Hooks)
+  assert.equal(res3.ready, false)
+  const ocrDep3 = res3.dependencies.find((d) => d.id === 'ocr-engine')
+  assert.equal(ocrDep3?.ready, false)
+  assert.equal(ocrDep3?.message, 'OCR engine cần cập nhật để tạo vùng làm mờ theo chữ.')
+
+  // Row 4: ocr-auto + fast + lamMo: false + mask probe failing + ocr missing visual-cues-v1 => ready: true (blur disabled)
+  const row4Config: AutoShortDependencyConfig = {
+    subtitleMethod: 'ocr',
+    blurMode: 'ocr-auto',
+    ocrScanProfile: 'fast',
+    lamMo: false
+  }
+  const res4 = await getAutoShortReadiness(row4Config, {
+    ...row2Hooks,
+    ...row3Hooks
+  })
+  assert.equal(res4.ready, true)
+  assert.equal(res4.dependencies.find((d) => d.id === 'ffmpeg')?.ready, true)
+  assert.equal(res4.dependencies.find((d) => d.id === 'ocr-engine')?.ready, true)
+
+  // Row 5: manual + accurate + lamMo: true + mask probe failing + ocr missing visual-cues-v1 => ready: true (manual blur only needs standard ffmpeg)
+  const row5Config: AutoShortDependencyConfig = {
+    subtitleMethod: 'ocr',
+    blurMode: 'manual',
+    ocrScanProfile: 'accurate',
+    lamMo: true
+  }
+  const res5 = await getAutoShortReadiness(row5Config, {
+    ...row2Hooks,
+    ...row3Hooks
+  })
+  assert.equal(res5.ready, true)
+  assert.equal(res5.dependencies.find((d) => d.id === 'ffmpeg')?.ready, true)
+  assert.equal(res5.dependencies.find((d) => d.id === 'ocr-engine')?.ready, true)
+
+  // Row 6: whisper + blurMode: ocr-auto + lamMo: false + mask probe failing + ocr absent => ready: true
+  const row6Config: AutoShortDependencyConfig = {
+    subtitleMethod: 'whisper',
+    blurMode: 'ocr-auto',
+    ocrScanProfile: 'accurate',
+    lamMo: false
+  }
+  const row6Hooks: AutoShortReadinessHooks = {
+    ...baseHooks,
+    ocrEngineStatus: async () => ({
+      has: false,
+      healthy: false,
+      needsUpdate: false,
+      version: null,
+      protocol: null,
+      engine: 'rapidocr',
+      features: []
+    }),
+    probeFfmpegOcrMaskCapability: async () => ({
+      healthy: false,
+      features: [],
+      probeSchemaVersion: 1
+    })
+  }
+  const res6 = await getAutoShortReadiness(row6Config, row6Hooks)
+  assert.equal(res6.ready, true)
+  assert.equal(res6.dependencies.some((d) => d.id === 'ocr-engine'), false)
+  assert.equal(res6.dependencies.find((d) => d.id === 'ffmpeg')?.ready, true)
+})
+
+test('installAutoShortDependencies triggers capability-aware installs and reprobes', async () => {
+  let ffmpegInstallCalled = false
+  let ffmpegInstallOptions: FfmpegInstallOptions | undefined
+  let ocrInstallCalled = false
+
+  let ffmpegMaskOk = false
+  let ocrVisualOk = false
+
+  const readinessHooks: AutoShortReadinessHooks = {
+    resolveFfmpeg: async () => 'C:\\mock\\ffmpeg.exe',
+    ocrEngineStatus: async () => ({
+      has: true,
+      healthy: true,
+      needsUpdate: false,
+      version: '1.1.0',
+      protocol: 'ocr-local/1',
+      engine: 'rapidocr',
+      features: ocrVisualOk ? ['visual-cues-v1'] : []
+    }),
+    probeFfmpegOcrMaskCapability: async () => ({
+      healthy: ffmpegMaskOk,
+      features: ffmpegMaskOk ? ['ocr-mask-v1'] : [],
+      probeSchemaVersion: 1
+    })
+  }
+
+  const installHooks: AutoShortInstallHooks = {
+    readinessHooks,
+    installFfmpeg: async (_onProgress, options) => {
+      ffmpegInstallCalled = true
+      ffmpegInstallOptions = options
+      ffmpegMaskOk = true
+    },
+    installOcrEngine: async () => {
+      ocrInstallCalled = true
+      ocrVisualOk = true
+    }
+  }
+
+  const config: AutoShortDependencyConfig = {
+    subtitleMethod: 'ocr',
+    blurMode: 'ocr-auto',
+    ocrScanProfile: 'accurate',
+    lamMo: true
+  }
+
+  const progressEvents: Array<{ id: string; phase: string }> = []
+  const result = await installAutoShortDependencies(
+    config,
+    (p) => progressEvents.push({ id: p.id, phase: p.phase }),
+    undefined,
+    installHooks
+  )
+
+  assert.equal(result.ready, true)
+  assert.equal(ffmpegInstallCalled, true)
+  assert.deepEqual(ffmpegInstallOptions, { forceCapabilityReinstall: 'ocr-mask-v1' })
+  assert.equal(ocrInstallCalled, true)
+
+  // When post-install check remains false for automatic blur, throws explicit error
+  let failFfmpegMaskOk = false
+  const failingInstallHooks: AutoShortInstallHooks = {
+    readinessHooks: {
+      ...readinessHooks,
+      probeFfmpegOcrMaskCapability: async () => ({
+        healthy: failFfmpegMaskOk,
+        features: failFfmpegMaskOk ? ['ocr-mask-v1'] : [],
+        probeSchemaVersion: 1
+      })
+    },
+    installFfmpeg: async () => {
+      failFfmpegMaskOk = false
+    },
+    installOcrEngine: async () => {}
+  }
+
+  await assert.rejects(
+    async () => installAutoShortDependencies(config, () => {}, undefined, failingInstallHooks),
+    /Sau khi cài đặt FFmpeg\/OCR engine, môi trường vẫn chưa hỗ trợ tính năng làm mờ chữ tự động/u
+  )
+})
+
+test('probeFfmpegOcrMaskCapability rejects invalid paths, missing sibling ffprobe, and avoids caching failures', async () => {
+  clearFfmpegOcrMaskProbeCache()
+
+  // 1. Relative path rejected
+  const relResult = await probeFfmpegOcrMaskCapability('relative/ffmpeg.exe')
+  assert.equal(relResult.healthy, false)
+  assert.match(relResult.message || '', /đường dẫn tuyệt đối/u)
+
+  // 2. Non-existent file rejected
+  const root = await mkdtemp(join(tmpdir(), 'tedia-probe-test-'))
+  try {
+    const missingFfmpeg = join(root, 'ffmpeg.exe')
+    const missResult = await probeFfmpegOcrMaskCapability(missingFfmpeg)
+    assert.equal(missResult.healthy, false)
+    assert.match(missResult.message || '', /Không tìm thấy FFmpeg/u)
+
+    // 3. Ffmpeg exists but ffprobe is missing in same dir
+    await writeFile(missingFfmpeg, 'dummy ffmpeg binary')
+    const noProbeResult = await probeFfmpegOcrMaskCapability(missingFfmpeg)
+    assert.equal(noProbeResult.healthy, false)
+    assert.match(noProbeResult.message || '', /Không tìm thấy FFprobe cùng thư mục/u)
+
+    // 4. Failed probe does not store cache
+    assert.equal(getFfmpegOcrMaskProbeCacheSize(), 0)
+  } finally {
+    await rm(root, { recursive: true, force: true })
+  }
+})
+
+test('probeFfmpegOcrMaskCapability verifies real ffmpeg and validates caching', async () => {
+  const possiblePaths = [
+    join(process.env.APPDATA || '', 'tedia-pros', 'bin', process.platform === 'win32' ? 'ffmpeg.exe' : 'ffmpeg'),
+    join(process.env.LOCALAPPDATA || '', 'tedia-pros', 'bin', process.platform === 'win32' ? 'ffmpeg.exe' : 'ffmpeg')
+  ]
+  let realFfmpeg: string | null = null
+  for (const p of possiblePaths) {
+    if (await import('node:fs/promises').then((fs) => fs.access(p).then(() => true).catch(() => false))) {
+      realFfmpeg = p
+      break
+    }
+  }
+
+  if (!realFfmpeg) return
+
+  clearFfmpegOcrMaskProbeCache()
+  assert.equal(getFfmpegOcrMaskProbeCacheSize(), 0)
+
+  const result1 = await probeFfmpegOcrMaskCapability(realFfmpeg)
+  assert.equal(result1.healthy, true)
+  assert.deepEqual(result1.features, ['ocr-mask-v1'])
+  assert.equal(getFfmpegOcrMaskProbeCacheSize(), 1)
+
+  // Second probe should hit cache immediately
+  const t0 = Date.now()
+  const result2 = await probeFfmpegOcrMaskCapability(realFfmpeg)
+  const duration = Date.now() - t0
+  assert.equal(result2.healthy, true)
+  assert.deepEqual(result2, result1)
+  assert.ok(duration < 100, `Cached probe should return almost instantly (${duration}ms)`)
 })
