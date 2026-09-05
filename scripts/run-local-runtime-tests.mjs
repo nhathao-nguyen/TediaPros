@@ -63,7 +63,8 @@ const knownTests = [
   'autoshort-ocr-burn.test',
   'video-title.test',
   'burn-video-title.test',
-  'autoshort-video-title.test'
+  'autoshort-video-title.test',
+  'autoshort-ocr-pipeline.test'
 ]
 
 const requestedTests = process.argv.slice(2).map((name) => name.replace(/\.(ts|js)$/, ''))

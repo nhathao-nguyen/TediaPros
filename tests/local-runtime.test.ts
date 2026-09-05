@@ -503,7 +503,7 @@ test(
 )
 
 test('AutoShort validates and composes assigned background music before replace-mode burn', async () => {
-  const source = await readFile(join(process.cwd(), 'src', 'main', 'autoshort.ts'), 'utf8')
+  const source = await readFile(join(process.cwd(), 'src', 'main', 'autoShortItemCoordinator.ts'), 'utf8')
   assert.match(source, /validateAutoShortMusicTrack\(backgroundMusic\.folderPath, assignedMusicPath\)/u)
   assert.match(source, /composeAutoShortBackgroundAudio\(/u)
   assert.match(source, /tts-background-mix\.wav/u)
@@ -512,7 +512,7 @@ test('AutoShort validates and composes assigned background music before replace-
 })
 
 test('AutoShort registers a partial composed WAV before composition can fail', async () => {
-  const source = await readFile(join(process.cwd(), 'src', 'main', 'autoshort.ts'), 'utf8')
+  const source = await readFile(join(process.cwd(), 'src', 'main', 'autoShortItemCoordinator.ts'), 'utf8')
   const registerArtifact = source.indexOf("artifactEntries.push({ source: outputAudioPath, name: 'tts-background-mix.wav' })")
   const runCompositor = source.indexOf('await composeAutoShortBackgroundAudio({')
   assert.ok(registerArtifact >= 0, 'composed WAV is not registered as an artifact candidate')
@@ -521,7 +521,7 @@ test('AutoShort registers a partial composed WAV before composition can fail', a
 })
 
 test('AutoShort sanitizes failure audit text before deriving the user-facing error label', async () => {
-  const source = await readFile(join(process.cwd(), 'src', 'main', 'autoshort.ts'), 'utf8')
+  const source = await readFile(join(process.cwd(), 'src', 'main', 'autoShortItemCoordinator.ts'), 'utf8')
   const failureBlockStart = source.indexOf('const rawMessage = sanitizeAutoShortAuditError(error, [')
   assert.ok(failureBlockStart >= 0, 'failure block does not sanitize the raw audit text')
   const failureBlock = source.slice(failureBlockStart, failureBlockStart + 500)
@@ -916,7 +916,7 @@ test('AutoShort sync validation rejects translated target timing drift independe
 })
 
 test('AutoShort validates semantic timeline with separate source and translated group inputs', async () => {
-  const source = await readFile(join(process.cwd(), 'src', 'main', 'autoshort.ts'), 'utf8')
+  const source = await readFile(join(process.cwd(), 'src', 'main', 'autoShortItemCoordinator.ts'), 'utf8')
   assert.match(source, /synthesized\.sourceGroupInputs\s*,\s*synthesized\.targetGroupInputs/u)
 })
 
@@ -1165,7 +1165,7 @@ test('AutoShort preview remains the selected source while output is handled sepa
 test('AutoShort preserves an explicitly configured Whisper language', async () => {
   assert.equal(resolveAutoShortWhisperLanguage('en'), 'en')
   assert.equal(resolveAutoShortWhisperLanguage('  '), 'auto')
-  const source = await readFile(join(process.cwd(), 'src', 'main', 'autoshort.ts'), 'utf8')
+  const source = await readFile(join(process.cwd(), 'src', 'main', 'autoShortItemCoordinator.ts'), 'utf8')
   assert.match(source, /language: resolveAutoShortWhisperLanguage\(config\.whisperLanguage\)/u)
 })
 

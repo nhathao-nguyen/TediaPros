@@ -1,7 +1,44 @@
+import type { AutoShortBlurMode, AutoShortOcrBlurProfile } from '../shared/types'
+
 const REDACTED_PATH = '[đường dẫn đã ẩn]'
 
 function escapeRegExp(value: string): string {
   return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+}
+
+export interface OcrBlurAuditMetadata {
+  blurMode: AutoShortBlurMode
+  ocrEngineVersion?: string
+  ocrSampleFps: 8
+  ocrScanProfile?: AutoShortOcrBlurProfile
+  ocrVisualSegmentCount?: number
+  ocrBoxSegmentCount?: number
+  ocrMaskedDurationSeconds?: number
+}
+
+export function createOcrBlurAuditMetadata(summary: {
+  blurMode: AutoShortBlurMode
+  engineVersion?: string
+  scanProfile?: AutoShortOcrBlurProfile
+  visualSegmentCount?: number
+  boxSegmentCount?: number
+  maskedDurationSeconds?: number
+}): OcrBlurAuditMetadata {
+  if (summary.blurMode !== 'ocr-auto') {
+    return {
+      blurMode: summary.blurMode,
+      ocrSampleFps: 8
+    }
+  }
+  return {
+    blurMode: summary.blurMode,
+    ocrEngineVersion: summary.engineVersion,
+    ocrSampleFps: 8,
+    ocrScanProfile: summary.scanProfile,
+    ocrVisualSegmentCount: summary.visualSegmentCount,
+    ocrBoxSegmentCount: summary.boxSegmentCount,
+    ocrMaskedDurationSeconds: summary.maskedDurationSeconds
+  }
 }
 
 /**

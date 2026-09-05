@@ -43,13 +43,15 @@ import {
   whisperEngineStatus,
   whisperModelStatus
 } from './whisper'
-import { cancelOcr, installOcrEngine, ocrEngineStatus, ocrVideo } from './ocr'
+import { cancelOcr, installOcrEngine, ocrEngineStatus, ocrVideo, ocrVideoWithVisualTimeline } from './ocr'
 import { detectGpu } from './gpu'
 import { translateSrt as geminiTranslateSrt } from './gemini'
 import { translateSrt as openaiTranslateSrt } from './openai'
 import { localTranslateSrt, loadLocalKey, checkLocalTranslateKey } from './localTranslate'
 import { generateSpeech, generateVoiceClone, getTtsModels, checkTtsServerHealth } from './tts'
-import { burnSubtitle, cancelBurn, probeBurnMedia } from './burn'
+import { cancelBurn, probeBurnMedia, burnAutoShort } from './burn'
+import { writeTimedOcrBlurMask } from './ocrMask'
+import { createAutoShortItemProcessor } from './autoShortItemCoordinator'
 import { composeAutoShortBackgroundAudio } from './autoShortBackgroundAudio'
 import { validateAutoShortMusicTrack } from './autoShortMusicLibrary'
 import { sanitizeAutoShortAuditError } from './autoShortAudit'
@@ -130,9 +132,9 @@ interface AutoShortJob {
 
 let activeJob: AutoShortJob | null = null
 
-const AUTO_SHORT_CHECKPOINT_VERSION = 4
+export const AUTO_SHORT_CHECKPOINT_VERSION = 5
 
-function buildAutoShortCheckpointFingerprint(
+export function buildAutoShortCheckpointFingerprint(
   filePath: string,
   inputInfo: { size: number; mtimeMs: number },
   config: AutoShortConfig,
@@ -182,11 +184,11 @@ function needsWhisper(method: AutoShortConfig['subtitleMethod']): boolean {
   return method !== 'ocr'
 }
 
-function needsCuda(config: Pick<AutoShortConfig, 'subtitleMethod' | 'whisperDevice'>): boolean {
+export function needsCuda(config: Pick<AutoShortConfig, 'subtitleMethod' | 'whisperDevice'>): boolean {
   return config.whisperDevice === 'cuda' && config.subtitleMethod !== 'ocr'
 }
 
-function resolveAutoShortTtsLanguage(config: AutoShortConfig, detectedLanguage?: string | null): string {
+export function resolveAutoShortTtsLanguage(config: AutoShortConfig, detectedLanguage?: string | null): string {
   const explicit = config.ttsLanguage?.trim().toLowerCase()
   if (explicit && explicit !== 'auto') return explicit
   if (config.translateTarget !== 'none') return config.translateTarget.trim().toLowerCase()
@@ -612,15 +614,15 @@ function safeEmit(job: AutoShortJob, event: AutoShortEvent): void {
   }
 }
 
-function throwIfAborted(signal: AbortSignal): void {
+export function throwIfAborted(signal: AbortSignal): void {
   if (signal.aborted) throw new Error('Đã hủy tác vụ')
 }
 
-function isAbortError(error: unknown): boolean {
+export function isAbortError(error: unknown): boolean {
   return error instanceof Error && (error.name === 'AbortError' || /hủy tác vụ/i.test(error.message))
 }
 
-function normalizedToPixels(
+export function normalizedToPixels(
   region: AutoShortNormalizedRegion | null | undefined,
   geometry: CanonicalDisplayGeometry
 ) {
@@ -628,7 +630,7 @@ function normalizedToPixels(
   return normalizedRegionToDisplayPixels(region, geometry)
 }
 
-function blurRegionsToPixels(
+export function blurRegionsToPixels(
   regions: AutoShortBlurRegion[],
   geometry: CanonicalDisplayGeometry
 ) {
@@ -642,7 +644,7 @@ function blurRegionsToPixels(
   })
 }
 
-function alignedFromSrt(cues: SubtitleCue[], source: AlignedCue['source']): AlignedCue[] {
+export function alignedFromSrt(cues: SubtitleCue[], source: AlignedCue['source']): AlignedCue[] {
   return cues.map((cue) => ({
     id: cue.id,
     start: cue.start,
@@ -653,7 +655,7 @@ function alignedFromSrt(cues: SubtitleCue[], source: AlignedCue['source']): Alig
   }))
 }
 
-async function readWhisperAlignedCues(srtPath: string, alignmentPath: string | null | undefined): Promise<AlignedCue[]> {
+export async function readWhisperAlignedCues(srtPath: string, alignmentPath: string | null | undefined): Promise<AlignedCue[]> {
   const cues = parseSrt(await readFile(srtPath, 'utf8')).cues.filter((cue) => cue.text.trim())
   const result = alignedFromSrt(cues, 'whisper')
   if (!alignmentPath || !(await fileExists(alignmentPath))) return result
@@ -694,7 +696,7 @@ async function readWhisperAlignedCues(srtPath: string, alignmentPath: string | n
   return result
 }
 
-function serializeAlignedCues(cues: AlignedCue[]): string {
+export function serializeAlignedCues(cues: AlignedCue[]): string {
   return serializeSrt(cues.map((cue, sourceIndex) => ({
     id: cue.id,
     sourceIndex,
@@ -704,7 +706,7 @@ function serializeAlignedCues(cues: AlignedCue[]): string {
   })))
 }
 
-async function fileExists(path: string): Promise<boolean> {
+export async function fileExists(path: string): Promise<boolean> {
   try {
     await access(path)
     return true
@@ -713,7 +715,7 @@ async function fileExists(path: string): Promise<boolean> {
   }
 }
 
-async function uniqueOutputName(outputDir: string, sourcePath: string): Promise<string> {
+export async function uniqueOutputName(outputDir: string, sourcePath: string): Promise<string> {
   const base = basename(sourcePath).replace(/\.[^.]+$/, '')
   const stem = `${base}-phude`
   let index = 1
@@ -858,7 +860,7 @@ async function speedUpVoiceClip(
   return probeDuration(ffmpeg, output, signal)
 }
 
-async function stitchAudioTimeline(
+export async function stitchAudioTimeline(
   clips: Array<{ start: number; path: string }>,
   videoDuration: number,
   workDir: string,
@@ -992,7 +994,7 @@ function assertTranslatedLanguageShift(
     // Unknown/unsupported locale tags should not block a valid translation.
   }
 }
-async function translateStrict(
+export async function translateStrict(
   config: AutoShortConfig,
   input: string,
   output: string,
@@ -1062,7 +1064,7 @@ export interface AutoShortCueDiagnostic {
   overlap: boolean
 }
 
-interface AutoShortArtifactEntry {
+export interface AutoShortArtifactEntry {
   source: string
   name: string
 }
@@ -1077,7 +1079,7 @@ function spokenTextWithoutSpeakerLabel(text: string): string {
   return stripOuterQuotes(withoutLabel || clean)
 }
 
-async function preserveAutoShortArtifacts(
+export async function preserveAutoShortArtifacts(
   artifactDir: string,
   entries: readonly AutoShortArtifactEntry[],
   manifest: Record<string, unknown>
@@ -1972,7 +1974,7 @@ async function legacySynthesizeVoice(
 }
 
 /** The coordinator adapter for the source-anchored dubbing modules. */
-async function synthesizeVoice(
+export async function synthesizeVoice(
   job: AutoShortJob,
   item: AutoShortQueueItemInput,
   config: AutoShortConfig,
@@ -2251,72 +2253,6 @@ async function synthesizeVoice(
   }
 }
 
-async function probeOutputMediaWithFfprobe(
-  ffmpegPath: string,
-  outputPath: string,
-  ttsExpected = false,
-  expectedVideoDuration?: number,
-  expectedFrameRate?: number,
-  maxDurationFrames = 8
-): Promise<{ ok: boolean; error?: string }> {
-  try {
-    const meta = await probeBurnMedia(outputPath).catch(() => ({
-      giay: 0,
-      w: 0,
-      h: 0,
-      hasAudio: false,
-      videoDuration: 0,
-      audioDuration: 0,
-      frameRate: 0,
-      videoStart: 0,
-      audioStart: 0
-    }))
-    const fileStat = await stat(outputPath).catch(() => null)
-    const fileSize = fileStat?.size || 0
-
-    let decodeError: string | null = null
-    try {
-      await new Promise<void>((resolve, reject) => {
-        const child = spawnAutoShortChild(ffmpegPath, ['-v', 'error', '-i', outputPath, '-f', 'null', '-'], { windowsHide: true })
-        let err = ''
-        child.stderr?.on('data', (d: Buffer) => { err += d.toString() })
-        child.on('error', reject)
-        child.on('close', (code) => {
-          if (code === 0 && !err.trim()) resolve()
-          else reject(new Error(err.trim() || `ffmpeg decode exited with code ${code}`))
-        })
-      })
-    } catch (err) {
-      decodeError = errLabel(err)
-    }
-
-    const probeInfo: RenderedMediaProbeInfo = {
-      fileSize,
-      videoStream: meta.w > 0 && meta.h > 0 ? { width: meta.w, height: meta.h, duration: meta.videoDuration && meta.videoDuration > 0 ? meta.videoDuration : undefined, startTime: meta.videoStart } : null,
-      audioStream: meta.hasAudio ? { channels: 2, sampleRate: 44100, duration: meta.audioDuration && meta.audioDuration > 0 ? meta.audioDuration : undefined, startTime: meta.audioStart } : null,
-      formatDuration: meta.giay,
-      decodeError,
-      ttsExpected
-    }
-
-    const res = validateRenderedOutputMedia(probeInfo)
-    const actualVideoDuration = meta.videoDuration && meta.videoDuration > 0 ? meta.videoDuration : 0
-    const maxDurationDelta = Math.max(0.001, maxDurationFrames / (expectedFrameRate || 30))
-    if (res.ok && expectedVideoDuration != null && Math.abs(actualVideoDuration - expectedVideoDuration) > maxDurationDelta) {
-      return {
-        ok: false,
-        error: `Thời lượng video đầu ra (${actualVideoDuration.toFixed(3)}s) lệch nguồn (${expectedVideoDuration.toFixed(3)}s) quá giới hạn cho phép (${maxDurationDelta.toFixed(3)}s).`
-      }
-    }
-    if (res.ok && expectedFrameRate != null && meta.frameRate != null && Math.abs(meta.frameRate - expectedFrameRate) > 0.1) {
-      logWarn(`[AutoShort] FPS đầu ra (${meta.frameRate.toFixed(3)}) lệch FPS nguồn (${expectedFrameRate.toFixed(3)}).`)
-    }
-    return { ok: res.ok, error: res.error }
-  } catch (error) {
-    return { ok: false, error: errLabel(error) }
-  }
-}
-
 async function processSingleVideo(
   job: AutoShortJob,
   item: AutoShortQueueItemInput,
@@ -2327,513 +2263,31 @@ async function processSingleVideo(
   const workDir = join(app.getPath('temp'), `tblao-autoshort-${job.id}-${item.id.slice(0, 8)}`)
   const checkpointDir = join(app.getPath('userData'), 'autoshort-checkpoints', safeArtifactSegment(item.id))
   const artifactDir = join(config.outputDir, `.autoshort-audit-${job.id}-${safeArtifactSegment(item.id)}`)
-  const artifactEntries: AutoShortArtifactEntry[] = []
-  await mkdir(workDir, { recursive: true })
-  await mkdir(checkpointDir, { recursive: true })
 
-  const checkpointFile = join(checkpointDir, 'checkpoint.json')
-  let checkpoint: {
-    version?: number
-    fingerprint?: string
-    sourceCues?: AlignedCue[]
-    detectedSourceLanguage?: string | null
-    translatedCues?: SubtitleCue[]
-    instrumentalPath?: string
-  } = {}
-  try {
-    checkpoint = JSON.parse(await readFile(checkpointFile, 'utf8'))
-  } catch {
-    checkpoint = {}
-  }
+  const processor = createAutoShortItemProcessor({
+    resolveFfmpeg,
+    resolveFfprobe,
+    runVisualOcr: ocrVideoWithVisualTimeline,
+    writeTimedMask: writeTimedOcrBlurMask,
+    burn: burnAutoShort
+  })
 
-  let extractedCueCount: number | undefined
-  let translatedCueCount: number | undefined
-  let generatedVoiceCount: number | undefined
-  let voice: string | undefined
-  let detectedSourceLanguage: string | null = checkpoint.detectedSourceLanguage || null
-  let outputName: string | undefined
-  let selectedBackgroundMusicPath: string | undefined
-  let artifactPath: string | undefined
-  let separationAuditMetadata: {
-    audioMode: 'separate-vocals'
-    separationPreset: AutoShortSeparationPreset
-    separatorModelId: string
-    separatorModelSha256: string
-    separatorEngineVersion: string
-    requestedProvider: 'auto'
-    effectiveProvider: SeparatorProvider
-    fallbackReasonCode?: string
-    separationElapsedMs: number
-  } | undefined
-
-  try {
-    throwIfAborted(job.controller.signal)
-    const inputInfo = await stat(item.filePath).catch(() => null)
-    if (!inputInfo?.isFile() || inputInfo.size <= 0) throw new Error(`Video không hợp lệ: ${basename(item.filePath)}`)
-    const checkpointFingerprint = buildAutoShortCheckpointFingerprint(item.filePath, inputInfo, config, job.separation)
-    if (checkpoint.version !== AUTO_SHORT_CHECKPOINT_VERSION || checkpoint.fingerprint !== checkpointFingerprint) {
-      if (checkpoint.sourceCues?.length || checkpoint.translatedCues?.length || checkpoint.instrumentalPath) {
-        logInfo('[AutoShort] Bỏ checkpoint cũ vì không khớp fingerprint input/cấu hình hiện tại.')
-      }
-      await rm(checkpointDir, { recursive: true, force: true }).catch(() => {})
-      await mkdir(checkpointDir, { recursive: true })
-      checkpoint = {}
-      detectedSourceLanguage = null
-    }
-    checkpoint.version = AUTO_SHORT_CHECKPOINT_VERSION
-    checkpoint.fingerprint = checkpointFingerprint
-    const meta = await probeBurnMedia(item.filePath)
-    if (!(meta.giay > 0) || !(meta.w > 0) || !(meta.h > 0)) throw new Error('Video không có metadata hợp lệ')
-    const geometry = meta.geometry ?? deriveCanonicalDisplayGeometry({
-      codedWidth: meta.w,
-      codedHeight: meta.h,
-      rotation: meta.rotation,
-      sampleAspectRatio: meta.sampleAspectRatio,
-      videoStart: meta.videoStart
-    })
-    const portrait = meta.h > meta.w
-    const ocrRegion = (config.ocrRegion ? normalizedToPixels(config.ocrRegion, geometry) : undefined) || {
-      x0: 0,
-      y0: Math.round(geometry.displayHeight * (portrait ? 0.72 : 0.74)),
-      x1: geometry.displayWidth,
-      y1: Math.round(geometry.displayHeight * (portrait ? 0.92 : 0.94))
-    }
-    const subtitleRegion = normalizedToPixels(config.subRegion, geometry)
-    const blurRegions = blurRegionsToPixels(config.blurRegions, geometry)
-
-    const rawSrtPath = join(workDir, 'source.srt')
-    let sourceCues: SubtitleCue[] = []
-
-    // 1. Stage: Subtitle Extraction (check checkpoint first)
-    if (checkpoint.sourceCues && checkpoint.sourceCues.length > 0) {
-      logInfo(`[AutoShort] Phục hồi ${checkpoint.sourceCues.length} câu nguồn từ checkpoint.`)
-      await writeFile(rawSrtPath, serializeAlignedCues(checkpoint.sourceCues), 'utf8')
-      sourceCues = parseSrt(await readFile(rawSrtPath, 'utf8')).cues.filter((cue) => cue.text.trim())
-      extractedCueCount = sourceCues.length
-    } else {
-      emitProgress(job, item, 'extracting_sub', 5, 'Đang tạo phụ đề SRT…', index, total)
-      const runOcr = async (): Promise<AlignedCue[]> => {
-        const ocrDir = join(workDir, 'ocr')
-        await mkdir(ocrDir, { recursive: true })
-        const ocrResult = await ocrVideo(item.filePath, ocrDir, ocrRegion.y0, ocrRegion.y1, ocrRegion.x0, ocrRegion.x1, ['.srt'], (p) => {
-          emitProgress(job, item, 'extracting_sub', 5 + Math.max(0, p.percent) * 0.25, p.text || 'Đang quét chữ trong video…', index, total)
-        }, job.controller.signal, 8)
-        if (!ocrResult.ok || !ocrResult.outputs?.length) throw new Error(ocrResult.error || 'OCR không tạo được SRT')
-        const cues = parseSrt(await readFile(ocrResult.outputs[0], 'utf8')).cues.filter((cue) => cue.text.trim())
-        if (cues.length === 0) throw new Error('OCR không nhận được câu phụ đề hợp lệ')
-        return alignedFromSrt(cues, 'ocr')
-      }
-      const runWhisper = async (): Promise<{ cues: AlignedCue[]; language: string | null }> => {
-        const whisperDir = join(workDir, 'whisper')
-        await mkdir(whisperDir, { recursive: true })
-        const whisperResult = await transcribeAudio(job.id, {
-          input: item.filePath,
-          outputDir: whisperDir,
-          model: config.whisperModel || 'base',
-          language: resolveAutoShortWhisperLanguage(config.whisperLanguage),
-          task: 'transcribe',
-          formats: ['srt'],
-          device: needsCuda(config) ? 'cuda' : 'cpu',
-          diarize: false,
-          speakers: 0
-        }, (p: WhisperProgress) => {
-          emitProgress(job, item, 'extracting_sub', 5 + Math.max(0, p.percent) * 0.25, p.line || 'Đang nhận diện giọng nói…', index, total)
-        }, job.controller.signal)
-        if (!whisperResult.ok || !whisperResult.outputs.length) throw new Error(whisperResult.error || 'Whisper không tạo được SRT')
-        const srtPath = whisperResult.outputs.find((path) => path.toLowerCase().endsWith('.srt')) || whisperResult.outputs[0]
-        const cues = await readWhisperAlignedCues(srtPath, whisperResult.alignmentPath)
-        if (cues.length === 0) throw new Error('Whisper không nhận được câu phụ đề hợp lệ')
-        return { cues, language: whisperResult.language || null }
-      }
-      let extracted: AlignedCue[] = []
-      if (config.subtitleMethod === 'ocr') {
-        extracted = await runOcr()
-      } else if (config.subtitleMethod === 'whisper-ocr') {
-        const [whisper, ocr] = await Promise.allSettled([runWhisper(), runOcr()])
-        if (job.controller.signal.aborted) throw new Error('Đã hủy tác vụ')
-        const speech = whisper.status === 'fulfilled' ? whisper.value.cues : []
-        const visual = ocr.status === 'fulfilled' ? ocr.value : []
-        detectedSourceLanguage = whisper.status === 'fulfilled' ? whisper.value.language : null
-        if (whisper.status === 'rejected') logWarn(`[AutoShort] Fast-Whisper không khả dụng: ${errLabel(whisper.reason)}`)
-        if (ocr.status === 'rejected') logWarn(`[AutoShort] OCR không khả dụng: ${errLabel(ocr.reason)}`)
-        extracted = speech.length && visual.length ? fuseWhisperAndOcr(speech, visual) : speech.length ? speech : visual
-        if (extracted.length === 0) {
-          throw new Error('Fast-Whisper và OCR đều không tạo được phụ đề hợp lệ.')
-        }
-        await writeFile(join(workDir, 'source.alignment.json'), JSON.stringify(extracted, null, 2), 'utf8')
-      } else {
-        const whisper = await runWhisper()
-        extracted = whisper.cues
-        detectedSourceLanguage = whisper.language
-      }
-      const boundedExtracted = clampAlignedCueTimeline(extracted, meta.giay)
-      if (boundedExtracted.length === 0) throw new Error('SRT nguồn không có câu nằm trong thời lượng video')
-      await writeFile(rawSrtPath, serializeAlignedCues(boundedExtracted), 'utf8')
-      sourceCues = parseSrt(await readFile(rawSrtPath, 'utf8')).cues.filter((cue) => cue.text.trim())
-      if (sourceCues.length === 0) throw new Error('SRT nguồn không có câu hợp lệ')
-      extractedCueCount = sourceCues.length
-
-      checkpoint.sourceCues = boundedExtracted
-      checkpoint.detectedSourceLanguage = detectedSourceLanguage
-      await writeFile(checkpointFile, JSON.stringify(checkpoint, null, 2), 'utf8')
-    }
-
-    artifactEntries.push({ source: rawSrtPath, name: 'source.srt' })
-
-    let targetSrtPath = rawSrtPath
-    let targetCues: SubtitleCue[] = sourceCues
-
-    if (config.translateTarget !== 'none') {
-      targetSrtPath = join(workDir, 'translated.srt')
-      if (checkpoint.translatedCues && checkpoint.translatedCues.length === sourceCues.length) {
-        logInfo(`[AutoShort] Phục hồi ${checkpoint.translatedCues.length} câu dịch từ checkpoint.`)
-        await writeFile(targetSrtPath, serializeSrt(checkpoint.translatedCues), 'utf8')
-        targetCues = checkpoint.translatedCues
-        translatedCueCount = targetCues.length
-      } else {
-        emitProgress(job, item, 'translating', 35, `Đang dịch phụ đề sang ${config.translateTarget}…`, index, total)
-        const sourceLanguage = resolveTranslationSourceLanguage(config.whisperLanguage, detectedSourceLanguage)
-        await translateStrict(config, rawSrtPath, targetSrtPath, (done, count) => {
-          emitProgress(job, item, 'translating', 35 + (count > 0 ? done / count : 0) * 20, `Đang dịch ${done}/${count} câu`, index, total)
-        }, job.controller.signal, sourceLanguage)
-        targetCues = parseSrt(await readFile(targetSrtPath, 'utf8')).cues.filter((cue) => cue.text.trim())
-        if (targetCues.length !== sourceCues.length) throw new Error('SRT đích không khớp số câu SRT nguồn')
-        translatedCueCount = targetCues.length
-
-        checkpoint.translatedCues = targetCues
-        await writeFile(checkpointFile, JSON.stringify(checkpoint, null, 2), 'utf8')
-      }
-      artifactEntries.push({ source: targetSrtPath, name: 'translated.srt' })
-    }
-
-    let separatedInstrumentalPath: string | null = null
-
-    if (config.audioMode === 'separate-vocals') {
-      throwIfAborted(job.controller.signal)
-      if (!meta.hasAudio) {
-        logInfo('[AutoShort] Video nguồn không có audio; sẽ xuất TTS-only.')
-        emitProgress(job, item, 'separating_audio', 45, 'Video nguồn không có audio; sẽ xuất TTS-only.', index, total)
-      } else {
-        if (!job.separation) throw new Error('Chưa chuẩn bị tài nguyên tách nhạc.')
-        emitProgress(job, item, 'separating_audio', 45, 'Đang chuẩn bị tách nhạc nền…', index, total)
-
-        const sepDir = join(workDir, 'separation')
-        await mkdir(sepDir, { recursive: true })
-
-        const ckptSepDir = join(checkpointDir, 'separation')
-        const checkpointInstrumental = join(ckptSepDir, 'instrumental.wav')
-        let reusedFromCheckpoint = false
-        if (checkpoint.instrumentalPath) {
-          try {
-            const ffprobe = await resolveFfprobe()
-            if (ffprobe) {
-              await validateSeparatorStem({
-                stemPath: checkpointInstrumental,
-                expectedDurationSeconds: meta.giay,
-                ffprobePath: ffprobe,
-                signal: job.controller.signal
-              })
-              logInfo('[AutoShort] Phục hồi instrumental từ checkpoint.')
-              separatedInstrumentalPath = join(sepDir, 'instrumental.wav')
-              await copyFile(checkpointInstrumental, separatedInstrumentalPath)
-              reusedFromCheckpoint = true
-            }
-          } catch {
-            logInfo('[AutoShort] Checkpoint instrumental không hợp lệ, tiến hành tách lại.')
-            await rm(checkpointInstrumental, { force: true }).catch(() => {})
-          }
-        }
-
-        if (!reusedFromCheckpoint) {
-          const ffmpeg = await resolveFfmpeg()
-          const ffprobe = await resolveFfprobe()
-          if (!ffmpeg || !ffprobe) throw new Error('Thiếu FFmpeg hoặc FFprobe để tách âm thanh.')
-
-          const sepResult = await separateSourceAudio({
-            sourcePath: item.filePath,
-            videoDurationSeconds: meta.giay,
-            workDir: sepDir,
-            ffmpegPath: ffmpeg,
-            ffprobePath: ffprobe,
-            enginePath: job.separation.enginePath,
-            model: job.separation.model,
-            preset: job.separation.preset,
-            providerState: job.separationProviderState,
-            signal: job.controller.signal,
-            onProgress: (event) => {
-              const text = event.stage === 'extracting'
-                ? 'Đang trích xuất audio nguồn…'
-                : event.stage === 'cpu-retry'
-                  ? 'Đang thử lại bằng CPU…'
-                  : event.stage === 'normalizing'
-                    ? 'Đang chuẩn hóa track instrumental…'
-                    : `Đang tách thoại (${event.percent}%)…`
-              emitProgress(job, item, 'separating_audio', 45 + (event.percent / 100) * 12, text, index, total)
-            }
-          })
-
-          if (sepResult.kind === 'no-audio') {
-            logInfo(`[AutoShort] ${sepResult.warning}`)
-          } else {
-            separatedInstrumentalPath = sepResult.instrumentalPath
-            separationAuditMetadata = {
-              audioMode: 'separate-vocals',
-              separationPreset: job.separation.preset,
-              separatorModelId: job.separation.model.id,
-              separatorModelSha256: job.separation.model.spec.model.sha256,
-              separatorEngineVersion: job.separation.engineVersion,
-              requestedProvider: 'auto',
-              effectiveProvider: sepResult.effectiveProvider,
-              fallbackReasonCode: sepResult.fallbackReasonCode,
-              separationElapsedMs: sepResult.elapsedMs
-            }
-
-            // Clean up temporary stems & extracted audio immediately
-            await rm(sepResult.vocalsPath, { force: true }).catch(() => {})
-            await rm(join(sepDir, 'source.wav'), { force: true }).catch(() => {})
-
-            // Save instrumental to checkpoint
-            await mkdir(ckptSepDir, { recursive: true })
-            await copyFile(separatedInstrumentalPath, checkpointInstrumental)
-            checkpoint.instrumentalPath = checkpointInstrumental
-            await writeFile(checkpointFile, JSON.stringify(checkpoint, null, 2), 'utf8')
-          }
-        }
-      }
-    }
-
-    let stitchedAudioPath: string | null = null
-    let renderSrtPath = targetSrtPath
-    let renderDisplayStyle = config.subtitleDisplayStyle || 'standard'
-    let finalWordTimings: any = undefined
-
-    if (config.ttsEnabled) {
-      emitProgress(job, item, 'generating_tts', 58, 'Đang tạo voice từ SRT đích…', index, total)
-      const synthesized = await synthesizeVoice(job, item, config, targetCues, sourceCues, workDir, meta.giay, index, total, detectedSourceLanguage)
-      
-      const syncValidation = validateAutoShortTimelineSync(
-        synthesized.dubbingUnits,
-        meta.giay,
-        synthesized.sourceGroupInputs,
-        synthesized.targetGroupInputs
-      )
-      if (!syncValidation.ok) {
-        logError(`[AutoShort] Vi phạm đồng bộ semantic timeline:\n${syncValidation.violations.join('\n')}`)
-        throw new Error(`Không thể xuất video do vi phạm đồng bộ semantic timeline: ${syncValidation.violations[0]}`)
-      }
-
-      emitProgress(job, item, 'stitching_audio', 80, 'Đang căn voice theo timeline phụ đề…', index, total)
-      await stitchAudioTimeline(synthesized.clips, meta.giay, workDir, synthesized.path, job.controller.signal)
-      stitchedAudioPath = synthesized.path
-      generatedVoiceCount = synthesized.count
-      voice = synthesized.voice
-      renderSrtPath = join(workDir, 'timed.srt')
-      await writeFile(renderSrtPath, serializeSrt(synthesized.cues), 'utf8')
-      artifactEntries.push({ source: synthesized.path, name: 'tts-timeline.wav' })
-      artifactEntries.push({ source: renderSrtPath, name: 'timed.srt' })
-      artifactEntries.push(...synthesized.artifacts)
-      const timelineManifestPath = join(workDir, 'tts-timeline.json')
-      await writeFile(timelineManifestPath, JSON.stringify({
-        language: synthesized.language,
-        voice: synthesized.voice,
-        paceMode: synthesized.paceMode,
-        tempo: synthesized.tempo,
-        maxTempo: synthesized.maxTempo,
-        averageTempo: synthesized.averageTempo,
-        degraded: synthesized.degraded,
-        rephraseCount: synthesized.rephraseCount,
-        splitCount: synthesized.splitCount,
-        predictorSamples: synthesized.predictorSamples,
-        fitFirstPassRatio: synthesized.fitFirstPassRatio,
-        predictorResidualP90: synthesized.predictorResidualP90,
-        cueCount: synthesized.count,
-        cues: synthesized.diagnostics
-      }, null, 2), 'utf8')
-      artifactEntries.push({ source: timelineManifestPath, name: 'tts-timeline.json' })
-
-      if (synthesized.wordTimings && synthesized.wordTimings.length > 0) {
-        finalWordTimings = synthesized.wordTimings
-      } else if (renderDisplayStyle !== 'standard') {
-        renderDisplayStyle = 'standard'
-        logWarn('[AutoShort] Đã chuyển word effect sang standard vì độ tin cậy word timing chưa đủ.')
-      }
-    }
-
-    let outputAudioPath = stitchedAudioPath
-    if (config.audioMode === 'separate-vocals' && separatedInstrumentalPath && stitchedAudioPath) {
-      const ffmpeg = await resolveFfmpeg()
-      if (!ffmpeg) throw new Error('Thiếu FFmpeg để trộn âm thanh nền với giọng lồng tiếng.')
-      outputAudioPath = join(workDir, 'tts-bed-mix.wav')
-      artifactEntries.push({ source: outputAudioPath, name: 'tts-bed-mix.wav' })
-      emitProgress(job, item, 'stitching_audio', 83, 'Đang trộn âm thanh nền với giọng lồng tiếng…', index, total)
-      await composeAutoShortNarratedAudio({
-        ffmpegPath: ffmpeg,
-        bedPath: separatedInstrumentalPath,
-        narrationPath: stitchedAudioPath,
-        outputPath: outputAudioPath,
-        durationSeconds: meta.giay,
-        bedMode: 'finite-source',
-        bedVolume: 100,
-        signal: job.controller.signal
-      })
-    } else if (config.backgroundMusic) {
-      const backgroundMusic = config.backgroundMusic
-      const assignedMusicPath = backgroundMusic.assignments[item.id]
-      selectedBackgroundMusicPath = await validateAutoShortMusicTrack(backgroundMusic.folderPath, assignedMusicPath)
-      outputAudioPath = join(workDir, 'tts-background-mix.wav')
-      artifactEntries.push({ source: outputAudioPath, name: 'tts-background-mix.wav' })
-      emitProgress(job, item, 'stitching_audio', 83, 'Đang trộn nhạc background với giọng lồng tiếng…', index, total)
-      await composeAutoShortBackgroundAudio({
-        musicPath: selectedBackgroundMusicPath,
-        narrationPath: stitchedAudioPath!,
-        outputPath: outputAudioPath,
-        duration: meta.giay,
-        volume: backgroundMusic.volume,
-        signal: job.controller.signal
-      })
-    }
-
-    throwIfAborted(job.controller.signal)
-
-    emitProgress(job, item, 'rendering_video', 85, 'Đang làm mờ, gắn phụ đề và xuất video…', index, total)
-    outputName = await uniqueOutputName(config.outputDir, item.filePath)
-    const burnReq: BurnReq = {
-      video: item.filePath,
-      srt: renderSrtPath,
-      outputDir: config.outputDir,
-      outputName,
-      videoTitle: config.videoTitle ? {
-        ...config.videoTitle,
-        language: config.translateTarget !== 'none' ? config.translateTarget : 'auto'
-      } : undefined,
-      mode: 'burn',
-      blurRegions,
-      lamMo: config.lamMo,
-      subRegion: subtitleRegion,
-      fontId: config.fontId,
-      textColor: config.textColor,
-      outlineColor: config.outlineColor,
-      outlinePx: config.outlineScale != null ? Math.max(0.5, Math.round(config.outlineScale * meta.h * 2) / 2) : config.outlinePx,
-      bgEnabled: config.bgEnabled,
-      bgColor: config.bgColor,
-      bgOpacity: config.bgOpacity,
-      subtitleDisplayStyle: renderDisplayStyle,
-      subtitleFontSize: config.subtitleFontScale != null ? Math.round(config.subtitleFontScale * meta.h) : config.subtitleFontSize,
-      subtitleFontScale: config.subtitleFontScale,
-      outlineScale: config.outlineScale,
-      highlightColor: config.highlightColor,
-      subtitleHighlightPop: config.subtitleHighlightPop,
-      subtitleLayoutProfile: config.subtitleLayoutProfile || 'vertical',
-      subtitleAutoOptimize: config.subtitleAutoOptimize !== false,
-      wordTimings: finalWordTimings || (!config.ttsEnabled && config.translateTarget === 'none'
-        ? (checkpoint.sourceCues || [])
-            .filter((cue) => Array.isArray(cue.words) && cue.words.length > 0)
-            .map((cue) => ({ start: cue.start, end: cue.end, words: cue.words! }))
-        : undefined),
-      requireWordTimings: renderDisplayStyle !== 'standard',
-      batAmThanh: Boolean(outputAudioPath),
-      amThanhFile: outputAudioPath,
-      amLuongGoc: config.audioMode === 'mix' ? config.originalAudioVolume : 0
-    }
-    const burnResult = await burnSubtitle(burnReq, (progress) => {
-      emitProgress(job, item, 'rendering_video', 85 + Math.max(0, progress.percent) * 0.12, progress.message || `Đang xuất video… ${progress.percent}%`, index, total)
-    })
-    if (!burnResult.ok || !burnResult.output || !(await fileExists(burnResult.output))) {
-      await Promise.all([
-        config.videoTitle ? Promise.resolve() : rm(join(config.outputDir, outputName), { force: true }),
-        burnResult.output ? rm(burnResult.output, { force: true }) : Promise.resolve()
-      ])
-      throw new Error(burnResult.error || 'Render video thất bại')
-    }
-
-    // 5. Stage: Output Media Validation via FFprobe
-    const ffmpegPath = await resolveFfmpeg()
-    if (!ffmpegPath) throw new Error('Thiếu FFmpeg/FFprobe đã xác minh để kiểm tra video đầu ra.')
-    emitProgress(job, item, 'rendering_video', 98, 'Đang kiểm tra chất lượng video đầu ra…', index, total)
-    const mediaCheck = await probeOutputMediaWithFfprobe(
-      ffmpegPath,
-      burnResult.output,
-      config.ttsEnabled,
-      meta.giay,
-      meta.frameRate,
-      config.audioMode === 'separate-vocals' ? 1 : 8
-    )
-    if (!mediaCheck.ok) {
-      logError(`[AutoShort] Kiểm tra video xuất ra thất bại: ${mediaCheck.error}`)
-      await rm(burnResult.output, { force: true }).catch(() => {})
-      if (burnResult.titlePath) await rm(burnResult.titlePath, { force: true }).catch(() => {})
-      throw new Error(`Video xuất ra không đạt tiêu chuẩn kiểm duyệt: ${mediaCheck.error}`)
-    }
-
-    artifactEntries.push({ source: burnResult.output, name: 'output.mp4' })
-    if (burnResult.titlePath) artifactEntries.push({ source: burnResult.titlePath, name: 'tieude.txt' })
-    artifactPath = await preserveAutoShortArtifacts(artifactDir, artifactEntries, {
-      version: 1,
-      status: 'done',
-      sourceFile: basename(item.filePath),
-      outputFile: outputName,
-      titleFile: burnResult.titlePath ? 'tieude.txt' : undefined,
-      titleError: burnResult.titleError,
-      sourceLanguage: resolveTranslationSourceLanguage(config.whisperLanguage, detectedSourceLanguage),
-      targetLanguage: config.translateTarget,
-      extractedCueCount,
-      translatedCueCount,
-      generatedVoiceCount,
-      voice,
-      backgroundMusicMode: config.backgroundMusic?.mode,
-      backgroundMusicFile: selectedBackgroundMusicPath ? basename(selectedBackgroundMusicPath) : undefined,
-      backgroundMusicVolume: config.backgroundMusic?.volume,
-      ...(separationAuditMetadata || {})
-    })
-
-    // Clean up checkpoint upon successful completion
-    await rm(checkpointDir, { recursive: true, force: true }).catch(() => {})
-
-    const completionMessage = burnResult.titleError ? 'Video đã xuất, chưa tạo được tiêu đề'
-      : burnResult.titlePath ? 'Đã xuất video và tieude.txt' : 'Hoàn tất xuất video'
-    emitProgress(job, item, 'done', 100, completionMessage, index, total, burnResult.output)
-    return { itemId: item.id, filePath: item.filePath, status: 'done', outputPath: burnResult.output, artifactDir: artifactPath, extractedCueCount, translatedCueCount, generatedVoiceCount, voice,
-      title: burnResult.title, titlePath: burnResult.titlePath, titleError: burnResult.titleError }
-  } catch (error) {
-    const rawMessage = sanitizeAutoShortAuditError(error, [
-      item.filePath,
-      config.outputDir,
-      config.backgroundMusic?.folderPath,
-      ...Object.values(config.backgroundMusic?.assignments || {})
-    ])
-    const message = errLabel(rawMessage)
-    logError(`[AutoShort] ${basename(item.filePath)} thất bại: ${rawMessage}`)
-    const cancelled = job.controller.signal.aborted || isAbortError(error)
-    const status: 'error' | 'cancelled' = cancelled ? 'cancelled' : 'error'
-
-    try {
-      artifactPath = await preserveAutoShortArtifacts(artifactDir, artifactEntries, {
-        version: 1,
-        status,
-        error: message,
-        rawMessage,
-        sourceFile: basename(item.filePath),
-        outputFile: outputName,
-        sourceLanguage: resolveTranslationSourceLanguage(config.whisperLanguage, detectedSourceLanguage),
-        targetLanguage: config.translateTarget,
-        extractedCueCount,
-        translatedCueCount,
-        generatedVoiceCount,
-        voice,
-        backgroundMusicMode: config.backgroundMusic?.mode,
-        backgroundMusicFile: selectedBackgroundMusicPath ? basename(selectedBackgroundMusicPath) : undefined,
-        backgroundMusicVolume: config.backgroundMusic?.volume,
-        ...(separationAuditMetadata || {})
-      })
-    } catch (preserveError) {
-      logWarn(`[AutoShort] Không thể lưu failure artifacts: ${errLabel(preserveError)}`)
-    }
-
-    emitProgress(job, item, status, 0, cancelled ? 'Đã hủy tác vụ' : `Lỗi: ${message}`, index, total, undefined, message)
-    return { itemId: item.id, filePath: item.filePath, status, error: cancelled ? 'Đã hủy tác vụ' : message, artifactDir: artifactPath, extractedCueCount, translatedCueCount, generatedVoiceCount, voice }
-  } finally {
-    await rm(workDir, { recursive: true, force: true }).catch(() => undefined)
-  }
+  return processor({
+    jobId: job.id,
+    request: job.request,
+    item,
+    index,
+    total,
+    signal: job.controller.signal,
+    emit: (event) => safeEmit(job, event),
+    checkpointDir,
+    workDir,
+    artifactDir,
+    ttsCapabilities: job.ttsCapabilities,
+    ttsCapabilitiesUrl: job.ttsCapabilitiesUrl,
+    separation: job.separation,
+    separationProviderState: job.separationProviderState
+  })
 }
 
 async function preflight(job: AutoShortJob): Promise<void> {
@@ -3006,4 +2460,14 @@ export async function selectAutoShortVideoFiles(): Promise<{ ok: boolean; paths:
   })
   if (res.canceled || !res.filePaths.length) return { ok: false, paths: [] }
   return { ok: true, paths: res.filePaths }
+}
+
+export function defaultAutoShortOcrRegion(meta: { w: number; h: number }, geometry: { displayWidth: number; displayHeight: number }): { x0: number; y0: number; x1: number; y1: number } {
+  const portrait = meta.h > meta.w
+  return {
+    x0: 0,
+    y0: Math.round(geometry.displayHeight * (portrait ? 0.72 : 0.74)),
+    x1: geometry.displayWidth,
+    y1: Math.round(geometry.displayHeight * (portrait ? 0.92 : 0.94))
+  }
 }
