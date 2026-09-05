@@ -5,7 +5,7 @@ from PyInstaller.utils.hooks import collect_all
 SPEC_DIR = Path(SPECPATH).resolve()
 datas = []
 binaries = []
-hiddenimports = []
+hiddenimports = ['visual_timeline']
 for _m in ('rapidocr_onnxruntime', 'onnxruntime', 'cv2'):
     tmp_ret = collect_all(_m)
     datas += tmp_ret[0]; binaries += tmp_ret[1]; hiddenimports += tmp_ret[2]
