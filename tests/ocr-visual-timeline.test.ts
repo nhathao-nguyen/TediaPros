@@ -328,7 +328,7 @@ test('projectOcrTimelineToSubtitleCues merges adjacent segments with equivalent 
   assert.equal(cues[1].sourceIndex, 1)
 })
 
-test('planOcrMaskFrames pads boxes by 15% (clamped 4..8), expands 1 sample, and paints black terminal frame', () => {
+test('planOcrMaskFrames pads boxes by 20% (clamped 6..16), expands 1 sample, and paints black terminal frame', () => {
   const t: OcrVisualTimeline = {
     ...validTimeline(),
     segments: [
@@ -340,7 +340,7 @@ test('planOcrMaskFrames pads boxes by 15% (clamped 4..8), expands 1 sample, and 
         end: 0.5,
         text: 'test',
         confidence: 0.9,
-        // Box height is 20 => 15% is 3 => clamped to min 4 px padding
+        // Box height is 20 => 20% is 4 => clamped to min 6 px padding
         boxes: [{ text: 'test', confidence: 0.9, x0: 10, y0: 10, x1: 40, y1: 30 }]
       }
     ]
@@ -357,8 +357,8 @@ test('planOcrMaskFrames pads boxes by 15% (clamped 4..8), expands 1 sample, and 
   assert.equal(plan.segments[0].startFrame, 1)
   assert.equal(plan.segments[0].endFrameExclusive, 5)
 
-  // Padded box: 10-4=6, 10-4=6, 40+4=44, 30+4=34
-  assert.deepEqual(plan.segments[0].boxes, [{ x0: 6, y0: 6, x1: 44, y1: 34 }])
+  // Padded box: 10-6=4, 10-6=4, 40+6=46, 30+6=36
+  assert.deepEqual(plan.segments[0].boxes, [{ x0: 4, y0: 4, x1: 46, y1: 36 }])
 
   // Test boxesForMaskFrame
   assert.equal(boxesForMaskFrame(plan, 0).length, 0)

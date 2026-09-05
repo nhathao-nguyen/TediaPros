@@ -478,7 +478,7 @@ export function planOcrMaskFrames(
 
     const paddedBoxes: PixelRegion[] = seg.boxes.map((b) => {
       const boxH = b.y1 - b.y0
-      const pad = Math.max(4, Math.min(8, Math.round(boxH * 0.15)))
+      const pad = Math.max(6, Math.min(16, Math.round(boxH * 0.20)))
       return {
         x0: Math.max(0, Math.max(timeline.scanRegion.x0, b.x0 - pad)),
         y0: Math.max(0, Math.max(timeline.scanRegion.y0, b.y0 - pad)),

@@ -40,9 +40,10 @@ export function planBurnInputs(input: {
 }
 
 /**
- * Calculate Gaussian blur sigma for a given display height (scale proportional ~3%, min 8).
+ * Calculate Gaussian blur sigma for a given display height (scale proportional ~8%, min 12).
+ * Uses a stronger factor to ensure text is completely unreadable after blurring.
  */
 export function blurSigmaForDisplayHeight(displayHeight: number): number {
   const height = Number.isFinite(displayHeight) && displayHeight > 0 ? displayHeight : 720
-  return Math.max(8, Math.round(height * 0.03))
+  return Math.max(12, Math.round(height * 0.08))
 }

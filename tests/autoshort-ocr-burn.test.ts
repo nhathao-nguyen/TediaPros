@@ -46,10 +46,10 @@ test('planBurnInputs orders inputs deterministically across all four combination
   assert.equal(p4.maskVideoIndex, 2)
 })
 
-test('blurSigmaForDisplayHeight scales proportionally with min 8', () => {
-  assert.equal(blurSigmaForDisplayHeight(266), 8)
-  assert.equal(blurSigmaForDisplayHeight(720), 22)
-  assert.equal(blurSigmaForDisplayHeight(1080), 32)
+test('blurSigmaForDisplayHeight scales proportionally with min 12', () => {
+  assert.equal(blurSigmaForDisplayHeight(266), 21)
+  assert.equal(blurSigmaForDisplayHeight(720), 58)
+  assert.equal(blurSigmaForDisplayHeight(1080), 86)
 })
 
 test('freeze manual graph regressions before refactoring', () => {
@@ -96,15 +96,15 @@ test('taoFilterComplexAutomatic generates exact video filter chain and sigma', (
   // Check filter nodes
   assert.match(filterStr, /\[0:v\]null\[display\]/u)
   assert.match(filterStr, /\[display\]split=2\[base\]\[blur_source\]/u)
-  assert.match(filterStr, /\[blur_source\]gblur=sigma=8:steps=3\[blurred\]/u)
+  assert.match(filterStr, /\[blur_source\]gblur=sigma=21:steps=3\[blurred\]/u)
   assert.match(filterStr, /\[2:v\]format=gray,settb=AVTB,setpts=PTS-STARTPTS\[mask\]/u)
   assert.match(filterStr, /\[base\]\[blurred\]\[mask\]maskedmerge,trim=duration=1\.000\[masked\]/u)
   assert.match(filterStr, /\[masked\]ass=sub\.ass\[out\]/u)
 
-  // For 1080p, sigma must be 32
+  // For 1080p, sigma must be 86
   const meta1080: Meta = { w: 1920, h: 1080, giay: 1.0, hasAudio: false }
   const f1080 = taoFilterComplexAutomatic(meta1080, plan, true, 'sub.ass', false).join(' ')
-  assert.match(f1080, /gblur=sigma=32:steps=3/u)
+  assert.match(f1080, /gblur=sigma=86:steps=3/u)
 })
 
 test('automatic graph is constant size and forbids repeatlast/eof_action/shortest', () => {
