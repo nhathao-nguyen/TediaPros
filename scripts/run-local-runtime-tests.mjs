@@ -59,6 +59,7 @@ const knownTests = [
   'canonical-display-geometry.test',
   'ocr-visual-timeline.test',
   'autoshort-ocr-runtime.test',
+  'ocr-mask.test',
   'video-title.test',
   'burn-video-title.test',
   'autoshort-video-title.test'
