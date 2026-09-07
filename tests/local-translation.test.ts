@@ -250,7 +250,7 @@ test('cancellation between split batches stops the next server request and outpu
   assert.equal(await readFile(output, 'utf8'), 'existing output')
 }))
 
-test('persistent invalid responses stop by structural termination, not a default request budget', async () => fixture(async (input, output) => {
+test('persistent invalid responses stop at the workload recovery budget', async () => fixture(async (input, output) => {
   await writeFile(input, buildSrt(makeCues(12)))
   let calls = 0
   globalThis.fetch = async (_url, init) => {
@@ -263,9 +263,8 @@ test('persistent invalid responses stop by structural termination, not a default
     sleep: async () => {}
   })
   assert.equal(result.ok, false)
-  assert.doesNotMatch(result.error || '', /ngân sách request dịch/u)
-  assert.match(result.error || '', /Kết quả dịch không đạt yêu cầu/u)
-  assert.ok(calls > 7, `default request ceiling still stopped translation after ${calls} requests`)
+  assert.match(result.error || '', /ngân sách request dịch/u)
+  assert.ok(calls <= 5, `workload recovery budget allowed ${calls} requests`)
 }))
 
 test('an explicit maxRequests option can re-enable a request ceiling', async () => fixture(async (input, output) => {

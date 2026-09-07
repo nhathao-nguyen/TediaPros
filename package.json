@@ -13,6 +13,7 @@
     "typecheck:web": "tsc --noEmit -p tsconfig.web.json --composite false",
     "typecheck": "npm run typecheck:node && npm run typecheck:web",
     "test:local-runtime": "node scripts/run-local-runtime-tests.mjs",
+    "translation:qualification": "node scripts/translation-qualification-main.mjs",
     "test:ocr-engine": "python -m unittest discover -s engines/ocr-engine/tests -p \"test_*.py\" -v",
     "test:sttn-engine": "python -m unittest discover -s engines/sttn-engine/tests -p \"test_*.py\" -v",
     "test:separator-engine": "python -m unittest discover -s engines/separator-engine/tests -p \"test_*.py\" -v",

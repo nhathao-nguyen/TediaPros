@@ -2,6 +2,7 @@
 
 import type { CookieSite } from './sites'
 import type { YtDlpErrorCode } from './ytdlpErrors'
+import type { TranslationAssessment, TranslationStageCapability } from './translation'
 export type { CookieSite, SiteId } from './sites'
 export type { YtDlpErrorCode } from './ytdlpErrors'
 
@@ -948,6 +949,8 @@ export interface AutoShortReadiness {
   dependencies: AutoShortDependencyStatus[]
   model?: WhisperModelStatus
   separation?: AutoShortSeparationReadiness
+  /** Per-stage evidence; unknown remains visible and is never upgraded to supported. */
+  stageCapabilities?: TranslationStageCapability[]
   message?: string
 }
 
@@ -955,6 +958,9 @@ export type AutoShortDependencyConfig = Pick<
   AutoShortConfig,
   'subtitleMethod' | 'whisperModel' | 'lamMo' | 'blurMode' | 'ocrBlurProfile'
 > & {
+  /** Optional full-job fields supplied by preflight; absent in the dependency modal. */
+  translateTarget?: AutoShortConfig['translateTarget']
+  ttsEnabled?: AutoShortConfig['ttsEnabled']
   whisperDevice?: WhisperDevice
   audioMode?: AutoShortAudioMode
   separationPreset?: AutoShortSeparationPreset
@@ -1025,6 +1031,9 @@ export interface AutoShortTaskItem {
   title?: string
   titlePath?: string
   titleError?: string
+  translationAssessment?: TranslationAssessment
+  /** Opaque translation identity used by the explicit retry action. */
+  translationIdentity?: string
 }
 
 export type AutoShortStage =
@@ -1149,6 +1158,9 @@ export interface AutoShortProgress {
   error?: string
   stageInfo?: AutoShortStageInfo
   diagnosticsIncomplete?: boolean
+  translationAssessment?: TranslationAssessment
+  /** Opaque translation identity; never contains source text or credentials. */
+  translationIdentity?: string
 }
 
 export interface AutoShortItemResult {
@@ -1166,6 +1178,9 @@ export interface AutoShortItemResult {
   titlePath?: string
   titleError?: string
   diagnosticsIncomplete?: boolean
+  translationAssessment?: TranslationAssessment
+  /** Opaque translation identity; never contains source text or credentials. */
+  translationIdentity?: string
 }
 
 export type AutoShortEvent =
@@ -1202,6 +1217,8 @@ export type AutoShortEvent =
     errorCount: number
     cancelledCount: number
     totalCount: number
+    warningCount?: number
+    needsReviewCount?: number
     results: AutoShortItemResult[]
   })
 
@@ -1209,6 +1226,8 @@ export interface AutoShortBatchResult {
   ok: boolean
   completedCount: number
   totalCount: number
+  warningCount?: number
+  needsReviewCount?: number
   error?: string
 }
 

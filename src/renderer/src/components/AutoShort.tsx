@@ -407,7 +407,9 @@ export default function AutoShort(): JSX.Element {
         percent: event.itemStatus === 'done' ? 100 : Math.max(item.percent || 0, event.itemPercent),
         currentStepMessage: event.stageInfo?.waitReason ? `${event.itemMessage} (${event.stageInfo.waitReason})` : event.itemMessage,
         outputPath: event.outputPath || item.outputPath,
-        error: event.error || item.error
+        error: event.error || item.error,
+        translationAssessment: event.translationAssessment || item.translationAssessment,
+        translationIdentity: event.translationIdentity || item.translationIdentity
       } : item))
       setOverallProgress({
         current: event.batchIndex,
@@ -434,7 +436,9 @@ export default function AutoShort(): JSX.Element {
         voice: result.voice,
         title: result.title,
         titlePath: result.titlePath,
-        titleError: result.titleError
+        titleError: result.titleError,
+        translationAssessment: result.translationAssessment,
+        translationIdentity: result.translationIdentity
       } : item))
       return
     }
@@ -444,7 +448,7 @@ export default function AutoShort(): JSX.Element {
       total: event.totalCount,
       message: event.cancelledCount > 0
         ? `Đã dừng: ${event.completedCount}/${event.totalCount} video hoàn tất`
-        : `Đã xử lý ${event.completedCount}/${event.totalCount} video`
+        : `Đã xử lý ${event.completedCount}/${event.totalCount} video${event.warningCount ? ` · ${event.warningCount} cảnh báo` : ''}${event.needsReviewCount ? ` · ${event.needsReviewCount} cần kiểm tra` : ''}`
     })
     setIsRunning(false)
     setActiveJobId(null)
@@ -887,6 +891,8 @@ export default function AutoShort(): JSX.Element {
         title: undefined,
         titlePath: undefined,
         titleError: undefined,
+        translationAssessment: undefined,
+        translationIdentity: undefined,
         currentStepMessage: 'Đang trong hàng đợi…'
       }))
     )
@@ -993,6 +999,29 @@ export default function AutoShort(): JSX.Element {
     if (!result.ok) {
       setOverallProgress((prev) => ({ ...prev, message: result.error || 'Không thể dừng tác vụ' }))
     }
+  }
+
+  const prepareTranslationRetry = async (task: AutoShortTaskItem): Promise<void> => {
+    if (isRunning || !task.translationIdentity) return
+    const result = await window.api.autoShortRetryTranslation({
+      itemId: task.id,
+      expectedIdentity: task.translationIdentity
+    })
+    if (!result.ok) {
+      setTasks((prev) => prev.map((item) => item.id === task.id ? {
+        ...item,
+        currentStepMessage: result.error || 'Không thể chuẩn bị lượt thử lại bản dịch.'
+      } : item))
+      return
+    }
+    setTasks((prev) => prev.map((item) => item.id === task.id ? {
+      ...item,
+      status: 'queued',
+      percent: 0,
+      error: undefined,
+      translationAssessment: undefined,
+      currentStepMessage: `Đã chuẩn bị lượt thử lại bản dịch #${result.generation ?? 1}; bấm Bắt đầu chạy lại để gọi provider.`
+    } : item))
   }
 
   const chooseOutputDir = async (): Promise<void> => {
@@ -2371,6 +2400,31 @@ export default function AutoShort(): JSX.Element {
                             {task.titleError && <div className="queue-item-msg small" role="status" style={{ color: 'var(--danger)', whiteSpace: 'normal', overflowWrap: 'anywhere' }}>
                               Chưa có tieude.txt: {task.titleError}
                             </div>}
+                            {task.translationAssessment && task.translationAssessment.issues.length > 0 && (
+                              <details className="queue-item-msg small" style={{ color: task.translationAssessment.disposition === 'needs-review' ? 'var(--danger)' : 'var(--warning, #b7791f)' }}>
+                                <summary>
+                                  {task.translationAssessment.disposition === 'needs-review' ? 'Cần kiểm tra bản dịch' : `Hoàn tất · ${task.translationAssessment.issues.length} cảnh báo`}
+                                </summary>
+                                <ul style={{ margin: '4px 0 0 16px', padding: 0 }}>
+                                  {task.translationAssessment.issues.slice(0, 8).map((issue, issueIndex) => (
+                                    <li key={`${issue.code}-${issueIndex}`}>{issue.cueIds.length > 0 ? `${issue.cueIds.join(', ')}: ` : ''}{issue.message}</li>
+                                  ))}
+                                </ul>
+                              </details>
+                            )}
+                            {task.translationAssessment?.disposition === 'needs-review' && task.translationIdentity && (
+                              <button
+                                type="button"
+                                className="btn ghost sm"
+                                disabled={isRunning}
+                                onClick={(event) => {
+                                  event.stopPropagation()
+                                  void prepareTranslationRetry(task)
+                                }}
+                              >
+                                Chuẩn bị thử lại dịch
+                              </button>
+                            )}
                             {task.titlePath && <button type="button" className="btn ghost sm"
                               onClick={(event) => { event.stopPropagation(); void window.api.openPath(task.titlePath!) }}>
                               Mở tieude.txt
@@ -2537,6 +2591,27 @@ export default function AutoShort(): JSX.Element {
               <p className="muted small" style={{ margin: 0 }}>
                 {readiness?.message || 'Kiểm tra engine và model trước khi chạy. Auto Short sẽ không tải ngầm trong lúc render video.'}
               </p>
+              {(readiness?.stageCapabilities || []).length > 0 && (
+                <div style={{ border: '1px solid var(--border)', borderRadius: 8, padding: '10px 12px' }}>
+                  <strong>Khả năng theo từng bước</strong>
+                  <div style={{ display: 'grid', gap: 4, marginTop: 6 }}>
+                    {readiness?.stageCapabilities?.map((stage) => {
+                      const state = stage.support === 'supported' && stage.qualified
+                        ? 'Sẵn sàng'
+                        : stage.support === 'unsupported'
+                          ? 'Chưa hỗ trợ'
+                          : 'Chưa đủ bằng chứng'
+                      const label = stage.required ? `${stage.stage} · bắt buộc` : stage.stage
+                      return (
+                        <div key={stage.stage} className="muted small" style={{ display: 'flex', justifyContent: 'space-between', gap: 12 }}>
+                          <span>{label}</span>
+                          <span>{state}</span>
+                        </div>
+                      )
+                    })}
+                  </div>
+                </div>
+              )}
               {(readiness?.dependencies || []).map((item) => {
                 const progress = dependencyProgress[item.id]
                 return (

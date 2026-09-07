@@ -137,6 +137,7 @@ import {
   installAutoShortDependencies,
   shutdownAutoShortRuntime,
   startAutoShortJob,
+  retryAutoShortTranslation,
   selectAutoShortVideoFiles
 } from './autoshort'
 import { listAutoShortMusicTracks } from './autoShortMusicLibrary'
@@ -1124,6 +1125,16 @@ function registerIpc(): void {
     if (rejected) return rejected
     if (typeof jobId !== 'string') return { ok: false, error: 'Job ID không hợp lệ.' }
     return cancelAutoShort(jobId)
+  })
+  ipcMain.handle('autoshort:retryTranslation', async (event, raw: unknown) => {
+    const rejected = rejectUntrustedAutoShortIpc(event)
+    if (rejected) return rejected
+    if (!raw || typeof raw !== 'object' || Array.isArray(raw)) return { ok: false, error: 'Yêu cầu thử lại bản dịch không hợp lệ.' }
+    const value = raw as Record<string, unknown>
+    if (typeof value.itemId !== 'string' || typeof value.expectedIdentity !== 'string') {
+      return { ok: false, error: 'Yêu cầu thử lại bản dịch không hợp lệ.' }
+    }
+    return retryAutoShortTranslation({ itemId: value.itemId, expectedIdentity: value.expectedIdentity })
   })
   ipcMain.handle('autoshort:clearCache', async (event) => {
     const rejected = rejectUntrustedAutoShortIpc(event)

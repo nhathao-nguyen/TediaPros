@@ -1,6 +1,6 @@
 import { app, dialog } from 'electron'
 import { spawn, type ChildProcess } from 'node:child_process'
-import { access, copyFile, mkdir, readFile, rm, stat, writeFile } from 'node:fs/promises'
+import { access, copyFile, mkdir, readFile, rename, rm, stat, writeFile } from 'node:fs/promises'
 import { basename, dirname, join } from 'node:path'
 import { createHash, randomUUID } from 'node:crypto'
 import { resolveFfmpeg, installFfmpeg } from './deps'
@@ -31,7 +31,7 @@ import { buildTtsCacheKey, getTtsCacheStore } from './dubbing/cache'
 import { synthesizeDubbingPlan } from './dubbing/synthesis'
 import { buildStageKey, hashFileSha256 } from './autoShortStageKeys'
 import { DUBBING_PLAN_VERSION, buildDubbingPlan as buildPlan, validateDubbingPlan, type DubbingPlan } from './dubbing/plan'
-import { huongDan, parseTranslationItems, stripOuterQuotes } from './translate-shared'
+import { huongDan, stripOuterQuotes } from './translate-shared'
 import { resolveTranslationSourceLanguage } from './localTranslatePolicy'
 import { debugRaw, logInfo, logWarn, logError, errLabel } from './logger'
 import {
@@ -59,6 +59,8 @@ import { sanitizeAutoShortAuditError } from './autoShortAudit'
 import { cancelVideo2x } from './video2x'
 import { terminateProcessTree, terminateTrackedProcessTrees, trackChildProcess } from './processTree'
 import { parseSrt, serializeSrt, type SubtitleCue } from '../shared/subtitles'
+import { mapTranslationsStrict } from './translation/response'
+import { parseRephraseResponse } from './translation/response'
 import { runAutoShortQueue } from './autoShortQueueRunner'
 import { AutoShortResourceManager, getGlobalResourceManager } from './autoShortResourceManager'
 import { getGlobalAutoShortDiskBudget, type DiskReservation } from './autoShortDiskBudget'
@@ -90,6 +92,9 @@ import { composeAutoShortNarratedAudio } from './autoShortNarratedAudio'
 import type { InstalledSeparatorModel } from './separation/modelStore'
 import { reserveVideoTitleOutputDir } from './videoTitle'
 import { createAutoShortArtifactCache, type ArtifactCache } from './autoShortArtifactCache'
+import { assertContainedParentDirectory } from './safeContainedPath'
+import { buildRephraseMessages } from './translation/prompts'
+import { resolveTranslationReadiness } from './translation/language'
 import type {
   AutoShortDependencyConfig,
   AutoShortSeparationPreset,
@@ -147,6 +152,22 @@ interface AutoShortJob {
 
 let activeJob: AutoShortJob | null = null
 let sharedArtifactCache: ArtifactCache | null = null
+
+interface TranslationRetryEntry {
+  itemId: string
+  filePath: string
+  checkpointFile: string
+  checkpointRoot: string
+  expectedIdentity: string
+  generation: number
+  inFlight: boolean
+}
+
+// The registry is app-owned: renderer requests select an item ID and opaque
+// identity from this map; they never supply a filesystem path or checkpoint
+// payload. Entries are kept for the process lifetime so a completed job can be
+// explicitly retried without making the normal queue auto-retry itself.
+const translationRetryRegistry = new Map<string, TranslationRetryEntry>()
 
 function getAutoShortArtifactCache(): ArtifactCache {
   if (!sharedArtifactCache) {
@@ -206,7 +227,9 @@ export function buildAutoShortCheckpointFingerprint(
 ): string {
   return createHash('sha256').update(stableJson({
     version: AUTO_SHORT_CHECKPOINT_VERSION,
-    translationPromptVersion: 'dubbing-target-language-v3',
+    // Translation prompt/parser revisions belong to the translation identity
+    // below. Keeping them out of this outer job fingerprint lets a prompt
+    // upgrade reuse an already verified source transcript safely.
     input: {
       filePath,
       size: inputInfo.size,
@@ -260,9 +283,9 @@ export function needsCuda(config: Pick<AutoShortConfig, 'subtitleMethod' | 'whis
 }
 
 export function resolveAutoShortTtsLanguage(config: AutoShortConfig, detectedLanguage?: string | null): string {
-  const explicit = config.ttsLanguage?.trim().toLowerCase()
+  const explicit = config.ttsLanguage?.trim()
   if (explicit && explicit !== 'auto') return explicit
-  if (config.translateTarget !== 'none') return config.translateTarget.trim().toLowerCase()
+  if (config.translateTarget !== 'none') return config.translateTarget.trim()
   return resolveTranslationSourceLanguage(config.whisperLanguage, detectedLanguage)
 }
 
@@ -567,6 +590,56 @@ export async function getAutoShortReadiness(
 
   if (sttnRemoval) dependencies.push(...await (hooks.getSttnReadiness || getSttnReadiness)())
   const missing = dependencies.filter((item) => item.required && !item.ready)
+  const dependencyReady = (id: AutoShortDependencyStatus['id']): boolean => {
+    const item = dependencies.find((candidate) => candidate.id === id)
+    return item ? item.ready : true
+  }
+  // Dependency readiness is also used by the configuration modal, where the
+  // translation/TTS fields are intentionally absent. Treat absent fields as
+  // "not requested" instead of accidentally making an optional stage
+  // required during dependency installation.
+  const translationRequested = config.translateTarget !== undefined && config.translateTarget !== 'none'
+  const ttsRequested = config.ttsEnabled === true
+  const stageCapabilities = [
+    {
+      stage: 'asr' as const,
+      required: useWhisper,
+      support: !useWhisper ? 'supported' as const : dependencyReady('whisper-engine') && dependencyReady('whisper-model') ? 'supported' as const : 'unsupported' as const,
+      qualified: false,
+      reason: !useWhisper ? 'Không dùng ASR trong cấu hình này.' : dependencyReady('whisper-engine') && dependencyReady('whisper-model') ? 'Engine/model đã sẵn sàng; chất lượng theo corpus chưa được chứng nhận.' : 'Thiếu engine hoặc model Whisper.'
+    },
+    {
+      stage: 'ocr' as const,
+      required: needsOcr,
+      support: !needsOcr ? 'supported' as const : dependencyReady('ocr-engine') ? 'supported' as const : 'unsupported' as const,
+      qualified: false,
+      reason: !needsOcr ? 'Không dùng OCR trong cấu hình này.' : dependencyReady('ocr-engine') ? 'OCR engine đã sẵn sàng; chất lượng theo corpus chưa được chứng nhận.' : 'Thiếu OCR engine.'
+    },
+    {
+      stage: 'translation' as const,
+      required: translationRequested,
+      support: !translationRequested ? 'supported' as const : 'unknown' as const,
+      qualified: false,
+      reason: !translationRequested ? 'Không yêu cầu dịch trong cấu hình dependency.' : 'Provider đã chọn nhưng locale/model chưa có qualification live tương ứng.'
+    },
+    {
+      stage: 'tts' as const,
+      required: ttsRequested,
+      support: !ttsRequested ? 'supported' as const : 'unknown' as const,
+      qualified: false,
+      reason: !ttsRequested ? 'Không dùng TTS trong cấu hình này.' : 'TTS capability phụ thuộc model/server và cần kiểm tra riêng.'
+    },
+    {
+      stage: 'render' as const,
+      required: true,
+      support: ffmpegReady ? 'supported' as const : 'unsupported' as const,
+      qualified: false,
+      reason: ffmpegReady ? 'FFmpeg đã sẵn sàng; media/font qualification vẫn tách riêng.' : (ffmpegMessage || 'FFmpeg chưa sẵn sàng.')
+    }
+  ]
+  // Keep the shared readiness calculation exercised here so a future stage
+  // capability can become a blocking preflight without changing the IPC shape.
+  resolveTranslationReadiness(stageCapabilities)
   const message = missing.length
     ? `Cần chuẩn bị: ${missing.map((item) => item.label).join(', ')}.`
     : undefined
@@ -578,6 +651,7 @@ export async function getAutoShortReadiness(
     dependencies,
     model,
     separation: separationReadiness,
+    stageCapabilities,
     message
   }
 }
@@ -1001,9 +1075,14 @@ async function requestTranslation(
   output: string,
   onProgress: (done: number, total: number) => void,
   signal: AbortSignal,
-  sourceLanguage?: string | null
+  sourceLanguage?: string | null,
+  onBatch?: (items: readonly { id: string; text: string }[], batchIndex: number) => Promise<void> | void
 ): Promise<void> {
-  const options = { strict: true, mode: 'dubbing' as const, sourceLanguage, contextRadius: 1, signal }
+  // Subtitle-only jobs should use the subtitle contract. Dubbing constraints
+  // are soft hints for TTS-enabled jobs and must never leak into plain SRT
+  // translation when voice generation is disabled.
+  // mode: 'dubbing' remains the explicit contract whenever voice generation is enabled.
+  const options = { strict: true, mode: config.ttsEnabled ? 'dubbing' as const : 'subtitle' as const, sourceLanguage, contextRadius: 1, signal, onBatch }
   let result: { ok: boolean; error?: string; count?: number }
   if (config.translateProvider === 'local') {
     result = await localTranslateSrt(input, output, config.translateTarget, config.translateServerUrl, await loadLocalKey(), onProgress, options)
@@ -1087,29 +1166,23 @@ export async function translateStrict(
   output: string,
   onProgress: (done: number, total: number) => void,
   signal: AbortSignal,
-  sourceLanguage?: string | null
+  sourceLanguage?: string | null,
+  onBatch?: (items: readonly { id: string; text: string }[], batchIndex: number) => Promise<void> | void
 ): Promise<void> {
-  await requestTranslation(config, input, output, onProgress, signal, sourceLanguage)
+  await requestTranslation(config, input, output, onProgress, signal, sourceLanguage, onBatch)
   const source = parseSrt(await readFile(input, 'utf8')).cues
   const translated = parseSrt(await readFile(output, 'utf8')).cues
-  let effectiveTranslated = translated
-  if (source.length !== translated.length) {
-    logWarn(`[AutoShort] SRT dịch trả về ${translated.length} câu, nguồn có ${source.length} câu. Đang tự động căn chỉnh và bổ sung...`)
-    effectiveTranslated = source.map((srcCue, index) => {
-      const match = translated[index]
-      return {
-        ...srcCue,
-        text: match?.text?.trim() || srcCue.text
-      }
-    })
-  }
-  const mapped = effectiveTranslated.map((cue, index) => ({
+  // Never infer identity by position or silently copy source text. A
+  // cardinality/identity mismatch is a recoverable translation failure and
+  // must leave the previous output untouched for the caller to repair.
+  const mapped = mapTranslationsStrict(source, translated).map((cue, index) => ({
     ...cue,
+    // These fields are copied only from the already validated source array;
+    // provider output is still matched by ID inside mapTranslationsStrict.
     id: source[index].id,
     sourceIndex: source[index].sourceIndex,
     start: source[index].start,
-    end: source[index].end,
-    text: cue.text.trim() || source[index].text
+    end: source[index].end
   }))
   await writeFile(output, serializeSrt(mapped), 'utf8')
 }
@@ -1192,7 +1265,8 @@ export async function preserveAutoShortArtifacts(
 }
 
 function extractRephrasedTexts(rawContent: string, cueId: string): string[] {
-  const items = parseTranslationItems(rawContent)
+  const parsed = parseRephraseResponse(rawContent, cueId)
+  const items = parsed.items
   const normalizedId = cueId.trim().toLowerCase()
   const found = items
     .filter((item) => {
@@ -1203,27 +1277,9 @@ function extractRephrasedTexts(rawContent: string, cueId: string): string[] {
     .filter(Boolean)
   if (found.length > 0) return [...new Set(found)].slice(0, 3)
 
-  const lineAlternatives = rawContent
-    .split(/\r?\n/u)
-    .map((line) => /^\s*\[([^\]]+)\]\s*(.*?)\s*$/u.exec(line))
-    .filter((match): match is RegExpExecArray => Boolean(match))
-    .filter((match) => {
-      const id = match[1].trim().toLowerCase()
-      return id === normalizedId || id.startsWith(`${normalizedId}:`) || id.startsWith(`${normalizedId}-`)
-    })
-    .map((match) => spokenTextWithoutSpeakerLabel(match[2]))
-    .filter(Boolean)
-  if (lineAlternatives.length > 0) return [...new Set(lineAlternatives)].slice(0, 3)
-
-  const cleaned = rawContent.replace(/^\[.*?\]\s*/u, '').replace(/^\s*\((?:thời lượng|duration|time)[\s\S]*?\)\s*/iu, '').trim()
-  const normalized = spokenTextWithoutSpeakerLabel(cleaned)
-  return normalized && !normalized.includes('\n') ? [normalized] : []
-}
-
-function rephraseGraphemeBudget(targetDuration: number): number {
-  // This is only a provider hint, not a correctness gate.  The actual audio
-  // duration remains authoritative after synthesis.
-  return Math.max(8, Math.ceil(Math.max(0.2, targetDuration) * 14))
+  // Free-form prose is intentionally rejected. Returning it as a candidate
+  // would let an explanatory model response replace the grounded translation.
+  return []
 }
 
 async function rephraseDubbingCue(
@@ -1233,29 +1289,36 @@ async function rephraseDubbingCue(
   targetDuration: number,
   targetLanguage: string,
   sourceLanguage?: string | null,
-  signal?: AbortSignal
+  signal?: AbortSignal,
+  sourceText?: string,
+  contextBefore: string[] = [],
+  contextAfter: string[] = []
 ): Promise<string[]> {
   try {
-    const durationStr = Math.max(0.2, targetDuration).toFixed(1)
-    const systemPrompt = huongDan(targetLanguage, { mode: 'dubbing', sourceLanguage })
-    const userPrompt = [
-      `Câu phụ đề/lồng tiếng sau đây cần nói vừa trong thời lượng tối đa ${durationStr} giây:`,
-      `[${cueId}] ${currentText}`,
-      '',
-      'Yêu cầu diễn đạt lại (rephrase):',
-      `1. Hãy viết lại câu trên bằng ${targetLanguage} thật tự nhiên, súc tích và ngắn gọn hơn để người bản ngữ đọc vừa vặn trong ${durationStr} giây.`,
-      '2. Giữ nguyên trọn vẹn ý nghĩa cốt lõi, không làm mất hoặc sai lệch thông tin quan trọng.',
-      '3. Giữ nguyên chủ thể, đối tượng, số liệu và quan hệ hành động; không thêm đại từ hoặc tác nhân không xuất hiện trong câu hiện tại hoặc nguồn. Nếu chủ thể được lược bỏ trong bản gốc, không tự suy ra chủ thể mới.',
-      '4. Không thêm bớt thông tin ngoài lề.',
-      `5. Mỗi phương án không quá ${rephraseGraphemeBudget(targetDuration)} grapheme (không tính khoảng trắng) nếu vẫn giữ đủ nghĩa.`,
-      `6. Trả về tối đa 3 phương án, mỗi phương án một dòng theo định dạng [${cueId}:1] câu_viết_lại_ngắn_gọn (đánh số :1, :2, :3). Không giải thích thêm.`
-    ].join('\n')
+    // The shared rephrase contract explicitly says: giữ nguyên chủ thể, đối tượng, số liệu và phủ định; không thêm đại từ hoặc tác nhân không xuất hiện. This call only supplies source evidence and
+    // never lets timing override those semantic anchors.
+    const messages = buildRephraseMessages({
+      targetLocale: targetLanguage,
+      cues: [{ cueId, sourceText, currentText, targetDuration, contextBefore, contextAfter }].map((cue) => ({
+        id: cue.cueId,
+        sourceText: cue.sourceText,
+        currentText: cue.currentText,
+        targetDuration: cue.targetDuration,
+        contextBefore: cue.contextBefore,
+        contextAfter: cue.contextAfter
+      }))
+    })
+    const systemPrompt = messages[0].content
+    const userPrompt = messages[1].content
 
     if (config.translateProvider === 'local') {
       const localKey = await loadLocalKey()
       const serverUrl = config.translateServerUrl || DEFAULT_AI_SERVER_URL
       const base = serverUrl.replace(/\/+$/u, '')
       const content = await getGlobalResourceManager().withLease(['server-inference'], signal, async () => {
+        const requestSignal = signal
+          ? AbortSignal.any([signal, AbortSignal.timeout(90_000)])
+          : AbortSignal.timeout(90_000)
         const res = await fetch(`${base}/v1/chat/completions`, {
           method: 'POST',
           headers: {
@@ -1270,7 +1333,7 @@ async function rephraseDubbingCue(
             ],
             temperature: 0.3
           }),
-          signal
+          signal: requestSignal
         })
         if (!res.ok) return null
         const data = (await res.json()) as { choices?: Array<{ message?: { content?: string } }> }
@@ -1299,6 +1362,9 @@ interface DubbingRephraseRequest {
   cueId: string
   currentText: string
   targetDuration: number
+  sourceText?: string
+  contextBefore?: string[]
+  contextAfter?: string[]
 }
 
 /**
@@ -1325,28 +1391,29 @@ async function rephraseDubbingCues(
         request.targetDuration,
         targetLanguage,
         sourceLanguage,
-        signal
+        signal,
+        request.sourceText,
+        request.contextBefore || [],
+        request.contextAfter || []
       ))
     }
     return result
   }
 
   try {
-    const systemPrompt = huongDan(targetLanguage, { mode: 'dubbing', sourceLanguage })
-    const userPrompt = [
-      `Có ${requests.length} câu phụ đề/lồng tiếng cần diễn đạt lại để nói vừa thời lượng mục tiêu.`,
-      'Xử lý từng cue độc lập, không chuyển nội dung giữa các cue và không đổi ID nguồn.',
-      '',
-      'Yêu cầu chung:',
-      `1. Viết lại bằng ${targetLanguage} tự nhiên, súc tích, ngắn gọn hơn nếu cần.`,
-      '2. Giữ nguyên ý nghĩa cốt lõi, chủ thể, đối tượng, số liệu, tên riêng và phủ định.',
-      '3. Không thêm bớt thông tin ngoài lề hoặc tự suy ra chủ thể mới.',
-      '4. Mỗi phương án không quá số grapheme được ghi ở từng cue (không tính khoảng trắng) nếu vẫn giữ đủ nghĩa.',
-      '5. Trả về tối đa 3 phương án cho mỗi cue, mỗi phương án một dòng theo định dạng [cue-id:1] câu viết lại (đánh số :1, :2, :3). Không giải thích thêm.',
-      '',
-      '[Các cue cần xử lý] ',
-      ...requests.map((request) => `[${request.cueId}] (tối đa ${Math.max(0.2, request.targetDuration).toFixed(1)} giây, không quá ${rephraseGraphemeBudget(request.targetDuration)} grapheme) ${request.currentText}`)
-    ].join('\n')
+    const messages = buildRephraseMessages({
+      targetLocale: targetLanguage,
+      cues: requests.map((request) => ({
+        id: request.cueId,
+        sourceText: request.sourceText,
+        currentText: request.currentText,
+        targetDuration: request.targetDuration,
+        contextBefore: request.contextBefore || [],
+        contextAfter: request.contextAfter || []
+      }))
+    })
+    const systemPrompt = messages[0].content
+    const userPrompt = messages[1].content
     const localKey = await loadLocalKey()
     const serverUrl = config.translateServerUrl || DEFAULT_AI_SERVER_URL
     const base = serverUrl.replace(/\/+$/u, '')
@@ -1552,7 +1619,10 @@ async function legacySynthesizeVoice(
       requests.push({
         cueId: group.id,
         currentText,
-        targetDuration: Math.max(0.2, window.availableDuration * localCeiling)
+        targetDuration: Math.max(0.2, window.availableDuration * localCeiling),
+        sourceText: group.cues.map((cue) => cue.text).join(' '),
+        contextBefore: cueIndex > 0 ? [ttsGroups[cueIndex - 1]?.text || ''] : [],
+        contextAfter: cueIndex + 1 < ttsGroups.length ? [ttsGroups[cueIndex + 1]?.text || ''] : []
       })
     }
     if (requests.length === 0) return
@@ -2291,7 +2361,21 @@ export async function synthesizeVoice(
     tts: adapter,
     audio: audioAdapter,
     rephrase: allowDynamicRephrase
-       ? (request, signal) => rephraseDubbingCue(config, request.cueId, request.currentText, request.targetDuration, language, detectedLanguage, signal)
+       ? (request, signal) => {
+          const cueIndex = translatedPlan.cues.findIndex((cue) => cue.id === request.cueId)
+          return rephraseDubbingCue(
+            config,
+            request.cueId,
+            request.currentText,
+            request.targetDuration,
+            language,
+            detectedLanguage,
+            signal,
+            cueIndex >= 0 ? translatedPlan.cues[cueIndex]?.sourceText : undefined,
+            cueIndex > 0 ? [translatedPlan.cues[cueIndex - 1]?.sourceText || ''] : [],
+            cueIndex >= 0 && cueIndex + 1 < translatedPlan.cues.length ? [translatedPlan.cues[cueIndex + 1]?.sourceText || ''] : []
+          )
+        }
           : undefined,
     signal: job.controller.signal,
     onProgress: (completed, count, cueId) => emitProgress(job, item, 'generating_tts', 58 + (completed / Math.max(1, count)) * 20, `Đang tạo voice ${completed}/${count} (${cueId})`, index, total),
@@ -2476,10 +2560,83 @@ async function processSingleVideo(
     artifactCache: job.artifactCache,
     telemetryBudget: job.telemetryBudget
   })
+  if (result.translationIdentity && result.translationAssessment?.disposition === 'needs-review') {
+    translationRetryRegistry.set(item.id, {
+      itemId: item.id,
+      filePath: item.filePath,
+      checkpointFile: join(checkpointDir, 'checkpoint.json'),
+      checkpointRoot: join(app.getPath('userData'), 'autoshort-checkpoints'),
+      expectedIdentity: result.translationIdentity,
+      generation: 0,
+      inFlight: false
+    })
+  } else if (result.status === 'done') {
+    translationRetryRegistry.delete(item.id)
+  }
   // All known artifacts have been published; no future bytes remain reserved
   // when this item reaches the queue terminal state.
   reservation?.update(0)
   return result
+}
+
+export interface AutoShortTranslationRetryRequest {
+  itemId: string
+  expectedIdentity: string
+}
+
+export interface AutoShortTranslationRetryResult {
+  ok: boolean
+  generation?: number
+  error?: string
+}
+
+/**
+ * Prepare one explicit translation retry. This mutates only the app-owned
+ * checkpoint and never starts a provider request; the caller must start a new
+ * normal AutoShort job explicitly afterwards.
+ */
+export async function retryAutoShortTranslation(
+  request: AutoShortTranslationRetryRequest
+): Promise<AutoShortTranslationRetryResult> {
+  if (activeJob) return { ok: false, error: 'Không thể thử lại khi Auto Short đang chạy.' }
+  if (!request || typeof request.itemId !== 'string' || !request.itemId.trim() ||
+    typeof request.expectedIdentity !== 'string' || !/^[a-f0-9]{64}$/iu.test(request.expectedIdentity)) {
+    return { ok: false, error: 'Yêu cầu thử lại bản dịch không hợp lệ.' }
+  }
+  const entry = translationRetryRegistry.get(request.itemId)
+  if (!entry) return { ok: false, error: 'Không còn phiên dịch cần kiểm tra trên máy này. Hãy chạy lại video để tạo phiên mới.' }
+  if (entry.expectedIdentity !== request.expectedIdentity) return { ok: false, error: 'Identity bản dịch đã thay đổi; yêu cầu cũ không còn hợp lệ.' }
+  if (entry.inFlight) return { ok: false, error: 'Đang chuẩn bị lượt thử lại bản dịch này.' }
+  entry.inFlight = true
+  try {
+    await assertContainedParentDirectory(entry.checkpointFile, entry.checkpointRoot, 'translation retry checkpoint')
+    const raw = await readFile(entry.checkpointFile, 'utf8')
+    const checkpoint = JSON.parse(raw) as Record<string, unknown>
+    if (checkpoint.translationKey !== entry.expectedIdentity) return { ok: false, error: 'Checkpoint không còn khớp identity bản dịch.' }
+    const generation = Number.isInteger(checkpoint.translationRetryGeneration) ? Number(checkpoint.translationRetryGeneration) + 1 : entry.generation + 1
+    const next = {
+      ...checkpoint,
+      translationRetryGeneration: generation,
+      // Keep any independently validated cue batches. The next coordinator
+      // run will strict-revalidate the full set and request only missing or
+      // invalid IDs under the same identity.
+      translationAssessment: undefined
+    }
+    const temporary = `${entry.checkpointFile}.${randomUUID()}.tmp`
+    try {
+      await writeFile(temporary, JSON.stringify(next, null, 2), 'utf8')
+      await rename(temporary, entry.checkpointFile)
+    } finally {
+      await rm(temporary, { force: true }).catch(() => {})
+    }
+    entry.generation = generation
+    entry.expectedIdentity = request.expectedIdentity
+    return { ok: true, generation }
+  } catch (error) {
+    return { ok: false, error: error instanceof Error ? error.message : String(error) }
+  } finally {
+    entry.inFlight = false
+  }
 }
 
 const AUTOSHORT_MIN_FUTURE_BYTES = 512 * 1024 * 1024
@@ -2629,13 +2786,17 @@ async function executeJob(job: AutoShortJob): Promise<AutoShortBatchResult> {
   const completedCount = results.filter((result) => result?.status === 'done').length
   const errorCount = results.filter((result) => result?.status === 'error').length
   const cancelledCount = results.filter((result) => result?.status === 'cancelled').length
+  const warningCount = results.reduce((sum, result) => sum + (result?.translationAssessment?.issues.filter((issue) => issue.severity === 'warning').length || 0), 0)
+  const needsReviewCount = results.filter((result) => result?.translationAssessment?.disposition === 'needs-review').length
   const result: AutoShortBatchResult = {
     ok: completedCount > 0 && errorCount === 0 && cancelledCount === 0,
     completedCount,
     totalCount: total,
+    warningCount,
+    needsReviewCount,
     error: errorCount > 0 ? `${errorCount} video lỗi` : cancelledCount > 0 ? 'Tiến trình đã bị dừng bởi người dùng' : undefined
   }
-  safeEmit(job, { type: 'batch-done', jobId: job.id, completedCount, errorCount, cancelledCount, totalCount: total, results })
+  safeEmit(job, { type: 'batch-done', jobId: job.id, completedCount, errorCount, cancelledCount, totalCount: total, warningCount, needsReviewCount, results })
   return result
 }
 

@@ -26,9 +26,9 @@ export function resolveTranslationSourceLanguage(
   configured?: string | null,
   detected?: string | null
 ): string {
-  const configuredCode = configured?.trim().toLowerCase()
+  const configuredCode = configured?.trim()
   if (configuredCode && configuredCode !== 'auto') return configuredCode
-  const detectedCode = detected?.trim().toLowerCase()
+  const detectedCode = detected?.trim()
   if (detectedCode && detectedCode !== 'auto') return detectedCode
   return 'auto'
 }

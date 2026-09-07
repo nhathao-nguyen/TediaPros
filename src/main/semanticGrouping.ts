@@ -104,7 +104,7 @@ const CJK_CHAR_REGEX = /[\p{Script=Han}\p{Script=Hiragana}\p{Script=Katakana}\p{
 /**
  * Ghép nội dung text của các cue trong group một cách tự nhiên.
  */
-export function joinGroupText(cues: readonly SemanticCue[]): string {
+export function joinGroupText(cues: readonly SemanticCue[], locale?: string): string {
   if (cues.length === 0) return ''
   if (cues.length === 1) return cues[0].text.trim()
 
@@ -120,7 +120,12 @@ export function joinGroupText(cues: readonly SemanticCue[]): string {
 
     const lastChar = prev.slice(-1)
     const firstChar = next.slice(0, 1)
-    if (CJK_CHAR_REGEX.test(lastChar) && CJK_CHAR_REGEX.test(firstChar)) {
+    const isHangulPair = /\p{Script=Hangul}/u.test(lastChar) && /\p{Script=Hangul}/u.test(firstChar)
+    if (isHangulPair && /^ko(?:-|$)/iu.test(locale || '')) {
+      // Korean words are normally separated even though the script itself is
+      // CJK-like; concatenating cue boundaries changes the written meaning.
+      result = `${prev} ${next}`
+    } else if (CJK_CHAR_REGEX.test(lastChar) && CJK_CHAR_REGEX.test(firstChar)) {
       result = prev + next
     } else {
       result = prev + ' ' + next
@@ -134,7 +139,8 @@ export function joinGroupText(cues: readonly SemanticCue[]): string {
  */
 export function buildSemanticGroups<T extends SemanticCue>(
   cues: readonly T[],
-  customPolicy?: Partial<SemanticGroupingPolicy>
+  customPolicy?: Partial<SemanticGroupingPolicy>,
+  locale?: string
 ): SemanticGroup<T>[] {
   if (cues.length === 0) return []
 
@@ -193,7 +199,7 @@ export function buildSemanticGroups<T extends SemanticCue>(
       groups.push({
         id: `group-${groups.length}`,
         cues: currentCues,
-        text: joinGroupText(currentCues),
+        text: joinGroupText(currentCues, locale),
         start: firstTiming.start,
         end: lastTiming.end
       })
@@ -213,7 +219,7 @@ export function buildSemanticGroups<T extends SemanticCue>(
     groups.push({
       id: `group-${groups.length}`,
       cues: currentCues,
-      text: joinGroupText(currentCues),
+      text: joinGroupText(currentCues, locale),
       start: firstTiming.start,
       end: lastTiming.end
     })
@@ -260,7 +266,8 @@ export function buildSemanticBatches<T extends SemanticCue>(
  * có nhiều cue thì mới chia đôi cues của group đó.
  */
 export function splitSemanticBatch<T extends SemanticCue>(
-  batchGroups: readonly SemanticGroup<T>[]
+  batchGroups: readonly SemanticGroup<T>[],
+  locale?: string
 ): [SemanticGroup<T>[], SemanticGroup<T>[]] | null {
   if (batchGroups.length === 0) return null
 
@@ -286,7 +293,7 @@ export function splitSemanticBatch<T extends SemanticCue>(
   const leftGroup: SemanticGroup<T> = {
     id: `${single.id}-left`,
     cues: leftCues,
-    text: joinGroupText(leftCues),
+    text: joinGroupText(leftCues, locale),
     start: leftTimingFirst.start,
     end: leftTimingLast.end
   }
@@ -294,7 +301,7 @@ export function splitSemanticBatch<T extends SemanticCue>(
   const rightGroup: SemanticGroup<T> = {
     id: `${single.id}-right`,
     cues: rightCues,
-    text: joinGroupText(rightCues),
+    text: joinGroupText(rightCues, locale),
     start: rightTimingFirst.start,
     end: rightTimingLast.end
   }

@@ -1,0 +1,72 @@
+import assert from 'node:assert/strict'
+import test from 'node:test'
+import {
+  TranslationBudgetExhaustedError,
+  classifyTranslationError,
+  createTranslationBudget
+} from '../src/main/translation/budget'
+
+test('five normal batches share four recovery credits and restore without reset', () => {
+  const budget = createTranslationBudget(5, () => 0)
+  for (let i = 0; i < 5; i++) budget.charge('normal', `b${i}`)
+  for (let i = 0; i < 4; i++) budget.charge('recovery', 'b0')
+  assert.throws(() => budget.charge('recovery', 'b1'), TranslationBudgetExhaustedError)
+  assert.equal(budget.snapshot().recoveryUsed, 4)
+  const resumed = createTranslationBudget(5, () => 0, budget.snapshot())
+  assert.throws(() => resumed.charge('recovery', 'b1'), TranslationBudgetExhaustedError)
+})
+
+test('normal charge is idempotent and per-batch recovery/split limits are finite', () => {
+  const budget = createTranslationBudget(1, () => 0)
+  budget.charge('normal', 'b0')
+  budget.charge('normal', 'b0')
+  assert.equal(budget.snapshot().normalUsed, 1)
+  for (let i = 0; i < 4; i++) budget.charge('recovery', 'b0')
+  assert.throws(() => budget.charge('recovery', 'b0'), TranslationBudgetExhaustedError)
+  budget.recordSplit('b0', 1)
+  budget.recordSplit('b0', 2)
+  assert.equal(budget.canSplit('b0', 2), false)
+  assert.throws(() => budget.recordSplit('b0', 3), TranslationBudgetExhaustedError)
+})
+
+test('transport and format repair claims are bounded per exact request', () => {
+  const budget = createTranslationBudget(2, () => 0)
+  budget.claimTransportRetry('b0', 'request-a')
+  budget.claimTransportRetry('b0', 'request-a')
+  assert.throws(() => budget.claimTransportRetry('b0', 'request-a'), TranslationBudgetExhaustedError)
+  budget.claimFormatRepair('b0', 'ids-a')
+  budget.claimFormatRepair('b0', 'ids-b')
+  assert.throws(() => budget.claimFormatRepair('b0', 'ids-a'), TranslationBudgetExhaustedError)
+})
+
+test('failure classification uses structured status and names', () => {
+  assert.deepEqual(classifyTranslationError({ status: 401, providerCode: 'invalid_api_key', message: 'x' }), {
+    code: 'provider-auth', retryable: false, status: 401, message: 'x'
+  })
+  assert.equal(classifyTranslationError({ status: 503, retryAfterMs: 250, message: 'x' }).retryable, true)
+  assert.equal(classifyTranslationError({ status: 429, providerCode: 'quota_exhausted', message: 'x' }).retryable, false)
+  assert.equal(classifyTranslationError({ name: 'AbortError', message: 'cancelled' }).code, 'cancelled')
+  assert.equal(classifyTranslationError({ name: 'TimeoutError', message: 'timeout' }).retryable, true)
+  assert.equal(classifyTranslationError(new Error('arbitrary user text')).code, 'provider-protocol')
+})
+
+test('restoring malformed or over-quota snapshots is rejected', () => {
+  const budget = createTranslationBudget(2, () => 0)
+  const snapshot = budget.snapshot()
+  assert.throws(() => createTranslationBudget(2, () => 0, { ...snapshot, recoveryUsed: Number.NaN }))
+  assert.throws(() => createTranslationBudget(2, () => 0, { ...snapshot, normalUsed: 3 }))
+})
+
+test('restoring a lower persisted quota never increases it', () => {
+  const snapshot = createTranslationBudget(2, () => 0).snapshot()
+  const resumed = createTranslationBudget(2, () => 0, {
+    ...snapshot,
+    recoveryLimit: 1,
+    activeBudgetMs: 600_000
+  })
+  assert.equal(resumed.recoveryLimit, 1)
+  assert.throws(() => {
+    resumed.charge('recovery', 'b0')
+    resumed.charge('recovery', 'b0')
+  }, TranslationBudgetExhaustedError)
+})

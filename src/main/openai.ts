@@ -3,16 +3,18 @@ import { readFile, writeFile, rm } from 'node:fs/promises'
 import { join } from 'node:path'
 import { debugRaw, errLabel, logInfo } from './logger'
 import type { DichKeyStatus, SrtBlock } from '../shared/types'
+import type { TranslationInput } from '../shared/translation'
 import {
   buildSrt,
   buildDubbingTranslationPayload,
   buildTranslationBatches,
   chia,
-  huongDan,
   parseSrt,
   stripOuterQuotes,
   validateTranslationItems
 } from './translate-shared'
+import { buildTranslationMessages } from './translation/prompts'
+import { parseTranslationResponse } from './translation/response'
 
 const BASE = 'https://api.openai.com/v1'
 
@@ -80,7 +82,9 @@ async function danhSach(key: string): Promise<string[]> {
   }
   const pool = ds.length ? ds : DU_PHONG
   const uniq = [...new Set(pool)]
-  return uniq.sort((a, b) => diem(b) - diem(a))
+  // Keep provider fallback finite and predictable; the shared recovery budget
+  // treats model fallback as recovery work rather than an open-ended loop.
+  return uniq.sort((a, b) => diem(b) - diem(a)).slice(0, 2)
 }
 
 interface GenKQ {
@@ -89,6 +93,7 @@ interface GenKQ {
   lui?: boolean
   status?: number
   err?: string
+  truncated?: boolean
 }
 
 const HAN_KIEM = 20_000
@@ -161,11 +166,12 @@ async function goi(
     return { ok: false, lui: res.status === 429 || res.status >= 500, status: res.status, err: t }
   }
   const d = (await res.json()) as {
-    choices?: { message?: { content?: string | null } }[]
+    choices?: { message?: { content?: string | null }; finish_reason?: string }[]
   }
-  const text = d.choices?.[0]?.message?.content ?? ''
+  const choice = d.choices?.[0]
+  const text = choice?.message?.content ?? ''
   if (!text.trim()) return { ok: false, lui: false, status: 200, err: 'rỗng' }
-  return { ok: true, text }
+  return { ok: true, text, truncated: choice?.finish_reason === 'length' }
 }
 
 async function goiCoLui(
@@ -225,7 +231,7 @@ export async function translateSrt(
   outPath: string,
   dich: string,
   onProgress?: (done: number, total: number) => void,
-  options: { strict?: boolean; mode?: 'subtitle' | 'dubbing'; concise?: boolean; sourceLanguage?: string | null; contextRadius?: number; signal?: AbortSignal } = {}
+  options: { strict?: boolean; mode?: 'subtitle' | 'dubbing'; concise?: boolean; sourceLanguage?: string | null; contextRadius?: number; signal?: AbortSignal; onBatch?: (items: readonly { id: string; text: string }[], batchIndex: number) => Promise<void> | void } = {}
 ): Promise<{ ok: boolean; error?: string; count?: number }> {
   const key = await loadKey()
   if (!key) return { ok: false, error: 'Chưa có API key.' }
@@ -247,7 +253,7 @@ export async function translateSrt(
     const c = chunks[i]
     let payload: string
     if (options.mode === 'dubbing') {
-      payload = buildDubbingTranslationPayload(c, blocks, options.contextRadius)
+      payload = buildDubbingTranslationPayload(c, blocks, options.contextRadius, dich)
     } else {
       const radius = Number.isInteger(options.contextRadius) ? Math.max(0, Math.min(3, options.contextRadius!)) : 1
       const firstIndex = blocks.findIndex((b) => b.id === c[0]?.id)
@@ -275,37 +281,42 @@ export async function translateSrt(
       }
       payload = payloadLines.join('\n')
     }
-    const r = await goiCoLui(key, models, huongDan(dich, { mode: options.mode, concise: options.concise, sourceLanguage: options.sourceLanguage }), payload, true, undefined, options.signal)
+    const promptInput: TranslationInput = {
+      sourceLanguage: options.sourceLanguage?.trim() || 'auto',
+      targetLocale: dich,
+      mode: options.mode || (options.concise ? 'dubbing' : 'subtitle'),
+      cues: c.map((cue, index) => ({
+        id: cue.id || `cue-${index}`,
+        sourceIndex: cue.sourceIndex ?? index,
+        start: typeof cue.start === 'number' ? cue.start : 0,
+        end: typeof cue.end === 'number' ? cue.end : typeof cue.start === 'number' ? cue.start : 0,
+        text: cue.text,
+        groupId: `group-${cue.sourceIndex ?? index}`
+      })),
+      contextBefore: [],
+      contextAfter: [],
+      glossary: []
+    }
+    const r = await goiCoLui(key, models, buildTranslationMessages(promptInput, 'json-items')[0].content, payload, true, undefined, options.signal)
     if (!r.ok) return { ok: false, error: errLabel(r.err) }
 
-    let arr: { id: string; t: string }[] = []
-    try {
-      const parsed = JSON.parse(r.text as string) as
-        | { items?: { id?: unknown; t?: unknown }[] }
-        | { id?: unknown; t?: unknown }[]
-      const rawItems = Array.isArray(parsed) ? parsed : (parsed.items ?? [])
-      arr = rawItems.map((item) => {
-        const rawT = typeof item.t === 'string' ? item.t.trim() : ''
-        const cleanT = stripOuterQuotes(rawT.replace(/^\s*\((?:thời lượng|duration|time)[\s\S]*?\)\s*/iu, '').trim())
-        return {
-          id: typeof item.id === 'string' ? item.id.trim() : '',
-          t: cleanT
-        }
-      })
-    } catch {
-      return { ok: false, error: 'Kết quả dịch không đọc được.' }
+    const parsed = parseTranslationResponse(r.text || '', 'json-items', c.map((block) => block.id || ''), Boolean(r.truncated))
+    if (!parsed.complete) {
+      const firstIssue = parsed.issues.find((issue) => issue.severity === 'error')
+      return { ok: false, error: firstIssue?.message || 'Kết quả dịch không đạt contract.' }
     }
-    try {
-      validateTranslationItems(arr.map((item) => ({ id: item.id, text: item.t })), c.map((block) => block.id || ''))
-    } catch (error) {
-      return { ok: false, error: error instanceof Error ? error.message : 'Kết quả dịch không đạt contract.' }
-    }
+    const arr = parsed.items.map((item) => ({
+      id: item.id,
+      t: stripOuterQuotes(item.text.replace(/^\s*\((?:thời lượng|duration|time)[\s\S]*?\)\s*/iu, '').trim())
+    }))
+    validateTranslationItems(arr.map((item) => ({ id: item.id, text: item.t })), c.map((block) => block.id || ''))
     const map = new Map(arr.map((item) => [item.id, item.t]))
     c.forEach((b) => {
       const translatedText = map.get(b.id || '')
       if (!translatedText) throw new Error('Kết quả dịch thiếu cue.')
       ra.push({ ...b, text: translatedText })
     })
+    await options.onBatch?.(c.map((b) => ({ id: b.id || '', text: map.get(b.id || '') || '' })), i)
     processed += c.length
     onProgress?.(processed, blocks.length)
   }

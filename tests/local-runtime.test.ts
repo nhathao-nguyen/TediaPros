@@ -42,6 +42,7 @@ import {
   runAutoShortBackgroundFfmpegProcess
 } from '../src/main/autoShortBackgroundAudio'
 import { sanitizeAutoShortAuditError } from '../src/main/autoShortAudit'
+import { errLabel } from '../src/main/logger'
 import { runLatestAutoShortMusicFolderRequest } from '../src/renderer/src/lib/latestAutoShortMusicFolderRequest'
 import type { AutoShortStartRequest } from '../src/shared/types'
 import {
@@ -527,6 +528,15 @@ test('AutoShort sanitizes failure audit text before deriving the user-facing err
   const failureBlock = source.slice(failureBlockStart, failureBlockStart + 500)
   assert.match(failureBlock, /const message = errLabel\(rawMessage\)/u)
   assert.doesNotMatch(failureBlock, /const message = errLabel\(error\)/u)
+})
+
+test('error labels ignore stack-frame numbers that look like HTTP codes', () => {
+  const label = errLabel(
+    'Error: OCR không phát hiện vùng chữ hợp lệ trong vùng quét.\n' +
+      '    at processItem (C:\\tmp\\ocr.js:34045:22)'
+  )
+  assert.match(label, /OCR không phát hiện vùng chữ hợp lệ trong vùng quét/u)
+  assert.doesNotMatch(label, /nội dung không còn khả dụng/u)
 })
 
 test('AutoShort background music requires one manual track per queue item', () => {

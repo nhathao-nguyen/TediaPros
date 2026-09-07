@@ -1,0 +1,38 @@
+[
+  {
+    "id": "zh-en-negation",
+    "sourceLocale": "zh",
+    "targetLocale": "en",
+    "source": "不要摸这只狗。",
+    "reference": "Do not touch this dog.",
+    "expected": "warning",
+    "tags": ["negation", "cross-script"]
+  },
+  {
+    "id": "vi-en-number-word",
+    "sourceLocale": "vi",
+    "targetLocale": "en",
+    "source": "Có 2 con chó.",
+    "reference": "There are two dogs.",
+    "expected": "warning",
+    "tags": ["numeric-representation"]
+  },
+  {
+    "id": "en-ar-digits",
+    "sourceLocale": "en",
+    "targetLocale": "ar",
+    "source": "There are 12 dogs.",
+    "reference": "هناك ١٢ كلبًا.",
+    "expected": "warning",
+    "tags": ["unicode-digits", "rtl"]
+  },
+  {
+    "id": "malformed-continuation",
+    "sourceLocale": "en",
+    "targetLocale": "fr",
+    "source": "First part",
+    "reference": "Première partie",
+    "expected": "needs-review",
+    "tags": ["parser", "unparsed-content"]
+  }
+]

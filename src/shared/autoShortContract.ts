@@ -211,6 +211,17 @@ function validateConfigRecord(raw: Record<string, unknown>): AutoShortConfig | s
   }
   if (typeof raw.lamMo !== 'boolean' || typeof raw.ttsEnabled !== 'boolean' || typeof raw.voiceOverMode !== 'boolean') return 'Cấu hình bật/tắt không hợp lệ.'
   if (typeof raw.translateTarget !== 'string' || !raw.translateTarget.trim() || raw.translateTarget.length > 64) return 'Ngôn ngữ đích không hợp lệ.'
+  if (raw.translateTarget !== 'none') {
+    const targetLocale = raw.translateTarget.trim()
+    if (/^(?:auto|mixed|unknown)$/iu.test(targetLocale)) return 'Ngôn ngữ đích phải là locale cụ thể, không dùng auto/mixed/unknown.'
+    try {
+      // Validate BCP47 at the IPC boundary so a malformed target cannot reach
+      // a provider with an implicit auto-language request.
+      new Intl.Locale(targetLocale)
+    } catch {
+      return 'Ngôn ngữ đích không phải locale BCP47 hợp lệ.'
+    }
+  }
   if (!PROVIDERS.has(raw.translateProvider as string)) return 'Nhà cung cấp dịch không hợp lệ.'
   if (raw.videoTitle != null) {
     const error = validateVideoTitleConfig(raw.videoTitle)

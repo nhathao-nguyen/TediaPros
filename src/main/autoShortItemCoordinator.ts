@@ -1,5 +1,6 @@
 import { basename, dirname, join } from 'node:path'
-import { copyFile, mkdir, mkdtemp, readFile, rm, stat, writeFile } from 'node:fs/promises'
+import { copyFile, mkdir, mkdtemp, readFile, rename, rm, stat, writeFile } from 'node:fs/promises'
+import { randomUUID } from 'node:crypto'
 import type {
   AlignedCue,
   AutoShortConfig,
@@ -15,6 +16,7 @@ import type {
   BurnResult,
   WhisperProgress
 } from '../shared/types'
+import type { TranslationAssessment, TranslationInput, TranslationItem, TranslationIssue } from '../shared/translation'
 import { parseSrt, serializeSrt } from '../shared/subtitles'
 import {
   isAutomaticOcrBlur,
@@ -76,11 +78,15 @@ import { resolveTranslationSourceLanguage } from './localTranslatePolicy'
 import { composeAutoShortNarratedAudio } from './autoShortNarratedAudio'
 import { composeAutoShortBackgroundAudio } from './autoShortBackgroundAudio'
 import { validateAutoShortMusicTrack } from './autoShortMusicLibrary'
-import { validateAutoShortContentQuality } from './autoShortContentQuality'
+import { assessContentQuality } from './autoShortContentQuality'
 import { separateSourceAudio } from './separation/pipeline'
 import { errLabel, logInfo, logWarn, logError } from './logger'
 import type { getTtsModels } from './tts'
 import { runSttnRemoval } from './inpainting/runner'
+import { buildTranslationIdentity, type TranslationArtifact } from './translation/checkpoint'
+import { TRANSLATION_PARSER_VERSION, TRANSLATION_PROMPT_VERSION } from './translation/prompts'
+import { normalizeTranslationLocale } from './translation/language'
+import { mapTranslationsStrict } from './translation/response'
 
 import {
   AutoShortTelemetryCollector,
@@ -133,7 +139,9 @@ function emitProgress(
   outputPath?: string,
   error?: string,
   stageInfo?: AutoShortStageInfo,
-  diagnosticsIncomplete?: boolean
+  diagnosticsIncomplete?: boolean,
+  translationAssessment?: TranslationAssessment,
+  translationIdentity?: string
 ): void {
   context.emit({
     type: 'item-progress',
@@ -153,7 +161,9 @@ function emitProgress(
           etaText: stageInfo.etaText || 'chưa đủ dữ liệu'
         }
       : undefined,
-    diagnosticsIncomplete
+    diagnosticsIncomplete,
+    translationAssessment,
+    translationIdentity
   })
 }
 
@@ -190,26 +200,110 @@ function parseCachedAlignedArtifact(value: unknown): { language: string | null; 
   }
 }
 
-function parseCachedSubtitleArtifact(value: unknown): SubtitleCue[] | null {
+function parseCachedSubtitleArtifact(
+  value: unknown,
+  expectedKey?: string,
+  expectedModelIdentity?: string
+): { cues: TranslationItem[]; assessment: TranslationAssessment; modelIdentity: string; key: string } | null {
   if (!value || typeof value !== 'object' || Array.isArray(value)) return null
   const raw = value as Record<string, unknown>
-  if (raw.schemaVersion !== 1 || !Array.isArray(raw.cues)) return null
-  const cues: SubtitleCue[] = []
-  for (const item of raw.cues) {
-    if (!item || typeof item !== 'object' || Array.isArray(item)) return null
-    const cue = item as Record<string, unknown>
-    if (typeof cue.id !== 'string' || !cue.id.trim() ||
-      !Number.isFinite(cue.start) || !Number.isFinite(cue.end) || (cue.end as number) <= (cue.start as number) ||
-      typeof cue.text !== 'string' || !cue.text.trim()) return null
-    cues.push({
-      id: cue.id,
-      start: cue.start as number,
-      end: cue.end as number,
-      text: cue.text,
-      sourceIndex: Number.isInteger(cue.sourceIndex) ? cue.sourceIndex as number : cues.length
+  if (raw.schemaVersion !== 2 || typeof raw.key !== 'string' || !/^[a-f0-9]{64}$/iu.test(raw.key) ||
+    (expectedKey && raw.key !== expectedKey) || typeof raw.modelIdentity !== 'string' || !raw.modelIdentity.trim() ||
+    (expectedModelIdentity && raw.modelIdentity !== expectedModelIdentity) ||
+    !raw.result || typeof raw.result !== 'object' || Array.isArray(raw.result)) return null
+  const result = raw.result as Record<string, unknown>
+  if (!Array.isArray(result.items) || !result.assessment || typeof result.assessment !== 'object' || Array.isArray(result.assessment)) return null
+  const assessment = result.assessment as Record<string, unknown>
+  if (assessment.version !== 'translation-assessment-v2' ||
+    !['validated', 'with-warnings', 'needs-review'].includes(String(assessment.disposition)) ||
+    !Array.isArray(assessment.issues) ||
+    !['matched', 'suspect', 'unknown'].includes(String(assessment.languageEvidence)) ||
+    (result.modelIdentity !== undefined && result.modelIdentity !== raw.modelIdentity)) return null
+  const issues: TranslationIssue[] = []
+  const issueCodes = new Set<TranslationIssue['code']>([
+    'invalid-source', 'missing-id', 'duplicate-id', 'unknown-id', 'empty-text',
+    'unparsed-content', 'truncated-output', 'protected-token-suspect',
+    'language-suspect', 'unsupported-capability', 'budget-exhausted',
+    'no-progress', 'provider-auth', 'provider-transient', 'provider-protocol', 'cancelled'
+  ])
+  for (const value of assessment.issues) {
+    if (!value || typeof value !== 'object' || Array.isArray(value)) return null
+    const item = value as Record<string, unknown>
+    if (typeof item.code !== 'string' || !issueCodes.has(item.code as TranslationIssue['code']) ||
+      (item.severity !== 'error' && item.severity !== 'warning') ||
+      (item.confidence !== 'certain' && item.confidence !== 'heuristic' && item.confidence !== 'unknown') ||
+      !Array.isArray(item.cueIds) || item.cueIds.some((id) => typeof id !== 'string') ||
+      typeof item.message !== 'string' || !item.message.trim()) return null
+    issues.push({
+      code: item.code as TranslationIssue['code'],
+      severity: item.severity as TranslationIssue['severity'],
+      confidence: item.confidence as TranslationIssue['confidence'],
+      cueIds: [...item.cueIds] as string[],
+      message: item.message
     })
   }
-  return cues.length > 0 ? cues : null
+  const cues: TranslationItem[] = []
+  for (const item of result.items) {
+    if (!item || typeof item !== 'object' || Array.isArray(item)) return null
+    const cue = item as Record<string, unknown>
+    if (typeof cue.id !== 'string' || !cue.id.trim() || typeof cue.text !== 'string' || !cue.text.trim()) return null
+    cues.push({
+      id: cue.id,
+      text: cue.text
+    })
+  }
+  if (cues.length === 0) return null
+  return {
+    cues,
+    assessment: {
+      version: 'translation-assessment-v2',
+      disposition: assessment.disposition as TranslationAssessment['disposition'],
+      issues,
+      languageEvidence: assessment.languageEvidence as TranslationAssessment['languageEvidence']
+    },
+    modelIdentity: raw.modelIdentity,
+    key: raw.key
+  }
+}
+
+function buildTranslationInput(
+  sourceCues: readonly SubtitleCue[],
+  sourceLanguage: string,
+  targetLocale: string,
+  mode: 'subtitle' | 'dubbing'
+): TranslationInput {
+  const cues = sourceCues.map((cue, index) => ({
+    id: cue.id,
+    sourceIndex: Number.isInteger(cue.sourceIndex) ? cue.sourceIndex : index,
+    start: cue.start,
+    end: cue.end,
+    text: cue.text,
+    groupId: `cue-${Number.isInteger(cue.sourceIndex) ? cue.sourceIndex : index}`
+  }))
+  return {
+    sourceLanguage: sourceLanguage.trim() || 'auto',
+    targetLocale,
+    mode,
+    cues,
+    contextBefore: [],
+    contextAfter: [],
+    glossary: []
+  }
+}
+
+function translationModelIdentity(config: AutoShortConfig): { modelIdentity: string; revisionKnown: boolean; profileId: string } {
+  if (config.translateProvider === 'local') {
+    return {
+      modelIdentity: 'llm-default',
+      revisionKnown: false,
+      profileId: sanitizeEndpointAlias(config.translateServerUrl) || 'local-default'
+    }
+  }
+  return {
+    modelIdentity: `${config.translateProvider}:configured-model`,
+    revisionKnown: false,
+    profileId: `${config.translateProvider}-account`
+  }
 }
 
 function parseCachedVisualArtifact(value: unknown): {
@@ -272,6 +366,11 @@ export function createAutoShortItemProcessor(
       ocrSourceEvidence?: OcrSourceCueEvidence
       detectedSourceLanguage?: string | null
       translatedCues?: SubtitleCue[]
+      translationKey?: string
+      translationModelIdentity?: string
+      translationAssessment?: TranslationAssessment
+      translationBatches?: Record<string, { items: TranslationItem[]; modelIdentity: string }>
+      translationRetryGeneration?: number
       instrumentalPath?: string
     } = {}
 
@@ -282,11 +381,22 @@ export function createAutoShortItemProcessor(
     }
 
     const saveCheckpoint = async (): Promise<void> => {
-      await writeFile(checkpointFile, JSON.stringify(checkpoint, null, 2), 'utf8')
+      // Checkpoint updates are the resume commit point. Write beside the
+      // authoritative file and replace it atomically so a crash cannot leave
+      // half a JSON document that looks like a valid translation state.
+      const temporary = `${checkpointFile}.${randomUUID()}.tmp`
+      try {
+        await writeFile(temporary, JSON.stringify(checkpoint, null, 2), 'utf8')
+        await rename(temporary, checkpointFile)
+      } finally {
+        await rm(temporary, { force: true }).catch(() => {})
+      }
     }
 
     let extractedCueCount: number | undefined
     let translatedCueCount: number | undefined
+    let translationAssessment: TranslationAssessment | undefined = checkpoint.translationAssessment
+    let translationIdentity: string | undefined = checkpoint.translationKey
     let generatedVoiceCount: number | undefined
     let voice: string | undefined
     let detectedSourceLanguage: string | null = checkpoint.detectedSourceLanguage || null
@@ -335,7 +445,12 @@ export function createAutoShortItemProcessor(
         if (checkpoint.sourceCues?.length || checkpoint.translatedCues?.length || checkpoint.instrumentalPath) {
           logInfo('[AutoShort] Bỏ checkpoint cũ vì không khớp fingerprint input/cấu hình hiện tại.')
         }
-        await rm(checkpointDir, { recursive: true, force: true }).catch(() => {})
+        // Keep the previous checkpoint for diagnostics/rollback. A changed
+        // configuration or source invalidates reuse; it must not erase the
+        // user's last durable source/output evidence.
+        if (await fileExists(checkpointFile)) {
+          await copyFile(checkpointFile, join(checkpointDir, 'checkpoint.previous.json')).catch(() => {})
+        }
         await mkdir(checkpointDir, { recursive: true })
         checkpoint = {}
         detectedSourceLanguage = null
@@ -770,86 +885,188 @@ export function createAutoShortItemProcessor(
       if (config.translateTarget !== 'none') {
         targetSrtPath = join(workDir, 'translated.srt')
         const sourceLanguage = resolveTranslationSourceLanguage(config.whisperLanguage, detectedSourceLanguage)
-        const translationKey = buildStageKey('translation', {
-          cacheRevision: 'translated-srt-v1',
-          sourceDigest,
-          sourceCueCount: sourceCues.length,
-          sourceLanguage,
-          targetLanguage: config.translateTarget,
+        const targetLocale = normalizeTranslationLocale(config.translateTarget)
+        const translationMode = config.ttsEnabled ? 'dubbing' : 'subtitle'
+        const translationInput = buildTranslationInput(sourceCues, sourceLanguage, targetLocale, translationMode)
+        const model = translationModelIdentity(config)
+        const translationKey = buildTranslationIdentity(translationInput, {
           provider: config.translateProvider,
-          serverUrl: config.translateServerUrl || '',
-          promptVersion: 'translation-v3'
+          modelIdentity: model.modelIdentity,
+          revisionKnown: model.revisionKnown,
+          profileId: model.profileId,
+          promptVersion: TRANSLATION_PROMPT_VERSION,
+          parserVersion: TRANSLATION_PARSER_VERSION,
+          plannerVersion: 'translation-plan-v2',
+          assessmentVersion: 'translation-assessment-v2',
+          options: {
+            sourceDigest,
+            contextRadius: 1,
+            mode: translationMode,
+            strict: true
+          }
         })
-        if (checkpoint.translatedCues && checkpoint.translatedCues.length === sourceCues.length) {
-          logInfo(`[AutoShort] Phục hồi ${checkpoint.translatedCues.length} câu dịch từ checkpoint.`)
-          await writeFile(targetSrtPath, serializeSrt(checkpoint.translatedCues), 'utf8')
-          targetCues = checkpoint.translatedCues
-          translatedCueCount = targetCues.length
+        translationIdentity = translationKey
+        const sourceById = new Map(sourceCues.map((cue) => [cue.id.trim(), cue]))
+        const collectReusablePartial = (cues: readonly SubtitleCue[] | undefined): TranslationItem[] => {
+          if (!cues || cues.length === 0) return []
+          const byId = new Map<string, TranslationItem>()
+          for (const cue of cues) {
+            const id = cue.id.trim()
+            if (!sourceById.has(id) || byId.has(id) || !cue.text.trim()) continue
+            byId.set(id, { id, text: cue.text.trim() })
+          }
+          return sourceCues
+            .map((cue) => byId.get(cue.id.trim()))
+            .filter((item): item is TranslationItem => Boolean(item))
+        }
+
+        let reusedTranslation = false
+        let reusablePartial: TranslationItem[] = []
+        const revalidate = (items: readonly TranslationItem[]): SubtitleCue[] | null => {
+          try {
+            const mapped = mapTranslationsStrict(sourceCues, items)
+            const assessment = assessContentQuality({ sourceCues, targetCues: mapped })
+            if (assessment.disposition === 'needs-review') return null
+            targetCues = mapped
+            translationAssessment = assessment
+            checkpoint.translationAssessment = assessment
+            return mapped
+          } catch {
+            return null
+          }
+        }
+
+        if (checkpoint.translatedCues && checkpoint.translationKey === translationKey && checkpoint.translationModelIdentity === model.modelIdentity && checkpoint.translationAssessment?.disposition !== 'needs-review') {
+          const restored = revalidate(checkpoint.translatedCues.map((cue) => ({ id: cue.id, text: cue.text })))
+          if (restored) {
+            logInfo(`[AutoShort] Phục hồi ${restored.length} câu dịch đã được kiểm tra từ checkpoint.`)
+            await writeFile(targetSrtPath, serializeSrt(restored), 'utf8')
+            translatedCueCount = restored.length
+            reusedTranslation = true
+          } else {
+            logWarn('[AutoShort] Bỏ qua bản dịch checkpoint vì không vượt qua kiểm tra structural hiện tại.')
+            reusablePartial = collectReusablePartial(checkpoint.translatedCues)
+          }
+        } else if (checkpoint.translatedCues) {
+          logWarn('[AutoShort] Bỏ qua bản dịch checkpoint legacy/khác identity; giữ lại source checkpoint và tạo bản dịch mới.')
+        }
+
+        const pendingSourceCues = !reusedTranslation && reusablePartial.length > 0
+          ? sourceCues.filter((cue) => !reusablePartial.some((item) => item.id === cue.id))
+          : sourceCues
+        const translationInputPath = pendingSourceCues.length === sourceCues.length
+          ? rawSrtPath
+          : join(workDir, 'source.translation-pending.srt')
+        if (!reusedTranslation && pendingSourceCues.length < sourceCues.length) {
+          await writeFile(translationInputPath, serializeSrt(pendingSourceCues), 'utf8')
+          logInfo(`[AutoShort] Giữ lại ${reusablePartial.length} cue dịch đã có; chỉ dịch lại ${pendingSourceCues.length} cue còn thiếu.`)
+        }
+
+        if (!reusedTranslation && artifactCache && model.revisionKnown) {
+          const cached = await artifactCache.get('translation', translationKey, signal).catch(() => null)
+          if (cached) {
+            try {
+              const artifact = parseCachedSubtitleArtifact(JSON.parse(await readFile(cached.path, 'utf8')), translationKey, model.modelIdentity)
+              const restored = artifact ? revalidate(artifact.cues) : null
+              if (restored) {
+                await writeFile(targetSrtPath, serializeSrt(restored), 'utf8')
+                translatedCueCount = restored.length
+                reusedTranslation = true
+              } else {
+                logWarn('[AutoShort] Bỏ qua translation cache vì thiếu identity hoặc không vượt qua validator.')
+              }
+            } catch {
+              // Invalid or stale cache entries are ignored and replaced by the
+              // authoritative translator below.
+            } finally {
+              cached.release()
+            }
+          }
+        }
+
+        if (!reusedTranslation && artifactCache && !model.revisionKnown) {
+          logInfo('[AutoShort] Bỏ qua persistent translation cache vì model revision chưa được xác nhận.')
+        }
+
+        if (reusedTranslation) {
+          await telemetry.withStageSpan('translate', { endpointAlias: sanitizeEndpointAlias(config.translateServerUrl) }, async (span) => {
+            span.updateCounters({ cacheHit: 1, cueCount: translatedCueCount || 0 })
+          })
         } else {
-          let reusedTranslation = false
-          if (artifactCache) {
-            const cached = await artifactCache.get('translation', translationKey, signal).catch(() => null)
-            if (cached) {
-              try {
-                const cachedCues = parseCachedSubtitleArtifact(JSON.parse(await readFile(cached.path, 'utf8')))
-                const compatible = Boolean(
-                  cachedCues &&
-                  cachedCues.length === sourceCues.length &&
-                  cachedCues.every((cue, cueIndex) => {
-                    const source = sourceCues[cueIndex]
-                    return Math.abs(cue.start - source.start) <= 0.05 && Math.abs(cue.end - source.end) <= 0.05
-                  })
-                )
-                if (compatible) {
-                  targetCues = cachedCues!
-                  await writeFile(targetSrtPath, serializeSrt(targetCues), 'utf8')
-                  translatedCueCount = targetCues.length
-                  reusedTranslation = true
+          checkpoint.translationKey = translationKey
+          checkpoint.translationModelIdentity = model.modelIdentity
+          checkpoint.translationAssessment = undefined
+          await saveCheckpoint()
+          emitProgress(context, 'translating', 35, `Đang dịch phụ đề sang ${targetLocale}…`, undefined, undefined, { stage: 'translate', phase: 'running' }, undefined, translationAssessment, translationIdentity)
+          await telemetry.withStageSpan('translate', { endpointAlias: sanitizeEndpointAlias(config.translateServerUrl) }, async (span) => {
+            await translateStrict(config, translationInputPath, targetSrtPath, (done, count) => {
+              const completeDone = reusablePartial.length + done
+              emitProgress(context, 'translating', 35 + (sourceCues.length > 0 ? completeDone / sourceCues.length : 0) * 20, `Đang dịch ${completeDone}/${sourceCues.length} câu`, undefined, undefined, { stage: 'translate', phase: 'running', detail: `${completeDone}/${sourceCues.length}` }, undefined, translationAssessment, translationIdentity)
+            }, signal, sourceLanguage, async (items, batchIndex) => {
+              const partialById = new Map<string, TranslationItem>([
+                ...reusablePartial.map((item) => [item.id, item] as const),
+                ...items.map((item) => [item.id, { id: item.id, text: item.text }] as const)
+              ])
+              checkpoint.translationBatches = {
+                ...(checkpoint.translationBatches || {}),
+                [`provider-batch-${batchIndex + 1}`]: {
+                  items: items.map((item) => ({ id: item.id, text: item.text })),
+                  modelIdentity: model.modelIdentity
                 }
-              } catch {
-                // Invalid or stale cache entries are ignored and replaced by
-                // the authoritative translator below.
-              } finally {
-                cached.release()
+              }
+              checkpoint.translatedCues = sourceCues
+                .map((cue) => {
+                  const item = partialById.get(cue.id)
+                  return item ? { ...cue, text: item.text } : null
+                })
+                .filter((cue): cue is SubtitleCue => Boolean(cue))
+              checkpoint.translationKey = translationKey
+              checkpoint.translationModelIdentity = model.modelIdentity
+              await saveCheckpoint()
+            })
+            const translated = parseSrt(await readFile(targetSrtPath, 'utf8')).cues.filter((cue) => cue.text.trim())
+            const restored = revalidate([
+              ...reusablePartial,
+              ...translated.map((cue) => ({ id: cue.id, text: cue.text }))
+            ])
+            if (!restored) throw new Error('SRT đích không vượt qua kiểm tra identity/quality; không ghi đè bằng bản dịch không chắc chắn.')
+            await writeFile(targetSrtPath, serializeSrt(restored), 'utf8')
+            translatedCueCount = restored.length
+            span.updateCounters({ cueCount: translatedCueCount })
+          })
+
+          if (artifactCache && model.revisionKnown && translationAssessment && translationAssessment.disposition !== 'needs-review') {
+            const cacheSource = join(workDir, 'translated-cache.json')
+            const cacheArtifact: TranslationArtifact = {
+              schemaVersion: 2,
+              key: translationKey,
+              modelIdentity: model.modelIdentity,
+              result: {
+                items: targetCues.map((cue) => ({ id: cue.id, text: cue.text })),
+                assessment: translationAssessment,
+                modelIdentity: model.modelIdentity
               }
             }
-          }
-
-          if (reusedTranslation) {
-            await telemetry.withStageSpan('translate', { endpointAlias: sanitizeEndpointAlias(config.translateServerUrl) }, async (span) => {
-              span.updateCounters({ cacheHit: 1, cueCount: translatedCueCount || 0 })
+            await writeFile(cacheSource, JSON.stringify(cacheArtifact), 'utf8')
+            await artifactCache.put('translation', translationKey, cacheSource, signal).catch((error) => {
+              logWarn(`[AutoShort] Không lưu cache bản dịch: ${errLabel(error)}`)
             })
-          } else {
-            emitProgress(context, 'translating', 35, `Đang dịch phụ đề sang ${config.translateTarget}…`, undefined, undefined, { stage: 'translate', phase: 'running' })
-            await telemetry.withStageSpan('translate', { endpointAlias: sanitizeEndpointAlias(config.translateServerUrl) }, async (span) => {
-              await translateStrict(config, rawSrtPath, targetSrtPath, (done, count) => {
-                emitProgress(context, 'translating', 35 + (count > 0 ? done / count : 0) * 20, `Đang dịch ${done}/${count} câu`, undefined, undefined, { stage: 'translate', phase: 'running', detail: `${done}/${count}` })
-              }, signal, sourceLanguage)
-              targetCues = parseSrt(await readFile(targetSrtPath, 'utf8')).cues.filter((cue) => cue.text.trim())
-              if (targetCues.length !== sourceCues.length) throw new Error('SRT đích không khớp số câu SRT nguồn')
-              translatedCueCount = targetCues.length
-              span.updateCounters({ cueCount: translatedCueCount })
-            })
-
-            if (artifactCache) {
-              const cacheSource = join(workDir, 'translated-cache.json')
-              await writeFile(cacheSource, JSON.stringify({ schemaVersion: 1, cues: targetCues }), 'utf8')
-              await artifactCache.put('translation', translationKey, cacheSource, signal).catch((error) => {
-                logWarn(`[AutoShort] Không lưu cache bản dịch: ${errLabel(error)}`)
-              })
-            }
           }
-
-          checkpoint.translatedCues = targetCues
-          await saveCheckpoint()
         }
+
+        checkpoint.translatedCues = targetCues
+        checkpoint.translationKey = translationKey
+        checkpoint.translationModelIdentity = model.modelIdentity
+        await saveCheckpoint()
         artifactEntries.push({ source: targetSrtPath, name: 'translated.srt' })
       }
 
-      const contentQuality = validateAutoShortContentQuality({ sourceCues, targetCues })
-      if (!contentQuality.ok) {
-        const firstFinding = contentQuality.findings.find((finding) => finding.severity === 'error')
-        throw new Error(`Kiểm tra nội dung phụ đề thất bại: ${firstFinding?.message || 'cue mapping không hợp lệ.'}`)
+      translationAssessment = assessContentQuality({ sourceCues, targetCues })
+      checkpoint.translationAssessment = translationAssessment
+      await saveCheckpoint()
+      if (translationAssessment.disposition === 'needs-review') {
+        const firstIssue = translationAssessment.issues.find((issue) => issue.severity === 'error')
+        throw new Error(`Kiểm tra nội dung phụ đề thất bại: ${firstIssue?.message || 'cue mapping không hợp lệ.'}`)
       }
 
       let separatedInstrumentalPath: string | null = null
@@ -1228,7 +1445,7 @@ export function createAutoShortItemProcessor(
         : burnResult.titlePath
           ? 'Đã xuất video và tieude.txt'
           : 'Hoàn tất xuất video'
-      emitProgress(context, 'done', 100, completionMessage, burnResult.output, undefined, { stage: 'publish', phase: 'succeeded' }, finalSummary.diagnosticsIncomplete)
+      emitProgress(context, 'done', 100, completionMessage, burnResult.output, undefined, { stage: 'publish', phase: 'succeeded' }, finalSummary.diagnosticsIncomplete, translationAssessment, translationIdentity)
       return {
         itemId: item.id,
         filePath: item.filePath,
@@ -1242,6 +1459,8 @@ export function createAutoShortItemProcessor(
         title: burnResult.title,
         titlePath: burnResult.titlePath,
         titleError: burnResult.titleError,
+        translationAssessment,
+        translationIdentity,
         diagnosticsIncomplete: finalSummary.diagnosticsIncomplete
       }
     } catch (error) {
@@ -1261,6 +1480,8 @@ export function createAutoShortItemProcessor(
           title: burnResult.title,
           titlePath: burnResult.titlePath,
           titleError: burnResult.titleError,
+          translationAssessment,
+          translationIdentity,
           diagnosticsIncomplete: pubSummary?.diagnosticsIncomplete
         }
       }
@@ -1289,6 +1510,29 @@ export function createAutoShortItemProcessor(
         ? 'Đã hủy tác vụ'
         : message || 'Xử lý video thất bại'
 
+      // A provider/protocol failure can happen after the translation identity
+      // has been committed but before content assessment is written. Preserve
+      // that durable identity as an explicit review state so the UI can offer
+      // one bounded, user-triggered retry instead of losing the recovery path.
+      if (!isCancelled && config.translateTarget !== 'none' && translationIdentity && !translationAssessment) {
+        translationAssessment = {
+          version: 'translation-assessment-v2',
+          disposition: 'needs-review',
+          issues: [{
+            code: 'provider-protocol',
+            severity: 'error',
+            confidence: 'certain',
+            cueIds: [],
+            message: 'Bản dịch chưa được xác nhận do lỗi nhà cung cấp hoặc định dạng phản hồi; hãy thử lại một lần từ hàng đợi.'
+          }],
+          languageEvidence: 'unknown'
+        }
+        checkpoint.translationAssessment = translationAssessment
+        await saveCheckpoint().catch((checkpointError) => {
+          logWarn(`[AutoShort] Không lưu được trạng thái cần kiểm tra bản dịch: ${errLabel(checkpointError)}`)
+        })
+      }
+
       const errSummary = await telemetry.finalize(isCancelled ? 'cancelled' : 'failed', message).catch(() => null)
 
       if (isCancelled) {
@@ -1300,12 +1544,14 @@ export function createAutoShortItemProcessor(
       emitProgress(context, isCancelled ? 'cancelled' : 'error', 0, userMessage, undefined, undefined, {
         stage: 'publish',
         phase: isCancelled ? 'cancelled' : 'failed'
-      }, errSummary?.diagnosticsIncomplete)
+      }, errSummary?.diagnosticsIncomplete, translationAssessment, translationIdentity)
       return {
         itemId: item.id,
         filePath: item.filePath,
         status: isCancelled ? 'cancelled' : 'error',
         error: userMessage,
+        translationAssessment,
+        translationIdentity,
         diagnosticsIncomplete: errSummary?.diagnosticsIncomplete
       }
     } finally {

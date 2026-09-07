@@ -1,10 +1,15 @@
 import type { SubtitleCue } from '../shared/types'
+import type {
+  TranslationAssessment,
+  TranslationIssue,
+  TranslationIssueCode
+} from '../shared/translation'
 
 export type ContentQualitySeverity = 'error' | 'warning'
 
 export interface ContentQualityFinding {
   severity: ContentQualitySeverity
-  code: 'duplicate-source-id' | 'duplicate-target-id' | 'missing-target-id' | 'unexpected-target-id' | 'empty-target-text' | 'protected-token-mismatch'
+  code: 'duplicate-source-id' | 'duplicate-target-id' | 'missing-target-id' | 'unexpected-target-id' | 'empty-target-text' | 'protected-token-mismatch' | 'invalid-source'
   cueId?: string
   message: string
 }
@@ -15,11 +20,33 @@ export interface AutoShortContentQualityResult {
 }
 
 const NEGATION_WORDS = new Set([
-  'không', 'chưa', 'đừng', 'chẳng', 'chả', 'never', 'not', 'no', "don't", "doesn't", "isn't", "wasn't", 'without'
+  'không', 'chưa', 'đừng', 'chẳng', 'chả', 'never', 'not', 'no', "don't", "doesn't", "isn't", "wasn't", 'without',
+  '不', '沒', '没', '别', '不要', '無', '无', 'ない', 'ません', '안', '않', 'لا', 'ليس', 'नहीं', 'ไม่'
 ])
 
+const ISSUE_CODE_BY_FINDING: Record<ContentQualityFinding['code'], TranslationIssueCode> = {
+  'duplicate-source-id': 'invalid-source',
+  'duplicate-target-id': 'duplicate-id',
+  'missing-target-id': 'missing-id',
+  'unexpected-target-id': 'unknown-id',
+  'empty-target-text': 'empty-text',
+  'protected-token-mismatch': 'protected-token-suspect',
+  'invalid-source': 'invalid-source'
+}
+
+function unicodeDigitsToAscii(value: string): string {
+  return Array.from(value).map((character) => {
+    const codePoint = character.codePointAt(0) || 0
+    if (codePoint >= 0x0660 && codePoint <= 0x0669) return String(codePoint - 0x0660)
+    if (codePoint >= 0x06f0 && codePoint <= 0x06f9) return String(codePoint - 0x06f0)
+    if (codePoint >= 0x0966 && codePoint <= 0x096f) return String(codePoint - 0x0966)
+    if (codePoint >= 0x0e50 && codePoint <= 0x0e59) return String(codePoint - 0x0e50)
+    return character
+  }).join('')
+}
+
 function protectedTokens(text: string): string[] {
-  const normalized = text.normalize('NFKC').toLowerCase()
+  const normalized = unicodeDigitsToAscii(text.normalize('NFKC')).toLowerCase()
   const tokens: string[] = []
   // Keep a numeric value and its canonical unit as protected tokens. Unit
   // words often change during translation ("phút" -> "minutes", "%" ->
@@ -58,6 +85,12 @@ function protectedTokens(text: string): string[] {
   for (const word of normalized.match(/[\p{L}']+/gu) || []) {
     if (NEGATION_WORDS.has(word)) tokens.push('neg')
   }
+  // CJK and several other scripts do not expose whitespace-delimited words.
+  // Treat the presence of a known negation marker as one heuristic signal;
+  // this is deliberately not a hard semantic assertion.
+  if (/(?:不|沒|没|别|不要|無|无|ない|ません|안|않|لا|ليس|नहीं|ไม่)/u.test(normalized) && !tokens.includes('neg')) {
+    tokens.push('neg')
+  }
   return tokens.sort()
 }
 
@@ -82,14 +115,30 @@ export function validateAutoShortContentQuality(input: {
   const sourceCounts = idCounts(input.sourceCues)
   const targetCounts = idCounts(input.targetCues)
 
+  if (input.sourceCues.length === 0) {
+    findings.push({ severity: 'error', code: 'invalid-source', message: 'Không có cue nguồn để kiểm tra.' })
+  }
+
   for (const [id, count] of sourceCounts) {
+    const sourceCue = input.sourceCues.find((cue) => String(cue.id || '').trim() === id)
+    if (!id) findings.push({ severity: 'error', code: 'invalid-source', cueId: id, message: 'Source cue không có ID ổn định.' })
     if (count > 1) findings.push({ severity: 'error', code: 'duplicate-source-id', cueId: id, message: `Source cue ID ${id || '(rỗng)'} bị lặp ${count} lần.` })
+    if (!sourceCue?.text?.trim()) findings.push({ severity: 'error', code: 'invalid-source', cueId: id, message: `Source cue ${id || '(rỗng)'} không có nội dung.` })
+    if (sourceCue && (!Number.isFinite(sourceCue.start) || !Number.isFinite(sourceCue.end) || sourceCue.end < sourceCue.start)) {
+      findings.push({ severity: 'error', code: 'invalid-source', cueId: id, message: `Source cue ${id || '(rỗng)'} có timeline không hợp lệ.` })
+    }
     const targetCount = targetCounts.get(id) || 0
     if (targetCount === 0) findings.push({ severity: 'error', code: 'missing-target-id', cueId: id, message: `Thiếu target cue cho source ID ${id || '(rỗng)'}.` })
   }
   for (const [id, count] of targetCounts) {
     if (count > 1) findings.push({ severity: 'error', code: 'duplicate-target-id', cueId: id, message: `Target cue ID ${id || '(rỗng)'} bị lặp ${count} lần.` })
     if (!sourceCounts.has(id)) findings.push({ severity: 'error', code: 'unexpected-target-id', cueId: id, message: `Target cue ID ${id || '(rỗng)'} không có source tương ứng.` })
+  }
+
+  for (const target of input.targetCues) {
+    if (!target.text?.trim()) {
+      findings.push({ severity: 'error', code: 'empty-target-text', cueId: target.id, message: `Target cue ${target.id || '(rỗng)'} không có nội dung.` })
+    }
   }
 
   const targetById = new Map(input.targetCues.map((cue) => [String(cue.id || '').trim(), cue]))
@@ -104,7 +153,7 @@ export function validateAutoShortContentQuality(input: {
     const targetTokens = protectedTokens(target.text)
     if (sourceTokens.join('\u0000') !== targetTokens.join('\u0000')) {
       findings.push({
-        severity: 'error',
+        severity: 'warning',
         code: 'protected-token-mismatch',
         cueId: source.id,
         message: `Cue ${source.id} thay đổi số, đơn vị hoặc phủ định quan trọng (${sourceTokens.join(', ')} -> ${targetTokens.join(', ')}).`
@@ -112,4 +161,42 @@ export function validateAutoShortContentQuality(input: {
     }
   }
   return { ok: findings.every((finding) => finding.severity !== 'error'), findings }
+}
+
+/**
+ * Convert the legacy QA findings to the shared assessment contract. Structural
+ * failures stop publication; number/unit/negation differences remain visible
+ * review evidence because a valid translation is allowed to change their
+ * surface form (for example 2 -> two or 不 -> do not).
+ */
+export function assessContentQuality(
+  sourceCues: readonly SubtitleCue[],
+  targetCues: readonly SubtitleCue[]
+): TranslationAssessment
+export function assessContentQuality(input: {
+  sourceCues: readonly SubtitleCue[]
+  targetCues: readonly SubtitleCue[]
+}): TranslationAssessment
+export function assessContentQuality(
+  sourceOrInput: readonly SubtitleCue[] | { sourceCues: readonly SubtitleCue[]; targetCues: readonly SubtitleCue[] },
+  maybeTargetCues?: readonly SubtitleCue[]
+): TranslationAssessment {
+  const input: { sourceCues: readonly SubtitleCue[]; targetCues: readonly SubtitleCue[] } = Array.isArray(sourceOrInput)
+    ? { sourceCues: sourceOrInput as readonly SubtitleCue[], targetCues: maybeTargetCues || [] }
+    : sourceOrInput as { sourceCues: readonly SubtitleCue[]; targetCues: readonly SubtitleCue[] }
+  const result = validateAutoShortContentQuality(input)
+  const issues: TranslationIssue[] = result.findings.map((finding) => ({
+    code: ISSUE_CODE_BY_FINDING[finding.code],
+    severity: finding.severity,
+    cueIds: finding.cueId ? [finding.cueId] : [],
+    confidence: finding.severity === 'error' ? 'certain' : 'heuristic',
+    message: finding.message
+  }))
+  const hasErrors = issues.some((issue) => issue.severity === 'error')
+  return {
+    version: 'translation-assessment-v2',
+    disposition: hasErrors ? 'needs-review' : issues.length > 0 ? 'with-warnings' : 'validated',
+    issues,
+    languageEvidence: 'unknown'
+  }
 }

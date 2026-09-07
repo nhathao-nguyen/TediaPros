@@ -404,6 +404,8 @@ const api = {
     ipcRenderer.invoke('autoshort:start', request),
   autoShortCancel: (jobId: string): Promise<{ ok: boolean; error?: string }> =>
     ipcRenderer.invoke('autoshort:cancel', jobId),
+  autoShortRetryTranslation: (request: { itemId: string; expectedIdentity: string }): Promise<{ ok: boolean; generation?: number; error?: string }> =>
+    ipcRenderer.invoke('autoshort:retryTranslation', request),
   autoShortClearCache: (): Promise<{ ok: boolean; error?: string }> =>
     ipcRenderer.invoke('autoshort:clearCache'),
   onAutoShortEvent: (cb: (event: AutoShortEvent) => void): (() => void) => {

@@ -7,11 +7,11 @@ import {
   buildTranslationBatches,
   huongDan,
   parseSrt,
-  parseTranslationItems,
   validateTranslationItems,
   type TranslationItem,
   type TranslationMode
 } from './translate-shared'
+import { parseTranslationResponse } from './translation/response'
 import {
   buildSemanticBatches,
   buildSemanticGroups,
@@ -27,7 +27,9 @@ import {
 import { joinGroupText } from './semanticGrouping'
 import { debugRaw, errLabel, logInfo, logWarn } from './logger'
 import { DEFAULT_AI_SERVER_URL, type DichKeyStatus, type SrtBlock } from '../shared/types'
+import type { TranslationInput } from '../shared/translation'
 import { getGlobalResourceManager } from './autoShortResourceManager'
+import { buildTranslationMessages } from './translation/prompts'
 
 export type { TranslationMode }
 
@@ -49,6 +51,8 @@ export interface TranslateOptions {
   wallNow?: () => number
   /** Retry sleep hook for deterministic tests. */
   sleep?: (delayMs: number, signal?: AbortSignal) => Promise<void>
+  /** Durable observer invoked after each validated provider batch. */
+  onBatch?: (items: readonly TranslationItem[], batchIndex: number) => Promise<void> | void
 }
 
 export const LOCAL_TRANSLATION_DEADLINE_MS = 10 * 60 * 1000
@@ -310,7 +314,8 @@ function hasOneExpectedItemPerCue(
 
 function groupsForMissingCues(
   groups: readonly SemanticGroup<SrtBlock>[],
-  usable: ReadonlyMap<string, string>
+  usable: ReadonlyMap<string, string>,
+  locale?: string
 ): SemanticGroup<SrtBlock>[] {
   return groups.flatMap((group) => {
     const missingCues = group.cues.filter((cue) => !usable.has(cue.id || ''))
@@ -322,7 +327,7 @@ function groupsForMissingCues(
       ...group,
       id: `${group.id}-missing`,
       cues: missingCues,
-      text: joinGroupText(missingCues),
+      text: joinGroupText(missingCues, locale),
       start: first.start,
       end: last.end
     }]
@@ -470,9 +475,9 @@ export async function localTranslateSrt(
 
   const total = sourceBlocks.length
   const sourceLanguage = resolveTranslationSourceLanguage(options.sourceLanguage)
-  const semanticGroups = buildSemanticGroups(sourceBlocks)
+  const semanticGroups = buildSemanticGroups(sourceBlocks, undefined, sourceLanguage)
   const batches = mode === 'dubbing'
-    ? buildTranslationBatches(sourceBlocks, LOCAL_DUBBING_BATCH_MAX_CHARS, LOCAL_DUBBING_BATCH_MAX_CUES).map((batch) => buildSemanticGroups(batch))
+    ? buildTranslationBatches(sourceBlocks, LOCAL_DUBBING_BATCH_MAX_CHARS, LOCAL_DUBBING_BATCH_MAX_CUES, targetLanguage).map((batch) => buildSemanticGroups(batch, undefined, targetLanguage))
     : buildSemanticBatches(semanticGroups, 10)
   const translatedBlocks: SrtBlock[] = []
 
@@ -480,7 +485,9 @@ export async function localTranslateSrt(
   const now = options.now || (() => performance.now())
   const sleep = options.sleep || waitForLocalTranslationRetry
   const budget = new TranslationRequestBudget(
-    options.maxRequests ?? Number.POSITIVE_INFINITY,
+    options.maxRequests ?? (
+      batches.length + Math.max(4, Math.ceil(batches.length * 0.5))
+    ),
     options.deadlineMs ?? LOCAL_TRANSLATION_DEADLINE_MS,
     now
   )
@@ -488,7 +495,8 @@ export async function localTranslateSrt(
 
   const translateGroupBatch = async (
     batchGroups: SemanticGroup<SrtBlock>[],
-    startCueIndex: number
+    startCueIndex: number,
+    splitDepth = 0
   ): Promise<Map<string, string>> => {
     const batchCues = batchGroups.flatMap((g) => g.cues)
     const expectedIds = batchCues.map((c) => c.id || '')
@@ -498,14 +506,37 @@ export async function localTranslateSrt(
       `Giữ nguyên chính xác các ID cần dịch: ${expectedIds.join(', ')}. Không đánh số lại từ đầu.`,
       'Không trả nhãn nhóm, thời lượng, lời giải thích, Markdown hoặc cue ngữ cảnh. Dù chỉ có một cue vẫn phải ghi [id].'
     ].join('\n')
-    const systemPrompt = `${huongDan(targetLanguage, { mode, sourceLanguage })}\n\n${outputContract}`
+    const radius = Number.isInteger(options.contextRadius)
+      ? Math.max(0, Math.min(3, options.contextRadius!))
+      : 1
+    const firstCueIndex = sourceBlocks.findIndex((b) => b.id === batchCues[0]?.id)
+    const lastCueIndex = sourceBlocks.findIndex((b) => b.id === batchCues[batchCues.length - 1]?.id)
+    const toPromptCue = (cue: SrtBlock, index: number) => ({
+      id: cue.id || `cue-${index}`,
+      sourceIndex: cue.sourceIndex ?? index,
+      start: typeof cue.start === 'number' ? cue.start : 0,
+      end: typeof cue.end === 'number' ? cue.end : typeof cue.start === 'number' ? cue.start : 0,
+      text: cue.text,
+      groupId: `group-${cue.sourceIndex ?? index}`
+    })
+    const promptInput: TranslationInput = {
+      sourceLanguage,
+      targetLocale: targetLanguage,
+      mode,
+      cues: batchCues.map((cue, index) => toPromptCue(cue, index)),
+      contextBefore: firstCueIndex > 0
+        ? sourceBlocks.slice(Math.max(0, firstCueIndex - radius), firstCueIndex).map((cue, index) => toPromptCue(cue, index))
+        : [],
+      contextAfter: lastCueIndex >= 0 && lastCueIndex < sourceBlocks.length - 1
+        ? sourceBlocks.slice(lastCueIndex + 1, Math.min(sourceBlocks.length, lastCueIndex + 1 + radius)).map((cue, index) => toPromptCue(cue, index))
+        : [],
+      glossary: []
+    }
+    const systemPrompt = `${buildTranslationMessages(promptInput, 'id-lines')[0].content}\n\n${outputContract}`
     let userPrompt: string
     if (mode === 'dubbing') {
       userPrompt = buildDubbingTranslationPayload(batchCues, sourceBlocks, options.contextRadius, targetLanguage)
     } else {
-      const radius = Number.isInteger(options.contextRadius)
-        ? Math.max(0, Math.min(3, options.contextRadius!))
-        : 1
       const firstCueIndex = sourceBlocks.findIndex((b) => b.id === batchCues[0]?.id)
       const lastCueIndex = sourceBlocks.findIndex((b) => b.id === batchCues[batchCues.length - 1]?.id)
       const contextBefore = firstCueIndex > 0
@@ -515,7 +546,7 @@ export async function localTranslateSrt(
         ? sourceBlocks.slice(lastCueIndex + 1, Math.min(sourceBlocks.length, lastCueIndex + 1 + radius))
         : []
       const userPromptLines: string[] = [
-        `Dịch các nhóm lời thoại/phụ đề sau sang ngôn ngữ đích: target_language=${targetLanguage} (chế độ: ${mode}).`,
+        `Dịch các nhóm lời thoại/phụ đề sau sang locale đích: target_locale=${targetLanguage} (chế độ: ${mode}).`,
         '',
         'Yêu cầu dịch thuật:',
         '1. Đọc toàn bộ các cue trong cùng một nhóm như một câu/lời thoại liền mạch để hiểu trọn vẹn ngữ cảnh và ý nghĩa toàn câu.',
@@ -585,7 +616,18 @@ export async function localTranslateSrt(
       const truncated = data.choices?.[0]?.finish_reason === 'length'
       logInfo(`[Translate] response cues=${batchCues.length} attempt=${responseAttempt + 1} elapsedMs=${Math.round(performance.now() - requestStarted)} truncated=${truncated}`)
 
-      const candidate = parseTranslationItems(transText)
+      const jsonFormat = /^\s*(?:```(?:json)?\s*\r?\n)?(?:\{|\[\s*\{)/iu.test(transText)
+      const contextIds = sourceBlocks
+        .map((cue) => cue.id || '')
+        .filter((id) => id && !expectedIds.includes(id))
+      const parsedResponse = parseTranslationResponse(
+        transText,
+        jsonFormat ? 'json-items' : 'id-lines',
+        expectedIds,
+        truncated,
+        contextIds
+      )
+      const candidate = parsedResponse.items
       const responseIdCounts = new Map<string, number>()
       for (const item of candidate) responseIdCounts.set(item.id, (responseIdCounts.get(item.id) || 0) + 1)
       const missingCount = expectedIds.filter((id) => !responseIdCounts.has(id)).length
@@ -599,20 +641,29 @@ export async function localTranslateSrt(
       const usable = !truncated && !sourceEcho
         ? collectUsableTranslationItems(candidate, expectedIds)
         : new Map<string, string>()
+      // Some older local gateways echo a read-only context line that is not
+      // present in the current batch. It cannot be mapped to output; tolerate
+      // that extra only when every expected cue is present exactly once. Any
+      // missing/duplicate/empty/unparsed item remains a hard recovery path.
+      const onlyUnknownExtras = parsedResponse.issues.length > 0 && parsedResponse.issues.every((item) => item.code === 'unknown-id')
       try {
         // Even a syntactically complete final line may have lost its last words.
         if (truncated) throw new Error('phản hồi bị cắt do giới hạn token')
         // Ignore non-current context items only when every current cue appears
         // exactly once. This keeps the identity contract while preventing a
         // harmless extra context line from triggering a full retranslation.
-        if (hasOneExpectedItemPerCue(candidate, expectedIds, usable)) {
+        if ((parsedResponse.complete || onlyUnknownExtras) && hasOneExpectedItemPerCue(candidate, expectedIds, usable)) {
           if (candidate.length !== expectedIds.length) {
             logWarn(`[Translate] Bỏ qua ${candidate.length - expectedIds.length} cue ngoài batch; các cue hiện tại đã đủ.`)
           }
           resultMap = usable as Map<string, string>
+          // Compatibility validation remains at the public wrapper boundary;
+          // the parser above is authoritative and already reports typed issues.
+          validateTranslationItems([...resultMap.entries()].map(([id, text]) => ({ id, text })), expectedIds)
           break
         }
-        validateTranslationItems(candidate, expectedIds)
+        const parserIssue = parsedResponse.issues.find((item) => item.severity === 'error' && item.code !== 'unknown-id')
+        if (parserIssue) throw new Error(parserIssue.message)
         if (sourceEcho) {
           invalidResponseReason = 'nội dung phản hồi vẫn ở hệ chữ nguồn'
           // Do not spend another request repeating the same oversized prompt;
@@ -635,7 +686,7 @@ export async function localTranslateSrt(
       if (!truncated && !sourceEcho && usable.size > 0) {
         const mergedUsable = new Map(partialMap)
         for (const [id, text] of usable) mergedUsable.set(id, text)
-        const missingGroups = groupsForMissingCues(batchGroups, mergedUsable)
+        const missingGroups = groupsForMissingCues(batchGroups, mergedUsable, targetLanguage)
         if (mergedUsable.size > 0 && mergedUsable.size < expectedIds.length && missingGroups.length > 0) {
           partialMap = mergedUsable
           partialMissingGroups = missingGroups
@@ -659,21 +710,24 @@ export async function localTranslateSrt(
     if (partialMap && partialMissingGroups) {
       const missingCueCount = partialMissingGroups.reduce((sum, group) => sum + group.cues.length, 0)
       logWarn(`[Translate] Batch ${startCueIndex + 1}-${startCueIndex + batchCues.length} ${invalidResponseReason || 'thiếu cue'}; giữ ${partialMap.size} cue hợp lệ và dịch lại ${missingCueCount} cue còn thiếu.`)
-      const recovered = await translateGroupBatch(partialMissingGroups, startCueIndex)
+      const recovered = await translateGroupBatch(partialMissingGroups, startCueIndex, splitDepth)
       return new Map([...partialMap.entries(), ...recovered.entries()])
     }
 
-    const split = splitSemanticBatch(batchGroups)
+    const split = splitDepth < 2 ? splitSemanticBatch(batchGroups, targetLanguage) : null
     if (split) {
       const [leftGroups, rightGroups] = split
       const leftCount = leftGroups.reduce((sum, g) => sum + g.cues.length, 0)
       const rightCount = rightGroups.reduce((sum, g) => sum + g.cues.length, 0)
       logWarn(`[Translate] Batch ${startCueIndex + 1}-${startCueIndex + batchCues.length} ${invalidResponseReason || 'không đạt schema'}; chia thành ${leftCount}+${rightCount}.`)
-      const leftMap = await translateGroupBatch(leftGroups, startCueIndex)
-      const rightMap = await translateGroupBatch(rightGroups, startCueIndex + leftCount)
+      const leftMap = await translateGroupBatch(leftGroups, startCueIndex, splitDepth + 1)
+      const rightMap = await translateGroupBatch(rightGroups, startCueIndex + leftCount, splitDepth + 1)
       return new Map([...leftMap.entries(), ...rightMap.entries()])
     }
 
+    if (Number.isFinite(budget.maxRequests) && budget.requests >= budget.maxRequests) {
+      throw new Error(`Đã hết ngân sách request dịch (${budget.maxRequests} lượt)`)
+    }
     throw new Error(`Kết quả dịch không đạt yêu cầu: ${invalidResponseReason || 'thiếu câu hoặc có câu rỗng'}`)
   }
 
@@ -690,6 +744,7 @@ export async function localTranslateSrt(
           text
         })
       }
+      await options.onBatch?.(batchCues.map((cue) => ({ ...cue, text: resultMap!.get(cue.id || '') || '' })), batches.indexOf(batch))
       doneCount += batchCues.length
       onProgress?.(Math.min(doneCount, total), total)
     } catch (err) {
