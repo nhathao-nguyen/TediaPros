@@ -1,5 +1,14 @@
 import type { AutoShortBlurMode, AutoShortConfig, AutoShortOcrBlurProfile } from './types'
 
+export function isSttnRemoval(config: Pick<AutoShortConfig, 'lamMo' | 'blurMode'>): boolean {
+  return config.lamMo === true && config.blurMode === 'sttn'
+}
+
+/** Modes that need OCR boxes/timing in addition to subtitle text. */
+export function isAutomaticOcrProcessing(config: Pick<AutoShortConfig, 'lamMo' | 'blurMode'>): boolean {
+  return isAutomaticOcrBlur(config) || isSttnRemoval(config)
+}
+
 export function isAutomaticOcrBlur(
   config: Pick<AutoShortConfig, 'lamMo' | 'blurMode'>
 ): boolean {
@@ -9,7 +18,7 @@ export function isAutomaticOcrBlur(
 export function autoShortNeedsOcr(
   config: Pick<AutoShortConfig, 'subtitleMethod' | 'lamMo' | 'blurMode'>
 ): boolean {
-  return isAutomaticOcrBlur(config) ||
+  return isAutomaticOcrProcessing(config) ||
     config.subtitleMethod === 'ocr' ||
     config.subtitleMethod === 'whisper-ocr'
 }
@@ -18,11 +27,11 @@ export function autoShortNeedsOcr(
 export function effectiveAutoShortOcrProfile(
   config: Pick<AutoShortConfig, 'lamMo' | 'blurMode' | 'ocrBlurProfile'>
 ): AutoShortOcrBlurProfile {
-  return isAutomaticOcrBlur(config) ? config.ocrBlurProfile : 'fast'
+  return isSttnRemoval(config) ? 'accurate' : isAutomaticOcrBlur(config) ? config.ocrBlurProfile : 'fast'
 }
 
 export function normalizeAutoShortBlurMode(value: unknown): AutoShortBlurMode {
-  return value === 'ocr-auto' ? 'ocr-auto' : 'manual'
+  return value === 'sttn' || value === 'ocr-auto' ? value : 'manual'
 }
 
 export function normalizeAutoShortOcrBlurProfile(value: unknown): AutoShortOcrBlurProfile {

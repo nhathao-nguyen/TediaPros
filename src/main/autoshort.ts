@@ -27,7 +27,7 @@ import { buildSemanticGroups, joinGroupText, type SemanticGroup } from './semant
 import { createDurationPredictor, durationProfileKey } from './dubbingDuration'
 import { loadDurationProfile, saveDurationProfile } from './dubbing/profileStore'
 import { applyDubbingTranslations } from './dubbing/translation'
-import { buildTtsCacheKey } from './dubbing/cache'
+import { buildTtsCacheKey, getTtsCacheStore } from './dubbing/cache'
 import { synthesizeDubbingPlan } from './dubbing/synthesis'
 import { DUBBING_PLAN_VERSION, buildDubbingPlan as buildPlan, validateDubbingPlan, type DubbingPlan } from './dubbing/plan'
 import { huongDan, parseTranslationItems, stripOuterQuotes } from './translate-shared'
@@ -58,6 +58,11 @@ import { sanitizeAutoShortAuditError } from './autoShortAudit'
 import { cancelVideo2x } from './video2x'
 import { terminateProcessTree, terminateTrackedProcessTrees, trackChildProcess } from './processTree'
 import { parseSrt, serializeSrt, type SubtitleCue } from '../shared/subtitles'
+import { runAutoShortQueue } from './autoShortQueueRunner'
+import { AutoShortResourceManager, getGlobalResourceManager } from './autoShortResourceManager'
+import { getGlobalAutoShortDiskBudget, type DiskReservation } from './autoShortDiskBudget'
+import { AutoShortTelemetryJobBudget } from './autoShortTelemetry'
+import { resolveExecutionPolicy, CONSERVATIVE_POLICY, type AutoShortExecutionPolicy } from './autoShortExecutionPolicy'
 import { validateAutoShortStartRequest } from '../shared/autoShortContract'
 import {
   deriveCanonicalDisplayGeometry,
@@ -65,7 +70,9 @@ import {
   type CanonicalDisplayGeometry
 } from './canonicalDisplayGeometry'
 import { fuseWhisperAndOcr, clampAlignedCueTimeline } from '../shared/autoShortAlignment'
-import { isAutomaticOcrBlur, autoShortNeedsOcr } from '../shared/autoShortOcrBlur'
+import { isAutomaticOcrBlur, isSttnRemoval, autoShortNeedsOcr } from '../shared/autoShortOcrBlur'
+import { getSttnReadiness, installSttnDependencies } from './inpainting/assets'
+import { runSttnRemoval } from './inpainting/runner'
 import { probeFfmpegOcrMaskCapability } from './ffmpegOcrMaskProbe'
 import { resolveSeparatorEngine, resolveFfprobe } from './runtimeResolver'
 import { probeRuntimeExecutable } from './runtimeProbes'
@@ -80,6 +87,7 @@ import { separateSourceAudio, type SeparatorProviderState } from './separation/p
 import { requiredSeparationWorkspaceBytes } from './separation/disk'
 import { composeAutoShortNarratedAudio } from './autoShortNarratedAudio'
 import type { InstalledSeparatorModel } from './separation/modelStore'
+import { reserveVideoTitleOutputDir } from './videoTitle'
 import type {
   AutoShortDependencyConfig,
   AutoShortSeparationPreset,
@@ -100,6 +108,8 @@ import {
   AutoShortProgress,
   AutoShortQueueItemInput,
   AutoShortStartRequest,
+  AutoShortSttnPreviewResult,
+  AutoShortSttnPreviewProgress,
   AlignedCue,
   BurnReq,
   DichKeyStatus,
@@ -128,6 +138,8 @@ interface AutoShortJob {
   ttsCapabilitiesUrl?: string
   separation?: PreparedAutoShortSeparation
   separationProviderState: SeparatorProviderState
+  resourceManager?: AutoShortResourceManager
+  telemetryBudget?: AutoShortTelemetryJobBudget
 }
 
 let activeJob: AutoShortJob | null = null
@@ -207,6 +219,7 @@ function dependency(
 }
 
 export interface AutoShortReadinessHooks {
+  getSttnReadiness?: typeof getSttnReadiness
   resolveFfmpeg?: typeof resolveFfmpeg
   ocrEngineStatus?: typeof ocrEngineStatus
   probeFfmpegOcrMaskCapability?: typeof probeFfmpegOcrMaskCapability
@@ -222,6 +235,7 @@ export interface AutoShortReadinessHooks {
 }
 
 export interface AutoShortInstallHooks {
+  installSttnDependencies?: typeof installSttnDependencies
   installFfmpeg?: typeof installFfmpeg
   installOcrEngine?: typeof installOcrEngine
   downloadRuntimeEngine?: typeof downloadRuntimeEngineFromManifest
@@ -252,6 +266,8 @@ export async function getAutoShortReadiness(
   const getGpu = hooks.detectGpu || detectGpu
 
   const automaticBlur = isAutomaticOcrBlur(config)
+  const sttnRemoval = isSttnRemoval(config)
+  const visualOcrRequired = automaticBlur || sttnRemoval
   const needsOcr = autoShortNeedsOcr(config)
   const useWhisper = needsWhisper(config.subtitleMethod)
   const useCuda = needsCuda(config)
@@ -355,13 +371,13 @@ export async function getAutoShortReadiness(
     const ocrVisualReady = Boolean(
       ocr?.has &&
       ocr.healthy &&
-      (!automaticBlur || ocr.features?.includes('visual-cues-v1'))
+      (!visualOcrRequired || ocr.features?.includes('visual-cues-v1'))
     )
     const ocrMessage = !ocr?.has
       ? 'Chưa cài OCR engine.'
       : !ocr.healthy
         ? (ocr.message || 'OCR engine probe thất bại.')
-        : automaticBlur && !ocr.features?.includes('visual-cues-v1')
+        : visualOcrRequired && !ocr.features?.includes('visual-cues-v1')
           ? 'OCR engine cần cập nhật để tạo vùng làm mờ theo chữ.'
           : undefined
 
@@ -490,6 +506,7 @@ export async function getAutoShortReadiness(
     }
   }
 
+  if (sttnRemoval) dependencies.push(...await (hooks.getSttnReadiness || getSttnReadiness)())
   const missing = dependencies.filter((item) => item.required && !item.ready)
   const message = missing.length
     ? `Cần chuẩn bị: ${missing.map((item) => item.label).join(', ')}.`
@@ -594,6 +611,11 @@ export async function installAutoShortDependencies(
       signal
     )
     emit('separator-model', 'verifying', 100, 'Đang kiểm tra model tách nhạc…')
+    readiness = await getAutoShortReadiness(config, hooks.readinessHooks)
+  }
+  if (isSttnRemoval(config) && (isMissing('sttn-engine') || isMissing('sttn-model'))) {
+    aborted()
+    await (hooks.installSttnDependencies || installSttnDependencies)(onProgress, signal)
     readiness = await getAutoShortReadiness(config, hooks.readinessHooks)
   }
   if (!readiness.ready) {
@@ -774,20 +796,22 @@ async function probeDuration(ffmpeg: string, input: string, signal: AbortSignal)
     const ffprobe = join(dirname(ffmpeg), process.platform === 'win32' ? 'ffprobe.exe' : 'ffprobe')
     const child = spawnAutoShortChild(ffprobe, ['-v', 'error', '-show_entries', 'format=duration', '-of', 'default=nw=1', input], { windowsHide: true })
     let output = ''
+    let abortError: Error | null = null
     const abort = (): void => {
+      abortError = new Error('Đã hủy tác vụ')
       terminateProcessTree(child)
-      reject(new Error('Đã hủy tác vụ'))
     }
     if (signal.aborted) abort()
     else signal.addEventListener('abort', abort, { once: true })
     child.stdout?.on('data', (chunk: Buffer) => { output += chunk.toString() })
     child.on('error', (error) => {
       signal.removeEventListener('abort', abort)
-      reject(error)
+      reject(abortError || error)
     })
     child.on('close', (code) => {
       signal.removeEventListener('abort', abort)
-      if (code !== 0) reject(new Error('Không thể đọc thời lượng audio'))
+      if (abortError) reject(abortError)
+      else if (code !== 0) reject(new Error('Không thể đọc thời lượng audio'))
       else resolve(Number(/duration=([\d.]+)/.exec(output)?.[1]) || 0)
     })
   })
@@ -813,19 +837,21 @@ async function runAudioFilter(ffmpeg: string, input: string, output: string, fil
   throwIfAborted(signal)
   await new Promise<void>((resolve, reject) => {
     const child = spawnAutoShortChild(ffmpeg, ['-y', '-i', input, '-vn', '-ac', '2', '-ar', '44100', '-filter:a', filter, output], { windowsHide: true })
+    let abortError: Error | null = null
     const abort = (): void => {
+      abortError = new Error('Đã hủy tác vụ')
       terminateProcessTree(child)
-      reject(new Error('Đã hủy tác vụ'))
     }
     if (signal.aborted) abort()
     else signal.addEventListener('abort', abort, { once: true })
     child.on('error', (error) => {
       signal.removeEventListener('abort', abort)
-      reject(error)
+      reject(abortError || error)
     })
     child.on('close', (code) => {
       signal.removeEventListener('abort', abort)
-      if (code === 0) resolve()
+      if (abortError) reject(abortError)
+      else if (code === 0) resolve()
       else reject(new Error('Không thể chuẩn hóa voice'))
     })
   })
@@ -890,19 +916,21 @@ export async function stitchAudioTimeline(
 
   await new Promise<void>((resolve, reject) => {
     const child = spawnAutoShortChild(ffmpeg, args, { windowsHide: true })
+    let abortError: Error | null = null
     const abort = (): void => {
+      abortError = new Error('Đã hủy tác vụ')
       terminateProcessTree(child)
-      reject(new Error('Đã hủy tác vụ'))
     }
     if (signal.aborted) abort()
     else signal.addEventListener('abort', abort, { once: true })
     child.on('error', (error) => {
       signal.removeEventListener('abort', abort)
-      reject(error)
+      reject(abortError || error)
     })
     child.on('close', (code) => {
       signal.removeEventListener('abort', abort)
-      if (code === 0) resolve()
+      if (abortError) reject(abortError)
+      else if (code === 0) resolve()
       else reject(new Error('Không thể ghép timeline voice'))
     })
   })
@@ -1168,35 +1196,37 @@ async function rephraseDubbingCue(
       const localKey = await loadLocalKey()
       const serverUrl = config.translateServerUrl || DEFAULT_AI_SERVER_URL
       const base = serverUrl.replace(/\/+$/u, '')
-      const res = await fetch(`${base}/v1/chat/completions`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          ...(localKey ? { Authorization: `Bearer ${localKey}` } : {})
-        },
-        body: JSON.stringify({
-          model: 'llm-default',
-          messages: [
-            { role: 'system', content: systemPrompt },
-            { role: 'user', content: userPrompt }
-          ],
-          temperature: 0.3
-        }),
-        signal
+      const content = await getGlobalResourceManager().withLease(['server-inference'], signal, async () => {
+        const res = await fetch(`${base}/v1/chat/completions`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            ...(localKey ? { Authorization: `Bearer ${localKey}` } : {})
+          },
+          body: JSON.stringify({
+            model: 'llm-default',
+            messages: [
+              { role: 'system', content: systemPrompt },
+              { role: 'user', content: userPrompt }
+            ],
+            temperature: 0.3
+          }),
+          signal
+        })
+        if (!res.ok) return null
+        const data = (await res.json()) as { choices?: Array<{ message?: { content?: string } }> }
+        return data.choices?.[0]?.message?.content?.trim() || null
       })
-      if (!res.ok) return []
-      const data = (await res.json()) as { choices?: Array<{ message?: { content?: string } }> }
-      const content = data.choices?.[0]?.message?.content?.trim()
       if (!content) return []
       return extractRephrasedTexts(content, cueId)
     } else if (config.translateProvider === 'gemini') {
       const { rephraseGeminiCue } = await import('./gemini')
-      const text = await rephraseGeminiCue(systemPrompt, userPrompt, signal)
+      const text = await getGlobalResourceManager().withLease(['external-title'], signal, () => rephraseGeminiCue(systemPrompt, userPrompt, signal))
       if (!text) return []
       return extractRephrasedTexts(text, cueId)
     } else if (config.translateProvider === 'openai') {
       const { rephraseOpenaiCue } = await import('./openai')
-      const text = await rephraseOpenaiCue(systemPrompt, userPrompt, signal)
+      const text = await getGlobalResourceManager().withLease(['external-title'], signal, () => rephraseOpenaiCue(systemPrompt, userPrompt, signal))
       if (!text) return []
       return extractRephrasedTexts(text, cueId)
     }
@@ -1984,7 +2014,8 @@ export async function synthesizeVoice(
   videoDuration: number,
   index: number,
   total: number,
-  detectedLanguage?: string | null
+  detectedLanguage?: string | null,
+  policy?: AutoShortExecutionPolicy
 ): Promise<{
   path: string
   clips: Array<{ start: number; path: string }>
@@ -2049,6 +2080,12 @@ export async function synthesizeVoice(
   const referenceInfo = config.ttsRefAudioPath
     ? await stat(config.ttsRefAudioPath).then((info) => ({ path: config.ttsRefAudioPath, size: info.size, mtimeMs: info.mtimeMs })).catch(() => ({ path: config.ttsRefAudioPath, size: 0, mtimeMs: 0 }))
     : null
+  const referenceBuffer = config.ttsRefAudioPath
+    ? await readFile(config.ttsRefAudioPath).catch(() => null)
+    : null
+  const referenceContentHash = referenceBuffer
+    ? createHash('sha256').update(referenceBuffer).digest('hex')
+    : null
   const profileKey = durationProfileKey({
     endpoint: config.ttsServerUrl,
     model: selectedModel.id,
@@ -2060,9 +2097,16 @@ export async function synthesizeVoice(
   const profileRoot = join(app.getPath('userData'), 'autoshort-duration-profiles')
   const predictor = createDurationPredictor(await loadDurationProfile(profileRoot, profileKey))
   const cacheRoot = join(app.getPath('userData'), 'autoshort-tts-cache-v2')
+  const ttsCache = getTtsCacheStore(cacheRoot)
+  const modelRevision = typeof (selectedModel as { revision?: unknown; model_revision?: unknown }).revision === 'string'
+    ? (selectedModel as { revision: string }).revision
+    : typeof (selectedModel as { model_revision?: unknown }).model_revision === 'string'
+      ? (selectedModel as { model_revision: string }).model_revision
+      : null
   const attemptByCue = new Map<string, number>()
   const adapter: Parameters<typeof synthesizeDubbingPlan>[0]['tts'] = {
     async synthesize(request, signal) {
+      const started = performance.now()
       const attempt = (attemptByCue.get(request.cueId) || 0) + 1
       attemptByCue.set(request.cueId, attempt)
       const safeId = safeArtifactSegment(request.cueId)
@@ -2076,41 +2120,55 @@ export async function synthesizeVoice(
         serverSpeed: 1,
         options: request.options,
         referenceAudio: referenceInfo,
-        referenceTranscript: config.ttsRefTranscript
+        referenceTranscript: config.ttsRefTranscript,
+        contentHash: referenceContentHash,
+        modelRevision
       })
-      const cachedPath = join(cacheRoot, `${cacheKey}.wav`)
-      if (request.cacheMode !== 'bypass' && await fileExists(cachedPath)) {
-        await copyFile(cachedPath, outputPath)
-        return { path: outputPath, voice: effectiveVoice, fromCache: true }
-      }
-      await mkdir(cacheRoot, { recursive: true })
-      const requestInput = {
-        serverUrl: config.ttsServerUrl,
-        text: request.text,
-        language: request.language,
-        model: request.model,
-        voice: request.voice || undefined,
-        speed: 1,
-        apiKey: localKey,
-        options: request.options
-      }
-      const result = config.ttsRefAudioPath
-        ? await generateVoiceClone({ ...requestInput, referenceAudioPath: config.ttsRefAudioPath, referenceTranscript: config.ttsRefTranscript }, signal, outputPath)
-        : await generateSpeech(requestInput, signal, outputPath)
-      if (!result.ok || !result.savedPath) throw new Error(result.error || `TTS không trả audio cho cue ${request.cueId}.`)
-      await copyFile(result.savedPath, cachedPath)
-      return { path: result.savedPath, voice: result.voice || effectiveVoice, fromCache: false }
+      const cacheValue = await ttsCache.getOrCreate(cacheKey, signal, async (producerSignal, producerTempPath) => {
+        const requestInput = {
+          serverUrl: config.ttsServerUrl,
+          text: request.text,
+          language: request.language,
+          model: request.model,
+          voice: request.voice || undefined,
+          speed: 1,
+          apiKey: localKey,
+          options: request.options
+        }
+        const result = config.ttsRefAudioPath
+          ? await generateVoiceClone({
+              ...requestInput,
+              referenceAudioPath: config.ttsRefAudioPath,
+              referenceTranscript: config.ttsRefTranscript,
+              referenceAudioBuffer: referenceBuffer || undefined
+            }, producerSignal, producerTempPath)
+          : await generateSpeech(requestInput, producerSignal, producerTempPath)
+        if (!result.ok || !result.savedPath) throw new Error(result.error || `TTS không trả audio cho cue ${request.cueId}.`)
+        return { path: result.savedPath, voice: result.voice || effectiveVoice }
+      }, { bypass: request.cacheMode === 'bypass' })
+      await copyFile(cacheValue.path, outputPath)
+      logInfo(`[AutoShort:timing] stage=tts cue=${safeId} cache=${cacheValue.fromCache ? 'hit' : 'miss'} elapsedMs=${Math.round(performance.now() - started)}`)
+      return { path: outputPath, voice: cacheValue.voice || effectiveVoice, fromCache: cacheValue.fromCache }
     }
   }
+  const resourceManager = (job as any).resourceManager || getGlobalResourceManager()
   const audioAdapter: Parameters<typeof synthesizeDubbingPlan>[0]['audio'] = {
     async trim(inputPath, outputHint, signal) {
+      const started = performance.now()
       const outputPath = join(workDir, `${safeArtifactSegment(outputHint)}.wav`)
-      const duration = await trimVoiceClip(ffmpeg, inputPath, outputPath, signal)
+      const duration = await resourceManager.withLease(['local-audio-dsp'], signal, async () => {
+        return trimVoiceClip(ffmpeg, inputPath, outputPath, signal)
+      })
+      logInfo(`[AutoShort:timing] stage=trim cue=${safeArtifactSegment(outputHint)} elapsedMs=${Math.round(performance.now() - started)} audioSeconds=${duration.toFixed(3)}`)
       return { path: outputPath, duration }
     },
     async applyTempo(inputPath, outputHint, targetDuration, signal) {
+      const started = performance.now()
       const outputPath = join(workDir, `${safeArtifactSegment(outputHint)}.wav`)
-      const actualDuration = await speedUpVoiceClip(ffmpeg, inputPath, outputPath, await probeDuration(ffmpeg, inputPath, signal), targetDuration, signal)
+      const actualDuration = await resourceManager.withLease(['local-audio-dsp'], signal, async () => {
+        return speedUpVoiceClip(ffmpeg, inputPath, outputPath, await probeDuration(ffmpeg, inputPath, signal), targetDuration, signal)
+      })
+      logInfo(`[AutoShort:timing] stage=tempo cue=${safeArtifactSegment(outputHint)} elapsedMs=${Math.round(performance.now() - started)} targetSeconds=${targetDuration.toFixed(3)} audioSeconds=${actualDuration.toFixed(3)}`)
       return { path: outputPath, duration: actualDuration }
     }
   }
@@ -2133,7 +2191,8 @@ export async function synthesizeVoice(
        ? (request, signal) => rephraseDubbingCue(config, request.cueId, request.currentText, request.targetDuration, language, detectedLanguage, signal)
           : undefined,
     signal: job.controller.signal,
-    onProgress: (completed, count, cueId) => emitProgress(job, item, 'generating_tts', 58 + (completed / Math.max(1, count)) * 20, `Đang tạo voice ${completed}/${count} (${cueId})`, index, total)
+    onProgress: (completed, count, cueId) => emitProgress(job, item, 'generating_tts', 58 + (completed / Math.max(1, count)) * 20, `Đang tạo voice ${completed}/${count} (${cueId})`, index, total),
+    prefetchTts: Boolean(policy?.prefetchTts)
   })
   await saveDurationProfile(profileRoot, profileKey, predictor.profile).catch((error) => {
     logWarn(`[AutoShort] Không lưu được duration profile: ${errLabel(error)}`)
@@ -2145,6 +2204,7 @@ export async function synthesizeVoice(
     const subtitles = cue.subtitles as SubtitleCue[]
     const unit: AutoShortDubbingUnit = {
       id: cue.id,
+      timingPolicy: 'source-anchored-v2',
       sourceCueIds: [...cue.sourceCueIds],
       sourceStart: cue.sourceStart,
       sourceEnd: cue.sourceEnd,
@@ -2258,11 +2318,27 @@ async function processSingleVideo(
   item: AutoShortQueueItemInput,
   config: AutoShortConfig,
   index: number,
-  total: number
+  total: number,
+  policy: AutoShortExecutionPolicy = CONSERVATIVE_POLICY,
+  reservation?: DiskReservation
 ): Promise<AutoShortItemResult> {
   const workDir = join(app.getPath('temp'), `tblao-autoshort-${job.id}-${item.id.slice(0, 8)}`)
   const checkpointDir = join(app.getPath('userData'), 'autoshort-checkpoints', safeArtifactSegment(item.id))
-  const artifactDir = join(config.outputDir, `.autoshort-audit-${job.id}-${safeArtifactSegment(item.id)}`)
+  let itemOutputDir: string
+  try {
+    // Reserve the directory atomically before rendering so the MP4, title
+    // file, and audit artifacts for one source can never mix with another.
+    itemOutputDir = await reserveVideoTitleOutputDir(config.outputDir, basename(item.filePath))
+  } catch (error) {
+    const message = sanitizeAutoShortAuditError(error, [item.filePath, config.outputDir])
+    return {
+      itemId: item.id,
+      filePath: item.filePath,
+      status: 'error',
+      error: message || 'Không thể tạo thư mục riêng cho video đầu ra.'
+    }
+  }
+  const artifactDir = join(itemOutputDir, `.autoshort-audit-${job.id}-${safeArtifactSegment(item.id)}`)
 
   const processor = createAutoShortItemProcessor({
     resolveFfmpeg,
@@ -2272,7 +2348,7 @@ async function processSingleVideo(
     burn: burnAutoShort
   })
 
-  return processor({
+  const result = await processor({
     jobId: job.id,
     request: job.request,
     item,
@@ -2283,11 +2359,42 @@ async function processSingleVideo(
     checkpointDir,
     workDir,
     artifactDir,
+    itemOutputDir,
     ttsCapabilities: job.ttsCapabilities,
     ttsCapabilitiesUrl: job.ttsCapabilitiesUrl,
     separation: job.separation,
-    separationProviderState: job.separationProviderState
+    separationProviderState: job.separationProviderState,
+    policy,
+    resourceManager: job.resourceManager || getGlobalResourceManager(),
+    telemetryBudget: job.telemetryBudget
   })
+  // All known artifacts have been published; no future bytes remain reserved
+  // when this item reaches the queue terminal state.
+  reservation?.update(0)
+  return result
+}
+
+const AUTOSHORT_MIN_FUTURE_BYTES = 512 * 1024 * 1024
+const AUTOSHORT_INPUT_WORKING_SET_MULTIPLIER = 3
+const AUTOSHORT_FIXED_FUTURE_BYTES = 256 * 1024 * 1024
+
+/**
+ * Conservative admission estimate for experimental two-item execution.
+ * It represents future writes only; existing input/output files are not
+ * counted, and the ledger adds the independent STTN headroom.
+ */
+export function estimateAutoShortFutureBytes(inputBytes: number): number {
+  const normalized = Number.isFinite(inputBytes) && inputBytes > 0 ? inputBytes : 0
+  return Math.max(
+    AUTOSHORT_MIN_FUTURE_BYTES,
+    Math.ceil(normalized * AUTOSHORT_INPUT_WORKING_SET_MULTIPLIER + AUTOSHORT_FIXED_FUTURE_BYTES)
+  )
+}
+
+export function autoShortVolumeForPath(filePath: string): string {
+  const drive = filePath.match(/^([A-Za-z]):(?:[\\/]|$)/)?.[1]
+  if (drive) return `${drive.toUpperCase()}:\\`
+  return dirname(filePath) || filePath
 }
 
 async function preflight(job: AutoShortJob): Promise<void> {
@@ -2357,32 +2464,58 @@ async function preflight(job: AutoShortJob): Promise<void> {
 }
 
 async function executeJob(job: AutoShortJob): Promise<AutoShortBatchResult> {
-  const results: AutoShortItemResult[] = []
+  const total = job.request.items.length
+  const results: AutoShortItemResult[] = new Array(total)
   try {
+    job.telemetryBudget = new AutoShortTelemetryJobBudget()
     await preflight(job)
-    for (let index = 0; index < job.request.items.length; index++) {
-      if (job.controller.signal.aborted) {
-        for (let rest = index; rest < job.request.items.length; rest++) {
-          const item = job.request.items[rest]
-          const result: AutoShortItemResult = { itemId: item.id, filePath: item.filePath, status: 'cancelled', error: 'Đã hủy tác vụ' }
-          results.push(result)
-          emitTerminal(job, item, rest, job.request.items.length, result)
-        }
-        break
+    const policy = resolveExecutionPolicy(job.request.config?.executionPolicy)
+    // Two-item execution remains an explicit experimental opt-in. When it is
+    // selected, admit each item through the disk ledger before starting any
+    // child process; the conservative production default (1) is unchanged.
+    const diskBudget = policy.maxActiveItems === 2 ? getGlobalAutoShortDiskBudget() : undefined
+    const queueResults = await runAutoShortQueue({
+      items: job.request.items,
+      maxActiveItems: policy.maxActiveItems,
+      signal: job.controller.signal,
+      admitItem: diskBudget
+        ? async (item, _index, _totalCount, signal) => {
+            const inputInfo = await stat(item.filePath).catch(() => null)
+            const estimate = estimateAutoShortFutureBytes(inputInfo?.size || 0)
+            const volume = autoShortVolumeForPath(job.request.config.outputDir)
+            logInfo(`[AutoShort] disk-admission volume=${volume} estimateBytes=${estimate} item=${safeArtifactSegment(item.id)}`)
+            return diskBudget.reserve(volume, estimate, signal)
+          }
+        : undefined,
+      processItem: async (item, index, totalCount, reservation) => {
+        return processSingleVideo(job, item, job.request.config, index, totalCount, policy, reservation)
+      },
+      onTerminal: (itemResult, index, item, totalCount) => {
+        results[index] = itemResult
+        emitTerminal(job, item, index, totalCount, itemResult)
+      },
+      sanitizeError: (item, error) => sanitizeAutoShortAuditError(error, [item.filePath, job.request.config.outputDir])
+    })
+    for (let i = 0; i < total; i++) {
+      if (queueResults[i]) {
+        results[i] = queueResults[i]
       }
-      const item = job.request.items[index]
-      const result = await processSingleVideo(job, item, job.request.config, index, job.request.items.length)
-      results.push(result)
-      emitTerminal(job, item, index, job.request.items.length, result)
     }
   } catch (error) {
     const message = errLabel(error)
     logError(`[AutoShort] Preflight thất bại: ${message}`)
-    for (let index = results.length; index < job.request.items.length; index++) {
-      const item = job.request.items[index]
-      const result: AutoShortItemResult = { itemId: item.id, filePath: item.filePath, status: job.controller.signal.aborted ? 'cancelled' : 'error', error: message }
-      results.push(result)
-      emitTerminal(job, item, index, job.request.items.length, result)
+    for (let index = 0; index < total; index++) {
+      if (!results[index]) {
+        const item = job.request.items[index]
+        const result: AutoShortItemResult = {
+          itemId: item.id,
+          filePath: item.filePath,
+          status: job.controller.signal.aborted ? 'cancelled' : 'error',
+          error: message
+        }
+        results[index] = result
+        emitTerminal(job, item, index, total, result)
+      }
     }
   }
   const completedCount = results.filter((result) => result?.status === 'done').length
@@ -2391,10 +2524,10 @@ async function executeJob(job: AutoShortJob): Promise<AutoShortBatchResult> {
   const result: AutoShortBatchResult = {
     ok: completedCount > 0 && errorCount === 0 && cancelledCount === 0,
     completedCount,
-    totalCount: job.request.items.length,
+    totalCount: total,
     error: errorCount > 0 ? `${errorCount} video lỗi` : cancelledCount > 0 ? 'Tiến trình đã bị dừng bởi người dùng' : undefined
   }
-  safeEmit(job, { type: 'batch-done', jobId: job.id, completedCount, errorCount, cancelledCount, totalCount: job.request.items.length, results })
+  safeEmit(job, { type: 'batch-done', jobId: job.id, completedCount, errorCount, cancelledCount, totalCount: total, results })
   return result
 }
 
@@ -2430,6 +2563,7 @@ export async function cancelAutoShort(jobId: string): Promise<{ ok: boolean; err
 
 /** Stop every child-process owner used by Auto Short before Electron exits. */
 export async function shutdownAutoShortRuntime(): Promise<void> {
+  await Promise.all([...sttnPreviews.keys()].map((ownerId) => disposeAutoShortSttnPreview(ownerId)))
   const job = activeJob
   if (job) {
     job.cancelled = true
@@ -2447,6 +2581,142 @@ export async function shutdownAutoShortRuntime(): Promise<void> {
   cancelOcr()
   cancelVideo2x()
   terminateTrackedProcessTrees()
+}
+
+interface SttnPreviewHooks {
+  resolveFfmpeg?: typeof resolveFfmpeg
+  resolveFfprobe?: typeof resolveFfprobe
+  probeMedia?: typeof probeBurnMedia
+  runVisualOcr?: typeof ocrVideoWithVisualTimeline
+  removeSubtitles?: typeof runSttnRemoval
+  runMedia?: typeof runSttnPreviewMedia
+  resourceManager?: AutoShortResourceManager
+}
+
+/** Preview helpers await native process close before callers may remove work files. */
+async function runSttnPreviewMedia(executable: string, args: string[], signal: AbortSignal): Promise<void> {
+  throwIfAborted(signal)
+  await new Promise<void>((resolve, reject) => {
+    const child = spawnAutoShortChild(executable, ['-nostdin', '-hide_banner', '-loglevel', 'error', '-n', ...args], { windowsHide: true, shell: false })
+    let diagnostics = ''
+    let spawnError: Error | undefined
+    const abort = (): void => terminateProcessTree(child)
+    child.stdout?.resume()
+    child.stderr?.on('data', (chunk: Buffer) => { diagnostics = (diagnostics + chunk.toString()).slice(-8192) })
+    child.once('error', (error) => { spawnError = error })
+    child.once('close', (code) => {
+      signal.removeEventListener('abort', abort)
+      if (signal.aborted) reject(new Error('Đã hủy xem thử STTN.'))
+      else if (spawnError || code !== 0) reject(new Error(`Không tạo được video xem thử STTN: ${spawnError?.message || diagnostics}`))
+      else resolve()
+    })
+    signal.addEventListener('abort', abort, { once: true })
+    if (signal.aborted) abort()
+  })
+}
+
+export async function runAutoShortSttnPreview(
+  raw: unknown,
+  workDir: string,
+  signal: AbortSignal,
+  onProgress: (progress: AutoShortSttnPreviewProgress) => void,
+  hooks: SttnPreviewHooks = {}
+): Promise<{ outputPath: string; provider: 'cuda' | 'cpu'; elapsedMs: number }> {
+  if (!raw || typeof raw !== 'object' || Array.isArray(raw)) throw new Error('Yêu cầu xem thử STTN không hợp lệ.')
+  const request = raw as Record<string, unknown>
+  if (Object.keys(request).some(key => !['videoPath', 'config', 'previewSeconds'].includes(key))) throw new Error('Yêu cầu xem thử chứa tham số không được phép.')
+  const seconds = request.previewSeconds ?? 5
+  if (typeof seconds !== 'number' || !Number.isFinite(seconds) || seconds <= 0 || seconds > 10) throw new Error('Xem thử STTN chỉ hỗ trợ tối đa 10 giây.')
+  if (!request.config || typeof request.config !== 'object' || Array.isArray(request.config)) throw new Error('Cấu hình xem thử không hợp lệ.')
+  const validated = validateAutoShortStartRequest({
+    config: { ...request.config, outputDir: workDir },
+    items: [{ id: 'sttn-preview', filePath: request.videoPath }]
+  })
+  if (!validated.ok) throw new Error(validated.error)
+  const { config } = validated.value
+  if (!isSttnRemoval(config)) throw new Error('Hãy bật chế độ xóa chữ STTN trước khi xem thử.')
+  throwIfAborted(signal)
+  const videoPath = validated.value.items[0].filePath
+  if (!(await stat(videoPath)).isFile()) throw new Error('Video xem thử không hợp lệ.')
+  const ffmpeg = await (hooks.resolveFfmpeg || resolveFfmpeg)()
+  const ffprobe = await (hooks.resolveFfprobe || resolveFfprobe)()
+  if (!ffmpeg || !ffprobe) throw new Error('Cần FFmpeg/FFprobe để xem thử STTN.')
+  const media = hooks.runMedia || runSttnPreviewMedia
+  const resourceManager = hooks.resourceManager || getGlobalResourceManager()
+  await mkdir(workDir, { recursive: true })
+  const sourceClip = join(workDir, 'source-preview.mkv')
+  const cleanedPath = join(workDir, 'cleaned-preview.mkv')
+  const outputPath = join(workDir, 'preview.mp4')
+  onProgress({ percent: 0, message: 'Đang chuẩn bị đoạn xem thử…' })
+  await media(ffmpeg, ['-i', videoPath, '-t', String(seconds), '-map', '0:v:0', '-map', '0:a:0?', '-c:v', 'ffv1', '-level', '3', '-fps_mode', 'passthrough', '-c:a', 'pcm_s16le', sourceClip], signal)
+  throwIfAborted(signal)
+  const meta = await (hooks.probeMedia || probeBurnMedia)(sourceClip)
+  const geometry = meta.geometry ?? deriveCanonicalDisplayGeometry({ codedWidth: meta.w, codedHeight: meta.h, rotation: meta.rotation, sampleAspectRatio: meta.sampleAspectRatio, videoStart: meta.videoStart })
+  const scanRegion = normalizedToPixels(config.ocrRegion, geometry)
+  if (!scanRegion) throw new Error('Cần chọn vùng OCR để xem thử STTN.')
+  const ocrDir = join(workDir, 'ocr')
+  await mkdir(ocrDir, { recursive: true })
+  const visual = await resourceManager.withLease(['local-gpu-heavy', 'local-cpu-heavy'], signal, async () => {
+    return (hooks.runVisualOcr || ocrVideoWithVisualTimeline)({
+      input: sourceClip, outputDir: ocrDir, scanRegion, profile: 'accurate', geometry,
+      videoDurationSeconds: meta.videoDurationSeconds || meta.giay, sampleFps: 8, signal
+    }, p => onProgress({ percent: 5 + Math.max(0, p.percent) * .35, message: 'Đang quét chữ trong đoạn xem thử…' }))
+  })
+  throwIfAborted(signal)
+  if (!visual.timeline?.segments.length || !visual.boxSegmentCount) throw new Error('Không phát hiện chữ trong đoạn xem thử và vùng OCR đã chọn.')
+  const result = await resourceManager.withLease(['local-gpu-heavy', 'local-cpu-heavy'], signal, async () => {
+    return (hooks.removeSubtitles || runSttnRemoval)({
+      videoPath: sourceClip, timeline: visual.timeline, outputPath: cleanedPath,
+      ffmpegPath: ffmpeg, ffprobePath: ffprobe, signal, previewSeconds: seconds,
+      onProgress: (percent, message) => onProgress({ percent: 40 + percent * .5, message })
+    })
+  })
+  throwIfAborted(signal)
+  onProgress({ percent: 92, message: 'Đang tạo MP4 xem thử…' })
+  await media(ffmpeg, ['-i', result.outputPath, '-map', '0:v:0', '-map', '0:a:0?', '-c:v', 'libx264', '-preset', 'fast', '-crf', '18', '-vf', 'pad=ceil(iw/2)*2:ceil(ih/2)*2', '-pix_fmt', 'yuv420p', '-fps_mode', 'passthrough', '-c:a', 'aac', '-movflags', '+faststart', outputPath], signal)
+  throwIfAborted(signal)
+  if (!(await stat(outputPath)).size) throw new Error('Video xem thử STTN trống.')
+  await Promise.all([sourceClip, cleanedPath, ocrDir].map(path => rm(path, { recursive: true, force: true })))
+  onProgress({ percent: 100, message: `Xem thử STTN hoàn tất (${result.provider.toUpperCase()}).` })
+  return { ...result, outputPath }
+}
+
+const sttnPreviews = new Map<number, { controller: AbortController; workDir: string; done: Promise<AutoShortSttnPreviewResult>; running: boolean }>()
+
+export async function startAutoShortSttnPreview(ownerId: number, raw: unknown, onProgress: (progress: AutoShortSttnPreviewProgress) => void): Promise<AutoShortSttnPreviewResult> {
+  const previous = sttnPreviews.get(ownerId)
+  if (previous?.running) return { ok: false, error: 'Đang tạo đoạn xem thử STTN.' }
+  const controller = new AbortController()
+  const workDir = join(app.getPath('userData'), 'autoshort', 'sttn-previews', randomUUID())
+  const entry = { controller, workDir, running: true, done: Promise.resolve<AutoShortSttnPreviewResult>({ ok: false, error: 'Đang chuẩn bị.' }) }
+  sttnPreviews.set(ownerId, entry)
+  entry.done = (async (): Promise<AutoShortSttnPreviewResult> => {
+    try {
+      if (previous) await rm(previous.workDir, { recursive: true, force: true })
+      const result = await runAutoShortSttnPreview(raw, workDir, controller.signal, onProgress)
+      return { ok: true, ...result }
+    } catch (error) {
+      await rm(workDir, { recursive: true, force: true }).catch(() => {})
+      return { ok: false, error: controller.signal.aborted ? 'Đã hủy xem thử STTN.' : sanitizeAutoShortAuditError(error, [workDir]) }
+    } finally { entry.running = false }
+  })()
+  return entry.done
+}
+
+export async function cancelAutoShortSttnPreview(ownerId: number): Promise<void> {
+  const preview = sttnPreviews.get(ownerId)
+  if (!preview?.running) return
+  preview.controller.abort()
+  await preview.done
+}
+
+export async function disposeAutoShortSttnPreview(ownerId: number): Promise<void> {
+  const preview = sttnPreviews.get(ownerId)
+  if (!preview) return
+  preview.controller.abort()
+  await preview.done
+  await rm(preview.workDir, { recursive: true, force: true }).catch(() => {})
+  if (sttnPreviews.get(ownerId) === preview) sttnPreviews.delete(ownerId)
 }
 
 export async function selectAutoShortVideoFiles(): Promise<{ ok: boolean; paths: string[] }> {

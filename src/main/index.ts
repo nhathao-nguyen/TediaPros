@@ -129,6 +129,9 @@ import {
 } from './tts'
 import {
   cancelAutoShort,
+  startAutoShortSttnPreview,
+  cancelAutoShortSttnPreview,
+  disposeAutoShortSttnPreview,
   getAutoShortReadiness,
   installAutoShortDependencies,
   shutdownAutoShortRuntime,
@@ -937,6 +940,21 @@ function registerIpc(): void {
   ipcMain.handle('tts:selectRefAudio', async () => selectReferenceAudioFile())
 
   // Auto Short
+  const sttnPreviewOwners = new Set<number>()
+  ipcMain.handle('auto-short:sttn-preview', async (event, raw: unknown) => {
+    const ownerId = event.sender.id
+    if (!sttnPreviewOwners.has(ownerId)) {
+      sttnPreviewOwners.add(ownerId)
+      event.sender.once('destroyed', () => {
+        sttnPreviewOwners.delete(ownerId)
+        void disposeAutoShortSttnPreview(ownerId)
+      })
+    }
+    return startAutoShortSttnPreview(ownerId, raw, progress => {
+      if (!event.sender.isDestroyed()) event.sender.send('auto-short:sttn-preview-progress', progress)
+    })
+  })
+  ipcMain.handle('auto-short:sttn-preview-cancel', async event => cancelAutoShortSttnPreview(event.sender.id))
   ipcMain.handle('autoshort:selectVideos', async () => selectAutoShortVideoFiles())
   ipcMain.handle('autoshort:selectMusicFolder', async () => {
     if (!mainWindow) return { ok: false, tracks: [], error: 'Cửa sổ ứng dụng chưa sẵn sàng.' }
@@ -967,7 +985,7 @@ function registerIpc(): void {
     if (r.separationPreset !== undefined && !isAutoShortSeparationPreset(r.separationPreset)) {
       throw new Error('Chất lượng tách thoại không hợp lệ.')
     }
-    if (r.blurMode !== undefined && r.blurMode !== 'manual' && r.blurMode !== 'ocr-auto') {
+    if (r.blurMode !== undefined && r.blurMode !== 'manual' && r.blurMode !== 'ocr-auto' && r.blurMode !== 'sttn') {
       throw new Error('Chế độ làm mờ không hợp lệ.')
     }
     if (r.ocrBlurProfile !== undefined && r.ocrBlurProfile !== 'accurate' && r.ocrBlurProfile !== 'fast') {

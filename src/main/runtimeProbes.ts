@@ -13,6 +13,7 @@ export interface RuntimeProbeResult {
   version?: string | null
   protocol?: string | null
   features?: string[]
+  implementationFingerprint?: string | null
   message?: string
 }
 
@@ -152,6 +153,9 @@ async function probeOcr(root: string, spec: RuntimeAssetSpec): Promise<RuntimePr
     .sort()
 
   const reportedVersion = typeof versionJson.version === 'string' ? versionJson.version : null
+  const versionFingerprint = typeof versionJson.implementation_fingerprint === 'string'
+    ? versionJson.implementation_fingerprint
+    : null
 
   if (probe.code !== 0 || !ready) {
     return {
@@ -159,6 +163,7 @@ async function probeOcr(root: string, spec: RuntimeAssetSpec): Promise<RuntimePr
       version: reportedVersion,
       protocol: 'ocr-local/1',
       features: verifiedFeatures,
+      implementationFingerprint: versionFingerprint,
       message: 'OCR model probe thất bại.'
     }
   }
@@ -171,6 +176,7 @@ async function probeOcr(root: string, spec: RuntimeAssetSpec): Promise<RuntimePr
         version: reportedVersion,
         protocol: 'ocr-local/1',
         features: verifiedFeatures,
+        implementationFingerprint: versionFingerprint,
         message: `OCR thiếu capabilities bắt buộc từ manifest: ${missing.join(', ')}.`
       }
     }
@@ -182,7 +188,19 @@ async function probeOcr(root: string, spec: RuntimeAssetSpec): Promise<RuntimePr
       version: reportedVersion,
       protocol: 'ocr-local/1',
       features: verifiedFeatures,
+      implementationFingerprint: versionFingerprint,
       message: `OCR version ${reportedVersion || '(trống)'} không khớp manifest ${spec.version}.`
+    }
+  }
+
+  if (spec.implementationFingerprint && versionFingerprint !== spec.implementationFingerprint) {
+    return {
+      healthy: false,
+      version: reportedVersion,
+      protocol: 'ocr-local/1',
+      features: verifiedFeatures,
+      implementationFingerprint: versionFingerprint,
+      message: 'OCR implementation fingerprint không khớp manifest.'
     }
   }
 
@@ -190,7 +208,8 @@ async function probeOcr(root: string, spec: RuntimeAssetSpec): Promise<RuntimePr
     healthy: true,
     version: reportedVersion,
     protocol: 'ocr-local/1',
-    features: verifiedFeatures
+    features: verifiedFeatures,
+    implementationFingerprint: versionFingerprint
   }
 }
 
@@ -204,6 +223,17 @@ export async function probeRuntimeAsset(
   const executable = entrypointPath(root, spec)
   if (!(await exists(executable))) return { healthy: false, message: `Thiếu entrypoint ${spec.entrypoint}.` }
   if (kind === 'ocr-engine') return probeOcr(root, spec)
+  if (kind === 'sttn-engine') {
+    const { runSttnCommand } = await import('./inpainting/runner')
+    try {
+      const version = await runSttnCommand({ executablePath: executable, args: ['--version'], expectedEvent: 'version', timeoutMs: 30_000 })
+      const healthy = version.engine === 'sttn' && typeof version.version === 'string' &&
+        (spec.version === 'installed' || version.version === spec.version) &&
+        (!spec.protocol || spec.protocol === 'sttn-engine/1') &&
+        spec.capabilities.every(feature => Array.isArray(version.features) && version.features.includes(feature))
+      return { healthy, version: typeof version.version === 'string' ? version.version : undefined, protocol: 'sttn-engine/1', message: healthy ? undefined : 'STTN version/capabilities không khớp manifest.' }
+    } catch (error) { return { healthy: false, message: error instanceof Error ? error.message : String(error) } }
+  }
   if (kind === 'ffmpeg') {
     const ffprobeName = process.platform === 'win32' ? 'ffprobe.exe' : 'ffprobe'
     const ffprobe = join(root, ffprobeName)

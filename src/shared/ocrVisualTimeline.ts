@@ -7,6 +7,14 @@ export const OCR_VISUAL_MAX_BOXES_PER_SEGMENT = 64
 export const OCR_VISUAL_MAX_TEXT_CODE_POINTS = 4_096
 export const OCR_SAMPLE_FPS = 8 as const
 
+export type OcrVisualTransport = 'legacy-disk' | 'stream-full' | 'stream-roi'
+
+export interface OcrProviderReport {
+  det: string | null
+  cls: string | null
+  rec: string | null
+}
+
 export interface OcrVisualBox extends PixelRegion {
   text: string
   confidence: number
@@ -35,6 +43,9 @@ export interface OcrVisualTimeline {
     geometryFingerprint: string
   }
   profile: AutoShortOcrBlurProfile
+  transport?: OcrVisualTransport
+  implementationFingerprint?: string
+  ocrProvider?: OcrProviderReport
   scanRegion: PixelRegion
   segments: OcrVisualSegment[]
 }
@@ -133,6 +144,27 @@ export function validateOcrVisualTimeline(
   }
   if (r.profile !== 'accurate' && r.profile !== 'fast') {
     throw new Error(`Profile OCR không hợp lệ: ${r.profile}.`)
+  }
+
+  const transport = r.transport === undefined ? undefined : r.transport
+  if (transport !== undefined && transport !== 'legacy-disk' && transport !== 'stream-full' && transport !== 'stream-roi') {
+    throw new Error(`Transport OCR không hợp lệ: ${String(transport)}.`)
+  }
+  const implementationFingerprint = r.implementationFingerprint === undefined ? undefined : r.implementationFingerprint
+  if (implementationFingerprint !== undefined && (typeof implementationFingerprint !== 'string' || !/^[a-f0-9]{64}$/iu.test(implementationFingerprint))) {
+    throw new Error('Implementation fingerprint OCR không hợp lệ.')
+  }
+  let ocrProvider: OcrProviderReport | undefined
+  if (r.ocrProvider !== undefined) {
+    const rawProvider = r.ocrProvider as Record<string, unknown>
+    if (!rawProvider || typeof rawProvider !== 'object') throw new Error('Provider OCR không hợp lệ.')
+    const readProvider = (name: string): string | null => {
+      const value = rawProvider[name]
+      if (value === null || value === undefined) return null
+      if (typeof value !== 'string' || value.length > 128) throw new Error(`Provider OCR ${name} không hợp lệ.`)
+      return value
+    }
+    ocrProvider = { det: readProvider('det'), cls: readProvider('cls'), rec: readProvider('rec') }
   }
 
   const v = r.video as Record<string, unknown> | undefined
@@ -325,6 +357,9 @@ export function validateOcrVisualTimeline(
       geometryFingerprint: expected.geometryFingerprint
     },
     profile: r.profile as AutoShortOcrBlurProfile,
+    ...(transport !== undefined ? { transport: transport as OcrVisualTransport } : {}),
+    ...(implementationFingerprint !== undefined ? { implementationFingerprint: implementationFingerprint as string } : {}),
+    ...(ocrProvider ? { ocrProvider } : {}),
     scanRegion: { ...expected.scanRegion },
     segments: validatedSegments
   }
@@ -478,7 +513,10 @@ export function planOcrMaskFrames(
 
     const paddedBoxes: PixelRegion[] = seg.boxes.map((b) => {
       const boxH = b.y1 - b.y0
-      const pad = Math.max(6, Math.min(16, Math.round(boxH * 0.20)))
+      // OCR boxes can stop directly at a glyph edge. A larger safety margin
+      // prevents that edge from leaking through maskedmerge, while clipping
+      // keeps the blur strictly inside the user's scan region.
+      const pad = Math.max(8, Math.min(24, Math.round(boxH * 0.30)))
       return {
         x0: Math.max(0, Math.max(timeline.scanRegion.x0, b.x0 - pad)),
         y0: Math.max(0, Math.max(timeline.scanRegion.y0, b.y0 - pad)),

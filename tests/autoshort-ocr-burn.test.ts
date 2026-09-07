@@ -5,7 +5,8 @@ import { join } from 'node:path'
 import { test } from 'node:test'
 import {
   planBurnInputs,
-  blurSigmaForDisplayHeight
+  blurSigmaForDisplayHeight,
+  ocrBlurSigmaForDisplayHeight
 } from '../src/main/burnInputPlanner'
 import {
   taoFilterComplex,
@@ -46,10 +47,19 @@ test('planBurnInputs orders inputs deterministically across all four combination
   assert.equal(p4.maskVideoIndex, 2)
 })
 
-test('blurSigmaForDisplayHeight scales proportionally with min 12', () => {
-  assert.equal(blurSigmaForDisplayHeight(266), 21)
-  assert.equal(blurSigmaForDisplayHeight(720), 58)
-  assert.equal(blurSigmaForDisplayHeight(1080), 86)
+test('manual blur keeps its existing display-height profile', () => {
+  assert.equal(blurSigmaForDisplayHeight(266), 32)
+  assert.equal(blurSigmaForDisplayHeight(720), 86)
+  assert.equal(blurSigmaForDisplayHeight(1080), 130)
+})
+
+test('ocrBlurSigmaForDisplayHeight uses a bounded privacy profile', () => {
+  // Keep the OCR glyph unreadable without averaging a bright background into
+  // a flat white rectangle on tall portrait videos.
+  assert.equal(ocrBlurSigmaForDisplayHeight(266), 16)
+  assert.equal(ocrBlurSigmaForDisplayHeight(720), 29)
+  assert.equal(ocrBlurSigmaForDisplayHeight(1080), 43)
+  assert.equal(ocrBlurSigmaForDisplayHeight(1920), 64)
 })
 
 test('freeze manual graph regressions before refactoring', () => {
@@ -86,7 +96,7 @@ test('freeze manual graph regressions before refactoring', () => {
   assert.match(str4, /ass=sub\.ass/u)
 })
 
-test('taoFilterComplexAutomatic generates exact video filter chain and sigma', () => {
+test('taoFilterComplexAutomatic generates exact video filter chain and bounded sigma', () => {
   const meta: Meta = { w: 576, h: 266, giay: 1.0, hasAudio: false }
   const plan = planBurnInputs({ sourceVideo: 'src.mp4', narrationAudio: 'narr.wav', timedMask: 'mask.mkv' })
 
@@ -94,17 +104,17 @@ test('taoFilterComplexAutomatic generates exact video filter chain and sigma', (
   const filterStr = filterArgs.join(' ')
 
   // Check filter nodes
-  assert.match(filterStr, /\[0:v\]null\[display\]/u)
+  assert.match(filterStr, /\[0:v\]null,format=gbrp\[display\]/u)
   assert.match(filterStr, /\[display\]split=2\[base\]\[blur_source\]/u)
-  assert.match(filterStr, /\[blur_source\]gblur=sigma=21:steps=3\[blurred\]/u)
+  assert.match(filterStr, /\[blur_source\]gblur=sigma=16:steps=6\[blurred\]/u)
   assert.match(filterStr, /\[2:v\]format=gray,settb=AVTB,setpts=PTS-STARTPTS\[mask\]/u)
   assert.match(filterStr, /\[base\]\[blurred\]\[mask\]maskedmerge,trim=duration=1\.000\[masked\]/u)
   assert.match(filterStr, /\[masked\]ass=sub\.ass\[out\]/u)
 
-  // For 1080p, sigma must be 86
+  // For 1080p, the bounded privacy sigma must be 43.
   const meta1080: Meta = { w: 1920, h: 1080, giay: 1.0, hasAudio: false }
   const f1080 = taoFilterComplexAutomatic(meta1080, plan, true, 'sub.ass', false).join(' ')
-  assert.match(f1080, /gblur=sigma=86:steps=3/u)
+  assert.match(f1080, /gblur=sigma=43:steps=6/u)
 })
 
 test('automatic graph is constant size and forbids repeatlast/eof_action/shortest', () => {

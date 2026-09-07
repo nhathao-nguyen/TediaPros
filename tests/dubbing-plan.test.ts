@@ -366,3 +366,68 @@ test('synthesis performs at most one rephrase and updates both plan text and sub
   assert.equal(result.plan.cues[0].finalSpokenText, 'short final')
   assert.equal(result.plan.cues[0].subtitles[0].text, 'short final')
 })
+
+test('long voice fits once from original PCM and reports total effective tempo', async () => {
+  const plan = planModule.buildDubbingPlan({ videoDuration: 4, paceMode: 'fixed', cues: [
+    { id: 'long', start: 0, end: 1, text: 'Keep all the original words.' },
+    { id: 'short', start: 2, end: 3, text: 'Next sentence.' }
+  ] })
+  const calls: Array<{ path: string; target: number }> = []
+  const result = await synthesisModule.synthesizeDubbingPlan({
+    plan, language: 'en', model: 'fixture', fixedTempo: 1,
+    tts: { synthesize: async (request) => ({ path: `${request.cueId}.wav` }) },
+    audio: {
+      trim: async (path) => ({ path: `${path}.trim`, duration: path.startsWith('long') ? 5 : 0.8 }),
+      applyTempo: async (path, _hint, target) => {
+        calls.push({ path, target })
+        return { path: `${path}.tempo`, duration: target }
+      }
+    }
+  })
+  assert.equal(calls.length, 1, 'the old emergency path processed this cue twice')
+  assert.equal(calls[0].path, 'long.wav.trim')
+  assert.equal(calls[0].target, 1.98)
+  assert.equal(result.plan.cues[0].tempo, Number((5 / 1.98).toFixed(4)))
+  assert.equal(result.metrics.maxTempo, result.plan.cues[0].tempo)
+  assert.equal(result.plan.cues[0].finalSpokenText, 'Keep all the original words.')
+  assert.ok(result.plan.cues[0].voiceEnd! <= 1.98)
+  const units = result.plan.cues.map((cue) => ({
+    ...cue,
+    timingPolicy: 'source-anchored-v2',
+    plannedStart: cue.start,
+    plannedEnd: cue.voiceEnd!,
+    finalDuration: cue.actualDuration!
+  }))
+  const exported = policyModule.validateAutoShortTimelineSync(units, plan.videoDuration)
+  assert.equal(exported.ok, true, exported.violations.join('\n'))
+  assert.ok(exported.warnings?.some((warning) => warning.includes('2.525')))
+  // Old callers retain their original tempo ceiling.
+  assert.equal(policyModule.validateAutoShortTimelineSync(units.map(({ timingPolicy, ...unit }) => unit), 4).ok, false)
+  const invalid = [
+    { ...units[0], tempo: NaN },
+    { ...units[0], tempo: 0 },
+    { ...units[0], tempo: units[0].tempo + 1 },
+    { ...units[0], finalDuration: NaN },
+    { ...units[0], plannedEnd: 2.1, hardEnd: 2.1, finalDuration: 2.1, tempo: 5 / 2.1 },
+    { ...units[0], plannedEnd: 5, hardEnd: 5, finalDuration: 5, tempo: 1 }
+  ]
+  for (const unit of invalid) {
+    assert.equal(policyModule.validateAutoShortTimelineSync([unit, units[1]], 4).ok, false, JSON.stringify(unit))
+  }
+})
+
+test('measured tempo overshoot retries original audio once and rejects persistent overlap', async () => {
+  const plan = planModule.buildDubbingPlan({ videoDuration: 2, paceMode: 'fixed', cues: [
+    { id: 'long', start: 0, end: 1, text: 'All original words.' }
+  ] })
+  const paths: string[] = []
+  await assert.rejects(synthesisModule.synthesizeDubbingPlan({
+    plan, language: 'en', model: 'fixture',
+    tts: { synthesize: async () => ({ path: 'original.wav' }) },
+    audio: {
+      trim: async () => ({ path: 'trimmed.wav', duration: 5 }),
+      applyTempo: async (path) => { paths.push(path); return { path: 'bad.wav', duration: 3 } }
+    }
+  }), /vượt thời lượng/u)
+  assert.deepEqual(paths, ['trimmed.wav', 'trimmed.wav'])
+})

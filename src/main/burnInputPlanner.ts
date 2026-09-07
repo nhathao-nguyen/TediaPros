@@ -40,10 +40,25 @@ export function planBurnInputs(input: {
 }
 
 /**
- * Calculate Gaussian blur sigma for a given display height (scale proportional ~8%, min 12).
- * Uses a stronger factor to ensure text is completely unreadable after blurring.
+ * Calculate Gaussian blur sigma for a given display height.
+ *
+ * This is the existing manual blur profile. Automatic OCR blur uses the
+ * bounded profile below because it applies one full-frame blur before the
+ * timed mask selects individual OCR regions.
  */
 export function blurSigmaForDisplayHeight(displayHeight: number): number {
   const height = Number.isFinite(displayHeight) && displayHeight > 0 ? displayHeight : 720
-  return Math.max(12, Math.round(height * 0.08))
+  return Math.max(24, Math.round(height * 0.12))
+}
+
+/**
+ * Calculate the bounded sigma used by the automatic OCR privacy blur.
+ *
+ * A full-frame Gaussian blur at very large sigma values averages bright
+ * backgrounds into visible flat rectangles inside the mask. The cap keeps
+ * OCR glyphs unreadable while preserving the underlying scene texture.
+ */
+export function ocrBlurSigmaForDisplayHeight(displayHeight: number): number {
+  const height = Number.isFinite(displayHeight) && displayHeight > 0 ? displayHeight : 720
+  return Math.min(64, Math.max(16, Math.round(height * 0.04)))
 }

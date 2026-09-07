@@ -4,7 +4,7 @@ import { access, mkdir, rm, chmod, stat } from 'node:fs/promises'
 import { join, basename, dirname } from 'node:path'
 import { Readable } from 'node:stream'
 import { pipeline } from 'node:stream/promises'
-import { getDistributionConfig } from './distributionConfig'
+import { createDistributionFetch, getDistributionConfig } from './distributionConfig'
 import { validateRuntimeDistributionManifest, type RuntimeAssetSpec, type RuntimeDistributionManifest } from './runtimeManifest'
 import { extractZip, validateZipArchive, isSafeRuntimeArchiveEntryPath } from './deps'
 import { findFile, replaceDirectoryAtomic } from './localAssets'
@@ -43,11 +43,12 @@ function arch(): 'x64' | 'arm64' | 'ia32' {
   return process.arch === 'arm64' || process.arch === 'ia32' ? process.arch : 'x64'
 }
 
-export async function fetchRuntimeManifest(fetchImpl: typeof fetch = fetch): Promise<RuntimeDistributionManifest | null> {
+export async function fetchRuntimeManifest(fetchImpl?: typeof fetch): Promise<RuntimeDistributionManifest | null> {
   const config = getDistributionConfig()
   if (!config.manifestUrl) return null
+  const requestFetch = fetchImpl || createDistributionFetch(config)
   try {
-    const response = await fetchImpl(config.manifestUrl, {
+    const response = await requestFetch(config.manifestUrl, {
       headers: { Accept: 'application/json' },
       signal: AbortSignal.timeout(15_000)
     })
@@ -97,12 +98,12 @@ export async function downloadRuntimeEngineFromManifest(
   onProgress: (percent: number, message: string) => void,
   hooks: RuntimeInstallerHooks = {}
 ): Promise<boolean> {
-  const fetchImpl = hooks.fetch || fetch
+  const config = getDistributionConfig()
+  const fetchImpl = hooks.fetch || createDistributionFetch(config)
   const manifest = await fetchRuntimeManifest(fetchImpl)
   const spec = manifest?.assets[kind]
   if (!manifest || !spec) return false
 
-  const config = getDistributionConfig()
   const assetUrl = config.getAssetUrl(spec.asset)
   if (!assetUrl) return false
   const targetDir = runtimeKindDir(kind)

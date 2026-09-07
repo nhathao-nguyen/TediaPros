@@ -11,6 +11,7 @@ import {
   type AutoShortBackgroundMusicConfig,
   type AutoShortBackgroundMusicMode,
   type AutoShortDependencyProgress,
+  type AutoShortSttnPreviewProgress,
   type AutoShortReadiness,
   type AutoShortEvent,
   type AutoShortSubtitleMethod,
@@ -25,7 +26,7 @@ import {
   type TtsModelInfo,
   type WhisperDevice
 } from '../../../shared/types'
-import { normalizeAutoShortBlurMode, normalizeAutoShortOcrBlurProfile } from '../../../shared/autoShortOcrBlur'
+import { isAutomaticOcrProcessing, isSttnRemoval, normalizeAutoShortBlurMode, normalizeAutoShortOcrBlurProfile } from '../../../shared/autoShortOcrBlur'
 import { createAutoShortMusicAssignments } from '../../../shared/autoShortBackgroundMusic'
 import { localMediaSource } from '../lib/localMedia'
 import { useTabOutputDir } from '../lib/outputDir'
@@ -233,10 +234,11 @@ export default function AutoShort(): JSX.Element {
   const [blurRegions, setBlurRegions] = useState<BlurRegion[]>([])
   const [activeBlurId, setActiveBlurId] = useState<string | null>(null)
 
-  const automaticBlur = blurEnabled && blurMode === 'ocr-auto'
+  const automaticProcessing = isAutomaticOcrProcessing({ lamMo: blurEnabled, blurMode })
+  const sttnRemoval = isSttnRemoval({ lamMo: blurEnabled, blurMode })
   const subtitleUsesOcr = subtitleMethod === 'ocr' || subtitleMethod === 'whisper-ocr'
   const visibleManualBlurRegions = blurEnabled && blurMode === 'manual' ? blurRegions : []
-  const showOcrScanRegion = subtitleUsesOcr || automaticBlur
+  const showOcrScanRegion = subtitleUsesOcr || automaticProcessing
 
 
   // TTS AI Voice
@@ -389,14 +391,19 @@ export default function AutoShort(): JSX.Element {
   const [dependencyInstalling, setDependencyInstalling] = useState(false)
   const [dependencyError, setDependencyError] = useState<string | null>(null)
   const [dependencyProgress, setDependencyProgress] = useState<Record<string, AutoShortDependencyProgress>>({})
+  const [dependencyAction, setDependencyAction] = useState<'batch' | 'preview'>('batch')
+  const [sttnPreviewRunning, setSttnPreviewRunning] = useState(false)
+  const sttnPreviewToken = useRef(0)
+  const [sttnPreviewProgress, setSttnPreviewProgress] = useState<AutoShortSttnPreviewProgress | null>(null)
+  const [sttnPreviewPath, setSttnPreviewPath] = useState<string | null>(null)
 
   const applyItemResult = useCallback((event: AutoShortEvent): void => {
     if (event.type === 'item-progress') {
       setTasks((prev) => prev.map((item) => item.id === event.itemId ? {
         ...item,
         status: event.itemStatus,
-        percent: event.itemPercent,
-        currentStepMessage: event.itemMessage,
+        percent: event.itemStatus === 'done' ? 100 : Math.max(item.percent || 0, event.itemPercent),
+        currentStepMessage: event.stageInfo?.waitReason ? `${event.itemMessage} (${event.stageInfo.waitReason})` : event.itemMessage,
         outputPath: event.outputPath || item.outputPath,
         error: event.error || item.error
       } : item))
@@ -486,16 +493,16 @@ export default function AutoShort(): JSX.Element {
     return unsub
   }, [activeJobId, applyItemResult])
 
-  const refreshAutoShortReadiness = useCallback(async (): Promise<AutoShortReadiness | null> => {
+  const refreshAutoShortReadiness = useCallback(async (preview = false): Promise<AutoShortReadiness | null> => {
     try {
       const next = await window.api.autoShortGetReadiness({
-        subtitleMethod,
+        subtitleMethod: preview ? 'ocr' : subtitleMethod,
         whisperModel: selectedWhisperModel,
         whisperDevice,
         lamMo: blurEnabled,
         blurMode,
         ocrBlurProfile,
-        audioMode,
+        audioMode: preview ? 'replace' : audioMode,
         separationPreset
       })
       setReadiness(next)
@@ -523,6 +530,8 @@ export default function AutoShort(): JSX.Element {
       setDependencyProgress((previous) => ({ ...previous, [progress.id]: progress }))
     })
   }, [])
+
+  useEffect(() => window.api.onAutoShortSttnPreviewProgress(setSttnPreviewProgress), [])
 
   // Font family preview loader
   useEffect(() => {
@@ -810,7 +819,8 @@ export default function AutoShort(): JSX.Element {
 
   // Khởi động chạy hàng loạt Auto Short
   const startBatch = async (): Promise<void> => {
-    if (tasks.length === 0 || isRunning) return
+    if (tasks.length === 0 || isRunning || sttnPreviewRunning) return
+    setDependencyAction('batch')
     let backgroundMusicConfig: AutoShortBackgroundMusicConfig | undefined
     if (ttsEnabled && audioMode === 'replace' && backgroundMusicEnabled) {
       const assignmentResult = createAutoShortMusicAssignments({
@@ -970,27 +980,71 @@ export default function AutoShort(): JSX.Element {
     if (dir) setOutputDir(dir)
   }
 
+  const startSttnPreview = async (): Promise<void> => {
+    if (!selectedTask || !sttnRemoval || isRunning || sttnPreviewRunning) return
+    const token = ++sttnPreviewToken.current
+    setDependencyAction('preview')
+    setSttnPreviewRunning(true)
+    setSttnPreviewPath(null)
+    setSttnPreviewProgress({ percent: 0, message: 'Đang kiểm tra thành phần STTN…' })
+    try {
+      const status = await refreshAutoShortReadiness(true)
+      if (token !== sttnPreviewToken.current) return
+      if (!status?.ready) {
+        setDependencyError(status?.message || 'Không thể kiểm tra thành phần STTN.')
+        setShowDependencyModal(true)
+        return
+      }
+      const w = videoW > 0 ? videoW : 1280
+      const h = videoH > 0 ? videoH : 720
+      const scan = ocrRegion || defaultOcrRegion(w, h)
+      const result = await window.api.autoShortSttnPreview({
+        videoPath: selectedTask.filePath,
+        previewSeconds: 5,
+        config: {
+          subtitleMethod: 'ocr', whisperModel: selectedWhisperModel, whisperDevice,
+          lamMo: true, blurMode: 'sttn', ocrBlurProfile: 'accurate', blurRegions: [],
+          ocrRegion: { x0: scan.x0 / w, y0: scan.y0 / h, x1: scan.x1 / w, y1: scan.y1 / h },
+          translateTarget: 'none', translateProvider: 'local', ttsEnabled: false,
+          voiceOverMode: false, audioMode: 'replace', originalAudioVolume: 1,
+          outputDir: outputDir || selectedTask.filePath.replace(/[^\\/]+$/, '')
+        }
+      })
+      if (token !== sttnPreviewToken.current) return
+      if (!result.ok) throw new Error(result.error)
+      setSttnPreviewPath(result.outputPath)
+      setSttnPreviewProgress({ percent: 100, message: `Xem thử hoàn tất · ${result.provider.toUpperCase()} · ${(result.elapsedMs / 1000).toFixed(1)} giây xử lý` })
+      await window.api.openPath(result.outputPath)
+    } catch (error) {
+      if (token === sttnPreviewToken.current) setSttnPreviewProgress({ percent: 0, message: error instanceof Error ? error.message : 'Không thể tạo bản xem thử STTN.' })
+    } finally {
+      if (token !== sttnPreviewToken.current) setSttnPreviewProgress({ percent: 0, message: 'Đã hủy xem thử STTN.' })
+      setSttnPreviewRunning(false)
+    }
+  }
+
   const installDependencies = async (): Promise<void> => {
     setDependencyInstalling(true)
     setDependencyError(null)
     setDependencyProgress({})
     try {
       const result = await window.api.autoShortInstallDependencies({
-        subtitleMethod,
+        subtitleMethod: dependencyAction === 'preview' ? 'ocr' : subtitleMethod,
         whisperModel: selectedWhisperModel,
         whisperDevice,
         lamMo: blurEnabled,
         blurMode,
         ocrBlurProfile,
-        audioMode,
+        audioMode: dependencyAction === 'preview' ? 'replace' : audioMode,
         separationPreset
       })
       if (!result.ok) throw new Error(result.error || 'Không thể chuẩn bị dependency.')
-      const next = await refreshAutoShortReadiness()
+      const next = await refreshAutoShortReadiness(dependencyAction === 'preview')
       if (!next?.ready) throw new Error(next?.message || 'Dependency chưa sẵn sàng sau khi tải.')
       setShowDependencyModal(false)
       // Tự động tiếp tục chạy flow Auto Short vừa bấm trước đó
-      void startBatch()
+      if (dependencyAction === 'preview') void startSttnPreview()
+      else void startBatch()
     } catch (error) {
       setDependencyError(error instanceof Error ? error.message : 'Không thể chuẩn bị dependency.')
     } finally {
@@ -1124,7 +1178,7 @@ export default function AutoShort(): JSX.Element {
                     subRegion={subtitleRegion || defaultSubtitleRegion(videoW, videoH)}
                     setSubRegion={updateSubRegionClamped}
                     hienOcrBox={showOcrScanRegion}
-                    ocrInteractive={(tool === 'blur' && automaticBlur) || (tool === 'subtitle' && subtitleUsesOcr)}
+                    ocrInteractive={(tool === 'blur' && automaticProcessing) || (tool === 'subtitle' && subtitleUsesOcr)}
                     ocrRegion={ocrRegion || defaultOcrRegion(videoW, videoH)}
                     setOcrRegion={(region) => {
                       const w = videoW > 0 ? videoW : 1280
@@ -1283,7 +1337,7 @@ export default function AutoShort(): JSX.Element {
           </div>
 
           <div className="editor-inspector-scroll">
-            <fieldset disabled={isRunning} style={{ border: 0, padding: 0, margin: 0, minWidth: 0 }}>
+            <fieldset disabled={isRunning || sttnPreviewRunning} style={{ border: 0, padding: 0, margin: 0, minWidth: 0 }}>
               {/* ------------------------------------------------------------- */}
               {/* TAB 1: PHỤ ĐỀ                                                 */}
               {/* ------------------------------------------------------------- */}
@@ -1718,8 +1772,8 @@ export default function AutoShort(): JSX.Element {
                 <>
                   <div className="editor-section-head">
                     <div>
-                      <strong>Vùng làm mờ</strong>
-                      <small>Kéo vùng màu trên video để che phụ đề hoặc logo cũ.</small>
+                      <strong>Xử lý phụ đề gốc</strong>
+                      <small>Chọn làm mờ hoặc dùng AI xóa chữ trong vùng OCR.</small>
                     </div>
                     <label className="editor-switch">
                       <input
@@ -1752,9 +1806,32 @@ export default function AutoShort(): JSX.Element {
                       />
                       <span>Tự động OCR</span>
                     </label>
+                    <label className={`autoshort-blur-mode-option ${blurMode === 'sttn' ? 'selected' : ''}`}>
+                      <input type="radio" name="autoshort-blur-mode" value="sttn"
+                        checked={blurMode === 'sttn'} onChange={() => setBlurModeRaw('sttn')} />
+                      <span>Xóa phụ đề AI (STTN)</span>
+                    </label>
                   </div>
 
-                  {blurMode === 'ocr-auto' ? (
+                  {blurMode === 'sttn' ? (
+                    <div className="autoshort-ocr-blur-settings">
+                      <div className="autoshort-ocr-blur-explain">
+                        <p>STTN dùng các khung hình lân cận để phục hồi nền tại vị trí chữ. Luôn quét OCR Chính xác để xác định vị trí và thời gian xuất hiện.</p>
+                        <p>Kéo vùng nét đứt bao phủ chữ gốc cần xóa. Phụ đề nguồn được nhận diện trước khi xóa để tiếp tục dịch, tạo tiêu đề và lồng tiếng.</p>
+                        <p>Engine và model STTN được tải riêng khi cần; bản CUDA cần khoảng 4,5 GiB dung lượng cài đặt, cộng thêm chỗ trống xử lý video. Hãy xem thử 5 giây đầu để đánh giá nền và chuyển động trước khi chạy toàn bộ.</p>
+                        {readiness?.dependencies.find(item => item.id === 'sttn-engine')?.message &&
+                          <p>{readiness.dependencies.find(item => item.id === 'sttn-engine')?.message}</p>}
+                      </div>
+                      <button className="btn editor-wide-action" type="button"
+                        disabled={!sttnRemoval || !selectedTask || sttnPreviewRunning || dependencyInstalling}
+                        onClick={() => void startSttnPreview()}>Xem thử STTN · 5 giây đầu</button>
+                      {sttnPreviewProgress && <div className="muted small" role="status">
+                        {sttnPreviewRunning ? `${Math.round(sttnPreviewProgress.percent)}% · ` : ''}{sttnPreviewProgress.message}
+                      </div>}
+                      {sttnPreviewPath && <button className="btn ghost sm" type="button"
+                        onClick={() => void window.api.openPath(sttnPreviewPath)}>Mở bản xem thử</button>}
+                    </div>
+                  ) : blurMode === 'ocr-auto' ? (
                     <div className="autoshort-ocr-blur-settings">
                       <div className="autoshort-ocr-profile-group" role="radiogroup" aria-label="Cấu hình quét OCR">
                         <label className={`autoshort-ocr-profile-card ${ocrBlurProfile === 'accurate' ? 'selected' : ''}`}>
@@ -1786,7 +1863,9 @@ export default function AutoShort(): JSX.Element {
                       </div>
 
                       <div className="autoshort-ocr-blur-explain">
-                        <p>Mọi chữ OCR phát hiện trong vùng nét đứt sẽ được làm mờ đúng thời gian xuất hiện, cộng biên an toàn 1 khung OCR. Ứng dụng tự render ngay sau khi quét.</p>
+                        <p>Mọi chữ OCR phát hiện trong vùng nét đứt sẽ được làm mờ mạnh, đúng thời gian xuất hiện, cộng biên an toàn 1 khung OCR. Ứng dụng tự render ngay sau khi quét.</p>
+                        <p>Chữ nằm ngoài vùng nét đứt (ví dụ ở phía trên khung) sẽ không bị làm mờ; hãy kéo giãn vùng OCR bao phủ toàn bộ chữ gốc cần xoá.</p>
+                        <p>Mỗi video mới được lưu trong một thư mục riêng, gồm video đầu ra và thư mục audit.</p>
                         <p>Không phát hiện vùng chữ hợp lệ sẽ dừng video này.</p>
                         {ocrBlurProfile === 'fast' && (
                           <p className="autoshort-ocr-blur-warn">Chế độ Nhanh có thể bỏ sót chữ rất nhỏ hoặc xuất hiện quá ngắn.</p>
@@ -2386,7 +2465,15 @@ export default function AutoShort(): JSX.Element {
           </div>
         </div>
 
-        {isRunning ? (
+        {sttnPreviewRunning ? (
+          <button className="btn danger" type="button" onClick={() => {
+            ++sttnPreviewToken.current
+            setSttnPreviewProgress({ percent: 0, message: 'Đang hủy xem thử STTN…' })
+            void window.api.autoShortCancelSttnPreview().catch((error: unknown) => {
+              setSttnPreviewProgress({ percent: 0, message: error instanceof Error ? error.message : 'Không thể hủy xem thử.' })
+            })
+          }}>Hủy xem thử STTN</button>
+        ) : isRunning ? (
           <button className="btn danger" onClick={() => void cancelBatch()} type="button">
             ⛔ Dừng xử lý
           </button>
@@ -2394,7 +2481,7 @@ export default function AutoShort(): JSX.Element {
           <button
             className="btn primary"
             onClick={() => void startBatch()}
-            disabled={tasks.length === 0}
+            disabled={tasks.length === 0 || sttnPreviewRunning || dependencyInstalling}
             style={{ fontWeight: 700, padding: '10px 22px' }}
             type="button"
           >

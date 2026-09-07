@@ -1,5 +1,6 @@
 import { createHash } from 'node:crypto'
 import type { AutoShortConfig, AlignedCue, AutoShortOcrBlurProfile } from '../shared/types'
+import type { OcrVisualTransport } from '../shared/ocrVisualTimeline'
 import { isAutomaticOcrBlur } from '../shared/autoShortOcrBlur'
 
 export interface OcrSourceCueEvidence {
@@ -7,6 +8,8 @@ export interface OcrSourceCueEvidence {
   engineVersion: string
   engineProtocol: 'ocr-local/1'
   cueDigest: string
+  transport?: OcrVisualTransport
+  implementationFingerprint?: string
 }
 
 export function mustRegenerateOcrSource(
@@ -41,6 +44,8 @@ export function sameOcrSourceCueEvidence(
     previous.effectiveOcrProfile === next.effectiveOcrProfile &&
     previous.engineVersion === next.engineVersion &&
     previous.engineProtocol === next.engineProtocol &&
-    previous.cueDigest === next.cueDigest
+    previous.cueDigest === next.cueDigest &&
+    (previous.transport || null) === (next.transport || null) &&
+    (previous.implementationFingerprint || null) === (next.implementationFingerprint || null)
   )
 }

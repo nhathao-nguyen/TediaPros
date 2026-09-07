@@ -52,6 +52,7 @@ import { resolveSubtitlePlanFont } from './subtitlePlanner'
 import { terminateProcessTree, trackChildProcess } from './processTree'
 import {
   blurSigmaForDisplayHeight,
+  ocrBlurSigmaForDisplayHeight,
   planBurnInputs,
   type BurnInputPlan
 } from './burnInputPlanner'
@@ -840,17 +841,23 @@ export function taoFilterComplexAutomatic(
   if (plan.maskVideoIndex == null) {
     throw new Error('Cần có mask index cho automatic filter complex.')
   }
-  const sigma = blurSigmaForDisplayHeight(meta.h)
+  const sigma = ocrBlurSigmaForDisplayHeight(meta.h)
   const lines: string[] = []
   const canonicalFilter = canonicalDisplayVideoFilter(meta)
   if (canonicalFilter) {
-    lines.push(`[0:v]${canonicalFilter}[display]`)
+    lines.push(`[0:v]${canonicalFilter},format=gbrp[display]`)
   } else {
-    lines.push('[0:v]null[display]')
+    // maskedmerge is not reliable on the source video's subsampled YUV
+    // planes: a white mask can leave a low-contrast copy of the glyph behind.
+    // Use planar RGB for the blend, then let the selected encoder convert back
+    // to the delivery pixel format.
+    lines.push('[0:v]null,format=gbrp[display]')
   }
 
   lines.push('[display]split=2[base][blur_source]')
-  lines.push(`[blur_source]gblur=sigma=${sigma}:steps=3[blurred]`)
+  // Six passes keep fine glyph edges from surviving the privacy blur, while
+  // the mask still limits the effect to OCR-recognized regions.
+  lines.push(`[blur_source]gblur=sigma=${sigma}:steps=6[blurred]`)
   lines.push(`[${plan.maskVideoIndex}:v]format=gray,settb=AVTB,setpts=PTS-STARTPTS[mask]`)
 
   const durationSec = meta.videoDurationSeconds ?? meta.videoDuration ?? meta.giay
@@ -1089,10 +1096,10 @@ export async function runBurnSubtitleLower(
     }
 
     const encoders: Array<{ ten: string; gpu: boolean; args: string[] }> = [
-      { ten: 'h264_nvenc', gpu: true, args: ['-c:v', 'h264_nvenc', '-preset', 'p4', '-cq', '23'] },
-      { ten: 'h264_amf', gpu: true, args: ['-c:v', 'h264_amf', '-quality', 'balanced', '-rc', 'cqp', '-qp_i', '23', '-qp_p', '23'] },
-      { ten: 'h264_qsv', gpu: true, args: ['-c:v', 'h264_qsv', '-global_quality', '23'] },
-      { ten: 'libx264', gpu: false, args: ['-c:v', 'libx264', '-preset', 'medium', '-crf', '20'] }
+      { ten: 'h264_nvenc', gpu: true, args: ['-c:v', 'h264_nvenc', '-pix_fmt', 'yuv420p', '-preset', 'p4', '-cq', '23'] },
+      { ten: 'h264_amf', gpu: true, args: ['-c:v', 'h264_amf', '-pix_fmt', 'yuv420p', '-quality', 'balanced', '-rc', 'cqp', '-qp_i', '23', '-qp_p', '23'] },
+      { ten: 'h264_qsv', gpu: true, args: ['-c:v', 'h264_qsv', '-pix_fmt', 'yuv420p', '-global_quality', '23'] },
+      { ten: 'libx264', gpu: false, args: ['-c:v', 'libx264', '-pix_fmt', 'yuv420p', '-preset', 'medium', '-crf', '20'] }
     ]
 
     for (const enc of encoders) {
@@ -1524,7 +1531,17 @@ export async function burnAutoShort(
     }
 
     await rename(partialPath, options.finalOutputPath)
-    return { ok: true, output: options.finalOutputPath }
+
+    // Auto Short renders through this lower-level path instead of
+    // burnSubtitle(), so it must explicitly run the optional title stage
+    // after the MP4 has been atomically published.
+    return await completeBurnVideoTitle(
+      { ok: true, output: options.finalOutputPath },
+      renderReq,
+      onProgress,
+      options.signal,
+      { probe: (video) => doVideo(options.ffprobePath, video) }
+    )
   } finally {
     burnInFlight = false
     try {

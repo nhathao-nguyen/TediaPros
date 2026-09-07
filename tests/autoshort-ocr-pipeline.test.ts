@@ -2,7 +2,7 @@ import assert from 'node:assert/strict'
 import test from 'node:test'
 import { mkdtemp, mkdir, rm, writeFile, readFile, stat } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
-import { join, basename } from 'node:path'
+import { join, basename, dirname, relative } from 'node:path'
 import type {
   AutoShortConfig,
   AutoShortStartRequest,
@@ -279,6 +279,76 @@ test('Step 9.2: RED OCR-only automatic reuse (single visual OCR call, same timel
       assert.equal(cp.maskPath, undefined)
       assert.equal(cp.sidecarPath, undefined)
     }
+  } finally {
+    await rm(root, { recursive: true, force: true })
+  }
+})
+
+test('AutoShort keeps each rendered video and its audit folder under one item output directory', async () => {
+  const root = await mkdtemp(join(tmpdir(), 'tedia-pipe-item-output-dir-'))
+  try {
+    const videoFile = join(root, 'input.mp4')
+    await writeFile(videoFile, 'dummy-video-content')
+    const outDir = join(root, 'out')
+    const itemOutputDir = join(outDir, 'input')
+    const auditDir = join(itemOutputDir, '.autoshort-audit-job-output-item-output')
+    await mkdir(outDir)
+
+    const deps: AutoShortItemCoordinatorDeps = {
+      resolveFfmpeg: async () => 'ffmpeg.exe',
+      resolveFfprobe: async () => 'ffprobe.exe',
+      probeMedia: async () => mockMeta,
+      runVisualOcr: async () => ({
+        timeline: sampleTimeline(),
+        sourceSrtPath: 'source.engine.srt',
+        sidecarPath: 'visual-cues.json',
+        engineVersion: '1.1.0',
+        engineProtocol: 'ocr-local/1',
+        visualSegmentCount: 1,
+        boxSegmentCount: 1
+      }),
+      writeTimedMask: async () => ({
+        maskPath: join(root, 'mask.mkv'),
+        durationSeconds: 10,
+        frameCount: 80,
+        width: 1280,
+        height: 720
+      }),
+      burn: async (_req, opts) => {
+        await mkdir(dirname(opts.finalOutputPath), { recursive: true })
+        await writeFile(opts.finalOutputPath, 'rendered-video')
+        return { ok: true, output: opts.finalOutputPath }
+      }
+    }
+
+    const context = {
+      jobId: 'job-output',
+      request: {
+        items: [{ id: 'item-output', filePath: videoFile }],
+        config: baseConfig({ outputDir: outDir })
+      },
+      item: { id: 'item-output', filePath: videoFile },
+      index: 0,
+      total: 1,
+      signal: new AbortController().signal,
+      emit: () => {},
+      checkpointDir: join(root, 'checkpoint'),
+      workDir: join(root, 'work'),
+      artifactDir: auditDir,
+      // This property is added to the coordinator contract by the fix.
+      itemOutputDir,
+      separationProviderState: { mode: 'auto' as const }
+    } as AutoShortItemContext & { itemOutputDir: string }
+
+    const result = await createAutoShortItemProcessor(deps)(context)
+    assert.equal(result.status, 'done')
+    assert.ok(result.outputPath)
+    assert.ok(result.artifactDir)
+    assert.equal(dirname(result.outputPath!), itemOutputDir)
+    assert.equal(dirname(result.artifactDir!), itemOutputDir)
+    assert.equal(relative(outDir, result.outputPath!).split('\\')[0], 'input')
+    assert.equal(relative(outDir, result.artifactDir!).split('\\')[0], 'input')
+    assert.equal(await readFile(result.outputPath!, 'utf8'), 'rendered-video')
   } finally {
     await rm(root, { recursive: true, force: true })
   }

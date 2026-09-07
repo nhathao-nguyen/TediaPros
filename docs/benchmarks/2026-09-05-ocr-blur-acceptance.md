@@ -72,3 +72,35 @@ Font hash: `bfb7bb691513f12e734dc346c03a03f784912432d7e3fa8e56efcf906fe86b3d` (N
 | isolated on-demand install | Depends on packaged runtime-v5 | BLOCKED |
 | Windows app package | `npm run package:win` | NOT RUN |
 | representative user media | Approved input required | BLOCKED — no approved input provided |
+
+## Dev-only local follow-up (2026-09-05)
+
+This follow-up is intentionally separate from the publishable runtime gate
+above. A local OCR 1.1.0 one-dir build was produced with Python 3.14.7 and
+RapidOCR 1.2.3 because the pinned Python 3.12.10 environment is unavailable
+on this machine. The resulting `release-artifacts/` is marked `devOnly: true`
+and must not be uploaded to the production release.
+
+| Check | Outcome |
+|---|---|
+| Local runtime archive verification | PASS — `runtime-v5`, 2 assets (FFmpeg/FFprobe + OCR) |
+| Clean-profile install/readiness | PASS — FFmpeg `ocr-mask-v1` and OCR `visual-cues-v1` |
+| Real RapidOCR fixture, accurate profile | PASS — 5 visual segments, 40 boxes, render duration 6.000 s |
+| Real RapidOCR fixture, fast profile | PASS — 5 visual segments, 6 boxes, render duration 6.000 s |
+
+The fast-profile pass includes the dense-static-edge regression fix in
+`engines/ocr-engine/visual_timeline.py`; no OCR text or coordinates are
+written to diagnostic output.
+
+## Accepted blur/output follow-up (2026-09-05)
+
+| Check | Outcome |
+|---|---|
+| Automatic blur privacy path | PASS — bounded sigma 16/29/43 (64px cap), six `gblur` passes, planar-RGB `maskedmerge` input |
+| Real synthetic render after YUV residual fix | PASS — accurate and fast output have no readable source glyph in the OCR box; duration 6.000 s |
+| Per-video output grouping | PASS — `ground-truth-*/source/source-phude.mp4` and `.autoshort-audit-*` are siblings under the same item folder |
+| Regression/type/build checks | PASS — focused OCR suites, `test:local-runtime`, `typecheck`, `build`, `test:ocr-engine`, `release:verify-runtime`, `git diff --check` |
+
+The scan-region contract is unchanged: text outside the dashed OCR scan region
+is intentionally not masked. Expand or move that region when source text appears
+elsewhere in the frame.

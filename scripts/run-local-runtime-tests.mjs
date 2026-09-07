@@ -1,12 +1,11 @@
 import { build } from 'esbuild'
-import { existsSync, mkdirSync, rmSync } from 'node:fs'
+import { mkdtempSync, rmSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { spawnSync } from 'node:child_process'
 
-const outDir = join(tmpdir(), 'tedia-local-runtime-tests')
-if (existsSync(outDir)) rmSync(outDir, { recursive: true, force: true })
-mkdirSync(outDir, { recursive: true })
+// Independent runs must not delete one another's compiled test fixtures.
+const outDir = mkdtempSync(join(tmpdir(), 'tedia-local-runtime-tests-'))
 const outFile = join(outDir, 'local-runtime.test.cjs')
 
 const electronMockPlugin = {
@@ -48,11 +47,15 @@ const electronMockPlugin = {
 }
 
 const knownTests = [
+  'sttn-runtime.test',
+  'sttn-contract.test',
+  'sttn-pipeline.test',
   'local-runtime.test',
   'canonical-runtime-migration.test',
   'e2e-autoshort.test',
   'release-tooling.test',
   'dubbing-plan.test',
+  'local-translation.test',
   'separator-contract.test',
   'separator-runtime.test',
   'separator-pipeline.test',
@@ -65,7 +68,14 @@ const knownTests = [
   'video-title.test',
   'burn-video-title.test',
   'autoshort-video-title.test',
-  'autoshort-ocr-pipeline.test'
+  'autoshort-ocr-pipeline.test',
+  'autoshort-telemetry.test',
+  'autoshort-tts-pipeline.test',
+  'autoshort-tts-cache.test',
+  'autoshort-disk-budget.test',
+  'autoshort-resource-manager.test',
+  'autoshort-queue-throughput.test',
+  'autoshort-item-scope.test'
 ]
 
 const requestedTests = process.argv.slice(2).map((name) => name.replace(/\.(ts|js)$/, ''))
@@ -88,4 +98,5 @@ await build({
 const results = selectedTests.map((testName) =>
   spawnSync(process.execPath, ['--test', join(outDir, `${testName}.js`)], { stdio: 'inherit' })
 )
+rmSync(outDir, { recursive: true, force: true })
 if (results.some((result) => result.status !== 0)) process.exit(1)

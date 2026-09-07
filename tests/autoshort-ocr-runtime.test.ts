@@ -11,6 +11,7 @@ import {
 } from '../src/main/safeContainedPath'
 import {
   ocrVideoWithVisualTimeline,
+  negotiateOcrVisualTransport,
   type AutoShortOcrVideoOptions
 } from '../src/main/ocr'
 import { probeRuntimeAsset, probeRuntimeExecutable } from '../src/main/runtimeProbes'
@@ -29,6 +30,23 @@ import {
   getFfmpegOcrMaskProbeCacheSize,
   type FfmpegInstallOptions
 } from '../src/main/ffmpegOcrMaskProbe'
+
+test('OCR transport negotiation defaults to stream-full only for a qualified binary and keeps ROI opt-in', () => {
+  const qualified = {
+    healthy: true,
+    version: '1.2.0',
+    protocol: 'ocr-local/1',
+    features: ['visual-stream-full-v1', 'visual-stream-roi-v1']
+  }
+  assert.equal(negotiateOcrVisualTransport(undefined, qualified).effective, 'stream-full')
+  assert.equal(negotiateOcrVisualTransport('stream-roi', qualified).effective, 'stream-roi')
+  assert.equal(negotiateOcrVisualTransport('legacy-disk', qualified).effective, 'legacy-disk')
+
+  const legacy = { healthy: true, version: '1.1.0', protocol: 'ocr-local/1', features: ['visual-cues-v1'] }
+  const fallback = negotiateOcrVisualTransport('stream-roi', legacy)
+  assert.equal(fallback.effective, 'legacy-disk')
+  assert.match(fallback.reason || '', /visual-stream-roi-v1/u)
+})
 
 class MockChildProcess extends EventEmitter {
   stdout = new EventEmitter()
@@ -396,6 +414,58 @@ test('ocrVideoWithVisualTimeline rejects pre-aborted and mid-run cancellation', 
         spawnChild: mockSpawn as unknown as typeof import('node:child_process').spawn
       }),
       /huỷ/u
+    )
+  } finally {
+    await rm(root, { recursive: true, force: true })
+  }
+})
+
+test('ocrVideoWithVisualTimeline enforces phase-aware watchdog timeouts', async () => {
+  const root = await mkdtemp(join(tmpdir(), 'tedia-ocr-timeout-'))
+  try {
+    // 1. Model load timeout test
+    const mockHangingSpawn = () => {
+      const cp = new MockChildProcess()
+      // Never emits anything
+      return cp as unknown as ChildProcess
+    }
+
+    const options: AutoShortOcrVideoOptions = {
+      input: 'dummy.mp4',
+      outputDir: root,
+      scanRegion: mockScanRegion,
+      profile: 'fast',
+      geometry: mockGeometry,
+      videoDurationSeconds: 1.0,
+      sampleFps: 8,
+      signal: new AbortController().signal,
+      modelLoadTimeoutMs: 50,
+      progressTimeoutMs: 50,
+      spawnChild: mockHangingSpawn as unknown as typeof import('node:child_process').spawn,
+      engineExecutable: 'mock-engine.exe',
+      ffmpegExecutable: 'mock-ffmpeg.exe'
+    }
+
+    await assert.rejects(
+      async () => ocrVideoWithVisualTimeline(options),
+      /quá thời gian khởi động mô hình/u
+    )
+
+    // 2. Progress timeout test (progress starts, then stalls)
+    const mockStallingSpawn = () => {
+      const cp = new MockChildProcess()
+      process.nextTick(() => {
+        cp.stdout.emit('data', Buffer.from(JSON.stringify({ type: 'progress', percent: 10 }) + '\n'))
+      })
+      return cp as unknown as ChildProcess
+    }
+
+    await assert.rejects(
+      async () => ocrVideoWithVisualTimeline({
+        ...options,
+        spawnChild: mockStallingSpawn as unknown as typeof import('node:child_process').spawn
+      }),
+      /không có tiến độ mới/u
     )
   } finally {
     await rm(root, { recursive: true, force: true })

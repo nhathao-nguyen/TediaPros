@@ -10,7 +10,14 @@ OCR_VISUAL_MAX_BYTES = 64 * 1024 * 1024
 OCR_VISUAL_MAX_SEGMENTS = 100_000
 OCR_VISUAL_MAX_BOXES_PER_SEGMENT = 64
 OCR_VISUAL_MAX_TEXT_CODE_POINTS = 4096
-FEATURES = ["directml-fallback", "probe", "rapidocr", "visual-cues-v1"]
+FEATURES = [
+    "directml-fallback",
+    "probe",
+    "rapidocr",
+    "visual-cues-v1",
+    "visual-stream-full-v1",
+    "visual-stream-roi-v1",
+]
 
 
 def mask_chu(vung, cv2=None, np=None):
@@ -40,6 +47,18 @@ def mask_chu(vung, cv2=None, np=None):
     kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (3, 3))
     grad = cv2.morphologyEx(gray, cv2.MORPH_GRADIENT, kernel)
     _, edge_mask = cv2.threshold(grad, 40, 255, cv2.THRESH_BINARY)
+
+    # A patterned/static background can make the raw edge mask almost full
+    # frame.  In that case it drowns out the text changes that fast-profile
+    # segmentation is meant to detect.  Remove isolated small edge islands
+    # while retaining the colour mask (which carries the common text colours).
+    edge_density = float(np.count_nonzero(edge_mask)) / float(edge_mask.size)
+    if edge_density > 0.35:
+        edge_mask = cv2.morphologyEx(
+            edge_mask,
+            cv2.MORPH_OPEN,
+            cv2.getStructuringElement(cv2.MORPH_RECT, (3, 3)),
+        )
 
     return color_mask | edge_mask
 
@@ -307,12 +326,14 @@ def sort_and_group_boxes(qualifying_boxes):
     return full_text, ordered_boxes
 
 
-def build_accurate_timeline(frame_paths, detect, metadata, scan_region):
-    """Xay dung timeline accurate (8 fps): chay detect moi khung hinh."""
+def build_accurate_timeline(samples, detect, metadata, scan_region):
+    """Xay dung timeline accurate (8 fps): chay detect moi khung hinh tu samples (iterable hoac list)."""
     segments = []
     duration = metadata["duration_seconds"]
+    count = 0
 
-    for k, p in enumerate(frame_paths):
+    for k, p in enumerate(samples):
+        count += 1
         raw_res = detect(p) or []
         qualifying = []
         for item in raw_res:
@@ -339,6 +360,10 @@ def build_accurate_timeline(frame_paths, detect, metadata, scan_region):
             "boxes": ordered_boxes[:OCR_VISUAL_MAX_BOXES_PER_SEGMENT],
         })
 
+    frame_count = metadata.get("frame_count")
+    if frame_count is None:
+        frame_count = count
+
     return {
         "schemaVersion": 1,
         "protocol": "ocr-visual-cues/1",
@@ -347,10 +372,141 @@ def build_accurate_timeline(frame_paths, detect, metadata, scan_region):
             "height": metadata["height"],
             "durationSeconds": metadata["duration_seconds"],
             "sampleFps": 8,
-            "frameCount": metadata["frame_count"],
+            "frameCount": frame_count,
             "geometryFingerprint": metadata["geometry_fingerprint"],
         },
         "profile": "accurate",
+        "scanRegion": {
+            "x0": scan_region["x0"],
+            "y0": scan_region["y0"],
+            "x1": scan_region["x1"],
+            "y1": scan_region["y1"],
+        },
+        "segments": segments,
+    }
+
+
+def build_fast_timeline_stream(frame_stream, detect, metadata, scan_region, halo=32, cv2=None, np=None, ocr_crop=None):
+    """Xay dung timeline fast qua streaming frames truc tiep: phan doan bang mask/Jaccard, detect tren stable frame."""
+    if cv2 is None:
+        import cv2 as _cv2
+        cv2 = _cv2
+    if np is None:
+        import numpy as _np
+        np = _np
+
+    x0, y0, x1, y1 = scan_region["x0"], scan_region["y0"], scan_region["x1"], scan_region["y1"]
+    w, h = metadata["width"], metadata["height"]
+    crop_x0 = max(0, x0 - halo)
+    crop_y0 = max(0, y0 - halo)
+    crop_x1 = min(w, x1 + halo)
+    crop_y1 = min(h, y1 + halo)
+
+    duration = metadata["duration_seconds"]
+    segments = []
+
+    bat_dau = 0
+    actual_count = 0
+
+    prev_mask = None
+    prev_crop = None
+    prev_idx = None
+    prev_d = None
+
+    best_score = float("inf")
+    best_idx = None
+    best_crop = None
+
+    def finalize_current_interval(end_idx):
+        nonlocal bat_dau, best_score, best_idx, best_crop
+        if bat_dau >= end_idx:
+            return
+        if best_crop is None:
+            return
+        raw_res = detect(best_crop) or []
+        qualifying = []
+        for item in raw_res:
+            nb = normalize_rapidocr_item(item, scan_region)
+            if nb is not None:
+                qualifying.append(nb)
+        if qualifying:
+            full_text, ordered_boxes = sort_and_group_boxes(qualifying)
+            if full_text and ordered_boxes:
+                min_conf = min(box["confidence"] for box in ordered_boxes)
+                segments.append({
+                    "id": f"fast-{bat_dau}-{end_idx}",
+                    "startFrame": bat_dau,
+                    "endFrameExclusive": end_idx,
+                    "start": bat_dau / 8.0,
+                    "end": min(end_idx / 8.0, duration),
+                    "text": full_text,
+                    "confidence": min_conf,
+                    "boxes": ordered_boxes[:OCR_VISUAL_MAX_BOXES_PER_SEGMENT],
+                })
+
+    for idx, frame in frame_stream:
+        actual_count += 1
+        if ocr_crop is None:
+            curr_crop = frame.copy()
+        else:
+            curr_crop = frame[crop_y0:crop_y1, crop_x0:crop_x1].copy()
+        sub = frame[y0:y1, x0:x1]
+        m = mask_chu(sub, cv2, np)
+
+        if prev_mask is not None:
+            curr_d = jaccard(m, prev_mask, np)
+        else:
+            curr_d = 0.0
+
+        if prev_idx is not None:
+            score_prev = prev_d + curr_d
+            if score_prev < best_score:
+                best_score = score_prev
+                best_idx = prev_idx
+                best_crop = prev_crop
+
+        if prev_mask is not None and curr_d > NG_DOI and idx > bat_dau:
+            finalize_current_interval(idx)
+            bat_dau = idx
+            best_score = float("inf")
+            best_idx = None
+            best_crop = None
+
+        prev_mask = m
+        prev_crop = curr_crop
+        prev_idx = idx
+        prev_d = curr_d
+
+    # Handle the final frame at EOF:
+    if prev_idx is not None:
+        score_last = prev_d  # Last frame has no subsequent delta
+        if score_last < best_score:
+            best_score = score_last
+            best_idx = prev_idx
+            best_crop = prev_crop
+
+    if actual_count > bat_dau:
+        finalize_current_interval(actual_count)
+
+    prev_crop = None
+    best_crop = None
+
+    frame_count = metadata.get("frame_count")
+    if frame_count is None:
+        frame_count = actual_count
+
+    return {
+        "schemaVersion": 1,
+        "protocol": "ocr-visual-cues/1",
+        "video": {
+            "width": metadata["width"],
+            "height": metadata["height"],
+            "durationSeconds": metadata["duration_seconds"],
+            "sampleFps": 8,
+            "frameCount": frame_count,
+            "geometryFingerprint": metadata["geometry_fingerprint"],
+        },
+        "profile": "fast",
         "scanRegion": {
             "x0": scan_region["x0"],
             "y0": scan_region["y0"],

@@ -12,6 +12,7 @@ export interface RuntimeAssetSpec {
   bytes: number
   entrypoint: string
   protocol?: string
+  implementationFingerprint?: string
   capabilities: string[]
   files: string[]
 }
@@ -32,7 +33,8 @@ const RUNTIME_KINDS = new Set<RuntimeEngineKind>([
   'ocr-engine',
   'video2x',
   'douyin',
-  'separator-engine'
+  'separator-engine',
+  'sttn-engine'
 ])
 
 
@@ -135,6 +137,10 @@ export function validateRuntimeDistributionManifest(
     if (item.protocol !== undefined && (typeof item.protocol !== 'string' || !item.protocol.trim())) {
       return { ok: false, error: `Asset ${kind} có protocol không hợp lệ.` }
     }
+    if (item.implementationFingerprint !== undefined &&
+      (typeof item.implementationFingerprint !== 'string' || !/^[a-f0-9]{64}$/iu.test(item.implementationFingerprint))) {
+      return { ok: false, error: `Asset ${kind} có implementationFingerprint không hợp lệ.` }
+    }
 
     assets[kind as RuntimeEngineKind] = {
       version: item.version.trim(),
@@ -145,6 +151,9 @@ export function validateRuntimeDistributionManifest(
       bytes: item.bytes,
       entrypoint,
       protocol: typeof item.protocol === 'string' ? item.protocol.trim() : undefined,
+      implementationFingerprint: typeof item.implementationFingerprint === 'string'
+        ? item.implementationFingerprint.toLowerCase()
+        : undefined,
       capabilities,
       files
     }

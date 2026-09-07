@@ -31,6 +31,8 @@ files:
   - '!repo test{,/**}'
   - '!dist-engine{,/**}'
   - '!engines{,/**}'
+  - '!release-artifacts{,/**}'
+  - '!**/*.pth'
   - '!**/*.zip'
   - '!**/*.dll'
   - '!**/*.exe'

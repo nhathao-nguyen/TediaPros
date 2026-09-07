@@ -276,6 +276,7 @@ export interface OcrEngineStatus {
   healthy?: boolean
   protocol?: string | null
   version?: string | null
+  implementationFingerprint?: string | null
   features: string[]
   message?: string
 }
@@ -446,6 +447,8 @@ export interface BurnReq {
   outputDir: string
   /** Optional deterministic file name chosen by a batch job. */
   outputName?: string
+  /** Generate one title from the exported subtitles in a separate video folder. */
+  videoTitle?: VideoTitleConfig
   mode: 'burn' | 'soft'
   bandTop?: number | null
   bandBot?: number | null
@@ -482,16 +485,27 @@ export interface BurnReq {
 
 export interface BurnProgress {
   percent: number
+  message?: string
 }
 
 export interface BurnResult {
   ok: boolean
   output?: string
   error?: string
+  title?: string
+  titlePath?: string
+  titleError?: string
 }
 
 /** Nha cung cap dich phu de bang AI. */
 export type DichProvider = 'gemini' | 'openai' | 'local'
+
+export interface VideoTitleConfig {
+  provider: DichProvider
+  /** auto follows the language of the exported subtitle text. */
+  language: string
+  serverUrl?: string
+}
 
 export interface GeminiStatus {
   ok: boolean
@@ -699,6 +713,8 @@ export interface TtsModelInfo {
   name?: string
   provider?: string
   logical_model?: string
+  revision?: string | null
+  model_revision?: string | null
   available?: boolean
   languages?: string[]
   default_voice?: string
@@ -731,6 +747,7 @@ export interface TtsCloneRequest {
   speed?: number
   referenceAudioPath: string
   referenceTranscript?: string
+  referenceAudioBuffer?: Buffer | Uint8Array
   options?: Record<string, any>
   supportedOptions?: string[]
 }
@@ -824,7 +841,7 @@ export interface AutoShortSeparationReadiness {
   message?: string
 }
 
-export type AutoShortBlurMode = 'manual' | 'ocr-auto'
+export type AutoShortBlurMode = 'manual' | 'ocr-auto' | 'sttn'
 export type AutoShortOcrBlurProfile = 'accurate' | 'fast'
 
 export interface AutoShortConfig {
@@ -859,6 +876,7 @@ export interface AutoShortConfig {
   translateTarget: string
   translateProvider: DichProvider
   translateServerUrl?: string
+  videoTitle?: VideoTitleConfig
   ttsEnabled: boolean
   ttsServerUrl?: string
   ttsModel?: string
@@ -876,6 +894,12 @@ export interface AutoShortConfig {
   originalAudioVolume: number
   backgroundMusic?: AutoShortBackgroundMusicConfig
   outputDir: string
+  executionPolicy?: {
+    maxActiveItems?: 1 | 2
+    overlapIndependentStages?: boolean
+    prefetchTts?: boolean
+    ocrTransport?: 'legacy-disk' | 'stream-full' | 'stream-roi'
+  }
 }
 
 export interface TimedWord {
@@ -904,6 +928,8 @@ export type AutoShortDependencyId =
   | 'ocr-engine'
   | 'separator-engine'
   | 'separator-model'
+  | 'sttn-engine'
+  | 'sttn-model'
 
 export interface AutoShortDependencyStatus {
   id: AutoShortDependencyId
@@ -952,10 +978,26 @@ export type AutoShortStartResult =
   | { ok: true; jobId: string }
   | { ok: false; error: string }
 
+export interface AutoShortSttnPreviewRequest {
+  videoPath: string
+  config: AutoShortConfig
+  previewSeconds?: number
+}
+
+export type AutoShortSttnPreviewResult =
+  | { ok: true; outputPath: string; provider: 'cuda' | 'cpu'; elapsedMs: number }
+  | { ok: false; error: string }
+
+export interface AutoShortSttnPreviewProgress {
+  percent: number
+  message: string
+}
+
 export type AutoShortItemStatus =
   | 'idle'
   | 'queued'
   | 'extracting_sub'
+  | 'removing_subtitles'
   | 'translating'
   | 'separating_audio'
   | 'generating_tts'
@@ -980,6 +1022,113 @@ export interface AutoShortTaskItem {
   translatedCueCount?: number
   generatedVoiceCount?: number
   voice?: string
+  title?: string
+  titlePath?: string
+  titleError?: string
+}
+
+export type AutoShortStage =
+  | 'validate'
+  | 'asr'
+  | 'visual_ocr'
+  | 'translate'
+  | 'tts'
+  | 'audio'
+  | 'sttn'
+  | 'render'
+  | 'title'
+  | 'publish'
+
+export type AutoShortStagePhase =
+  | 'queued'
+  | 'resource_wait'
+  | 'cache_lookup'
+  | 'loading'
+  | 'running'
+  | 'validating'
+  | 'committing'
+  | 'succeeded'
+  | 'failed'
+  | 'cancelled'
+  | 'interrupted'
+  | 'progress'
+
+export interface AutoShortRequestSpan {
+  url?: string
+  batchCueCount?: number
+  sourceChars?: number
+  tokenBudget?: number
+  actualTokens?: number
+  status?: number
+  durationMs?: number
+  error?: string
+  schemaFailureCategory?: string
+  audioDurationSec?: number
+  localDspDurationMs?: number
+}
+
+export interface AutoShortStageEventV1 {
+  schemaVersion: 1
+  jobId: string
+  itemId: string
+  attemptId: string
+  stageId: string
+  eventId: string
+  stage: AutoShortStage
+  phase: AutoShortStagePhase
+  timestampUtc: string
+  monotonicElapsedMs: number
+  queueWaitMs?: number
+  activeMs?: number
+  totalMs?: number
+  parentSpanId?: string
+  engineVersion?: string
+  model?: string
+  contentHash?: string
+  requestedProvider?: string
+  effectiveProvider?: string
+  fallbackReason?: string
+  endpointAlias?: string
+  resourceGroup?: string
+  workerPid?: number
+  counters?: Record<string, number | null>
+  requestSpans?: AutoShortRequestSpan[]
+  error?: string
+}
+
+export interface AutoShortStageSummaryV1 {
+  schemaVersion: 1
+  jobId: string
+  itemId: string
+  attemptId: string
+  startedAtUtc: string
+  completedAtUtc: string
+  status: 'succeeded' | 'failed' | 'cancelled' | 'interrupted'
+  totalWallMs: number
+  stages: Partial<
+    Record<
+      AutoShortStage,
+      {
+        status: 'running' | 'succeeded' | 'failed' | 'cancelled' | 'skipped'
+        activeMs: number
+        resourceWaitMs: number
+        counters?: Record<string, number | null>
+        error?: string
+      }
+    >
+  >
+  error?: string
+  diagnosticsIncomplete?: boolean
+}
+
+export interface AutoShortStageInfo {
+  stage: AutoShortStage
+  phase: AutoShortStagePhase
+  elapsedMs?: number
+  waitMs?: number
+  detail?: string
+  waitReason?: string
+  etaText?: string
 }
 
 export interface AutoShortProgress {
@@ -998,6 +1147,8 @@ export interface AutoShortProgress {
   outputPath?: string
   artifactDir?: string
   error?: string
+  stageInfo?: AutoShortStageInfo
+  diagnosticsIncomplete?: boolean
 }
 
 export interface AutoShortItemResult {
@@ -1011,6 +1162,10 @@ export interface AutoShortItemResult {
   translatedCueCount?: number
   generatedVoiceCount?: number
   voice?: string
+  title?: string
+  titlePath?: string
+  titleError?: string
+  diagnosticsIncomplete?: boolean
 }
 
 export type AutoShortEvent =

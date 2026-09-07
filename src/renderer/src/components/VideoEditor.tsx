@@ -5,11 +5,13 @@ import type {
   BurnFontEntry,
   BurnReq,
   BurnResult,
+  DichProvider,
   SubtitleDisplayStyle,
   SubtitleFilePreview,
   SubtitleLayoutProfile,
   SubtitleRenderPlan
 } from '../../../shared/types'
+import { DEFAULT_AI_SERVER_URL } from '../../../shared/types'
 import { automaticSubtitleFontId } from '../../../shared/subtitles'
 import { useTabOutputDir } from '../lib/outputDir'
 import { usePersistedState } from '../lib/persist'
@@ -22,6 +24,7 @@ import {
 } from '../hooks/useSubtitlePreview'
 import { useVideoTransport } from '../hooks/useVideoTransport'
 import RegionBox, { type Region } from './RegionBox'
+import VideoTitleSettings from './VideoTitleSettings'
 
 const baseName = (path: string): string => path.split(/[\\/]/).pop() || path
 
@@ -166,6 +169,14 @@ export default function VideoEditor({ draft, active = true }: Props): JSX.Elemen
   const [burnPercent, setBurnPercent] = useState(0)
   const [burnOutput, setBurnOutput] = useState('')
   const [burnError, setBurnError] = useState<string | null>(null)
+  const [burnMessage, setBurnMessage] = useState('')
+  const [burnTitle, setBurnTitle] = useState('')
+  const [burnTitlePath, setBurnTitlePath] = useState('')
+  const [burnTitleError, setBurnTitleError] = useState('')
+  const [titleEnabled, setTitleEnabled] = usePersistedState('tblao.editor.videoTitleEnabled', false)
+  const [titleLanguage, setTitleLanguage] = usePersistedState('tblao.editor.videoTitleLanguage', 'auto')
+  const [titleProvider] = usePersistedState<DichProvider>('tblao.videoTitle.provider', 'gemini')
+  const [aiServerUrl] = usePersistedState('tblao.videoTitle.serverUrl', DEFAULT_AI_SERVER_URL)
 
   const videoRef = useRef<HTMLVideoElement | null>(null)
   const previewPanelRef = useRef<HTMLElement | null>(null)
@@ -173,6 +184,7 @@ export default function VideoEditor({ draft, active = true }: Props): JSX.Elemen
   const appliedDraftId = useRef('')
 
   const api = window.api as EditorApi
+  const hasTitleSubtitles = subtitleEnabled && Boolean(subtitlePath) && !subtitleError && previewFile.cues.length > 0
   const previewCues = layoutPlan?.segments ?? previewFile.cues
   const { currentTime, activeCues } = useSubtitlePreview(videoRef, previewCues, video)
   const {
@@ -279,6 +291,13 @@ export default function VideoEditor({ draft, active = true }: Props): JSX.Elemen
   useEffect(() => {
     void refreshFonts()
   }, [])
+
+  useEffect(() => {
+    setBurnTitle('')
+    setBurnTitlePath('')
+    setBurnTitleError('')
+    setBurnMessage('')
+  }, [video, subtitlePath, subtitleEnabled, audioEnabled, audioFile, titleEnabled, titleLanguage, titleProvider, draft?.requestId])
 
   useEffect(() => {
     if (!draft || draft.requestId === appliedDraftId.current) return
@@ -716,6 +735,11 @@ export default function VideoEditor({ draft, active = true }: Props): JSX.Elemen
   }
 
   const exportVideo = async (): Promise<void> => {
+    if (burnState === 'running') return
+    setBurnTitle('')
+    setBurnTitlePath('')
+    setBurnTitleError('')
+    setBurnMessage('')
     if (!video) {
       setBurnError('Hãy chọn video cần biên tập.')
       setBurnState('error')
@@ -778,6 +802,7 @@ export default function VideoEditor({ draft, active = true }: Props): JSX.Elemen
     setBurnOutput('')
     const off = window.api.onBurnProgress((progress) => {
       setBurnPercent(progress.percent < 0 ? 0 : progress.percent)
+      setBurnMessage(progress.message || '')
     })
 
     const request = {
@@ -802,7 +827,14 @@ export default function VideoEditor({ draft, active = true }: Props): JSX.Elemen
       highlightColor,
       subtitleHighlightPop: highlightPop,
       subtitleLayoutProfile: layoutProfile,
-      subtitleAutoOptimize: autoOptimize
+      subtitleAutoOptimize: autoOptimize,
+      ...(titleEnabled && hasTitleSubtitles ? {
+        videoTitle: {
+          provider: titleProvider,
+          language: titleLanguage,
+          serverUrl: titleProvider === 'local' ? aiServerUrl : undefined
+        }
+      } : {})
     } as BurnReq & {
       subtitleDisplayStyle: SubtitleDisplayStyle
       highlightColor: string
@@ -832,6 +864,9 @@ export default function VideoEditor({ draft, active = true }: Props): JSX.Elemen
       return
     }
     setBurnOutput(result.output || '')
+    setBurnTitle(result.title || '')
+    setBurnTitlePath(result.titlePath || '')
+    setBurnTitleError(result.titleError || '')
     setBurnState('done')
   }
 
@@ -1149,6 +1184,7 @@ export default function VideoEditor({ draft, active = true }: Props): JSX.Elemen
                     <input
                       type="checkbox"
                       checked={subtitleEnabled}
+                      disabled={burnState === 'running'}
                       onChange={(event) => setSubtitleEnabled(event.target.checked)}
                     />
                     <span>{subtitleEnabled ? 'Bật' : 'Tắt'}</span>
@@ -1504,6 +1540,14 @@ export default function VideoEditor({ draft, active = true }: Props): JSX.Elemen
                 </p>
               </>
             )}
+            <VideoTitleSettings
+              enabled={titleEnabled}
+              onEnabledChange={setTitleEnabled}
+              language={titleLanguage}
+              onLanguageChange={setTitleLanguage}
+              disabled={burnState === 'running'}
+              unavailableReason={hasTitleSubtitles ? undefined : 'Bật phụ đề và chọn SRT hợp lệ để AI tạo tiêu đề theo nội dung video.'}
+            />
           </div>
         </aside>
       </div>
@@ -1513,16 +1557,25 @@ export default function VideoEditor({ draft, active = true }: Props): JSX.Elemen
           {burnState === 'running' && (
             <>
               <div className="bar"><div className="bar-fill" style={{ width: `${burnPercent}%` }} /></div>
-              <span>Đang tạo video · {burnPercent}%</span>
+              <span>{burnMessage || 'Đang tạo video'} · {burnPercent}%</span>
             </>
           )}
           {burnState === 'done' && (
-            <span>
-              Đã tạo xong ·{' '}
-              <button className="link-btn" onClick={() => window.api.showItem(burnOutput)}>
-                {baseName(burnOutput)}
-              </button>
-            </span>
+            <div style={{ display: 'grid', gap: 4, minWidth: 0, overflowWrap: 'anywhere' }}>
+              <span>
+                Đã tạo xong ·{' '}
+                <button className="link-btn" onClick={() => window.api.showItem(burnOutput)}>
+                  {baseName(burnOutput)}
+                </button>
+              </span>
+              {burnTitle && <span>Tiêu đề: {burnTitle}</span>}
+              {burnTitlePath && (
+                <button className="link-btn" style={{ justifySelf: 'start' }} onClick={() => window.api.openPath(burnTitlePath)}>
+                  Mở tieude.txt
+                </button>
+              )}
+              {burnTitleError && <span className="dy-err small" role="alert">Đã xuất video, nhưng chưa tạo được tieude.txt: {burnTitleError}</span>}
+            </div>
           )}
           {burnError && <span className="dy-err small">{burnError}</span>}
           {burnState === 'idle' && layoutPlan && subtitleEnabled ? (

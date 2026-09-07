@@ -31,6 +31,42 @@ npm run package:win   # đóng gói .exe (NSIS installer) -> dist/
 npm run package:mac   # đóng gói .dmg (cần macOS)
 ```
 
+### Test runtime local trước khi publish
+
+Ở chế độ phát triển (`npm run dev`), có thể trỏ installer tới một thư mục
+release local bằng biến môi trường. Thư mục phải có `runtime-manifest.json` và
+các ZIP đúng với manifest (OCR 1.1.0 phải có `visual-cues-v1`; FFmpeg phải có
+`ocr-mask-v1`):
+
+```powershell
+Remove-Item Env:\ELECTRON_RUN_AS_NODE -ErrorAction SilentlyContinue
+$env:TEDIAPROS_LOCAL_RUNTIME_DIR = (Resolve-Path .\release-artifacts).Path
+npm run dev
+```
+
+Biến này chỉ được đọc khi Electron chưa đóng gói; bản packaged vẫn dùng URL
+GitHub và không nhận runtime local. Xóa biến sau khi test nếu cần:
+
+```powershell
+Remove-Item Env:\TEDIAPROS_LOCAL_RUNTIME_DIR -ErrorAction SilentlyContinue
+```
+
+Kho `release-artifacts/` dev hiện tại đã gồm cả FFmpeg/FFprobe và OCR 1.1.0,
+nên profile Electron mới có thể tự cài dependency ngay lần bấm đầu tiên. Đây
+là artifact kiểm thử có `devOnly: true` (được tạo bằng Python 3.14.7 và
+RapidOCR 1.2.3); không dùng nó để publish. Bản phát hành phải được đóng gói
+lại từ input đã ghim trong `distribution/runtime-inputs.json`.
+
+### Auto Short: làm mờ OCR và thư mục kết quả
+
+- Chế độ OCR tự động dùng profile blur mạnh (sigma theo chiều cao khung hình,
+  nhiều pass) và chuyển khung hình sang planar RGB trước `maskedmerge` để
+  tránh hiện lại bóng chữ do video YUV 4:2:0. Chỉ các box OCR đang hoạt động
+  trong vùng quét mới bị làm mờ.
+- Mỗi video mới được đặt trong một thư mục riêng dưới thư mục đầu ra. Video,
+  `tieude.txt` (nếu bật tạo tiêu đề) và `.autoshort-audit-*` nằm cùng thư mục;
+  kết quả cũ không bị di chuyển hoặc xoá.
+
 ## Cổng phát hành
 
 Trước khi tạo tag, chạy `npm run release:verify`, `npm run typecheck`,

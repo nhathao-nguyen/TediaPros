@@ -5,6 +5,9 @@ import {
   AutoShortDependencyProgress,
   AutoShortReadiness,
   AutoShortStartRequest,
+  AutoShortSttnPreviewRequest,
+  AutoShortSttnPreviewResult,
+  AutoShortSttnPreviewProgress,
   AutoShortStartResult,
   AutoShortMusicLibraryResult,
   CookieCaptureEvent,
@@ -372,6 +375,14 @@ const api = {
     ipcRenderer.invoke('tts:selectRefAudio'),
 
   // ---- Auto Short ----
+  autoShortSttnPreview: (request: AutoShortSttnPreviewRequest): Promise<AutoShortSttnPreviewResult> =>
+    ipcRenderer.invoke('auto-short:sttn-preview', request),
+  autoShortCancelSttnPreview: (): Promise<void> => ipcRenderer.invoke('auto-short:sttn-preview-cancel'),
+  onAutoShortSttnPreviewProgress: (cb: (progress: AutoShortSttnPreviewProgress) => void): (() => void) => {
+    const listener = (_event: unknown, progress: AutoShortSttnPreviewProgress): void => cb(progress)
+    ipcRenderer.on('auto-short:sttn-preview-progress', listener)
+    return () => ipcRenderer.removeListener('auto-short:sttn-preview-progress', listener)
+  },
   autoShortSelectVideos: (): Promise<{ ok: boolean; paths: string[] }> =>
     ipcRenderer.invoke('autoshort:selectVideos'),
   autoShortSelectMusicFolder: (): Promise<AutoShortMusicLibraryResult> =>

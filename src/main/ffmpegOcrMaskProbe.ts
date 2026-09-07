@@ -15,6 +15,7 @@ export interface FfmpegOcrMaskProbeResult {
   features: string[]
   ffmpegSha256?: string
   probeSchemaVersion: 1
+  cases?: Array<{ id: string; passed: boolean }>
   message?: string
 }
 
@@ -466,7 +467,13 @@ export async function probeFfmpegOcrMaskCapability(
       healthy: true,
       features: ['ocr-mask-v1'],
       ffmpegSha256,
-      probeSchemaVersion: 1
+      probeSchemaVersion: 1,
+      cases: [
+        { id: 'appear-disappear', passed: true },
+        { id: 'terminal-black-frame', passed: true },
+        { id: 'moving-resize', passed: true },
+        { id: 'moving-resize-with-narration', passed: true }
+      ]
     }
     probeSuccessCache.set(cacheKey, result)
     return result

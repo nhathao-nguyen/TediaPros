@@ -11,6 +11,7 @@ import {
   type TtsServerHealth,
   type TtsSpeechRequest
 } from '../shared/types'
+import { getGlobalResourceManager } from './autoShortResourceManager'
 
 function normalizeUrl(url?: string): string {
   const target = (url || DEFAULT_AI_SERVER_URL).trim()
@@ -182,6 +183,11 @@ async function loadTtsModels(
         name: typeof m.name === 'string' && m.name.trim() ? m.name.trim() : typeof m.physical_model === 'string' && m.physical_model.trim() ? m.physical_model.trim() : id,
         provider: effectiveProvider,
         logical_model: typeof m.logical_model === 'string' && m.logical_model.trim() ? m.logical_model.trim() : id,
+        revision: typeof m.revision === 'string' && m.revision.trim()
+          ? m.revision.trim()
+          : typeof m.model_revision === 'string' && m.model_revision.trim()
+            ? m.model_revision.trim()
+            : null,
         available: m.available !== false,
         languages: Array.isArray(languages) ? languages.filter((v): v is string => typeof v === 'string' && Boolean(v.trim())) : [],
         default_voice: typeof capabilities.default_voice === 'string' && capabilities.default_voice.trim() ? capabilities.default_voice.trim() : undefined,
@@ -286,22 +292,30 @@ export async function generateSpeech(
   logInfo(`[TTS] Requesting speech from ${base}/v1/audio/speech (${text.length} chars, model=${payload.model || 'auto'}, voice=${payload.voice || 'default'})`)
 
   try {
-    const res = await fetch(`${base}/v1/audio/speech`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Accept: 'audio/wav, audio/*',
-        ...getAuthHeaders(req.apiKey)
-      },
-      body: JSON.stringify(payload),
-      signal: requestSignal(120_000, signal)
+    const { res, arrayBuffer, errorMsg } = await getGlobalResourceManager().withLease(['server-inference'], signal, async () => {
+      const resp = await fetch(`${base}/v1/audio/speech`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Accept: 'audio/wav, audio/*',
+          ...getAuthHeaders(req.apiKey)
+        },
+        body: JSON.stringify(payload),
+        signal: requestSignal(120_000, signal)
+      })
+
+      if (!resp.ok) {
+        return { res: resp, arrayBuffer: null, errorMsg: await responseErrorMessage(resp, `Server trả về mã lỗi ${resp.status}`) }
+      }
+
+      const ab = await resp.arrayBuffer()
+      return { res: resp, arrayBuffer: ab, errorMsg: null }
     })
 
-    if (!res.ok) {
-      return { ok: false, error: await responseErrorMessage(res, `Server trả về mã lỗi ${res.status}`) }
+    if (!res.ok || !arrayBuffer) {
+      return { ok: false, error: errorMsg || `Server trả về mã lỗi ${res.status}` }
     }
 
-    const arrayBuffer = await res.arrayBuffer()
     const buffer = Buffer.from(arrayBuffer)
     const audioBase64 = savePath ? undefined : buffer.toString('base64')
     const mimeType = res.headers.get('content-type') || 'audio/wav'
@@ -350,9 +364,9 @@ export async function generateVoiceClone(
   }
 
   try {
-    const audioFileBuffer = await readFile(req.referenceAudioPath)
+    const audioFileBuffer = req.referenceAudioBuffer || await readFile(req.referenceAudioPath)
     const fileName = basename(req.referenceAudioPath)
-    const blob = new Blob([audioFileBuffer], { type: audioMimeType(fileName) })
+    const blob = new Blob([audioFileBuffer as any], { type: audioMimeType(fileName) })
 
     const cleanOpts = cleanOptions(req.options, req.supportedOptions, req.model)
 
@@ -373,21 +387,29 @@ export async function generateVoiceClone(
 
     logInfo(`[TTS] Requesting voice clone from ${base}/v1/audio/voice-clone with ${fileName} (model=${req.model || 'auto'})`)
 
-    const res = await fetch(`${base}/v1/audio/voice-clone`, {
-      method: 'POST',
-      headers: {
-        Accept: 'audio/wav, audio/*',
-        ...getAuthHeaders(req.apiKey)
-      },
-      body: form,
-      signal: requestSignal(180_000, signal)
+    const { res, arrayBuffer, errorMsg } = await getGlobalResourceManager().withLease(['server-inference'], signal, async () => {
+      const resp = await fetch(`${base}/v1/audio/voice-clone`, {
+        method: 'POST',
+        headers: {
+          Accept: 'audio/wav, audio/*',
+          ...getAuthHeaders(req.apiKey)
+        },
+        body: form,
+        signal: requestSignal(180_000, signal)
+      })
+
+      if (!resp.ok) {
+        return { res: resp, arrayBuffer: null, errorMsg: await responseErrorMessage(resp, `Server trả về mã lỗi ${resp.status}`) }
+      }
+
+      const ab = await resp.arrayBuffer()
+      return { res: resp, arrayBuffer: ab, errorMsg: null }
     })
 
-    if (!res.ok) {
-      return { ok: false, error: await responseErrorMessage(res, `Server trả về mã lỗi ${res.status}`) }
+    if (!res.ok || !arrayBuffer) {
+      return { ok: false, error: errorMsg || `Server trả về mã lỗi ${res.status}` }
     }
 
-    const arrayBuffer = await res.arrayBuffer()
     const buffer = Buffer.from(arrayBuffer)
     const audioBase64 = savePath ? undefined : buffer.toString('base64')
     const mimeType = res.headers.get('content-type') || 'audio/wav'

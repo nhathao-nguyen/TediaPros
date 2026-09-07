@@ -1,6 +1,10 @@
 export * from './semanticGrouping'
 
 export const DEFAULT_LOCAL_TRANSLATION_TEMPERATURE = 0.2
+// Keep the provider-neutral defaults unchanged. Local models benefit from
+// bounded output cardinality as well as bounded source text.
+export const LOCAL_DUBBING_BATCH_MAX_CUES = 24
+export const LOCAL_DUBBING_BATCH_MAX_CHARS = 2_000
 
 /** Only errors that may clear on a later request are safe to retry. */
 export function isRetryableLocalTranslationError(error: unknown): boolean {
@@ -33,4 +37,3 @@ export function resolveTranslationSourceLanguage(
 export function inferTranslationSourceLanguage(_texts: readonly string[]): string {
   return 'auto'
 }
-

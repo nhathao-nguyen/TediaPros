@@ -1,4 +1,5 @@
 import type { AutoShortBlurMode, AutoShortOcrBlurProfile } from '../shared/types'
+import type { OcrProviderReport, OcrVisualTransport } from '../shared/ocrVisualTimeline'
 
 const REDACTED_PATH = '[đường dẫn đã ẩn]'
 
@@ -14,6 +15,9 @@ export interface OcrBlurAuditMetadata {
   ocrVisualSegmentCount?: number
   ocrBoxSegmentCount?: number
   ocrMaskedDurationSeconds?: number
+  ocrTransport?: OcrVisualTransport
+  ocrImplementationFingerprint?: string
+  ocrProvider?: OcrProviderReport
 }
 
 export function createOcrBlurAuditMetadata(summary: {
@@ -23,6 +27,9 @@ export function createOcrBlurAuditMetadata(summary: {
   visualSegmentCount?: number
   boxSegmentCount?: number
   maskedDurationSeconds?: number
+  transport?: OcrVisualTransport
+  implementationFingerprint?: string
+  ocrProvider?: OcrProviderReport
 }): OcrBlurAuditMetadata {
   if (summary.blurMode !== 'ocr-auto') {
     return {
@@ -37,7 +44,10 @@ export function createOcrBlurAuditMetadata(summary: {
     ocrScanProfile: summary.scanProfile,
     ocrVisualSegmentCount: summary.visualSegmentCount,
     ocrBoxSegmentCount: summary.boxSegmentCount,
-    ocrMaskedDurationSeconds: summary.maskedDurationSeconds
+    ocrMaskedDurationSeconds: summary.maskedDurationSeconds,
+    ...(summary.transport ? { ocrTransport: summary.transport } : {}),
+    ...(summary.implementationFingerprint ? { ocrImplementationFingerprint: summary.implementationFingerprint } : {}),
+    ...(summary.ocrProvider ? { ocrProvider: summary.ocrProvider } : {})
   }
 }
 

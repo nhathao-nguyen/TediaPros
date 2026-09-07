@@ -10,6 +10,7 @@ import type {
   SubtitleLayoutProfile
 } from './types'
 import { isAutoShortSeparationPreset } from './autoShortSeparation'
+import { validateVideoTitleConfig } from './videoTitle'
 
 export type AutoShortValidation =
   | { ok: true; value: AutoShortStartRequest }
@@ -140,13 +141,13 @@ function validateConfigRecord(raw: Record<string, unknown>): AutoShortConfig | s
   if (raw.whisperLanguage != null && optionalString(raw.whisperLanguage, 'Ngôn ngữ Whisper', 32)) {
     return 'Ngôn ngữ Whisper không hợp lệ.'
   }
-  if (raw.blurMode !== 'manual' && raw.blurMode !== 'ocr-auto') {
+  if (raw.blurMode !== 'manual' && raw.blurMode !== 'ocr-auto' && raw.blurMode !== 'sttn') {
     return 'Chế độ làm mờ không hợp lệ.'
   }
   if (raw.ocrBlurProfile !== 'accurate' && raw.ocrBlurProfile !== 'fast') {
     return 'Hồ sơ quét OCR không hợp lệ.'
   }
-  if (raw.lamMo === true && raw.blurMode === 'ocr-auto') {
+  if (raw.lamMo === true && (raw.blurMode === 'ocr-auto' || raw.blurMode === 'sttn')) {
     if (!isRecord(raw.ocrRegion) || region(raw.ocrRegion, 'Vùng OCR') !== null) {
       return 'Tự động OCR cần một vùng OCR hợp lệ.'
     }
@@ -211,6 +212,10 @@ function validateConfigRecord(raw: Record<string, unknown>): AutoShortConfig | s
   if (typeof raw.lamMo !== 'boolean' || typeof raw.ttsEnabled !== 'boolean' || typeof raw.voiceOverMode !== 'boolean') return 'Cấu hình bật/tắt không hợp lệ.'
   if (typeof raw.translateTarget !== 'string' || !raw.translateTarget.trim() || raw.translateTarget.length > 64) return 'Ngôn ngữ đích không hợp lệ.'
   if (!PROVIDERS.has(raw.translateProvider as string)) return 'Nhà cung cấp dịch không hợp lệ.'
+  if (raw.videoTitle != null) {
+    const error = validateVideoTitleConfig(raw.videoTitle)
+    if (error) return error
+  }
   if (raw.translateServerUrl != null) {
     const error = url(raw.translateServerUrl, 'Server dịch')
     if (error) return error
@@ -275,7 +280,7 @@ function validateConfigRecord(raw: Record<string, unknown>): AutoShortConfig | s
 
   return {
     ...(raw as unknown as AutoShortConfig),
-    blurRegions: raw.blurRegions as AutoShortBlurRegion[],
+    blurRegions: raw.lamMo === true && raw.blurMode === 'sttn' ? [] : raw.blurRegions as AutoShortBlurRegion[],
     ocrRegion: (raw.ocrRegion as AutoShortNormalizedRegion | null | undefined) ?? null,
     subRegion: (raw.subRegion as AutoShortNormalizedRegion | null | undefined) ?? null,
     translateTarget: raw.translateTarget as string,

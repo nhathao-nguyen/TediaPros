@@ -5,7 +5,7 @@ import { basename, join } from 'node:path'
 import { resolveFfmpeg } from './deps'
 import { resolveRuntimeExecutable, runtimeKindDir } from './runtimeResolver'
 import { probeRuntimeExecutable } from './runtimeProbes'
-import { debugRaw, errLabel, logError, logInfo } from './logger'
+import { debugRaw, errLabel, logError, logInfo, logWarn } from './logger'
 import { terminateProcessTree, trackChildProcess } from './processTree'
 import { assertContainedParentDirectory, assertContainedRegularFile } from './safeContainedPath'
 import type { CanonicalDisplayGeometry } from './canonicalDisplayGeometry'
@@ -23,6 +23,7 @@ import type {
   OcrVisualTimeline,
   PixelRegion
 } from '../shared/types'
+import type { OcrProviderReport, OcrVisualTransport } from '../shared/ocrVisualTimeline'
 
 export { assertContainedRegularFile } from './safeContainedPath'
 
@@ -31,14 +32,51 @@ async function resolveEnginePath(): Promise<string | null> {
   return resolveRuntimeExecutable('ocr-engine', isWin ? ['ocr-engine.exe'] : ['ocr-engine'])
 }
 
-async function probeOcr(path: string): Promise<{ healthy: boolean; version: string | null; protocol: string | null; features: string[]; message?: string }> {
+async function probeOcr(path: string): Promise<{ healthy: boolean; version: string | null; protocol: string | null; features: string[]; implementationFingerprint?: string | null; message?: string }> {
   const result = await probeRuntimeExecutable('ocr-engine', path)
   return {
     healthy: result.healthy,
     version: result.version || null,
     protocol: result.protocol || null,
     features: result.features || [],
+    implementationFingerprint: result.implementationFingerprint || null,
     message: result.message
+  }
+}
+
+export interface OcrTransportProbe {
+  healthy: boolean
+  version?: string | null
+  protocol?: string | null
+  features?: readonly string[]
+  implementationFingerprint?: string | null
+  message?: string
+}
+
+export interface OcrTransportDecision {
+  requested: OcrVisualTransport | undefined
+  effective: OcrVisualTransport
+  reason?: string
+}
+
+/** Choose a visual transport only when the installed binary advertises it. */
+export function negotiateOcrVisualTransport(
+  requested: OcrVisualTransport | undefined,
+  probe: OcrTransportProbe
+): OcrTransportDecision {
+  if (requested === 'legacy-disk') {
+    return { requested, effective: 'legacy-disk' }
+  }
+  const features = new Set(probe.features || [])
+  const wanted = requested || 'stream-full'
+  const required = wanted === 'stream-roi' ? 'visual-stream-roi-v1' : 'visual-stream-full-v1'
+  if (probe.healthy && features.has(required)) {
+    return { requested, effective: wanted }
+  }
+  return {
+    requested,
+    effective: 'legacy-disk',
+    reason: `OCR runtime không đủ capability ${required}; chuyển sang legacy-disk để giữ chất lượng/profile ${wanted === 'stream-roi' ? 'ROI' : 'đã chọn'}.`
   }
 }
 
@@ -318,6 +356,11 @@ export interface AutoShortOcrVideoOptions {
   spawnChild?: typeof spawn
   engineExecutable?: string
   ffmpegExecutable?: string
+  /** Test hook; production probes the installed executable before selecting transport. */
+  engineProbe?: OcrTransportProbe
+  modelLoadTimeoutMs?: number
+  progressTimeoutMs?: number
+  ocrTransport?: OcrVisualTransport
 }
 
 export interface AutoShortOcrVideoResult {
@@ -326,6 +369,9 @@ export interface AutoShortOcrVideoResult {
   sidecarPath: string
   engineVersion: string
   engineProtocol: 'ocr-local/1'
+  transport?: OcrVisualTransport
+  implementationFingerprint?: string
+  ocrProvider?: OcrProviderReport
   visualSegmentCount: number
   boxSegmentCount: number
 }
@@ -364,6 +410,14 @@ export async function ocrVideoWithVisualTimeline(
   if (!executable) {
     throw new Error('Chưa có OCR asset local có manifest. Hãy import asset trước.')
   }
+  const ready: OcrTransportProbe = options.engineProbe || (options.engineExecutable
+    ? { healthy: true, version: 'injected', protocol: 'ocr-local/1', features: ['visual-stream-full-v1', 'visual-stream-roi-v1'] }
+    : await probeOcr(executable))
+  if (!ready.healthy) {
+    throw new Error(ready.message || 'OCR engine chưa qua probe.')
+  }
+  const transportDecision = negotiateOcrVisualTransport(options.ocrTransport, ready)
+  if (transportDecision.reason) logWarn(`[OCR] ${transportDecision.reason}`)
   const ffmpeg = options.ffmpegExecutable || (await resolveFfmpeg())
   if (!ffmpeg) {
     throw new Error('Thiếu ffmpeg. Hãy chạy lại bước cài đặt.')
@@ -384,6 +438,15 @@ export async function ocrVideoWithVisualTimeline(
     '--fps', '8',
     '--ffmpeg', ffmpeg
   ]
+  if (transportDecision.effective === 'legacy-disk') {
+    // An old binary may not understand --visual-transport. Send the explicit
+    // value only after capability negotiation proved the new contract.
+    if ((ready.features || []).some((feature) => feature === 'visual-stream-full-v1' || feature === 'visual-stream-roi-v1')) {
+      args.push('--visual-transport', 'legacy-disk')
+    }
+  } else {
+    args.push('--visual-transport', transportDecision.effective)
+  }
 
   const spawnFn = options.spawnChild || spawn
 
@@ -395,6 +458,9 @@ export async function ocrVideoWithVisualTimeline(
     count?: number
     segment_count?: number
     box_count?: number
+    transport?: OcrVisualTransport
+    implementation_fingerprint?: string
+    ocr_provider?: OcrProviderReport
   } | null = null
 
   let engineError: string | null = null
@@ -414,7 +480,29 @@ export async function ocrVideoWithVisualTimeline(
     }
 
     let settled = false
+    let isTimingOut = false
+    let timeoutReason = ''
+    let watchdogTimer: NodeJS.Timeout | null = null
+    let hasReceivedFirstProgress = false
+
+    const modelLoadTimeoutMs = options.modelLoadTimeoutMs ?? 180_000
+    const progressTimeoutMs = options.progressTimeoutMs ?? 120_000
+
+    const resetWatchdog = (timeoutMs: number, reason: string): void => {
+      if (watchdogTimer) clearTimeout(watchdogTimer)
+      if (settled) return
+      watchdogTimer = setTimeout(() => {
+        if (settled) return
+        isTimingOut = true
+        timeoutReason = reason
+        terminateProcessTree(p)
+      }, timeoutMs)
+    }
+
+    resetWatchdog(modelLoadTimeoutMs, `OCR quá thời gian khởi động mô hình (${Math.round(modelLoadTimeoutMs / 1000)}s)`)
+
     const abortHandler = (): void => {
+      if (watchdogTimer) clearTimeout(watchdogTimer)
       terminateProcessTree(p)
     }
 
@@ -442,7 +530,16 @@ export async function ocrVideoWithVisualTimeline(
         try {
           const parsed = JSON.parse(trimmed) as Record<string, unknown>
           if (parsed.type === 'progress' && typeof parsed.percent === 'number') {
+            hasReceivedFirstProgress = true
+            resetWatchdog(progressTimeoutMs, `OCR không có tiến độ mới sau ${Math.round(progressTimeoutMs / 1000)}s`)
             onProgress?.({ percent: parsed.percent, text: '' })
+          } else if (parsed.type === 'status') {
+            resetWatchdog(
+              hasReceivedFirstProgress ? progressTimeoutMs : modelLoadTimeoutMs,
+              hasReceivedFirstProgress
+                ? `OCR không có tiến độ mới sau ${Math.round(progressTimeoutMs / 1000)}s`
+                : `OCR quá thời gian khởi động mô hình (${Math.round(modelLoadTimeoutMs / 1000)}s)`
+            )
           } else if (parsed.type === 'done') {
             doneEvent = parsed as typeof doneEvent
           } else if (parsed.type === 'error' && typeof parsed.message === 'string') {
@@ -462,6 +559,7 @@ export async function ocrVideoWithVisualTimeline(
     p.on('error', (err) => {
       if (settled) return
       settled = true
+      if (watchdogTimer) clearTimeout(watchdogTimer)
       options.signal.removeEventListener('abort', abortHandler)
       reject(err)
     })
@@ -469,9 +567,14 @@ export async function ocrVideoWithVisualTimeline(
     p.on('close', (code) => {
       if (settled) return
       settled = true
+      if (watchdogTimer) clearTimeout(watchdogTimer)
       options.signal.removeEventListener('abort', abortHandler)
       if (options.signal.aborted) {
         reject(new Error('Tiến trình OCR đã bị huỷ.'))
+        return
+      }
+      if (isTimingOut) {
+        reject(new Error(`OCR engine bị watchdog dừng: ${timeoutReason}`))
         return
       }
       if (code !== 0) {
@@ -491,6 +594,9 @@ export async function ocrVideoWithVisualTimeline(
     count?: number
     segment_count?: number
     box_count?: number
+    transport?: OcrVisualTransport
+    implementation_fingerprint?: string
+    ocr_provider?: OcrProviderReport
   } | null
 
   if (!finalDone) {
@@ -500,6 +606,9 @@ export async function ocrVideoWithVisualTimeline(
   // Exact path equality checks
   if (finalDone.output !== engineSrtPath || finalDone.visual_cues !== sidecarPath) {
     throw new Error('Đường dẫn kết quả OCR từ engine không khớp chính xác với đường dẫn mong đợi.')
+  }
+  if (finalDone.transport && finalDone.transport !== transportDecision.effective) {
+    throw new Error(`OCR transport trả về không khớp: mong đợi ${transportDecision.effective}, nhận ${finalDone.transport}.`)
   }
 
   // Contained regular file check
@@ -530,6 +639,10 @@ export async function ocrVideoWithVisualTimeline(
 
   const stabilized = stabilizeSingleSampleGaps(validatedTimeline)
 
+  const effectiveTransport = stabilized.transport || finalDone.transport || transportDecision.effective
+  const implementationFingerprint = stabilized.implementationFingerprint || finalDone.implementation_fingerprint || ready.implementationFingerprint || undefined
+  const ocrProvider = stabilized.ocrProvider || finalDone.ocr_provider
+
   if (stabilized.segments.length === 0) {
     throw new Error('Timeline OCR không chứa segment hợp lệ nào.')
   }
@@ -552,6 +665,9 @@ export async function ocrVideoWithVisualTimeline(
     sidecarPath,
     engineVersion: typeof finalDone.version === 'string' ? finalDone.version : '1.1.0',
     engineProtocol: 'ocr-local/1',
+    transport: effectiveTransport,
+    implementationFingerprint,
+    ocrProvider,
     visualSegmentCount: stabilized.segments.length,
     boxSegmentCount: totalBoxes
   }

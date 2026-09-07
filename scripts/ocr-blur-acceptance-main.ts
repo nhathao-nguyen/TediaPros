@@ -1,5 +1,5 @@
 import { app } from 'electron'
-import { isAbsolute, resolve, join } from 'node:path'
+import { basename, isAbsolute, resolve, join } from 'node:path'
 import { readFile, writeFile, mkdir } from 'node:fs/promises'
 
 function parseCliArgs(argv: string[]) {
@@ -46,6 +46,7 @@ async function main() {
     const { writeTimedOcrBlurMask } = await import('../src/main/ocrMask')
     const { burnAutoShort, probeBurnMedia } = await import('../src/main/burn')
     const { ocrVideoWithVisualTimeline } = await import('../src/main/ocr')
+    const { reserveVideoTitleOutputDir } = await import('../src/main/videoTitle')
     const { spawnSync } = await import('node:child_process')
 
     await mkdir(outputRoot, { recursive: true })
@@ -53,6 +54,8 @@ async function main() {
     const sourceVideo = join(fixtureDir, 'source.mp4')
     const fixtureJson = JSON.parse(await readFile(join(fixtureDir, 'fixture.json'), 'utf8'))
     const timelineJson = JSON.parse(await readFile(join(fixtureDir, 'timeline.json'), 'utf8'))
+    const itemOutputDir = await reserveVideoTitleOutputDir(outputRoot, basename(sourceVideo))
+    const itemAuditDir = join(itemOutputDir, `.autoshort-audit-acceptance-${profile}-acceptance-item`)
 
     const t0 = Date.now()
     let visualOcrCalls = 0
@@ -72,14 +75,14 @@ async function main() {
         const { parseCanonicalMediaMetadata } = await import('../src/main/canonicalDisplayGeometry')
         return parseCanonicalMediaMetadata(parsed)
       },
-      runVisualOcr: async (opts: any) => {
+      runVisualOcr: async (opts: any, onProgress: any) => {
         visualOcrCalls++
         if (ocrEnginePath) {
-          return ocrVideoWithVisualTimeline(opts, {
-            resolveExecutable: async () => ocrEnginePath,
-            resolveFfmpeg: async () => ffmpegPath,
-            resolveFfprobe: async () => ffprobePath
-          })
+          return ocrVideoWithVisualTimeline({
+            ...opts,
+            engineExecutable: ocrEnginePath,
+            ffmpegExecutable: ffmpegPath
+          }, onProgress)
         }
         return {
           timeline: timelineJson,
@@ -99,7 +102,7 @@ async function main() {
 
     const workDir = join(outputRoot, 'work')
     const cpDir = join(outputRoot, 'checkpoint')
-    const auditDir = join(outputRoot, 'audit')
+    const auditDir = itemAuditDir
 
     const context = {
       jobId: `acceptance-${profile}`,
@@ -115,7 +118,7 @@ async function main() {
             x1: fixtureJson.ocrRegion.x1 / fixtureJson.canvas.width,
             y1: fixtureJson.ocrRegion.y1 / fixtureJson.canvas.height
           },
-          ocrProfile: profile,
+          ocrBlurProfile: profile,
           blurRegions: [],
           lamMo: true,
           blurMode: 'ocr-auto' as const,
@@ -136,6 +139,7 @@ async function main() {
       checkpointDir: cpDir,
       workDir,
       artifactDir: auditDir,
+      itemOutputDir,
       separationProviderState: { mode: 'auto' as const }
     }
 

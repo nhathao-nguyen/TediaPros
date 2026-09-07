@@ -24,7 +24,11 @@ export function terminateProcessTree(child: ChildProcess | null | undefined): vo
     }
     child.kill()
   } catch {
-    /* best effort during shutdown */
+    try {
+      child.kill()
+    } catch {
+      /* best effort during shutdown */
+    }
   }
 }
 

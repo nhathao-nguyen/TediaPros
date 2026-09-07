@@ -223,6 +223,8 @@ export interface AutoShortWordTiming {
 
 export interface AutoShortDubbingUnit {
   id: string
+  /** V2 fits original PCM to source anchors and reports measured total tempo. */
+  timingPolicy?: 'source-anchored-v2'
   sourceCueIds: string[]
   sourceStart: number
   sourceEnd: number
@@ -831,6 +833,7 @@ export interface TimelineSyncValidationResult {
   ok: boolean
   error?: string
   violations: string[]
+  warnings?: string[]
 }
 
 /**
@@ -846,6 +849,7 @@ export function validateAutoShortTimelineSync(
   legacyTolerance = 0.25
 ): TimelineSyncValidationResult {
   const violations: string[] = []
+  const warnings: string[] = []
 
   // Check if called with modern DubbingUnit array
   const isModern = Array.isArray(dubbingUnitsOrSource) &&
@@ -910,7 +914,23 @@ export function validateAutoShortTimelineSync(
       if (u.plannedEnd > voiceHardEnd + semanticTolerance) {
         violations.push(`Unit ${i + 1} (${unitId}): voice kết thúc sau hardEnd (${u.plannedEnd.toFixed(3)}s > ${voiceHardEnd.toFixed(3)}s).`)
       }
-      if (u.tempo <= 0 || u.tempo > AUTO_SHORT_TTS_HARD_MAX_TEMPO + 0.05) {
+      if (!Number.isFinite(u.tempo) || u.tempo <= 0) {
+        violations.push(`Unit ${i + 1} (${unitId}): tempo ${u.tempo.toFixed(3)}x vượt policy.`)
+      } else if (u.timingPolicy === 'source-anchored-v2') {
+        // The V2 synthesizer intentionally fits long audio before the next cue.
+        // Verify measured timing rather than applying the legacy synthesis cap
+        // after all TTS work has finished. Fast speech is a quality warning.
+        const actual = u.finalDuration as number
+        if (![u.naturalDuration, actual, u.plannedStart, u.plannedEnd, voiceHardEnd].every(Number.isFinite)
+          || !(u.naturalDuration > 0) || !(actual > 0)
+          || Math.abs(actual - (u.plannedEnd - u.plannedStart)) > 0.005
+          || Math.abs(u.tempo - u.naturalDuration / actual) > 0.001) {
+          violations.push(`Unit ${i + 1} (${unitId}): số đo audio/tempo không khớp timeline.`)
+        }
+        if (u.tempo > AUTO_SHORT_TTS_HARD_MAX_TEMPO + 0.05) {
+          warnings.push(`Unit ${i + 1} (${unitId}): giọng được tăng tốc ${u.tempo.toFixed(3)}x để vừa mốc nguồn; cần nghe kiểm tra.`)
+        }
+      } else if (u.tempo > AUTO_SHORT_TTS_HARD_MAX_TEMPO + 0.05) {
         violations.push(`Unit ${i + 1} (${unitId}): tempo ${u.tempo.toFixed(3)}x vượt policy.`)
       }
       if (u.subtitles?.some((subtitle) => (
@@ -994,9 +1014,9 @@ export function validateAutoShortTimelineSync(
   }
 
   if (violations.length > 0) {
-    return { ok: false, error: violations.join(' | '), violations }
+    return { ok: false, error: violations.join(' | '), violations, ...(warnings.length ? { warnings } : {}) }
   }
-  return { ok: true, violations: [] }
+  return { ok: true, violations: [], ...(warnings.length ? { warnings } : {}) }
 }
 
 export interface VoiceCompletenessCheckResult {

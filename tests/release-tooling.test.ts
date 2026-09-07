@@ -1,4 +1,4 @@
-import { mkdtemp, mkdir, readFile, writeFile, rm, stat } from 'node:fs/promises'
+import { access, mkdtemp, mkdir, readFile, writeFile, rm, stat } from 'node:fs/promises'
 import { createHash } from 'node:crypto'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
@@ -441,12 +441,19 @@ test('Task 11.2: runtime-v5 default is used across all distribution configs, wor
   assert.match(separatorPacker, /runtimeVersion\s*\|\|\s*['"]runtime-v5['"]/u)
 })
 
-test('Task 11.3: OCR capability requires 1.1.0, ocr-local/1, and exact capabilities without duplicates', async () => {
+test('Task 11.3: OCR capability requires 1.2.0, ocr-local/1, and exact capabilities without duplicates', async () => {
   const runtimeInputs = JSON.parse(await readFile(join(process.cwd(), 'distribution', 'runtime-inputs.json'), 'utf8'))
   const ocr = runtimeInputs.assets['ocr-engine']
-  assert.equal(ocr.version, '1.1.0')
+  assert.equal(ocr.version, '1.2.0')
   assert.equal(ocr.protocol, 'ocr-local/1')
-  assert.deepEqual(ocr.capabilities, ['probe', 'rapidocr', 'directml-fallback', 'visual-cues-v1'])
+  assert.deepEqual(ocr.capabilities, [
+    'probe',
+    'rapidocr',
+    'directml-fallback',
+    'visual-cues-v1',
+    'visual-stream-full-v1',
+    'visual-stream-roi-v1'
+  ])
 })
 
 test('Task 11.4: FFmpeg ocr-mask-v1 packaging and proof verification test matrix', async () => {
@@ -644,4 +651,24 @@ test('Task 11.4: FFmpeg ocr-mask-v1 packaging and proof verification test matrix
   } finally {
     await rm(root, { recursive: true, force: true })
   }
+})
+
+test('native FFmpeg OCR-mask probe reports the four proof cases to the packer', async (t) => {
+  const ffmpegPath = process.env.APPDATA
+    ? join(process.env.APPDATA, 'tedia-pros', 'bin', 'ffmpeg', 'ffmpeg.exe')
+    : ''
+  if (!ffmpegPath || !(await access(ffmpegPath).then(() => true).catch(() => false))) {
+    t.skip('managed FFmpeg is not installed on this machine')
+    return
+  }
+
+  const { runNativeFfmpegOcrMaskProbe } = await import('../scripts/pack-runtime-release.mjs')
+  const result = await runNativeFfmpegOcrMaskProbe(ffmpegPath)
+  assert.equal(result.healthy, true)
+  assert.deepEqual(result.cases, [
+    { id: 'appear-disappear', passed: true },
+    { id: 'terminal-black-frame', passed: true },
+    { id: 'moving-resize', passed: true },
+    { id: 'moving-resize-with-narration', passed: true }
+  ])
 })

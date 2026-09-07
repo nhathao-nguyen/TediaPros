@@ -10,6 +10,7 @@ import {
 } from './policy'
 import type { DubbingPlan, DubbingPlanCue } from './plan'
 import { selectBootstrapCues } from './durationPredictor'
+import { createAutoShortItemScope, type BranchOutcome } from '../autoShortItemScope'
 
 export interface DubbingTtsRequest {
   cueId: string
@@ -46,6 +47,7 @@ export interface DubbingSynthesisInput {
   rephrase?: (input: { cueId: string; currentText: string; targetDuration: number }, signal: AbortSignal) => Promise<readonly string[]>
   signal?: AbortSignal
   onProgress?: (completed: number, total: number, cueId: string) => void
+  prefetchTts?: boolean
 }
 
 export interface DubbingSynthesisMetrics {
@@ -167,157 +169,207 @@ async function prepareNaturalCue(
  * only local audio adapters decide whether they can pipeline their own work.
  */
 export async function synthesizeDubbingPlan(input: DubbingSynthesisInput): Promise<DubbingSynthesisResult> {
-  const signal = input.signal || new AbortController().signal
-  const plan = clonePlan(input.plan)
-  if (plan.cues.length === 0) throw new Error('DubbingPlan không có cue để tạo voice.')
-  const predictor = input.predictor || createDurationPredictor()
-  const sourceCues = plan.cues.map((cue) => ({ id: cue.id, start: cue.sourceStart, end: cue.sourceEnd, text: cue.sourceText }))
-  const windows = deriveDubbingWindows(sourceCues, plan.videoDuration)
-  const predicted = estimateDurations(plan, predictor)
-  let globalTempo = selectGlobalTempo(plan, predicted, input.fixedTempo)
-  const prepared = new Map<string, PreparedCue>()
-  let voice = input.voice || undefined
+  const scope = createAutoShortItemScope(input.signal)
+  const signal = scope.signal
+  let caughtError: unknown = undefined
+  try {
+    const plan = clonePlan(input.plan)
+    if (plan.cues.length === 0) throw new Error('DubbingPlan không có cue để tạo voice.')
+    const predictor = input.predictor || createDurationPredictor()
+    const sourceCues = plan.cues.map((cue) => ({ id: cue.id, start: cue.sourceStart, end: cue.sourceEnd, text: cue.sourceText }))
+    const windows = deriveDubbingWindows(sourceCues, plan.videoDuration)
+    const predicted = estimateDurations(plan, predictor)
+    let globalTempo = selectGlobalTempo(plan, predicted, input.fixedTempo)
+    const prepared = new Map<string, PreparedCue>()
+    let voice = input.voice || undefined
 
-  const bootstrap = predictor.profile.samples === 0
-    ? selectBootstrapCues(plan.cues.map((cue) => ({ id: cue.id, text: cue.finalSpokenText })), 3)
-    : []
-  for (const bootstrapCue of bootstrap) {
-    throwIfAborted(signal)
-    const cue = plan.cues.find((candidate) => candidate.id === bootstrapCue.id) as DubbingPlanCue
-    const current = await prepareNaturalCue(input, cue, cue.finalSpokenText, signal, 0)
-    prepared.set(cue.id, current)
-    if (current.voice) voice = current.voice
-    predictor.addSample(current.text, current.naturalDuration, input.language)
-  }
-
-  // Bootstrap audio is real output and has already updated the profile. Lock
-  // the shared pace once before synthesizing all remaining cues.
-  if (bootstrap.length > 0) globalTempo = selectGlobalTempo(plan, estimateDurations(plan, predictor), input.fixedTempo)
-  plan.globalTempo = globalTempo
-
-  const finalCues: DubbingPlanCue[] = []
-  const subtitles: DubbingSubtitleCue[] = []
-  const clips: Array<{ start: number; path: string }> = []
-  let rephraseCount = 0
-  let fitFirstPassCount = 0
-
-  for (let index = 0; index < plan.cues.length; index++) {
-    throwIfAborted(signal)
-    const cue = plan.cues[index]
-    let current = prepared.get(cue.id)
-    if (!current) {
-      current = await prepareNaturalCue(input, cue, cue.finalSpokenText, signal, 0)
+    const bootstrap = predictor.profile.samples === 0
+      ? selectBootstrapCues(plan.cues.map((cue) => ({ id: cue.id, text: cue.finalSpokenText })), 3)
+      : []
+    for (const bootstrapCue of bootstrap) {
+      throwIfAborted(signal)
+      const cue = plan.cues.find((candidate) => candidate.id === bootstrapCue.id) as DubbingPlanCue
+      const current = await prepareNaturalCue(input, cue, cue.finalSpokenText, signal, 0)
+      prepared.set(cue.id, current)
+      if (current.voice) voice = current.voice
       predictor.addSample(current.text, current.naturalDuration, input.language)
     }
-    if (current.voice) voice = current.voice
 
-    const window = windows[index]
-    const localDelta = Math.max(0, input.localTempoDelta ?? DUBBING_LOCAL_TEMPO_DELTA)
-    const localCeiling = globalTempo + localDelta
-    if (current.naturalDuration / window.availableDuration > localCeiling + DUBBING_TIMING_TOLERANCE_SECONDS) {
-      if (input.rephrase) {
-        const candidates = await input.rephrase({
-          cueId: cue.id,
-          currentText: current.text,
-          targetDuration: window.availableDuration * localCeiling
-        }, signal)
-        let candidate = chooseDubbingRephrase(
-          candidates.map((text) => ({ text, predictedSeconds: predictor.estimate(text, { locale: input.language }).seconds })),
-          window.availableDuration * localCeiling
-        )
-        if (!candidate && candidates.length > 0) {
-          const ranked = candidates
-            .map((text) => ({ text, predictedSeconds: predictor.estimate(text, { locale: input.language }).seconds }))
-            .sort((a, b) => a.predictedSeconds - b.predictedSeconds)
-          candidate = ranked[0]
+    // Bootstrap audio is real output and has already updated the profile. Lock
+    // the shared pace once before synthesizing all remaining cues.
+    if (bootstrap.length > 0) globalTempo = selectGlobalTempo(plan, estimateDurations(plan, predictor), input.fixedTempo)
+    plan.globalTempo = globalTempo
+
+    const finalCues: DubbingPlanCue[] = []
+    const subtitles: DubbingSubtitleCue[] = []
+    const clips: Array<{ start: number; path: string }> = []
+    let rephraseCount = 0
+    let fitFirstPassCount = 0
+
+    interface PendingPrefetch {
+      cueId: string
+      textFingerprint: string
+      outcomePromise: Promise<BranchOutcome<PreparedCue>>
+    }
+    let pendingPrefetch: PendingPrefetch | null = null
+
+    for (let index = 0; index < plan.cues.length; index++) {
+      throwIfAborted(signal)
+      const cue = plan.cues[index]
+      let current = prepared.get(cue.id)
+      if (!current) {
+        if (pendingPrefetch && pendingPrefetch.cueId === cue.id) {
+          const prefetch = pendingPrefetch
+          pendingPrefetch = null
+          if (prefetch.textFingerprint === cue.finalSpokenText.trim()) {
+            const outcome = await prefetch.outcomePromise
+            if (!outcome.ok) {
+              throw outcome.error
+            }
+            current = outcome.value
+          } else {
+            await prefetch.outcomePromise
+          }
         }
-        if (candidate) {
-          current = await prepareNaturalCue(input, cue, candidate.text, signal, 1)
-          if (current.voice) voice = current.voice
-          predictor.addSample(current.text, current.naturalDuration, input.language)
-          rephraseCount++
+        if (!current) {
+          current = await prepareNaturalCue(input, cue, cue.finalSpokenText, signal, 0)
+        }
+        predictor.addSample(current.text, current.naturalDuration, input.language)
+      }
+      if (current.voice) voice = current.voice
+
+      const window = windows[index]
+      const localDelta = Math.max(0, input.localTempoDelta ?? DUBBING_LOCAL_TEMPO_DELTA)
+      const localCeiling = globalTempo + localDelta
+      if (current.naturalDuration / window.availableDuration > localCeiling + DUBBING_TIMING_TOLERANCE_SECONDS) {
+        if (input.rephrase) {
+          const candidates = await input.rephrase({
+            cueId: cue.id,
+            currentText: current.text,
+            targetDuration: window.availableDuration * localCeiling
+          }, signal)
+          let candidate = chooseDubbingRephrase(
+            candidates.map((text) => ({ text, predictedSeconds: predictor.estimate(text, { locale: input.language }).seconds })),
+            window.availableDuration * localCeiling
+          )
+          if (!candidate && candidates.length > 0) {
+            const ranked = candidates
+              .map((text) => ({ text, predictedSeconds: predictor.estimate(text, { locale: input.language }).seconds }))
+              .sort((a, b) => a.predictedSeconds - b.predictedSeconds)
+            candidate = ranked[0]
+          }
+          if (candidate) {
+            current = await prepareNaturalCue(input, cue, candidate.text, signal, 1)
+            if (current.voice) voice = current.voice
+            predictor.addSample(current.text, current.naturalDuration, input.language)
+            rephraseCount++
+          }
+        }
+      } else {
+        fitFirstPassCount++
+      }
+
+      // Pipeline synthesis of the next cue while local audio DSP is processing the current cue
+      if (input.prefetchTts && index + 1 < plan.cues.length) {
+        const nextCue = plan.cues[index + 1]
+        if (!prepared.has(nextCue.id) && (!pendingPrefetch || pendingPrefetch.cueId !== nextCue.id)) {
+          const text = nextCue.finalSpokenText.trim()
+          pendingPrefetch = {
+            cueId: nextCue.id,
+            textFingerprint: text,
+            outcomePromise: scope.start((s) => prepareNaturalCue(input, nextCue, nextCue.finalSpokenText, s, 0))
+          }
         }
       }
-    } else {
-      fitFirstPassCount++
-    }
 
-    const maxLocalCeiling = Math.min(1.45, Math.max(localCeiling, 1.35))
-    const rawRequiredTempo = current.naturalDuration / window.availableDuration
-    const tempo = Number(Math.min(maxLocalCeiling, Math.max(globalTempo, rawRequiredTempo)).toFixed(4))
-    const targetDuration = current.naturalDuration / tempo
-    let finalPath = current.trimmedPath
-    let actualDuration = current.naturalDuration
-    if (Math.abs(tempo - 1) > DUBBING_TIMING_TOLERANCE_SECONDS) {
-      const fitted = await input.audio.applyTempo(current.trimmedPath, `${cue.id}-tempo`, targetDuration, signal)
-      finalPath = fitted.path
-      actualDuration = validDuration(fitted.duration, cue.id)
-    }
-    let voiceEnd = cue.start + actualDuration
-    const nextStart = index < plan.cues.length - 1 ? plan.cues[index + 1].sourceStart : plan.videoDuration
-    const safeDeadline = Math.min(plan.videoDuration, nextStart > cue.start ? nextStart - 0.02 : plan.videoDuration)
-
-    if (voiceEnd > safeDeadline) {
-      // Emergency elastic fit so voice strictly finishes before nextStart without colliding or shifting start anchor
-      const emergencyAvailable = Math.max(0.08, safeDeadline - cue.start)
-      if (emergencyAvailable < actualDuration) {
-        const emergencyFitted = await input.audio.applyTempo(finalPath, `${cue.id}-emergency`, emergencyAvailable, signal)
-        finalPath = emergencyFitted.path
-        actualDuration = validDuration(emergencyFitted.duration, cue.id)
+      const maxLocalCeiling = Math.min(1.45, Math.max(localCeiling, 1.35))
+      const rawRequiredTempo = current.naturalDuration / window.availableDuration
+      const preferredTempo = Number(Math.min(maxLocalCeiling, Math.max(globalTempo, rawRequiredTempo)).toFixed(4))
+      const nextStart = index < plan.cues.length - 1 ? plan.cues[index + 1].sourceStart : plan.videoDuration
+      const safeDeadline = Math.min(plan.videoDuration, nextStart > cue.start ? nextStart - 0.02 : plan.videoDuration)
+      const safeAvailable = validDuration(safeDeadline - cue.start, cue.id)
+      // Include the existing emergency deadline BEFORE processing PCM. Cascading
+      // two tempo filters costs another process and needlessly processes audio twice.
+      const targetDuration = Math.min(current.naturalDuration / preferredTempo, safeAvailable)
+      const requestedTempo = current.naturalDuration / targetDuration
+      let finalPath = current.trimmedPath
+      let actualDuration = current.naturalDuration
+      if (Math.abs(requestedTempo - 1) > DUBBING_TIMING_TOLERANCE_SECONDS || actualDuration > safeAvailable) {
+        const fitted = await input.audio.applyTempo(current.trimmedPath, `${cue.id}-tempo`, targetDuration, signal)
+        finalPath = fitted.path
+        actualDuration = validDuration(fitted.duration, cue.id)
+      }
+      let voiceEnd = cue.start + actualDuration
+      if (voiceEnd > safeDeadline + DUBBING_TIMING_TOLERANCE_SECONDS) {
+        // Retry only a measured adapter overshoot, always from the original PCM.
+        const correctedTarget = Math.max(0.001, targetDuration * safeAvailable / actualDuration - 0.01)
+        const corrected = await input.audio.applyTempo(current.trimmedPath, `${cue.id}-correction`, correctedTarget, signal)
+        finalPath = corrected.path
+        actualDuration = validDuration(corrected.duration, cue.id)
         voiceEnd = cue.start + actualDuration
       }
-    }
-    const subtitle = buildDubbingSubtitle({
-      cueId: cue.id,
-      sourceIndex: index,
-      start: cue.start,
-      end: voiceEnd,
-      finalSpokenText: current.text
-    })
-    subtitles.push(subtitle)
-    const effectiveHardEnd = Math.max(cue.hardEnd, voiceEnd)
-    const effectiveAvailable = effectiveHardEnd - cue.start
+      if (voiceEnd > safeDeadline + DUBBING_TIMING_TOLERANCE_SECONDS) throw new Error(`Cue ${cue.id} vẫn vượt thời lượng sau khi chỉnh nhịp; không cắt lời.`)
+      // Report the measured TOTAL acceleration, including an emergency fit.
+      const tempo = Number((current.naturalDuration / actualDuration).toFixed(4))
+      const subtitle = buildDubbingSubtitle({
+        cueId: cue.id,
+        sourceIndex: index,
+        start: cue.start,
+        end: voiceEnd,
+        finalSpokenText: current.text
+      })
+      subtitles.push(subtitle)
+      const effectiveHardEnd = Math.max(cue.hardEnd, voiceEnd)
+      const effectiveAvailable = effectiveHardEnd - cue.start
 
-    finalCues.push({
-      ...cue,
-      hardEnd: effectiveHardEnd,
-      availableDuration: effectiveAvailable,
-      translatedText: cue.translatedText,
-      finalSpokenText: current.text,
-      predictedDuration: predictor.estimate(current.text, { locale: input.language }).seconds,
-      predictionUncertainty: predictor.estimate(current.text, { locale: input.language }).uncertaintySeconds,
-      naturalDuration: current.naturalDuration,
-      actualDuration,
-      tempo,
-      plannedDuration: targetDuration,
-      voiceEnd,
-      localTempoAdjustment: Number((tempo - globalTempo).toFixed(4)),
-      audioPath: finalPath,
-      subtitles: [subtitle],
-      rephrased: current.rephrased
-    })
-    clips.push({ start: cue.start, path: finalPath })
-    input.onProgress?.(index + 1, plan.cues.length, cue.id)
-  }
-
-  const tempos = finalCues.map((cue) => cue.tempo)
-  const averageTempo = tempos.reduce((sum, tempo) => sum + tempo, 0) / tempos.length
-  const outputPlan: DubbingPlan = { ...plan, cues: finalCues }
-  return {
-    plan: outputPlan,
-    clips,
-    subtitles,
-    voice,
-    metrics: {
-      rephraseCount,
-      fitFirstPassCount,
-      fitFirstPassRatio: Number((fitFirstPassCount / finalCues.length).toFixed(3)),
-      predictorSamples: predictor.profile.samples,
-      predictorResidualP90: predictor.profile.residualP90,
-      globalTempo,
-      averageTempo: Number(averageTempo.toFixed(4)),
-      maxTempo: Math.max(...tempos),
-      degraded: finalCues.some((cue) => Math.abs(cue.localTempoAdjustment) > 0.0001)
+      finalCues.push({
+        ...cue,
+        hardEnd: effectiveHardEnd,
+        availableDuration: effectiveAvailable,
+        translatedText: cue.translatedText,
+        finalSpokenText: current.text,
+        predictedDuration: predictor.estimate(current.text, { locale: input.language }).seconds,
+        predictionUncertainty: predictor.estimate(current.text, { locale: input.language }).uncertaintySeconds,
+        naturalDuration: current.naturalDuration,
+        actualDuration,
+        tempo,
+        plannedDuration: targetDuration,
+        voiceEnd,
+        localTempoAdjustment: Number((tempo - globalTempo).toFixed(4)),
+        audioPath: finalPath,
+        subtitles: [subtitle],
+        rephrased: current.rephrased
+      })
+      clips.push({ start: cue.start, path: finalPath })
+      input.onProgress?.(index + 1, plan.cues.length, cue.id)
     }
+
+    const tempos = finalCues.map((cue) => cue.tempo)
+    const averageTempo = tempos.reduce((sum, tempo) => sum + tempo, 0) / tempos.length
+    const outputPlan: DubbingPlan = { ...plan, cues: finalCues }
+    return {
+      plan: outputPlan,
+      clips,
+      subtitles,
+      voice,
+      metrics: {
+        rephraseCount,
+        fitFirstPassCount,
+        fitFirstPassRatio: Number((fitFirstPassCount / finalCues.length).toFixed(3)),
+        predictorSamples: predictor.profile.samples,
+        predictorResidualP90: predictor.profile.residualP90,
+        globalTempo,
+        averageTempo: Number(averageTempo.toFixed(4)),
+        maxTempo: Math.max(...tempos),
+        degraded: finalCues.some((cue) => Math.abs(cue.localTempoAdjustment) > 0.0001)
+      }
+    }
+  } catch (error) {
+    caughtError = error
+    throw error
+  } finally {
+    scope.abort(caughtError)
+    await scope.drain()
+    scope.dispose()
   }
 }

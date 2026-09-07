@@ -23,8 +23,16 @@ class EngineCliTests(unittest.TestCase):
             "type": "version",
             "protocol": "ocr-local/1",
             "engine": "rapidocr",
-            "version": "1.1.0",
-            "features": ["directml-fallback", "probe", "rapidocr", "visual-cues-v1"],
+            "version": "1.2.0",
+            "features": [
+                "directml-fallback",
+                "probe",
+                "rapidocr",
+                "visual-cues-v1",
+                "visual-stream-full-v1",
+                "visual-stream-roi-v1",
+            ],
+            "implementation_fingerprint": "1e0c8bd778d9d97cf129c891e053b0421f5b43b4c3d0914e29e38c63b614c6a4",
         })
 
     def test_probe_output_matches_contract_when_mocked(self):
@@ -51,9 +59,17 @@ class EngineCliTests(unittest.TestCase):
         self.assertEqual(data["type"], "probe")
         self.assertEqual(data["protocol"], "ocr-local/1")
         self.assertEqual(data["engine"], "rapidocr")
-        self.assertEqual(data["version"], "1.1.0")
+        self.assertEqual(data["version"], "1.2.0")
         self.assertEqual(data["ready"], True)
-        self.assertEqual(data["features"], ["directml-fallback", "probe", "rapidocr", "visual-cues-v1"])
+        self.assertEqual(data["features"], [
+            "directml-fallback",
+            "probe",
+            "rapidocr",
+            "visual-cues-v1",
+            "visual-stream-full-v1",
+            "visual-stream-roi-v1",
+        ])
+        self.assertRegex(data["implementation_fingerprint"], r"^[0-9a-f]{64}$")
 
     def test_missing_visual_arguments_emit_error_and_exit_nonzero(self):
         # Missing display width/height/fingerprint when --visual-cues-output is provided
@@ -165,6 +181,84 @@ class EngineCliTests(unittest.TestCase):
         self.assertTrue(len(lines) >= 1)
         data = json.loads(lines[-1])
         self.assertEqual(data["type"], "error")
+
+
+    def test_legacy_disk_extract_flag_accepted(self):
+        # Verify --legacy-disk-extract is an accepted CLI argument
+        completed = subprocess.run(
+            [
+                sys.executable,
+                ENGINE,
+                "--input", "nonexistent.mp4",
+                "--output", "dummy.srt",
+                "--visual-cues-output", "dummy.json",
+                "--display-width", "576",
+                "--display-height", "768",
+                "--geometry-fingerprint", "a" * 64,
+                "--x0", "0", "--y0", "0", "--x1", "576", "--y1", "768",
+                "--fps", "8",
+                "--legacy-disk-extract",
+            ],
+            capture_output=True,
+            text=True,
+        )
+        lines = completed.stdout.strip().splitlines()
+        self.assertTrue(len(lines) >= 1)
+        data = json.loads(lines[-1])
+        # It fails because nonexistent.mp4 cannot be probed, but NOT with argparse unrecognized arguments error
+        self.assertEqual(data["type"], "error")
+        self.assertNotIn("unrecognized arguments", completed.stderr)
+
+    def test_visual_transport_flags_are_accepted(self):
+        for transport in ("legacy-disk", "stream-full", "stream-roi"):
+            completed = subprocess.run(
+                [
+                    sys.executable,
+                    ENGINE,
+                    "--input", "nonexistent.mp4",
+                    "--output", "dummy.srt",
+                    "--visual-cues-output", "dummy.json",
+                    "--display-width", "576",
+                    "--display-height", "768",
+                    "--geometry-fingerprint", "a" * 64,
+                    "--x0", "0", "--y0", "0", "--x1", "576", "--y1", "768",
+                    "--fps", "8",
+                    "--visual-transport", transport,
+                ],
+                capture_output=True,
+                text=True,
+            )
+            self.assertNotEqual(completed.returncode, 0)
+            lines = completed.stdout.strip().splitlines()
+            self.assertTrue(lines)
+            self.assertEqual(json.loads(lines[-1])["type"], "error")
+            self.assertNotIn("unrecognized arguments", completed.stderr)
+
+    def test_legacy_alias_rejects_conflicting_visual_transport(self):
+        completed = subprocess.run(
+            [
+                sys.executable,
+                ENGINE,
+                "--input", "nonexistent.mp4",
+                "--output", "dummy.srt",
+                "--visual-cues-output", "dummy.json",
+                "--display-width", "576",
+                "--display-height", "768",
+                "--geometry-fingerprint", "a" * 64,
+                "--x0", "0", "--y0", "0", "--x1", "576", "--y1", "768",
+                "--fps", "8",
+                "--legacy-disk-extract",
+                "--visual-transport", "stream-full",
+            ],
+            capture_output=True,
+            text=True,
+        )
+        self.assertNotEqual(completed.returncode, 0)
+        lines = completed.stdout.strip().splitlines()
+        self.assertTrue(lines)
+        data = json.loads(lines[-1])
+        self.assertEqual(data["type"], "error")
+        self.assertIn("visual-transport", data["message"])
 
 
 if __name__ == "__main__":

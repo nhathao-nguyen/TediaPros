@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""ocr-engine — doc chu chay tren video, xuat .srt va visual cues timeline (1.1.0)
+"""ocr-engine — doc chu chay tren video, xuat .srt va visual cues timeline (1.2.0)
 
 Giao thuc: JSON-lines ra stdout:
   {"type":"info","frames":183,"fps":8}
@@ -8,18 +8,22 @@ Giao thuc: JSON-lines ra stdout:
   {"type":"error","message":"..."}
 """
 import argparse
+import hashlib
 import json
 import os
 import re
 import subprocess
 import sys
 import tempfile
+import threading
+import numpy as np
 
 from visual_timeline import (
     FEATURES,
     NG_DOI,
     build_accurate_timeline,
     build_fast_timeline,
+    build_fast_timeline_stream,
     clip_polygon_to_rect,
     hhmmss,
     khung_on_dinh,
@@ -30,11 +34,78 @@ from visual_timeline import (
     polygon_to_aabb,
     timeline_to_srt,
     write_visual_timeline,
+    normalize_rapidocr_item,
+    sort_and_group_boxes,
+    OCR_VISUAL_MAX_BOXES_PER_SEGMENT,
 )
 
-VERSION = "1.1.0"
+VERSION = "1.2.0"
 PROTOCOL = "ocr-local/1"
 ENGINE_NAME = "rapidocr"
+IMPLEMENTATION_FINGERPRINT = hashlib.sha256(
+    b"tediapros-ocr-engine|1.2.0|visual-stream-full-v1|visual-stream-roi-v1|halo=32|fps=8"
+).hexdigest()
+VISUAL_TRANSPORTS = ("legacy-disk", "stream-full", "stream-roi")
+
+
+def resolve_visual_transport(transport, legacy_disk_extract=False):
+    """Resolve the visual transport while keeping the legacy alias unambiguous."""
+    requested = transport or "stream-full"
+    if requested not in VISUAL_TRANSPORTS:
+        raise ValueError("visual transport không được hỗ trợ")
+    if legacy_disk_extract and requested != "legacy-disk":
+        raise ValueError("--legacy-disk-extract và --visual-transport mâu thuẫn")
+    return "legacy-disk" if legacy_disk_extract else requested
+
+
+def _session_providers(candidate):
+    """Return providers reported by an actual ONNX session, if discoverable."""
+    seen = set()
+    pending = [candidate]
+    for _ in range(8):
+        if not pending:
+            break
+        value = pending.pop(0)
+        if value is None or id(value) in seen:
+            continue
+        seen.add(id(value))
+        getter = getattr(value, "get_providers", None)
+        if callable(getter):
+            try:
+                providers = getter()
+                if providers:
+                    return [str(provider) for provider in providers]
+            except Exception:
+                pass
+        providers = getattr(value, "providers", None)
+        if isinstance(providers, (list, tuple)) and providers:
+            return [str(provider) for provider in providers]
+        for attr in ("session", "ort_session", "_session", "model"):
+            try:
+                nested = getattr(value, attr, None)
+            except Exception:
+                nested = None
+            if nested is not None:
+                pending.append(nested)
+    return None
+
+
+def get_ocr_provider_report(ocr):
+    """Report det/cls/rec providers from their live sessions, never a startup guess."""
+    report = {}
+    for component in ("det", "cls", "rec"):
+        candidates = [
+            getattr(ocr, f"{component}_model", None),
+            getattr(ocr, f"_{component}_model", None),
+            getattr(ocr, component, None),
+        ]
+        providers = None
+        for candidate in candidates:
+            providers = _session_providers(candidate)
+            if providers:
+                break
+        report[component] = providers[0] if providers else None
+    return report
 
 try:
     sys.stdout.reconfigure(encoding="utf-8")
@@ -141,13 +212,319 @@ def tao_ocr():
     return RapidOCR()
 
 
-def run_visual(args):
+def kill_process_tree(proc):
+    """Terminate or kill a subprocess and any children safely on Windows and POSIX."""
+    if proc is None or proc.poll() is not None:
+        return
+    pid = proc.pid
+    if sys.platform == "win32":
+        try:
+            subprocess.run(
+                ["taskkill", "/F", "/T", "/PID", str(pid)],
+                stdout=subprocess.DEVNULL,
+                stderr=subprocess.DEVNULL,
+                timeout=5,
+            )
+        except Exception:
+            pass
+    try:
+        proc.kill()
+    except Exception:
+        pass
+
+
+def stream_video_frames(ffmpeg_path, video_path, display_width, display_height, no_progress_timeout_seconds=120.0):
+    """Doc raw frames tu ffmpeg pipe qua queue toi da 2 frames, co read watchdog timeout."""
+    import queue
+    import time
+
+    filter_value = (
+        "setpts=PTS-STARTPTS,"
+        f"scale={display_width}:{display_height}:flags=lanczos,"
+        "setsar=1,fps=8"
+    )
+    cmd = [
+        ffmpeg_path,
+        "-y",
+        "-hide_banner",
+        "-nostdin",
+        "-loglevel", "error",
+        "-i", video_path,
+        "-vf", filter_value,
+        "-f", "rawvideo",
+        "-pix_fmt", "bgr24",
+        "pipe:1",
+    ]
+
+    frame_bytes = display_width * display_height * 3
+    proc = subprocess.Popen(
+        cmd,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        bufsize=4 * frame_bytes,
+    )
+
+    stderr_chunks = []
+    stderr_total_bytes = 0
+    max_stderr_bytes = 80 * 1024
+    stop_event = threading.Event()
+
+    def drain_stderr():
+        nonlocal stderr_total_bytes
+        try:
+            while not stop_event.is_set():
+                chunk = proc.stderr.read(4096)
+                if not chunk:
+                    break
+                text = chunk.decode("utf-8", "replace")
+                stderr_chunks.append(text)
+                stderr_total_bytes += len(chunk)
+                while stderr_total_bytes > max_stderr_bytes and len(stderr_chunks) > 1:
+                    removed = stderr_chunks.pop(0)
+                    stderr_total_bytes -= len(removed.encode("utf-8", "replace"))
+        except Exception:
+            pass
+
+    stderr_thread = threading.Thread(target=drain_stderr, daemon=True)
+    stderr_thread.start()
+
+    q = queue.Queue(maxsize=2)
+    producer_exc = []
+
+    def frame_reader():
+        frame_idx = 0
+        try:
+            while not stop_event.is_set():
+                buf = bytearray()
+                while len(buf) < frame_bytes and not stop_event.is_set():
+                    chunk = proc.stdout.read(frame_bytes - len(buf))
+                    if not chunk:
+                        break
+                    buf.extend(chunk)
+
+                if stop_event.is_set():
+                    break
+
+                if len(buf) == 0:
+                    # Normal EOF
+                    break
+
+                if len(buf) < frame_bytes:
+                    raise RuntimeError(
+                        f"FFmpeg stdout kết thúc đột ngột ở frame {frame_idx}: đọc {len(buf)}/{frame_bytes} bytes"
+                    )
+
+                frame = np.frombuffer(buf, dtype=np.uint8).reshape((display_height, display_width, 3))
+                # Put with check on stop_event so we don't hang if consumer aborted
+                while not stop_event.is_set():
+                    try:
+                        q.put((frame_idx, frame), timeout=0.1)
+                        break
+                    except queue.Full:
+                        continue
+
+                frame_idx += 1
+        except Exception as e:
+            producer_exc.append(e)
+        finally:
+            q.put(None)  # Sentinel indicating EOF or error
+
+    reader_thread = threading.Thread(target=frame_reader, daemon=True)
+    reader_thread.start()
+
+    actual_frames = 0
+    original_error = None
+    try:
+        while True:
+            # Consumer waits for next frame with no_progress_timeout_seconds watchdog
+            try:
+                item = q.get(timeout=no_progress_timeout_seconds)
+            except queue.Empty:
+                raise TimeoutError(
+                    f"FFmpeg stream không có frame mới sau {no_progress_timeout_seconds}s (đã đọc {actual_frames} frames)"
+                )
+
+            if item is None:
+                # Sentinel reached
+                if producer_exc:
+                    raise producer_exc[0]
+                break
+
+            frame_idx, frame = item
+            yield frame_idx, frame
+            actual_frames += 1
+    except Exception as err:
+        original_error = err
+        raise
+    finally:
+        stop_event.set()
+        kill_process_tree(proc)
+        try:
+            proc.stdout.close()
+        except Exception:
+            pass
+        try:
+            proc.stderr.close()
+        except Exception:
+            pass
+
+        try:
+            ret = proc.wait(timeout=5)
+        except subprocess.TimeoutExpired:
+            kill_process_tree(proc)
+            try:
+                ret = proc.wait(timeout=2)
+            except Exception:
+                ret = -1
+
+        reader_thread.join(timeout=2)
+        stderr_thread.join(timeout=2)
+
+        # Only raise returncode error if no previous error occurred:
+        if original_error is None and ret is not None and ret != 0:
+            err_msg = "".join(stderr_chunks)[-300:].strip()
+            raise RuntimeError(f"ffmpeg ({ret}): {err_msg}")
+
+
+def run_visual_stream(args):
+    import cv2
+
+    ffprobe = resolve_ffprobe(args.ffmpeg)
+    duration = probe_duration(ffprobe, args.input)
+    total_frames = max(1, int(round(duration * 8)))
+
+    emit({"type": "info", "frames": total_frames, "fps": 8, "width": args.display_width, "height": args.display_height})
+
+    ocr = tao_ocr()
+    provider_report = get_ocr_provider_report(ocr)
+    use_roi = args.visual_transport == "stream-roi"
+
+    crop_halo = 32
+    crop_x0 = max(0, args.x0 - crop_halo)
+    crop_y0 = max(0, args.y0 - crop_halo)
+    crop_x1 = min(args.display_width, args.x1 + crop_halo)
+    crop_y1 = min(args.display_height, args.y1 + crop_halo)
+
+    scan_region = {
+        "x0": args.x0,
+        "y0": args.y0,
+        "x1": args.x1,
+        "y1": args.y1,
+    }
+
+    meta = {
+        "width": args.display_width,
+        "height": args.display_height,
+        "duration_seconds": duration,
+        "frame_count": total_frames,
+        "geometry_fingerprint": args.geometry_fingerprint,
+    }
+
+    processed = [0]
+
+    def detect_frame(frame):
+        res, _ = ocr(frame)
+        display_items = []
+        for item in (res or []):
+            if not item or len(item) < 3:
+                continue
+            poly, text, score = item[0], item[1], item[2]
+            poly_display = (
+                [[pt[0] + crop_x0, pt[1] + crop_y0] for pt in poly]
+                if use_roi else poly
+            )
+            display_items.append([poly_display, text, score])
+        processed[0] += 1
+        emit({
+            "type": "progress",
+            "percent": min(100, int(processed[0] / total_frames * 100)),
+            "processed": processed[0],
+            "total": total_frames,
+        })
+        return display_items
+
+    emit({"type": "status", "message": f"Đang quét chữ profile {args.scan_profile}…"})
+
+    if args.scan_profile == "accurate":
+        def crop_generator():
+            count = 0
+            for idx, frame in stream_video_frames(args.ffmpeg, args.input, args.display_width, args.display_height):
+                count += 1
+                yield frame[crop_y0:crop_y1, crop_x0:crop_x1] if use_roi else frame
+            if count == 0:
+                raise RuntimeError("Không tách được khung hình nào từ video")
+
+        timeline = build_accurate_timeline(crop_generator(), detect_frame, meta, scan_region)
+    else:
+        def frame_generator():
+            count = 0
+            for idx, frame in stream_video_frames(args.ffmpeg, args.input, args.display_width, args.display_height):
+                count += 1
+                yield idx, frame
+            if count == 0:
+                raise RuntimeError("Không tách được khung hình nào từ video")
+
+        timeline = build_fast_timeline_stream(
+            frame_generator(),
+            detect_frame,
+            meta,
+            scan_region,
+            halo=crop_halo,
+            cv2=cv2,
+            np=np,
+            ocr_crop=(crop_x0, crop_y0, crop_x1, crop_y1) if use_roi else None,
+        )
+
+    timeline["transport"] = args.visual_transport
+    timeline["implementationFingerprint"] = IMPLEMENTATION_FINGERPRINT
+    timeline["ocrProvider"] = provider_report
+
+    band_top, band_bot = None, None
+    for s in timeline["segments"]:
+        for b in s["boxes"]:
+            band_top = b["y0"] if band_top is None else min(band_top, b["y0"])
+            band_bot = b["y1"] if band_bot is None else max(band_bot, b["y1"])
+
+    # Atomic write visual timeline
+    write_visual_timeline(args.visual_cues_output, timeline)
+
+    # Atomic write derived SRT
+    srt_content = timeline_to_srt(timeline)
+    out_dir = os.path.dirname(os.path.abspath(args.output))
+    os.makedirs(out_dir, exist_ok=True)
+    with tempfile.NamedTemporaryFile(dir=out_dir, delete=False, mode="w", encoding="utf-8") as tmp_srt:
+        tmp_srt.write(srt_content)
+        tmp_srt.flush()
+        os.fsync(tmp_srt.fileno())
+        temp_srt_name = tmp_srt.name
+    os.replace(temp_srt_name, args.output)
+
+    subs_count = len([line for line in srt_content.splitlines() if "-->" in line])
+    emit({
+        "type": "done",
+        "output": args.output,
+        "visual_cues": args.visual_cues_output,
+        "count": subs_count,
+        "segment_count": len(timeline["segments"]),
+        "box_count": sum(len(s["boxes"]) for s in timeline["segments"]),
+        "profile": args.scan_profile,
+        "transport": args.visual_transport,
+        "implementation_fingerprint": IMPLEMENTATION_FINGERPRINT,
+        "ocr_provider": provider_report,
+        "band_top": int(band_top) if band_top is not None else None,
+        "band_bot": int(band_bot) if band_bot is not None else None,
+    })
+    return 0
+
+
+def run_visual_legacy_disk(args):
     import cv2
 
     ffprobe = resolve_ffprobe(args.ffmpeg)
     duration = probe_duration(ffprobe, args.input)
 
     ocr = tao_ocr()
+    provider_report = get_ocr_provider_report(ocr)
     with tempfile.TemporaryDirectory() as td:
         emit({"type": "status", "message": "Đang tách khung hình display-space…"})
         filter_value = (
@@ -237,6 +614,10 @@ def run_visual(args):
         else:
             timeline = build_fast_timeline(frame_paths, detect, meta, scan_region)
 
+        timeline["transport"] = "legacy-disk"
+        timeline["implementationFingerprint"] = IMPLEMENTATION_FINGERPRINT
+        timeline["ocrProvider"] = provider_report
+
         band_top, band_bot = None, None
         for s in timeline["segments"]:
             for b in s["boxes"]:
@@ -266,10 +647,19 @@ def run_visual(args):
             "segment_count": len(timeline["segments"]),
             "box_count": sum(len(s["boxes"]) for s in timeline["segments"]),
             "profile": args.scan_profile,
+            "transport": args.visual_transport,
+            "implementation_fingerprint": IMPLEMENTATION_FINGERPRINT,
+            "ocr_provider": provider_report,
             "band_top": int(band_top) if band_top is not None else None,
             "band_bot": int(band_bot) if band_bot is not None else None,
         })
         return 0
+
+
+def run_visual(args):
+    if args.visual_transport == "legacy-disk":
+        return run_visual_legacy_disk(args)
+    return run_visual_stream(args)
 
 
 def run_legacy(args):
@@ -354,7 +744,19 @@ def main():
     p.add_argument("--x1", type=int, default=-1, help="mep PHAI vung chu (px)")
     p.add_argument("--fps", type=int, default=2, help="so khung/giay lay ra")
     p.add_argument("--ffmpeg", default="ffmpeg", help="duong dan ffmpeg")
+    p.add_argument("--legacy-disk-extract", action="store_true", help="dung rut khung PNG ra dia (legacy)")
+    p.add_argument("--visual-transport", choices=VISUAL_TRANSPORTS, default=None,
+                   help="transport visual: legacy-disk, stream-full hoac stream-roi")
     args = p.parse_args()
+
+    try:
+        args.visual_transport = resolve_visual_transport(
+            args.visual_transport,
+            getattr(args, "legacy_disk_extract", False),
+        )
+    except ValueError as error:
+        emit({"type": "error", "message": str(error)})
+        return 1
 
     if args.version:
         emit({
@@ -363,6 +765,7 @@ def main():
             "engine": ENGINE_NAME,
             "version": VERSION,
             "features": FEATURES,
+            "implementation_fingerprint": IMPLEMENTATION_FINGERPRINT,
         })
         return 0
 
@@ -376,6 +779,7 @@ def main():
                 "engine": ENGINE_NAME,
                 "version": VERSION,
                 "features": FEATURES,
+                "implementation_fingerprint": IMPLEMENTATION_FINGERPRINT,
                 "gpu": gpu_that_su_chay(),
             })
             return 0
@@ -387,6 +791,7 @@ def main():
                 "engine": ENGINE_NAME,
                 "version": VERSION,
                 "features": FEATURES,
+                "implementation_fingerprint": IMPLEMENTATION_FINGERPRINT,
                 "error": str(e),
             })
             return 1

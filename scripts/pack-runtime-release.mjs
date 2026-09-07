@@ -13,6 +13,7 @@ import { sha256ArchiveEntry } from './verify-runtime-release.mjs'
 
 const execFileAsync = promisify(execFile)
 const REQUIRED_KINDS = ['ffmpeg', 'whisper-engine', 'whisper-cuda', 'ocr-engine', 'video2x', 'douyin', 'separator-engine']
+const OPTIONAL_KINDS = ['sttn-engine']
 const LEGACY_INPUT_ENV = [
   'TEDIAPROS_RUNTIME_DIR',
   'WHISPER_RUNTIME_DIR',
@@ -191,6 +192,10 @@ function validateAssetMetadata(kind, metadata) {
   if (metadata.protocol !== undefined && (typeof metadata.protocol !== 'string' || !metadata.protocol.trim())) {
     throw new Error(`${kind}.protocol is invalid`)
   }
+  if (metadata.implementationFingerprint !== undefined &&
+      (typeof metadata.implementationFingerprint !== 'string' || !/^[a-f0-9]{64}$/iu.test(metadata.implementationFingerprint))) {
+    throw new Error(`${kind}.implementationFingerprint is invalid`)
+  }
   const entrypoint = metadata.entrypoint.replace(/\\/g, '/')
   if (entrypoint.split('/').some((part) => !part || part === '.' || part === '..') || entrypoint.startsWith('/')) {
     throw new Error(`${kind}.entrypoint is unsafe`)
@@ -234,7 +239,7 @@ export async function buildRuntimeRelease({
     const provenanceAssets = {}
     let ffmpegProof = null
 
-    for (const kind of REQUIRED_KINDS) {
+    for (const kind of [...REQUIRED_KINDS, ...OPTIONAL_KINDS.filter(kind => inputSpec.assets[kind])]) {
       const sourceDir = ensureInside(inputRoot, join(inputRoot, kind))
       const metadata = validateAssetMetadata(kind, inputSpec.assets[kind])
       if (!(await stat(sourceDir).catch(() => null))?.isDirectory()) throw new Error(`Missing clean runtime input: ${sourceDir}`)
@@ -295,6 +300,7 @@ export async function buildRuntimeRelease({
         bytes: info.size,
         entrypoint: metadata.entrypoint,
         ...(metadata.protocol ? { protocol: metadata.protocol } : {}),
+        ...(metadata.implementationFingerprint ? { implementationFingerprint: metadata.implementationFingerprint } : {}),
         capabilities: finalCapabilities,
         files
       }

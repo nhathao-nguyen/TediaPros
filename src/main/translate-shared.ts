@@ -54,7 +54,8 @@ function cueDuration(cue: Pick<SrtBlock, 'start' | 'end'>): number | null {
  */
 export function buildTranslationBatches<T extends SrtBlock>(
   cues: readonly T[],
-  maxChars = MAX_CHARS
+  maxChars = MAX_CHARS,
+  maxCues = Number.POSITIVE_INFINITY
 ): T[][] {
   const groups = buildSemanticGroups(cues)
   const batches: T[][] = []
@@ -63,7 +64,7 @@ export function buildTranslationBatches<T extends SrtBlock>(
 
   for (const group of groups) {
     const groupCost = group.cues.reduce((sum, cue) => sum + cue.text.length + 5, 0)
-    if (current.length > 0 && currentCost + groupCost > maxChars) {
+    if (current.length > 0 && (currentCost + groupCost > maxChars || current.length + group.cues.length > maxCues)) {
       batches.push(current)
       current = []
       currentCost = 0
@@ -119,7 +120,7 @@ export function buildDubbingTranslationPayload<T extends SrtBlock>(
     `Bắt buộc: mọi cue trong phần Nội dung cần dịch phải được viết bằng ${targetLanguage}; không được lặp lại ngôn ngữ nguồn trừ tên riêng/thuật ngữ cần giữ.`,
     'Đọc toàn bộ từng nhóm như một utterance liền mạch trước khi dịch. Sau đó trả về đúng một bản dịch cho từng cue ID hiện tại.',
     'Bản dịch phải là lời nói tự nhiên, súc tích, giữ đủ ý nghĩa và thông tin quan trọng; chỉ bỏ redundancy ngôn ngữ đích, không được tự ý lược ý.',
-    'Bắt buộc vừa vặn thời lượng: Mỗi câu dịch phải nói vừa trong thời lượng và không vượt quá số ký tự ước tính được ghi ở từng cue để giọng đọc (TTS) không bị tràn timeline.',
+    'Ưu tiên câu dịch gọn và tự nhiên để nói vừa thời lượng. Số ký tự ghi ở từng cue chỉ là ước lượng tham khảo, không phải giới hạn để cắt ý. Không bỏ tên riêng, số liệu, phủ định hoặc quan hệ nguyên nhân-kết quả chỉ để đạt số ký tự; thời lượng thực tế sẽ được đo từ audio TTS.',
     'Chỉ các cue trong mục Nội dung cần dịch là đầu ra hợp lệ. Các cue trong mục Ngữ cảnh chỉ để hiểu nghĩa, không được trả về.',
     ''
   ]
@@ -143,7 +144,7 @@ export function buildDubbingTranslationPayload<T extends SrtBlock>(
     for (const cue of group.cues) {
       const duration = cueDuration(cue)
       const durationLabel = duration != null
-        ? ` (thời lượng cue: ${duration.toFixed(2)}s, tối đa ~${estimateCueCharBudget(duration)} ký tự)`
+        ? ` (thời lượng cue: ${duration.toFixed(2)}s, tham khảo ~${estimateCueCharBudget(duration)} ký tự)`
         : ''
       lines.push(`[${cue.id}]${durationLabel} ${cue.text}`)
     }
@@ -202,14 +203,18 @@ export function stripOuterQuotes(text: string): string {
 
 /** Parse the provider-neutral `[cue-id] translation` line format or JSON items. */
 export function parseTranslationItems(raw: string): TranslationItem[] {
-  const text = raw.trim()
+  // Unwrap only a complete outer fence. Do not extract arbitrary JSON from
+  // prose or repair truncated JSON: that can silently publish partial cues.
+  const text = raw.trim().replace(/^```(?:json)?\s*\n([\s\S]*?)\n```$/iu, '$1').trim()
   try {
     const parsed = JSON.parse(text) as unknown
     const candidate = Array.isArray(parsed)
       ? parsed
       : parsed && typeof parsed === 'object' && Array.isArray((parsed as { items?: unknown }).items)
         ? (parsed as { items: unknown[] }).items
-        : null
+        : parsed && typeof parsed === 'object' && typeof (parsed as { id?: unknown }).id === 'string'
+          ? [parsed]
+          : null
     if (candidate) {
       return candidate.map((value) => {
         const record = value && typeof value === 'object' ? value as Record<string, unknown> : {}

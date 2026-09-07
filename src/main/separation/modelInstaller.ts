@@ -5,7 +5,7 @@ import { basename, dirname, join } from 'node:path'
 import { Readable } from 'node:stream'
 import { pipeline } from 'node:stream/promises'
 import type { AutoShortDependencyProgress, SeparatorModelId } from '../../shared/types'
-import { getDistributionConfig } from '../distributionConfig'
+import { createDistributionFetch, getDistributionConfig } from '../distributionConfig'
 import { extractZip, validateZipArchive } from '../deps'
 import { replaceDirectoryAtomic } from '../localAssets'
 import { resolveSeparatorEngine } from '../runtimeResolver'
@@ -47,12 +47,13 @@ async function sha256File(path: string): Promise<string> {
 }
 
 export async function fetchSeparatorModelManifest(
-  fetchImpl: typeof fetch = fetch
+  fetchImpl?: typeof fetch
 ): Promise<SeparatorModelReleaseManifest | null> {
   const config = getDistributionConfig()
   if (!config.separatorModelManifestUrl) return null
+  const requestFetch = fetchImpl || createDistributionFetch(config)
   try {
-    const response = await fetchImpl(config.separatorModelManifestUrl, {
+    const response = await requestFetch(config.separatorModelManifestUrl, {
       headers: { Accept: 'application/json' },
       signal: AbortSignal.timeout(15_000)
     })
@@ -88,7 +89,8 @@ export async function installSeparatorModel(
     return existing
   }
 
-  const fetchImpl = hooks.fetch || fetch
+  const config = getDistributionConfig()
+  const fetchImpl = hooks.fetch || createDistributionFetch(config)
   const manifest = await fetchSeparatorModelManifest(fetchImpl)
   if (!manifest) {
     throw new Error('Không thể tải manifest separator model.')
@@ -129,7 +131,6 @@ export async function installSeparatorModel(
       message: `Đang tải model ${id}…`
     })
 
-    const config = getDistributionConfig()
     const assetUrl = config.getSeparatorModelAssetUrl(spec.asset)
     const response = await fetchImpl(assetUrl, { redirect: 'follow', signal })
     if (!response.ok || !response.body) {

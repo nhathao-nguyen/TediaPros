@@ -13,6 +13,7 @@ export type RuntimeEngineKind =
   | 'video2x'
   | 'douyin'
   | 'separator-engine'
+  | 'sttn-engine'
 
 
 export interface InstalledRuntimeReceipt {
@@ -140,6 +141,10 @@ export async function resolveFfprobe(): Promise<string | null> {
 
 export async function resolveSeparatorEngine(): Promise<string | null> {
   return resolveRuntimeExecutable('separator-engine', ['separator-engine.exe', 'separator-engine'])
+}
+
+export async function resolveSttnEngine(): Promise<string | null> {
+  return resolveRuntimeExecutable('sttn-engine', ['sttn-engine.exe', 'sttn-engine'])
 }
 
 export async function readInstalledRuntimeState(): Promise<InstalledRuntimeState> {

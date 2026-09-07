@@ -1817,6 +1817,143 @@ test('Distribution configuration: getDistributionConfig generates valid release 
   }
 })
 
+test('Distribution configuration: unpackaged dev mode selects an explicit local runtime directory', async () => {
+  const { app } = await import('electron')
+  const { getDistributionConfig } = await import('../src/main/distributionConfig')
+  const appState = app as unknown as { isPackaged: boolean }
+  const previousPackaged = appState.isPackaged
+  const previousLocal = process.env.TEDIAPROS_LOCAL_RUNTIME_DIR
+  const previousOwner = process.env.TEDIAPROS_DISTRIBUTION_OWNER
+  const previousRepo = process.env.TEDIAPROS_DISTRIBUTION_REPO
+  const previousChannel = process.env.TEDIAPROS_RUNTIME_CHANNEL
+  const localDir = join(tmpdir(), 'tedia-local-runtime-source')
+
+  appState.isPackaged = false
+  process.env.TEDIAPROS_LOCAL_RUNTIME_DIR = localDir
+  delete process.env.TEDIAPROS_DISTRIBUTION_OWNER
+  delete process.env.TEDIAPROS_DISTRIBUTION_REPO
+  delete process.env.TEDIAPROS_RUNTIME_CHANNEL
+
+  try {
+    const config = getDistributionConfig()
+    assert.equal(config.runtimeSource, 'local')
+    assert.equal(config.localRuntimeDir, localDir)
+    assert.equal(config.manifestUrl, 'local-runtime:///runtime-manifest.json')
+    assert.equal(config.getAssetUrl('ocr-engine-win-x64.zip'), 'local-runtime:///ocr-engine-win-x64.zip')
+
+    appState.isPackaged = true
+    const packagedConfig = getDistributionConfig()
+    assert.equal(packagedConfig.runtimeSource, 'remote')
+    assert.equal(packagedConfig.localRuntimeDir, undefined)
+    assert.match(packagedConfig.manifestUrl, /^https:\/\/github\.com\//u)
+  } finally {
+    appState.isPackaged = previousPackaged
+    if (previousLocal == null) delete process.env.TEDIAPROS_LOCAL_RUNTIME_DIR
+    else process.env.TEDIAPROS_LOCAL_RUNTIME_DIR = previousLocal
+    if (previousOwner == null) delete process.env.TEDIAPROS_DISTRIBUTION_OWNER
+    else process.env.TEDIAPROS_DISTRIBUTION_OWNER = previousOwner
+    if (previousRepo == null) delete process.env.TEDIAPROS_DISTRIBUTION_REPO
+    else process.env.TEDIAPROS_DISTRIBUTION_REPO = previousRepo
+    if (previousChannel == null) delete process.env.TEDIAPROS_RUNTIME_CHANNEL
+    else process.env.TEDIAPROS_RUNTIME_CHANNEL = previousChannel
+  }
+})
+
+test('Local runtime fetch serves only the manifest and one-level asset files', async () => {
+  const { app } = await import('electron')
+  const { createDistributionFetch, getDistributionConfig } = await import('../src/main/distributionConfig')
+  const appState = app as unknown as { isPackaged: boolean }
+  const previousPackaged = appState.isPackaged
+  const previousLocal = process.env.TEDIAPROS_LOCAL_RUNTIME_DIR
+  const root = await mkdtemp(join(tmpdir(), 'tedia-local-runtime-fetch-'))
+
+  appState.isPackaged = false
+  process.env.TEDIAPROS_LOCAL_RUNTIME_DIR = root
+  await writeFile(join(root, 'runtime-manifest.json'), '{"schemaVersion":1}\n', 'utf8')
+  await writeFile(join(root, 'ocr-engine-win-x64.zip'), 'archive-bytes', 'utf8')
+
+  try {
+    const config = getDistributionConfig()
+    const localFetch = createDistributionFetch(config)
+    const manifestResponse = await localFetch(config.manifestUrl)
+    assert.equal(manifestResponse.status, 200)
+    assert.equal(await manifestResponse.text(), '{"schemaVersion":1}\n')
+
+    const assetResponse = await localFetch(config.getAssetUrl('ocr-engine-win-x64.zip'))
+    assert.equal(assetResponse.status, 200)
+    assert.equal(await assetResponse.text(), 'archive-bytes')
+
+    const missingResponse = await localFetch('local-runtime:///missing.zip')
+    assert.equal(missingResponse.status, 404)
+    const traversalResponse = await localFetch('local-runtime:///..%2Foutside.zip')
+    assert.equal(traversalResponse.status, 400)
+  } finally {
+    appState.isPackaged = previousPackaged
+    if (previousLocal == null) delete process.env.TEDIAPROS_LOCAL_RUNTIME_DIR
+    else process.env.TEDIAPROS_LOCAL_RUNTIME_DIR = previousLocal
+    await rm(root, { recursive: true, force: true })
+  }
+})
+
+test('Runtime installer uses the local distribution source without contacting the network', async () => {
+  const { app } = await import('electron')
+  const { createHash } = await import('node:crypto')
+  const { access } = await import('node:fs/promises')
+  const { downloadRuntimeEngineFromManifest } = await import('../src/main/runtimeInstaller')
+  const appState = app as unknown as { isPackaged: boolean }
+  const previousPackaged = appState.isPackaged
+  const previousLocal = process.env.TEDIAPROS_LOCAL_RUNTIME_DIR
+  const previousUserData = process.env.TEDIAPROS_TEST_USER_DATA
+  const root = await mkdtemp(join(tmpdir(), 'tedia-local-runtime-install-'))
+  const userData = join(root, 'userdata')
+  const archive = Buffer.from('local-archive')
+  const archiveName = 'video2x-local.zip'
+  const platform = process.platform === 'darwin' ? 'darwin' : process.platform === 'win32' ? 'win32' : 'linux'
+  const arch = process.arch === 'arm64' ? 'arm64' : process.arch === 'ia32' ? 'ia32' : 'x64'
+
+  appState.isPackaged = false
+  process.env.TEDIAPROS_LOCAL_RUNTIME_DIR = root
+  process.env.TEDIAPROS_TEST_USER_DATA = userData
+  await writeFile(join(root, 'runtime-manifest.json'), JSON.stringify({
+    schemaVersion: 1,
+    runtimeVersion: 'runtime-v5',
+    platform,
+    arch,
+    assets: {
+      video2x: {
+        version: '6.4.0',
+        platform,
+        arch,
+        asset: archiveName,
+        sha256: createHash('sha256').update(archive).digest('hex'),
+        bytes: archive.length,
+        entrypoint: 'video2x.exe',
+        capabilities: ['list-devices'],
+        files: ['video2x.exe']
+      }
+    }
+  }), 'utf8')
+  await writeFile(join(root, archiveName), archive)
+
+  try {
+    const installed = await downloadRuntimeEngineFromManifest('video2x', () => {}, {
+      extract: async (_archivePath, destination) => {
+        await writeFile(join(destination, 'video2x.exe'), 'local-engine', 'utf8')
+      },
+      probe: async () => ({ healthy: true, version: '6.4.0', protocol: null, features: [] })
+    })
+    assert.equal(installed, true)
+    assert.equal(await access(join(userData, 'bin', 'video2x', 'video2x.exe')).then(() => true).catch(() => false), true)
+  } finally {
+    appState.isPackaged = previousPackaged
+    if (previousLocal == null) delete process.env.TEDIAPROS_LOCAL_RUNTIME_DIR
+    else process.env.TEDIAPROS_LOCAL_RUNTIME_DIR = previousLocal
+    if (previousUserData == null) delete process.env.TEDIAPROS_TEST_USER_DATA
+    else process.env.TEDIAPROS_TEST_USER_DATA = previousUserData
+    await rm(root, { recursive: true, force: true })
+  }
+})
+
 test('Runtime manifest validator: strictly validates contract and rejects malformed payloads', async () => {
   const { validateRuntimeDistributionManifest } = await import('../src/main/runtimeManifest')
 
@@ -2271,22 +2408,22 @@ test('AutoShort renderer wiring: OCR blur mode, profile selector, and boundary i
   assert.match(source, /normalizeAutoShortBlurMode/u)
   assert.match(source, /normalizeAutoShortOcrBlurProfile/u)
 
-  // Exactly four approved option labels
+  // Legacy options remain available alongside optional STTN.
   assert.match(source, /Thủ công/u)
   assert.match(source, /Tự động OCR/u)
   assert.match(source, /Chính xác — khuyên dùng/u)
   assert.match(source, /Nhanh/u)
 
   // Derived expressions
-  assert.match(source, /const automaticBlur = blurEnabled && blurMode === 'ocr-auto'/u)
+  assert.match(source, /const automaticProcessing = isAutomaticOcrProcessing\(\{ lamMo: blurEnabled, blurMode \}\)/u)
   assert.match(source, /const subtitleUsesOcr = subtitleMethod === 'ocr' \|\| subtitleMethod === 'whisper-ocr'/u)
   assert.match(source, /const visibleManualBlurRegions = blurEnabled && blurMode === 'manual' \? blurRegions : \[\]/u)
-  assert.match(source, /const showOcrScanRegion = subtitleUsesOcr \|\| automaticBlur/u)
+  assert.match(source, /const showOcrScanRegion = subtitleUsesOcr \|\| automaticProcessing/u)
 
   // RegionBox props wiring
   assert.match(source, /regions=\{visibleManualBlurRegions\}/u)
   assert.match(source, /hienOcrBox=\{showOcrScanRegion\}/u)
-  assert.match(source, /ocrInteractive=\{\(tool === 'blur' && automaticBlur\) \|\| \(tool === 'subtitle' && subtitleUsesOcr\)\}/u)
+  assert.match(source, /ocrInteractive=\{\(tool === 'blur' && automaticProcessing\) \|\| \(tool === 'subtitle' && subtitleUsesOcr\)\}/u)
 
   // Readiness, install, and start payloads send safe dependency fields
   assert.match(source, /autoShortGetReadiness\(\{[\s\S]*?lamMo:\s*blurEnabled[\s\S]*?blurMode[\s\S]*?ocrBlurProfile[\s\S]*?\}\)/u)

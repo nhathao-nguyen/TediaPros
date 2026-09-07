@@ -16,14 +16,18 @@ import {
   buildSemanticBatches,
   buildSemanticGroups,
   DEFAULT_LOCAL_TRANSLATION_TEMPERATURE,
+  LOCAL_DUBBING_BATCH_MAX_CUES,
+  LOCAL_DUBBING_BATCH_MAX_CHARS,
   isRetryableLocalTranslationError,
   parseCueTiming,
   resolveTranslationSourceLanguage,
   splitSemanticBatch,
   type SemanticGroup
 } from './localTranslatePolicy'
+import { joinGroupText } from './semanticGrouping'
 import { debugRaw, errLabel, logInfo, logWarn } from './logger'
 import { DEFAULT_AI_SERVER_URL, type DichKeyStatus, type SrtBlock } from '../shared/types'
+import { getGlobalResourceManager } from './autoShortResourceManager'
 
 export type { TranslationMode }
 
@@ -35,6 +39,73 @@ export interface TranslateOptions {
   contextRadius?: number
   signal?: AbortSignal
   model?: string
+  /** Per-item wall-clock budget. Defaults to ten minutes. */
+  deadlineMs?: number
+  /** Optional request-count ceiling; omitted/null keeps only the deadline guard. */
+  maxRequests?: number | null
+  /** Monotonic clock hook for deterministic tests. */
+  now?: () => number
+  /** Wall-clock hook used when parsing HTTP-date Retry-After values. */
+  wallNow?: () => number
+  /** Retry sleep hook for deterministic tests. */
+  sleep?: (delayMs: number, signal?: AbortSignal) => Promise<void>
+}
+
+export const LOCAL_TRANSLATION_DEADLINE_MS = 10 * 60 * 1000
+
+export interface LocalTranslationRequestBudget {
+  readonly maxRequests: number
+  readonly deadlineAtMs: number
+  readonly requests: number
+  remainingMs(): number
+  consume(): void
+}
+
+class TranslationRequestBudget implements LocalTranslationRequestBudget {
+  readonly maxRequests: number
+  readonly deadlineAtMs: number
+  private requestCount = 0
+  private readonly now: () => number
+
+  constructor(maxRequests: number, deadlineMs: number, now: () => number) {
+    this.maxRequests = Number.isFinite(maxRequests)
+      ? Math.max(1, Math.floor(maxRequests))
+      : Number.POSITIVE_INFINITY
+    this.now = now
+    this.deadlineAtMs = now() + Math.max(0, deadlineMs)
+  }
+
+  get requests(): number {
+    return this.requestCount
+  }
+
+  remainingMs(): number {
+    return Math.max(0, this.deadlineAtMs - this.now())
+  }
+
+  consume(): void {
+    if (this.remainingMs() <= 0) {
+      throw new Error(`Đã hết thời gian dịch cho item (deadline ${Math.round(LOCAL_TRANSLATION_DEADLINE_MS / 60_000)} phút)`)
+    }
+    if (Number.isFinite(this.maxRequests) && this.requestCount >= this.maxRequests) {
+      throw new Error(`Đã hết ngân sách request dịch (${this.maxRequests} lượt)`)
+    }
+    this.requestCount++
+  }
+}
+
+/** Parse Retry-After as delay-seconds or an RFC 7231 HTTP-date. */
+export function parseRetryAfterMs(value: string | null | undefined, wallNow = Date.now()): number | null {
+  const raw = value?.trim()
+  if (!raw) return null
+  if (/^\d+(?:\.\d+)?$/u.test(raw)) {
+    const seconds = Number(raw)
+    if (!Number.isFinite(seconds)) return null
+    return Math.max(0, Math.round(seconds * 1000))
+  }
+  const timestamp = Date.parse(raw)
+  if (Number.isNaN(timestamp)) return null
+  return Math.max(0, timestamp - wallNow)
 }
 
 function keyFile(): string {
@@ -196,27 +267,134 @@ async function waitForLocalTranslationRetry(delayMs: number, signal?: AbortSigna
   })
 }
 
+function translationDeadlineError(): Error {
+  return new Error(`Đã hết thời gian dịch cho item (deadline ${Math.round(LOCAL_TRANSLATION_DEADLINE_MS / 60_000)} phút)`)
+}
+
+/**
+ * Keep response items that are structurally usable even when the provider
+ * omitted a few cue IDs. Re-requesting already valid cues wastes the shared
+ * deadline budget and is especially harmful for small batches.
+ */
+function collectUsableTranslationItems(
+  candidate: readonly TranslationItem[],
+  expectedIds: readonly string[]
+): Map<string, string> {
+  const expected = new Set(expectedIds)
+  const usable = new Map<string, string>()
+  const seen = new Set<string>()
+  for (const item of candidate) {
+    if (!item || typeof item.id !== 'string' || !expected.has(item.id)) continue
+    if (seen.has(item.id)) {
+      usable.delete(item.id)
+      continue
+    }
+    seen.add(item.id)
+    if (typeof item.text !== 'string' || !item.text.trim()) continue
+    usable.set(item.id, item.text.trim())
+  }
+  return usable
+}
+
+function hasOneExpectedItemPerCue(
+  candidate: readonly TranslationItem[],
+  expectedIds: readonly string[],
+  usable: ReadonlyMap<string, string>
+): boolean {
+  if (usable.size !== expectedIds.length) return false
+  const expected = new Set(expectedIds)
+  const expectedItems = candidate.filter((item) => expected.has(item.id))
+  if (expectedItems.length !== expectedIds.length) return false
+  return new Set(expectedItems.map((item) => item.id)).size === expectedIds.length
+}
+
+function groupsForMissingCues(
+  groups: readonly SemanticGroup<SrtBlock>[],
+  usable: ReadonlyMap<string, string>
+): SemanticGroup<SrtBlock>[] {
+  return groups.flatMap((group) => {
+    const missingCues = group.cues.filter((cue) => !usable.has(cue.id || ''))
+    if (missingCues.length === 0) return []
+    if (missingCues.length === group.cues.length) return [group]
+    const first = parseCueTiming(missingCues[0])
+    const last = parseCueTiming(missingCues[missingCues.length - 1])
+    return [{
+      ...group,
+      id: `${group.id}-missing`,
+      cues: missingCues,
+      text: joinGroupText(missingCues),
+      start: first.start,
+      end: last.end
+    }]
+  })
+}
+
+function assertRetryFitsBudget(delayMs: number, budget: LocalTranslationRequestBudget): void {
+  if (delayMs > budget.remainingMs()) throw translationDeadlineError()
+}
+
 async function fetchLocalTranslationBatch(
   url: string,
   init: Omit<RequestInit, 'signal'>,
-  signal?: AbortSignal
+  signal: AbortSignal | undefined,
+  budget: LocalTranslationRequestBudget,
+  sleep: (delayMs: number, signal?: AbortSignal) => Promise<void>,
+  wallNow: () => number
 ): Promise<Response> {
   for (let attempt = 0; attempt < LOCAL_TRANSLATION_MAX_ATTEMPTS; attempt++) {
     try {
-      const requestSignal = signal
-        ? AbortSignal.any([signal, AbortSignal.timeout(60_000)])
-        : AbortSignal.timeout(60_000)
-      const response = await fetch(url, { ...init, signal: requestSignal })
-      if (response.ok) return response
+      budget.consume()
+      const remainingMs = budget.remainingMs()
+      if (remainingMs <= 0) throw translationDeadlineError()
+      const { response, bodyText, errText, retryAfter } = await getGlobalResourceManager().withLease(
+        ['server-inference'],
+        signal,
+        async () => {
+          const leaseRemainingMs = budget.remainingMs()
+          if (leaseRemainingMs <= 0) throw translationDeadlineError()
+          const timeoutMs = Math.max(1, Math.min(60_000, Math.ceil(leaseRemainingMs)))
+          const timeoutSignal = AbortSignal.timeout(timeoutMs)
+          const requestSignal = signal
+            ? AbortSignal.any([signal, timeoutSignal])
+            : timeoutSignal
+          const resp = await fetch(url, { ...init, signal: requestSignal })
+          if (resp.ok) {
+            const text = await resp.text()
+            return { response: resp, bodyText: text, errText: '', retryAfter: null }
+          }
+          const text = await resp.text().catch(() => '')
+          const ra = resp.headers.get('Retry-After')
+          return { response: resp, bodyText: '', errText: text, retryAfter: ra }
+        }
+      )
 
-      const error = translationHttpError(response.status, await response.text().catch(() => ''))
+      if (response.ok) {
+        if (budget.remainingMs() <= 0) throw translationDeadlineError()
+        return new Response(bodyText, {
+          status: response.status,
+          statusText: response.statusText,
+          headers: response.headers
+        })
+      }
+
+      let retryDelayMs = LOCAL_TRANSLATION_RETRY_DELAYS_MS[attempt]
+      if (response.status === 429 || response.status === 503) {
+        const parsedRetryAfter = parseRetryAfterMs(retryAfter, wallNow())
+        if (parsedRetryAfter !== null) retryDelayMs = parsedRetryAfter
+      }
+
+      const error = translationHttpError(response.status, errText)
       if (!isRetryableLocalTranslationError(error) || attempt >= LOCAL_TRANSLATION_MAX_ATTEMPTS - 1) throw error
-      await waitForLocalTranslationRetry(LOCAL_TRANSLATION_RETRY_DELAYS_MS[attempt], signal)
+      assertRetryFitsBudget(retryDelayMs, budget)
+      await sleep(retryDelayMs, signal)
     } catch (error) {
+      if (budget.remainingMs() <= 0) throw translationDeadlineError()
       if (signal?.aborted || !isRetryableLocalTranslationError(error) || attempt >= LOCAL_TRANSLATION_MAX_ATTEMPTS - 1) {
         throw error
       }
-      await waitForLocalTranslationRetry(LOCAL_TRANSLATION_RETRY_DELAYS_MS[attempt], signal)
+      const retryDelayMs = LOCAL_TRANSLATION_RETRY_DELAYS_MS[attempt]
+      assertRetryFitsBudget(retryDelayMs, budget)
+      await sleep(retryDelayMs, signal)
     }
   }
   throw new Error('Server AI không trả về kết quả dịch')
@@ -294,11 +472,19 @@ export async function localTranslateSrt(
   const sourceLanguage = resolveTranslationSourceLanguage(options.sourceLanguage)
   const semanticGroups = buildSemanticGroups(sourceBlocks)
   const batches = mode === 'dubbing'
-    ? buildTranslationBatches(sourceBlocks).map((batch) => buildSemanticGroups(batch))
+    ? buildTranslationBatches(sourceBlocks, LOCAL_DUBBING_BATCH_MAX_CHARS, LOCAL_DUBBING_BATCH_MAX_CUES).map((batch) => buildSemanticGroups(batch))
     : buildSemanticBatches(semanticGroups, 10)
   const translatedBlocks: SrtBlock[] = []
 
   let doneCount = 0
+  const now = options.now || (() => performance.now())
+  const sleep = options.sleep || waitForLocalTranslationRetry
+  const budget = new TranslationRequestBudget(
+    options.maxRequests ?? Number.POSITIVE_INFINITY,
+    options.deadlineMs ?? LOCAL_TRANSLATION_DEADLINE_MS,
+    now
+  )
+  const wallNow = options.wallNow || (() => Date.now())
 
   const translateGroupBatch = async (
     batchGroups: SemanticGroup<SrtBlock>[],
@@ -307,7 +493,12 @@ export async function localTranslateSrt(
     const batchCues = batchGroups.flatMap((g) => g.cues)
     const expectedIds = batchCues.map((c) => c.id || '')
 
-    const systemPrompt = huongDan(targetLanguage, { mode, sourceLanguage })
+    const outputContract = [
+      `Định dạng đầu ra bắt buộc: mỗi dòng là [id] bản dịch, ví dụ [${expectedIds[0]}] <bản dịch bằng ngôn ngữ đích>.`,
+      `Giữ nguyên chính xác các ID cần dịch: ${expectedIds.join(', ')}. Không đánh số lại từ đầu.`,
+      'Không trả nhãn nhóm, thời lượng, lời giải thích, Markdown hoặc cue ngữ cảnh. Dù chỉ có một cue vẫn phải ghi [id].'
+    ].join('\n')
+    const systemPrompt = `${huongDan(targetLanguage, { mode, sourceLanguage })}\n\n${outputContract}`
     let userPrompt: string
     if (mode === 'dubbing') {
       userPrompt = buildDubbingTranslationPayload(batchCues, sourceBlocks, options.contextRadius, targetLanguage)
@@ -355,27 +546,30 @@ export async function localTranslateSrt(
     }
     let resultMap: Map<string, string> | undefined
     let invalidResponseReason = ''
+    let partialMap: Map<string, string> | undefined
+    let partialMissingGroups: SemanticGroup<SrtBlock>[] | undefined
 
     for (let responseAttempt = 0; responseAttempt < LOCAL_TRANSLATION_RESPONSE_MAX_ATTEMPTS; responseAttempt++) {
+      if (options.signal?.aborted) throw new Error('Đã hủy tác vụ')
       const activeUserPrompt = responseAttempt === 0
         ? userPrompt
         : `${userPrompt}\nLưu ý: Bản trả lời trước chưa đạt yêu cầu (${invalidResponseReason || 'schema không hợp lệ'}). Yêu cầu trả về đúng và đủ các cue ID: ${expectedIds.join(', ')}.`
 
+      const requestStarted = performance.now()
       const res = await fetchLocalTranslationBatch(`${base}/v1/chat/completions`, {
         method: 'POST',
         headers: getAuthHeaders(effectiveKey),
         body: JSON.stringify({
-          model: 'llm-default',
+          model: options.model?.trim() || 'llm-default',
           messages: [
             { role: 'system', content: systemPrompt },
             { role: 'user', content: activeUserPrompt }
           ],
           temperature: DEFAULT_LOCAL_TRANSLATION_TEMPERATURE,
-          // The gateway maps this to Ollama's num_predict. A bounded budget
-          // avoids a long batch being cut off before every cue is returned.
-          max_tokens: Math.min(8_192, Math.max(512, expectedIds.length * 64))
+          // Bounded token budget prevents runaway generation on local server
+          max_tokens: Math.min(2_048, Math.max(512, expectedIds.length * 64))
         })
-      }, options.signal)
+      }, options.signal, budget, sleep, wallNow)
 
       if (!res.ok) {
         const errText = await res.text().catch(() => '')
@@ -383,16 +577,43 @@ export async function localTranslateSrt(
       }
 
       const data = (await res.json()) as {
-        choices?: Array<{ message?: { content?: string } }>
+        choices?: Array<{ message?: { content?: string }; finish_reason?: string }>
         translation?: string
       }
+      if (options.signal?.aborted) throw new Error('Đã hủy tác vụ')
       const transText = (data.choices?.[0]?.message?.content || data.translation || '').trim()
-      if (!transText) throw new Error('Server AI trả về kết quả rỗng')
+      const truncated = data.choices?.[0]?.finish_reason === 'length'
+      logInfo(`[Translate] response cues=${batchCues.length} attempt=${responseAttempt + 1} elapsedMs=${Math.round(performance.now() - requestStarted)} truncated=${truncated}`)
 
       const candidate = parseTranslationItems(transText)
+      const responseIdCounts = new Map<string, number>()
+      for (const item of candidate) responseIdCounts.set(item.id, (responseIdCounts.get(item.id) || 0) + 1)
+      const missingCount = expectedIds.filter((id) => !responseIdCounts.has(id)).length
+      const duplicateCount = expectedIds.filter((id) => (responseIdCounts.get(id) || 0) > 1).length
+      const expectedSet = new Set(expectedIds)
+      const unknownCount = candidate.filter((item) => !expectedSet.has(item.id)).length
+      const emptyCount = candidate.filter((item) => expectedSet.has(item.id) && !item.text.trim()).length
+      // Counts only: no prompt, raw response, unknown ID strings or credentials.
+      logInfo(`[Translate] schema expected=${expectedIds.length} parsed=${candidate.length} missing=${missingCount} duplicate=${duplicateCount} unknown=${unknownCount} empty=${emptyCount} chars=${transText.length} fenced=${transText.startsWith('```')}`)
+      const sourceEcho = !truncated && isLikelySourceScriptEcho(sourceBlocks, candidate, sourceLanguage, targetLanguage)
+      const usable = !truncated && !sourceEcho
+        ? collectUsableTranslationItems(candidate, expectedIds)
+        : new Map<string, string>()
       try {
+        // Even a syntactically complete final line may have lost its last words.
+        if (truncated) throw new Error('phản hồi bị cắt do giới hạn token')
+        // Ignore non-current context items only when every current cue appears
+        // exactly once. This keeps the identity contract while preventing a
+        // harmless extra context line from triggering a full retranslation.
+        if (hasOneExpectedItemPerCue(candidate, expectedIds, usable)) {
+          if (candidate.length !== expectedIds.length) {
+            logWarn(`[Translate] Bỏ qua ${candidate.length - expectedIds.length} cue ngoài batch; các cue hiện tại đã đủ.`)
+          }
+          resultMap = usable as Map<string, string>
+          break
+        }
         validateTranslationItems(candidate, expectedIds)
-        if (isLikelySourceScriptEcho(sourceBlocks, candidate, sourceLanguage, targetLanguage)) {
+        if (sourceEcho) {
           invalidResponseReason = 'nội dung phản hồi vẫn ở hệ chữ nguồn'
           // Do not spend another request repeating the same oversized prompt;
           // the bounded semantic split below is the recovery path.
@@ -402,15 +623,45 @@ export async function localTranslateSrt(
         break
       } catch (error) {
         invalidResponseReason = error instanceof Error ? error.message : 'schema không hợp lệ'
+        if (candidate.length === 0 && !truncated) {
+          invalidResponseReason = 'Không đọc được cue có ID từ phản hồi AI; cần định dạng [id] bản dịch hoặc JSON có id và t/text.'
+        }
       }
+
+      // A provider may return most IDs correctly and omit only a small tail.
+      // Preserve those valid translations and recurse only over groups that
+      // still contain a missing cue. This keeps semantic boundaries intact
+      // while avoiding duplicate requests for work already completed.
+      if (!truncated && !sourceEcho && usable.size > 0) {
+        const mergedUsable = new Map(partialMap)
+        for (const [id, text] of usable) mergedUsable.set(id, text)
+        const missingGroups = groupsForMissingCues(batchGroups, mergedUsable)
+        if (mergedUsable.size > 0 && mergedUsable.size < expectedIds.length && missingGroups.length > 0) {
+          partialMap = mergedUsable
+          partialMissingGroups = missingGroups
+        }
+      }
+
+      // Retain whole utterances, but avoid repeating a failed multi-group
+      // request before trying smaller batches. A single group gets one repair.
+      if (batchGroups.length > 1 || (truncated && batchCues.length > 1)) break
 
       if (responseAttempt < LOCAL_TRANSLATION_RESPONSE_MAX_ATTEMPTS - 1) {
         logWarn(`[Translate] Batch ${startCueIndex + 1}-${startCueIndex + batchCues.length} ${invalidResponseReason}; thử lại response.`)
-        await waitForLocalTranslationRetry(LOCAL_TRANSLATION_RETRY_DELAYS_MS[responseAttempt], options.signal)
+        const retryDelayMs = LOCAL_TRANSLATION_RETRY_DELAYS_MS[responseAttempt]
+        assertRetryFitsBudget(retryDelayMs, budget)
+        await sleep(retryDelayMs, options.signal)
       }
     }
 
     if (resultMap) return resultMap
+
+    if (partialMap && partialMissingGroups) {
+      const missingCueCount = partialMissingGroups.reduce((sum, group) => sum + group.cues.length, 0)
+      logWarn(`[Translate] Batch ${startCueIndex + 1}-${startCueIndex + batchCues.length} ${invalidResponseReason || 'thiếu cue'}; giữ ${partialMap.size} cue hợp lệ và dịch lại ${missingCueCount} cue còn thiếu.`)
+      const recovered = await translateGroupBatch(partialMissingGroups, startCueIndex)
+      return new Map([...partialMap.entries(), ...recovered.entries()])
+    }
 
     const split = splitSemanticBatch(batchGroups)
     if (split) {

@@ -35,9 +35,10 @@ export async function probeSourceAudio(
     const child = spawn(ffprobePath, args, { windowsHide: true, shell: false })
     trackChildProcess(child)
 
+    let abortError: Error | null = null
     const onAbort = (): void => {
+      abortError = new Error('Đã hủy tác vụ.')
       terminateProcessTree(child)
-      reject(new Error('Đã hủy tác vụ.'))
     }
     if (signal) signal.addEventListener('abort', onAbort)
 
@@ -46,11 +47,12 @@ export async function probeSourceAudio(
 
     child.on('error', (err) => {
       if (signal) signal.removeEventListener('abort', onAbort)
-      reject(err)
+      reject(abortError || err)
     })
 
     child.on('close', (code) => {
       if (signal) signal.removeEventListener('abort', onAbort)
+      if (abortError) return reject(abortError)
       if (code !== 0) {
         return reject(new Error(`ffprobe failed (${code}): ${stderr}`))
       }
@@ -112,9 +114,10 @@ export async function prepareSourceAudio(input: {
     const child = spawn(input.ffmpegPath, args, { windowsHide: true, shell: false })
     trackChildProcess(child)
 
+    let abortError: Error | null = null
     const onAbort = (): void => {
+      abortError = new Error('Đã hủy tác vụ.')
       terminateProcessTree(child)
-      reject(new Error('Đã hủy tác vụ.'))
     }
     input.signal.addEventListener('abort', onAbort)
 
@@ -125,11 +128,12 @@ export async function prepareSourceAudio(input: {
 
     child.on('error', (err) => {
       input.signal.removeEventListener('abort', onAbort)
-      reject(err)
+      reject(abortError || err)
     })
 
     child.on('close', (code) => {
       input.signal.removeEventListener('abort', onAbort)
+      if (abortError) return reject(abortError)
       if (code !== 0) {
         return reject(new Error(`Trích xuất audio thất bại (${code}): ${stderr}`))
       }
@@ -181,9 +185,10 @@ export async function validateSeparatorStem(input: {
     const child = spawn(input.ffprobePath, args, { windowsHide: true, shell: false })
     trackChildProcess(child)
 
+    let abortError: Error | null = null
     const onAbort = (): void => {
+      abortError = new Error('Đã hủy tác vụ.')
       terminateProcessTree(child)
-      reject(new Error('Đã hủy tác vụ.'))
     }
     if (input.signal) input.signal.addEventListener('abort', onAbort)
 
@@ -192,11 +197,12 @@ export async function validateSeparatorStem(input: {
 
     child.on('error', (err) => {
       if (input.signal) input.signal.removeEventListener('abort', onAbort)
-      reject(err)
+      reject(abortError || err)
     })
 
     child.on('close', (code) => {
       if (input.signal) input.signal.removeEventListener('abort', onAbort)
+      if (abortError) return reject(abortError)
       if (code !== 0) return reject(new Error(`Probe stem thất bại (${code}): ${stderr}`))
 
       try {
@@ -257,9 +263,10 @@ export async function normalizeInstrumentalDuration(input: {
     const child = spawn(input.ffmpegPath, args, { windowsHide: true, shell: false })
     trackChildProcess(child)
 
+    let abortError: Error | null = null
     const onAbort = (): void => {
+      abortError = new Error('Đã hủy tác vụ.')
       terminateProcessTree(child)
-      reject(new Error('Đã hủy tác vụ.'))
     }
     input.signal.addEventListener('abort', onAbort)
 
@@ -270,11 +277,12 @@ export async function normalizeInstrumentalDuration(input: {
 
     child.on('error', (err) => {
       input.signal.removeEventListener('abort', onAbort)
-      reject(err)
+      reject(abortError || err)
     })
 
     child.on('close', (code) => {
       input.signal.removeEventListener('abort', onAbort)
+      if (abortError) return reject(abortError)
       if (code !== 0) return reject(new Error(`Chuẩn hóa độ dài instrumental thất bại (${code}): ${stderr}`))
       resolve()
     })
