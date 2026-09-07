@@ -112,16 +112,12 @@ export class AutoShortResourceManager {
     action: (lease: ResourceLease) => Promise<T>
   ): Promise<T> {
     const lease = await this.acquire(resources, signal)
-    // Cancellation is the ownership fence for a resource. Release the slot
-    // immediately when an uncooperative provider ignores AbortSignal; the
-    // action still settles in its own promise, while later work is no longer
-    // deadlocked behind a leaked lease.
-    const releaseOnAbort = (): void => lease.release()
-    signal?.addEventListener('abort', releaseOnAbort, { once: true })
     try {
       return await action(lease)
     } finally {
-      signal?.removeEventListener('abort', releaseOnAbort)
+      // The lease remains owned until the provider action has settled.  An
+      // AbortSignal is a request to stop the action; releasing here earlier
+      // would let another job enter while the old process still owns CPU/GPU.
       lease.release()
     }
   }

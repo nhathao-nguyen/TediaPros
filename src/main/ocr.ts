@@ -148,6 +148,24 @@ function parseSrt(content: string): SrtCue[] {
   return cues
 }
 
+export function validateOcrSrtOutput(content: string, reportedCount: number): SrtCue[] {
+  if (!Number.isInteger(reportedCount) || reportedCount <= 0) {
+    throw new Error('OCR không tạo được SRT có cue hợp lệ.')
+  }
+  if (typeof content !== 'string' || content.trim().length === 0) {
+    throw new Error('OCR không tạo được SRT có cue hợp lệ.')
+  }
+  const cues = parseSrt(content)
+  const timestamp = /^\d{2}:\d{2}:\d{2}[,.]\d{3}$/
+  if (
+    cues.length !== reportedCount ||
+    cues.some((cue) => !Number.isInteger(cue.id) || cue.id <= 0 || !cue.text || !timestamp.test(cue.start) || !timestamp.test(cue.end))
+  ) {
+    throw new Error(`OCR không tạo được SRT có cue hợp lệ (reported=${reportedCount}, parsed=${cues.length}).`)
+  }
+  return cues
+}
+
 function convertToVtt(cues: SrtCue[]): string {
   const lines = ['WEBVTT', '']
   for (const cue of cues) {
@@ -292,10 +310,7 @@ export async function ocrVideo(
         const outputs: string[] = []
         try {
           const srtContent = await readFile(doneOut, 'utf8')
-          const cues = parseSrt(srtContent)
-          if (srtContent.trim().length === 0 || cues.length === 0 || count <= 0) {
-            throw new Error('OCR không tạo được SRT có cue hợp lệ.')
-          }
+          const cues = validateOcrSrtOutput(srtContent, count)
 
           const txtPath = doneOut.replace(/\.srt$/i, '.txt')
           const vttPath = doneOut.replace(/\.srt$/i, '.vtt')
@@ -322,9 +337,9 @@ export async function ocrVideo(
           }
         } catch (err) {
           debugRaw('ocr format conversion error', err)
-          if (outputs.length === 0) {
-            outputs.push(doneOut)
-          }
+          const message = errLabel(err)
+          resolve({ ok: false, error: message, outputs, count, bandTop, bandBot })
+          return
         }
 
         resolve({ ok: true, output: outputs[0] || doneOut, outputs, count, bandTop, bandBot })

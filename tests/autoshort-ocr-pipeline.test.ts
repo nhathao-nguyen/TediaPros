@@ -532,8 +532,9 @@ test('Step 9.4: Whisper-only automatic (restore Whisper cues from checkpoint, ru
     ]
     const inputStat = await stat(videoFile)
     const { buildAutoShortCheckpointFingerprint, AUTO_SHORT_CHECKPOINT_VERSION } = await import('../src/main/autoshort')
+    const { hashFileSha256 } = await import('../src/main/autoShortStageKeys')
     const cfg = baseConfig({ subtitleMethod: 'whisper', outputDir: outDir })
-    const fp = buildAutoShortCheckpointFingerprint(videoFile, inputStat, cfg)
+    const fp = buildAutoShortCheckpointFingerprint(videoFile, inputStat, cfg, undefined, await hashFileSha256(videoFile))
 
     await writeFile(join(cpDir, 'checkpoint.json'), JSON.stringify({
       version: AUTO_SHORT_CHECKPOINT_VERSION,

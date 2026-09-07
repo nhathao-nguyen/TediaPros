@@ -60,7 +60,10 @@ import type { TimedOcrBlurMask } from './ocrMask'
 import { assertContainedRegularFile } from './safeContainedPath'
 import { randomUUID } from 'node:crypto'
 import {
+  buildVideoTitleInputDigest,
   generateVideoTitle,
+  prepareVideoTitle,
+  type PreparedVideoTitle,
   reserveVideoTitleOutputDir,
   validateVideoTitleConfig,
   writeVideoTitle
@@ -1475,6 +1478,14 @@ export async function burnAutoShort(
   const finalStem = basename(options.finalOutputPath, '.mp4')
   const partialName = `.${finalStem}.${randomUUID()}.partial.mp4`
   const partialPath = join(finalDir, partialName)
+  const titleController = new AbortController()
+  const forwardTitleAbort = (): void => {
+    if (!titleController.signal.aborted) titleController.abort(options.signal.reason)
+  }
+  if (options.signal.aborted) forwardTitleAbort()
+  else options.signal.addEventListener('abort', forwardTitleAbort, { once: true })
+  let preparedTitlePromise: Promise<PreparedVideoTitle | undefined> | undefined
+  let published = false
 
   try {
     if (options.signal?.aborted) throw new Error('Đã huỷ.')
@@ -1489,6 +1500,27 @@ export async function burnAutoShort(
       ...request,
       outputDir: finalDir,
       outputName: partialName
+    }
+
+    // The final spoken SRT is known before rendering starts. Prepare the
+    // optional title in parallel, but only commit it after the MP4 passes the
+    // existing decode/probe gate below. If the render fails, the scope aborts
+    // this request and the promise is drained in finally.
+    if (renderReq.videoTitle && renderReq.srt) {
+      try {
+        const titleCues = trimSubtitleCues(
+          docSrt(docFileSrt(renderReq.srt)),
+          options.expectedMedia.durationSeconds
+        )
+        if (titleCues.length > 0) {
+          preparedTitlePromise = prepareVideoTitle(titleCues, renderReq.videoTitle, titleController.signal)
+            .catch(() => undefined)
+        }
+      } catch {
+        // Title is optional; the render must continue even if its input SRT
+        // cannot be read here. completeBurnVideoTitle will report the same
+        // condition after publication.
+      }
     }
 
     const renderRes = await runBurnSubtitleLower(
@@ -1531,6 +1563,7 @@ export async function burnAutoShort(
     }
 
     await rename(partialPath, options.finalOutputPath)
+    published = true
 
     // Auto Short renders through this lower-level path instead of
     // burnSubtitle(), so it must explicitly run the optional title stage
@@ -1540,9 +1573,15 @@ export async function burnAutoShort(
       renderReq,
       onProgress,
       options.signal,
-      { probe: (video) => doVideo(options.ffprobePath, video) }
+      {
+        probe: (video) => doVideo(options.ffprobePath, video),
+        prepared: preparedTitlePromise
+      }
     )
   } finally {
+    if (!published) titleController.abort(new Error('Render thất bại trước khi commit title.'))
+    await preparedTitlePromise?.catch(() => {})
+    options.signal.removeEventListener('abort', forwardTitleAbort)
     burnInFlight = false
     try {
       await rm(partialPath, { force: true })
@@ -1788,6 +1827,7 @@ interface BurnVideoTitleDependencies {
   readSubtitle: typeof docFileSrt
   generate: typeof generateVideoTitle
   write: typeof writeVideoTitle
+  prepared?: PreparedVideoTitle | Promise<PreparedVideoTitle | undefined>
 }
 
 /** Complete an already rendered video without losing it if the optional title fails. */
@@ -1809,7 +1849,7 @@ export async function completeBurnVideoTitle(
   let stage: 'subtitle' | 'generate' | 'write' = 'subtitle'
   try {
     signal.throwIfAborted()
-    onProgress({ percent: 99, message: 'Video đã render xong, AI đang tạo tiêu đề từ SRT…' })
+    onProgress({ percent: 99, message: 'Video đã render xong, AI đang hoàn thiện tiêu đề từ SRT…' })
     const outputMeta = await io.probe(result.output)
     signal.throwIfAborted()
     // Soft subtitles can extend container duration beyond the actual video stream.
@@ -1822,8 +1862,21 @@ export async function completeBurnVideoTitle(
     if (cues.length === 0) {
       return { ...result, titleError: 'Video đã xuất thành công nhưng SRT không có nội dung trong thời lượng video để tạo tiêu đề.' }
     }
-    stage = 'generate'
-    const title = (await io.generate(cues, req.videoTitle, signal)).trim()
+    const prepared = io.prepared
+      ? await Promise.resolve(io.prepared).catch(() => undefined)
+      : undefined
+    const actualDigest = buildVideoTitleInputDigest(cues, req.videoTitle)
+    let title: string
+    if (prepared?.inputDigest === actualDigest && prepared.text?.trim()) {
+      title = prepared.text.trim()
+    } else if (prepared?.inputDigest === actualDigest && prepared.error) {
+      return { ...result, titleError: prepared.error }
+    } else {
+      // A duration/probe difference invalidates the prepared request. Reuse
+      // the existing generator once with the exact post-probe cue window.
+      stage = 'generate'
+      title = (await io.generate(cues, req.videoTitle, signal)).trim()
+    }
     signal.throwIfAborted()
     if (!title) throw new Error('Empty video title')
     stage = 'write'

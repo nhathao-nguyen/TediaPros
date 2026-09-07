@@ -79,6 +79,43 @@ test('disk ledger cancels a queued reservation without consuming capacity', asyn
   first.release()
 })
 
+test('disk ledger does not grant a reservation cancelled while its free-space probe is pending', async () => {
+  let probeCalls = 0
+  let releaseProbe!: () => void
+  const probeReady = new Promise<void>((resolve) => { releaseProbe = resolve })
+  let probeBlocked = false
+  const ledger = new AutoShortDiskBudgetLedger({
+    safetyHeadroomBytes: 100,
+    getFreeBytes: async () => {
+      probeCalls++
+      if (probeCalls === 1) return 1_000
+      probeBlocked = true
+      await probeReady
+      return 1_200
+    }
+  })
+
+  const first = await ledger.reserve('F:', 700, signal())
+  const controller = new AbortController()
+  const pending = ledger.reserve('F:', 300, controller.signal)
+  const waiter = ledger.reserve('F:', 100, signal())
+  while (!probeBlocked) await new Promise((resolve) => setImmediate(resolve))
+
+  controller.abort(new Error('cancelled while probing'))
+  releaseProbe()
+  await assert.rejects(pending, (error: unknown) => {
+    assert.equal((error as { code?: string }).code, 'ABORT_ERR')
+    return true
+  })
+  const second = await Promise.race([
+    waiter,
+    new Promise<never>((_, reject) => setTimeout(() => reject(new Error('waiter was lost after cancellation')), 100))
+  ])
+  second.release()
+  assert.equal(ledger.getReservedBytes('F:'), 700)
+  first.release()
+})
+
 test('disk ledger rejects an impossible reservation with ENOSPC', async () => {
   const ledger = new AutoShortDiskBudgetLedger({
     safetyHeadroomBytes: 100,

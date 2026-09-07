@@ -67,6 +67,7 @@ const knownTests = [
   'autoshort-ocr-burn.test',
   'video-title.test',
   'burn-video-title.test',
+  'autoshort-title-overlap.test',
   'autoshort-video-title.test',
   'autoshort-ocr-pipeline.test',
   'autoshort-telemetry.test',
@@ -74,8 +75,18 @@ const knownTests = [
   'autoshort-tts-cache.test',
   'autoshort-disk-budget.test',
   'autoshort-resource-manager.test',
+  'autoshort-resource-lifecycle.test',
+  'autoshort-stage-scheduling.test',
+  'autoshort-artifact-cache.test',
+  'autoshort-stage-cache.test',
+  'autoshort-trim-cache.test',
+  'autoshort-benchmark.test',
+  'autoshort-content-quality.test',
+  'autoshort-ui-contract.test',
   'autoshort-queue-throughput.test',
-  'autoshort-item-scope.test'
+  'autoshort-item-scope.test',
+  'standalone-engine-results.test',
+  'ipc-origin-validation.test'
 ]
 
 const requestedTests = process.argv.slice(2).map((name) => name.replace(/\.(ts|js)$/, ''))

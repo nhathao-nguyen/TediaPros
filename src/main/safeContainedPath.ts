@@ -80,14 +80,26 @@ export async function assertContainedParentDirectory(
   let parent = dirname(candidate)
   let parentReal: string | null = null
   while (parent) {
+    let st
     try {
-      const st = await lstat(parent)
-      if (st.isSymbolicLink()) {
-        throw new Error(`${label}: phát hiện symbolic link trong cây thư mục: ${parent}`)
-      }
+      st = await lstat(parent)
+    } catch (error) {
+      if ((error as NodeJS.ErrnoException).code !== 'ENOENT') throw error
+      const next = dirname(parent)
+      if (next === parent) break
+      parent = next
+      continue
+    }
+
+    if (st.isSymbolicLink()) {
+      throw new Error(`${label}: phát hiện symbolic link trong cây thư mục: ${parent}`)
+    }
+
+    try {
       parentReal = await realpath(parent)
       break
-    } catch {
+    } catch (error) {
+      if ((error as NodeJS.ErrnoException).code !== 'ENOENT') throw error
       const next = dirname(parent)
       if (next === parent) break
       parent = next

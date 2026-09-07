@@ -32,8 +32,9 @@ export async function findForbiddenFiles(dir) {
     let entries
     try {
       entries = await readdir(current, { withFileTypes: true })
-    } catch {
-      return
+    } catch (error) {
+      const code = error && typeof error === 'object' && 'code' in error ? String(error.code) : 'UNKNOWN'
+      throw new Error(`Không thể đọc thư mục package (${code}): ${current}`)
     }
 
     for (const entry of entries) {

@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict'
 import { EventEmitter } from 'node:events'
-import { mkdtemp, rm, writeFile } from 'node:fs/promises'
+import { mkdtemp, mkdir, rm, symlink, writeFile } from 'node:fs/promises'
 import { createHash } from 'node:crypto'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
@@ -16,6 +16,7 @@ import { planOcrMaskFrames, boxesForMaskFrame } from '../src/shared/ocrVisualTim
 import { resolveFfmpeg } from '../src/main/deps'
 import { resolveRuntimeExecutable } from '../src/main/runtimeResolver'
 import type { OcrVisualTimeline } from '../src/shared/types'
+import { assertContainedParentDirectory } from '../src/main/safeContainedPath'
 
 class MockChildProcess extends EventEmitter {
   stdin = new EventEmitter() as unknown as NodeJS.WritableStream & EventEmitter
@@ -76,6 +77,23 @@ test('rasterizeOcrMaskFrame allocates exact buffer and paints white islands insi
     () => rasterizeOcrMaskFrame(width, height, [{ x0: -1, y0: 0, x1: 10, y1: 10 }]),
     /ngoài giới hạn/u
   )
+})
+
+test('contained output rejects a junction ancestor that resolves outside the allowed root', async () => {
+  const root = await mkdtemp(join(tmpdir(), 'tedia-contained-'))
+  const allowed = join(root, 'allowed')
+  const outside = join(root, 'outside')
+  try {
+    await mkdir(allowed)
+    await mkdir(outside)
+    await symlink(outside, join(allowed, 'redirect'), 'junction')
+    await assert.rejects(
+      assertContainedParentDirectory(join(allowed, 'redirect', 'output.bin'), allowed, 'output'),
+      /symbolic link|ngoài thư mục/u
+    )
+  } finally {
+    await rm(root, { recursive: true, force: true })
+  }
 })
 
 test('mask frame planning expands 1 sample, clamps to activeFrameCount, and leaves terminal frame black', () => {

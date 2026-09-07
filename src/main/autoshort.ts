@@ -29,6 +29,7 @@ import { loadDurationProfile, saveDurationProfile } from './dubbing/profileStore
 import { applyDubbingTranslations } from './dubbing/translation'
 import { buildTtsCacheKey, getTtsCacheStore } from './dubbing/cache'
 import { synthesizeDubbingPlan } from './dubbing/synthesis'
+import { buildStageKey, hashFileSha256 } from './autoShortStageKeys'
 import { DUBBING_PLAN_VERSION, buildDubbingPlan as buildPlan, validateDubbingPlan, type DubbingPlan } from './dubbing/plan'
 import { huongDan, parseTranslationItems, stripOuterQuotes } from './translate-shared'
 import { resolveTranslationSourceLanguage } from './localTranslatePolicy'
@@ -88,6 +89,7 @@ import { requiredSeparationWorkspaceBytes } from './separation/disk'
 import { composeAutoShortNarratedAudio } from './autoShortNarratedAudio'
 import type { InstalledSeparatorModel } from './separation/modelStore'
 import { reserveVideoTitleOutputDir } from './videoTitle'
+import { createAutoShortArtifactCache, type ArtifactCache } from './autoShortArtifactCache'
 import type {
   AutoShortDependencyConfig,
   AutoShortSeparationPreset,
@@ -139,23 +141,80 @@ interface AutoShortJob {
   separation?: PreparedAutoShortSeparation
   separationProviderState: SeparatorProviderState
   resourceManager?: AutoShortResourceManager
+  artifactCache?: ArtifactCache
   telemetryBudget?: AutoShortTelemetryJobBudget
 }
 
 let activeJob: AutoShortJob | null = null
+let sharedArtifactCache: ArtifactCache | null = null
+
+function getAutoShortArtifactCache(): ArtifactCache {
+  if (!sharedArtifactCache) {
+    sharedArtifactCache = createAutoShortArtifactCache({
+      rootDir: join(app.getPath('userData'), 'autoshort-artifact-cache-v1'),
+      stageQuotas: {
+        asr: 512 * 1024 * 1024,
+        translation: 512 * 1024 * 1024,
+        'visual-ocr': 1024 * 1024 * 1024,
+        'trim-pcm': 1024 * 1024 * 1024
+      },
+      stageTtlMs: {
+        sttn: 7 * 24 * 60 * 60 * 1000
+      }
+    })
+  }
+  return sharedArtifactCache
+}
 
 export const AUTO_SHORT_CHECKPOINT_VERSION = 5
+export const AUTO_SHORT_TRIM_PCM_CACHE_POLICY_VERSION = 'autoshort-tts-trim-v1'
+
+export function buildAutoShortTrimPcmCacheKey(input: {
+  rawWavSha256: string
+  ffmpegRevision: string
+  trimPolicyVersion?: string
+  sampleRate?: number
+  channels?: number
+  sampleFormat?: string
+}): string {
+  if (!/^[a-f0-9]{64}$/iu.test(input.rawWavSha256)) {
+    throw new Error('Trim PCM cache yêu cầu SHA-256 WAV hợp lệ.')
+  }
+  if (!input.ffmpegRevision.trim()) throw new Error('Trim PCM cache yêu cầu revision FFmpeg.')
+  const sampleRate = input.sampleRate ?? 44_100
+  const channels = input.channels ?? 2
+  const sampleFormat = input.sampleFormat ?? 's16'
+  if (!Number.isSafeInteger(sampleRate) || sampleRate <= 0 || !Number.isSafeInteger(channels) || channels <= 0 || !sampleFormat.trim()) {
+    throw new Error('Trim PCM cache có format audio không hợp lệ.')
+  }
+  return buildStageKey('trim-pcm', {
+    cacheRevision: input.trimPolicyVersion || AUTO_SHORT_TRIM_PCM_CACHE_POLICY_VERSION,
+    rawWavSha256: input.rawWavSha256.toLowerCase(),
+    ffmpegRevision: input.ffmpegRevision,
+    sampleRate,
+    channels,
+    sampleFormat
+  })
+}
 
 export function buildAutoShortCheckpointFingerprint(
   filePath: string,
   inputInfo: { size: number; mtimeMs: number },
   config: AutoShortConfig,
-  separation?: PreparedAutoShortSeparation
+  separation?: PreparedAutoShortSeparation,
+  sourceDigest?: string
 ): string {
   return createHash('sha256').update(stableJson({
     version: AUTO_SHORT_CHECKPOINT_VERSION,
     translationPromptVersion: 'dubbing-target-language-v3',
-    input: { filePath, size: inputInfo.size, mtimeMs: inputInfo.mtimeMs },
+    input: {
+      filePath,
+      size: inputInfo.size,
+      mtimeMs: inputInfo.mtimeMs,
+      // Metadata is retained for diagnostics; content identity comes from
+      // the streamed digest so same-size replacements cannot reuse a job.
+      sourceDigest: sourceDigest || 'missing-source-digest'
+    },
     subtitleMethod: config.subtitleMethod,
     whisperModel: config.whisperModel,
     whisperDevice: config.whisperDevice,
@@ -1405,6 +1464,10 @@ async function legacySynthesizeVoice(
   predictorSamples: number
   fitFirstPassRatio: number
   predictorResidualP90: number
+  prefetchStarted: number
+  prefetchUsed: number
+  prefetchDiscarded: number
+  prefetchWaitMs: number
   diagnostics: AutoShortCueDiagnostic[]
   sourceGroupInputs: AutoShortVoiceCueInput[]
   targetGroupInputs: AutoShortVoiceCueInput[]
@@ -1996,6 +2059,10 @@ async function legacySynthesizeVoice(
     predictorSamples: predictor.profile.samples,
     fitFirstPassRatio,
     predictorResidualP90: predictor.profile.residualP90,
+    prefetchStarted: 0,
+    prefetchUsed: 0,
+    prefetchDiscarded: 0,
+    prefetchWaitMs: 0,
     diagnostics,
     sourceGroupInputs,
     targetGroupInputs,
@@ -2035,6 +2102,10 @@ export async function synthesizeVoice(
   predictorSamples: number
   fitFirstPassRatio: number
   predictorResidualP90: number
+  prefetchStarted: number
+  prefetchUsed: number
+  prefetchDiscarded: number
+  prefetchWaitMs: number
   diagnostics: AutoShortCueDiagnostic[]
   sourceGroupInputs: AutoShortVoiceCueInput[]
   targetGroupInputs: AutoShortVoiceCueInput[]
@@ -2156,10 +2227,42 @@ export async function synthesizeVoice(
     async trim(inputPath, outputHint, signal) {
       const started = performance.now()
       const outputPath = join(workDir, `${safeArtifactSegment(outputHint)}.wav`)
+      const artifactCache = job.artifactCache
+      let trimKey: string | undefined
+      if (artifactCache) {
+        const rawWavSha256 = await hashFileSha256(inputPath, signal)
+        trimKey = buildAutoShortTrimPcmCacheKey({
+          rawWavSha256,
+          ffmpegRevision: ffmpeg
+        })
+        const cached = await artifactCache.get('trim-pcm', trimKey, signal).catch(() => null)
+        if (cached) {
+          try {
+            await copyFile(cached.path, outputPath)
+            const duration = await resourceManager.withLease(['local-audio-dsp'], signal, async () => {
+              return probeDuration(ffmpeg, outputPath, signal)
+            })
+            if (!(duration > 0.05)) throw new Error('Trim PCM cache có thời lượng không hợp lệ.')
+            logInfo(`[AutoShort:timing] stage=trim cue=${safeArtifactSegment(outputHint)} cache=hit elapsedMs=${Math.round(performance.now() - started)} audioSeconds=${duration.toFixed(3)}`)
+            return { path: outputPath, duration }
+          } catch (error) {
+            if (signal.aborted) throw error
+            logWarn(`[AutoShort] Bỏ qua cache trim PCM hỏng cho ${safeArtifactSegment(outputHint)}: ${errLabel(error)}`)
+          } finally {
+            cached.release()
+          }
+        }
+      }
+
       const duration = await resourceManager.withLease(['local-audio-dsp'], signal, async () => {
         return trimVoiceClip(ffmpeg, inputPath, outputPath, signal)
       })
-      logInfo(`[AutoShort:timing] stage=trim cue=${safeArtifactSegment(outputHint)} elapsedMs=${Math.round(performance.now() - started)} audioSeconds=${duration.toFixed(3)}`)
+      if (trimKey && artifactCache) {
+        await artifactCache.put('trim-pcm', trimKey, outputPath, signal).catch((error) => {
+          logWarn(`[AutoShort] Không lưu cache trim PCM: ${errLabel(error)}`)
+        })
+      }
+      logInfo(`[AutoShort:timing] stage=trim cue=${safeArtifactSegment(outputHint)} cache=miss elapsedMs=${Math.round(performance.now() - started)} audioSeconds=${duration.toFixed(3)}`)
       return { path: outputPath, duration }
     },
     async applyTempo(inputPath, outputHint, targetDuration, signal) {
@@ -2306,6 +2409,10 @@ export async function synthesizeVoice(
     predictorSamples: synthesized.metrics.predictorSamples,
     fitFirstPassRatio: synthesized.metrics.fitFirstPassRatio,
     predictorResidualP90: synthesized.metrics.predictorResidualP90,
+    prefetchStarted: synthesized.metrics.prefetchStarted,
+    prefetchUsed: synthesized.metrics.prefetchUsed,
+    prefetchDiscarded: synthesized.metrics.prefetchDiscarded,
+    prefetchWaitMs: synthesized.metrics.prefetchWaitMs,
     diagnostics,
     sourceGroupInputs: dubbingUnits.map((unit) => ({ id: unit.id, start: unit.sourceStart, end: unit.sourceEnd, text: unit.sourceText })),
     targetGroupInputs: dubbingUnits.map((unit) => ({ id: unit.id, start: unit.sourceStart, end: unit.sourceEnd, text: unit.finalSpokenText })),
@@ -2366,6 +2473,7 @@ async function processSingleVideo(
     separationProviderState: job.separationProviderState,
     policy,
     resourceManager: job.resourceManager || getGlobalResourceManager(),
+    artifactCache: job.artifactCache,
     telemetryBudget: job.telemetryBudget
   })
   // All known artifacts have been published; no future bytes remain reserved
@@ -2542,6 +2650,7 @@ export function startAutoShortJob(raw: unknown, onEvent: (event: AutoShortEvent)
     emit: onEvent,
     cancelled: false,
     separationProviderState: { mode: 'auto' },
+    artifactCache: getAutoShortArtifactCache(),
     done: Promise.resolve({ ok: false, completedCount: 0, totalCount: validation.value.items.length })
   }
   job.done = executeJob(job).finally(() => {
@@ -2549,6 +2658,17 @@ export function startAutoShortJob(raw: unknown, onEvent: (event: AutoShortEvent)
   })
   activeJob = job
   return { ok: true, jobId: job.id }
+}
+
+/** Clear reusable stage artifacts without touching published videos or active work. */
+export async function clearAutoShortArtifactCache(): Promise<{ ok: boolean; error?: string }> {
+  if (activeJob) return { ok: false, error: 'Không thể xóa cache khi Auto Short đang chạy.' }
+  try {
+    await getAutoShortArtifactCache().clear(new AbortController().signal)
+    return { ok: true }
+  } catch (error) {
+    return { ok: false, error: errLabel(error) }
+  }
 }
 
 export async function cancelAutoShort(jobId: string): Promise<{ ok: boolean; error?: string }> {

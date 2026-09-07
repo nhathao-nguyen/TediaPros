@@ -84,6 +84,14 @@ test('rejects a cue that needs more than the permitted local pace adjustment', (
   )
 })
 
+test('fixed dubbing pace never exceeds the hard tempo ceiling', () => {
+  const selectFixedPace = (policyModule as typeof policyModule & {
+    selectFixedPace?: (speed: number) => number
+  }).selectFixedPace
+  assert.equal(typeof selectFixedPace, 'function')
+  assert.equal(selectFixedPace!(2), 1.45)
+})
+
 test('validates source identity, hard-end, overlap, and final subtitle text', () => {
   const buildDubbingPlan = (planModule as typeof planModule & {
     buildDubbingPlan?: PlanBuilder
@@ -367,53 +375,24 @@ test('synthesis performs at most one rephrase and updates both plan text and sub
   assert.equal(result.plan.cues[0].subtitles[0].text, 'short final')
 })
 
-test('long voice fits once from original PCM and reports total effective tempo', async () => {
+test('long single cue rejects when fitting would exceed the hard tempo ceiling', async () => {
   const plan = planModule.buildDubbingPlan({ videoDuration: 4, paceMode: 'fixed', cues: [
     { id: 'long', start: 0, end: 1, text: 'Keep all the original words.' },
     { id: 'short', start: 2, end: 3, text: 'Next sentence.' }
   ] })
-  const calls: Array<{ path: string; target: number }> = []
-  const result = await synthesisModule.synthesizeDubbingPlan({
+  let applyTempoCalls = 0
+  await assert.rejects(synthesisModule.synthesizeDubbingPlan({
     plan, language: 'en', model: 'fixture', fixedTempo: 1,
     tts: { synthesize: async (request) => ({ path: `${request.cueId}.wav` }) },
     audio: {
       trim: async (path) => ({ path: `${path}.trim`, duration: path.startsWith('long') ? 5 : 0.8 }),
       applyTempo: async (path, _hint, target) => {
-        calls.push({ path, target })
+        applyTempoCalls++
         return { path: `${path}.tempo`, duration: target }
       }
     }
-  })
-  assert.equal(calls.length, 1, 'the old emergency path processed this cue twice')
-  assert.equal(calls[0].path, 'long.wav.trim')
-  assert.equal(calls[0].target, 1.98)
-  assert.equal(result.plan.cues[0].tempo, Number((5 / 1.98).toFixed(4)))
-  assert.equal(result.metrics.maxTempo, result.plan.cues[0].tempo)
-  assert.equal(result.plan.cues[0].finalSpokenText, 'Keep all the original words.')
-  assert.ok(result.plan.cues[0].voiceEnd! <= 1.98)
-  const units = result.plan.cues.map((cue) => ({
-    ...cue,
-    timingPolicy: 'source-anchored-v2',
-    plannedStart: cue.start,
-    plannedEnd: cue.voiceEnd!,
-    finalDuration: cue.actualDuration!
-  }))
-  const exported = policyModule.validateAutoShortTimelineSync(units, plan.videoDuration)
-  assert.equal(exported.ok, true, exported.violations.join('\n'))
-  assert.ok(exported.warnings?.some((warning) => warning.includes('2.525')))
-  // Old callers retain their original tempo ceiling.
-  assert.equal(policyModule.validateAutoShortTimelineSync(units.map(({ timingPolicy, ...unit }) => unit), 4).ok, false)
-  const invalid = [
-    { ...units[0], tempo: NaN },
-    { ...units[0], tempo: 0 },
-    { ...units[0], tempo: units[0].tempo + 1 },
-    { ...units[0], finalDuration: NaN },
-    { ...units[0], plannedEnd: 2.1, hardEnd: 2.1, finalDuration: 2.1, tempo: 5 / 2.1 },
-    { ...units[0], plannedEnd: 5, hardEnd: 5, finalDuration: 5, tempo: 1 }
-  ]
-  for (const unit of invalid) {
-    assert.equal(policyModule.validateAutoShortTimelineSync([unit, units[1]], 4).ok, false, JSON.stringify(unit))
-  }
+  }), /vượt giới hạn|vượt thời lượng|không cắt lời/u)
+  assert.equal(applyTempoCalls, 0, 'an impossible single cue must fail before tempo processing')
 })
 
 test('measured tempo overshoot retries original audio once and rejects persistent overlap', async () => {
@@ -428,6 +407,6 @@ test('measured tempo overshoot retries original audio once and rejects persisten
       trim: async () => ({ path: 'trimmed.wav', duration: 5 }),
       applyTempo: async (path) => { paths.push(path); return { path: 'bad.wav', duration: 3 } }
     }
-  }), /vượt thời lượng/u)
-  assert.deepEqual(paths, ['trimmed.wav', 'trimmed.wav'])
+  }), /vượt (?:trần|thời lượng)/u)
+  assert.deepEqual(paths, [], 'an impossible single cue must be rejected before DSP')
 })

@@ -327,7 +327,17 @@ def stream_video_frames(ffmpeg_path, video_path, display_width, display_height, 
         except Exception as e:
             producer_exc.append(e)
         finally:
-            q.put(None)  # Sentinel indicating EOF or error
+            # Never block shutdown on a full bounded queue.  A cancelled
+            # consumer has no reason to receive the EOF sentinel; a normal
+            # consumer still gets it after it drains one of the queued frames.
+            while True:
+                try:
+                    q.put_nowait(None)  # Sentinel indicating EOF or error
+                    break
+                except queue.Full:
+                    if stop_event.is_set():
+                        break
+                    time.sleep(0.01)
 
     reader_thread = threading.Thread(target=frame_reader, daemon=True)
     reader_thread.start()
@@ -353,7 +363,7 @@ def stream_video_frames(ffmpeg_path, video_path, display_width, display_height, 
             frame_idx, frame = item
             yield frame_idx, frame
             actual_frames += 1
-    except Exception as err:
+    except BaseException as err:
         original_error = err
         raise
     finally:

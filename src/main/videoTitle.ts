@@ -1,3 +1,4 @@
+import { createHash } from 'node:crypto'
 import { mkdir, open, rm } from 'node:fs/promises'
 import { basename, dirname, extname, join } from 'node:path'
 import { DEFAULT_AI_SERVER_URL, type SubtitleCue, type VideoTitleConfig } from '../shared/types'
@@ -14,6 +15,7 @@ const SUMMARY_CHARS = 2_000
 const TITLE_CHARS = 120
 const RESPONSE_CHARS = 16_000
 const REQUEST_TIMEOUT_MS = 60_000
+const TITLE_PROMPT_VERSION = 'video-title-v2'
 
 class VideoTitleError extends Error {}
 
@@ -25,6 +27,30 @@ function cancelled(): Error {
 
 function checkCancelled(signal?: AbortSignal): void {
   if (signal?.aborted) throw cancelled()
+}
+
+/**
+ * Resolve at the abort boundary even when a provider/fetch implementation
+ * ignores AbortSignal. The surrounding resource lease can then settle and
+ * release without admitting another request while this action is still
+ * considered active.
+ */
+async function fetchWithAbort(
+  input: string,
+  init: RequestInit,
+  signal: AbortSignal
+): Promise<Response> {
+  checkCancelled(signal)
+  let onAbort: (() => void) | undefined
+  const interrupted = new Promise<Response>((_resolve, reject) => {
+    onAbort = () => reject(cancelled())
+    signal.addEventListener('abort', onAbort, { once: true })
+  })
+  try {
+    return await Promise.race([fetch(input, init), interrupted])
+  } finally {
+    if (onAbort) signal.removeEventListener('abort', onAbort)
+  }
 }
 
 /** Remove subtitle markup only; preserve source wording and nonadjacent repetition. */
@@ -87,7 +113,7 @@ async function localCompletion(config: VideoTitleConfig, system: string, user: s
   const key = await loadLocalKey()
   checkCancelled(signal)
   const base = (config.serverUrl || DEFAULT_AI_SERVER_URL).trim().replace(/\/+$/u, '')
-  const response = await fetch(`${base}/v1/chat/completions`, {
+  const response = await fetchWithAbort(`${base}/v1/chat/completions`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -101,7 +127,7 @@ async function localCompletion(config: VideoTitleConfig, system: string, user: s
       max_tokens: 2_048
     }),
     signal
-  })
+  }, signal)
   if (!response.ok) {
     void response.body?.cancel().catch(() => {})
     throw new VideoTitleError(`AI tạo tiêu đề phản hồi lỗi HTTP ${response.status}.`)
@@ -199,6 +225,42 @@ function validateTitle(value: string): string {
   return title
 }
 
+export interface PreparedVideoTitle {
+  /** Digest of the exact subtitle input and title policy used for generation. */
+  inputDigest: string
+  text?: string
+  error?: string
+}
+
+/**
+ * Identify a title request without persisting subtitle text or provider
+ * responses. Timings are included so a render whose duration clips the final
+ * cue cannot accidentally reuse a title prepared for a different input.
+ */
+export function buildVideoTitleInputDigest(
+  cues: readonly SubtitleCue[],
+  config: VideoTitleConfig
+): string {
+  const input = {
+    promptVersion: TITLE_PROMPT_VERSION,
+    provider: config.provider,
+    language: config.language,
+    serverUrl: config.serverUrl || DEFAULT_AI_SERVER_URL,
+    model: 'llm-default',
+    temperature: 0.3,
+    maxTokens: 2_048,
+    titleChars: TITLE_CHARS,
+    summaryChars: SUMMARY_CHARS,
+    cues: cues.map((cue) => ({
+      start: Number(cue.start.toFixed(3)),
+      end: Number(cue.end.toFixed(3)),
+      text: cue.text.trim().normalize('NFC')
+    })),
+    transcript: transcriptText(cues)
+  }
+  return createHash('sha256').update(JSON.stringify(input)).digest('hex')
+}
+
 /** Read all source cues; large transcripts are summarized sequentially without cutting the tail. */
 export async function generateVideoTitle(cues: readonly SubtitleCue[], config: VideoTitleConfig, signal?: AbortSignal): Promise<string> {
   const invalid = validateVideoTitleConfig(config)
@@ -220,6 +282,33 @@ export async function generateVideoTitle(cues: readonly SubtitleCue[], config: V
   }
   const response = await completion(config, systemPrompt(config.language, false), JSON.stringify({ source_text: context }), signal)
   return responseField(response, 'title')
+}
+
+/**
+ * Prepare an optional title while another stage (usually video rendering) is
+ * running. Provider failures become an optional result so they never discard
+ * an otherwise valid video; cancellation is recorded for the same reason.
+ */
+export async function prepareVideoTitle(
+  cues: readonly SubtitleCue[],
+  config: VideoTitleConfig,
+  signal?: AbortSignal
+): Promise<PreparedVideoTitle> {
+  const inputDigest = buildVideoTitleInputDigest(cues, config)
+  try {
+    const text = await generateVideoTitle(cues, config, signal)
+    return { inputDigest, text }
+  } catch (error) {
+    if (signal?.aborted) {
+      return { inputDigest, error: 'Video đã xuất thành công. Đã dừng tạo tiêu đề; chưa lưu tieude.txt.' }
+    }
+    return {
+      inputDigest,
+      error: error instanceof VideoTitleError
+        ? error.message
+        : 'Video đã xuất thành công nhưng AI chưa tạo được tiêu đề.'
+    }
+  }
 }
 
 /** Reserve a unique per-video directory atomically, including simultaneous renders. */

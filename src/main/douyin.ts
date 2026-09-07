@@ -6,9 +6,54 @@ import { resolveRuntimeExecutable, runtimeKindDir } from './runtimeResolver'
 import { probeRuntimeExecutable } from './runtimeProbes'
 import { readDyCookies } from './douyinCookies'
 import { debugRaw, errLabel, logError, logInfo } from './logger'
+import { trackChildProcess } from './processTree'
 import { DouyinProgress, DouyinRequest, DouyinResult, DyChannel, DyEngineStatus } from '../shared/types'
 
 const isWin = process.platform === 'win32'
+export const MAX_DOUYIN_OUTPUT_BUFFER_CHARS = 256 * 1024
+
+export interface DouyinOutputBuffers {
+  stdout: string
+  stderr: string
+}
+
+export function appendDouyinOutputChunk(
+  buffers: DouyinOutputBuffers,
+  chunk: string,
+  isErr: boolean,
+  maxChars = MAX_DOUYIN_OUTPUT_BUFFER_CHARS
+): DouyinOutputBuffers {
+  const safeMax = Number.isSafeInteger(maxChars) && maxChars > 0
+    ? maxChars
+    : MAX_DOUYIN_OUTPUT_BUFFER_CHARS
+  const appendBounded = (current: string): string => {
+    const next = current + chunk
+    return next.length <= safeMax ? next : next.slice(-safeMax)
+  }
+  return isErr
+    ? { stdout: buffers.stdout, stderr: appendBounded(buffers.stderr) }
+    : { stdout: appendBounded(buffers.stdout), stderr: buffers.stderr }
+}
+
+export interface DouyinCompletionCounts {
+  total: number
+  success: number
+  failed: number
+  skipped: number
+}
+
+export function summarizeDouyinCompletion(
+  exitCode: number | null,
+  counts: DouyinCompletionCounts
+): { ok: boolean; total: number; error: string | null } {
+  const total = Math.max(0, counts.total || counts.success + counts.failed + counts.skipped)
+  const complete = total > 0 && counts.success + counts.failed + counts.skipped === total
+  const ok = exitCode === 0 && complete && counts.failed === 0
+  if (ok) return { ok: true, total, error: null }
+  if (exitCode !== 0) return { ok: false, total, error: `Douyin engine thoát với mã ${exitCode ?? '?'}.` }
+  if (counts.failed > 0) return { ok: false, total, error: `Có ${counts.failed}/${total || '?'} mục tải thất bại.` }
+  return { ok: false, total, error: 'Douyin engine không trả về thống kê hoàn tất hợp lệ.' }
+}
 
 function engineName(): string {
   return isWin ? 'dy-engine.exe' : 'dy-engine'
@@ -113,10 +158,10 @@ export async function downloadDouyin(
 
   try {
     return await new Promise<DouyinResult>((resolve) => {
-      const child = spawn(engine, ['-c', cfgPath, '--verbose'], {
+      const child = trackChildProcess(spawn(engine, ['-c', cfgPath, '--verbose'], {
         windowsHide: true,
         env: { ...process.env, PYTHONUTF8: '1', PYTHONIOENCODING: 'utf-8' }
-      })
+      }))
 
       let success = 0
       let total = 0
@@ -159,7 +204,9 @@ export async function downloadDouyin(
       }
 
       const feed = (chunk: string, isErr: boolean): void => {
-        if (isErr) errBuf += chunk
+        const buffers = appendDouyinOutputChunk({ stdout: outBuf, stderr: errBuf }, chunk, isErr)
+        outBuf = buffers.stdout
+        errBuf = buffers.stderr
         let buf = isErr ? errBuf : outBuf
         const parts = buf.split(/\r?\n/)
         buf = parts.pop() ?? ''
@@ -181,18 +228,19 @@ export async function downloadDouyin(
       child.on('close', (code) => {
         if (outBuf) handleLine(outBuf)
         if (errBuf) handleLine(errBuf)
-        if (code === 0) {
-          logInfo(`Douyin: hoàn tất — thành công ${success}/${total || success}`)
+        const completion = summarizeDouyinCompletion(code, { total, success, failed, skipped })
+        if (completion.ok) {
+          logInfo(`Douyin: hoàn tất — thành công ${success}/${completion.total}`)
           onProgress({ id, status: 'finished', line: null, lastFile, success })
           if (req.isChannel) void recordChannel(req.url, req.outputDir, success)
-          resolve({ id, ok: true, total: total || success, success, failed, skipped, error: null })
+          resolve({ id, ok: true, total: completion.total, success, failed, skipped, error: null })
         } else {
-          const raw = errTail || errBuf.trim().split(/\r?\n/).slice(-2).join(' ') || `code ${code}`
+          const raw = errTail || completion.error || errBuf.trim().split(/\r?\n/).slice(-2).join(' ') || `code ${code}`
           debugRaw('douyin close', raw)
           const nhan = errLabel(raw)
           logError(`Douyin: ${nhan}`)
           onProgress({ id, status: 'error', line: nhan, lastFile, success })
-          resolve({ id, ok: false, total, success, failed, skipped, error: nhan })
+          resolve({ id, ok: false, total: completion.total, success, failed, skipped, error: nhan })
         }
       })
     })

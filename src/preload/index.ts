@@ -404,6 +404,8 @@ const api = {
     ipcRenderer.invoke('autoshort:start', request),
   autoShortCancel: (jobId: string): Promise<{ ok: boolean; error?: string }> =>
     ipcRenderer.invoke('autoshort:cancel', jobId),
+  autoShortClearCache: (): Promise<{ ok: boolean; error?: string }> =>
+    ipcRenderer.invoke('autoshort:clearCache'),
   onAutoShortEvent: (cb: (event: AutoShortEvent) => void): (() => void) => {
     const listener = (_e: unknown, event: AutoShortEvent): void => cb(event)
     ipcRenderer.on('autoshort:event', listener)

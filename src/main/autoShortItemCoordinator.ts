@@ -21,7 +21,7 @@ import {
   isSttnRemoval,
   effectiveAutoShortOcrProfile
 } from '../shared/autoShortOcrBlur'
-import { projectOcrTimelineToSubtitleCues } from '../shared/ocrVisualTimeline'
+import { projectOcrTimelineToSubtitleCues, validateOcrVisualTimeline, type OcrVisualTimeline } from '../shared/ocrVisualTimeline'
 import {
   deriveCanonicalDisplayGeometry,
   normalizedRegionToDisplayPixels
@@ -70,10 +70,13 @@ import {
   type AutoShortResourceType
 } from './autoShortResourceManager'
 import { resolveAutoShortWhisperLanguage } from './autoShortPolicy'
+import { buildStageKey, hashFileSha256 } from './autoShortStageKeys'
+import type { ArtifactCache } from './autoShortArtifactCache'
 import { resolveTranslationSourceLanguage } from './localTranslatePolicy'
 import { composeAutoShortNarratedAudio } from './autoShortNarratedAudio'
 import { composeAutoShortBackgroundAudio } from './autoShortBackgroundAudio'
 import { validateAutoShortMusicTrack } from './autoShortMusicLibrary'
+import { validateAutoShortContentQuality } from './autoShortContentQuality'
 import { separateSourceAudio } from './separation/pipeline'
 import { errLabel, logInfo, logWarn, logError } from './logger'
 import type { getTtsModels } from './tts'
@@ -119,6 +122,7 @@ export interface AutoShortItemContext {
   telemetryBudget?: AutoShortTelemetryJobBudget
   policy?: AutoShortExecutionPolicy
   resourceManager?: AutoShortResourceManager
+  artifactCache?: ArtifactCache
 }
 
 function emitProgress(
@@ -153,6 +157,87 @@ function emitProgress(
   })
 }
 
+function parseCachedAlignedArtifact(value: unknown): { language: string | null; cues: AlignedCue[] } | null {
+  if (!value || typeof value !== 'object' || Array.isArray(value)) return null
+  const raw = value as Record<string, unknown>
+  if (raw.schemaVersion !== 1 || !Array.isArray(raw.cues)) return null
+  const cues: AlignedCue[] = []
+  for (const item of raw.cues) {
+    if (!item || typeof item !== 'object' || Array.isArray(item)) return null
+    const cue = item as Record<string, unknown>
+    const source = cue.source
+    const timingQuality = cue.timingQuality
+    if (typeof cue.id !== 'string' || !cue.id.trim() ||
+      !Number.isFinite(cue.start) || !Number.isFinite(cue.end) || (cue.end as number) <= (cue.start as number) ||
+      typeof cue.text !== 'string' || !cue.text.trim() ||
+      (source !== 'whisper' && source !== 'ocr' && source !== 'fused') ||
+      (timingQuality !== 'word' && timingQuality !== 'cue' && timingQuality !== 'ocr')) return null
+    cues.push({
+      id: cue.id,
+      start: cue.start as number,
+      end: cue.end as number,
+      text: cue.text,
+      source,
+      timingQuality,
+      ...(Array.isArray(cue.words) ? { words: cue.words as AlignedCue['words'] } : {}),
+      ...(cue.confidence == null || Number.isFinite(cue.confidence) ? { confidence: cue.confidence as number | null | undefined } : {})
+    })
+  }
+  if (cues.length === 0) return null
+  return {
+    language: typeof raw.language === 'string' && raw.language.trim() ? raw.language : null,
+    cues
+  }
+}
+
+function parseCachedSubtitleArtifact(value: unknown): SubtitleCue[] | null {
+  if (!value || typeof value !== 'object' || Array.isArray(value)) return null
+  const raw = value as Record<string, unknown>
+  if (raw.schemaVersion !== 1 || !Array.isArray(raw.cues)) return null
+  const cues: SubtitleCue[] = []
+  for (const item of raw.cues) {
+    if (!item || typeof item !== 'object' || Array.isArray(item)) return null
+    const cue = item as Record<string, unknown>
+    if (typeof cue.id !== 'string' || !cue.id.trim() ||
+      !Number.isFinite(cue.start) || !Number.isFinite(cue.end) || (cue.end as number) <= (cue.start as number) ||
+      typeof cue.text !== 'string' || !cue.text.trim()) return null
+    cues.push({
+      id: cue.id,
+      start: cue.start as number,
+      end: cue.end as number,
+      text: cue.text,
+      sourceIndex: Number.isInteger(cue.sourceIndex) ? cue.sourceIndex as number : cues.length
+    })
+  }
+  return cues.length > 0 ? cues : null
+}
+
+function parseCachedVisualArtifact(value: unknown): {
+  timeline: OcrVisualTimeline
+  engineVersion: string
+  transport?: OcrVisualTimeline['transport']
+  implementationFingerprint?: string
+  ocrProvider?: OcrVisualTimeline['ocrProvider']
+  visualSegmentCount: number
+  boxSegmentCount: number
+} | null {
+  if (!value || typeof value !== 'object' || Array.isArray(value)) return null
+  const raw = value as Record<string, unknown>
+  if (raw.schemaVersion !== 1 || !raw.timeline || typeof raw.timeline !== 'object') return null
+  if (typeof raw.engineVersion !== 'string' || !raw.engineVersion.trim() ||
+    !Number.isInteger(raw.visualSegmentCount) || (raw.visualSegmentCount as number) <= 0 ||
+    !Number.isInteger(raw.boxSegmentCount) || (raw.boxSegmentCount as number) <= 0) return null
+  return {
+    timeline: raw.timeline as OcrVisualTimeline,
+    engineVersion: raw.engineVersion,
+    ...(raw.transport === 'legacy-disk' || raw.transport === 'stream-full' || raw.transport === 'stream-roi' ? { transport: raw.transport } : {}),
+    ...(typeof raw.implementationFingerprint === 'string' ? { implementationFingerprint: raw.implementationFingerprint } : {}),
+    ...(raw.ocrProvider && typeof raw.ocrProvider === 'object' ? { ocrProvider: raw.ocrProvider as OcrVisualTimeline['ocrProvider'] } : {}),
+    visualSegmentCount: raw.visualSegmentCount as number,
+    boxSegmentCount: raw.boxSegmentCount as number
+  }
+}
+
 export function createAutoShortItemProcessor(
   deps: AutoShortItemCoordinatorDeps
 ): (context: AutoShortItemContext) => Promise<AutoShortItemResult> {
@@ -161,6 +246,7 @@ export function createAutoShortItemProcessor(
     const scope = createAutoShortItemScope(parentSignal)
     const signal = scope.signal
     const resourceManager = context.resourceManager || getGlobalResourceManager()
+    const artifactCache = context.artifactCache
     const { config } = request
     const itemOutputDir = context.itemOutputDir || config.outputDir
     let sttnWorkDir: string | undefined
@@ -236,11 +322,13 @@ export function createAutoShortItemProcessor(
         validateSpan.updateCounters({ inputBytes: inputInfo.size })
       })
 
+      const sourceDigest = await hashFileSha256(item.filePath, signal)
       const checkpointFingerprint = buildAutoShortCheckpointFingerprint(
         item.filePath,
         inputInfo,
         config,
-        context.separation
+        context.separation,
+        sourceDigest
       )
 
       if (checkpoint.version !== AUTO_SHORT_CHECKPOINT_VERSION || checkpoint.fingerprint !== checkpointFingerprint) {
@@ -302,6 +390,64 @@ export function createAutoShortItemProcessor(
             emitProgress(context, 'extracting_sub', 5, 'Đang quét chữ trong video…', undefined, undefined, { stage: 'visual_ocr', phase: 'running' })
             const ocrDir = join(workDir, 'ocr')
             await mkdir(ocrDir, { recursive: true })
+            const requestedTransport = context.policy?.ocrTransport || 'legacy-disk'
+            const visualCacheKey = buildStageKey('visual-ocr', {
+              cacheRevision: 'ocr-visual-cues-v1',
+              sourceDigest,
+              profile: effectiveProfile,
+              requestedTransport,
+              geometryFingerprint: geometry.fingerprint,
+              displayWidth: geometry.displayWidth,
+              displayHeight: geometry.displayHeight,
+              scanRegion: ocrRegion,
+              sampleFps: 8
+            })
+
+            if (artifactCache) {
+              const cached = await artifactCache.get('visual-ocr', visualCacheKey, ocrSignal).catch(() => null)
+              if (cached) {
+                try {
+                  const payload = parseCachedVisualArtifact(JSON.parse(await readFile(cached.path, 'utf8')))
+                  const transportMatches = (payload?.transport || 'legacy-disk') === requestedTransport
+                  if (payload && transportMatches) {
+                    const timeline = validateOcrVisualTimeline(payload.timeline, {
+                      width: geometry.displayWidth,
+                      height: geometry.displayHeight,
+                      durationSeconds: meta.giay,
+                      sampleFps: 8,
+                      geometryFingerprint: geometry.fingerprint,
+                      scanRegion: ocrRegion
+                    })
+                    const sidecarPath = join(ocrDir, 'visual-cues.json')
+                    const sourceSrtPath = join(ocrDir, 'source.srt')
+                    await writeFile(sidecarPath, JSON.stringify(timeline, null, 2), 'utf8')
+                    await writeFile(sourceSrtPath, serializeSrt(projectOcrTimelineToSubtitleCues(timeline)), 'utf8')
+                    span.updateCounters({
+                      cacheHit: 1,
+                      visualSegments: payload.visualSegmentCount,
+                      boxSegments: payload.boxSegmentCount
+                    })
+                    return {
+                      timeline,
+                      sourceSrtPath,
+                      sidecarPath,
+                      engineVersion: payload.engineVersion,
+                      engineProtocol: 'ocr-local/1' as const,
+                      transport: payload.transport || 'legacy-disk',
+                      implementationFingerprint: payload.implementationFingerprint,
+                      ocrProvider: payload.ocrProvider,
+                      visualSegmentCount: payload.visualSegmentCount,
+                      boxSegmentCount: payload.boxSegmentCount
+                    }
+                  }
+                } catch {
+                  // Corrupt or stale entries are treated as a cache miss. A
+                  // successful fresh run below replaces the entry atomically.
+                } finally {
+                  cached.release()
+                }
+              }
+            }
             const ocrRes = await resourceManager.withLease(['local-gpu-heavy', 'local-cpu-heavy'], ocrSignal, async (lease) => {
               span.recordResourceWait(lease.waitMs || 0)
               return deps.runVisualOcr(
@@ -329,6 +475,22 @@ export function createAutoShortItemProcessor(
               visualSegments: ocrRes.visualSegmentCount,
               boxSegments: ocrRes.boxSegmentCount
             })
+            if (artifactCache) {
+              const cacheSource = join(ocrDir, 'visual-cache.json')
+              await writeFile(cacheSource, JSON.stringify({
+                schemaVersion: 1,
+                timeline: ocrRes.timeline,
+                engineVersion: ocrRes.engineVersion,
+                transport: ocrRes.transport,
+                implementationFingerprint: ocrRes.implementationFingerprint,
+                ocrProvider: ocrRes.ocrProvider,
+                visualSegmentCount: ocrRes.visualSegmentCount,
+                boxSegmentCount: ocrRes.boxSegmentCount
+              }), 'utf8')
+              await artifactCache.put('visual-ocr', visualCacheKey, cacheSource, ocrSignal).catch((error) => {
+                logWarn(`[AutoShort] Không lưu cache visual OCR: ${errLabel(error)}`)
+              })
+            }
             return ocrRes
           })
         }
@@ -401,9 +563,6 @@ export function createAutoShortItemProcessor(
       }
 
       const shouldOverlap = Boolean(context.policy?.overlapIndependentStages)
-      if (shouldOverlap && visualOcrRequired && config.subtitleMethod === 'whisper') {
-        visualBranchOutcomePromise = scope.start((s) => runVisualBranch(s))
-      }
 
       // 1. Stage: Subtitle Extraction
       const canReuseCheckpointCues = !forceFreshOcr && Boolean(checkpoint.sourceCues && checkpoint.sourceCues.length > 0)
@@ -417,6 +576,31 @@ export function createAutoShortItemProcessor(
           return telemetry.withStageSpan('asr', { requestedProvider: needsCuda(config) ? 'cuda' : 'cpu', model: config.whisperModel || 'base' }, async (span) => {
             const whisperDir = join(workDir, 'whisper')
             await mkdir(whisperDir, { recursive: true })
+            const asrKey = buildStageKey('asr', {
+              cacheRevision: 'faster-whisper-aligned-v1',
+              sourceDigest,
+              model: config.whisperModel || 'base',
+              device: needsCuda(config) ? 'cuda' : 'cpu',
+              language: resolveAutoShortWhisperLanguage(config.whisperLanguage),
+              protocol: 'faster-whisper/1'
+            })
+            if (artifactCache) {
+              const cached = await artifactCache.get('asr', asrKey, signal).catch(() => null)
+              if (cached) {
+                try {
+                  const payload = parseCachedAlignedArtifact(JSON.parse(await readFile(cached.path, 'utf8')))
+                  if (payload) {
+                    span.updateCounters({ cacheHit: 1, cueCount: payload.cues.length })
+                    return payload
+                  }
+                } catch {
+                  // Treat malformed cache content as a miss and run the
+                  // authoritative engine below.
+                } finally {
+                  cached.release()
+                }
+              }
+            }
             const transcribeFn = deps.transcribeAudio || transcribeAudio
             const asrResources: AutoShortResourceType[] = needsCuda(config)
               ? ['local-gpu-heavy', 'local-cpu-heavy']
@@ -444,6 +628,17 @@ export function createAutoShortItemProcessor(
             const cues = await readWhisperAlignedCues(srtPath, whisperResult.alignmentPath)
             if (cues.length === 0) throw new Error('Whisper không nhận được câu phụ đề hợp lệ')
             span.updateCounters({ cueCount: cues.length })
+            if (artifactCache) {
+              const cacheSource = join(whisperDir, 'aligned-cache.json')
+              await writeFile(cacheSource, JSON.stringify({
+                schemaVersion: 1,
+                language: whisperResult.language || null,
+                cues
+              }), 'utf8')
+              await artifactCache.put('asr', asrKey, cacheSource, signal).catch((error) => {
+                logWarn(`[AutoShort] Không lưu cache Whisper: ${errLabel(error)}`)
+              })
+            }
             return { cues, language: whisperResult.language || null }
           })
         }
@@ -558,6 +753,15 @@ export function createAutoShortItemProcessor(
         await saveCheckpoint()
       }
 
+      // Whisper supplies the source evidence needed by translation.  Start
+      // the independent visual branch only after that evidence is durable so
+      // an OCR/STTN failure can still abort translation without an orphaned
+      // branch, while allowing the expensive visual work to overlap remote
+      // translation and later audio preparation.
+      if (shouldOverlap && visualOcrRequired && config.subtitleMethod === 'whisper') {
+        visualBranchOutcomePromise = scope.start((s) => runVisualBranch(s))
+      }
+
       artifactEntries.push({ source: rawSrtPath, name: 'source.srt' })
 
       let targetSrtPath = rawSrtPath
@@ -565,28 +769,87 @@ export function createAutoShortItemProcessor(
 
       if (config.translateTarget !== 'none') {
         targetSrtPath = join(workDir, 'translated.srt')
+        const sourceLanguage = resolveTranslationSourceLanguage(config.whisperLanguage, detectedSourceLanguage)
+        const translationKey = buildStageKey('translation', {
+          cacheRevision: 'translated-srt-v1',
+          sourceDigest,
+          sourceCueCount: sourceCues.length,
+          sourceLanguage,
+          targetLanguage: config.translateTarget,
+          provider: config.translateProvider,
+          serverUrl: config.translateServerUrl || '',
+          promptVersion: 'translation-v3'
+        })
         if (checkpoint.translatedCues && checkpoint.translatedCues.length === sourceCues.length) {
           logInfo(`[AutoShort] Phục hồi ${checkpoint.translatedCues.length} câu dịch từ checkpoint.`)
           await writeFile(targetSrtPath, serializeSrt(checkpoint.translatedCues), 'utf8')
           targetCues = checkpoint.translatedCues
           translatedCueCount = targetCues.length
         } else {
-          emitProgress(context, 'translating', 35, `Đang dịch phụ đề sang ${config.translateTarget}…`, undefined, undefined, { stage: 'translate', phase: 'running' })
-          const sourceLanguage = resolveTranslationSourceLanguage(config.whisperLanguage, detectedSourceLanguage)
-          await telemetry.withStageSpan('translate', { endpointAlias: sanitizeEndpointAlias(config.translateServerUrl) }, async (span) => {
-            await translateStrict(config, rawSrtPath, targetSrtPath, (done, count) => {
-              emitProgress(context, 'translating', 35 + (count > 0 ? done / count : 0) * 20, `Đang dịch ${done}/${count} câu`, undefined, undefined, { stage: 'translate', phase: 'running', detail: `${done}/${count}` })
-            }, signal, sourceLanguage)
-            targetCues = parseSrt(await readFile(targetSrtPath, 'utf8')).cues.filter((cue) => cue.text.trim())
-            if (targetCues.length !== sourceCues.length) throw new Error('SRT đích không khớp số câu SRT nguồn')
-            translatedCueCount = targetCues.length
-            span.updateCounters({ cueCount: translatedCueCount })
-          })
+          let reusedTranslation = false
+          if (artifactCache) {
+            const cached = await artifactCache.get('translation', translationKey, signal).catch(() => null)
+            if (cached) {
+              try {
+                const cachedCues = parseCachedSubtitleArtifact(JSON.parse(await readFile(cached.path, 'utf8')))
+                const compatible = Boolean(
+                  cachedCues &&
+                  cachedCues.length === sourceCues.length &&
+                  cachedCues.every((cue, cueIndex) => {
+                    const source = sourceCues[cueIndex]
+                    return Math.abs(cue.start - source.start) <= 0.05 && Math.abs(cue.end - source.end) <= 0.05
+                  })
+                )
+                if (compatible) {
+                  targetCues = cachedCues!
+                  await writeFile(targetSrtPath, serializeSrt(targetCues), 'utf8')
+                  translatedCueCount = targetCues.length
+                  reusedTranslation = true
+                }
+              } catch {
+                // Invalid or stale cache entries are ignored and replaced by
+                // the authoritative translator below.
+              } finally {
+                cached.release()
+              }
+            }
+          }
+
+          if (reusedTranslation) {
+            await telemetry.withStageSpan('translate', { endpointAlias: sanitizeEndpointAlias(config.translateServerUrl) }, async (span) => {
+              span.updateCounters({ cacheHit: 1, cueCount: translatedCueCount || 0 })
+            })
+          } else {
+            emitProgress(context, 'translating', 35, `Đang dịch phụ đề sang ${config.translateTarget}…`, undefined, undefined, { stage: 'translate', phase: 'running' })
+            await telemetry.withStageSpan('translate', { endpointAlias: sanitizeEndpointAlias(config.translateServerUrl) }, async (span) => {
+              await translateStrict(config, rawSrtPath, targetSrtPath, (done, count) => {
+                emitProgress(context, 'translating', 35 + (count > 0 ? done / count : 0) * 20, `Đang dịch ${done}/${count} câu`, undefined, undefined, { stage: 'translate', phase: 'running', detail: `${done}/${count}` })
+              }, signal, sourceLanguage)
+              targetCues = parseSrt(await readFile(targetSrtPath, 'utf8')).cues.filter((cue) => cue.text.trim())
+              if (targetCues.length !== sourceCues.length) throw new Error('SRT đích không khớp số câu SRT nguồn')
+              translatedCueCount = targetCues.length
+              span.updateCounters({ cueCount: translatedCueCount })
+            })
+
+            if (artifactCache) {
+              const cacheSource = join(workDir, 'translated-cache.json')
+              await writeFile(cacheSource, JSON.stringify({ schemaVersion: 1, cues: targetCues }), 'utf8')
+              await artifactCache.put('translation', translationKey, cacheSource, signal).catch((error) => {
+                logWarn(`[AutoShort] Không lưu cache bản dịch: ${errLabel(error)}`)
+              })
+            }
+          }
 
           checkpoint.translatedCues = targetCues
           await saveCheckpoint()
         }
         artifactEntries.push({ source: targetSrtPath, name: 'translated.srt' })
+      }
+
+      const contentQuality = validateAutoShortContentQuality({ sourceCues, targetCues })
+      if (!contentQuality.ok) {
+        const firstFinding = contentQuality.findings.find((finding) => finding.severity === 'error')
+        throw new Error(`Kiểm tra nội dung phụ đề thất bại: ${firstFinding?.message || 'cue mapping không hợp lệ.'}`)
       }
 
       let separatedInstrumentalPath: string | null = null
@@ -745,6 +1008,10 @@ export function createAutoShortItemProcessor(
           predictorSamples: synthesized.predictorSamples,
           fitFirstPassRatio: synthesized.fitFirstPassRatio,
           predictorResidualP90: synthesized.predictorResidualP90,
+          prefetchStarted: synthesized.prefetchStarted,
+          prefetchUsed: synthesized.prefetchUsed,
+          prefetchDiscarded: synthesized.prefetchDiscarded,
+          prefetchWaitMs: synthesized.prefetchWaitMs,
           cueCount: synthesized.count,
           cues: synthesized.diagnostics
         }, null, 2), 'utf8')

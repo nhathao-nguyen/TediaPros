@@ -129,6 +129,7 @@ import {
 } from './tts'
 import {
   cancelAutoShort,
+  clearAutoShortArtifactCache,
   startAutoShortSttnPreview,
   cancelAutoShortSttnPreview,
   disposeAutoShortSttnPreview,
@@ -194,7 +195,23 @@ app.on('second-instance', () => {
 })
 
 import { isSafeExternalUrl } from '../shared/urlSafety'
+import { isTrustedIpcSender, isTrustedRendererUrl } from './ipcSecurity'
 export { isSafeExternalUrl }
+
+function rejectUntrustedAutoShortIpc(event: { senderFrame?: { url?: string | null } | null; sender?: { getURL?: () => string } }): { ok: false; error: string } | null {
+  if (isTrustedIpcSender(event, {
+    packaged: app.isPackaged,
+    devOrigin: process.env['ELECTRON_RENDERER_URL']
+  })) return null
+  return { ok: false, error: 'Nguồn IPC Auto Short không được phép.' }
+}
+
+function isTrustedAppNavigation(rawUrl: string): boolean {
+  return isTrustedRendererUrl(rawUrl, {
+    packaged: app.isPackaged,
+    devOrigin: process.env['ELECTRON_RENDERER_URL']
+  })
+}
 
 function createWindow(): void {
   mainWindow = new BrowserWindow({
@@ -234,6 +251,13 @@ function createWindow(): void {
     }
     return { action: 'deny' }
   })
+  const rejectUntrustedNavigation = (event: Electron.Event, url: string): void => {
+    if (isTrustedAppNavigation(url)) return
+    event.preventDefault()
+    logWarn('Đã chặn navigation ngoài origin renderer của ứng dụng.')
+  }
+  mainWindow.webContents.on('will-navigate', rejectUntrustedNavigation)
+  mainWindow.webContents.on('will-redirect', rejectUntrustedNavigation)
 
   // electron-vite: dev server URL hoac file build
   if (process.env['ELECTRON_RENDERER_URL']) {
@@ -942,6 +966,8 @@ function registerIpc(): void {
   // Auto Short
   const sttnPreviewOwners = new Set<number>()
   ipcMain.handle('auto-short:sttn-preview', async (event, raw: unknown) => {
+    const rejected = rejectUntrustedAutoShortIpc(event)
+    if (rejected) return rejected
     const ownerId = event.sender.id
     if (!sttnPreviewOwners.has(ownerId)) {
       sttnPreviewOwners.add(ownerId)
@@ -954,9 +980,19 @@ function registerIpc(): void {
       if (!event.sender.isDestroyed()) event.sender.send('auto-short:sttn-preview-progress', progress)
     })
   })
-  ipcMain.handle('auto-short:sttn-preview-cancel', async event => cancelAutoShortSttnPreview(event.sender.id))
-  ipcMain.handle('autoshort:selectVideos', async () => selectAutoShortVideoFiles())
-  ipcMain.handle('autoshort:selectMusicFolder', async () => {
+  ipcMain.handle('auto-short:sttn-preview-cancel', async event => {
+    const rejected = rejectUntrustedAutoShortIpc(event)
+    if (rejected) throw new Error(rejected.error)
+    return cancelAutoShortSttnPreview(event.sender.id)
+  })
+  ipcMain.handle('autoshort:selectVideos', async (event) => {
+    const rejected = rejectUntrustedAutoShortIpc(event)
+    if (rejected) return { ok: false, paths: [], error: rejected.error }
+    return selectAutoShortVideoFiles()
+  })
+  ipcMain.handle('autoshort:selectMusicFolder', async event => {
+    const rejected = rejectUntrustedAutoShortIpc(event)
+    if (rejected) return { ok: false, tracks: [], error: rejected.error }
     if (!mainWindow) return { ok: false, tracks: [], error: 'Cửa sổ ứng dụng chưa sẵn sàng.' }
     const result = await dialog.showOpenDialog(mainWindow, {
       title: 'Chọn folder nhạc background',
@@ -965,7 +1001,9 @@ function registerIpc(): void {
     if (result.canceled || !result.filePaths[0]) return { ok: false, tracks: [], error: 'Đã hủy chọn folder nhạc.' }
     return listAutoShortMusicTracks(result.filePaths[0])
   })
-  ipcMain.handle('autoshort:listMusicTracks', async (_event, folderPath: unknown) => {
+  ipcMain.handle('autoshort:listMusicTracks', async (event, folderPath: unknown) => {
+    const rejected = rejectUntrustedAutoShortIpc(event)
+    if (rejected) return { ok: false, tracks: [], error: rejected.error }
     if (typeof folderPath !== 'string' || folderPath.length === 0 || folderPath.length > 32768) {
       return { ok: false, tracks: [], error: 'Folder nhạc không hợp lệ.' }
     }
@@ -1016,12 +1054,20 @@ function registerIpc(): void {
     }
   }
 
-  ipcMain.handle('autoshort:getReadiness', async (_event, raw: unknown) => {
+  ipcMain.handle('autoshort:getReadiness', async (event, raw: unknown) => {
+    const rejected = rejectUntrustedAutoShortIpc(event)
+    if (rejected) throw new Error(rejected.error)
     const config = parseAutoShortDependencyConfig(raw)
     return getAutoShortReadiness(config)
   })
-  ipcMain.handle('whisper:modelStatus', async (_event, model: string) => whisperModelStatus(model))
+  ipcMain.handle('whisper:modelStatus', async (event, model: string) => {
+    const rejected = rejectUntrustedAutoShortIpc(event)
+    if (rejected) throw new Error(rejected.error)
+    return whisperModelStatus(model)
+  })
   ipcMain.handle('whisper:installModel', async (event, model: string) => {
+    const rejected = rejectUntrustedAutoShortIpc(event)
+    if (rejected) return { ok: false, error: rejected.error }
     try {
       await installWhisperModel(model, (progress) => event.sender.send('whisper:model-install-progress', progress))
       return { ok: true }
@@ -1029,11 +1075,15 @@ function registerIpc(): void {
       return { ok: false, error: err instanceof Error ? err.message : String(err) }
     }
   })
-  ipcMain.handle('whisper:stopWorker', async () => {
+  ipcMain.handle('whisper:stopWorker', async event => {
+    const rejected = rejectUntrustedAutoShortIpc(event)
+    if (rejected) return { ok: false }
     await shutdownWhisperRuntime()
     return { ok: true }
   })
   ipcMain.handle('autoshort:installDependencies', async (event, raw: unknown) => {
+    const rejected = rejectUntrustedAutoShortIpc(event)
+    if (rejected) return rejected
     const config = parseAutoShortDependencyConfig(raw)
     const key = event.sender.id
     if (autoShortDependencyInstalls.has(key)) return { ok: false, error: 'Đang tải dependency Auto Short.' }
@@ -1051,12 +1101,16 @@ function registerIpc(): void {
     }
   })
   ipcMain.handle('autoshort:cancelDependencyInstall', async (event) => {
+    const rejected = rejectUntrustedAutoShortIpc(event)
+    if (rejected) return rejected
     const controller = autoShortDependencyInstalls.get(event.sender.id)
     if (!controller) return { ok: false, error: 'Không có lượt tải dependency đang chạy.' }
     controller.abort()
     return { ok: true }
   })
   ipcMain.handle('autoshort:start', async (event, raw: unknown) => {
+    const rejected = rejectUntrustedAutoShortIpc(event)
+    if (rejected) return rejected
     return startAutoShortJob(raw, (payload) => {
       try {
         event.sender.send('autoshort:event', payload)
@@ -1066,8 +1120,15 @@ function registerIpc(): void {
     })
   })
   ipcMain.handle('autoshort:cancel', async (_event, jobId: unknown) => {
+    const rejected = rejectUntrustedAutoShortIpc(_event)
+    if (rejected) return rejected
     if (typeof jobId !== 'string') return { ok: false, error: 'Job ID không hợp lệ.' }
     return cancelAutoShort(jobId)
+  })
+  ipcMain.handle('autoshort:clearCache', async (event) => {
+    const rejected = rejectUntrustedAutoShortIpc(event)
+    if (rejected) return rejected
+    return clearAutoShortArtifactCache()
   })
 
   // Mo file/thu muc sau khi tai

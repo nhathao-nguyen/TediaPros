@@ -75,6 +75,9 @@ test('TTS request pipelining (prefetchTts: true) overlaps next cue synthesis wit
   assert.equal(result.clips.length, 4)
   assert.equal(maxServerInFlight, 1, `Server in-flight peak was ${maxServerInFlight}, expected <= 1`)
   assert.equal(overlapObserved, true, 'Next cue synthesis should overlap with current cue DSP when prefetchTts is true')
+  assert.ok(result.metrics.prefetchStarted >= 1)
+  assert.ok(result.metrics.prefetchUsed >= 1)
+  assert.equal(result.metrics.prefetchDiscarded, 0)
 })
 
 test('TTS request pipelining (prefetchTts: false by default) strictly serializes synthesis and DSP', async () => {
@@ -159,11 +162,11 @@ test('TTS prefetch regression: DSP failure aborts in-flight next cue request and
     plan,
     language: 'en',
     model: 'mock',
-    fixedTempo: 1,
+    fixedTempo: 1.3,
     prefetchTts: true,
     predictor: {
       profile: { samples: 5, residualP90: 0.1 },
-      estimate: () => ({ seconds: 5, uncertaintySeconds: 0.1 }),
+      estimate: () => ({ seconds: 1.0, uncertaintySeconds: 0.1 }),
       addSample() {}
     } as any,
     tts: {
@@ -179,7 +182,7 @@ test('TTS prefetch regression: DSP failure aborts in-flight next cue request and
       }
     },
     audio: {
-      trim: async (path) => ({ path, duration: 5 }),
+      trim: async (path) => ({ path, duration: 1.5 }),
       applyTempo: async () => {
         // Current cue DSP fails while next cue TTS is in-flight
         throw new Error('DSP fixture failure')

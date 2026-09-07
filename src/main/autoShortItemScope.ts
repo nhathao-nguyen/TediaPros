@@ -5,7 +5,7 @@ export type BranchOutcome<T> =
 export interface AutoShortItemScope {
   readonly signal: AbortSignal
   readonly firstError?: unknown
-  start<T>(action: (signal: AbortSignal) => Promise<T>): Promise<BranchOutcome<T>>
+  start<T>(action: (signal: AbortSignal) => Promise<T>, options?: { abortOnError?: boolean }): Promise<BranchOutcome<T>>
   abort(reason?: unknown): void
   drain(): Promise<void>
   dispose(): void
@@ -41,7 +41,7 @@ export function createAutoShortItemScope(parent?: AbortSignal): AutoShortItemSco
     }
   }
 
-  function start<T>(action: (signal: AbortSignal) => Promise<T>): Promise<BranchOutcome<T>> {
+  function start<T>(action: (signal: AbortSignal) => Promise<T>, options: { abortOnError?: boolean } = {}): Promise<BranchOutcome<T>> {
     if (isDisposed || isDraining) {
       const err = new Error('Cannot start action on a closed or draining scope')
       if (firstError === undefined) firstError = err
@@ -56,10 +56,12 @@ export function createAutoShortItemScope(parent?: AbortSignal): AutoShortItemSco
         const value = await action(controller.signal)
         return { ok: true, value }
       } catch (error) {
-        if (firstError === undefined) {
-          firstError = error
+        if (options.abortOnError !== false) {
+          if (firstError === undefined) {
+            firstError = error
+          }
+          abort(error)
         }
-        abort(error)
         return { ok: false, error }
       }
     })()

@@ -3,11 +3,13 @@ import { chooseDubbingRephrase } from './translation'
 import { buildDubbingSubtitle, type DubbingSubtitleCue } from './subtitles'
 import {
   DUBBING_LOCAL_TEMPO_DELTA,
+  DUBBING_PROTECTED_GAP_SECONDS,
   DUBBING_TIMING_TOLERANCE_SECONDS,
   deriveDubbingWindows,
   selectFixedPace,
   selectSourceAdaptivePace
 } from './policy'
+import { AUTO_SHORT_TTS_HARD_MAX_TEMPO } from '../autoShortPolicy'
 import type { DubbingPlan, DubbingPlanCue } from './plan'
 import { selectBootstrapCues } from './durationPredictor'
 import { createAutoShortItemScope, type BranchOutcome } from '../autoShortItemScope'
@@ -60,6 +62,11 @@ export interface DubbingSynthesisMetrics {
   averageTempo: number
   maxTempo: number
   degraded: boolean
+  /** Bounded one-cue lookahead counters used to decide whether prefetch is useful. */
+  prefetchStarted: number
+  prefetchUsed: number
+  prefetchDiscarded: number
+  prefetchWaitMs: number
 }
 
 export interface DubbingSynthesisResult {
@@ -205,6 +212,10 @@ export async function synthesizeDubbingPlan(input: DubbingSynthesisInput): Promi
     const clips: Array<{ start: number; path: string }> = []
     let rephraseCount = 0
     let fitFirstPassCount = 0
+    let prefetchStarted = 0
+    let prefetchUsed = 0
+    let prefetchDiscarded = 0
+    let prefetchWaitMs = 0
 
     interface PendingPrefetch {
       cueId: string
@@ -222,13 +233,20 @@ export async function synthesizeDubbingPlan(input: DubbingSynthesisInput): Promi
           const prefetch = pendingPrefetch
           pendingPrefetch = null
           if (prefetch.textFingerprint === cue.finalSpokenText.trim()) {
+            const waitStarted = performance.now()
             const outcome = await prefetch.outcomePromise
+            prefetchWaitMs += Math.max(0, performance.now() - waitStarted)
+            prefetchUsed++
             if (!outcome.ok) {
               throw outcome.error
             }
             current = outcome.value
           } else {
-            await prefetch.outcomePromise
+            prefetchDiscarded++
+            // The text may have changed after a rephrase or a resumed
+            // checkpoint. An obsolete prefetch is deliberately drained but
+            // must not turn into a failure for the replacement request.
+            await prefetch.outcomePromise.catch(() => undefined)
           }
         }
         if (!current) {
@@ -277,19 +295,34 @@ export async function synthesizeDubbingPlan(input: DubbingSynthesisInput): Promi
           pendingPrefetch = {
             cueId: nextCue.id,
             textFingerprint: text,
-            outcomePromise: scope.start((s) => prepareNaturalCue(input, nextCue, nextCue.finalSpokenText, s, 0))
+            // A prefetch is speculative. Its failure must be observed by
+            // the consumer, but an obsolete request must not abort the
+            // active cue or mark the whole item scope failed.
+            outcomePromise: scope.start(
+              (s) => prepareNaturalCue(input, nextCue, nextCue.finalSpokenText, s, 0),
+              { abortOnError: false }
+            )
           }
+          prefetchStarted++
         }
       }
 
-      const maxLocalCeiling = Math.min(1.45, Math.max(localCeiling, 1.35))
+      const maxLocalCeiling = Math.min(AUTO_SHORT_TTS_HARD_MAX_TEMPO, Math.max(localCeiling, 1.35))
       const rawRequiredTempo = current.naturalDuration / window.availableDuration
       const preferredTempo = Number(Math.min(maxLocalCeiling, Math.max(globalTempo, rawRequiredTempo)).toFixed(4))
       const nextStart = index < plan.cues.length - 1 ? plan.cues[index + 1].sourceStart : plan.videoDuration
-      const safeDeadline = Math.min(plan.videoDuration, nextStart > cue.start ? nextStart - 0.02 : plan.videoDuration)
+      const safeDeadline = Math.min(
+        plan.videoDuration,
+        windows[index].hardEnd,
+        nextStart > cue.start ? nextStart - DUBBING_PROTECTED_GAP_SECONDS : plan.videoDuration
+      )
       const safeAvailable = validDuration(safeDeadline - cue.start, cue.id)
       // Include the existing emergency deadline BEFORE processing PCM. Cascading
       // two tempo filters costs another process and needlessly processes audio twice.
+      const requiredTempo = current.naturalDuration / safeAvailable
+      if (requiredTempo > AUTO_SHORT_TTS_HARD_MAX_TEMPO + DUBBING_TIMING_TOLERANCE_SECONDS) {
+        throw new Error(`Cue ${cue.id} cần nhịp ${requiredTempo.toFixed(3)}x, vượt trần ${AUTO_SHORT_TTS_HARD_MAX_TEMPO.toFixed(2)}x; cần rephrase hoặc tách câu, không cắt lời.`)
+      }
       const targetDuration = Math.min(current.naturalDuration / preferredTempo, safeAvailable)
       const requestedTempo = current.naturalDuration / targetDuration
       let finalPath = current.trimmedPath
@@ -319,7 +352,7 @@ export async function synthesizeDubbingPlan(input: DubbingSynthesisInput): Promi
         finalSpokenText: current.text
       })
       subtitles.push(subtitle)
-      const effectiveHardEnd = Math.max(cue.hardEnd, voiceEnd)
+      const effectiveHardEnd = cue.hardEnd
       const effectiveAvailable = effectiveHardEnd - cue.start
 
       finalCues.push({
@@ -361,7 +394,11 @@ export async function synthesizeDubbingPlan(input: DubbingSynthesisInput): Promi
         globalTempo,
         averageTempo: Number(averageTempo.toFixed(4)),
         maxTempo: Math.max(...tempos),
-        degraded: finalCues.some((cue) => Math.abs(cue.localTempoAdjustment) > 0.0001)
+        degraded: finalCues.some((cue) => Math.abs(cue.localTempoAdjustment) > 0.0001),
+        prefetchStarted,
+        prefetchUsed,
+        prefetchDiscarded,
+        prefetchWaitMs: Math.round(prefetchWaitMs)
       }
     }
   } catch (error) {

@@ -364,6 +364,19 @@ test('packaged app verifier and builder configuration strictly exclude separator
   }
 })
 
+test('packaged app verifier fails closed when the package root is missing', async () => {
+  const { findForbiddenFiles } = await import('../scripts/verify-packaged-app.mjs')
+  const root = await mkdtemp(join(tmpdir(), 'tedia-missing-pkg-'))
+  try {
+    await assert.rejects(
+      findForbiddenFiles(join(root, 'does-not-exist')),
+      /không tồn tại|does not exist|ENOENT/u
+    )
+  } finally {
+    await rm(root, { recursive: true, force: true })
+  }
+})
+
 export const V4_SEPARATOR_BASELINE = {
   'separator-fast-balanced-v1': {
     id: 'separator-fast-balanced-v1',

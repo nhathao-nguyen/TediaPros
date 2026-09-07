@@ -170,6 +170,33 @@ class StreamVideoFramesTests(unittest.TestCase):
         finally:
             subprocess.Popen = orig_popen
 
+    def test_consumer_cancel_does_not_leave_reader_blocked_on_full_sentinel_queue(self):
+        w, h = 10, 10
+        frame_bytes = w * h * 3
+        code = (
+            'import sys, time\n'
+            'for i in range(20):\n'
+            f'    sys.stdout.buffer.write(bytes([i] * {frame_bytes}))\n'
+            '    sys.stdout.buffer.flush()\n'
+            '    time.sleep(0.01)\n'
+        )
+        orig_popen = subprocess.Popen
+        try:
+            def mock_popen(cmd, *args, **kwargs):
+                if isinstance(cmd, (list, tuple)) and cmd and cmd[0] == 'ffmpeg':
+                    return orig_popen([sys.executable, '-c', code], *args, **kwargs)
+                return orig_popen(cmd, *args, **kwargs)
+
+            subprocess.Popen = mock_popen
+            stream = stream_video_frames('ffmpeg', 'video.mp4', w, h, no_progress_timeout_seconds=1.0)
+            next(stream)
+            started = time.time()
+            stream.close()
+            elapsed = time.time() - started
+            self.assertLess(elapsed, 1.0, f'cancel waited for a blocked reader ({elapsed}s)')
+        finally:
+            subprocess.Popen = orig_popen
+
 
 if __name__ == '__main__':
     unittest.main()

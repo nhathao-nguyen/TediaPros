@@ -193,6 +193,20 @@ export class AutoShortDiskBudgetLedger implements AutoShortDiskBudget {
           continue
         }
 
+        // The free-space probe yields to abort handlers and other waiters.
+        // Re-find the entry by its stable ID before mutating the queue; an
+        // earlier cancellation may have removed it or shifted another waiter
+        // into the old index.
+        const currentIndex = this.pending.findIndex((candidate) => candidate.id === entry.id)
+        if (currentIndex === -1 || entry.signal.aborted) {
+          index--
+          continue
+        }
+        if (currentIndex !== index) {
+          index = currentIndex - 1
+          continue
+        }
+
         const otherReserved = this.getReservedBytes(entry.volume)
         const requiredBytes = entry.remainingBytes + this.safetyHeadroomBytes
         if (freeBytes - otherReserved >= requiredBytes) {

@@ -12,6 +12,7 @@ import {
 import {
   ocrVideoWithVisualTimeline,
   negotiateOcrVisualTransport,
+  validateOcrSrtOutput,
   type AutoShortOcrVideoOptions
 } from '../src/main/ocr'
 import { probeRuntimeAsset, probeRuntimeExecutable } from '../src/main/runtimeProbes'
@@ -46,6 +47,14 @@ test('OCR transport negotiation defaults to stream-full only for a qualified bin
   const fallback = negotiateOcrVisualTransport('stream-roi', legacy)
   assert.equal(fallback.effective, 'legacy-disk')
   assert.match(fallback.reason || '', /visual-stream-roi-v1/u)
+})
+
+test('standalone OCR output validation rejects missing, empty, and count-mismatched SRT', () => {
+  assert.throws(() => validateOcrSrtOutput('', 1), /SRT có cue hợp lệ/u)
+  assert.throws(() => validateOcrSrtOutput('not an srt', 1), /SRT có cue hợp lệ/u)
+  const valid = '1\n00:00:00,000 --> 00:00:01,000\nHello\n'
+  assert.throws(() => validateOcrSrtOutput(valid, 0), /SRT có cue hợp lệ/u)
+  assert.equal(validateOcrSrtOutput(valid, 1).length, 1)
 })
 
 class MockChildProcess extends EventEmitter {

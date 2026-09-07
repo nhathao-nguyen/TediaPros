@@ -5,6 +5,7 @@ import { mkdir, rename, rm, stat } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { resolveFfmpeg } from './deps'
 import { debugRaw } from './logger'
+import { trackChildProcess } from './processTree'
 
 export interface AudioPreviewResult {
   ok: boolean
@@ -41,11 +42,11 @@ async function transcodeAudioPreview(input: string): Promise<AudioPreviewResult>
 
   return new Promise((resolve) => {
     const temporaryOutput = join(cacheDir, `${key}.${randomUUID()}.tmp.m4a`)
-    const child = spawn(
+    const child = trackChildProcess(spawn(
       ffmpeg,
       ['-y', '-v', 'error', '-i', input, '-vn', '-c:a', 'aac', '-b:a', '192k', temporaryOutput],
       { windowsHide: true }
-    )
+    ))
     let stderr = ''
     let settled = false
     const finish = (result: AudioPreviewResult): void => {

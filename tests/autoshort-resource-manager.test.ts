@@ -81,6 +81,36 @@ test('AutoShortResourceManager supports cancellation while queued', async () => 
   assert.equal(manager.getAllocated('local-gpu-heavy'), 0)
 })
 
+test('withLease retains a resource until an aborted action has settled', async () => {
+  const manager = new AutoShortResourceManager({ 'local-gpu-heavy': 1 })
+  const controller = new AbortController()
+  let actionStarted = false
+  let releaseAction!: () => void
+  const actionDone = new Promise<void>((resolve) => { releaseAction = resolve })
+
+  const first = manager.withLease(['local-gpu-heavy'], controller.signal, async () => {
+    actionStarted = true
+    await actionDone
+  })
+  while (!actionStarted) await new Promise((resolve) => setImmediate(resolve))
+
+  let secondStarted = false
+  const second = manager.withLease(['local-gpu-heavy'], undefined, async () => {
+    secondStarted = true
+  })
+
+  controller.abort(new Error('cancel while provider is closing'))
+  await new Promise((resolve) => setTimeout(resolve, 10))
+  assert.equal(secondStarted, false, 'an aborted action must keep the resource until it settles')
+  assert.equal(manager.getAllocated('local-gpu-heavy'), 1)
+
+  releaseAction()
+  await first
+  await second
+  assert.equal(secondStarted, true)
+  assert.equal(manager.getAllocated('local-gpu-heavy'), 0)
+})
+
 test('Double release does not corrupt allocation count', async () => {
   const manager = new AutoShortResourceManager({ 'local-cpu-heavy': 1 })
   const lease = await manager.acquire(['local-cpu-heavy'])

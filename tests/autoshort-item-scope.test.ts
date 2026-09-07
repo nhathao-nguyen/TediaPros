@@ -71,6 +71,18 @@ test('AutoShortItemScope: failure records firstError, aborts sibling branches, r
   }
 })
 
+test('AutoShortItemScope: speculative failure can be drained without aborting the item', async () => {
+  const scope = createAutoShortItemScope()
+  const outcome = await scope.start(async () => {
+    throw new Error('obsolete prefetch')
+  }, { abortOnError: false })
+  assert.equal(outcome.ok, false)
+  assert.equal(scope.signal.aborted, false)
+  assert.equal(scope.firstError, undefined)
+  await scope.drain()
+  scope.dispose()
+})
+
 test('AutoShortItemScope: drain waits for all registered promises to settle before completing', async () => {
   const scope = createAutoShortItemScope()
   let settled = false
@@ -123,7 +135,7 @@ test('AutoShortItemScope: parent abort cancels all child scopes', async () => {
   scopeB.dispose()
 })
 
-test('Coordinator Scope Integration: ASR error while OCR is running aborts OCR and drains before workDir cleanup', async () => {
+test('Coordinator scheduling: ASR failure does not start an independent visual branch early', async () => {
   const unhandled: unknown[] = []
   const onUnhandled = (err: unknown) => unhandled.push(err)
   process.on('unhandledRejection', onUnhandled)
@@ -133,10 +145,10 @@ test('Coordinator Scope Integration: ASR error while OCR is running aborts OCR a
   const video = join(root, 'input.mp4')
   await writeFile(video, 'mock input')
 
-  let releaseOcr: () => void = () => {}
-  const ocrGate = new Promise<void>((r) => { releaseOcr = r })
   let ocrSignal: AbortSignal | undefined
   let ocrRunning = false
+  let releaseAsr: () => void = () => {}
+  const asrSettled = new Promise<void>((resolve) => { releaseAsr = resolve })
 
   const config: AutoShortConfig = {
     subtitleMethod: 'whisper',
@@ -169,6 +181,7 @@ test('Coordinator Scope Integration: ASR error while OCR is running aborts OCR a
     },
     transcribeAudio: async () => {
       await tick(20)
+      releaseAsr()
       return { ok: false, error: 'ASR fixture failure', outputs: [] }
     },
     writeTimedMask: async () => { throw new Error('must not reach mask') },
@@ -195,39 +208,28 @@ test('Coordinator Scope Integration: ASR error while OCR is running aborts OCR a
     resourceManager: new AutoShortResourceManager({ 'local-cpu-heavy': 2, 'local-gpu-heavy': 2 })
   }
 
-  let processorDone = false
-  const processorPromise = processor(context).then((res) => {
-    processorDone = true
-    return res
-  })
+  const processorPromise = processor(context)
 
-  // Wait enough time for ASR to fail
-  await tick(60)
-
-  // Assertions while OCR gate is still open:
-  assert.equal(processorDone, false, 'Processor must NOT settle before OCR gate is released (must wait for scope.drain)')
-  assert.equal(ocrRunning, true, 'OCR is still running')
-  assert.equal(ocrSignal?.aborted, true, 'OCR signal must have received abort signal when ASR failed')
-  const workDirBeforeRelease = await stat(context.workDir).catch(() => null)
-  assert.ok(workDirBeforeRelease, 'workDir must still exist while OCR is running')
-
-  // Now release OCR
-  releaseOcr()
+  // Wait for the ASR fixture's own completion signal. Plain Whisper starts the
+  // independent visual branch only after source cues are durable, so the
+  // failed ASR stage must prevent that branch from starting at all.
+  await asrSettled
   const itemResult = await processorPromise
+
+  assert.equal(ocrRunning, false, 'Visual OCR must not start before durable ASR cues')
+  assert.equal(ocrSignal, undefined, 'No visual OCR signal should exist after the early ASR failure')
+  const workDirBeforeRelease = await stat(context.workDir).catch(() => null)
+  assert.equal(workDirBeforeRelease, null, 'workDir must be cleaned after the failed stage settles')
 
   assert.equal(itemResult.status, 'error')
   assert.ok(itemResult.error?.includes('ASR fixture failure'))
-  assert.equal(ocrRunning, false, 'OCR must be completely stopped when item returns')
+  assert.equal(ocrRunning, false, 'OCR must remain stopped when item returns')
 
-  const workDirAfterRelease = await stat(context.workDir).catch(() => null)
-  assert.equal(workDirAfterRelease, null, 'workDir must be cleaned up only after scope drain')
-
-  await tick(20)
   assert.equal(unhandled.length, 0, 'No unhandled rejections from late OCR failure')
   process.removeListener('unhandledRejection', onUnhandled)
 })
 
-test('Coordinator Scope Integration: OCR failure while ASR is pending preserves original OCR error and aborts sibling', async () => {
+test('Coordinator scheduling: visual branch failure after ASR preserves its primary error', async () => {
   const root = join(tmpdir(), `tediapros-itemscope-test2-${Date.now()}`)
   await mkdir(root, { recursive: true })
   const video = join(root, 'input.mp4')
@@ -261,12 +263,8 @@ test('Coordinator Scope Integration: OCR failure while ASR is pending preserves 
       await tick(10)
       throw new Error('OCR hardware failure')
     },
-    transcribeAudio: async (_jobId, _opt, _prog, signal) => {
-      asrSignal = signal
-      await new Promise<void>((resolve, reject) => {
-        signal?.addEventListener('abort', () => reject(new Error('Đã hủy tác vụ')))
-      })
-      return { ok: true, outputs: ['sub.srt'] }
+    transcribeAudio: async () => {
+      return { ok: true, outputs: [join(root, 'whisper.srt')] }
     },
     writeTimedMask: async () => { throw new Error('must not reach') },
     burn: async () => { throw new Error('must not reach') }
@@ -292,11 +290,11 @@ test('Coordinator Scope Integration: OCR failure while ASR is pending preserves 
     resourceManager: new AutoShortResourceManager({ 'local-cpu-heavy': 2, 'local-gpu-heavy': 2 })
   }
 
+  await writeFile(join(root, 'whisper.srt'), '1\n00:00:01,000 --> 00:00:03,000\nGiọng nói\n')
   const itemResult = await processor(context)
   assert.equal(itemResult.status, 'error')
-  assert.equal(asrSignal?.aborted, true, 'ASR should be aborted by sibling OCR failure')
   assert.ok(
     itemResult.error?.includes('OCR hardware failure'),
-    `Expected OCR hardware failure preserved, got: ${itemResult.error}`
+    `Expected OCR hardware failure preserved after ASR, got: ${itemResult.error}`
   )
 })

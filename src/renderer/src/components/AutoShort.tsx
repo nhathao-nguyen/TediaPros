@@ -34,6 +34,7 @@ import { usePersistedState } from '../lib/persist'
 import { fitVideoInBounds } from '../lib/videoGeometry'
 import { useVideoTransport } from '../hooks/useVideoTransport'
 import { runLatestAutoShortMusicFolderRequest } from '../lib/latestAutoShortMusicFolderRequest'
+import { createAutoShortProgressCoalescer } from '../lib/autoshortProgressCoalescer'
 import RegionBox, { type Region } from './RegionBox'
 import VideoTitleSettings from './VideoTitleSettings'
 
@@ -396,6 +397,7 @@ export default function AutoShort(): JSX.Element {
   const sttnPreviewToken = useRef(0)
   const [sttnPreviewProgress, setSttnPreviewProgress] = useState<AutoShortSttnPreviewProgress | null>(null)
   const [sttnPreviewPath, setSttnPreviewPath] = useState<string | null>(null)
+  const [cacheAction, setCacheAction] = useState(false)
 
   const applyItemResult = useCallback((event: AutoShortEvent): void => {
     if (event.type === 'item-progress') {
@@ -486,11 +488,15 @@ export default function AutoShort(): JSX.Element {
 
   // Lắng nghe event discriminated union của job hiện tại.
   useEffect(() => {
+    const coalescer = createAutoShortProgressCoalescer((event) => applyItemResult(event), 10)
     const unsub = window.api.onAutoShortEvent((event: AutoShortEvent) => {
       if (activeJobId && event.jobId !== activeJobId) return
-      applyItemResult(event)
+      coalescer.push(event)
     })
-    return unsub
+    return () => {
+      coalescer.dispose()
+      unsub()
+    }
   }, [activeJobId, applyItemResult])
 
   const refreshAutoShortReadiness = useCallback(async (preview = false): Promise<AutoShortReadiness | null> => {
@@ -693,6 +699,20 @@ export default function AutoShort(): JSX.Element {
     setSelectedId(null)
     setVideoW(0)
     setVideoH(0)
+  }
+
+  const clearAutoShortCache = async (): Promise<void> => {
+    if (isRunning || cacheAction) return
+    if (!window.confirm('Xóa các kết quả Auto Short có thể tái sử dụng? Video đầu ra và file đang xử lý sẽ được giữ nguyên.')) return
+    setCacheAction(true)
+    try {
+      const result = await window.api.autoShortClearCache()
+      if (!result.ok) alert(result.error || 'Không thể xóa cache Auto Short.')
+    } catch {
+      alert('Không thể xóa cache Auto Short.')
+    } finally {
+      setCacheAction(false)
+    }
   }
 
   const chooseBackgroundMusicFolder = async (): Promise<void> => {
@@ -2416,6 +2436,15 @@ export default function AutoShort(): JSX.Element {
                       Xóa tất cả video
                     </button>
                   )}
+                  <button
+                    className="btn ghost sm"
+                    onClick={() => void clearAutoShortCache()}
+                    disabled={isRunning || cacheAction}
+                    type="button"
+                    style={{ marginTop: 8, width: '100%' }}
+                  >
+                    {cacheAction ? 'Đang xóa cache…' : 'Xóa cache kết quả tái sử dụng'}
+                  </button>
                 </>
               )}
             </fieldset>
