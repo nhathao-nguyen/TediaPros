@@ -164,14 +164,22 @@ jobs:
       - name: Build separator engine from pinned environment
         shell: pwsh
         run: |
+          $ErrorActionPreference = 'Stop'
           python -m venv (Join-Path $env:RUNNER_TEMP 'separator-build-venv')
+          if ($LASTEXITCODE -ne 0) { throw 'Separator build virtual environment creation failed.' }
           $python = Join-Path $env:RUNNER_TEMP 'separator-build-venv\Scripts\python.exe'
+          if (-not (Test-Path -LiteralPath $python -PathType Leaf)) { throw "Separator build Python was not created: $python" }
           & $python -m pip install --disable-pip-version-check --no-cache-dir -r engines/separator-engine/requirements.txt
+          if ($LASTEXITCODE -ne 0) { throw 'Separator dependency installation failed.' }
           & $python -m unittest discover -s engines/separator-engine/tests -p 'test_*.py' -v
+          if ($LASTEXITCODE -ne 0) { throw 'Separator engine tests failed.' }
           & $python -m PyInstaller --clean --noconfirm engines/separator-engine/separator-engine.spec --distpath (Join-Path $env:RUNNER_TEMP 'separator-dist') --workpath (Join-Path $env:RUNNER_TEMP 'separator-work')
+          if ($LASTEXITCODE -ne 0) { throw 'Separator PyInstaller build failed.' }
+          $separatorOutput = Join-Path $env:RUNNER_TEMP 'separator-dist\separator-engine'
+          if (-not (Test-Path -LiteralPath $separatorOutput -PathType Container)) { throw "Separator build output is missing: $separatorOutput" }
           $target = Join-Path $env:RUNTIME_INPUT_ROOT 'separator-engine'
           New-Item -ItemType Directory -Force -Path $target | Out-Null
-          Copy-Item -Path (Join-Path $env:RUNNER_TEMP 'separator-dist\separator-engine\*') -Destination $target -Recurse -Force
+          Copy-Item -Path (Join-Path $separatorOutput '*') -Destination $target -Recurse -Force
 
       - name: Run native capability probes before packaging
         shell: pwsh

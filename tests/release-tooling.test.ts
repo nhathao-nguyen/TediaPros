@@ -79,6 +79,24 @@ test('pinned engine dependency inputs do not reintroduce the retired Whisper bac
   for (const spec of [whisperSpec, ocrSpec, douyinSpec]) assert.doesNotMatch(spec, /except\s+Exception\s*:\s*\n\s+pass/u)
 })
 
+test('separator engine pins the published DirectML wheel for the CI Python version', async () => {
+  const requirements = await readFile(join(process.cwd(), 'engines', 'separator-engine', 'requirements.txt'), 'utf8')
+  assert.match(requirements, /^onnxruntime-directml==1\.24\.4$/mu)
+  assert.doesNotMatch(requirements, /^onnxruntime-directml==1\.29\.0$/mu)
+})
+
+test('Windows separator build stops after dependency, test, or PyInstaller failure', async () => {
+  const workflow = await readFile(join(process.cwd(), '.github', 'workflows', 'build-windows-runtime.yml'), 'utf8')
+  const start = workflow.indexOf('Build separator engine from pinned environment')
+  const end = workflow.indexOf('Run native capability probes before packaging', start)
+  assert.ok(start >= 0 && end > start, 'separator build step must be present before capability probes')
+  const step = workflow.slice(start, end)
+  assert.match(step, /pip install[^\r\n]*\r?\n\s+if \(\$LASTEXITCODE -ne 0\) \{ throw 'Separator dependency installation failed\.'/u)
+  assert.match(step, /unittest discover[^\r\n]*\r?\n\s+if \(\$LASTEXITCODE -ne 0\) \{ throw 'Separator engine tests failed\.'/u)
+  assert.match(step, /PyInstaller[^\r\n]*\r?\n\s+if \(\$LASTEXITCODE -ne 0\) \{ throw 'Separator PyInstaller build failed\.'/u)
+  assert.match(step, /separator-dist\\separator-engine[\s\S]{0,400}Separator build output is missing/u)
+})
+
 test('PyInstaller specs resolve entrypoints and hooks from the spec directory, not the process CWD', async () => {
   const { readFile } = await import('node:fs/promises')
   const specs = [
