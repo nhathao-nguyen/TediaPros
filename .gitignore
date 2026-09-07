@@ -59,6 +59,9 @@ __pycache__/
 # Clone / thu nghiem noi bo
 repo test/
 
+# Local linked worktrees
+.worktrees/
+
 # Font nguon day du (chi ship subset resources/fonts/ khi duoc phep)
 font/
 
