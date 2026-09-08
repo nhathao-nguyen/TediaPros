@@ -46,3 +46,13 @@ Nếu xử lý ngây thơ:
 
 ### Tiêu cực / Đánh đổi:
 - Yêu cầu bản dịch ban đầu phải được rút gọn tương đối vừa vặn với độ dài câu gốc; nếu bản dịch quá dài, pipeline sẽ từ chối hoặc cần tách phân đoạn.
+
+## Bổ Sung Triển Khai (2026-09-08)
+
+Đường chạy AutoShort hiện thực hiện việc fit theo ba pha tuần tự:
+
+1. **Measured pass:** TTS chạy ở tốc độ server `1.0`, trim và đo WAV thật cho toàn bộ cue. Cue nhóm tràn được structural split tại ranh giới source và câu dịch hoàn chỉnh trước khi gửi LLM.
+2. **Batch rephrase:** Chỉ overflow queue sau measured pass mới được gửi cho adapter rephrase. Local provider chia request measured overflow thành batch tối đa `8` cue, giữ exact cue ID, source/current text, context và `measured_natural_seconds`/`hard_max_natural_seconds`. Pha này không gọi TTS.
+3. **Measured rescue:** Chỉ candidate hợp lệ mới được TTS/trim lại. Candidate được chọn phải cải thiện và fit khi tempo đo được không vượt `1.45x`; nếu không fit thì cue vẫn báo lỗi policy, không cắt hoặc bỏ lời.
+
+Progress và manifest `tts-timeline.json` phân biệt `measure`, `batch-rephrase`, `rescue`, `finalize`, đồng thời lưu `overflowCount`, `batchCount`, `batchCueCount`, `rescueAttemptCount`, `rescueAcceptedCount` và `phaseWaitMs`. Các test local chỉ xác nhận contract và thứ tự phase; việc chấp nhận với TTS server thật vẫn cần media run riêng.

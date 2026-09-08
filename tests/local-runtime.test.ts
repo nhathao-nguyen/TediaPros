@@ -1122,6 +1122,20 @@ test('AutoShort records final target text and bounded fit decisions for audit ar
   assert.match(source, /splitCount/u)
 })
 
+test('AutoShort active dubbing wiring uses batch rephrase and exposes phase metrics', async () => {
+  const source = await readFile(join(process.cwd(), 'src', 'main', 'autoshort.ts'), 'utf8')
+  const callStart = source.indexOf('const synthesized = await synthesizeDubbingPlan')
+  const callEnd = source.indexOf('for (const cue of synthesized.plan.cues)', callStart)
+  assert.ok(callStart >= 0 && callEnd > callStart)
+  const activeCall = source.slice(callStart, callEnd)
+  assert.match(activeCall, /rephraseBatch:/u)
+  assert.doesNotMatch(activeCall, /^\s*rephrase:/mu)
+  assert.match(activeCall, /phase=\$\{event\.phase\}/u)
+  assert.match(source, /overflowCount/u)
+  assert.match(source, /batchCueCount/u)
+  assert.match(source, /rescueAcceptedCount/u)
+})
+
 test('AutoShort trims only outer TTS silence, preserves decay and appends a safe tail margin', async () => {
   const filter = buildAutoShortTtsTrimFilter()
   assert.match(filter, /silenceremove=start_periods=1:start_duration=0\.03:start_threshold=-50dB/u)

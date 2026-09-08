@@ -27,6 +27,70 @@ test('measured-first synthesis never rewrites a predictor outlier before TTS', a
   assert.equal(plan.cues[0].finalSpokenText, plan.cues[0].sourceText, 'do not mutate input/cache')
 })
 
+test('a fitting measured plan skips batch rephrase and reports zero rescue metrics', async () => {
+  let batchCalls = 0
+  const result = await synthesisModule.synthesizeDubbingPlan({
+    plan: planModule.buildDubbingPlan({ videoDuration: 4, paceMode: 'fixed', cues: [
+      { id: 'fit-a', start: 0, end: 2, text: 'A short line.' },
+      { id: 'fit-b', start: 2.5, end: 3.5, text: 'Another line.' }
+    ] }),
+    language: 'en', model: 'fixture', fixedTempo: 1,
+    tts: { synthesize: async (request) => ({ path: request.cueId }) },
+    audio: {
+      trim: async (path) => ({ path, duration: 0.6 }),
+      applyTempo: async (path, _hint, duration) => ({ path, duration })
+    },
+    rephraseBatch: async () => { batchCalls++; return new Map() }
+  } as any)
+  assert.equal(batchCalls, 0)
+  assert.equal(result.metrics.overflowCount, 0)
+  assert.equal(result.metrics.batchCount, 0)
+  assert.equal(result.metrics.batchCueCount, 0)
+  assert.equal(result.metrics.rescueAttemptCount, 0)
+  assert.equal(result.metrics.rescueAcceptedCount, 0)
+})
+
+test('measured pass completes before one batch adapter and rescue audio begins', async () => {
+  const cueIds = Array.from({ length: 10 }, (_, index) => `overflow-${index}`)
+  const trace: string[] = []
+  const candidateByCue = new Map(cueIds.map((cueId) => [cueId, `short-${cueId}`]))
+  const result = await synthesisModule.synthesizeDubbingPlan({
+    plan: planModule.buildDubbingPlan({
+      videoDuration: 20,
+      paceMode: 'fixed',
+      cues: cueIds.map((id, index) => ({ id, start: index * 2, end: index * 2 + 1, text: `Original ${id}.` }))
+    }),
+    language: 'en', model: 'fixture', fixedTempo: 1,
+    predictor: {
+      profile: { version: 2, samples: 1, weights: [0, 0, 0, 0, 0, 0], residualP90: 0 },
+      estimate: () => ({ seconds: 1, uncertaintySeconds: 0, confidence: 1 }),
+      addSample: () => {}
+    },
+    tts: { synthesize: async (request) => {
+      trace.push(`tts:${request.text}`)
+      return { path: request.text }
+    } },
+    audio: {
+      trim: async (path) => ({ path, duration: path.startsWith('short-') ? 0.7 : 3 }),
+      applyTempo: async (path, _hint, duration) => ({ path, duration })
+    },
+    rephraseBatch: async (requests: readonly { cueId: string }[]) => {
+      trace.push(`batch:${requests.length}`)
+      return new Map(requests.map((request) => [request.cueId, [candidateByCue.get(request.cueId)!]]))
+    }
+  } as any)
+
+  const firstBatch = trace.findIndex((entry) => entry.startsWith('batch:'))
+  assert.equal(firstBatch, cueIds.length)
+  assert.deepEqual(trace.filter((entry) => entry.startsWith('batch:')), ['batch:8', 'batch:2'])
+  assert.ok(trace.slice(firstBatch + 1).every((entry) => entry.startsWith('tts:short-') || entry.startsWith('batch:')))
+  assert.equal(result.metrics.overflowCount, cueIds.length)
+  assert.equal(result.metrics.batchCount, 2)
+  assert.equal(result.metrics.batchCueCount, cueIds.length)
+  assert.equal(result.metrics.rescueAcceptedCount, cueIds.length)
+  assert.equal(result.plan.cues.every((cue) => cue.finalSpokenText.startsWith('short-')), true)
+})
+
 for (const [id, natural, available] of [['cue-0-1490', 2.428, 1.42], ['cue-0-2320', 2.727, 1.24]] as const) {
   test(`${id} rescues measured overflow once and rejects a still-too-long replacement`, async () => {
     for (const replacementFits of [true, false]) {
@@ -98,7 +162,7 @@ for (const [id, natural, firstRescue, available, fitted] of [
       tts: { synthesize: async (request) => { spoken.push(request.text); return { path: request.text } } },
       audio: { trim: async (path) => ({ path, duration: spoken.length === 1 ? natural : spoken.length === 2 ? firstRescue : fitted }),
         applyTempo: async (path, _hint, duration) => ({ path, duration }) },
-      onRephrase: (event) => { outcomes.push(event.outcome) }
+      onRephrase: (event) => { if (event.phase === 'rescue') outcomes.push(event.outcome) }
     })
     assert.equal(llmCalls, 1)
     assert.equal(spoken.length, 3)

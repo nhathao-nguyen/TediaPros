@@ -6,7 +6,6 @@ import type { SubtitleCue } from '../src/shared/types'
 const cue = (id: string, text: string, sourceIndex: number): SubtitleCue => ({
   id, text, sourceIndex, start: sourceIndex, end: sourceIndex + 1
 })
-
 test('content QA rejects duplicate/missing/unexpected cue mappings and protected number changes', () => {
   const result = validateAutoShortContentQuality({
     sourceCues: [cue('a', 'Có 12 kg và 3 hộp.', 0), cue('b', 'Không bỏ qua bước này.', 1)],
@@ -76,4 +75,51 @@ test('empty and missing target cues remain hard structural failures', () => {
   assert.ok(result.issues.some((issue) => issue.code === 'empty-text' && issue.severity === 'error'))
   assert.ok(result.issues.some((issue) => issue.code === 'duplicate-id' && issue.severity === 'error'))
   assert.ok(result.issues.some((issue) => issue.code === 'missing-id' && issue.severity === 'error'))
+})
+
+test('interrogative question particles across languages do not trigger false negation mismatch warnings', () => {
+  const result = validateAutoShortContentQuality({
+    sourceCues: [
+      cue('q1', '你明天去学校吗？', 0),
+      cue('q2', '你吃饭了吗？', 1),
+      cue('q3', '我们可以走吗？', 2)
+    ],
+    targetCues: [
+      cue('q1', 'Ngày mai bạn có đi học không?', 0),
+      cue('q2', 'Bạn đã ăn cơm chưa?', 1),
+      cue('q3', 'Chúng ta có thể đi được không?', 2)
+    ]
+  })
+  assert.equal(result.ok, true)
+  assert.equal(result.findings.filter((f) => f.code === 'protected-token-mismatch').length, 0)
+})
+
+test('CJK numerals match corresponding Arabic digits without warnings', () => {
+  const result = validateAutoShortContentQuality({
+    sourceCues: [
+      cue('n1', '桌子上有三个苹果。', 0),
+      cue('n2', '我有两本书。', 1)
+    ],
+    targetCues: [
+      cue('n1', 'Trên bàn có 3 quả táo.', 0),
+      cue('n2', 'Tôi có 2 quyển sách.', 1)
+    ]
+  })
+  assert.equal(result.ok, true)
+  assert.equal(result.findings.filter((f) => f.code === 'protected-token-mismatch').length, 0)
+})
+
+test('Chinese ordinal cue markers do not become protected quantities', () => {
+  const result = validateAutoShortContentQuality({
+    sourceCues: [
+      cue('a', '第一句。', 0),
+      cue('b', '第二句。', 1)
+    ],
+    targetCues: [
+      cue('a', 'translated a', 0),
+      cue('b', 'translated b', 1)
+    ]
+  })
+  assert.equal(result.ok, true)
+  assert.equal(result.findings.filter((f) => f.code === 'protected-token-mismatch').length, 0)
 })

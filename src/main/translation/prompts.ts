@@ -53,23 +53,63 @@ function outputContract(format: TranslationFormat): string {
     : 'format=id-lines; output exactly one line [<cue-id>] <translation> for every requested cue and no other non-empty lines.'
 }
 
+export interface LanguageRateProfile {
+  unit: 'words' | 'characters'
+  safeRate: number
+  maxRate: number
+}
+
+export const GLOBAL_LANGUAGE_PROFILES: Record<string, LanguageRateProfile> = {
+  zh: { unit: 'characters', safeRate: 3.2, maxRate: 4.2 },
+  ja: { unit: 'characters', safeRate: 6.0, maxRate: 7.5 },
+  ko: { unit: 'characters', safeRate: 4.5, maxRate: 5.8 },
+  th: { unit: 'characters', safeRate: 15.0, maxRate: 19.0 },
+  de: { unit: 'characters', safeRate: 14.0, maxRate: 18.0 },
+  en: { unit: 'words', safeRate: 2.6, maxRate: 3.4 },
+  vi: { unit: 'words', safeRate: 3.6, maxRate: 4.6 },
+  es: { unit: 'words', safeRate: 3.3, maxRate: 4.3 },
+  it: { unit: 'words', safeRate: 3.2, maxRate: 4.2 },
+  fr: { unit: 'words', safeRate: 3.2, maxRate: 4.2 },
+  ru: { unit: 'words', safeRate: 2.4, maxRate: 3.2 },
+  ar: { unit: 'words', safeRate: 2.5, maxRate: 3.3 }
+}
+
+export function getLanguageSpeakingBudget(localeStr: string, durationSeconds: number): { unit: 'words' | 'characters'; budget: number } {
+  let lang = 'en'
+  try {
+    lang = new Intl.Locale(localeStr).language.toLowerCase()
+  } catch {
+    lang = localeStr.toLowerCase().split(/[-_]/u)[0] || 'en'
+  }
+  const profile = GLOBAL_LANGUAGE_PROFILES[lang] || (['zh', 'ja', 'ko', 'th', 'de'].includes(lang)
+    ? { unit: 'characters', safeRate: 15.0, maxRate: 19.0 }
+    : { unit: 'words', safeRate: 3.0, maxRate: 4.0 })
+  const budget = Math.max(1, Math.round(durationSeconds * profile.maxRate))
+  return { unit: profile.unit, budget }
+}
+
 function cueData(input: TranslationInput, ids: readonly string[] = input.cues.map((cue) => cue.id)): string[] {
   const selected = new Set(ids)
   return input.cues
     .filter((cue) => selected.has(cue.id))
-    .map((cue) => `[${cue.id}] ${JSON.stringify({
-      id: cue.id,
-      source_index: cue.sourceIndex,
-      start: cue.start,
-      end: cue.end,
-      group_id: cue.groupId,
-      ...(input.mode === 'dubbing' ? {
-        speaking_duration_seconds: cue.speakingDuration ?? Math.max(0, cue.end - cue.start),
-        target_natural_seconds: Number(((cue.speakingDuration ?? Math.max(0, cue.end - cue.start)) * 1.1).toFixed(3)),
-        hard_max_natural_seconds: Number(((cue.speakingDuration ?? Math.max(0, cue.end - cue.start)) * 1.45).toFixed(3))
-      } : {}),
-      text: cue.text
-    })}`)
+    .map((cue) => {
+      const duration = cue.speakingDuration ?? Math.max(0, cue.end - cue.start)
+      const budget = input.mode === 'dubbing' ? getLanguageSpeakingBudget(input.targetLocale, duration) : null
+      return `[${cue.id}] ${JSON.stringify({
+        id: cue.id,
+        source_index: cue.sourceIndex,
+        start: cue.start,
+        end: cue.end,
+        group_id: cue.groupId,
+        ...(input.mode === 'dubbing' ? {
+          speaking_duration_seconds: duration,
+          target_natural_seconds: Number((duration * 1.1).toFixed(3)),
+          hard_max_natural_seconds: Number((duration * 1.45).toFixed(3)),
+          ...(budget ? (budget.unit === 'words' ? { suggested_max_words: budget.budget } : { suggested_max_chars: budget.budget }) : {})
+        } : {}),
+        text: cue.text
+      })}`
+    })
 }
 
 function contextData(input: TranslationInput): string[] {

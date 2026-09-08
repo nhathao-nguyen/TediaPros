@@ -36,6 +36,26 @@ export interface DubbingAudioAdapter {
   applyTempo(inputPath: string, outputHint: string, targetDuration: number, signal: AbortSignal): Promise<{ path: string; duration: number }>
 }
 
+export type DubbingPhase = 'measure' | 'batch-rephrase' | 'rescue' | 'finalize'
+
+export interface DubbingOverflowRequest {
+  cueId: string
+  currentText: string
+  sourceText?: string
+  targetDuration: number
+  measuredDuration: number
+  maxDuration: number
+  contextBefore: string[]
+  contextAfter: string[]
+}
+
+export interface DubbingRephraseAdapter {
+  rephraseBatch(
+    requests: readonly DubbingOverflowRequest[],
+    signal: AbortSignal
+  ): Promise<ReadonlyMap<string, readonly string[]>>
+}
+
 export interface DubbingSynthesisInput {
   plan: DubbingPlan
   language: string
@@ -51,23 +71,32 @@ export interface DubbingSynthesisInput {
   predictor?: DurationPredictor
   tts: DubbingTtsAdapter
   audio: DubbingAudioAdapter
-  rephrase?: (input: { cueId: string; currentText: string; targetDuration: number; measuredDuration: number; maxDuration: number }, signal: AbortSignal) => Promise<readonly string[]>
+  rephraseBatch?: DubbingRephraseAdapter['rephraseBatch']
+  /** @deprecated Compatibility bridge for callers not yet migrated to the batch adapter. */
+  rephrase?: (input: DubbingOverflowRequest, signal: AbortSignal) => Promise<readonly string[]>
   onRephrase?: (event: {
     cueId: string
-    phase: 'rescue'
-    outcome: 'accepted' | 'improved-overflow' | 'no-candidate' | 'invalid-candidate' | 'unchanged' | 'no-improvement' | 'incomplete-audio'
+    phase: 'batch-rephrase' | 'rescue'
+    outcome: 'batch-received' | 'accepted' | 'improved-overflow' | 'no-candidate' | 'invalid-candidate' | 'unchanged' | 'no-improvement' | 'incomplete-audio'
     candidateCount: number
+    batchSize?: number
     previousSeconds?: number
     candidateSeconds?: number
   }) => void
   onStructuralSplit?: (event: { cueId: string; sourceCueIds: readonly string[]; partCount: number }) => void
   signal?: AbortSignal
-  onProgress?: (completed: number, total: number, cueId: string) => void
+  onProgress?: (completed: number, total: number, cueId: string, phase?: DubbingPhase) => void
   prefetchTts?: boolean
 }
 
 export interface DubbingSynthesisMetrics {
   rephraseCount: number
+  overflowCount: number
+  batchCount: number
+  batchCueCount: number
+  rescueAttemptCount: number
+  rescueAcceptedCount: number
+  phaseWaitMs: number
   fitFirstPassCount: number
   fitFirstPassRatio: number
   predictorSamples: number
@@ -106,6 +135,19 @@ interface MeasuredSpeechSlot {
   deadline: number
   availableDuration: number
   maximumAvailableDuration: number
+}
+
+interface MeasuredCueState {
+  cue: DubbingPlanCue
+  current: PreparedCue
+  measuredText: string
+  safeAvailable: number
+  measuredSlot: MeasuredSpeechSlot
+  overflowRequest?: DubbingOverflowRequest
+  provisionalPath?: string
+  provisionalDuration?: number
+  provisionalTargetDuration?: number
+  provisionalError?: unknown
 }
 
 const MAX_STRUCTURAL_SPLIT_DEPTH = 8
@@ -336,11 +378,15 @@ export async function synthesizeDubbingPlan(input: DubbingSynthesisInput): Promi
     if (bootstrap.length > 0) globalTempo = selectGlobalTempo(plan, estimateDurations(plan, predictor), input.fixedTempo)
     plan.globalTempo = globalTempo
 
-    const finalCues: DubbingPlanCue[] = []
-    const subtitles: DubbingSubtitleCue[] = []
-    const clips: Array<{ start: number; path: string }> = []
+    const measuredStates: MeasuredCueState[] = []
     let rephraseCount = plan.cues.filter((cue) => cue.rephrased).length
     let fitFirstPassCount = 0
+    let overflowCount = 0
+    let batchCount = 0
+    let batchCueCount = 0
+    let rescueAttemptCount = 0
+    let rescueAcceptedCount = 0
+    let phaseWaitMs = 0
     let prefetchStarted = 0
     let prefetchUsed = 0
     let prefetchDiscarded = 0
@@ -351,51 +397,102 @@ export async function synthesizeDubbingPlan(input: DubbingSynthesisInput): Promi
       textFingerprint: string
       outcomePromise: Promise<BranchOutcome<PreparedCue>>
     }
-    let pendingPrefetch: PendingPrefetch | null = null
+    const pendingPrefetch: { value: PendingPrefetch | null } = { value: null }
 
+    const fitPreparedCue = async (
+      cue: DubbingPlanCue,
+      current: PreparedCue,
+      slot: MeasuredSpeechSlot,
+      outputHint: string
+    ): Promise<{ path: string; duration: number; targetDuration: number; tempo: number; voiceEnd: number }> => {
+      const localDelta = Math.max(0, input.localTempoDelta ?? DUBBING_LOCAL_TEMPO_DELTA)
+      const localCeiling = Math.min(AUTO_SHORT_TTS_HARD_MAX_TEMPO, globalTempo + localDelta)
+      const maxLocalCeiling = Math.min(AUTO_SHORT_TTS_HARD_MAX_TEMPO, Math.max(localCeiling, 1.35))
+      const safeAvailable = slot.availableDuration
+      const safeDeadline = slot.deadline
+      const requiredTempo = current.naturalDuration / safeAvailable
+      if (requiredTempo > AUTO_SHORT_TTS_HARD_MAX_TEMPO + DUBBING_TIMING_TOLERANCE_SECONDS) {
+        throw new Error(`Cue ${cue.id} cần nhịp ${requiredTempo.toFixed(3)}x, vượt trần ${AUTO_SHORT_TTS_HARD_MAX_TEMPO.toFixed(2)}x; cần rephrase hoặc tách câu, không cắt lời.`)
+      }
+      const preferredTempo = Number(Math.min(maxLocalCeiling, Math.max(globalTempo, requiredTempo)).toFixed(4))
+      const targetDuration = Math.min(current.naturalDuration / preferredTempo, safeAvailable)
+      const requestedTempo = current.naturalDuration / targetDuration
+      let finalPath = current.trimmedPath
+      let actualDuration = current.naturalDuration
+      if (Math.abs(requestedTempo - 1) > DUBBING_TIMING_TOLERANCE_SECONDS || actualDuration > safeAvailable) {
+        const fitted = await input.audio.applyTempo(current.trimmedPath, outputHint, targetDuration, signal)
+        finalPath = fitted.path
+        actualDuration = validDuration(fitted.duration, cue.id)
+      }
+      let voiceEnd = slot.start + actualDuration
+      if (voiceEnd > safeDeadline + DUBBING_TIMING_TOLERANCE_SECONDS) {
+        const correctedTarget = Math.max(0.001, targetDuration * safeAvailable / actualDuration - 0.01)
+        if (current.naturalDuration / correctedTarget > AUTO_SHORT_TTS_HARD_MAX_TEMPO + DUBBING_TIMING_TOLERANCE_SECONDS) {
+          throw new Error(`Cue ${cue.id} cần chỉnh nhịp vượt trần 1.45x sau DSP; không cắt lời.`)
+        }
+        const corrected = await input.audio.applyTempo(current.trimmedPath, `${outputHint}-correction`, correctedTarget, signal)
+        finalPath = corrected.path
+        actualDuration = validDuration(corrected.duration, cue.id)
+        voiceEnd = slot.start + actualDuration
+      }
+      if (voiceEnd > safeDeadline + DUBBING_TIMING_TOLERANCE_SECONDS) throw new Error(`Cue ${cue.id} vẫn vượt thời lượng sau khi chỉnh nhịp; không cắt lời.`)
+      const tempo = Number((current.naturalDuration / actualDuration).toFixed(4))
+      if (tempo > AUTO_SHORT_TTS_HARD_MAX_TEMPO + DUBBING_TIMING_TOLERANCE_SECONDS) {
+        throw new Error(`Cue ${cue.id} có tempo đo được ${tempo.toFixed(3)}x vượt trần 1.45x; không chấp nhận audio bị tăng tốc quá mức.`)
+      }
+      return { path: finalPath, duration: actualDuration, targetDuration, tempo, voiceEnd }
+    }
+
+    const schedulePrefetch = (index: number): void => {
+      if (!input.prefetchTts || index + 1 >= plan.cues.length) return
+      const nextCue = plan.cues[index + 1]
+      if (prepared.has(nextCue.id) || (pendingPrefetch.value && pendingPrefetch.value.cueId === nextCue.id)) return
+      const text = nextCue.finalSpokenText.trim()
+      pendingPrefetch.value = {
+        cueId: nextCue.id,
+        textFingerprint: text,
+        outcomePromise: scope.start(
+          (s) => prepareNaturalCue(input, nextCue, nextCue.finalSpokenText, s, 0),
+          { abortOnError: false }
+        )
+      }
+      prefetchStarted++
+    }
+
+    let measuredPreviousVoiceEnd: number | null = null
+    // Phase 1: synthesize and trim every original cue before any LLM call.
     for (let index = 0; index < plan.cues.length; index++) {
       throwIfAborted(signal)
       const cue = plan.cues[index]
       let current = prepared.get(cue.id)
       if (!current) {
-        if (pendingPrefetch && pendingPrefetch.cueId === cue.id) {
-          const prefetch = pendingPrefetch
-          pendingPrefetch = null
+        const prefetched = pendingPrefetch.value
+        if (prefetched && prefetched.cueId === cue.id) {
+          const prefetch = prefetched
+          pendingPrefetch.value = null
           if (prefetch.textFingerprint === cue.finalSpokenText.trim()) {
             const waitStarted = performance.now()
             const outcome = await prefetch.outcomePromise
             prefetchWaitMs += Math.max(0, performance.now() - waitStarted)
             prefetchUsed++
-            if (!outcome.ok) {
-              throw outcome.error
-            }
+            if (!outcome.ok) throw outcome.error
             current = outcome.value
           } else {
             prefetchDiscarded++
-            // The text may have changed after a rephrase or a resumed
-            // checkpoint. An obsolete prefetch is deliberately drained but
-            // must not turn into a failure for the replacement request.
             await prefetch.outcomePromise.catch(() => undefined)
           }
         }
-        if (!current) {
-          current = await prepareNaturalCue(input, cue, cue.finalSpokenText, signal, 0)
-        }
+        if (!current) current = await prepareNaturalCue(input, cue, cue.finalSpokenText, signal, 0)
         predictor.addSample(current.text, current.naturalDuration, input.language)
       }
       if (current.voice) voice = current.voice
 
       const localDelta = Math.max(0, input.localTempoDelta ?? DUBBING_LOCAL_TEMPO_DELTA)
       const localCeiling = Math.min(AUTO_SHORT_TTS_HARD_MAX_TEMPO, globalTempo + localDelta)
-      const safeAvailableForRephrase = validDuration(speakingDurations[index], cue.id)
-      let measuredSlot = measuredSpeechSlot(
-        input,
-        cue,
-        safeAvailableForRephrase,
-        current.naturalDuration,
-        finalCues.at(-1)?.voiceEnd
-      )
-      if (current.naturalDuration > measuredSlot.maximumAvailableDuration * AUTO_SHORT_TTS_HARD_MAX_TEMPO + DUBBING_TIMING_TOLERANCE_SECONDS) {
+      const safeAvailable = validDuration(speakingDurations[index], cue.id)
+      const slot = measuredSpeechSlot(input, cue, safeAvailable, current.naturalDuration, measuredPreviousVoiceEnd)
+      const overflow = current.naturalDuration > slot.maximumAvailableDuration * AUTO_SHORT_TTS_HARD_MAX_TEMPO + DUBBING_TIMING_TOLERANCE_SECONDS
+      if (overflow) {
         const splitDepth = input.structuralSplitDepth || 0
         const splitPlan = splitDepth < MAX_STRUCTURAL_SPLIT_DEPTH
           ? buildStructuralSplitPlan(plan, cue, current.text)
@@ -404,157 +501,200 @@ export async function synthesizeDubbingPlan(input: DubbingSynthesisInput): Promi
           input.onStructuralSplit?.({ cueId: cue.id, sourceCueIds: cue.sourceCueIds, partCount: splitPlan.cues.length - plan.cues.length + 1 })
           throw new DubbingStructuralSplitRequired(splitPlan, cue.id, cue.sourceCueIds, splitPlan.cues.length - plan.cues.length + 1)
         }
-        if (input.rephrase) {
-          const candidates = await input.rephrase({
-            cueId: cue.id,
-            currentText: current.text,
-            targetDuration: measuredSlot.maximumAvailableDuration * Math.min(1.1, localCeiling),
-            measuredDuration: current.naturalDuration,
-            maxDuration: measuredSlot.maximumAvailableDuration * AUTO_SHORT_TTS_HARD_MAX_TEMPO
-          }, signal)
-          const compactQuestions = current.naturalDuration > measuredSlot.maximumAvailableDuration * AUTO_SHORT_TTS_HARD_MAX_TEMPO
-            ? [current.text, ...candidates].map((text) => compactEnglishDubbingQuestion(text, input.language)).filter((text): text is string => text !== null)
-            : []
-          // Put grammatical alternatives first for ties in a flat predictor;
-          // they share the existing three-audio budget with LLM alternatives.
-          const candidateTexts = [...compactQuestions, ...candidates]
-          const validTexts = [...new Set(candidateTexts.map((text) => text.trim()).filter((text) => text && !containsRephraseLabel(text, [cue.id])))]
-          const ranked = validTexts.filter((text) => text !== current!.text.trim())
-            .map((text) => ({ text, predictedSeconds: predictor.estimate(text, { locale: input.language }).seconds }))
-            .filter((candidate) => Number.isFinite(candidate.predictedSeconds) && candidate.predictedSeconds > 0)
-            .sort((left, right) => left.predictedSeconds - right.predictedSeconds).slice(0, 3)
-          let rescued = false
-          for (const [attempt, candidate] of ranked.entries()) {
-            throwIfAborted(signal)
-            const replacement = await prepareNaturalCue(input, cue, candidate.text, signal, attempt + 1)
-            const complete = validateVoiceAudioCompleteness(replacement.text, replacement.naturalDuration).ok
-            const improved = replacement.naturalDuration < current.naturalDuration - DUBBING_TIMING_TOLERANCE_SECONDS
-            const replacementSlot = measuredSpeechSlot(
-              input,
-              cue,
-              safeAvailableForRephrase,
-              replacement.naturalDuration,
-              finalCues.at(-1)?.voiceEnd
-            )
-            const fits = replacement.naturalDuration <= replacementSlot.maximumAvailableDuration * AUTO_SHORT_TTS_HARD_MAX_TEMPO
-            input.onRephrase?.({
-              cueId: cue.id, phase: 'rescue', outcome: !complete ? 'incomplete-audio' : !improved ? 'no-improvement' : fits ? 'accepted' : 'improved-overflow',
-              candidateCount: candidates.length, previousSeconds: current.naturalDuration, candidateSeconds: replacement.naturalDuration
-            })
-            // Keep the original measured clip until a replacement proves better.
-            // Rejected/repetitive output must not calibrate the duration profile.
-            if (complete && improved) {
-              current = replacement
-              if (current.voice) voice = current.voice
-              predictor.addSample(current.text, current.naturalDuration, input.language)
-              rescued = true
-            }
-            // Predictor ordering is only an estimate. Try another distinct
-            // option from this ONE LLM response while the best audio overflows.
-            if (current.naturalDuration <= measuredSpeechSlot(
-              input,
-              cue,
-              safeAvailableForRephrase,
-              current.naturalDuration,
-              finalCues.at(-1)?.voiceEnd
-            ).maximumAvailableDuration * AUTO_SHORT_TTS_HARD_MAX_TEMPO) break
-          }
-          if (rescued && !cue.rephrased) rephraseCount++
-          if (!ranked.length) {
-            input.onRephrase?.({
-              cueId: cue.id, phase: 'rescue', candidateCount: candidates.length,
-              outcome: validTexts.includes(current.text.trim()) ? 'unchanged' : candidates.length && !validTexts.length ? 'invalid-candidate' : 'no-candidate'
-            })
-          }
-        }
-      } else {
-        if (!cue.rephrased) fitFirstPassCount++
       }
 
-      measuredSlot = measuredSpeechSlot(
-        input,
+      schedulePrefetch(index)
+      const state: MeasuredCueState = {
         cue,
-        safeAvailableForRephrase,
-        current.naturalDuration,
-        finalCues.at(-1)?.voiceEnd
-      )
+        current,
+        measuredText: current.text,
+        safeAvailable,
+        measuredSlot: slot
+      }
+      if (overflow) {
+        overflowCount++
+        state.overflowRequest = {
+          cueId: cue.id,
+          currentText: current.text,
+          sourceText: cue.sourceText,
+          targetDuration: slot.maximumAvailableDuration * Math.min(1.1, localCeiling),
+          measuredDuration: current.naturalDuration,
+          maxDuration: slot.maximumAvailableDuration * AUTO_SHORT_TTS_HARD_MAX_TEMPO,
+          contextBefore: index > 0 ? [plan.cues[index - 1].sourceText] : [],
+          contextAfter: index + 1 < plan.cues.length ? [plan.cues[index + 1].sourceText] : []
+        }
+        measuredPreviousVoiceEnd = Math.min(slot.deadline, slot.start + current.naturalDuration / AUTO_SHORT_TTS_HARD_MAX_TEMPO)
+      } else {
+        fitFirstPassCount++
+        if (input.prefetchTts) {
+          const provisional = await fitPreparedCue(cue, current, slot, `${cue.id}-tempo-measured`)
+          state.provisionalPath = provisional.path
+          state.provisionalDuration = provisional.duration
+          state.provisionalTargetDuration = provisional.targetDuration
+          measuredPreviousVoiceEnd = provisional.voiceEnd
+        } else {
+          measuredPreviousVoiceEnd = slot.start + Math.min(current.naturalDuration / globalTempo, slot.availableDuration)
+        }
+      }
+      measuredStates.push(state)
+      input.onProgress?.(index + 1, plan.cues.length, cue.id, 'measure')
+    }
 
-      // Pipeline synthesis of the next cue while local audio DSP is processing the current cue
-      if (input.prefetchTts && index + 1 < plan.cues.length) {
-        const nextCue = plan.cues[index + 1]
-        if (!prepared.has(nextCue.id) && (!pendingPrefetch || pendingPrefetch.cueId !== nextCue.id)) {
-          const text = nextCue.finalSpokenText.trim()
-          pendingPrefetch = {
-            cueId: nextCue.id,
-            textFingerprint: text,
-            // A prefetch is speculative. Its failure must be observed by
-            // the consumer, but an obsolete request must not abort the
-            // active cue or mark the whole item scope failed.
-            outcomePromise: scope.start(
-              (s) => prepareNaturalCue(input, nextCue, nextCue.finalSpokenText, s, 0),
-              { abortOnError: false }
-            )
+    const overflowRequests = measuredStates
+      .map((state) => state.overflowRequest)
+      .filter((request): request is DubbingOverflowRequest => Boolean(request))
+    const candidatesByCue = new Map<string, readonly string[]>()
+    if (overflowRequests.length > 0) {
+      input.onProgress?.(0, overflowRequests.length, 'batch-rephrase', 'batch-rephrase')
+      const phaseStarted = performance.now()
+      try {
+        if (input.rephraseBatch) {
+          for (let offset = 0; offset < overflowRequests.length; offset += 8) {
+            const batch = overflowRequests.slice(offset, offset + 8)
+            batchCount++
+            const result = await input.rephraseBatch(batch, signal)
+            for (const request of batch) {
+              const candidates = result.get(request.cueId)
+              if (candidates?.length) candidatesByCue.set(request.cueId, [...candidates])
+            }
           }
-          prefetchStarted++
+        } else if (input.rephrase) {
+          batchCount = 1
+          for (const request of overflowRequests) {
+            const candidates = await input.rephrase(request, signal)
+            if (candidates.length) candidatesByCue.set(request.cueId, [...candidates])
+          }
         }
+      } catch (error) {
+        if (signal.aborted) throw error
+      } finally {
+        phaseWaitMs += Math.max(0, performance.now() - phaseStarted)
       }
+      if (batchCount === 0) batchCount = 1
+      batchCueCount = overflowRequests.length
+      for (const request of overflowRequests) {
+        const candidates = candidatesByCue.get(request.cueId) || []
+        input.onRephrase?.({
+          cueId: request.cueId,
+          phase: 'batch-rephrase',
+          outcome: candidates.length ? 'batch-received' : 'no-candidate',
+          candidateCount: candidates.length,
+          batchSize: overflowRequests.length,
+          previousSeconds: request.measuredDuration
+        })
+      }
+      input.onProgress?.(overflowRequests.length, overflowRequests.length, 'batch-rephrase', 'batch-rephrase')
+    }
 
-      const maxLocalCeiling = Math.min(AUTO_SHORT_TTS_HARD_MAX_TEMPO, Math.max(localCeiling, 1.35))
-      const rawRequiredTempo = current.naturalDuration / measuredSlot.availableDuration
-      const preferredTempo = Number(Math.min(maxLocalCeiling, Math.max(globalTempo, rawRequiredTempo)).toFixed(4))
-      const safeAvailable = measuredSlot.availableDuration
-      const safeDeadline = measuredSlot.deadline
-      // Include the existing emergency deadline BEFORE processing PCM. Cascading
-      // two tempo filters costs another process and needlessly processes audio twice.
-      const requiredTempo = current.naturalDuration / safeAvailable
-      if (requiredTempo > AUTO_SHORT_TTS_HARD_MAX_TEMPO + DUBBING_TIMING_TOLERANCE_SECONDS) {
-        throw new Error(`Cue ${cue.id} cần nhịp ${requiredTempo.toFixed(3)}x, vượt trần ${AUTO_SHORT_TTS_HARD_MAX_TEMPO.toFixed(2)}x; cần rephrase hoặc tách câu, không cắt lời.`)
-      }
-      const targetDuration = Math.min(current.naturalDuration / preferredTempo, safeAvailable)
-      const requestedTempo = current.naturalDuration / targetDuration
-      let finalPath = current.trimmedPath
-      let actualDuration = current.naturalDuration
-      if (Math.abs(requestedTempo - 1) > DUBBING_TIMING_TOLERANCE_SECONDS || actualDuration > safeAvailable) {
-        const fitted = await input.audio.applyTempo(current.trimmedPath, `${cue.id}-tempo`, targetDuration, signal)
-        finalPath = fitted.path
-        actualDuration = validDuration(fitted.duration, cue.id)
-      }
-      let voiceEnd = measuredSlot.start + actualDuration
-      if (voiceEnd > safeDeadline + DUBBING_TIMING_TOLERANCE_SECONDS) {
-        // Retry only a measured adapter overshoot, always from the original PCM.
-        const correctedTarget = Math.max(0.001, targetDuration * safeAvailable / actualDuration - 0.01)
-        if (current.naturalDuration / correctedTarget > AUTO_SHORT_TTS_HARD_MAX_TEMPO + DUBBING_TIMING_TOLERANCE_SECONDS) {
-          throw new Error(`Cue ${cue.id} cần chỉnh nhịp vượt trần 1.45x sau DSP; không cắt lời.`)
+    // Phase 3a: measure only candidates returned by the completed batch.
+    let rescueIndex = 0
+    for (const state of measuredStates) {
+      const request = state.overflowRequest
+      if (!request) continue
+      throwIfAborted(signal)
+      const candidates = candidatesByCue.get(request.cueId) || []
+      const compactQuestions = [state.current.text, ...candidates]
+        .map((text) => compactEnglishDubbingQuestion(text, input.language))
+        .filter((text): text is string => text !== null)
+      const validTexts = [...new Set([...compactQuestions, ...candidates]
+        .map((text) => text.trim())
+        .filter((text) => text && !containsRephraseLabel(text, [state.cue.id])))]
+      const ranked = validTexts
+        .filter((text) => text !== state.current.text.trim())
+        .map((text) => ({ text, predictedSeconds: predictor.estimate(text, { locale: input.language }).seconds }))
+        .filter((candidate) => Number.isFinite(candidate.predictedSeconds) && candidate.predictedSeconds > 0)
+        .sort((left, right) => left.predictedSeconds - right.predictedSeconds)
+        .slice(0, 3)
+      const original = state.current
+      let best = original
+      let accepted = false
+      for (const [attempt, candidate] of ranked.entries()) {
+        throwIfAborted(signal)
+        rescueAttemptCount++
+        const replacement = await prepareNaturalCue(input, state.cue, candidate.text, signal, attempt + 1)
+        const complete = validateVoiceAudioCompleteness(replacement.text, replacement.naturalDuration).ok
+        const improved = replacement.naturalDuration < best.naturalDuration - DUBBING_TIMING_TOLERANCE_SECONDS
+        const fits = replacement.naturalDuration <= state.measuredSlot.maximumAvailableDuration * AUTO_SHORT_TTS_HARD_MAX_TEMPO
+        input.onRephrase?.({
+          cueId: state.cue.id,
+          phase: 'rescue',
+          outcome: !complete ? 'incomplete-audio' : !improved ? 'no-improvement' : fits ? 'accepted' : 'improved-overflow',
+          candidateCount: candidates.length,
+          previousSeconds: best.naturalDuration,
+          candidateSeconds: replacement.naturalDuration
+        })
+        if (complete && improved) {
+          best = replacement
+          predictor.addSample(replacement.text, replacement.naturalDuration, input.language)
         }
-        const corrected = await input.audio.applyTempo(current.trimmedPath, `${cue.id}-correction`, correctedTarget, signal)
-        finalPath = corrected.path
-        actualDuration = validDuration(corrected.duration, cue.id)
-        voiceEnd = measuredSlot.start + actualDuration
+        if (complete && improved && fits) {
+          state.current = replacement
+          state.provisionalPath = undefined
+          state.provisionalDuration = undefined
+          state.provisionalTargetDuration = undefined
+          if (replacement.voice) voice = replacement.voice
+          accepted = true
+          rescueAcceptedCount++
+          if (!state.cue.rephrased) rephraseCount++
+          break
+        }
       }
-      if (voiceEnd > safeDeadline + DUBBING_TIMING_TOLERANCE_SECONDS) throw new Error(`Cue ${cue.id} vẫn vượt thời lượng sau khi chỉnh nhịp; không cắt lời.`)
-      // Report the measured TOTAL acceleration, including an emergency fit.
+      if (!accepted && best !== original) state.current = best
+      if (!ranked.length) {
+        input.onRephrase?.({
+          cueId: state.cue.id,
+          phase: 'rescue',
+          candidateCount: candidates.length,
+          outcome: validTexts.includes(original.text.trim()) ? 'unchanged' : candidates.length && !validTexts.length ? 'invalid-candidate' : 'no-candidate'
+        })
+      }
+      rescueIndex++
+      input.onProgress?.(rescueIndex, overflowRequests.length, state.cue.id, 'rescue')
+    }
+
+    const finalCues: DubbingPlanCue[] = []
+    const subtitles: DubbingSubtitleCue[] = []
+    const clips: Array<{ start: number; path: string }> = []
+    let previousVoiceEnd: number | null = null
+    // Phase 3b: finalize all cues against the post-rescue source ledger.
+    for (let index = 0; index < measuredStates.length; index++) {
+      throwIfAborted(signal)
+      const state = measuredStates[index]
+      const cue = state.cue
+      const current = state.current
+      const slot = measuredSpeechSlot(input, cue, state.safeAvailable, current.naturalDuration, previousVoiceEnd)
+      let finalPath = state.provisionalPath || current.trimmedPath
+      let actualDuration = state.provisionalDuration || current.naturalDuration
+      let targetDuration = state.provisionalTargetDuration || current.naturalDuration
+      const reusable = Boolean(
+        state.provisionalPath && current.text === state.measuredText
+        && current.naturalDuration / actualDuration <= AUTO_SHORT_TTS_HARD_MAX_TEMPO + DUBBING_TIMING_TOLERANCE_SECONDS
+        && slot.start + actualDuration <= slot.deadline + DUBBING_TIMING_TOLERANCE_SECONDS
+      )
+      if (!reusable) {
+        const fitted = await fitPreparedCue(cue, current, slot, `${cue.id}-tempo`)
+        finalPath = fitted.path
+        actualDuration = fitted.duration
+        targetDuration = fitted.targetDuration
+      }
+      const voiceEnd = slot.start + actualDuration
       const tempo = Number((current.naturalDuration / actualDuration).toFixed(4))
-      if (tempo > AUTO_SHORT_TTS_HARD_MAX_TEMPO + DUBBING_TIMING_TOLERANCE_SECONDS) {
-        throw new Error(`Cue ${cue.id} có tempo đo được ${tempo.toFixed(3)}x vượt trần 1.45x; không chấp nhận audio bị tăng tốc quá mức.`)
-      }
       const originalSourceIndex = plan.sourceCues?.findIndex((source) => source.id === cue.sourceCueIds[0]) ?? -1
       const subtitleInput = {
         cueId: cue.id,
         sourceIndex: originalSourceIndex >= 0 ? (plan.sourceCues![originalSourceIndex].sourceIndex ?? originalSourceIndex) : index,
-        start: measuredSlot.start,
+        start: slot.start,
         end: voiceEnd,
         finalSpokenText: current.text
       }
       const cueSubtitles = cue.sourceCueIds.length > 1
         ? buildDubbingSubtitleSegments(subtitleInput) : [buildDubbingSubtitle(subtitleInput)]
       subtitles.push(...cueSubtitles)
-      const effectiveHardEnd = cue.hardEnd
-
       finalCues.push({
         ...cue,
-        start: measuredSlot.start,
-        hardEnd: effectiveHardEnd,
-        availableDuration: safeAvailable,
+        start: slot.start,
+        hardEnd: cue.hardEnd,
+        availableDuration: slot.availableDuration,
         translatedText: cue.translatedText,
         finalSpokenText: current.text,
         predictedDuration: predictor.estimate(current.text, { locale: input.language }).seconds,
@@ -569,8 +709,9 @@ export async function synthesizeDubbingPlan(input: DubbingSynthesisInput): Promi
         subtitles: cueSubtitles,
         rephrased: current.rephrased
       })
-      clips.push({ start: measuredSlot.start, path: finalPath })
-      input.onProgress?.(index + 1, plan.cues.length, cue.id)
+      clips.push({ start: slot.start, path: finalPath })
+      previousVoiceEnd = voiceEnd
+      input.onProgress?.(index + 1, measuredStates.length, cue.id, 'finalize')
     }
 
     const tempos = finalCues.map((cue) => cue.tempo)
@@ -583,6 +724,12 @@ export async function synthesizeDubbingPlan(input: DubbingSynthesisInput): Promi
       voice,
       metrics: {
         rephraseCount,
+        overflowCount,
+        batchCount,
+        batchCueCount,
+        rescueAttemptCount,
+        rescueAcceptedCount,
+        phaseWaitMs: Math.round(phaseWaitMs),
         fitFirstPassCount,
         fitFirstPassRatio: Number((fitFirstPassCount / finalCues.length).toFixed(3)),
         predictorSamples: predictor.profile.samples,

@@ -1511,6 +1511,8 @@ interface DubbingRephraseRequest {
   cueId: string
   currentText: string
   targetDuration: number
+  measuredDuration?: number
+  maxDuration?: number
   sourceText?: string
   contextBefore?: string[]
   contextAfter?: string[]
@@ -1543,7 +1545,10 @@ export async function rephraseDubbingCues(
         signal,
         request.sourceText,
         request.contextBefore || [],
-        request.contextAfter || []
+        request.contextAfter || [],
+        request.measuredDuration != null && request.maxDuration != null
+          ? { measuredDuration: request.measuredDuration, maxDuration: request.maxDuration }
+          : undefined
       ))
     }
     return result
@@ -1554,6 +1559,7 @@ export async function rephraseDubbingCues(
     const base = (config.translateServerUrl || DEFAULT_AI_SERVER_URL).replace(/\/+$/u, '')
     const deadline = AbortSignal.timeout(90_000)
     const requestSignal = signal ? AbortSignal.any([signal, deadline]) : deadline
+    const isMeasuredOverflow = requests.some((request) => Number.isFinite(request.measuredDuration))
     const requestBatch = async (batch: readonly DubbingRephraseRequest[], repair: boolean): Promise<void> => {
       const messages = buildRephraseMessages({
         targetLocale: targetLanguage,
@@ -1562,16 +1568,18 @@ export async function rephraseDubbingCues(
           sourceText: request.sourceText,
           currentText: request.currentText,
           targetDuration: request.targetDuration,
+          measuredDuration: request.measuredDuration,
+          maxDuration: request.maxDuration,
           contextBefore: request.contextBefore || [],
           contextAfter: request.contextAfter || []
         }))
       })
-      const res = await fetch(`${base}/v1/chat/completions`, {
+      const res = await getGlobalResourceManager().withLease(['server-inference'], requestSignal, () => fetch(`${base}/v1/chat/completions`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', ...(localKey ? { Authorization: `Bearer ${localKey}` } : {}) },
         body: JSON.stringify({ model: 'llm-default', messages, temperature: 0.3 }),
         signal: requestSignal
-      })
+      }))
       if (!res.ok) throw new Error(`Rephrase HTTP ${res.status}`)
       const data = await res.json() as { choices?: Array<{ message?: { content?: string }; finish_reason?: string }> }
       const content = data.choices?.[0]?.message?.content?.trim() || ''
@@ -1580,7 +1588,7 @@ export async function rephraseDubbingCues(
       const usable = truncated ? [] : parsed.items
       if (!parsed.complete || !usable.length) {
         const badLabels = [...new Set(parsed.issues.flatMap((item) => item.cueIds))].slice(0, 5).map((id) => safeArtifactSegment(id).slice(0, 80))
-        logWarn(`[AutoShort:rephrase] phase=preflight repair=${repair} cues=${batch.length} outcome=${usable.length ? 'partial-response' : 'invalid-response'} issues=${truncated ? 'truncated-output' : [...new Set(parsed.issues.map((item) => item.code))].join(',') || 'empty-response'} badLabels=${badLabels.join(',')} usableCandidates=${usable.length}`)
+        logWarn(`[AutoShort:rephrase] phase=${isMeasuredOverflow ? 'batch-rephrase' : 'preflight'} repair=${repair} cues=${batch.length} outcome=${usable.length ? 'partial-response' : 'invalid-response'} issues=${truncated ? 'truncated-output' : [...new Set(parsed.issues.map((item) => item.code))].join(',') || 'empty-response'} badLabels=${badLabels.join(',')} usableCandidates=${usable.length}`)
       }
       for (const request of batch) {
         const candidates = usable
@@ -1589,11 +1597,15 @@ export async function rephraseDubbingCues(
         if (candidates.length) result.set(request.cueId, candidates)
       }
     }
-    await requestBatch(requests, false)
+    const initialBatchLimit = isMeasuredOverflow ? 8 : requests.length
+    for (let offset = 0; offset < requests.length; offset += initialBatchLimit) {
+      requestSignal.throwIfAborted()
+      await requestBatch(requests.slice(offset, offset + initialBatchLimit), false)
+    }
     // One repair pass for missing/ambiguous cues only, within the original
     // deadline. Already usable IDs never re-enter the request or get replaced.
     const missing = requests.filter((request) => !result.has(request.cueId))
-    if (missing.length) logInfo(`[AutoShort:rephrase] phase=preflight outcome=repair-missing cues=${missing.length} kept=${result.size}`)
+    if (missing.length) logInfo(`[AutoShort:rephrase] phase=${isMeasuredOverflow ? 'batch-rephrase' : 'preflight'} outcome=repair-missing cues=${missing.length} kept=${result.size}`)
     for (let offset = 0; offset < missing.length; offset += 8) {
       requestSignal.throwIfAborted()
       await requestBatch(missing.slice(offset, offset + 8), true)
@@ -1681,6 +1693,12 @@ async function legacySynthesizeVoice(
   maxTempo: number
   degraded: boolean
   rephraseCount: number
+  overflowCount: number
+  batchCount: number
+  batchCueCount: number
+  rescueAttemptCount: number
+  rescueAcceptedCount: number
+  phaseWaitMs: number
   splitCount: number
   paceMode: 'source-adaptive' | 'fixed'
   predictorSamples: number
@@ -2279,6 +2297,12 @@ async function legacySynthesizeVoice(
     maxTempo: timing.maxTempo,
     degraded: timing.degraded,
     rephraseCount,
+    overflowCount: 0,
+    batchCount: 0,
+    batchCueCount: 0,
+    rescueAttemptCount: 0,
+    rescueAcceptedCount: 0,
+    phaseWaitMs: 0,
     splitCount,
     paceMode,
     predictorSamples: predictor.profile.samples,
@@ -2322,6 +2346,12 @@ export async function synthesizeVoice(
   maxTempo: number
   degraded: boolean
   rephraseCount: number
+  overflowCount: number
+  batchCount: number
+  batchCueCount: number
+  rescueAttemptCount: number
+  rescueAcceptedCount: number
+  phaseWaitMs: number
   splitCount: number
   paceMode: 'source-adaptive' | 'fixed'
   predictorSamples: number
@@ -2517,32 +2547,47 @@ export async function synthesizeVoice(
     predictor,
     tts: adapter,
     audio: audioAdapter,
-    rephrase: (request, signal) => {
-      const cueIndex = translatedPlan.cues.findIndex((cue) => cue.id === request.cueId)
-      return rephraseDubbingCue(
+    rephraseBatch: async (requests, signal) => {
+      const enrichedRequests = requests.map((request) => {
+        const cueIndex = translatedPlan.cues.findIndex((cue) => cue.id === request.cueId)
+        return {
+          ...request,
+          sourceText: request.sourceText || (cueIndex >= 0 ? translatedPlan.cues[cueIndex]?.sourceText : undefined),
+          contextBefore: request.contextBefore?.length ? request.contextBefore : (cueIndex > 0 ? [translatedPlan.cues[cueIndex - 1]?.sourceText || ''] : []),
+          contextAfter: request.contextAfter?.length ? request.contextAfter : (cueIndex >= 0 && cueIndex + 1 < translatedPlan.cues.length ? [translatedPlan.cues[cueIndex + 1]?.sourceText || ''] : [])
+        }
+      })
+      const results = await rephraseDubbingCues(
         config,
-        request.cueId,
-        request.currentText,
-        request.targetDuration,
+        enrichedRequests,
         language,
         detectedLanguage,
-        signal,
-        cueIndex >= 0 ? translatedPlan.cues[cueIndex]?.sourceText : undefined,
-        cueIndex > 0 ? [translatedPlan.cues[cueIndex - 1]?.sourceText || ''] : [],
-        cueIndex >= 0 && cueIndex + 1 < translatedPlan.cues.length ? [translatedPlan.cues[cueIndex + 1]?.sourceText || ''] : [],
-        { measuredDuration: request.measuredDuration, maxDuration: request.maxDuration }
+        signal
       )
+      return results
     },
     onRephrase: (event) => {
       const measured = event.previousSeconds == null ? ''
         : ` previousSeconds=${event.previousSeconds.toFixed(3)} candidateSeconds=${event.candidateSeconds?.toFixed(3) ?? 'unknown'}`
-      logInfo(`[AutoShort:rephrase] cue=${safeArtifactSegment(event.cueId)} phase=${event.phase} outcome=${event.outcome} candidates=${event.candidateCount}${measured}`)
+      const batch = event.batchSize == null ? '' : ` batchSize=${event.batchSize}`
+      logInfo(`[AutoShort:rephrase] cue=${safeArtifactSegment(event.cueId)} phase=${event.phase} outcome=${event.outcome} candidates=${event.candidateCount}${batch}${measured}`)
     },
     onStructuralSplit: (event) => {
       logInfo(`[AutoShort:timing] cue=${safeArtifactSegment(event.cueId)} measured-overflow split=${event.partCount} sourceCues=${event.sourceCueIds.length}`)
     },
     signal: job.controller.signal,
-    onProgress: (completed, count, cueId) => emitProgress(job, item, 'generating_tts', 58 + (completed / Math.max(1, count)) * 20, `Đang tạo voice ${completed}/${count} (${cueId})`, index, total),
+    onProgress: (completed, count, cueId, phase = 'measure') => {
+      const safeCount = Math.max(1, count)
+      const progress = 58 + (completed / safeCount) * 20
+      const message = phase === 'batch-rephrase'
+        ? `Rút gọn ${completed}/${count} cue quá dài (phase=batch-rephrase)`
+        : phase === 'rescue'
+          ? `Đo lại voice ${completed}/${count} (phase=rescue; ${cueId})`
+          : phase === 'finalize'
+            ? `Hoàn tất voice ${completed}/${count} (phase=finalize; ${cueId})`
+            : `Đo voice ${completed}/${count} (phase=measure; ${cueId})`
+      emitProgress(job, item, 'generating_tts', progress, message, index, total)
+    },
     prefetchTts: Boolean(policy?.prefetchTts)
   })
   for (const cue of synthesized.plan.cues) {
@@ -2658,6 +2703,12 @@ export async function synthesizeVoice(
     maxTempo: synthesized.metrics.maxTempo,
     degraded: synthesized.metrics.degraded,
     rephraseCount: synthesized.metrics.rephraseCount,
+    overflowCount: synthesized.metrics.overflowCount,
+    batchCount: synthesized.metrics.batchCount,
+    batchCueCount: synthesized.metrics.batchCueCount,
+    rescueAttemptCount: synthesized.metrics.rescueAttemptCount,
+    rescueAcceptedCount: synthesized.metrics.rescueAcceptedCount,
+    phaseWaitMs: synthesized.metrics.phaseWaitMs,
     splitCount: 0,
     paceMode: translatedPlan.paceMode,
     predictorSamples: synthesized.metrics.predictorSamples,

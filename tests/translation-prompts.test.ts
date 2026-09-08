@@ -4,6 +4,7 @@ import {
   buildRepairMessages,
   buildRephraseMessages,
   buildTranslationMessages,
+  getLanguageSpeakingBudget,
   TRANSLATION_PARSER_VERSION,
   TRANSLATION_PROMPT_VERSION
 } from '../src/main/translation/prompts'
@@ -28,7 +29,6 @@ test('one target and one output grammar per request', () => {
   assert.equal(TRANSLATION_PROMPT_VERSION, 'translation-v5')
   assert.equal(TRANSLATION_PARSER_VERSION, 'translation-parser-v2')
 })
-
 test('subtitle prompts carry source as data and omit dubbing duration pressure', () => {
   const messages = buildTranslationMessages(input, 'id-lines')
   assert.match(messages[1].content, /不要摸这只狗/u)
@@ -66,4 +66,32 @@ test('rephrase is editing existing translation with source evidence', () => {
   assert.match(messages[1].content, /Do not touch this dog/u)
   assert.doesNotMatch(messages[0].content, /target_language=auto/u)
   assert.doesNotMatch(messages[0].content, /one translation per ID|đúng một.*cue/iu)
+})
+
+test('getLanguageSpeakingBudget calculates words or characters appropriately across language families', () => {
+  const vi = getLanguageSpeakingBudget('vi', 2.0)
+  assert.equal(vi.unit, 'words')
+  assert.ok(vi.budget >= 8 && vi.budget <= 10)
+
+  const zh = getLanguageSpeakingBudget('zh-CN', 2.0)
+  assert.equal(zh.unit, 'characters')
+  assert.ok(zh.budget >= 7 && zh.budget <= 10)
+
+  const de = getLanguageSpeakingBudget('de', 2.0)
+  assert.equal(de.unit, 'characters')
+  assert.ok(de.budget >= 30)
+
+  const en = getLanguageSpeakingBudget('en-US', 2.0)
+  assert.equal(en.unit, 'words')
+  assert.ok(en.budget >= 6 && en.budget <= 8)
+})
+
+test('dubbing prompt carries suggested speaking budget for the target language', () => {
+  const messages = buildTranslationMessages({
+    ...input,
+    targetLocale: 'vi',
+    mode: 'dubbing',
+    cues: [{ ...input.cues[0], end: 2, speakingDuration: 2.0 }]
+  }, 'json-items')
+  assert.match(messages[1].content, /"suggested_max_words":\d+/u)
 })

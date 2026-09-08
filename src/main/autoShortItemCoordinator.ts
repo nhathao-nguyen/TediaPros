@@ -1264,6 +1264,34 @@ export function createAutoShortItemProcessor(
           return res
         })
 
+        // Resilient timeline clamping: clamp minor floating-point or tail rounding deviations before sync validation
+        if (Array.isArray(synthesized.dubbingUnits) && meta.giay > 0) {
+          for (let i = 0; i < synthesized.dubbingUnits.length; i++) {
+            const u = synthesized.dubbingUnits[i]
+            if (!u) continue
+            // 1. Clamp minor tail overshoot beyond video duration if within a small margin (<= 0.35s)
+            if (u.plannedEnd > meta.giay && u.plannedEnd <= meta.giay + 0.35) {
+              const clampedEnd = meta.giay
+              const dur = Math.max(0.01, clampedEnd - u.plannedStart)
+              u.plannedEnd = clampedEnd
+              u.finalDuration = Number(dur.toFixed(4))
+              if (u.subtitles?.length) {
+                const lastSub = u.subtitles[u.subtitles.length - 1]
+                if (lastSub && lastSub.end > clampedEnd) {
+                  lastSub.end = clampedEnd
+                }
+              }
+            }
+            // 2. Normalize minor floating point drift between finalDuration and plannedEnd - plannedStart
+            if (Number.isFinite(u.finalDuration) && Number.isFinite(u.plannedStart) && Number.isFinite(u.plannedEnd)) {
+              const calculatedDur = u.plannedEnd - u.plannedStart
+              if (Math.abs((u.finalDuration as number) - calculatedDur) > 0.001 && Math.abs((u.finalDuration as number) - calculatedDur) <= 0.015) {
+                u.finalDuration = Number(calculatedDur.toFixed(4))
+              }
+            }
+          }
+        }
+
         const syncValidation = validateAutoShortTimelineSync(
           synthesized.dubbingUnits,
           meta.giay,
@@ -1305,6 +1333,12 @@ export function createAutoShortItemProcessor(
           averageTempo: synthesized.averageTempo,
           degraded: synthesized.degraded,
           rephraseCount: synthesized.rephraseCount,
+          overflowCount: synthesized.overflowCount,
+          batchCount: synthesized.batchCount,
+          batchCueCount: synthesized.batchCueCount,
+          rescueAttemptCount: synthesized.rescueAttemptCount,
+          rescueAcceptedCount: synthesized.rescueAcceptedCount,
+          phaseWaitMs: synthesized.phaseWaitMs,
           splitCount: synthesized.splitCount,
           predictorSamples: synthesized.predictorSamples,
           fitFirstPassRatio: synthesized.fitFirstPassRatio,

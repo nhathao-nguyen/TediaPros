@@ -55,9 +55,41 @@ test('local batch repairs only missing cues once and preserves valid candidates 
   }
   try {
     const result = await rephraseDubbingCues({ translateProvider: 'local', translateServerUrl: 'http://fixture.invalid' },
-      ['c1', 'c2'].map((cueId) => ({ cueId, currentText: 'A longer original sentence.', targetDuration: 1.5 })), 'en')
+      ['c1', 'c2'].map((cueId) => ({ cueId, currentText: 'A longer original sentence.', targetDuration: 1.5, measuredDuration: 2.4, maxDuration: 2.175 })), 'en')
     assert.deepEqual(received, [['c1', 'c2'], ['c2']])
     assert.deepEqual([...result], [['c1', ['Keep this safe choice.']], ['c2', ['Repaired choice.']]])
+  } finally { globalThis.fetch = previousFetch }
+})
+
+test('local measured-overflow batches are capped at eight cues and carry measured timing fields', async () => {
+  const { rephraseDubbingCues } = await import('../src/main/autoshort') as any
+  const previousFetch = globalThis.fetch
+  const received: Array<{ ids: string[]; rows: any[] }> = []
+  globalThis.fetch = async (_url, init) => {
+    const body = JSON.parse(String(init?.body))
+    const rows = body.messages[1].content.split('\n').filter((line: string) => line.startsWith('{')).map((line: string) => JSON.parse(line))
+    received.push({ ids: rows.map((row: { id: string }) => row.id), rows })
+    const content = rows.map((row: { id: string }) => `[${row.id}:1] Short ${row.id}.`).join('\n')
+    return new Response(JSON.stringify({ choices: [{ message: { content }, finish_reason: 'stop' }] }))
+  }
+  try {
+    const requests = Array.from({ length: 9 }, (_, index) => ({
+      cueId: `overflow-${index}`,
+      currentText: `Original ${index} with extra words.`,
+      sourceText: `Nguồn ${index}`,
+      targetDuration: 1.1,
+      measuredDuration: 2.4,
+      maxDuration: 1.595,
+      contextBefore: index > 0 ? [`Nguồn ${index - 1}`] : [],
+      contextAfter: index < 8 ? [`Nguồn ${index + 1}`] : []
+    }))
+    const result = await rephraseDubbingCues({ translateProvider: 'local', translateServerUrl: 'http://fixture.invalid' }, requests, 'en')
+    assert.deepEqual(received.map((batch) => batch.ids.length), [8, 1])
+    assert.equal(received[0].rows[0].measured_natural_seconds, 2.4)
+    assert.equal(received[0].rows[0].target_duration_seconds, 1.1)
+    assert.equal(received[0].rows[0].hard_max_natural_seconds, 1.595)
+    assert.equal(received[0].rows[0].source_text, 'Nguồn 0')
+    assert.deepEqual([...result.keys()], requests.map((request) => request.cueId))
   } finally { globalThis.fetch = previousFetch }
 })
 

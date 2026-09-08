@@ -34,8 +34,15 @@ const ISSUE_CODE_BY_FINDING: Record<ContentQualityFinding['code'], TranslationIs
   'invalid-source': 'invalid-source'
 }
 
+const CJK_DIGIT_MAP: Record<string, string> = {
+  '零': '0', '〇': '0', '一': '1', '二': '2', '两': '2',
+  '三': '3', '四': '4', '五': '5', '六': '6', '七': '7',
+  '八': '8', '九': '9'
+}
+
 function unicodeDigitsToAscii(value: string): string {
   return Array.from(value).map((character) => {
+    if (CJK_DIGIT_MAP[character] !== undefined) return CJK_DIGIT_MAP[character]
     const codePoint = character.codePointAt(0) || 0
     if (codePoint >= 0x0660 && codePoint <= 0x0669) return String(codePoint - 0x0660)
     if (codePoint >= 0x06f0 && codePoint <= 0x06f9) return String(codePoint - 0x06f0)
@@ -45,8 +52,20 @@ function unicodeDigitsToAscii(value: string): string {
   }).join('')
 }
 
+function isQuestionSentence(text: string): boolean {
+  if (!text) return false
+  if (/[?？]/u.test(text)) return true
+  if (/(?:phải\s+không|đúng\s+không|được\s+không|hả|sao|chăng|chưa)\s*[.!]?$/iu.test(text.trim())) return true
+  if (/[吗呢吧か]\s*[.!]?$/u.test(text.trim())) return true
+  return false
+}
+
 function protectedTokens(text: string): string[] {
-  const normalized = unicodeDigitsToAscii(text.normalize('NFKC')).toLowerCase()
+  // Chinese ordinal markers such as 第一/第二 identify cue order, not a
+  // quantity that a translation must repeat. Strip that marker before the
+  // optional CJK digit normalization so generic fixture/translation text
+  // does not become a false protected-number warning.
+  const normalized = unicodeDigitsToAscii(text.normalize('NFKC').replace(/第[零〇一二两三四五六七八九]+/gu, '第')).toLowerCase()
   const tokens: string[] = []
   // Keep a numeric value and its canonical unit as protected tokens. Unit
   // words often change during translation ("phút" -> "minutes", "%" ->
@@ -151,6 +170,16 @@ export function validateAutoShortContentQuality(input: {
     }
     const sourceTokens = protectedTokens(source.text)
     const targetTokens = protectedTokens(target.text)
+    const sourceWithoutNeg = sourceTokens.filter((token) => token !== 'neg')
+    const targetWithoutNeg = targetTokens.filter((token) => token !== 'neg')
+    const onlyNegDiffers = sourceWithoutNeg.join('\u0000') === targetWithoutNeg.join('\u0000') &&
+      sourceTokens.includes('neg') !== targetTokens.includes('neg')
+    const isQuestionContext = isQuestionSentence(source.text) || isQuestionSentence(target.text)
+    if (onlyNegDiffers && isQuestionContext) {
+      // Question particles across languages (e.g. Chinese 吗/呢 -> Vietnamese không/chưa)
+      // are interrogative markers rather than semantic polarity reversals.
+      continue
+    }
     if (sourceTokens.join('\u0000') !== targetTokens.join('\u0000')) {
       findings.push({
         severity: 'warning',
