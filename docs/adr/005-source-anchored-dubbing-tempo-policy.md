@@ -32,7 +32,7 @@ Nếu xử lý ngây thơ:
    - Chế độ trộn với audio nguồn không được mượn khoảng lặng dẫn để tránh chồng tiếng nguồn. Start của phụ đề và clip luôn dùng start đã lập lịch, còn mốc nguồn vẫn được lưu riêng để kiểm tra.
 5. **Quy tắc phân tách ngữ nghĩa thay vì nuốt chữ (Semantic Splitting vs. No Silent Drop):**
    - Khi câu thoại dài không thể nhét vừa ở mức tempo `1.45x`:
-     - Nếu câu thuộc nhóm nhiều cues: Tự động tách tại ranh giới cue hợp lý (`shouldSplitAutoShortVoiceGroup`).
+     - Nếu WAV đo được thuộc nhóm nhiều cues và lời đích có đủ câu hoàn chỉnh tương ứng: Tự động tách tại ranh giới source cue, sau đó tổng hợp lại từng phần trong cửa sổ riêng. Fallback này được giới hạn theo độ sâu và chỉ chạy sau lần đo thật, không dựa vào predictor để rewrite lời.
      - Nếu chỉ có 1 cue: Báo lỗi vượt quá dung lượng thời gian để người dùng hoặc AI tinh chỉnh bản dịch, **tuyệt đối không âm thầm cắt bỏ câu thoại**.
 
 ---

@@ -85,6 +85,43 @@ test('grouped speech is measured before any duration-prediction rewrite', async 
   assert.deepEqual(spoken, plan.cues.map((cue) => cue.finalSpokenText))
 })
 
+test('measured overflow splits complete translated sentences at source boundaries', async () => {
+  const source = [
+    { id: 's0', start: 0, end: 1.4, text: '源一' },
+    { id: 's1', start: 1.4, end: 2.8, text: '源二' },
+    { id: 's2', start: 2.8, end: 4.2, text: '源三' },
+    { id: 's3', start: 4.2, end: 5.6, text: '源四' },
+    { id: 's4', start: 5.6, end: 7, text: '源五' },
+    { id: 'question', start: 7, end: 8, text: '能吃吗?' }
+  ]
+  const translated = applyDubbingTranslations(
+    plans.buildDubbingPlan({ videoDuration: 8.5, cues: source }),
+    source.map((cue, index) => ({ id: cue.id, text: index < 5 ? `Sentence ${index + 1}.` : 'Can it be eaten?' }))
+  )
+  const grouped = group(translated)
+  assert.deepEqual(grouped.cues.map((cue) => cue.sourceCueIds), [['s0', 's1', 's2', 's3', 's4'], ['question']])
+  const spoken: string[] = []
+  let rephraseCalls = 0
+  const result = await synthesizeDubbingPlan({
+    plan: grouped,
+    language: 'en',
+    model: 'fixture',
+    fixedTempo: 1,
+    rephrase: async () => { rephraseCalls++; return ['must not be requested'] },
+    tts: { synthesize: async (request) => { spoken.push(request.text); return { path: request.text } } },
+    audio: {
+      trim: async (path) => ({ path, duration: path.startsWith('Sentence 1.') && path.includes('Sentence 5.') ? 10 : 0.9 }),
+      applyTempo: async (path, _hint, duration) => ({ path, duration })
+    }
+  })
+  assert.equal(rephraseCalls, 0)
+  assert.ok(spoken.some((text) => text.includes('Sentence 1.') && text.includes('Sentence 5.')), 'measure the grouped unit before splitting')
+  assert.ok(spoken.includes('Sentence 1.'))
+  assert.ok(spoken.includes('Sentence 5.'))
+  assert.deepEqual(result.plan.cues.slice(0, 5).map((cue) => cue.sourceCueIds), [['s0'], ['s1'], ['s2'], ['s3'], ['s4']])
+  assert.equal(plans.validateDubbingPlan(result.plan).ok, true)
+})
+
 test('group validation rejects dropped, duplicated, reordered or retimed source identities', () => {
   const original = plans.buildDubbingPlan({ videoDuration: 5, cues: [
     { id: 'a', start: 0, end: 0.7, text: '第一部分' }, { id: 'b', start: 0.7, end: 2, text: '第二部分' }, { id: 'c', start: 2, end: 4, text: '第三部分' }

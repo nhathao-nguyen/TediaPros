@@ -2538,6 +2538,9 @@ export async function synthesizeVoice(
         : ` previousSeconds=${event.previousSeconds.toFixed(3)} candidateSeconds=${event.candidateSeconds?.toFixed(3) ?? 'unknown'}`
       logInfo(`[AutoShort:rephrase] cue=${safeArtifactSegment(event.cueId)} phase=${event.phase} outcome=${event.outcome} candidates=${event.candidateCount}${measured}`)
     },
+    onStructuralSplit: (event) => {
+      logInfo(`[AutoShort:timing] cue=${safeArtifactSegment(event.cueId)} measured-overflow split=${event.partCount} sourceCues=${event.sourceCueIds.length}`)
+    },
     signal: job.controller.signal,
     onProgress: (completed, count, cueId) => emitProgress(job, item, 'generating_tts', 58 + (completed / Math.max(1, count)) * 20, `Đang tạo voice ${completed}/${count} (${cueId})`, index, total),
     prefetchTts: Boolean(policy?.prefetchTts)

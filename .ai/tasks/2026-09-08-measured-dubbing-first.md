@@ -1,6 +1,6 @@
 # DUBBING-MEASURED-FIRST: Bỏ rephrase theo dự báo
 
-- **Trạng thái:** Đã kiểm chứng cục bộ; chờ xác nhận với bản build mới trên media thật
+- **Trạng thái:** Đang xác nhận media thật sau fallback structural split
 - **Người thực hiện:** Codex
 - **Thời gian:** 2026-09-08
 
@@ -14,6 +14,7 @@ Thay cơ chế rút gọn toàn bộ cue dựa trên duration predictor bằng q
 
 - [x] Đường chạy sản xuất đo và trim audio gốc trước khi gọi rephrase.
 - [x] Chỉ cue vẫn vượt trần 1,45x sau khe thoại đo được mới recovery tối đa một lượt với candidate giới hạn.
+- [x] Grouped unit vẫn tràn sau đo được tách tại câu dịch hoàn chỉnh và source cue boundary trong phạm vi giới hạn.
 - [x] `replace`/`separate-vocals` có thể mượn tối đa 0,35 giây leading silence đã kiểm chứng; `mix` không mượn khe này.
 - [x] Giữ source ledger bất biến, protected gap 0,50 giây và cấm cắt lời.
 - [x] Typecheck pass và test liên quan pass.
@@ -33,6 +34,7 @@ Thay cơ chế rút gọn toàn bộ cue dựa trên duration predictor bằng q
 ## 5. Danh Sách Tệp Thay Đổi (Changes Made)
 
 - `[MODIFY]` `src/main/dubbing/synthesis.ts` — measured-first synthesis và recovery giới hạn.
+- `[MODIFY]` `src/main/dubbing/synthesis.ts` — structural split sau measured overflow cho grouped unit.
 - `[MODIFY]` `src/main/dubbing/plan.ts` — validation early start/protected gap.
 - `[MODIFY]` `src/main/autoshort.ts` — truyền policy theo audio mode và log timing.
 - `[MODIFY]` `tests/dubbing-plan.test.ts` — regression cho measured-first, cancellation, candidate và leading silence.
@@ -60,6 +62,7 @@ git diff --check
 - `Typecheck`: PASS (0 errors).
 - `dubbing-plan.test`: 31 pass, 0 fail.
 - `dubbing-grouping.test`: 11 pass, 0 fail.
+- `dubbing-grouping.test` sau structural split: 12 pass, 0 fail.
 - `translation-rephrase.test`: 17 pass, 0 fail.
 - `test:local-runtime`: exit 0; toàn bộ suite báo pass.
 - `git diff --check`: PASS.
@@ -70,7 +73,7 @@ Case hồi quy tương ứng log cũ (`cue-0-1490`, WAV tự nhiên khoảng 2,2
 
 - Bản packaged 0.1.23 hiện tại vẫn chứa đường chạy cũ; cần build và khởi động bản mới.
 - Cue tràn lớn hơn khả năng của khe thoại vẫn đi qua recovery/review theo trần 1,45x.
-- Cần chạy lại kho video hoặc ít nhất các cue lỗi trên bản build mới để xác nhận log runtime.
+- Cần build/restart và chạy lại các cue lỗi trên bản build mới để xác nhận log structural split runtime.
 
 ## 7. Bước Tiếp Theo / Ghi Chú Bàn Giao (Handoff Notes)
 

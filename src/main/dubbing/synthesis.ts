@@ -11,7 +11,7 @@ import {
 } from './policy'
 import { AUTO_SHORT_TTS_HARD_MAX_TEMPO, validateVoiceAudioCompleteness } from '../autoShortPolicy'
 import { containsRephraseLabel } from '../translation/response'
-import { DUBBING_MAX_EARLY_START_SECONDS, type DubbingPlan, type DubbingPlanCue } from './plan'
+import { DUBBING_MAX_EARLY_START_SECONDS, deriveDubbingWindow, type DubbingPlan, type DubbingPlanCue } from './plan'
 import { selectBootstrapCues } from './durationPredictor'
 import { createAutoShortItemScope, type BranchOutcome } from '../autoShortItemScope'
 
@@ -46,18 +46,21 @@ export interface DubbingSynthesisInput {
   localTempoDelta?: number
   /** Enabled only when source dialogue is absent from the rendered mix. */
   maxEarlyStartSeconds?: number
+  /** Internal bounded retry: split one measured-overflow speech unit at source boundaries. */
+  structuralSplitDepth?: number
   predictor?: DurationPredictor
   tts: DubbingTtsAdapter
   audio: DubbingAudioAdapter
   rephrase?: (input: { cueId: string; currentText: string; targetDuration: number; measuredDuration: number; maxDuration: number }, signal: AbortSignal) => Promise<readonly string[]>
   onRephrase?: (event: {
     cueId: string
-    phase: 'preflight' | 'rescue'
+    phase: 'rescue'
     outcome: 'accepted' | 'improved-overflow' | 'no-candidate' | 'invalid-candidate' | 'unchanged' | 'no-improvement' | 'incomplete-audio'
     candidateCount: number
     previousSeconds?: number
     candidateSeconds?: number
   }) => void
+  onStructuralSplit?: (event: { cueId: string; sourceCueIds: readonly string[]; partCount: number }) => void
   signal?: AbortSignal
   onProgress?: (completed: number, total: number, cueId: string) => void
   prefetchTts?: boolean
@@ -105,6 +108,20 @@ interface MeasuredSpeechSlot {
   maximumAvailableDuration: number
 }
 
+const MAX_STRUCTURAL_SPLIT_DEPTH = 8
+
+class DubbingStructuralSplitRequired extends Error {
+  constructor(
+    readonly splitPlan: DubbingPlan,
+    readonly cueId: string,
+    readonly sourceCueIds: readonly string[],
+    readonly partCount: number
+  ) {
+    super(`Cue ${cueId} cần tách thành ${partCount} đoạn thoại theo ranh giới source.`)
+    this.name = 'DubbingStructuralSplitRequired'
+  }
+}
+
 function throwIfAborted(signal: AbortSignal): void {
   if (signal.aborted) throw new Error('Đã hủy tác vụ')
 }
@@ -139,6 +156,65 @@ function measuredSpeechSlot(
     deadline,
     availableDuration: deadline - start,
     maximumAvailableDuration: anchoredAvailableDuration + maximumEarlyLead
+  }
+}
+
+function splitTranslatedSentences(text: string): string[] {
+  return (text.match(/[^.!?。！？…]+(?:[.!?。！？…]+|$)/gu) || [])
+    .map((part) => part.trim())
+    .filter(Boolean)
+}
+
+/**
+ * A grouped unit may contain several complete translated sentences. If its
+ * measured WAV still overflows, split only at the immutable source cue
+ * boundaries instead of asking the model to delete meaning from the group.
+ */
+function buildStructuralSplitPlan(plan: DubbingPlan, cue: DubbingPlanCue, spokenText: string): DubbingPlan | null {
+  if (cue.sourceCueIds.length < 2) return null
+  const parts = splitTranslatedSentences(spokenText)
+  if (parts.length !== cue.sourceCueIds.length) return null
+  const sourceCues = plan.sourceCues
+  if (!sourceCues?.length) return null
+  const sourceById = new Map(sourceCues.map((source) => [source.id, source]))
+  const sourceIndex = new Map(sourceCues.map((source, index) => [source.id, index]))
+  const children = cue.sourceCueIds.map((sourceId, index) => {
+    const source = sourceById.get(sourceId)
+    const position = sourceIndex.get(sourceId)
+    if (!source || position == null) return null
+    const next = sourceCues[position + 1]?.start ?? null
+    const window = deriveDubbingWindow(source, next, plan.videoDuration)
+    return {
+      ...cue,
+      id: source.id,
+      start: window.start,
+      preferredEnd: window.preferredEnd,
+      hardEnd: window.hardEnd,
+      availableDuration: window.availableDuration,
+      sourceCueIds: [source.id],
+      sourceText: source.text,
+      sourceStart: source.start,
+      sourceEnd: source.end,
+      translatedText: parts[index],
+      finalSpokenText: parts[index],
+      predictedDuration: null,
+      naturalDuration: null,
+      actualDuration: null,
+      predictionUncertainty: null,
+      tempo: 1,
+      plannedDuration: null,
+      voiceEnd: null,
+      localTempoAdjustment: 0,
+      audioPath: null,
+      subtitles: [],
+      rephrased: false
+    } satisfies DubbingPlanCue
+  })
+  if (children.some((child): child is null => child === null)) return null
+  return {
+    ...plan,
+    globalTempo: null,
+    cues: plan.cues.flatMap((item) => item.id === cue.id ? children as DubbingPlanCue[] : [item])
   }
 }
 
@@ -320,6 +396,14 @@ export async function synthesizeDubbingPlan(input: DubbingSynthesisInput): Promi
         finalCues.at(-1)?.voiceEnd
       )
       if (current.naturalDuration > measuredSlot.maximumAvailableDuration * AUTO_SHORT_TTS_HARD_MAX_TEMPO + DUBBING_TIMING_TOLERANCE_SECONDS) {
+        const splitDepth = input.structuralSplitDepth || 0
+        const splitPlan = splitDepth < MAX_STRUCTURAL_SPLIT_DEPTH
+          ? buildStructuralSplitPlan(plan, cue, current.text)
+          : null
+        if (splitPlan) {
+          input.onStructuralSplit?.({ cueId: cue.id, sourceCueIds: cue.sourceCueIds, partCount: splitPlan.cues.length - plan.cues.length + 1 })
+          throw new DubbingStructuralSplitRequired(splitPlan, cue.id, cue.sourceCueIds, splitPlan.cues.length - plan.cues.length + 1)
+        }
         if (input.rephrase) {
           const candidates = await input.rephrase({
             cueId: cue.id,
@@ -514,6 +598,14 @@ export async function synthesizeDubbingPlan(input: DubbingSynthesisInput): Promi
       }
     }
   } catch (error) {
+    if (error instanceof DubbingStructuralSplitRequired
+      && (input.structuralSplitDepth || 0) < MAX_STRUCTURAL_SPLIT_DEPTH) {
+      return synthesizeDubbingPlan({
+        ...input,
+        plan: error.splitPlan,
+        structuralSplitDepth: (input.structuralSplitDepth || 0) + 1
+      })
+    }
     caughtError = error
     throw error
   } finally {
