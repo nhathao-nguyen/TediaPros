@@ -1,7 +1,7 @@
 # AutoShort Decoupled Dubbing Design
 
 Ngày: 2026-09-08
-Trạng thái: Đã duyệt hướng thiết kế, chờ duyệt spec để lập implementation plan
+Trạng thái: Đã duyệt spec, sẵn sàng lập implementation plan
 Phạm vi: `src/main/dubbing/` và đường chạy AutoShort có TTS
 
 ## Mục tiêu
