@@ -1,11 +1,13 @@
 import type { SubtitleCue } from '../../shared/subtitles'
+import { extractSpeaker, isSentenceTerminal, joinGroupText } from '../semanticGrouping'
 
-export const DUBBING_PLAN_VERSION = 2 as const
+export const DUBBING_PLAN_VERSION = 3 as const
 
 export type DubbingPaceMode = 'source-adaptive' | 'fixed'
 
 export interface DubbingSourceCue {
   id: string
+  sourceIndex?: number
   start: number
   end: number
   text: string
@@ -49,6 +51,8 @@ export interface DubbingPlan {
   videoDuration: number
   globalTempo: number | null
   cues: DubbingPlanCue[]
+  /** Immutable source ledger; speech units may cover several consecutive cues. */
+  sourceCues?: DubbingSourceCue[]
   createdAt: string
 }
 
@@ -75,7 +79,10 @@ function normalizedSourceCue(cue: DubbingSourceCue, index: number): DubbingSourc
   if (start < 0 || end < start) throw new Error(`Cue ${id} có mốc nguồn không hợp lệ.`)
   const text = typeof cue.text === 'string' ? cue.text.trim() : ''
   if (!text) throw new Error(`Cue ${id} không có text nguồn.`)
-  return { id, start, end, text }
+  if (cue.sourceIndex != null && (!Number.isInteger(cue.sourceIndex) || cue.sourceIndex < 0)) {
+    throw new Error(`Cue ${id} có sourceIndex không hợp lệ.`)
+  }
+  return { id, start, end, text, ...(cue.sourceIndex != null ? { sourceIndex: cue.sourceIndex } : {}) }
 }
 
 export function deriveDubbingWindow(
@@ -158,7 +165,73 @@ export function buildDubbingPlan(input: DubbingPlanInput): DubbingPlan {
     videoDuration,
     globalTempo: null,
     cues: planCues,
+    sourceCues: cues.map((cue) => ({ ...cue })),
     createdAt: new Date().toISOString()
+  }
+}
+
+/** Rejoin subtitle fragments before synthesis, retaining every original anchor. */
+export function groupDubbingPlanForSpeech(plan: DubbingPlan, locale: string): DubbingPlan {
+  if (plan.cues.some((cue) => cue.sourceCueIds.length > 1)) return plan
+  const runs: DubbingPlanCue[][] = []
+  const question = (cue: DubbingPlanCue): boolean => /[?？؟]/u.test(cue.sourceText + cue.translatedText)
+  for (const cue of plan.cues) {
+    const current = runs.at(-1)
+    const previous = current?.at(-1)
+    const previousSpeaker = previous ? extractSpeaker(previous.sourceText) : null
+    const speaker = extractSpeaker(cue.sourceText)
+    const boundary = !current || !previous
+      || question(previous) || question(cue) || isSentenceTerminal(previous.sourceText)
+      || (previousSpeaker !== speaker && (previousSpeaker !== null || speaker !== null))
+      // Decimal timestamps (e.g. 1.7 - 1.1) may land just below 0.6.
+      || cue.sourceStart - previous.sourceEnd >= 0.6 - 1e-9
+    if (boundary) runs.push([cue])
+    else current.push(cue)
+  }
+  // Partition each continuous thought as a whole. Greedy max-count slicing
+  // strands a short final warning in a near-zero speech window. Bounded DP
+  // keeps contiguous identities and prefers fewer, reasonably sized windows.
+  const groups = runs.flatMap((run) => {
+    const costs = Array<number>(run.length + 1).fill(Infinity)
+    const ends = Array<number>(run.length)
+    costs[run.length] = 0
+    for (let first = run.length - 1; first >= 0; first--) {
+      let chars = 0
+      for (let last = first; last < Math.min(run.length, first + 6); last++) {
+        chars += run[last].translatedText.length + (last > first ? 1 : 0)
+        if (last > first && (chars > 300 || run[last].sourceEnd - run[first].sourceStart > 15)) break
+        const available = Math.max(0.05, run[last].sourceEnd - run[first].sourceStart - 0.5)
+        const cost = costs[last + 1] + 1 + Math.pow(chars / (25 * available), 2)
+          + Math.max(0, 1.2 - available) * 20
+        if (cost < costs[first]) { costs[first] = cost; ends[first] = last + 1 }
+      }
+    }
+    const result: DubbingPlanCue[][] = []
+    for (let first = 0; first < run.length; first = ends[first]) result.push(run.slice(first, ends[first]))
+    return result
+  })
+  const sourceCues = (plan.sourceCues || plan.cues.map((cue) => ({
+    id: cue.id, start: cue.sourceStart, end: cue.sourceEnd, text: cue.sourceText
+  }))).map((cue) => ({ ...cue }))
+  const groupedSources = groups.map((group) => ({
+    id: group[0].id, start: group[0].sourceStart, end: group.at(-1)!.sourceEnd,
+    text: joinGroupText(group.map((cue) => ({ text: cue.sourceText })))
+  }))
+  return {
+    ...plan, sourceCues, globalTempo: null,
+    cues: groups.map((group, index) => {
+      const source = groupedSources[index]
+      const window = deriveDubbingWindow(source, groupedSources[index + 1]?.start ?? null, plan.videoDuration)
+      const text = joinGroupText(group.map((cue) => ({ text: cue.translatedText })), locale)
+      return {
+        ...group[0], ...window,
+        sourceCueIds: group.flatMap((cue) => cue.sourceCueIds),
+        sourceStart: source.start, sourceEnd: source.end, sourceText: source.text,
+        translatedText: text, finalSpokenText: text, subtitles: [], rephrased: false,
+        naturalDuration: null, actualDuration: null, predictedDuration: null, predictionUncertainty: null,
+        tempo: 1, plannedDuration: null, voiceEnd: null, localTempoAdjustment: 0, audioPath: null
+      }
+    })
   }
 }
 
@@ -172,12 +245,24 @@ export function validateDubbingPlan(plan: DubbingPlan): DubbingPlanValidation {
   if (!Number.isFinite(plan.videoDuration) || plan.videoDuration <= 0) violations.push('Thời lượng video trong plan không hợp lệ.')
 
   const seen = new Set<string>()
+  const sources = plan.sourceCues || plan.cues.map((cue) => ({ id: cue.id, start: cue.sourceStart, end: cue.sourceEnd, text: cue.sourceText }))
+  const sourceById = new Map(sources.map((cue) => [cue.id, cue]))
+  const covered = plan.cues.flatMap((cue) => cue.sourceCueIds)
+  if (sourceById.size !== sources.length || covered.length !== sources.length || covered.some((id, index) => id !== sources[index]?.id)) {
+    violations.push('DubbingPlan làm mất, trùng hoặc đổi thứ tự source cue identity.')
+  }
   let previousVoiceEnd = Number.NEGATIVE_INFINITY
   for (const cue of plan.cues) {
     if (seen.has(cue.id)) violations.push(`Cue ${cue.id} bị trùng id.`)
     seen.add(cue.id)
-    if (cue.sourceCueIds.length !== 1 || cue.sourceCueIds[0] !== cue.id) {
+    const members = cue.sourceCueIds.map((id) => sourceById.get(id)).filter((item): item is DubbingSourceCue => Boolean(item))
+    if (!cue.sourceCueIds.length || cue.sourceCueIds[0] !== cue.id || members.length !== cue.sourceCueIds.length) {
       violations.push(`Cue ${cue.id} làm mất hoặc đổi source cue identity.`)
+    }
+    if (members.length && (Math.abs(cue.sourceStart - members[0].start) > 0.005
+      || Math.abs(cue.sourceEnd - members.at(-1)!.end) > 0.005
+      || normalizedText(cue.sourceText) !== normalizedText(joinGroupText(members)))) {
+      violations.push(`Cue ${cue.id} làm thay đổi nội dung hoặc mốc nguồn của nhóm.`)
     }
     if (Math.abs(cue.start - cue.sourceStart) > 0.05) {
       violations.push(`Cue ${cue.id} bị dời start khỏi mốc nguồn.`)
@@ -200,9 +285,9 @@ export function validateDubbingPlan(plan: DubbingPlan): DubbingPlanValidation {
       if (subtitle.start < cue.start - 0.005 || subtitle.end > cue.hardEnd + 0.05) {
         violations.push(`Subtitle của cue ${cue.id} vượt cửa sổ voice.`)
       }
-      if (normalizedText(subtitle.text) !== finalText) {
-        violations.push(`Subtitle của cue ${cue.id} không khớp finalSpokenText.`)
-      }
+    }
+    if (cue.subtitles.length && normalizedText(cue.subtitles.map((subtitle) => subtitle.text).join(' ')) !== finalText) {
+      violations.push(`Subtitle của cue ${cue.id} không khớp finalSpokenText.`)
     }
     if (cue.actualDuration != null && cue.actualDuration > 0 && cue.subtitles.length === 0) {
       violations.push(`Cue ${cue.id} có audio nhưng thiếu subtitle.`)

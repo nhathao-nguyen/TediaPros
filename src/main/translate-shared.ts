@@ -95,7 +95,8 @@ export function buildDubbingTranslationPayload<T extends SrtBlock>(
   batch: readonly T[],
   allCues: readonly T[],
   contextRadius = 1,
-  targetLanguage = 'auto'
+  targetLanguage = 'auto',
+  sourceLanguage = 'auto'
 ): string {
   const normalizedAll = allCues.map((cue, index) => ({
     ...cue,
@@ -135,7 +136,7 @@ export function buildDubbingTranslationPayload<T extends SrtBlock>(
   }
 
   lines.push('[Nội dung cần dịch]:')
-  const groups = buildSemanticGroups(normalizedBatch, undefined, targetLanguage)
+  const groups = buildSemanticGroups(normalizedBatch, undefined, sourceLanguage)
   groups.forEach((group, groupIndex) => {
     const groupDuration = group.start != null && group.end != null && group.end >= group.start
       ? `${(group.end - group.start).toFixed(2)}s`
@@ -163,7 +164,7 @@ export function buildDubbingTranslationPayload<T extends SrtBlock>(
   // Keep the full group text available in the request for models that use
   // line-by-line cue text too aggressively; it is descriptive context only.
   if (groups.length > 0 && groups.some((group) => group.cues.length > 1)) {
-    lines.push('', `[Toàn văn nhóm để tham chiếu: ${groups.map((group) => joinGroupText(group.cues)).join(' / ')}]`)
+    lines.push('', `[Toàn văn nhóm để tham chiếu: ${groups.map((group) => joinGroupText(group.cues, sourceLanguage)).join(' / ')}]`)
   }
 
   return lines.join('\n')

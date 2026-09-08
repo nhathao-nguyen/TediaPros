@@ -68,6 +68,7 @@ import {
   YtDlpCapabilityStatus,
   YtDlpErrorCode
 } from '../shared/types'
+import type { TranslationAssessment } from '../shared/translation'
 
 const api = {
   checkDeps: (): Promise<DepStatus> => ipcRenderer.invoke('deps:check'),
@@ -274,7 +275,7 @@ const api = {
     dich: string,
     provider: DichProvider,
     serverUrl?: string
-  ): Promise<{ ok: boolean; error?: string; count?: number }> =>
+  ): Promise<{ ok: boolean; error?: string; count?: number; assessment?: TranslationAssessment }> =>
     ipcRenderer.invoke('translate:translateSrt', srtPath, outPath, dich, provider, serverUrl),
   onTranslateProgress: (cb: (p: { done: number; total: number }) => void): (() => void) => {
     const listener = (_e: unknown, p: { done: number; total: number }): void => cb(p)
@@ -290,7 +291,7 @@ const api = {
     srtPath: string,
     outPath: string,
     dich: string
-  ): Promise<{ ok: boolean; error?: string; count?: number }> =>
+  ): Promise<{ ok: boolean; error?: string; count?: number; assessment?: TranslationAssessment }> =>
     ipcRenderer.invoke('gemini:translateSrt', srtPath, outPath, dich),
   onGeminiProgress: (cb: (p: { done: number; total: number }) => void): (() => void) => {
     const listener = (_e: unknown, p: { done: number; total: number }): void => cb(p)

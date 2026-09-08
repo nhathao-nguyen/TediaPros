@@ -14,7 +14,7 @@ export interface TranslationQualificationCase {
 }
 
 export interface TranslationQualificationRecord {
-  schemaVersion: 1
+  schemaVersion: 2
   caseId: string
   variant: 'baseline' | 'candidate'
   run: number
@@ -27,22 +27,28 @@ export interface TranslationQualificationRecord {
   recoveryRequests: number
   lostCueCount: number
   unexpectedCueCount: number
+  expectedDisposition: 'validated' | 'with-warnings' | 'needs-review'
+  observedDisposition: 'validated' | 'with-warnings' | 'needs-review'
+  issueCodes: string[]
+  promptBytes: number
+  wireFormat: 'json-items' | 'id-lines'
   semanticReview: 'pending' | 'pass' | 'fail'
   naturalness: number | null
 }
 
 export interface TranslationQualificationReport {
-  schemaVersion: 1
+  schemaVersion: 2
   generatedAt: string
   mode: 'offline'
   variant: 'baseline' | 'candidate'
   runs: number
   caseCount: number
-  providerCalls: 0
+  providerCalls: number
+  recoveryRequests: number
   semanticReview: 'pending'
   records: TranslationQualificationRecord[]
 }
 
 // Keep the executable implementation in one place. This re-export is also
 // useful to esbuild based contract tests without introducing a runtime loader.
-export { parseQualificationArgs, buildOfflineQualificationReport, runOfflineQualification, main } from './translation-qualification-main.mjs'
+export { parseQualificationArgs, expandDirectedLocaleMatrix, buildOfflineQualificationReport, runOfflineQualification, main } from './translation-qualification-main.mjs'

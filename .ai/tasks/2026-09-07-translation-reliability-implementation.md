@@ -1,9 +1,22 @@
 # TEDIA-TRANSLATION-IMPLEMENTATION-20260907: Triển khai kế hoạch reliability
 
-- **Trạng thái:** Đã triển khai runtime và kiểm chứng offline; live/GUI/media/package còn unqualified
+- **Trạng thái sau review:** Triển khai một phần; các gate integration T2–T12 còn thiếu hoặc có lỗi. Xem review bên dưới.
 - **Người thực hiện:** Codex
 - **Thời gian:** 2026-09-07
 - **Branch:** `codex/autoshort-optimization`
+
+> Hiệu chỉnh ngày 2026-09-07 tại commit `7d86614`: các checkbox “Đã triển khai”
+> bên dưới là ghi nhận bàn giao ban đầu, **không phải nghiệm thu hiện tại**.
+> [Review implementation](../../docs/reviews/2026-09-07-translation-implementation-audit.md)
+> đã tái hiện 15 counterexamples offline: consumer vẫn mất continuation, batch
+> checkpoint sai ID, budget cloud vượt policy và resume bypass needs-review.
+> Orchestrator/planner chung chưa được production gọi. Theo
+> [handoff review](2026-09-07-translation-implementation-review.md) và acceptance
+> ledger đã sửa để tiếp tục công việc; không tuyên bố cả 12 task hoàn tất.
+
+> Follow-up runtime đã được triển khai sau review. Xem [handoff follow-up](2026-09-07-translation-reliability-followup.md)
+> và acceptance ledger để biết các regression offline đã đóng; các gate live/GUI/
+> TTS/font/RTL/media/package vẫn chưa đủ bằng chứng.
 
 ## 1. Mục tiêu
 

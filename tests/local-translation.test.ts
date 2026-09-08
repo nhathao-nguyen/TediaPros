@@ -62,6 +62,44 @@ test('partial recovery retries ambiguous duplicate IDs instead of retaining the 
   assert.equal(parseSrt(await readFile(output, 'utf8'))[0].text, 'Repaired cue-0')
 }))
 
+test('unparsed continuation invalidates the whole local batch and never publishes its valid-looking prefix', async () => fixture(async (input, output) => {
+  await writeFile(input, buildSrt(makeCues(12)))
+  await writeFile(output, 'previous output')
+  const requests: string[][] = []
+  globalThis.fetch = async (_url, init) => {
+    const ids = requestedIds(init)
+    requests.push(ids)
+    if (requests.length === 1) {
+      return contentReply(ids.slice(0, -1).map((id) => `[${id}] First attempt.`).join('\n') + '\ncontinuation was lost')
+    }
+    return contentReply(ids.map((id) => `[${id}] Repaired.`).join('\n'))
+  }
+  const result = await localTranslateSrt(input, output, 'en', undefined, 'fixture-key', undefined,
+    { mode: 'dubbing', sourceLanguage: 'zh', sleep: async () => {} })
+  assert.equal(result.ok, true, result.error)
+  const translated = parseSrt(await readFile(output, 'utf8'))
+  assert.equal(translated.length, 12)
+  assert.ok(translated.every((cue) => cue.text === 'Repaired.'))
+  assert.ok(requests.length >= 2)
+}))
+
+test('source locale is used when building Korean dubbing context', async () => fixture(async (input, output) => {
+  const koreanCues = makeCues(2).map((cue, index) => ({ ...cue, text: index === 0 ? '나는' : '학생입니다' }))
+  koreanCues[1].start = 1.2
+  koreanCues[1].end = 2.2
+  await writeFile(input, buildSrt(koreanCues))
+  let payload = ''
+  globalThis.fetch = async (_url, init) => {
+    payload = JSON.parse(String(init?.body)).messages[1].content
+    return contentReply(requestedIds(init).map((id) => `[${id}] A student.`).join('\n'))
+  }
+  const result = await localTranslateSrt(input, output, 'en', undefined, 'fixture-key', undefined,
+    { mode: 'dubbing', sourceLanguage: 'ko', sleep: async () => {} })
+  assert.equal(result.ok, true, result.error)
+  assert.match(payload, /나는 학생입니다/u)
+  assert.doesNotMatch(payload, /나는학생입니다/u)
+}))
+
 test('unlabelled output stays rejected and diagnostics explain the mismatch without raw text', async () => fixture(async (input, output) => {
   await writeFile(input, buildSrt(makeCues(1)))
   await writeFile(output, 'previous output')

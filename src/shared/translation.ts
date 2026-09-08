@@ -50,6 +50,8 @@ export interface TranslationCue {
   end: number
   text: string
   groupId: string
+  /** Computed from the complete source timeline before batching or resume filtering. */
+  speakingDuration?: number
 }
 
 export interface TranslationInput {

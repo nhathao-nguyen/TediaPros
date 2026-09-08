@@ -1,5 +1,17 @@
 import { buildTranslationContext, type TranslationCueContext } from '../translate-shared'
 import type { DubbingPlan, DubbingPlanCue } from './plan'
+import { deriveDubbingWindows, DUBBING_PROTECTED_GAP_SECONDS } from './policy'
+import type { DubbingSourceCue } from './plan'
+
+/** Same deadline as the measured audio fit, including the protected next-cue gap. */
+export function dubbingSpeakingDurations(cues: readonly DubbingSourceCue[], videoDuration: number): number[] {
+  return deriveDubbingWindows(cues, videoDuration).map((window, index) => {
+    const nextStart = cues[index + 1]?.start ?? videoDuration
+    const deadline = Math.min(videoDuration, window.hardEnd,
+      nextStart > window.start ? nextStart - DUBBING_PROTECTED_GAP_SECONDS : videoDuration)
+    return Math.max(0, deadline - window.start)
+  })
+}
 
 export interface DubbingTranslationCue extends TranslationCueContext {
   sourceStart: number
@@ -102,6 +114,17 @@ export function applyDubbingTranslations(
 export interface DubbingRephraseCandidate {
   text: string
   predictedSeconds: number
+}
+
+/** Colloquial copula ellipsis: retain every subject/predicate word and the question. */
+export function compactEnglishDubbingQuestion(text: string, locale: string): string | null {
+  if (!/^en(?:-|$)/iu.test(locale)) return null
+  const value = text.trim()
+  // Only a single, short demonstrative question; never trim to a word budget.
+  const match = /^(?:Is\s+(this|that)|Are\s+(these|those))\s+([^.!?;\r\n]+)\?$/iu.exec(value)
+  if (!match || value.split(/\s+/u).length > 10) return null
+  const demonstrative = (match[1] || match[2]).toLowerCase()
+  return `${demonstrative[0].toUpperCase()}${demonstrative.slice(1)} ${match[3].trim()}?`
 }
 
 /**

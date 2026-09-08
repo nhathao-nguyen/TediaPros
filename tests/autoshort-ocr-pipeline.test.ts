@@ -187,6 +187,61 @@ test('Step 9.7: Privacy & aggregate audit metadata', () => {
   assert.ok(sanitized.includes('[đường dẫn đã ẩn]'))
 })
 
+test('AutoShort persists an invalid-source assessment when ASR produces no cues', async () => {
+  const root = await mkdtemp(join(tmpdir(), 'tedia-pipe-invalid-source-'))
+  try {
+    const videoFile = join(root, 'input.mp4')
+    await writeFile(videoFile, 'dummy-video-content')
+    const emptySrt = join(root, 'empty.srt')
+    await writeFile(emptySrt, '')
+    const outDir = join(root, 'out')
+    await mkdir(outDir)
+    const checkpointDir = join(root, 'checkpoint')
+
+    const deps: AutoShortItemCoordinatorDeps = {
+      resolveFfmpeg: async () => 'ffmpeg.exe',
+      resolveFfprobe: async () => 'ffprobe.exe',
+      probeMedia: async () => mockMeta,
+      transcribeAudio: (async () => ({ ok: true, outputs: [emptySrt], language: 'zh' })) as any,
+      runVisualOcr: (async () => { throw new Error('visual OCR should not run') }) as any,
+      writeTimedMask: (async () => { throw new Error('mask should not run') }) as any,
+      burn: (async () => { throw new Error('burn should not run') }) as any
+    }
+
+    const result = await createAutoShortItemProcessor(deps)({
+      jobId: 'job-invalid-source',
+      request: {
+        items: [{ id: 'item-invalid-source', filePath: videoFile }],
+        config: baseConfig({
+          subtitleMethod: 'whisper',
+          translateTarget: 'en',
+          outputDir: outDir,
+          lamMo: false,
+          blurMode: 'manual'
+        })
+      },
+      item: { id: 'item-invalid-source', filePath: videoFile },
+      index: 0,
+      total: 1,
+      signal: new AbortController().signal,
+      emit: () => {},
+      checkpointDir,
+      workDir: join(root, 'work'),
+      artifactDir: join(root, 'audit'),
+      separationProviderState: { mode: 'auto' }
+    })
+
+    assert.equal(result.status, 'error')
+    assert.equal(result.translationAssessment?.disposition, 'needs-review')
+    assert.equal(result.translationAssessment?.issues[0]?.code, 'invalid-source')
+    const checkpoint = JSON.parse(await readFile(join(checkpointDir, 'checkpoint.json'), 'utf8')) as Record<string, any>
+    assert.equal(checkpoint.translationAssessment?.disposition, 'needs-review')
+    assert.equal(checkpoint.translationAssessment?.issues?.[0]?.code, 'invalid-source')
+  } finally {
+    await rm(root, { recursive: true, force: true })
+  }
+})
+
 test('Step 9.2: RED OCR-only automatic reuse (single visual OCR call, same timeline to SRT & mask, burnAutoShort)', async () => {
   const root = await mkdtemp(join(tmpdir(), 'tedia-pipe-ocr-only-'))
   try {

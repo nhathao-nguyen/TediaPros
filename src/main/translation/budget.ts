@@ -114,10 +114,20 @@ export function createTranslationBudget(
   now: () => number = () => (typeof performance !== 'undefined' ? performance.now() : Date.now()),
   restored?: TranslationBudgetSnapshot
 ): TranslationBudget {
-  const planned = assertPlan(plannedRequests)
+  assertPlan(plannedRequests)
+  // A resumed run may contain fewer pending cues than the original plan. The
+  // durable budget is therefore allowed to retain the original (larger) plan,
+  // while a plan that grows can never silently increase the remaining quota.
+  const effectivePlannedRequests = restored
+    ? Math.max(plannedRequests, Math.floor(finiteNonNegative(restored.plannedRequests, 'plannedRequests')))
+    : plannedRequests
+  if (restored && restored.plannedRequests < plannedRequests) {
+    throw new TranslationBudgetExhaustedError('Translation plan grew while restoring its durable budget.')
+  }
+  const planned = assertPlan(effectivePlannedRequests)
   let state: TranslationBudgetSnapshot = restored
-    ? restoreSnapshot(plannedRequests, planned.recoveryLimit, planned.activeBudgetMs, restored)
-    : { plannedRequests, recoveryLimit: planned.recoveryLimit, normalUsed: 0, recoveryUsed: 0, activeElapsedMs: 0, activeBudgetMs: planned.activeBudgetMs, perBatch: {} }
+    ? restoreSnapshot(effectivePlannedRequests, planned.recoveryLimit, planned.activeBudgetMs, restored)
+    : { plannedRequests: effectivePlannedRequests, recoveryLimit: planned.recoveryLimit, normalUsed: 0, recoveryUsed: 0, activeElapsedMs: 0, activeBudgetMs: planned.activeBudgetMs, perBatch: {} }
   let lastNow = now()
   if (!Number.isFinite(lastNow)) lastNow = 0
 
@@ -181,7 +191,9 @@ export function createTranslationBudget(
   }
 
   return {
-    plannedRequests,
+    // Expose the durable plan, including a larger plan retained when a
+    // resumed run has fewer pending cues than the original attempt.
+    plannedRequests: state.plannedRequests,
     recoveryLimit: state.recoveryLimit,
     charge,
     claimTransportRetry,
@@ -240,6 +252,7 @@ export function classifyTranslationError(error: unknown): TranslationFailure {
   if (name === 'AbortError' || providerCode === 'cancelled' || providerCode === 'aborted') return { code: 'cancelled', retryable: false, ...(status === undefined ? {} : { status }), message }
   if (name === 'TimeoutError' || providerCode === 'timeout' || providerCode === 'request_timeout') return { code: 'provider-transient', retryable: true, ...(status === undefined ? {} : { status }), ...(retryAfterMs === undefined ? {} : { retryAfterMs }), message }
   if (status === 401 || status === 403 || ['invalid_api_key', 'unauthorized', 'forbidden', 'auth'].includes(providerCode)) return { code: 'provider-auth', retryable: false, ...(status === undefined ? {} : { status }), message }
+  if (['provider-transient', 'provider_transient', 'transient', 'timeout', 'network'].includes(providerCode)) return { code: 'provider-transient', retryable: true, ...(status === undefined ? {} : { status }), ...(retryAfterMs === undefined ? {} : { retryAfterMs }), message }
   if (['unsupported', 'unsupported_capability', 'invalid_request', 'policy_refusal', 'quota_exhausted'].includes(providerCode)) return { code: 'provider-protocol', retryable: false, ...(status === undefined ? {} : { status }), message }
   if (status === 408 || status === 425 || status === 429 || (status !== undefined && status >= 500)) return { code: 'provider-transient', retryable: true, ...(status === undefined ? {} : { status }), ...(retryAfterMs === undefined ? {} : { retryAfterMs }), message }
   return { code: 'provider-protocol', retryable: false, ...(status === undefined ? {} : { status }), message }

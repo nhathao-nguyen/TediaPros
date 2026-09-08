@@ -25,7 +25,7 @@ test('one target and one output grammar per request', () => {
   assert.match(messages[0].content, /task=translate/u)
   assert.doesNotMatch(messages.map((message) => message.content).join('\n'), /target_language=auto/u)
   assert.throws(() => buildTranslationMessages({ ...input, targetLocale: 'auto' }, 'json-items'))
-  assert.equal(TRANSLATION_PROMPT_VERSION, 'translation-v4')
+  assert.equal(TRANSLATION_PROMPT_VERSION, 'translation-v5')
   assert.equal(TRANSLATION_PARSER_VERSION, 'translation-parser-v2')
 })
 
@@ -44,6 +44,16 @@ test('repair prompt contains only the IDs that need repair', () => {
   assert.match(messages[0].content, /task=repair/u)
   assert.match(messages[1].content, /expected_ids=c1/u)
   assert.match(messages[1].content, /不要摸这只狗/u)
+})
+
+test('dubbing prompts expose the real speaking window including across a batch boundary', () => {
+  const messages = buildTranslationMessages({ ...input, mode: 'dubbing',
+    cues: [{ ...input.cues[0], end: 2, speakingDuration: 1.42 }],
+    contextAfter: [{ ...input.cues[0], id: 'c2', start: 1.92, end: 3 }]
+  }, 'json-items')
+  assert.match(messages[1].content, /"speaking_duration_seconds":1.42/u)
+  assert.match(messages[1].content, /"hard_max_natural_seconds":2.059/u)
+  assert.match(messages[0].content, /shortest natural wording/u)
 })
 
 test('rephrase is editing existing translation with source evidence', () => {

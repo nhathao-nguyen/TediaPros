@@ -25,11 +25,18 @@
 
 ## Trạng thái và preflight
 
-Kế hoạch này đã được triển khai trong worktree và có handoff thực thi tại
-[`.ai/tasks/2026-09-07-translation-reliability-implementation.md`](../../../.ai/tasks/2026-09-07-translation-reliability-implementation.md).
-Các checkbox bên dưới vẫn là execution checklist; trạng thái bằng chứng hiện tại,
-giới hạn và các gate chưa đủ điều kiện nằm trong handoff và
-[translation-reliability-acceptance.md](../../releases/translation-reliability-acceptance.md).
+**Cập nhật follow-up ngày 2026-09-07:** runtime strict path đã được sửa theo các
+counterexample của [review implementation](../../reviews/2026-09-07-translation-implementation-audit.md).
+Auto Short, Local, Gemini và OpenAI hiện đi qua adapter/orchestrator chung; parser,
+ID canonical, checkpoint/budget, readiness và retry UI đã có regression offline.
+Các gate live provider, GUI thật, TTS/font/RTL/media và packaged app vẫn phải giữ
+ở trạng thái chưa đủ bằng chứng. [Handoff follow-up](../../../.ai/tasks/2026-09-07-translation-reliability-followup.md)
+ghi lại phạm vi đã đóng và phần còn unqualified.
+
+[Handoff implementation ban đầu](../../../.ai/tasks/2026-09-07-translation-reliability-implementation.md)
+được giữ để truy vết; dùng [handoff review](../../../.ai/tasks/2026-09-07-translation-implementation-review.md)
+và [acceptance ledger đã hiệu chỉnh](../../releases/translation-reliability-acceptance.md)
+để đánh giá trạng thái hiện tại. Unit tests PASS không thay cho integration acceptance.
 
 Làm trực tiếp trên
 worktree hiện có `F:\Son\tool\TediaPros\.worktrees\codex-autoshort-optimization`
@@ -83,15 +90,15 @@ khi split/resume. Per-request <=180s, stage active budget
 
 ## Final acceptance checklist
 
-- [x] Case incident zh→en không bị heuristic chặn, cảnh báo không mất trên resume.
-- [x] Không mất cue/continuation; không điền nguồn; source/timing/IDs được bảo toàn.
-- [x] Target/mode/schema thống nhất cả ba provider; rephrase có contract riêng.
+- [x] Case incident zh→en không bị heuristic chặn nhầm; cảnh báo ngôn ngữ được giữ trong assessment/checkpoint. Live quality vẫn unqualified.
+- [x] Strict path không mất cue/continuation, không điền nguồn; source/timing/IDs được bảo toàn qua mapping canonical và resume.
+- [x] Target/mode/schema thống nhất cả ba provider; rephrase có contract riêng và reject response không đầy đủ.
 - [x] Cache hit và fresh dùng cùng validator; sửa source text làm key thay đổi.
-- [x] Retry tests chứng minh hữu hạn cả HTTP, format, split, cancel và cross-resume.
-- [x] Queue chạy tiếp sau item needs-review/error; final event và counts chính xác trong contract/UI wiring.
+- [x] Retry tests chứng minh hữu hạn cho HTTP, format, split, cancel và cross-resume; mọi request dùng chung budget và resume không reset quota.
+- [x] Queue giữ item `needs-review/error`, retry theo tập đã chọn và hydrate state sau renderer restart; GUI thao tác thật còn unqualified.
 - [x] Locale unknown không đồng nghĩa supported; không lẫn qualitative claim với unit pass.
-- [x] `npm.cmd run typecheck`, `npm.cmd run test:local-runtime`, `npm.cmd run build`, `git diff --check` pass.
-- [x] Live corpus/report ghi rõ unqualified; không đánh dấu đạt chỉ bằng mock.
+- [x] Handoff follow-up ghi nhận typecheck/full suite/build/diff-check và probe offline sau runtime fix.
+- [x] Qualification report chạy adapter/parser mock thực, có matrix 240 directed locale pairs và giữ semantic/live rows ở trạng thái unqualified.
 - [x] Handoff task, release acceptance ledger, migration/rollback notes cập nhật.
 
 ## Execution handoff

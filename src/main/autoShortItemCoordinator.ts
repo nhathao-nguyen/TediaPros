@@ -17,6 +17,7 @@ import type {
   WhisperProgress
 } from '../shared/types'
 import type { TranslationAssessment, TranslationInput, TranslationItem, TranslationIssue } from '../shared/translation'
+import type { TranslationBudgetSnapshot } from './translation/budget'
 import { parseSrt, serializeSrt } from '../shared/subtitles'
 import {
   isAutomaticOcrBlur,
@@ -85,8 +86,9 @@ import type { getTtsModels } from './tts'
 import { runSttnRemoval } from './inpainting/runner'
 import { buildTranslationIdentity, type TranslationArtifact } from './translation/checkpoint'
 import { TRANSLATION_PARSER_VERSION, TRANSLATION_PROMPT_VERSION } from './translation/prompts'
-import { normalizeTranslationLocale } from './translation/language'
+import { assessTranslationLanguage, normalizeTranslationLocale } from './translation/language'
 import { mapTranslationsStrict } from './translation/response'
+import { createInvalidSourceAssessment } from './translation/orchestrator'
 
 import {
   AutoShortTelemetryCollector,
@@ -306,6 +308,26 @@ function translationModelIdentity(config: AutoShortConfig): { modelIdentity: str
   }
 }
 
+/**
+ * Provider SRT adapters historically address cues by their position in the
+ * request (`cue-0`, `cue-1`). AutoShort's canonical source IDs also include
+ * timing. Normalize the legacy wire IDs at this single boundary so a partial
+ * batch can be checkpointed and resumed without positional guessing.
+ */
+function normalizeProviderBatchItems(
+  items: readonly TranslationItem[],
+  pendingSourceCues: readonly SubtitleCue[],
+  sourceCues: readonly SubtitleCue[]
+): TranslationItem[] {
+  const byCanonicalId = new Map(sourceCues.map((cue) => [cue.id.trim(), cue.id.trim()]))
+  const byLegacyIndex = new Map(pendingSourceCues.map((cue, index) => [`cue-${index}`, cue.id.trim()]))
+  return items.map((item) => {
+    const rawId = item.id.trim()
+    const canonicalId = byCanonicalId.get(rawId) || byLegacyIndex.get(rawId) || rawId
+    return { id: canonicalId, text: item.text }
+  })
+}
+
 function parseCachedVisualArtifact(value: unknown): {
   timeline: OcrVisualTimeline
   engineVersion: string
@@ -371,6 +393,8 @@ export function createAutoShortItemProcessor(
       translationAssessment?: TranslationAssessment
       translationBatches?: Record<string, { items: TranslationItem[]; modelIdentity: string }>
       translationRetryGeneration?: number
+      translationAttemptGeneration?: number
+      translationBudget?: TranslationBudgetSnapshot
       instrumentalPath?: string
     } = {}
 
@@ -396,6 +420,7 @@ export function createAutoShortItemProcessor(
     let extractedCueCount: number | undefined
     let translatedCueCount: number | undefined
     let translationAssessment: TranslationAssessment | undefined = checkpoint.translationAssessment
+    let providerTranslationAssessment: TranslationAssessment | undefined
     let translationIdentity: string | undefined = checkpoint.translationKey
     let generatedVoiceCount: number | undefined
     let voice: string | undefined
@@ -420,6 +445,18 @@ export function createAutoShortItemProcessor(
 
     const artifactEntries: AutoShortArtifactEntry[] = []
     let caughtError: unknown = undefined
+
+    const failInvalidSource = (message: string): never => {
+      if (config.translateTarget.trim() !== 'none') {
+        translationAssessment = createInvalidSourceAssessment(message)
+        checkpoint.translationAssessment = translationAssessment
+      }
+      // Carry the assessment through the item boundary so the catch handler
+      // persists it even when source extraction fails before a provider call.
+      throw Object.assign(new Error(message), {
+        translationAssessment
+      })
+    }
 
     try {
       throwIfAborted(signal)
@@ -741,7 +778,7 @@ export function createAutoShortItemProcessor(
             }
             const srtPath = whisperResult.outputs.find((p) => p.toLowerCase().endsWith('.srt')) || whisperResult.outputs[0]
             const cues = await readWhisperAlignedCues(srtPath, whisperResult.alignmentPath)
-            if (cues.length === 0) throw new Error('Whisper không nhận được câu phụ đề hợp lệ')
+            if (cues.length === 0) failInvalidSource('Whisper không nhận được câu phụ đề hợp lệ')
             span.updateCounters({ cueCount: cues.length })
             if (artifactCache) {
               const cacheSource = join(whisperDir, 'aligned-cache.json')
@@ -768,7 +805,7 @@ export function createAutoShortItemProcessor(
           })
           if (!ocrResult.ok || !ocrResult.outputs?.length) throw new Error(ocrResult.error || 'OCR không tạo được SRT')
           const cues = parseSrt(await readFile(ocrResult.outputs[0], 'utf8')).cues.filter((cue) => cue.text.trim())
-          if (cues.length === 0) throw new Error('OCR không nhận được câu phụ đề hợp lệ')
+          if (cues.length === 0) failInvalidSource('OCR không nhận được câu phụ đề hợp lệ')
           return alignedFromSrt(cues, 'ocr')
         }
 
@@ -803,7 +840,7 @@ export function createAutoShortItemProcessor(
             throwIfAborted(signal)
 
             if (whisperSettled.status === 'rejected' && visualSettled.status === 'rejected') {
-              throw new Error('Fast-Whisper và OCR đều không tạo được phụ đề hợp lệ.')
+              failInvalidSource('Fast-Whisper và OCR đều không tạo được phụ đề hợp lệ.')
             }
             if (visualSettled.status === 'rejected') {
               throw visualSettled.reason
@@ -845,7 +882,7 @@ export function createAutoShortItemProcessor(
             if (ocr.status === 'rejected') logWarn(`[AutoShort] OCR không khả dụng: ${errLabel(ocr.reason)}`)
             extracted = speech.length && visual.length ? fuseWhisperAndOcr(speech, visual) : speech.length ? speech : visual
             if (extracted.length === 0) {
-              throw new Error('Fast-Whisper và OCR đều không tạo được phụ đề hợp lệ.')
+              failInvalidSource('Fast-Whisper và OCR đều không tạo được phụ đề hợp lệ.')
             }
             await writeFile(join(workDir, 'source.alignment.json'), JSON.stringify(extracted, null, 2), 'utf8')
           }
@@ -857,10 +894,10 @@ export function createAutoShortItemProcessor(
         }
 
         const boundedExtracted = clampAlignedCueTimeline(extracted, meta.giay)
-        if (boundedExtracted.length === 0) throw new Error('SRT nguồn không có câu nằm trong thời lượng video')
+        if (boundedExtracted.length === 0) failInvalidSource('SRT nguồn không có câu nằm trong thời lượng video')
         await writeFile(rawSrtPath, serializeAlignedCues(boundedExtracted), 'utf8')
         sourceCues = parseSrt(await readFile(rawSrtPath, 'utf8')).cues.filter((cue) => cue.text.trim())
-        if (sourceCues.length === 0) throw new Error('SRT nguồn không có câu hợp lệ')
+        if (sourceCues.length === 0) failInvalidSource('SRT nguồn không có câu hợp lệ')
         extractedCueCount = sourceCues.length
 
         checkpoint.sourceCues = boundedExtracted
@@ -901,11 +938,20 @@ export function createAutoShortItemProcessor(
           options: {
             sourceDigest,
             contextRadius: 1,
+            videoDuration: config.ttsEnabled ? meta.giay : undefined,
             mode: translationMode,
             strict: true
           }
         })
         translationIdentity = translationKey
+        if (checkpoint.translationKey && checkpoint.translationKey !== translationKey) {
+          // A changed source/config/prompt identity starts a fresh translation
+          // budget. Never merge batches or retry counters from another artifact.
+          checkpoint.translatedCues = undefined
+          checkpoint.translationBatches = undefined
+          checkpoint.translationBudget = undefined
+          checkpoint.translationAssessment = undefined
+        }
         const sourceById = new Map(sourceCues.map((cue) => [cue.id.trim(), cue]))
         const collectReusablePartial = (cues: readonly SubtitleCue[] | undefined): TranslationItem[] => {
           if (!cues || cues.length === 0) return []
@@ -951,14 +997,24 @@ export function createAutoShortItemProcessor(
           logWarn('[AutoShort] Bỏ qua bản dịch checkpoint legacy/khác identity; giữ lại source checkpoint và tạo bản dịch mới.')
         }
 
+        const retryGeneration = Number.isInteger(checkpoint.translationRetryGeneration) ? Number(checkpoint.translationRetryGeneration) : 0
+        const attemptGeneration = Number.isInteger(checkpoint.translationAttemptGeneration) ? Number(checkpoint.translationAttemptGeneration) : 0
+        const needsExplicitRetry = checkpoint.translationAssessment?.disposition === 'needs-review' && retryGeneration <= attemptGeneration
+        if (needsExplicitRetry && !reusedTranslation) {
+          throw new Error('Bản dịch đang ở trạng thái cần kiểm tra; hãy chuẩn bị một lượt thử lại rõ ràng trước khi chạy lại.')
+        }
+        if (!reusedTranslation) {
+          checkpoint.translationAttemptGeneration = retryGeneration
+        }
+
         const pendingSourceCues = !reusedTranslation && reusablePartial.length > 0
           ? sourceCues.filter((cue) => !reusablePartial.some((item) => item.id === cue.id))
           : sourceCues
-        const translationInputPath = pendingSourceCues.length === sourceCues.length
-          ? rawSrtPath
-          : join(workDir, 'source.translation-pending.srt')
+        // Keep the full source file as the authoritative input. The provider
+        // scheduler filters pending IDs in memory; serializing a subset would
+        // reindex SRT timing lines and destroy the canonical source identity.
+        const translationInputPath = rawSrtPath
         if (!reusedTranslation && pendingSourceCues.length < sourceCues.length) {
-          await writeFile(translationInputPath, serializeSrt(pendingSourceCues), 'utf8')
           logInfo(`[AutoShort] Giữ lại ${reusablePartial.length} cue dịch đã có; chỉ dịch lại ${pendingSourceCues.length} cue còn thiếu.`)
         }
 
@@ -969,6 +1025,7 @@ export function createAutoShortItemProcessor(
               const artifact = parseCachedSubtitleArtifact(JSON.parse(await readFile(cached.path, 'utf8')), translationKey, model.modelIdentity)
               const restored = artifact ? revalidate(artifact.cues) : null
               if (restored) {
+                providerTranslationAssessment = artifact?.assessment
                 await writeFile(targetSrtPath, serializeSrt(restored), 'utf8')
                 translatedCueCount = restored.length
                 reusedTranslation = true
@@ -999,18 +1056,21 @@ export function createAutoShortItemProcessor(
           await saveCheckpoint()
           emitProgress(context, 'translating', 35, `Đang dịch phụ đề sang ${targetLocale}…`, undefined, undefined, { stage: 'translate', phase: 'running' }, undefined, translationAssessment, translationIdentity)
           await telemetry.withStageSpan('translate', { endpointAlias: sanitizeEndpointAlias(config.translateServerUrl) }, async (span) => {
-            await translateStrict(config, translationInputPath, targetSrtPath, (done, count) => {
+            const strictResult = await translateStrict(config, translationInputPath, targetSrtPath, (done, count) => {
               const completeDone = reusablePartial.length + done
               emitProgress(context, 'translating', 35 + (sourceCues.length > 0 ? completeDone / sourceCues.length : 0) * 20, `Đang dịch ${completeDone}/${sourceCues.length} câu`, undefined, undefined, { stage: 'translate', phase: 'running', detail: `${completeDone}/${sourceCues.length}` }, undefined, translationAssessment, translationIdentity)
             }, signal, sourceLanguage, async (items, batchIndex) => {
-              const partialById = new Map<string, TranslationItem>([
-                ...reusablePartial.map((item) => [item.id, item] as const),
-                ...items.map((item) => [item.id, { id: item.id, text: item.text }] as const)
-              ])
+              const normalizedItems = normalizeProviderBatchItems(items, pendingSourceCues, sourceCues)
+              const partialById = new Map<string, TranslationItem>()
+              for (const cue of checkpoint.translatedCues || []) {
+                if (cue.text.trim()) partialById.set(cue.id.trim(), { id: cue.id.trim(), text: cue.text.trim() })
+              }
+              for (const item of reusablePartial) partialById.set(item.id, item)
+              for (const item of normalizedItems) partialById.set(item.id, { id: item.id, text: item.text })
               checkpoint.translationBatches = {
                 ...(checkpoint.translationBatches || {}),
-                [`provider-batch-${batchIndex + 1}`]: {
-                  items: items.map((item) => ({ id: item.id, text: item.text })),
+                [`provider-batch-${batchIndex + 1}-${Date.now()}`]: {
+                  items: normalizedItems.map((item) => ({ id: item.id, text: item.text })),
                   modelIdentity: model.modelIdentity
                 }
               }
@@ -1023,7 +1083,11 @@ export function createAutoShortItemProcessor(
               checkpoint.translationKey = translationKey
               checkpoint.translationModelIdentity = model.modelIdentity
               await saveCheckpoint()
-            })
+            }, async (budget) => {
+              checkpoint.translationBudget = budget
+              await saveCheckpoint()
+            }, reusablePartial, checkpoint.translationBudget, meta.giay)
+            providerTranslationAssessment = strictResult.assessment
             const translated = parseSrt(await readFile(targetSrtPath, 'utf8')).cues.filter((cue) => cue.text.trim())
             const restored = revalidate([
               ...reusablePartial,
@@ -1061,7 +1125,27 @@ export function createAutoShortItemProcessor(
         artifactEntries.push({ source: targetSrtPath, name: 'translated.srt' })
       }
 
-      translationAssessment = assessContentQuality({ sourceCues, targetCues })
+      const contentAssessment = assessContentQuality({ sourceCues, targetCues })
+      const languageAssessment = config.translateTarget !== 'none'
+        ? assessTranslationLanguage(buildTranslationInput(sourceCues, detectedSourceLanguage || 'auto', normalizeTranslationLocale(config.translateTarget), config.ttsEnabled ? 'dubbing' : 'subtitle'), targetCues.map((cue) => ({ id: cue.id, text: cue.text })))
+        : { languageEvidence: 'unknown' as const, issues: [] }
+      const combinedTranslationIssues = [
+        ...(providerTranslationAssessment?.issues || []),
+        ...contentAssessment.issues,
+        ...languageAssessment.issues
+      ].filter((item, index, all) => all.findIndex((candidate) =>
+        candidate.code === item.code && candidate.message === item.message && candidate.cueIds.join(',') === item.cueIds.join(',')) === index)
+      const combinedHasErrors = combinedTranslationIssues.some((issue) => issue.severity === 'error')
+      translationAssessment = {
+        ...contentAssessment,
+        disposition: combinedHasErrors
+          ? 'needs-review'
+          : combinedTranslationIssues.length > 0 ? 'with-warnings' : 'validated',
+        issues: combinedTranslationIssues,
+        languageEvidence: languageAssessment.languageEvidence === 'suspect'
+          ? 'suspect'
+          : providerTranslationAssessment?.languageEvidence === 'suspect' ? 'suspect' : languageAssessment.languageEvidence
+      }
       checkpoint.translationAssessment = translationAssessment
       await saveCheckpoint()
       if (translationAssessment.disposition === 'needs-review') {
@@ -1510,11 +1594,23 @@ export function createAutoShortItemProcessor(
         ? 'Đã hủy tác vụ'
         : message || 'Xử lý video thất bại'
 
+      const structuredTranslation = error && typeof error === 'object'
+        ? error as { translationAssessment?: TranslationAssessment; translationBudget?: TranslationBudgetSnapshot }
+        : undefined
+      if (!isCancelled && structuredTranslation?.translationAssessment) {
+        translationAssessment = structuredTranslation.translationAssessment
+        checkpoint.translationAssessment = translationAssessment
+        if (structuredTranslation.translationBudget) checkpoint.translationBudget = structuredTranslation.translationBudget
+        await saveCheckpoint().catch((checkpointError) => {
+          logWarn(`[AutoShort] Không lưu được assessment/budget dịch: ${errLabel(checkpointError)}`)
+        })
+      }
+
       // A provider/protocol failure can happen after the translation identity
       // has been committed but before content assessment is written. Preserve
       // that durable identity as an explicit review state so the UI can offer
       // one bounded, user-triggered retry instead of losing the recovery path.
-      if (!isCancelled && config.translateTarget !== 'none' && translationIdentity && !translationAssessment) {
+      if (!isCancelled && config.translateTarget.trim() !== 'none' && translationIdentity && !translationAssessment) {
         translationAssessment = {
           version: 'translation-assessment-v2',
           disposition: 'needs-review',

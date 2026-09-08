@@ -39,7 +39,7 @@ test('checkpoint persists a charged budget and valid batches atomically', async 
   assert.equal(await readTranslationCheckpoint(path, root, 'b'.repeat(64)), null)
 }))
 
-test('manual retry generation resets recovery state but retains valid batches', () => {
+test('manual retry generation retains recovery budget and valid batches', () => {
   const plan = planTranslation(input, capability)
   const budget = createTranslationBudget(plan.batches.length, () => 0)
   budget.charge('normal', plan.batches[0]!.id)
@@ -52,7 +52,8 @@ test('manual retry generation resets recovery state but retains valid batches', 
   const retry = createTranslationRetryGeneration(checkpoint)
   assert.equal(retry.generation, 3)
   assert.equal(retry.disposition, 'running')
-  assert.equal(retry.budget.recoveryUsed, 0)
+  assert.equal(retry.budget.recoveryUsed, 1)
+  assert.equal(retry.budget.perBatch[plan.batches[0]!.id]?.recoveryUsed, 1)
   assert.deepEqual(retry.batches, checkpoint.batches)
   assert.deepEqual(retry.failures, {})
 })

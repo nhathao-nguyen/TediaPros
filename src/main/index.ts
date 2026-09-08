@@ -900,12 +900,14 @@ function registerIpc(): void {
       const p: DichProvider = isProvider(provider) ? provider : 'gemini'
       if (p === 'local') {
         return localTranslateSrt(srtPath, outPath, dich, serverUrl, undefined, (d: number, t: number) =>
-          event.sender.send('translate:progress', { done: d, total: t })
+          event.sender.send('translate:progress', { done: d, total: t }),
+          { strict: true, mode: 'subtitle' }
         )
       }
       const run = p === 'openai' ? openaiTranslateSrt : geminiTranslateSrt
       return run(srtPath, outPath, dich, (d, t) =>
-        event.sender.send('translate:progress', { done: d, total: t })
+        event.sender.send('translate:progress', { done: d, total: t }),
+        { strict: true, mode: 'subtitle' }
       )
     }
   )
@@ -920,7 +922,7 @@ function registerIpc(): void {
       geminiTranslateSrt(srtPath, outPath, dich, (d, t) => {
         event.sender.send('translate:progress', { done: d, total: t })
         event.sender.send('gemini:progress', { done: d, total: t })
-      })
+      }, { strict: true, mode: 'subtitle' })
   )
 
 

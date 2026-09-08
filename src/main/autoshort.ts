@@ -26,11 +26,11 @@ import {
 import { buildSemanticGroups, joinGroupText, type SemanticGroup } from './semanticGrouping'
 import { createDurationPredictor, durationProfileKey } from './dubbingDuration'
 import { loadDurationProfile, saveDurationProfile } from './dubbing/profileStore'
-import { applyDubbingTranslations } from './dubbing/translation'
+import { applyDubbingTranslations, dubbingSpeakingDurations } from './dubbing/translation'
 import { buildTtsCacheKey, getTtsCacheStore } from './dubbing/cache'
 import { synthesizeDubbingPlan } from './dubbing/synthesis'
 import { buildStageKey, hashFileSha256 } from './autoShortStageKeys'
-import { DUBBING_PLAN_VERSION, buildDubbingPlan as buildPlan, validateDubbingPlan, type DubbingPlan } from './dubbing/plan'
+import { DUBBING_PLAN_VERSION, buildDubbingPlan as buildPlan, groupDubbingPlanForSpeech, validateDubbingPlan, type DubbingPlan } from './dubbing/plan'
 import { huongDan, stripOuterQuotes } from './translate-shared'
 import { resolveTranslationSourceLanguage } from './localTranslatePolicy'
 import { debugRaw, logInfo, logWarn, logError, errLabel } from './logger'
@@ -46,9 +46,9 @@ import {
 } from './whisper'
 import { cancelOcr, installOcrEngine, ocrEngineStatus, ocrVideo, ocrVideoWithVisualTimeline } from './ocr'
 import { detectGpu } from './gpu'
-import { translateSrt as geminiTranslateSrt } from './gemini'
-import { translateSrt as openaiTranslateSrt } from './openai'
-import { localTranslateSrt, loadLocalKey, checkLocalTranslateKey } from './localTranslate'
+import { createGeminiTranslationAdapter, loadKey as loadGeminiKey } from './gemini'
+import { createOpenAiTranslationAdapter, loadKey as loadOpenAiKey } from './openai'
+import { createLocalTranslationAdapter, loadLocalKey, checkLocalTranslateKey } from './localTranslate'
 import { generateSpeech, generateVoiceClone, getTtsModels, checkTtsServerHealth } from './tts'
 import { cancelBurn, probeBurnMedia, burnAutoShort } from './burn'
 import { writeTimedOcrBlurMask } from './ocrMask'
@@ -60,7 +60,10 @@ import { cancelVideo2x } from './video2x'
 import { terminateProcessTree, terminateTrackedProcessTrees, trackChildProcess } from './processTree'
 import { parseSrt, serializeSrt, type SubtitleCue } from '../shared/subtitles'
 import { mapTranslationsStrict } from './translation/response'
-import { parseRephraseResponse } from './translation/response'
+import { parseRephraseResponse, recoverBatchRephraseResponse } from './translation/response'
+import { translateWithAdapter, type TranslationAdapter } from './translation/orchestrator'
+import type { TranslationAssessment, TranslationInput, TranslationItem } from '../shared/translation'
+import type { TranslationBudgetSnapshot } from './translation/budget'
 import { runAutoShortQueue } from './autoShortQueueRunner'
 import { AutoShortResourceManager, getGlobalResourceManager } from './autoShortResourceManager'
 import { getGlobalAutoShortDiskBudget, type DiskReservation } from './autoShortDiskBudget'
@@ -160,6 +163,7 @@ interface TranslationRetryEntry {
   checkpointRoot: string
   expectedIdentity: string
   generation: number
+  preparedGeneration?: number
   inFlight: boolean
 }
 
@@ -637,14 +641,15 @@ export async function getAutoShortReadiness(
       reason: ffmpegReady ? 'FFmpeg đã sẵn sàng; media/font qualification vẫn tách riêng.' : (ffmpegMessage || 'FFmpeg chưa sẵn sàng.')
     }
   ]
-  // Keep the shared readiness calculation exercised here so a future stage
-  // capability can become a blocking preflight without changing the IPC shape.
-  resolveTranslationReadiness(stageCapabilities)
+  const stageReadiness = resolveTranslationReadiness(stageCapabilities)
+  const blockingStageMessage = stageReadiness.blocking.length > 0
+    ? `Cần chuẩn bị thêm: ${stageReadiness.blocking.map((stage) => stage.stage).join(', ')}.`
+    : undefined
   const message = missing.length
     ? `Cần chuẩn bị: ${missing.map((item) => item.label).join(', ')}.`
-    : undefined
+    : blockingStageMessage
   return {
-    ready: missing.length === 0,
+    ready: missing.length === 0 && stageReadiness.canStart,
     method: config.subtitleMethod,
     requestedDevice: useWhisper ? (useCuda ? 'cuda' : 'cpu') : null,
     effectiveDevice: useWhisper ? (useCuda && cudaReady ? 'cuda' : 'cpu') : null,
@@ -1076,28 +1081,147 @@ async function requestTranslation(
   onProgress: (done: number, total: number) => void,
   signal: AbortSignal,
   sourceLanguage?: string | null,
-  onBatch?: (items: readonly { id: string; text: string }[], batchIndex: number) => Promise<void> | void
-): Promise<void> {
-  // Subtitle-only jobs should use the subtitle contract. Dubbing constraints
-  // are soft hints for TTS-enabled jobs and must never leak into plain SRT
-  // translation when voice generation is disabled.
-  // mode: 'dubbing' remains the explicit contract whenever voice generation is enabled.
-  const options = { strict: true, mode: config.ttsEnabled ? 'dubbing' as const : 'subtitle' as const, sourceLanguage, contextRadius: 1, signal, onBatch }
-  let result: { ok: boolean; error?: string; count?: number }
+  onBatch?: (items: readonly { id: string; text: string }[], batchIndex: number) => Promise<void> | void,
+  onBudget?: (snapshot: TranslationBudgetSnapshot) => Promise<void> | void,
+  resumeItems: readonly TranslationItem[] = [],
+  restoredBudget?: TranslationBudgetSnapshot,
+  videoDuration?: number
+): Promise<{ assessment?: TranslationAssessment; budget?: TranslationBudgetSnapshot }> {
+  // AutoShort uses one provider-neutral scheduler. Provider modules only make
+  // one request and expose the canonical prompt/response contract; this
+  // function owns source identity, resume merging, validation and publication.
+  const sourceResult = parseSrt(await readFile(input, 'utf8'))
+  if (sourceResult.warnings.length > 0) {
+    throw new Error(`SRT nguồn có dòng không hợp lệ; dừng để tránh mất nội dung (${sourceResult.warnings[0]?.message || 'parser warning'}).`)
+  }
+  const source = sourceResult.cues.filter((cue) => cue.text.trim())
+  if (source.length === 0) throw new Error('SRT nguồn không có câu hợp lệ.')
+  const sourceIds = new Set(source.map((cue) => cue.id.trim()))
+  const reusableById = new Map<string, TranslationItem>()
+  for (const item of resumeItems) {
+    const id = item.id.trim()
+    const text = item.text.trim()
+    if (!id || !text || !sourceIds.has(id) || reusableById.has(id)) continue
+    reusableById.set(id, { id, text })
+  }
+  const reusable = source
+    .map((cue) => reusableById.get(cue.id.trim()))
+    .filter((item): item is TranslationItem => Boolean(item))
+  const pendingSource = source.filter((cue) => !reusableById.has(cue.id.trim()))
+  // The TTS branch deliberately uses `mode: 'dubbing'`; subtitle-only jobs
+  // stay on the lighter subtitle contract and never inherit dubbing rules.
+  const mode = config.ttsEnabled ? 'dubbing' as const : 'subtitle' as const
+  const targetLocale = config.translateTarget.trim()
+  const sourceLocale = sourceLanguage?.trim() || 'auto'
+
+  const toTranslationCue = (cue: SubtitleCue, index: number) => ({
+    id: cue.id.trim(),
+    sourceIndex: Number.isInteger(cue.sourceIndex) ? cue.sourceIndex : index,
+    start: cue.start,
+    end: cue.end,
+    text: cue.text,
+    groupId: `cue-${Number.isInteger(cue.sourceIndex) ? cue.sourceIndex : index}`
+  })
+  const fullTranslationCues = source.map(toTranslationCue)
+  if (mode === 'dubbing') {
+    const durations = dubbingSpeakingDurations(fullTranslationCues, videoDuration ?? Math.max(...source.map((cue) => cue.end)) + 0.5)
+    fullTranslationCues.forEach((cue, index) => Object.assign(cue, { speakingDuration: durations[index] }))
+  }
+  const translationInput: TranslationInput = {
+    sourceLanguage: sourceLocale,
+    targetLocale,
+    mode,
+    // Keep the complete source in the planner. Resume filtering happens by
+    // canonical ID inside the orchestrator, so batch IDs and per-batch quota
+    // remain stable when only a tail or an interior cue is missing.
+    cues: fullTranslationCues,
+    contextBefore: [],
+    contextAfter: [],
+    glossary: []
+  }
+
+  const publish = async (items: readonly TranslationItem[], budget?: TranslationBudgetSnapshot): Promise<SubtitleCue[]> => {
+    const mapped = mapTranslationsStrict(source, items)
+    try {
+      assertTranslatedLanguageShift(source, mapped, sourceLanguage, config.translateTarget)
+    } catch (error) {
+      const assessment: TranslationAssessment = {
+        version: 'translation-assessment-v2',
+        disposition: 'needs-review',
+        issues: [{
+          code: 'language-suspect',
+          severity: 'error',
+          confidence: 'certain',
+          cueIds: source.map((cue) => cue.id),
+          message: error instanceof Error ? error.message : 'Bản dịch vẫn ở hệ chữ nguồn; cần kiểm tra trước khi tạo voice.'
+        }],
+        languageEvidence: 'suspect'
+      }
+      throw Object.assign(error instanceof Error ? error : new Error(String(error)), {
+        translationAssessment: assessment,
+        ...(budget ? { translationBudget: budget } : {})
+      })
+    }
+    const temporary = `${output}.${randomUUID()}.tmp`
+    try {
+      await writeFile(temporary, serializeSrt(mapped), 'utf8')
+      await rename(temporary, output)
+    } finally {
+      await rm(temporary, { force: true }).catch(() => {})
+    }
+    return mapped
+  }
+
+  if (pendingSource.length === 0) {
+    onProgress(source.length, source.length)
+    await publish(reusable)
+    return {}
+  }
+
+  throwIfAborted(signal)
+  let adapter: TranslationAdapter
   if (config.translateProvider === 'local') {
-    result = await localTranslateSrt(input, output, config.translateTarget, config.translateServerUrl, await loadLocalKey(), onProgress, options)
+    adapter = createLocalTranslationAdapter(await loadLocalKey(), config.translateServerUrl)
   } else if (config.translateProvider === 'openai') {
-    result = await openaiTranslateSrt(input, output, config.translateTarget, onProgress, options)
+    const key = await loadOpenAiKey()
+    if (!key.trim()) throw new Error('Chưa có API key OpenAI.')
+    adapter = await createOpenAiTranslationAdapter(key)
   } else {
-    result = await geminiTranslateSrt(input, output, config.translateTarget, onProgress, options)
+    const key = await loadGeminiKey()
+    if (!key.trim()) throw new Error('Chưa có API key Gemini.')
+    adapter = await createGeminiTranslationAdapter(key)
   }
   throwIfAborted(signal)
-  if (!result.ok) throw new Error(result.error || 'Dịch phụ đề thất bại')
-  const translated = parseSrt(await readFile(output, 'utf8')).cues
-  if (translated.length === 0 || (result.count != null && result.count !== translated.length) || translated.some((cue) => !cue.text.trim())) {
-    throw new Error('SRT dịch không đầy đủ hoặc có câu rỗng')
+
+  const completedIds = new Set(reusable.map((item) => item.id))
+  let callbackIndex = 0
+  const run = await translateWithAdapter(translationInput, adapter, signal, {
+    restoredBudget,
+    resumeItems: reusable,
+    beforeDispatch: onBudget,
+    onBatch: async (_batchId, batch, budget) => {
+      await onBudget?.(budget)
+      for (const item of batch.items) completedIds.add(item.id)
+      onProgress(completedIds.size, source.length)
+      await onBatch?.(batch.items, callbackIndex++)
+    }
+  })
+  throwIfAborted(signal)
+  if (run.assessment.disposition === 'needs-review') {
+    const firstIssue = run.assessment.issues.find((item) => item.severity === 'error')
+    throw Object.assign(new Error(firstIssue?.message || 'Bản dịch không vượt qua kiểm tra; không xuất bản kết quả một phần.'), {
+      translationAssessment: run.assessment,
+      translationBudget: run.budget
+    })
   }
-  assertTranslatedLanguageShift(parseSrt(await readFile(input, 'utf8')).cues, translated, sourceLanguage, config.translateTarget)
+  const mergedById = new Map<string, TranslationItem>(reusable.map((item) => [item.id, item]))
+  for (const item of run.items) mergedById.set(item.id, item)
+  const merged = source
+    .map((cue) => mergedById.get(cue.id.trim()))
+    .filter((item): item is TranslationItem => Boolean(item))
+  if (merged.length !== source.length) throw new Error('SRT dịch không đầy đủ; không xuất bản kết quả một phần.')
+  await publish(merged, run.budget)
+  return { assessment: run.assessment, budget: run.budget }
 }
 
 function scriptMatcher(script: string): RegExp | null {
@@ -1167,9 +1291,13 @@ export async function translateStrict(
   onProgress: (done: number, total: number) => void,
   signal: AbortSignal,
   sourceLanguage?: string | null,
-  onBatch?: (items: readonly { id: string; text: string }[], batchIndex: number) => Promise<void> | void
-): Promise<void> {
-  await requestTranslation(config, input, output, onProgress, signal, sourceLanguage, onBatch)
+  onBatch?: (items: readonly { id: string; text: string }[], batchIndex: number) => Promise<void> | void,
+  onBudget?: (snapshot: TranslationBudgetSnapshot) => Promise<void> | void,
+  resumeItems: readonly TranslationItem[] = [],
+  restoredBudget?: TranslationBudgetSnapshot,
+  videoDuration?: number
+): Promise<{ assessment?: TranslationAssessment; budget?: TranslationBudgetSnapshot }> {
+  const result = await requestTranslation(config, input, output, onProgress, signal, sourceLanguage, onBatch, onBudget, resumeItems, restoredBudget, videoDuration)
   const source = parseSrt(await readFile(input, 'utf8')).cues
   const translated = parseSrt(await readFile(output, 'utf8')).cues
   // Never infer identity by position or silently copy source text. A
@@ -1185,6 +1313,7 @@ export async function translateStrict(
     end: source[index].end
   }))
   await writeFile(output, serializeSrt(mapped), 'utf8')
+  return result
 }
 
 export interface AutoShortCueDiagnostic {
@@ -1264,8 +1393,16 @@ export async function preserveAutoShortArtifacts(
   return artifactDir
 }
 
-function extractRephrasedTexts(rawContent: string, cueId: string): string[] {
+export function extractRephrasedTexts(rawContent: string, cueId: string): string[] {
   const parsed = parseRephraseResponse(rawContent, cueId)
+  // A rephrase is a supplemental candidate, never a lossy recovery path.
+  // Keep no candidate when the provider left any unparsed/structural content;
+  // otherwise a valid-looking first line could silently replace the complete
+  // translation while the continuation is lost.
+  if (!parsed.complete || parsed.issues.some((item) => item.severity === 'error')) {
+    logWarn(`[AutoShort:rephrase] cue=${safeArtifactSegment(cueId)} outcome=invalid-response issues=${[...new Set(parsed.issues.map((item) => item.code))].join(',')}`)
+    return []
+  }
   const items = parsed.items
   const normalizedId = cueId.trim().toLowerCase()
   const found = items
@@ -1282,7 +1419,7 @@ function extractRephrasedTexts(rawContent: string, cueId: string): string[] {
   return []
 }
 
-async function rephraseDubbingCue(
+export async function rephraseDubbingCue(
   config: AutoShortConfig,
   cueId: string,
   currentText: string,
@@ -1292,7 +1429,8 @@ async function rephraseDubbingCue(
   signal?: AbortSignal,
   sourceText?: string,
   contextBefore: string[] = [],
-  contextAfter: string[] = []
+  contextAfter: string[] = [],
+  timing?: { measuredDuration: number; maxDuration: number }
 ): Promise<string[]> {
   try {
     // The shared rephrase contract explicitly says: giữ nguyên chủ thể, đối tượng, số liệu và phủ định; không thêm đại từ hoặc tác nhân không xuất hiện. This call only supplies source evidence and
@@ -1304,6 +1442,7 @@ async function rephraseDubbingCue(
         sourceText: cue.sourceText,
         currentText: cue.currentText,
         targetDuration: cue.targetDuration,
+        ...timing,
         contextBefore: cue.contextBefore,
         contextAfter: cue.contextAfter
       }))
@@ -1335,11 +1474,21 @@ async function rephraseDubbingCue(
           }),
           signal: requestSignal
         })
-        if (!res.ok) return null
-        const data = (await res.json()) as { choices?: Array<{ message?: { content?: string } }> }
+        if (!res.ok) {
+          logWarn(`[AutoShort:rephrase] cue=${safeArtifactSegment(cueId)} outcome=http-error status=${res.status}`)
+          return null
+        }
+        const data = (await res.json()) as { choices?: Array<{ message?: { content?: string }; finish_reason?: string }> }
+        if (data.choices?.[0]?.finish_reason === 'length') {
+          logWarn(`[AutoShort:rephrase] cue=${safeArtifactSegment(cueId)} outcome=invalid-response issues=truncated-output`)
+          return null
+        }
         return data.choices?.[0]?.message?.content?.trim() || null
       })
-      if (!content) return []
+      if (!content) {
+        logWarn(`[AutoShort:rephrase] cue=${safeArtifactSegment(cueId)} outcome=no-content`)
+        return []
+      }
       return extractRephrasedTexts(content, cueId)
     } else if (config.translateProvider === 'gemini') {
       const { rephraseGeminiCue } = await import('./gemini')
@@ -1372,7 +1521,7 @@ interface DubbingRephraseRequest {
  * local server is commonly CPU-bound, so issuing one request per cue can
  * serialize dozens of expensive calls and make the job appear stuck.
  */
-async function rephraseDubbingCues(
+export async function rephraseDubbingCues(
   config: AutoShortConfig,
   requests: readonly DubbingRephraseRequest[],
   targetLanguage: string,
@@ -1401,52 +1550,58 @@ async function rephraseDubbingCues(
   }
 
   try {
-    const messages = buildRephraseMessages({
-      targetLocale: targetLanguage,
-      cues: requests.map((request) => ({
-        id: request.cueId,
-        sourceText: request.sourceText,
-        currentText: request.currentText,
-        targetDuration: request.targetDuration,
-        contextBefore: request.contextBefore || [],
-        contextAfter: request.contextAfter || []
-      }))
-    })
-    const systemPrompt = messages[0].content
-    const userPrompt = messages[1].content
     const localKey = await loadLocalKey()
-    const serverUrl = config.translateServerUrl || DEFAULT_AI_SERVER_URL
-    const base = serverUrl.replace(/\/+$/u, '')
-    const requestSignal = signal
-      ? AbortSignal.any([signal, AbortSignal.timeout(90_000)])
-      : AbortSignal.timeout(90_000)
-    const res = await fetch(`${base}/v1/chat/completions`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        ...(localKey ? { Authorization: `Bearer ${localKey}` } : {})
-      },
-      body: JSON.stringify({
-        model: 'llm-default',
-        messages: [
-          { role: 'system', content: systemPrompt },
-          { role: 'user', content: userPrompt }
-        ],
-        temperature: 0.3
-      }),
-      signal: requestSignal
-    })
-    if (!res.ok) return result
-    const data = await res.json() as { choices?: Array<{ message?: { content?: string } }> }
-    const content = data.choices?.[0]?.message?.content?.trim() || ''
-    for (const request of requests) {
-      result.set(request.cueId, content ? extractRephrasedTexts(content, request.cueId) : [])
+    const base = (config.translateServerUrl || DEFAULT_AI_SERVER_URL).replace(/\/+$/u, '')
+    const deadline = AbortSignal.timeout(90_000)
+    const requestSignal = signal ? AbortSignal.any([signal, deadline]) : deadline
+    const requestBatch = async (batch: readonly DubbingRephraseRequest[], repair: boolean): Promise<void> => {
+      const messages = buildRephraseMessages({
+        targetLocale: targetLanguage,
+        cues: batch.map((request) => ({
+          id: request.cueId,
+          sourceText: request.sourceText,
+          currentText: request.currentText,
+          targetDuration: request.targetDuration,
+          contextBefore: request.contextBefore || [],
+          contextAfter: request.contextAfter || []
+        }))
+      })
+      const res = await fetch(`${base}/v1/chat/completions`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', ...(localKey ? { Authorization: `Bearer ${localKey}` } : {}) },
+        body: JSON.stringify({ model: 'llm-default', messages, temperature: 0.3 }),
+        signal: requestSignal
+      })
+      if (!res.ok) throw new Error(`Rephrase HTTP ${res.status}`)
+      const data = await res.json() as { choices?: Array<{ message?: { content?: string }; finish_reason?: string }> }
+      const content = data.choices?.[0]?.message?.content?.trim() || ''
+      const parsed = recoverBatchRephraseResponse(content, batch.map((request) => request.cueId))
+      const truncated = data.choices?.[0]?.finish_reason === 'length'
+      const usable = truncated ? [] : parsed.items
+      if (!parsed.complete || !usable.length) {
+        const badLabels = [...new Set(parsed.issues.flatMap((item) => item.cueIds))].slice(0, 5).map((id) => safeArtifactSegment(id).slice(0, 80))
+        logWarn(`[AutoShort:rephrase] phase=preflight repair=${repair} cues=${batch.length} outcome=${usable.length ? 'partial-response' : 'invalid-response'} issues=${truncated ? 'truncated-output' : [...new Set(parsed.issues.map((item) => item.code))].join(',') || 'empty-response'} badLabels=${badLabels.join(',')} usableCandidates=${usable.length}`)
+      }
+      for (const request of batch) {
+        const candidates = usable
+          .filter((item) => item.id.startsWith(`${request.cueId}:`))
+          .map((item) => spokenTextWithoutSpeakerLabel(item.text)).filter(Boolean)
+        if (candidates.length) result.set(request.cueId, candidates)
+      }
+    }
+    await requestBatch(requests, false)
+    // One repair pass for missing/ambiguous cues only, within the original
+    // deadline. Already usable IDs never re-enter the request or get replaced.
+    const missing = requests.filter((request) => !result.has(request.cueId))
+    if (missing.length) logInfo(`[AutoShort:rephrase] phase=preflight outcome=repair-missing cues=${missing.length} kept=${result.size}`)
+    for (let offset = 0; offset < missing.length; offset += 8) {
+      requestSignal.throwIfAborted()
+      await requestBatch(missing.slice(offset, offset + 8), true)
     }
   } catch (error) {
     if (!isAbortError(error) || !signal?.aborted) {
       logWarn(`[AutoShort] Batch rephrase ${requests.length} cue không thành công: ${errLabel(error)}`)
     }
-    for (const request of requests) result.set(request.cueId, [])
   }
   return result
 }
@@ -2206,6 +2361,7 @@ export async function synthesizeVoice(
       : selectedModel.default_voice
   const stableSourceCues = sourceCues.map((cue, cueIndex) => ({
     id: cue.id?.trim() || `cue-${cue.sourceIndex ?? cueIndex}`,
+    sourceIndex: cue.sourceIndex ?? cueIndex,
     start: cue.start,
     end: cue.end,
     text: cue.text
@@ -2217,7 +2373,8 @@ export async function synthesizeVoice(
     if (!target || !target.text.trim()) throw new Error(`Không tìm thấy text dịch cho cue ${cue.id}.`)
     return { id: cue.id, text: spokenTextWithoutSpeakerLabel(target.text) }
   })
-  const translatedPlan = applyDubbingTranslations(sourcePlan, targetItems)
+  const translatedPlan = groupDubbingPlanForSpeech(applyDubbingTranslations(sourcePlan, targetItems), language)
+  logInfo(`[AutoShort] Gom ${sourcePlan.cues.length} mảnh phụ đề thành ${translatedPlan.cues.length} đoạn thoại; giữ đủ source cue ID và khoảng nghỉ giữa các đoạn.`)
   const referenceInfo = config.ttsRefAudioPath
     ? await stat(config.ttsRefAudioPath).then((info) => ({ path: config.ttsRefAudioPath, size: info.size, mtimeMs: info.mtimeMs })).catch(() => ({ path: config.ttsRefAudioPath, size: 0, mtimeMs: 0 }))
     : null
@@ -2345,10 +2502,7 @@ export async function synthesizeVoice(
       return { path: outputPath, duration: actualDuration }
     }
   }
-  const allowDynamicRephrase = config.translateProvider !== 'local'
-  if (!allowDynamicRephrase) {
-    logInfo('[AutoShort] Chế độ dịch Local: Vô hiệu hóa LLM rephrase trong giai đoạn TTS để tránh model thrashing / nghẽn VRAM. Sử dụng FFmpeg DSP co giãn nhịp tự động.')
-  }
+  logInfo('[AutoShort] Kiểm tra độ dài trước TTS; mỗi cue được tối đa một lượt rephrase cứu lỗi sau khi đo audio, giữ trần 1.45x.')
   const synthesized = await synthesizeDubbingPlan({
     plan: translatedPlan,
     language,
@@ -2356,27 +2510,38 @@ export async function synthesizeVoice(
     voice: effectiveVoice,
     options: config.ttsOptions,
     fixedTempo: config.ttsSpeed || 1,
-    localTempoDelta: allowDynamicRephrase ? undefined : 0.15,
+    localTempoDelta: config.translateProvider === 'local' ? 0.15 : undefined,
     predictor,
     tts: adapter,
     audio: audioAdapter,
-    rephrase: allowDynamicRephrase
-       ? (request, signal) => {
-          const cueIndex = translatedPlan.cues.findIndex((cue) => cue.id === request.cueId)
-          return rephraseDubbingCue(
-            config,
-            request.cueId,
-            request.currentText,
-            request.targetDuration,
-            language,
-            detectedLanguage,
-            signal,
-            cueIndex >= 0 ? translatedPlan.cues[cueIndex]?.sourceText : undefined,
-            cueIndex > 0 ? [translatedPlan.cues[cueIndex - 1]?.sourceText || ''] : [],
-            cueIndex >= 0 && cueIndex + 1 < translatedPlan.cues.length ? [translatedPlan.cues[cueIndex + 1]?.sourceText || ''] : []
-          )
-        }
-          : undefined,
+    rephraseBatch: async (requests, signal) => {
+      logInfo(`[AutoShort] Rút gọn trước TTS ${requests.length} cue có nguy cơ vượt thời lượng.`)
+      const run = () => rephraseDubbingCues(config, requests, language, detectedLanguage, signal)
+      return config.translateProvider === 'local'
+        ? getGlobalResourceManager().withLease(['server-inference'], signal, run)
+        : run()
+    },
+    rephrase: (request, signal) => {
+      const cueIndex = translatedPlan.cues.findIndex((cue) => cue.id === request.cueId)
+      return rephraseDubbingCue(
+        config,
+        request.cueId,
+        request.currentText,
+        request.targetDuration,
+        language,
+        detectedLanguage,
+        signal,
+        cueIndex >= 0 ? translatedPlan.cues[cueIndex]?.sourceText : undefined,
+        cueIndex > 0 ? [translatedPlan.cues[cueIndex - 1]?.sourceText || ''] : [],
+        cueIndex >= 0 && cueIndex + 1 < translatedPlan.cues.length ? [translatedPlan.cues[cueIndex + 1]?.sourceText || ''] : [],
+        { measuredDuration: request.measuredDuration, maxDuration: request.maxDuration }
+      )
+    },
+    onRephrase: (event) => {
+      const measured = event.previousSeconds == null ? ''
+        : ` previousSeconds=${event.previousSeconds.toFixed(3)} candidateSeconds=${event.candidateSeconds?.toFixed(3) ?? 'unknown'}`
+      logInfo(`[AutoShort:rephrase] cue=${safeArtifactSegment(event.cueId)} phase=${event.phase} outcome=${event.outcome} candidates=${event.candidateCount}${measured}`)
+    },
     signal: job.controller.signal,
     onProgress: (completed, count, cueId) => emitProgress(job, item, 'generating_tts', 58 + (completed / Math.max(1, count)) * 20, `Đang tạo voice ${completed}/${count} (${cueId})`, index, total),
     prefetchTts: Boolean(policy?.prefetchTts)
@@ -2561,13 +2726,20 @@ async function processSingleVideo(
     telemetryBudget: job.telemetryBudget
   })
   if (result.translationIdentity && result.translationAssessment?.disposition === 'needs-review') {
+    let generation = 0
+    try {
+      const persisted = JSON.parse(await readFile(join(checkpointDir, 'checkpoint.json'), 'utf8')) as Record<string, unknown>
+      generation = Number.isInteger(persisted.translationRetryGeneration) ? Number(persisted.translationRetryGeneration) : 0
+    } catch {
+      // The retry action will validate the authoritative checkpoint again.
+    }
     translationRetryRegistry.set(item.id, {
       itemId: item.id,
       filePath: item.filePath,
       checkpointFile: join(checkpointDir, 'checkpoint.json'),
       checkpointRoot: join(app.getPath('userData'), 'autoshort-checkpoints'),
       expectedIdentity: result.translationIdentity,
-      generation: 0,
+      generation,
       inFlight: false
     })
   } else if (result.status === 'done') {
@@ -2603,8 +2775,35 @@ export async function retryAutoShortTranslation(
     typeof request.expectedIdentity !== 'string' || !/^[a-f0-9]{64}$/iu.test(request.expectedIdentity)) {
     return { ok: false, error: 'Yêu cầu thử lại bản dịch không hợp lệ.' }
   }
-  const entry = translationRetryRegistry.get(request.itemId)
-  if (!entry) return { ok: false, error: 'Không còn phiên dịch cần kiểm tra trên máy này. Hãy chạy lại video để tạo phiên mới.' }
+  let entry = translationRetryRegistry.get(request.itemId)
+  if (!entry) {
+    // Rehydrate the app-owned entry after a main/renderer restart. The
+    // renderer still supplies only the opaque item ID and identity; the
+    // checkpoint path is derived inside userData and is containment-checked.
+    const checkpointRoot = join(app.getPath('userData'), 'autoshort-checkpoints')
+    const checkpointFile = join(checkpointRoot, safeArtifactSegment(request.itemId), 'checkpoint.json')
+    try {
+      await assertContainedParentDirectory(checkpointFile, checkpointRoot, 'translation retry checkpoint')
+      const persisted = JSON.parse(await readFile(checkpointFile, 'utf8')) as Record<string, unknown>
+      const persistedAssessment = persisted.translationAssessment as { disposition?: unknown } | undefined
+      if (persisted.translationKey !== request.expectedIdentity || persistedAssessment?.disposition !== 'needs-review') {
+        return { ok: false, error: 'Checkpoint không còn chứa bản dịch cần kiểm tra cho identity này.' }
+      }
+      const generation = Number.isInteger(persisted.translationRetryGeneration) ? Number(persisted.translationRetryGeneration) : 0
+      entry = {
+        itemId: request.itemId,
+        filePath: '',
+        checkpointFile,
+        checkpointRoot,
+        expectedIdentity: request.expectedIdentity,
+        generation,
+        inFlight: false
+      }
+      translationRetryRegistry.set(request.itemId, entry)
+    } catch {
+      return { ok: false, error: 'Không còn phiên dịch cần kiểm tra trên máy này. Hãy chạy lại video để tạo phiên mới.' }
+    }
+  }
   if (entry.expectedIdentity !== request.expectedIdentity) return { ok: false, error: 'Identity bản dịch đã thay đổi; yêu cầu cũ không còn hợp lệ.' }
   if (entry.inFlight) return { ok: false, error: 'Đang chuẩn bị lượt thử lại bản dịch này.' }
   entry.inFlight = true
@@ -2613,7 +2812,11 @@ export async function retryAutoShortTranslation(
     const raw = await readFile(entry.checkpointFile, 'utf8')
     const checkpoint = JSON.parse(raw) as Record<string, unknown>
     if (checkpoint.translationKey !== entry.expectedIdentity) return { ok: false, error: 'Checkpoint không còn khớp identity bản dịch.' }
-    const generation = Number.isInteger(checkpoint.translationRetryGeneration) ? Number(checkpoint.translationRetryGeneration) + 1 : entry.generation + 1
+    const persistedGeneration = Number.isInteger(checkpoint.translationRetryGeneration) ? Number(checkpoint.translationRetryGeneration) : 0
+    if (entry.preparedGeneration === persistedGeneration + 1 || persistedGeneration > entry.generation) {
+      return { ok: false, error: 'Lượt thử lại này đã được chuẩn bị; hãy bấm Bắt đầu chạy lại trước.' }
+    }
+    const generation = persistedGeneration + 1
     const next = {
       ...checkpoint,
       translationRetryGeneration: generation,
@@ -2629,7 +2832,7 @@ export async function retryAutoShortTranslation(
     } finally {
       await rm(temporary, { force: true }).catch(() => {})
     }
-    entry.generation = generation
+    entry.preparedGeneration = generation
     entry.expectedIdentity = request.expectedIdentity
     return { ok: true, generation }
   } catch (error) {

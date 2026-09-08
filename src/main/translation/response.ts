@@ -148,9 +148,19 @@ export function parseTranslationResponse(
 
 /** Parse the separate rephrase grammar without treating free-form prose as a candidate. */
 export function parseRephraseResponse(raw: string, cueId: string): ParseOutcome {
+  return parseBatchRephraseResponse(raw, [cueId])
+}
+
+/** Protocol labels must never become spoken text, even from a custom adapter. */
+export function containsRephraseLabel(text: string, cueIds: readonly string[] = []): boolean {
+  if (/\[[^\]\r\n]+:\d+\]|\bcue-[\w-]+:\d+\b/iu.test(text)) return true
+  return cueIds.some((id) => id.trim() && new RegExp(`${escapeRegExp(id.trim())}:\\d+\\b`, 'u').test(text))
+}
+
+export function parseBatchRephraseResponse(raw: string, cueIds: readonly string[]): ParseOutcome {
   const issues: TranslationIssue[] = []
-  const normalizedCueId = cueId.trim()
-  if (!normalizedCueId) {
+  const normalizedIds = cueIds.map((id) => id.trim())
+  if (!normalizedIds.length || normalizedIds.some((id) => !id)) {
     issues.push(issue('invalid-source', 'Rephrase yêu cầu cue ID hợp lệ.'))
     return { items: [], issues, complete: false }
   }
@@ -162,7 +172,11 @@ export function parseRephraseResponse(raw: string, cueId: string): ParseOutcome 
   const items: TranslationItem[] = []
   const seen = new Set<string>()
   const pattern = /^\s*\[([^\]]+)\]\s*(.*?)\s*$/u
-  for (const line of unwrapped.text.replace(/\r\n/g, '\n').split('\n')) {
+  // Models can return several labelled alternatives on one physical line.
+  // Split every candidate-shaped marker, including unknown/out-of-range IDs,
+  // so the normal strict validator sees them instead of speaking the suffix.
+  const normalized = unwrapped.text.replace(/\r\n/g, '\n').replace(/(\[[^\]\r\n]+:\d+\])/gu, '\n$1')
+  for (const line of normalized.split('\n')) {
     if (!line.trim()) continue
     const match = pattern.exec(line)
     if (!match) {
@@ -171,8 +185,8 @@ export function parseRephraseResponse(raw: string, cueId: string): ParseOutcome 
     }
     const id = match[1].trim()
     const text = match[2].trim()
-    if (!new RegExp(`^${escapeRegExp(normalizedCueId)}:[1-3]$`, 'u').test(id)) {
-      issues.push(issue('unknown-id', `Rephrase trả về candidate ngoài cue ${normalizedCueId}.`, [id]))
+    if (!normalizedIds.some((cueId) => new RegExp(`^${escapeRegExp(cueId)}:[1-3]$`, 'u').test(id))) {
+      issues.push(issue('unknown-id', 'Rephrase trả về candidate ngoài các cue yêu cầu.', [id]))
       continue
     }
     if (seen.has(id)) {
@@ -184,6 +198,12 @@ export function parseRephraseResponse(raw: string, cueId: string): ParseOutcome 
       issues.push(issue('empty-text', `Rephrase candidate ${id} rỗng.`, [id]))
       continue
     }
+    // An unnumbered inline bracket may be a foreign candidate label. Its
+    // boundary is ambiguous, so keep no supplemental text from this response.
+    if (/\[[^\]\r\n]+\]/u.test(text) || containsRephraseLabel(text, normalizedIds)) {
+      issues.push(issue('unparsed-content', `Rephrase candidate ${id} chứa nhãn phương án trong lời đọc.`, [id]))
+      continue
+    }
     items.push({ id, text })
   }
   return { items, issues, complete: issues.every((candidate) => candidate.severity !== 'error') }
@@ -191,6 +211,29 @@ export function parseRephraseResponse(raw: string, cueId: string): ParseOutcome 
 
 function escapeRegExp(value: string): string {
   return value.replace(/[.*+?^${}()|[\]\\]/gu, '\\$&')
+}
+
+/** Salvage only unambiguous, fully parsed cues; never infer a missing identity. */
+export function recoverBatchRephraseResponse(raw: string, cueIds: readonly string[]): ParseOutcome {
+  const expected = cueIds.map((id) => id.trim())
+  const labels = Array.from(raw.matchAll(/\[([^\]\r\n]+)\]/gu), (match) => match[1].trim())
+  const mixed = expected.filter((id) => labels.includes(id) && labels.some((label) => label.startsWith(`${id}:`)))
+  // Some providers return one choice as [exact-cue-id]. This is unambiguous;
+  // mixed numbered/unnumbered or repeated labels become duplicates below.
+  const normalized = raw.replace(/\[([^\]\r\n]+)\]/gu, (marker, id: string) =>
+    expected.includes(id.trim()) ? `[${id.trim()}:1]` : marker)
+  const parsed = parseBatchRephraseResponse(normalized, expected)
+  for (const id of mixed) parsed.issues.push(issue('duplicate-id', 'Rephrase trộn nhãn có và không có số phương án cho cùng cue.', [id]))
+  if (parsed.issues.some((entry) => entry.code === 'unparsed-content' || entry.code === 'invalid-source')) {
+    return { ...parsed, items: [] }
+  }
+  const blocked = new Set(parsed.issues.flatMap((entry) => entry.cueIds.flatMap((label) =>
+    expected.filter((id) => label === id || label.startsWith(`${id}:`)))))
+  return {
+    ...parsed,
+    complete: parsed.complete && mixed.length === 0,
+    items: parsed.items.filter((item) => !expected.some((id) => blocked.has(id) && item.id.startsWith(`${id}:`)))
+  }
 }
 
 /** Map validated provider items back to source timing using IDs only. */

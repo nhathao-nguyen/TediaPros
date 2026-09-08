@@ -70,3 +70,20 @@ test('restoring a lower persisted quota never increases it', () => {
     resumed.charge('recovery', 'b0')
   }, TranslationBudgetExhaustedError)
 })
+
+test('resuming fewer pending batches retains the original plan and remaining quota', () => {
+  const original = createTranslationBudget(5, () => 0)
+  original.charge('normal', 'b0')
+  original.charge('normal', 'b1')
+  original.charge('recovery', 'b0')
+
+  const snapshot = original.snapshot()
+  const resumed = createTranslationBudget(2, () => 0, snapshot)
+  assert.equal(resumed.plannedRequests, 5)
+  assert.equal(resumed.recoveryLimit, 4)
+  assert.deepEqual(resumed.snapshot(), snapshot)
+
+  resumed.charge('normal', 'b2')
+  assert.equal(resumed.snapshot().normalUsed, 3)
+  assert.equal(resumed.snapshot().recoveryUsed, 1)
+})

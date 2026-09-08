@@ -8,6 +8,217 @@ import * as translationModule from '../src/main/dubbing/translation'
 import * as subtitleModule from '../src/main/dubbing/subtitles'
 import * as synthesisModule from '../src/main/dubbing/synthesis'
 
+test('preflight shortens predicted outliers in a batch before the first TTS call', async () => {
+  const events: string[] = []
+  const plan = planModule.buildDubbingPlan({ videoDuration: 5, cues: [
+    { id: 'a', start: 0, end: 1, text: 'A long sentence with the original meaning.' },
+    { id: 'b', start: 2, end: 3, text: 'Fine.' }
+  ] })
+  const result = await synthesisModule.synthesizeDubbingPlan({
+    plan, language: 'en', model: 'fixture',
+    predictor: { profile: { version: 2, samples: 1, weights: [0, 0, 0, 0, 0, 0], residualP90: 0 },
+      estimate: (text: string) => ({ seconds: text.startsWith('A long') ? 4 : 0.8, uncertaintySeconds: 0, confidence: 1 }), addSample: () => {} },
+    rephraseBatch: async (requests) => {
+      events.push('rephrase')
+      assert.deepEqual(requests.map((r) => r.cueId), ['a'])
+      assert.equal(requests[0].sourceText, plan.cues[0].sourceText)
+      assert.equal(requests[0].targetDuration, 1.5 * 1.1)
+      return new Map([['a', ['Short meaning.']]])
+    },
+    tts: { synthesize: async (r) => { events.push(r.text); return { path: r.cueId } } },
+    audio: { trim: async (path: string) => ({ path, duration: 0.8 }), applyTempo: async (path: string, _hint: string, duration: number) => ({ path, duration }) }
+  })
+  assert.deepEqual(events, ['rephrase', 'Short meaning.', 'Fine.'])
+  assert.equal(result.plan.cues[0].subtitles[0].text, 'Short meaning.')
+  assert.equal(result.plan.cues[0].rephrased, true)
+  assert.equal(plan.cues[0].finalSpokenText, plan.cues[0].sourceText, 'do not mutate input/cache')
+})
+
+for (const [id, natural, available] of [['cue-0-1490', 2.428, 1.42], ['cue-0-2320', 2.727, 1.24]] as const) {
+  test(`${id} rescues measured overflow once and rejects a still-too-long replacement`, async () => {
+    for (const replacementFits of [true, false]) {
+      let rephrases = 0
+      let calls = 0
+      const plan = planModule.buildDubbingPlan({ videoDuration: available + 0.5, cues: [
+        { id, start: 0, end: available, text: 'Keep the full meaning.' }
+      ] })
+      const run = synthesisModule.synthesizeDubbingPlan({
+        plan, language: 'en', model: 'fixture', localTempoDelta: 0.15,
+        predictor: { profile: { version: 2, samples: 1, weights: [0, 0, 0, 0, 0, 0], residualP90: 0 },
+          estimate: () => ({ seconds: 1, uncertaintySeconds: 0, confidence: 1 }), addSample: () => {} },
+        tts: { synthesize: async () => { calls++; return { path: `audio-${calls}` } } },
+        audio: { trim: async (path) => ({ path, duration: calls > 1 && replacementFits ? available : natural }),
+          applyTempo: async (path, _hint, duration) => ({ path, duration }) },
+        rephrase: async (request) => {
+          rephrases++
+          assert.ok(request.targetDuration <= available * 1.1 + 0.001)
+          return ['Full meaning.']
+        }
+      })
+      if (replacementFits) {
+        const result = await run
+        assert.ok(result.plan.cues[0].tempo <= 1.45)
+        assert.equal(result.plan.cues[0].subtitles[0].text, 'Full meaning.')
+      } else {
+        await assert.rejects(run, /vượt trần 1.45x/u)
+      }
+      assert.equal(rephrases, 1)
+      assert.equal(calls, 2)
+    }
+  })
+}
+
+test('cancellation during preflight never starts TTS', async () => {
+  const controller = new AbortController()
+  let calls = 0
+  await assert.rejects(synthesisModule.synthesizeDubbingPlan({
+    plan: planModule.buildDubbingPlan({ videoDuration: 2, cues: [{ id: 'a', start: 0, end: 1, text: 'A very long sentence that must be shortened before speaking.' }] }),
+    language: 'en', model: 'fixture', signal: controller.signal,
+    rephraseBatch: async () => { controller.abort(new Error('cancel fixture')); return new Map() },
+    tts: { synthesize: async () => { calls++; return { path: 'unused' } } },
+    audio: { trim: async (path) => ({ path, duration: 1 }), applyTempo: async (path, _hint, duration) => ({ path, duration }) }
+  }), /Đã hủy tác vụ/u)
+  assert.equal(calls, 0)
+})
+
+for (const [id, natural, firstRescue, available, fitted] of [
+  ['cue-0-2320', 2.738, 1.959, 1.24, 1.7],
+  ['cue-0-1490', 2.397, 2.310, 1.42, 1.95],
+  ['cue-0-0', 2.789, 1.989, 1.26, 1.75]
+] as const) {
+  test(`${id} tries another distinct candidate when the first shorter audio still overflows`, async () => {
+    const spoken: string[] = []
+    const outcomes: string[] = []
+    let llmCalls = 0
+    const result = await synthesisModule.synthesizeDubbingPlan({
+      plan: planModule.buildDubbingPlan({ videoDuration: available + 0.5, cues: [
+        { id, start: 0, end: available, text: 'Carefully inspect the food before eating it.' }
+      ] }), language: 'en', model: 'fixture',
+      predictor: { profile: { version: 2, samples: 1, weights: [0, 0, 0, 0, 0, 0], residualP90: 0 },
+        estimate: () => ({ seconds: 1, uncertaintySeconds: 0, confidence: 1 }), addSample: () => {} },
+      rephrase: async (request) => {
+        llmCalls++
+        assert.equal((request as any).measuredDuration, natural)
+        assert.ok(Math.abs((request as any).maxDuration - available * 1.45) < 0.001)
+        return ['Check before eating.', 'Inspect before eating.', 'Inspect before eating.']
+      },
+      tts: { synthesize: async (request) => { spoken.push(request.text); return { path: request.text } } },
+      audio: { trim: async (path) => ({ path, duration: spoken.length === 1 ? natural : spoken.length === 2 ? firstRescue : fitted }),
+        applyTempo: async (path, _hint, duration) => ({ path, duration }) },
+      onRephrase: (event) => { outcomes.push(event.outcome) }
+    })
+    assert.equal(llmCalls, 1)
+    assert.equal(spoken.length, 3)
+    assert.equal(result.plan.cues[0].finalSpokenText, 'Inspect before eating.')
+    assert.ok(result.plan.cues[0].tempo <= 1.45)
+    assert.deepEqual(outcomes, ['improved-overflow', 'accepted'])
+    assert.equal(result.metrics.rephraseCount, 1)
+  })
+}
+
+for (const [replacementDuration, expectedOutcome] of [[14.86, 'no-improvement'], [2.311, 'no-improvement'], [0.2, 'incomplete-audio']] as const) {
+test(`rescue audio of ${replacementDuration}s never replaces the better original clip or poisons the predictor`, async () => {
+  const samples: number[] = []
+  const events: unknown[] = []
+  let calls = 0
+  const result = await synthesisModule.synthesizeDubbingPlan({
+    plan: planModule.buildDubbingPlan({ videoDuration: 2.5, paceMode: 'fixed', cues: [
+      { id: 'cue-0-1490', start: 0, end: 2, text: 'Check the crab before eating.' }
+    ] }), language: 'en', model: 'fixture', fixedTempo: 1,
+    predictor: { profile: { version: 2, samples: 1, weights: [0, 0, 0, 0, 0, 0], residualP90: 0 },
+      estimate: () => ({ seconds: 1, uncertaintySeconds: 0, confidence: 1 }), addSample: (_text, seconds) => { samples.push(seconds) } },
+    tts: { synthesize: async () => ({ path: ++calls === 1 ? 'original' : 'bad-rescue' }) },
+    audio: { trim: async (path) => ({ path, duration: path === 'original' ? 2.311 : replacementDuration }),
+      applyTempo: async (path, _hint, duration) => ({ path, duration }) },
+    rephrase: async () => ['Inspect the crab before eating.'],
+    onRephrase: (event) => { events.push(event) }
+  })
+  assert.equal(calls, 2)
+  assert.equal(result.clips[0].path, 'original')
+  assert.equal(result.plan.cues[0].finalSpokenText, 'Check the crab before eating.')
+  assert.equal(result.plan.cues[0].naturalDuration, 2.311)
+  assert.equal(result.plan.cues[0].rephrased, false)
+  assert.deepEqual(samples, [2.311])
+  assert.deepEqual(events, [{ cueId: 'cue-0-1490', phase: 'rescue', outcome: expectedOutcome,
+    candidateCount: 1, previousSeconds: 2.311, candidateSeconds: replacementDuration }])
+})
+}
+
+test('embedded candidate labels are rejected even when a rephrase adapter bypasses the parser', async () => {
+  let calls = 0
+  const result = await synthesisModule.synthesizeDubbingPlan({
+    plan: planModule.buildDubbingPlan({ videoDuration: 2.5, paceMode: 'fixed', cues: [
+      { id: 'cue-0-1490', start: 0, end: 2, text: 'Check the crab before eating.' }
+    ] }), language: 'en', model: 'fixture', fixedTempo: 1,
+    predictor: { profile: { version: 2, samples: 1, weights: [0, 0, 0, 0, 0, 0], residualP90: 0 },
+      estimate: () => ({ seconds: 1, uncertaintySeconds: 0, confidence: 1 }), addSample: () => {} },
+    tts: { synthesize: async () => { calls++; return { path: 'original' } } },
+    audio: { trim: async (path) => ({ path, duration: 2.311 }), applyTempo: async (path, _hint, duration) => ({ path, duration }) },
+    rephrase: async () => ['Check the crab. [cue-0-1490:2] Inspect it.']
+  })
+  assert.equal(calls, 1)
+  assert.equal(result.plan.cues[0].finalSpokenText, 'Check the crab before eating.')
+})
+
+test('a resumed plan with leaked labels is stopped before TTS or cache access', async () => {
+  let calls = 0
+  const plan = planModule.buildDubbingPlan({ videoDuration: 3, cues: [
+    { id: 'cue-0-1490', start: 0, end: 2, text: 'Check the crab.' }
+  ] })
+  plan.cues[0].finalSpokenText = 'Check the crab. [cue-0-1490:2] Inspect it.'
+  await assert.rejects(synthesisModule.synthesizeDubbingPlan({
+    plan, language: 'en', model: 'fixture',
+    tts: { synthesize: async () => { calls++; return { path: 'unused' } } },
+    audio: { trim: async (path) => ({ path, duration: 1 }), applyTempo: async (path, _hint, duration) => ({ path, duration }) }
+  }), /chứa nhãn rephrase.*trước TTS/u)
+  assert.equal(calls, 0)
+})
+
+test('a worse rescue preserves the original overflow diagnostic and never applies excessive tempo', async () => {
+  let calls = 0
+  await assert.rejects(synthesisModule.synthesizeDubbingPlan({
+    plan: planModule.buildDubbingPlan({ videoDuration: 1.92, cues: [
+      { id: 'cue-0-1490', start: 0, end: 1.42, text: 'Check the crab before eating.' }
+    ] }), language: 'en', model: 'fixture',
+    predictor: { profile: { version: 2, samples: 1, weights: [0, 0, 0, 0, 0, 0], residualP90: 0 },
+      estimate: () => ({ seconds: 1, uncertaintySeconds: 0, confidence: 1 }), addSample: () => {} },
+    tts: { synthesize: async () => ({ path: ++calls === 1 ? 'original' : 'bad-rescue' }) },
+    audio: { trim: async (path) => ({ path, duration: path === 'original' ? 2.311 : 14.86 }),
+      applyTempo: async () => { throw new Error('DSP must not run beyond the hard ceiling') } },
+    rephrase: async () => ['Inspect the crab before eating.']
+  }), /cần nhịp 1.627x, vượt trần 1.45x/u)
+  assert.equal(calls, 2)
+})
+
+test('rescue never synthesizes more than three distinct alternatives or recalibrates from worse clips', async () => {
+  const spoken: string[] = []
+  const samples: number[] = []
+  let rephrases = 0
+  await assert.rejects(synthesisModule.synthesizeDubbingPlan({
+    plan: planModule.buildDubbingPlan({ videoDuration: 1.74, cues: [{ id: 'a', start: 0, end: 1.24, text: 'Original text.' }] }),
+    language: 'en', model: 'fixture',
+    predictor: { profile: { version: 2, samples: 1, weights: [0, 0, 0, 0, 0, 0], residualP90: 0 },
+      estimate: () => ({ seconds: 1, uncertaintySeconds: 0, confidence: 1 }), addSample: (_text, seconds) => { samples.push(seconds) } },
+    rephrase: async () => { rephrases++; return ['One choice.', 'One choice.', 'Two choices.', 'Three choices.', 'Fourth option.'] },
+    tts: { synthesize: async (request) => { spoken.push(request.text); return { path: request.text } } },
+    audio: { trim: async (path) => ({ path, duration: spoken.length === 1 ? 2.738 : 10 }), applyTempo: async () => { throw new Error('No DSP for overflowing audio') } }
+  }), /cần nhịp 2.208x, vượt trần 1.45x/u)
+  assert.deepEqual(spoken, ['Original text.', 'One choice.', 'Two choices.', 'Three choices.'])
+  assert.equal(rephrases, 1)
+  assert.deepEqual(samples, [2.738])
+})
+
+test('measured DSP output cannot silently exceed the hard tempo ceiling', async () => {
+  await assert.rejects(synthesisModule.synthesizeDubbingPlan({
+    plan: planModule.buildDubbingPlan({ videoDuration: 3, cues: [{ id: 'a', start: 0, end: 2, text: 'Full meaning.' }] }),
+    language: 'en', model: 'fixture', fixedTempo: 1.1,
+    predictor: { profile: { version: 2, samples: 1, weights: [0, 0, 0, 0, 0, 0], residualP90: 0 }, estimate: () => ({ seconds: 2, confidence: 1, uncertaintySeconds: 0 }), addSample: () => {} },
+    tts: { synthesize: async () => ({ path: 'raw' }) },
+    audio: { trim: async (path: string) => ({ path, duration: 2.6 }),
+      applyTempo: async (path: string) => ({ path, duration: 1 }) }
+  }), /tempo đo được.*vượt trần/u)
+})
+
 type PlanBuilder = (input: {
   version: number
   videoDuration: number

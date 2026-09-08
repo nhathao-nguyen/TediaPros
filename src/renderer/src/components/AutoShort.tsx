@@ -132,7 +132,7 @@ export default function AutoShort(): JSX.Element {
   const [outputDir, setOutputDir] = useTabOutputDir('tblao.outputDir.autoshort')
 
   // Danh sách video hàng đợi
-  const [tasks, setTasks] = useState<AutoShortTaskItem[]>([])
+  const [tasks, setTasks] = usePersistedState<AutoShortTaskItem[]>('tblao.autoshort.tasks', [])
   const [selectedId, setSelectedId] = useState<string | null>(null)
   const selectedTask = useMemo(() => {
     return tasks.find((t) => t.id === selectedId) || tasks[0] || null
@@ -381,6 +381,10 @@ export default function AutoShort(): JSX.Element {
 
   // Batch Execution State
   const [isRunning, setIsRunning] = useState(false)
+  // An explicit translation retry is scoped to the items the user prepared;
+  // it must never silently reset and re-run already completed videos.
+  const [retryPendingIdList, setRetryPendingIdList] = usePersistedState<string[]>('tblao.autoshort.retryPendingIds', [])
+  const retryPendingIds = useMemo(() => new Set(retryPendingIdList), [retryPendingIdList])
   const [activeJobId, setActiveJobId] = useState<string | null>(null)
   const [overallProgress, setOverallProgress] = useState<{ current: number; total: number; message: string }>({
     current: 0,
@@ -468,6 +472,26 @@ export default function AutoShort(): JSX.Element {
 
   useEffect(() => {
     void refreshFonts()
+  }, [])
+
+  // A renderer restart cannot have a live job attached. Mark interrupted
+  // transient states idle while preserving done/error/review evidence stored
+  // in localStorage; an explicitly persisted retry selection remains queued.
+  useEffect(() => {
+    const transient = new Set<AutoShortTaskItem['status']>([
+      'queued', 'extracting_sub', 'removing_subtitles', 'translating',
+      'separating_audio', 'generating_tts', 'stitching_audio',
+      'rendering_video'
+    ])
+    setTasks((prev) => {
+      let changed = false
+      const next = prev.map((task) => {
+        if (!transient.has(task.status)) return task
+        changed = true
+        return { ...task, status: 'idle' as const, currentStepMessage: 'Sẵn sàng (phiên trước đã dừng).' }
+      })
+      return changed ? next : prev
+    })
   }, [])
 
   // Check stored API key
@@ -695,11 +719,13 @@ export default function AutoShort(): JSX.Element {
   const removeTask = (id: string, e: React.MouseEvent): void => {
     e.stopPropagation()
     setTasks((prev) => prev.filter((t) => t.id !== id))
+    setRetryPendingIdList((prev) => prev.filter((itemId) => itemId !== id))
     if (selectedId === id) setSelectedId(null)
   }
 
   const clearAllTasks = (): void => {
     setTasks([])
+    setRetryPendingIdList([])
     setSelectedId(null)
     setVideoW(0)
     setVideoH(0)
@@ -844,12 +870,20 @@ export default function AutoShort(): JSX.Element {
   // Khởi động chạy hàng loạt Auto Short
   const startBatch = async (): Promise<void> => {
     if (tasks.length === 0 || isRunning || sttnPreviewRunning) return
+    const retryOnly = retryPendingIds.size > 0
+    const runnableTasks = retryOnly
+      ? tasks.filter((task) => retryPendingIds.has(task.id))
+      : tasks
+    if (runnableTasks.length === 0) {
+      setRetryPendingIdList([])
+      return
+    }
     setDependencyAction('batch')
     let backgroundMusicConfig: AutoShortBackgroundMusicConfig | undefined
     if (ttsEnabled && audioMode === 'replace' && backgroundMusicEnabled) {
       const assignmentResult = createAutoShortMusicAssignments({
         mode: backgroundMusicMode,
-        itemIds: tasks.map((task) => task.id),
+        itemIds: runnableTasks.map((task) => task.id),
         trackPaths: backgroundMusicTracks.map((track) => track.path),
         selectedTrackPath: backgroundMusicSingleTrack,
         perVideoAssignments: backgroundMusicAssignments
@@ -878,24 +912,23 @@ export default function AutoShort(): JSX.Element {
     }
 
     setIsRunning(true)
-    setOverallProgress({ current: 0, total: tasks.length, message: 'Đang khởi động tiến trình hàng loạt…' })
+    setOverallProgress({ current: 0, total: runnableTasks.length, message: retryOnly ? 'Đang khởi động lượt thử lại…' : 'Đang khởi động tiến trình hàng loạt…' })
 
-    setTasks((prev) =>
-      prev.map((t) => ({
-        ...t,
-        status: 'queued',
-        percent: 0,
-        outputPath: undefined,
-        artifactDir: undefined,
-        error: undefined,
-        title: undefined,
-        titlePath: undefined,
-        titleError: undefined,
-        translationAssessment: undefined,
-        translationIdentity: undefined,
-        currentStepMessage: 'Đang trong hàng đợi…'
-      }))
-    )
+    const runnableIds = new Set(runnableTasks.map((task) => task.id))
+    setTasks((prev) => prev.map((t) => runnableIds.has(t.id) ? ({
+      ...t,
+      status: 'queued',
+      percent: 0,
+      outputPath: undefined,
+      artifactDir: undefined,
+      error: undefined,
+      title: undefined,
+      titlePath: undefined,
+      titleError: undefined,
+      translationAssessment: undefined,
+      translationIdentity: undefined,
+      currentStepMessage: 'Đang trong hàng đợi…'
+    }) : t))
 
     const w = videoW > 0 ? videoW : 1280
     const h = videoH > 0 ? videoH : 720
@@ -983,13 +1016,14 @@ export default function AutoShort(): JSX.Element {
 
     const started = await window.api.autoShortStart({
       config,
-      items: tasks.map((task) => ({ id: task.id, filePath: task.filePath }))
+      items: runnableTasks.map((task) => ({ id: task.id, filePath: task.filePath }))
     })
     if (!started.ok) {
       setIsRunning(false)
       setOverallProgress((prev) => ({ ...prev, message: started.error }))
       return
     }
+    setRetryPendingIdList([])
     setActiveJobId(started.jobId)
   }
 
@@ -1022,6 +1056,7 @@ export default function AutoShort(): JSX.Element {
       translationAssessment: undefined,
       currentStepMessage: `Đã chuẩn bị lượt thử lại bản dịch #${result.generation ?? 1}; bấm Bắt đầu chạy lại để gọi provider.`
     } : item))
+    setRetryPendingIdList((prev) => prev.includes(task.id) ? prev : [...prev, task.id])
   }
 
   const chooseOutputDir = async (): Promise<void> => {

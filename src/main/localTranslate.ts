@@ -27,9 +27,12 @@ import {
 import { joinGroupText } from './semanticGrouping'
 import { debugRaw, errLabel, logInfo, logWarn } from './logger'
 import { DEFAULT_AI_SERVER_URL, type DichKeyStatus, type SrtBlock } from '../shared/types'
-import type { TranslationInput } from '../shared/translation'
+import type { TranslationAssessment, TranslationInput } from '../shared/translation'
+import type { TranslationBudgetSnapshot } from './translation/budget'
 import { getGlobalResourceManager } from './autoShortResourceManager'
 import { buildTranslationMessages } from './translation/prompts'
+import type { TranslationAdapter } from './translation/orchestrator'
+import { translateFileWithAdapter } from './translation/fileRunner'
 
 export type { TranslationMode }
 
@@ -53,6 +56,9 @@ export interface TranslateOptions {
   sleep?: (delayMs: number, signal?: AbortSignal) => Promise<void>
   /** Durable observer invoked after each validated provider batch. */
   onBatch?: (items: readonly TranslationItem[], batchIndex: number) => Promise<void> | void
+  onBudget?: (snapshot: TranslationBudgetSnapshot) => Promise<void> | void
+  resumeItems?: readonly TranslationItem[]
+  restoredBudget?: TranslationBudgetSnapshot
 }
 
 export const LOCAL_TRANSLATION_DEADLINE_MS = 10 * 60 * 1000
@@ -141,6 +147,60 @@ export async function loadLocalKey(): Promise<string> {
 
 export async function hasLocalKey(): Promise<boolean> {
   return (await loadLocalKey()).length > 0
+}
+
+/**
+ * One-request Local adapter used by the provider-neutral AutoShort
+ * orchestrator. It deliberately performs no retry or model hop; the caller's
+ * shared budget owns those decisions.
+ */
+export function createLocalTranslationAdapter(
+  apiKey: string,
+  serverUrl?: string,
+  model = 'llm-default'
+): TranslationAdapter {
+  const base = normalizeUrl(serverUrl)
+  return {
+    capability: {
+      provider: 'local',
+      modelIdentity: model.trim() || 'llm-default',
+      revisionKnown: false,
+      format: 'id-lines',
+      contextTokens: null,
+      outputTokens: 2_048
+    },
+    async requestOnce(batch, signal) {
+      const messages = buildTranslationMessages(batch.input, 'id-lines')
+      const response = await getGlobalResourceManager().withLease(['server-inference'], signal, async () => fetch(`${base}/v1/chat/completions`, {
+        method: 'POST',
+        headers: getAuthHeaders(apiKey),
+        body: JSON.stringify({
+          model: model.trim() || 'llm-default',
+          messages,
+          temperature: DEFAULT_LOCAL_TRANSLATION_TEMPERATURE,
+          max_tokens: batch.maxOutputTokens
+        }),
+        signal
+      }))
+      if (!response.ok) {
+        const body = await response.text().catch(() => '')
+        const retryable = response.status === 408 || response.status === 425 || response.status === 429 || response.status >= 500
+        throw Object.assign(new Error(translationHttpError(response.status, body).message), {
+          status: response.status,
+          providerCode: retryable ? 'provider-transient' : response.status === 401 || response.status === 403 ? 'provider-auth' : 'provider-protocol'
+        })
+      }
+      const data = await response.json() as {
+        choices?: Array<{ message?: { content?: string }; finish_reason?: string }>
+        translation?: string
+      }
+      return {
+        raw: data.choices?.[0]?.message?.content || data.translation || '',
+        truncated: data.choices?.[0]?.finish_reason === 'length',
+        modelIdentity: model.trim() || 'llm-default'
+      }
+    }
+  }
 }
 
 function normalizeUrl(url?: string): string {
@@ -449,7 +509,7 @@ export async function localTranslateSrt(
   apiKey?: string,
   onProgress?: (done: number, total: number) => void,
   options: TranslateOptions = {}
-): Promise<{ ok: boolean; error?: string }> {
+): Promise<{ ok: boolean; error?: string; assessment?: TranslationAssessment; budget?: TranslationBudgetSnapshot; modelIdentity?: string }> {
   const base = normalizeUrl(serverUrl)
   const effectiveKey = apiKey !== undefined && apiKey !== '' ? apiKey : await loadLocalKey()
   const mode: TranslationMode = options.mode || (options.concise ? 'dubbing' : 'subtitle')
@@ -473,11 +533,31 @@ export async function localTranslateSrt(
     sourceIndex: block.sourceIndex ?? index
   }))
 
+  if (options.strict) {
+    const result = await translateFileWithAdapter(
+      srtPath,
+      outPath,
+      targetLanguage,
+      createLocalTranslationAdapter(effectiveKey, serverUrl, options.model),
+      {
+        sourceLanguage: options.sourceLanguage,
+        mode,
+        signal: options.signal,
+        onProgress,
+        onBatch: options.onBatch,
+        onBudget: options.onBudget,
+        resumeItems: options.resumeItems,
+        restoredBudget: options.restoredBudget
+      }
+    )
+    return { ok: result.ok, error: result.error, assessment: result.assessment, budget: result.budget, modelIdentity: result.modelIdentity }
+  }
+
   const total = sourceBlocks.length
   const sourceLanguage = resolveTranslationSourceLanguage(options.sourceLanguage)
   const semanticGroups = buildSemanticGroups(sourceBlocks, undefined, sourceLanguage)
   const batches = mode === 'dubbing'
-    ? buildTranslationBatches(sourceBlocks, LOCAL_DUBBING_BATCH_MAX_CHARS, LOCAL_DUBBING_BATCH_MAX_CUES, targetLanguage).map((batch) => buildSemanticGroups(batch, undefined, targetLanguage))
+    ? buildTranslationBatches(sourceBlocks, LOCAL_DUBBING_BATCH_MAX_CHARS, LOCAL_DUBBING_BATCH_MAX_CUES, sourceLanguage).map((batch) => buildSemanticGroups(batch, undefined, sourceLanguage))
     : buildSemanticBatches(semanticGroups, 10)
   const translatedBlocks: SrtBlock[] = []
 
@@ -535,7 +615,7 @@ export async function localTranslateSrt(
     const systemPrompt = `${buildTranslationMessages(promptInput, 'id-lines')[0].content}\n\n${outputContract}`
     let userPrompt: string
     if (mode === 'dubbing') {
-      userPrompt = buildDubbingTranslationPayload(batchCues, sourceBlocks, options.contextRadius, targetLanguage)
+      userPrompt = buildDubbingTranslationPayload(batchCues, sourceBlocks, options.contextRadius, targetLanguage, sourceLanguage)
     } else {
       const firstCueIndex = sourceBlocks.findIndex((b) => b.id === batchCues[0]?.id)
       const lastCueIndex = sourceBlocks.findIndex((b) => b.id === batchCues[batchCues.length - 1]?.id)
@@ -638,7 +718,10 @@ export async function localTranslateSrt(
       // Counts only: no prompt, raw response, unknown ID strings or credentials.
       logInfo(`[Translate] schema expected=${expectedIds.length} parsed=${candidate.length} missing=${missingCount} duplicate=${duplicateCount} unknown=${unknownCount} empty=${emptyCount} chars=${transText.length} fenced=${transText.startsWith('```')}`)
       const sourceEcho = !truncated && isLikelySourceScriptEcho(sourceBlocks, candidate, sourceLanguage, targetLanguage)
-      const usable = !truncated && !sourceEcho
+      const untrustedContent = parsedResponse.issues.some((item) =>
+        item.code === 'unparsed-content' || item.code === 'truncated-output' || item.code === 'provider-protocol'
+      )
+      const usable = !truncated && !sourceEcho && !untrustedContent
         ? collectUsableTranslationItems(candidate, expectedIds)
         : new Map<string, string>()
       // Some older local gateways echo a read-only context line that is not
@@ -683,10 +766,10 @@ export async function localTranslateSrt(
       // Preserve those valid translations and recurse only over groups that
       // still contain a missing cue. This keeps semantic boundaries intact
       // while avoiding duplicate requests for work already completed.
-      if (!truncated && !sourceEcho && usable.size > 0) {
+      if (!truncated && !sourceEcho && !untrustedContent && usable.size > 0) {
         const mergedUsable = new Map(partialMap)
         for (const [id, text] of usable) mergedUsable.set(id, text)
-        const missingGroups = groupsForMissingCues(batchGroups, mergedUsable, targetLanguage)
+        const missingGroups = groupsForMissingCues(batchGroups, mergedUsable, sourceLanguage)
         if (mergedUsable.size > 0 && mergedUsable.size < expectedIds.length && missingGroups.length > 0) {
           partialMap = mergedUsable
           partialMissingGroups = missingGroups
@@ -714,7 +797,7 @@ export async function localTranslateSrt(
       return new Map([...partialMap.entries(), ...recovered.entries()])
     }
 
-    const split = splitDepth < 2 ? splitSemanticBatch(batchGroups, targetLanguage) : null
+    const split = splitDepth < 2 ? splitSemanticBatch(batchGroups, sourceLanguage) : null
     if (split) {
       const [leftGroups, rightGroups] = split
       const leftCount = leftGroups.reduce((sum, g) => sum + g.cues.length, 0)

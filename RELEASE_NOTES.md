@@ -1,3 +1,13 @@
+## TediaPros v0.1.23
+
+### Độ tin cậy dịch và lồng tiếng AutoShort
+
+- Bổ sung bộ điều phối dịch có ngân sách, checkpoint, kiểm tra ID/cấu trúc phản hồi và đánh giá ngôn ngữ để khôi phục phần cue còn thiếu mà không ghi đè phần đã hợp lệ.
+- Gom các mảnh ASR liên tiếp thành đơn vị thoại trước TTS, giữ ledger cue nguồn và chỉ đặt khoảng bảo vệ 0,50 giây giữa các đơn vị thoại. Điều này loại bỏ các cửa sổ đọc 0,14–0,38 giây phát sinh khi một câu bị tách thành nhiều mảnh.
+- Thêm preflight rút gọn có giới hạn và một lượt recovery TTS khi audio vượt cửa sổ. Mọi phương án vẫn phải giữ nội dung cần thiết; nếu không fit sẽ yêu cầu xem lại.
+- Giữ nguyên trần tempo vật lý 1,45x; ứng dụng không tăng tốc quá trần hoặc cắt lời để ép khớp timeline.
+- Phụ đề của đơn vị thoại được chia theo từ và gắn lại `sourceIndex` gốc để giữ đồng bộ với SRT sau khi gom cue.
+
 ## TediaPros v0.1.22
 
 ### Sửa runtime phụ đề và Douyin

@@ -125,17 +125,8 @@ export function createTranslationRetryGeneration(checkpoint: TranslationCheckpoi
   next.failures = {}
   next.inFlight = undefined
   next.assessment = undefined
-  next.budget = {
-    ...next.budget,
-    recoveryUsed: 0,
-    activeElapsedMs: 0,
-    perBatch: Object.fromEntries(Object.entries(next.budget.perBatch).map(([id, state]) => [id, {
-      ...state,
-      recoveryUsed: 0,
-      splitDepth: 0,
-      repairSets: [],
-      transportRetries: {}
-    }]))
-  }
+  // A manual retry is a new generation for UI/state purposes, but it must
+  // consume the same durable request, recovery and time budget. Resetting
+  // these counters would turn repeated clicks into an unbounded retry loop.
   return next
 }

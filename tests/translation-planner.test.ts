@@ -40,3 +40,26 @@ test('planner preserves a short cue ID and source timing', () => {
   const plan = planTranslation(input, { ...capability, outputTokens: 2048 })
   assert.deepEqual(plan.batches[0]?.input.cues.map((cue) => [cue.id, cue.start, cue.end]), [['c1', 4, 5]])
 })
+
+test('planner splits a semantic group when the exact serialized prompt would exceed context', () => {
+  const input: TranslationInput = {
+    sourceLanguage: 'vi', targetLocale: 'en', mode: 'subtitle',
+    cues: [
+      { id: 'first', sourceIndex: 0, start: 0, end: 1, groupId: 'g', text: 'A short source sentence.' },
+      { id: 'second', sourceIndex: 1, start: 1.1, end: 2.1, groupId: 'g', text: 'A second short source sentence.' }
+    ],
+    contextBefore: [], contextAfter: [], glossary: []
+  }
+  const plan = planTranslation(input, {
+    ...capability,
+    contextTokens: 1_400,
+    outputTokens: 64,
+    // Model a tokenizer where the shared message envelope costs 900 tokens
+    // and each source cue adds 250. This makes each cue fit while the intact
+    // semantic pair does not, independent of the literal fixture text size.
+    countTokens: (text) => 900 + (text.match(/source_index/gu) || []).length * 250
+  })
+  assert.equal(plan.unsupported, false)
+  assert.equal(plan.batches.length, 2)
+  assert.deepEqual(plan.batches.map((batch) => batch.input.cues.map((cue) => cue.id)), [['first'], ['second']])
+})

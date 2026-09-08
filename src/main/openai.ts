@@ -3,7 +3,8 @@ import { readFile, writeFile, rm } from 'node:fs/promises'
 import { join } from 'node:path'
 import { debugRaw, errLabel, logInfo } from './logger'
 import type { DichKeyStatus, SrtBlock } from '../shared/types'
-import type { TranslationInput } from '../shared/translation'
+import type { TranslationAssessment, TranslationInput, TranslationItem } from '../shared/translation'
+import type { TranslationBudgetSnapshot } from './translation/budget'
 import {
   buildSrt,
   buildDubbingTranslationPayload,
@@ -15,6 +16,8 @@ import {
 } from './translate-shared'
 import { buildTranslationMessages } from './translation/prompts'
 import { parseTranslationResponse } from './translation/response'
+import type { TranslationAdapter } from './translation/orchestrator'
+import { translateFileWithAdapter } from './translation/fileRunner'
 
 const BASE = 'https://api.openai.com/v1'
 
@@ -99,7 +102,7 @@ interface GenKQ {
 const HAN_KIEM = 20_000
 const HAN_DICH = 180_000
 
-/** OpenAI json_schema bat root object — boc mang {n,t} trong `items`. */
+/** OpenAI json_schema canonical root object — bọc mảng `{id,text}` trong `items`. */
 const SCHEMA = {
   type: 'json_schema' as const,
   json_schema: {
@@ -114,15 +117,41 @@ const SCHEMA = {
             type: 'object',
             properties: {
               id: { type: 'string' },
-              t: { type: 'string' }
+              text: { type: 'string' }
             },
-            required: ['id', 't'],
+            required: ['id', 'text'],
             additionalProperties: false
           }
         }
       },
       required: ['items'],
       additionalProperties: false
+    }
+  }
+}
+
+/** One OpenAI request; retries/model fallback belong to the shared scheduler. */
+export async function createOpenAiTranslationAdapter(key: string): Promise<TranslationAdapter> {
+  const models = await danhSach(key)
+  let cursor = 0
+  const firstModel = models[0] || 'gpt-4o-mini'
+  return {
+    capability: {
+      provider: 'openai', modelIdentity: firstModel, revisionKnown: false,
+      format: 'json-items', contextTokens: null, outputTokens: 2_048
+    },
+    async requestOnce(batch, signal) {
+      const model = models[Math.min(cursor++, Math.max(0, models.length - 1))] || firstModel
+      const messages = buildTranslationMessages(batch.input, 'json-items')
+      const result = await goi(key, model, messages[0].content, messages[1].content, true, undefined, signal)
+      if (!result.ok) {
+        const retryable = result.lui === true || result.status === 429 || (result.status != null && result.status >= 500)
+        throw Object.assign(new Error(result.err || 'OpenAI translation request failed.'), {
+          status: result.status,
+          providerCode: retryable ? 'provider-transient' : result.status === 401 || result.status === 403 ? 'provider-auth' : 'provider-protocol'
+        })
+      }
+      return { raw: result.text || '', truncated: result.truncated === true, modelIdentity: model }
     }
   }
 }
@@ -231,10 +260,25 @@ export async function translateSrt(
   outPath: string,
   dich: string,
   onProgress?: (done: number, total: number) => void,
-  options: { strict?: boolean; mode?: 'subtitle' | 'dubbing'; concise?: boolean; sourceLanguage?: string | null; contextRadius?: number; signal?: AbortSignal; onBatch?: (items: readonly { id: string; text: string }[], batchIndex: number) => Promise<void> | void } = {}
-): Promise<{ ok: boolean; error?: string; count?: number }> {
+  options: { strict?: boolean; mode?: 'subtitle' | 'dubbing'; concise?: boolean; sourceLanguage?: string | null; contextRadius?: number; signal?: AbortSignal; onBatch?: (items: readonly { id: string; text: string }[], batchIndex: number) => Promise<void> | void; onBudget?: (snapshot: TranslationBudgetSnapshot) => Promise<void> | void; resumeItems?: readonly TranslationItem[]; restoredBudget?: TranslationBudgetSnapshot } = {}
+): Promise<{ ok: boolean; error?: string; count?: number; assessment?: TranslationAssessment; budget?: TranslationBudgetSnapshot; modelIdentity?: string }> {
   const key = await loadKey()
   if (!key) return { ok: false, error: 'Chưa có API key.' }
+
+  if (options.strict) {
+    const adapter = await createOpenAiTranslationAdapter(key)
+    const result = await translateFileWithAdapter(srtPath, outPath, dich, adapter, {
+      sourceLanguage: options.sourceLanguage,
+      mode: options.mode || (options.concise ? 'dubbing' : 'subtitle'),
+      signal: options.signal,
+      onProgress,
+      onBatch: options.onBatch,
+      onBudget: options.onBudget,
+      resumeItems: options.resumeItems,
+      restoredBudget: options.restoredBudget
+    })
+    return { ok: result.ok, error: result.error, count: result.count, assessment: result.assessment, budget: result.budget, modelIdentity: result.modelIdentity }
+  }
 
   const blocks = parseSrt(await readFile(srtPath, 'utf-8')).map((block, index) => ({
     ...block,
@@ -253,7 +297,7 @@ export async function translateSrt(
     const c = chunks[i]
     let payload: string
     if (options.mode === 'dubbing') {
-      payload = buildDubbingTranslationPayload(c, blocks, options.contextRadius, dich)
+      payload = buildDubbingTranslationPayload(c, blocks, options.contextRadius, dich, options.sourceLanguage || 'auto')
     } else {
       const radius = Number.isInteger(options.contextRadius) ? Math.max(0, Math.min(3, options.contextRadius!)) : 1
       const firstIndex = blocks.findIndex((b) => b.id === c[0]?.id)
@@ -297,7 +341,8 @@ export async function translateSrt(
       contextAfter: [],
       glossary: []
     }
-    const r = await goiCoLui(key, models, buildTranslationMessages(promptInput, 'json-items')[0].content, payload, true, undefined, options.signal)
+    const messages = buildTranslationMessages(promptInput, 'json-items')
+    const r = await goiCoLui(key, models, messages[0].content, messages[1].content, true, undefined, options.signal)
     if (!r.ok) return { ok: false, error: errLabel(r.err) }
 
     const parsed = parseTranslationResponse(r.text || '', 'json-items', c.map((block) => block.id || ''), Boolean(r.truncated))

@@ -42,6 +42,10 @@ export type TranslationBatchCallback = (
 export interface TranslateWithAdapterOptions {
   plan?: TranslationPlan
   budget?: TranslationBudget
+  /** Resume a durable budget without resetting normal/recovery usage. */
+  restoredBudget?: TranslationBudgetSnapshot
+  /** Validated source-ID items restored from an earlier generation. */
+  resumeItems?: readonly TranslationItem[]
   beforeDispatch?: (snapshot: TranslationBudgetSnapshot) => Promise<void> | void
   onBatch?: TranslationBatchCallback
   /** Sleep between structured transient retries. Inject a no-op in tests. */
@@ -69,9 +73,10 @@ function issue(
   code: TranslationIssue['code'],
   message: string,
   cueIds: readonly string[] = [],
-  confidence: TranslationIssue['confidence'] = 'certain'
+  confidence: TranslationIssue['confidence'] = 'certain',
+  severity: TranslationIssue['severity'] = 'error'
 ): TranslationIssue {
-  return { code, severity: 'error', cueIds: [...cueIds], confidence, message }
+  return { code, severity, cueIds: [...cueIds], confidence, message }
 }
 
 function assessmentForIssues(issues: readonly TranslationIssue[], complete: boolean): TranslationAssessment {
@@ -80,6 +85,21 @@ function assessmentForIssues(issues: readonly TranslationIssue[], complete: bool
     version: 'translation-assessment-v2',
     disposition: hasError ? 'needs-review' : issues.length > 0 ? 'with-warnings' : 'validated',
     issues: [...issues],
+    languageEvidence: 'unknown'
+  }
+}
+
+/** Convert an invalid/empty source boundary into the same durable assessment
+ * shape used by provider and parser failures. Callers can surface this in the
+ * queue and persist it without pretending that a provider request ran. */
+export function createInvalidSourceAssessment(
+  message: string,
+  cueIds: readonly string[] = []
+): TranslationAssessment {
+  return {
+    version: 'translation-assessment-v2',
+    disposition: 'needs-review',
+    issues: [issue('invalid-source', message, cueIds)],
     languageEvidence: 'unknown'
   }
 }
@@ -139,7 +159,7 @@ export async function translateWithAdapter(
   options: TranslateWithAdapterOptions = {}
 ): Promise<TranslationRunResult> {
   const plan = options.plan || planTranslation(input, adapter.capability)
-  const budget = options.budget || createTranslationBudget(plan.batches.length)
+  const budget = options.budget || createTranslationBudget(plan.batches.length, undefined, options.restoredBudget)
   const sleep = options.sleep || (async (delayMs: number, signal?: AbortSignal): Promise<void> => {
     await new Promise<void>((resolve, reject) => {
       const parentSignal = signal
@@ -160,21 +180,78 @@ export async function translateWithAdapter(
       parentSignal?.addEventListener('abort', onAbort, { once: true })
     })
   })
-  const pending: WorkItem[] = plan.batches.map((batch) => ({
-    batch,
-    originalBatchId: batch.id,
-    requestedIds: batch.input.cues.map((cue) => cue.id),
-    splitDepth: 0,
-    kind: 'normal'
-  }))
   const accepted = new Map<string, TranslationItem>()
+  const resumable = new Map<string, TranslationItem>()
+  for (const item of options.resumeItems || []) {
+    const id = item.id.trim()
+    const text = item.text.trim()
+    if (id && text && !resumable.has(id)) resumable.set(id, { id, text })
+  }
+  // A resumed source cue can be represented by one provider unit directly.
+  // If the planner split a long cue, the old restored text cannot be divided
+  // back into the original unit boundaries safely, so those units are sent
+  // again instead of guessing a lossy split.
+  const unitCountsByOriginal = new Map<string, number>()
+  for (const mapping of plan.mapping) unitCountsByOriginal.set(mapping.originalId, (unitCountsByOriginal.get(mapping.originalId) || 0) + 1)
+  for (const mapping of plan.mapping) {
+    if (mapping.unitId !== mapping.originalId || unitCountsByOriginal.get(mapping.originalId) !== 1) continue
+    const restored = resumable.get(mapping.originalId)
+    if (restored) accepted.set(mapping.unitId, restored)
+  }
+  const durableBatchState = options.restoredBudget?.perBatch || {}
+  const pending: WorkItem[] = plan.batches.flatMap((batch) => {
+    const pendingCues = batch.input.cues.filter((cue) => !accepted.has(cue.id))
+    if (pendingCues.length === 0) return []
+    const pendingIds = new Set(pendingCues.map((cue) => cue.id))
+    const firstPendingIndex = batch.input.cues.findIndex((cue) => pendingIds.has(cue.id))
+    const lastPendingIndex = batch.input.cues.reduce((last, cue, index) => pendingIds.has(cue.id) ? index : last, -1)
+    const restoredContextBefore = firstPendingIndex > 0
+      ? batch.input.cues.slice(0, firstPendingIndex).filter((cue) => accepted.has(cue.id))
+      : []
+    const restoredContextAfter = lastPendingIndex >= 0 && lastPendingIndex < batch.input.cues.length - 1
+      ? batch.input.cues.slice(lastPendingIndex + 1).filter((cue) => accepted.has(cue.id))
+      : []
+    const pendingBatch: PlannedTranslationBatch = {
+      ...batch,
+      input: {
+        ...batch.input,
+        cues: pendingCues.map((cue) => ({ ...cue })),
+        // Keep already validated neighboring cues as read-only context after
+        // filtering resume IDs. This preserves semantic meaning without
+        // asking the provider to regenerate or publish those cues.
+        contextBefore: [...batch.input.contextBefore, ...restoredContextBefore].map((cue) => ({ ...cue })),
+        contextAfter: [...restoredContextAfter, ...batch.input.contextAfter].map((cue) => ({ ...cue }))
+      },
+      mapping: batch.mapping.filter((mapping) => pendingIds.has(mapping.unitId))
+    }
+    return [{
+      batch: pendingBatch,
+      originalBatchId: batch.id,
+      requestedIds: pendingCues.map((cue) => cue.id),
+      splitDepth: durableBatchState[batch.id]?.splitDepth || 0,
+      // A request that was charged before a crash/restart is recovery work on
+      // the next invocation. This prevents an idempotent normal charge from
+      // bypassing the shared recovery quota after resume.
+      kind: durableBatchState[batch.id]?.normalCharged ? 'recovery' as const : 'normal' as const
+    } satisfies WorkItem]
+  })
   const failures = new Map<string, { fingerprint: string; repeats: number }>()
-  const terminalIssues: TranslationIssue[] = [...plan.warnings.map((message) => issue('unsupported-capability', message, [], 'unknown'))]
+  const terminalIssues: TranslationIssue[] = [...plan.warnings.map((message) => issue(
+    'unsupported-capability',
+    message,
+    [],
+    'unknown',
+    plan.unsupported ? 'error' : 'warning'
+  ))]
   let modelIdentity = adapter.capability.modelIdentity
 
   const enqueueRecovery = (work: WorkItem): void => {
     pending.push({ ...work, kind: 'recovery' })
   }
+
+  // A known capability violation is a preflight failure. It must never spend
+  // a provider request merely to discover what the planner already proved.
+  if (plan.unsupported) pending.length = 0
 
   while (pending.length > 0) {
     let work = pending.shift()!
@@ -182,6 +259,9 @@ export async function translateWithAdapter(
       throwIfAborted(signal)
       const alreadyDone = work.requestedIds.every((id) => accepted.has(id))
       if (alreadyDone) continue
+      if (budget.remainingMs() <= 0) {
+        throw new TranslationBudgetExhaustedError('Translation time budget exhausted before dispatch.')
+      }
       budget.charge(work.kind, work.originalBatchId)
       await options.beforeDispatch?.(budget.snapshot())
       const { signal: requestSignal, timeoutSignal } = makeRequestSignal(signal, budget.remainingMs())
@@ -213,9 +293,14 @@ export async function translateWithAdapter(
       }
 
       modelIdentity = response.modelIdentity || modelIdentity
-      const contextIds = [...input.contextBefore, ...input.contextAfter].map((cue) => cue.id)
+      const contextIds = [...work.batch.input.contextBefore, ...work.batch.input.contextAfter].map((cue) => cue.id)
       const parsed = parseTranslationResponse(response.raw, adapter.capability.format, work.requestedIds, response.truncated, contextIds)
-      const validItems = uniqueValidItems(parsed.items, work.requestedIds)
+      const untrustedContent = parsed.issues.some((item) =>
+        item.code === 'unparsed-content' || item.code === 'truncated-output' || item.code === 'provider-protocol'
+      )
+      // A parser can recover IDs from a response while still losing prose
+      // after a line break or token cutoff. Such items are never durable.
+      const validItems = untrustedContent ? [] : uniqueValidItems(parsed.items, work.requestedIds)
       for (const item of validItems) accepted.set(item.id, item)
       const expectedComplete = validItems.length === work.requestedIds.length
       const blockingParserIssues = parsed.issues.filter((item) => item.severity === 'error' && item.code !== 'missing-id' && item.code !== 'unknown-id')

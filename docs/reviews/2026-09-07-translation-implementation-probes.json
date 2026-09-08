@@ -1,0 +1,341 @@
+{
+  "reviewedCommit": "7d86614572c6941861ee130e89e4d93e9ae2cc64",
+  "evidence": "TEST_CONFIRMED_OFFLINE_MOCKS",
+  "network": "all fetch calls mocked",
+  "runtimeModified": true,
+  "privateInstrumentation": "Only extractRephrasedTexts exported from the temporary esbuild bundle.",
+  "total": 15,
+  "passed": 15,
+  "failed": 0,
+  "records": [
+    {
+      "id": "orchestrator-truncated",
+      "expected": "Persistent structurally invalid response must end needs-review.",
+      "passed": true,
+      "observed": {
+        "calls": 5,
+        "disposition": "needs-review",
+        "issues": [
+          {
+            "code": "truncated-output",
+            "severity": "error",
+            "cueIds": [],
+            "confidence": "certain",
+            "message": "Phản hồi model bị cắt trước khi hoàn tất."
+          },
+          {
+            "code": "missing-id",
+            "severity": "error",
+            "cueIds": [
+              "a",
+              "b"
+            ],
+            "confidence": "certain",
+            "message": "Bản dịch chưa đủ mọi cue nguồn; không xuất bản kết quả một phần."
+          }
+        ],
+        "itemCount": 0
+      }
+    },
+    {
+      "id": "orchestrator-continuation",
+      "expected": "Persistent structurally invalid response must end needs-review.",
+      "passed": true,
+      "observed": {
+        "calls": 5,
+        "disposition": "needs-review",
+        "issues": [
+          {
+            "code": "unparsed-content",
+            "severity": "error",
+            "cueIds": [],
+            "confidence": "certain",
+            "message": "Phản hồi có dòng ngoài định dạng [id] bản dịch."
+          },
+          {
+            "code": "missing-id",
+            "severity": "error",
+            "cueIds": [
+              "a",
+              "b"
+            ],
+            "confidence": "certain",
+            "message": "Bản dịch chưa đủ mọi cue nguồn; không xuất bản kết quả một phần."
+          }
+        ],
+        "itemCount": 0
+      }
+    },
+    {
+      "id": "planner-known-too-small",
+      "expected": "Known unsupported request is rejected before dispatch.",
+      "passed": true,
+      "observed": {
+        "calls": 0,
+        "unsupported": true,
+        "disposition": "needs-review",
+        "issues": [
+          {
+            "code": "unsupported-capability",
+            "severity": "error",
+            "cueIds": [],
+            "confidence": "unknown",
+            "message": "Batch 1 vượt ngân sách context ước lượng (1107 > 1)."
+          },
+          {
+            "code": "unsupported-capability",
+            "severity": "error",
+            "cueIds": [],
+            "confidence": "unknown",
+            "message": "Batch 2 vượt ngân sách context ước lượng (1107 > 1)."
+          },
+          {
+            "code": "missing-id",
+            "severity": "error",
+            "cueIds": [
+              "a",
+              "b"
+            ],
+            "confidence": "certain",
+            "message": "Bản dịch chưa đủ mọi cue nguồn; không xuất bản kết quả một phần."
+          }
+        ],
+        "maxOutputTokens": 1
+      }
+    },
+    {
+      "id": "planner-unknown",
+      "expected": "Unknown token limits remain warnings after a valid response.",
+      "passed": true,
+      "observed": {
+        "calls": 1,
+        "unsupported": false,
+        "disposition": "with-warnings",
+        "issues": [
+          {
+            "code": "unsupported-capability",
+            "severity": "warning",
+            "cueIds": [],
+            "confidence": "unknown",
+            "message": "Provider token limits are unknown; using a bounded compatibility estimate."
+          }
+        ],
+        "maxOutputTokens": 2048
+      }
+    },
+    {
+      "id": "local-lossy-partial-recovery",
+      "expected": "Unparsed response content must not leave first-attempt text accepted as good.",
+      "passed": true,
+      "observed": {
+        "ok": true,
+        "requests": [
+          [
+            "cue-0",
+            "cue-1",
+            "cue-2",
+            "cue-3",
+            "cue-4",
+            "cue-5",
+            "cue-6",
+            "cue-7",
+            "cue-8",
+            "cue-9",
+            "cue-10",
+            "cue-11"
+          ],
+          [
+            "cue-0",
+            "cue-1",
+            "cue-2",
+            "cue-3",
+            "cue-4",
+            "cue-5"
+          ],
+          [
+            "cue-6",
+            "cue-7",
+            "cue-8",
+            "cue-9",
+            "cue-10",
+            "cue-11"
+          ]
+        ],
+        "retainedUnvalidatedPrefix": false,
+        "continuationPresent": false
+      }
+    },
+    {
+      "id": "korean-production-dubbing-context",
+      "expected": "Korean source group context must retain the space in 나는 학생입니다.",
+      "passed": true,
+      "observed": {
+        "translatorOk": true,
+        "expectedSpacedContext": true,
+        "incorrectlyJoinedContext": false
+      }
+    },
+    {
+      "id": "resume-subset-id-roundtrip",
+      "expected": "Pending SRT roundtrip preserves original identity for strict resume merge.",
+      "passed": true,
+      "observed": {
+        "originalPendingId": "cue-1-2000",
+        "afterRoundtripId": "cue-1-2000",
+        "mergeError": ""
+      }
+    },
+    {
+      "id": "rephrase-lossy-consumer",
+      "expected": "Consumer must reject candidates from unparsed response content.",
+      "passed": true,
+      "observed": {
+        "parserComplete": false,
+        "parserIssues": [
+          "unparsed-content"
+        ],
+        "acceptedCandidates": []
+      }
+    },
+    {
+      "id": "coordinator-durable-good-batch",
+      "expected": "Validated first batch is available in translatedCues for resume after a later provider failure.",
+      "passed": true,
+      "observed": {
+        "status": "error",
+        "error": "api_403 — khoá không hợp lệ",
+        "firstBatchIds": [
+          "cue-0-0",
+          "cue-1-2000",
+          "cue-2-4000",
+          "cue-3-6000",
+          "cue-4-8000",
+          "cue-5-10000",
+          "cue-6-12000",
+          "cue-7-14000",
+          "cue-8-16000",
+          "cue-9-18000",
+          "cue-10-20000",
+          "cue-11-22000",
+          "cue-12-24000",
+          "cue-13-26000",
+          "cue-14-28000",
+          "cue-15-30000",
+          "cue-16-32000",
+          "cue-17-34000",
+          "cue-18-36000",
+          "cue-19-38000",
+          "cue-20-40000",
+          "cue-21-42000",
+          "cue-22-44000",
+          "cue-23-46000"
+        ],
+        "sourceIds": [
+          "cue-0-0",
+          "cue-1-2000"
+        ],
+        "savedTranslatedCueCount": 24,
+        "savedBatchCount": 1,
+        "assessment": "needs-review",
+        "checkpointFields": [
+          "version",
+          "fingerprint",
+          "sourceCues",
+          "detectedSourceLanguage",
+          "translationAttemptGeneration",
+          "translationKey",
+          "translationModelIdentity",
+          "translationAssessment",
+          "translationBudget",
+          "translationBatches",
+          "translatedCues"
+        ]
+      }
+    },
+    {
+      "id": "coordinator-needs-review-resume-gate",
+      "expected": "Reopen needs-review without explicit retry generation dispatches no request.",
+      "passed": true,
+      "observed": {
+        "firstDisposition": "needs-review",
+        "secondStatus": "error",
+        "callsBeforeResume": 2,
+        "callsAfterResume": 2,
+        "asrCalls": 1
+      }
+    },
+    {
+      "id": "gemini-shared-request-budget",
+      "expected": "Cloud model fallback counts against B + max(4, ceil(B/2)).",
+      "passed": true,
+      "observed": {
+        "normalBatches": 10,
+        "totalBudget": 15,
+        "inferenceCalls": 10,
+        "discoveryCalls": 1,
+        "ok": false
+      }
+    },
+    {
+      "id": "gemini-actual-prompt-schema",
+      "expected": "Actual system output contract and response schema agree on object.items[].text; source uses shared JSONL payload.",
+      "passed": true,
+      "observed": {
+        "systemRequiresTextProperty": true,
+        "schemaRoot": "OBJECT",
+        "schemaItemProperties": [
+          "id",
+          "text"
+        ],
+        "sharedJsonlPayload": true
+      }
+    },
+    {
+      "id": "openai-shared-request-budget",
+      "expected": "Cloud model fallback counts against B + max(4, ceil(B/2)).",
+      "passed": true,
+      "observed": {
+        "normalBatches": 10,
+        "totalBudget": 15,
+        "inferenceCalls": 10,
+        "discoveryCalls": 1,
+        "ok": false
+      }
+    },
+    {
+      "id": "openai-actual-prompt-schema",
+      "expected": "Actual system output contract and response schema agree on object.items[].text; source uses shared JSONL payload.",
+      "passed": true,
+      "observed": {
+        "systemRequiresTextProperty": true,
+        "schemaRoot": "object",
+        "schemaItemProperties": [
+          "id",
+          "text"
+        ],
+        "sharedJsonlPayload": true
+      }
+    },
+    {
+      "id": "production-path-same-script-language-warning",
+      "expected": "Unchanged English sentence requested as French must produce language suspicion evidence.",
+      "passed": true,
+      "observed": {
+        "translatorOk": true,
+        "disposition": "validated",
+        "issues": [
+          {
+            "code": "language-suspect",
+            "severity": "warning",
+            "cueIds": [
+              "cue-0-0"
+            ],
+            "confidence": "heuristic",
+            "message": "Một phần đáng kể bản dịch giữ nguyên nội dung nguồn; cần xác nhận ngôn ngữ đích fr."
+          }
+        ],
+        "languageEvidence": "suspect"
+      }
+    }
+  ]
+}

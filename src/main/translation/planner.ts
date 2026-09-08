@@ -5,6 +5,7 @@ import type {
   TranslationCue
 } from '../../shared/translation'
 import { buildSemanticGroups, joinGroupText, type SemanticCue } from '../semanticGrouping'
+import { buildTranslationMessages } from './prompts'
 
 export interface TranslationCapability extends SharedTranslationCapability {
   provider: 'local' | 'gemini' | 'openai' | 'fixture'
@@ -131,7 +132,9 @@ function normalizedInput(input: TranslationInput): TranslationInput {
 export function planTranslation(input: TranslationInput, capability: TranslationCapability): TranslationPlan {
   const source = normalizedInput(input)
   const warnings: string[] = []
-  const outputTokens = Math.max(128, Math.min(2048, Math.floor(capability.outputTokens ?? 2048)))
+  const outputTokens = capability.outputTokens == null
+    ? 2_048
+    : Math.max(1, Math.min(2_048, Math.floor(capability.outputTokens)))
   const maxChars = Math.max(256, Math.min(4_000, Math.floor(outputTokens * 3)))
   const units = source.cues.flatMap((cue) => splitCue(cue, maxChars))
   const mapping = units.map((item) => item.mapping)
@@ -148,17 +151,27 @@ export function planTranslation(input: TranslationInput, capability: Translation
   const batches: PlannedTranslationBatch[] = []
   let pending: typeof units = []
 
+  const buildBatchInput = (items: typeof units): TranslationInput => ({
+    ...source,
+    cues: items.map((item) => item.cue),
+    contextBefore: source.contextBefore.map(cloneCue),
+    contextAfter: source.contextAfter.map(cloneCue)
+  })
+
+  const exactInputCost = (items: typeof units): number => {
+    const serialized = JSON.stringify(buildTranslationMessages(buildBatchInput(items), capability.format))
+    return safeTokenCount(capability, serialized)
+  }
+
+  const fitsContext = (items: typeof units): boolean =>
+    capability.contextTokens === null || exactInputCost(items) + outputTokens <= capability.contextTokens
+
   const flush = (): void => {
     if (pending.length === 0) return
-    const batchCues = pending.map((item) => item.cue)
-    const batchInput: TranslationInput = {
-      ...source,
-      cues: batchCues,
-      contextBefore: source.contextBefore.map(cloneCue),
-      contextAfter: source.contextAfter.map(cloneCue)
-    }
-    const serialized = JSON.stringify({ task: 'translate', input: batchInput, format: capability.format, schema: 'items-v2' })
-    const inputCost = safeTokenCount(capability, serialized)
+    const batchInput = buildBatchInput(pending)
+    // Count the exact system/user payload sent by every production adapter so
+    // batching and context guards do not drift from the wire contract.
+    const inputCost = exactInputCost(pending)
     const reservedOutput = outputTokens
     if (capability.contextTokens !== null && inputCost + reservedOutput > capability.contextTokens) {
       warnings.push(`Batch ${batches.length + 1} vượt ngân sách context ước lượng (${inputCost + reservedOutput} > ${capability.contextTokens}).`)
@@ -175,10 +188,22 @@ export function planTranslation(input: TranslationInput, capability: Translation
   for (const group of groups) {
     const groupCost = group.reduce((sum, item) => sum + item.cue.text.length + 64, 0)
     const currentCost = pending.reduce((sum, item) => sum + item.cue.text.length + 64, 0)
-    const exceedsContext = capability.contextTokens !== null && currentCost + groupCost + outputTokens > capability.contextTokens
+    // The semantic-group estimate is only a cheap early filter. Before
+    // accepting a group, measure the exact system+user payload. If the group
+    // itself is too large, fall back to cue boundaries so one oversized group
+    // does not make otherwise valid cues unsupported.
+    const candidate = pending.length > 0 ? [...pending, ...group] : group
+    const exceedsContext = !fitsContext(candidate)
     const exceedsLegacy = currentCost + groupCost > 20_000 || pending.length + group.length > 24
     if (pending.length > 0 && (exceedsContext || exceedsLegacy)) flush()
-    pending.push(...group)
+    if (group.length > 1 && !fitsContext(group)) {
+      for (const item of group) {
+        if (pending.length > 0 && (!fitsContext([...pending, item]) || pending.length >= 24)) flush()
+        pending.push(item)
+      }
+    } else {
+      pending.push(...group)
+    }
   }
   flush()
   if (batches.length === 0) throw new Error('Translation planner produced no batches.')
