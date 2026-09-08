@@ -69,21 +69,20 @@ test('grouping preserves question, speaker, sentence and pause boundaries plus a
   assert.equal(synthesized.plan.cues[3].subtitles[0].sourceIndex, 4)
 })
 
-test('preflight batches grouped speech by eight units without losing or repeating a group', async () => {
+test('grouped speech is measured before any duration-prediction rewrite', async () => {
   const source = Array.from({ length: 18 }, (_, i) => [
     { id: `s${i}a`, start: i * 4, end: i * 4 + 0.5, text: '这是第一部分' },
     { id: `s${i}b`, start: i * 4 + 0.5, end: i * 4 + 2.5, text: '这是第二部分。' }
   ]).flat()
   const plan = group(plans.buildDubbingPlan({ videoDuration: 73, cues: source }))
-  const batches: string[][] = []
+  const spoken: string[] = []
   await synthesizeDubbingPlan({ plan, language: 'zh', model: 'fixture',
     predictor: { profile: { version: 2, samples: 1, weights: [0, 0, 0, 0, 0, 0], residualP90: 0 }, estimate: () => ({ seconds: 9, uncertaintySeconds: 0, confidence: 1 }), addSample: () => {} },
-    rephraseBatch: async (requests) => { batches.push(requests.map((request) => request.cueId)); return new Map() },
-    tts: { synthesize: async () => ({ path: 'pcm' }) },
+    rephrase: async () => { throw new Error('A fitting measured clip must not trigger rephrase.') },
+    tts: { synthesize: async (request) => { spoken.push(request.text); return { path: 'pcm' } } },
     audio: { trim: async () => ({ path: 'pcm', duration: 2 }), applyTempo: async (path, _hint, duration) => ({ path, duration }) }
   })
-  assert.deepEqual(batches.map((batch) => batch.length), [8, 8, 2])
-  assert.deepEqual(batches.flat(), plan.cues.map((cue) => cue.id))
+  assert.deepEqual(spoken, plan.cues.map((cue) => cue.finalSpokenText))
 })
 
 test('group validation rejects dropped, duplicated, reordered or retimed source identities', () => {

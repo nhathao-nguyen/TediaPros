@@ -2,6 +2,11 @@ import type { SubtitleCue } from '../../shared/subtitles'
 import { extractSpeaker, isSentenceTerminal, joinGroupText } from '../semanticGrouping'
 
 export const DUBBING_PLAN_VERSION = 3 as const
+/**
+ * A rendered narration may begin this far into verified leading silence when
+ * original dialogue is absent. The source identity/timing remains immutable.
+ */
+export const DUBBING_MAX_EARLY_START_SECONDS = 0.35
 
 export type DubbingPaceMode = 'source-adaptive' | 'fixed'
 
@@ -264,8 +269,9 @@ export function validateDubbingPlan(plan: DubbingPlan): DubbingPlanValidation {
       || normalizedText(cue.sourceText) !== normalizedText(joinGroupText(members)))) {
       violations.push(`Cue ${cue.id} làm thay đổi nội dung hoặc mốc nguồn của nhóm.`)
     }
-    if (Math.abs(cue.start - cue.sourceStart) > 0.05) {
-      violations.push(`Cue ${cue.id} bị dời start khỏi mốc nguồn.`)
+    const earlyStart = cue.sourceStart - cue.start
+    if (cue.start > cue.sourceStart + 0.05 || earlyStart > DUBBING_MAX_EARLY_START_SECONDS + 0.005) {
+      violations.push(`Cue ${cue.id} có start ngoài khe thoại cho phép.`)
     }
     if (Math.abs(cue.preferredEnd - cue.sourceEnd) > 0.05) {
       violations.push(`Cue ${cue.id} làm thay đổi preferredEnd nguồn.`)
@@ -274,7 +280,7 @@ export function validateDubbingPlan(plan: DubbingPlan): DubbingPlanValidation {
     if (cue.voiceEnd != null) {
       if (cue.voiceEnd < cue.start - 0.001) violations.push(`Cue ${cue.id} có voiceEnd trước start.`)
       if (cue.voiceEnd > cue.hardEnd + 0.05) violations.push(`Cue ${cue.id} vượt hardEnd.`)
-      if (cue.start < previousVoiceEnd - 0.02) violations.push(`Cue ${cue.id} bị overlap với voice cue trước.`)
+      if (cue.start < previousVoiceEnd + 0.5 - 0.02) violations.push(`Cue ${cue.id} không giữ khoảng lặng bảo vệ với voice cue trước.`)
       previousVoiceEnd = cue.voiceEnd
     }
     if (cue.actualDuration != null && cue.voiceEnd != null && Math.abs(cue.actualDuration - (cue.voiceEnd - cue.start)) > 0.02) {

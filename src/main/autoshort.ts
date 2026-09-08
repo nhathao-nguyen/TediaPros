@@ -30,7 +30,7 @@ import { applyDubbingTranslations, dubbingSpeakingDurations } from './dubbing/tr
 import { buildTtsCacheKey, getTtsCacheStore } from './dubbing/cache'
 import { synthesizeDubbingPlan } from './dubbing/synthesis'
 import { buildStageKey, hashFileSha256 } from './autoShortStageKeys'
-import { DUBBING_PLAN_VERSION, buildDubbingPlan as buildPlan, groupDubbingPlanForSpeech, validateDubbingPlan, type DubbingPlan } from './dubbing/plan'
+import { DUBBING_MAX_EARLY_START_SECONDS, DUBBING_PLAN_VERSION, buildDubbingPlan as buildPlan, groupDubbingPlanForSpeech, validateDubbingPlan, type DubbingPlan } from './dubbing/plan'
 import { huongDan, stripOuterQuotes } from './translate-shared'
 import { resolveTranslationSourceLanguage } from './localTranslatePolicy'
 import { debugRaw, logInfo, logWarn, logError, errLabel } from './logger'
@@ -2502,7 +2502,7 @@ export async function synthesizeVoice(
       return { path: outputPath, duration: actualDuration }
     }
   }
-  logInfo('[AutoShort] Kiểm tra độ dài trước TTS; mỗi cue được tối đa một lượt rephrase cứu lỗi sau khi đo audio, giữ trần 1.45x.')
+  logInfo('[AutoShort] Tạo và đo audio TTS thật trước; chỉ cue vượt giới hạn đo được mới có một lượt rephrase cứu lỗi, giữ trần 1.45x.')
   const synthesized = await synthesizeDubbingPlan({
     plan: translatedPlan,
     language,
@@ -2511,16 +2511,12 @@ export async function synthesizeVoice(
     options: config.ttsOptions,
     fixedTempo: config.ttsSpeed || 1,
     localTempoDelta: config.translateProvider === 'local' ? 0.15 : undefined,
+    maxEarlyStartSeconds: config.audioMode === 'replace' || config.audioMode === 'separate-vocals'
+      ? DUBBING_MAX_EARLY_START_SECONDS
+      : 0,
     predictor,
     tts: adapter,
     audio: audioAdapter,
-    rephraseBatch: async (requests, signal) => {
-      logInfo(`[AutoShort] Rút gọn trước TTS ${requests.length} cue có nguy cơ vượt thời lượng.`)
-      const run = () => rephraseDubbingCues(config, requests, language, detectedLanguage, signal)
-      return config.translateProvider === 'local'
-        ? getGlobalResourceManager().withLease(['server-inference'], signal, run)
-        : run()
-    },
     rephrase: (request, signal) => {
       const cueIndex = translatedPlan.cues.findIndex((cue) => cue.id === request.cueId)
       return rephraseDubbingCue(
@@ -2546,6 +2542,12 @@ export async function synthesizeVoice(
     onProgress: (completed, count, cueId) => emitProgress(job, item, 'generating_tts', 58 + (completed / Math.max(1, count)) * 20, `Đang tạo voice ${completed}/${count} (${cueId})`, index, total),
     prefetchTts: Boolean(policy?.prefetchTts)
   })
+  for (const cue of synthesized.plan.cues) {
+    const leadIn = cue.sourceStart - cue.start
+    if (leadIn > 0.001) {
+      logInfo(`[AutoShort:timing] cue=${safeArtifactSegment(cue.id)} dùng ${leadIn.toFixed(3)}s khoảng lặng dẫn trước; sourceStart=${cue.sourceStart.toFixed(3)} plannedStart=${cue.start.toFixed(3)}`)
+    }
+  }
   await saveDurationProfile(profileRoot, profileKey, predictor.profile).catch((error) => {
     logWarn(`[AutoShort] Không lưu được duration profile: ${errLabel(error)}`)
   })

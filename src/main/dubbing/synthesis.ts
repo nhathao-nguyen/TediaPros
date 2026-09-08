@@ -1,8 +1,9 @@
 import { createDurationPredictor, type DurationPredictor } from './durationPredictor'
-import { chooseDubbingRephrase, compactEnglishDubbingQuestion, dubbingSpeakingDurations } from './translation'
+import { compactEnglishDubbingQuestion, dubbingSpeakingDurations } from './translation'
 import { buildDubbingSubtitle, buildDubbingSubtitleSegments, type DubbingSubtitleCue } from './subtitles'
 import {
   DUBBING_LOCAL_TEMPO_DELTA,
+  DUBBING_PROTECTED_GAP_SECONDS,
   DUBBING_TIMING_TOLERANCE_SECONDS,
   deriveDubbingWindows,
   selectFixedPace,
@@ -10,7 +11,7 @@ import {
 } from './policy'
 import { AUTO_SHORT_TTS_HARD_MAX_TEMPO, validateVoiceAudioCompleteness } from '../autoShortPolicy'
 import { containsRephraseLabel } from '../translation/response'
-import type { DubbingPlan, DubbingPlanCue } from './plan'
+import { DUBBING_MAX_EARLY_START_SECONDS, type DubbingPlan, type DubbingPlanCue } from './plan'
 import { selectBootstrapCues } from './durationPredictor'
 import { createAutoShortItemScope, type BranchOutcome } from '../autoShortItemScope'
 
@@ -35,15 +36,6 @@ export interface DubbingAudioAdapter {
   applyTempo(inputPath: string, outputHint: string, targetDuration: number, signal: AbortSignal): Promise<{ path: string; duration: number }>
 }
 
-export interface DubbingPreflightRequest {
-  cueId: string
-  currentText: string
-  targetDuration: number
-  sourceText: string
-  contextBefore: string[]
-  contextAfter: string[]
-}
-
 export interface DubbingSynthesisInput {
   plan: DubbingPlan
   language: string
@@ -52,11 +44,12 @@ export interface DubbingSynthesisInput {
   options?: Record<string, unknown>
   fixedTempo?: number
   localTempoDelta?: number
+  /** Enabled only when source dialogue is absent from the rendered mix. */
+  maxEarlyStartSeconds?: number
   predictor?: DurationPredictor
   tts: DubbingTtsAdapter
   audio: DubbingAudioAdapter
   rephrase?: (input: { cueId: string; currentText: string; targetDuration: number; measuredDuration: number; maxDuration: number }, signal: AbortSignal) => Promise<readonly string[]>
-  rephraseBatch?: (requests: readonly DubbingPreflightRequest[], signal: AbortSignal) => Promise<ReadonlyMap<string, readonly string[]>>
   onRephrase?: (event: {
     cueId: string
     phase: 'preflight' | 'rescue'
@@ -105,6 +98,13 @@ interface PreparedCue {
   voice?: string
 }
 
+interface MeasuredSpeechSlot {
+  start: number
+  deadline: number
+  availableDuration: number
+  maximumAvailableDuration: number
+}
+
 function throwIfAborted(signal: AbortSignal): void {
   if (signal.aborted) throw new Error('Đã hủy tác vụ')
 }
@@ -112,6 +112,34 @@ function throwIfAborted(signal: AbortSignal): void {
 function validDuration(value: number, cueId: string): number {
   if (!Number.isFinite(value) || value <= 0) throw new Error(`Cue ${cueId} có audio không hợp lệ.`)
   return value
+}
+
+function measuredSpeechSlot(
+  input: DubbingSynthesisInput,
+  cue: DubbingPlanCue,
+  anchoredAvailableDuration: number,
+  naturalDuration: number,
+  previousVoiceEnd: number | null | undefined
+): MeasuredSpeechSlot {
+  const configuredEarlyStart = Number.isFinite(input.maxEarlyStartSeconds)
+    ? Math.max(0, Math.min(DUBBING_MAX_EARLY_START_SECONDS, input.maxEarlyStartSeconds || 0))
+    : 0
+  const earliestByLeadIn = Math.max(0, cue.sourceStart - configuredEarlyStart)
+  const earliestByPreviousVoice = previousVoiceEnd == null
+    ? 0
+    : previousVoiceEnd + DUBBING_PROTECTED_GAP_SECONDS
+  const earliestStart = Math.max(earliestByLeadIn, earliestByPreviousVoice)
+  const maximumEarlyLead = Math.max(0, cue.sourceStart - earliestStart)
+  const deadline = cue.sourceStart + anchoredAvailableDuration
+  const requiredLead = Math.max(0, naturalDuration / AUTO_SHORT_TTS_HARD_MAX_TEMPO - anchoredAvailableDuration)
+  const earlyLead = Math.min(maximumEarlyLead, requiredLead)
+  const start = cue.sourceStart - earlyLead
+  return {
+    start,
+    deadline,
+    availableDuration: deadline - start,
+    maximumAvailableDuration: anchoredAvailableDuration + maximumEarlyLead
+  }
 }
 
 function clonePlan(plan: DubbingPlan): DubbingPlan {
@@ -205,46 +233,11 @@ export async function synthesizeDubbingPlan(input: DubbingSynthesisInput): Promi
     if (plan.cues.length === 0) throw new Error('DubbingPlan không có cue để tạo voice.')
     const predictor = input.predictor || createDurationPredictor()
     const sourceCues = plan.cues.map((cue) => ({ id: cue.id, start: cue.sourceStart, end: cue.sourceEnd, text: cue.sourceText }))
-    const windows = deriveDubbingWindows(sourceCues, plan.videoDuration)
     const speakingDurations = dubbingSpeakingDurations(sourceCues, plan.videoDuration)
-    // Complete one bounded editing pass before bootstrap can load the TTS model.
-    // The predictor is advisory; candidates still go through measured audio fit.
-    if (input.rephraseBatch) {
-      const requests = plan.cues.flatMap((cue, index): DubbingPreflightRequest[] => {
-        const available = speakingDurations[index]
-        if (!(available > 0) || predictor.estimate(cue.finalSpokenText, { locale: input.language }).seconds <= available * 1.25) return []
-        return [{ cueId: cue.id, currentText: cue.finalSpokenText, targetDuration: available * 1.1,
-          sourceText: cue.sourceText,
-          contextBefore: index > 0 ? [plan.cues[index - 1].sourceText] : [],
-          contextAfter: index + 1 < plan.cues.length ? [plan.cues[index + 1].sourceText] : [] }]
-      })
-      // Grouped utterances carry several original cues, so 24 groups can
-      // exceed the Local server's bounded response deadline/token budget.
-      const batchSize = plan.cues.some((cue) => cue.sourceCueIds.length > 1) ? 8 : 24
-      for (let offset = 0; offset < requests.length; offset += batchSize) {
-        throwIfAborted(signal)
-        const batch = requests.slice(offset, offset + batchSize)
-        const result = await input.rephraseBatch(batch, signal)
-        throwIfAborted(signal)
-        for (const request of batch) {
-          const originalSeconds = predictor.estimate(request.currentText, { locale: input.language }).seconds
-          const texts = result.get(request.cueId) || []
-          const validTexts = texts.filter((text) => !containsRephraseLabel(text, [request.cueId]))
-          const candidate = chooseDubbingRephrase(validTexts.map((text) => ({
-            text, predictedSeconds: predictor.estimate(text, { locale: input.language }).seconds
-          })).filter((candidate) => candidate.predictedSeconds < originalSeconds), request.targetDuration)
-          if (candidate) {
-            const cue = plan.cues.find((cue) => cue.id === request.cueId)!
-            cue.finalSpokenText = candidate.text
-            cue.rephrased = true
-          }
-          input.onRephrase?.({
-            cueId: request.cueId, phase: 'preflight', candidateCount: texts.length,
-            outcome: candidate ? 'accepted' : !texts.length ? 'no-candidate' : !validTexts.length ? 'invalid-candidate' : 'no-improvement'
-          })
-        }
-      }
-    }
+    // The predictor selects an initial pace only. It must never edit text
+    // before a real WAV exists: a cold or stale duration profile turns a
+    // prediction-first pass into unnecessary LLM work and semantic churn.
+    // Recovery is therefore strictly driven by a measured overflow below.
     const predicted = estimateDurations(plan, predictor)
     let globalTempo = selectGlobalTempo(plan, predicted, input.fixedTempo)
     const prepared = new Map<string, PreparedCue>()
@@ -316,20 +309,26 @@ export async function synthesizeDubbingPlan(input: DubbingSynthesisInput): Promi
       }
       if (current.voice) voice = current.voice
 
-      const window = windows[index]
       const localDelta = Math.max(0, input.localTempoDelta ?? DUBBING_LOCAL_TEMPO_DELTA)
       const localCeiling = Math.min(AUTO_SHORT_TTS_HARD_MAX_TEMPO, globalTempo + localDelta)
       const safeAvailableForRephrase = validDuration(speakingDurations[index], cue.id)
-      if (current.naturalDuration / safeAvailableForRephrase > localCeiling + DUBBING_TIMING_TOLERANCE_SECONDS) {
+      let measuredSlot = measuredSpeechSlot(
+        input,
+        cue,
+        safeAvailableForRephrase,
+        current.naturalDuration,
+        finalCues.at(-1)?.voiceEnd
+      )
+      if (current.naturalDuration > measuredSlot.maximumAvailableDuration * AUTO_SHORT_TTS_HARD_MAX_TEMPO + DUBBING_TIMING_TOLERANCE_SECONDS) {
         if (input.rephrase) {
           const candidates = await input.rephrase({
             cueId: cue.id,
             currentText: current.text,
-            targetDuration: safeAvailableForRephrase * Math.min(1.1, localCeiling),
+            targetDuration: measuredSlot.maximumAvailableDuration * Math.min(1.1, localCeiling),
             measuredDuration: current.naturalDuration,
-            maxDuration: safeAvailableForRephrase * AUTO_SHORT_TTS_HARD_MAX_TEMPO
+            maxDuration: measuredSlot.maximumAvailableDuration * AUTO_SHORT_TTS_HARD_MAX_TEMPO
           }, signal)
-          const compactQuestions = current.naturalDuration > safeAvailableForRephrase * AUTO_SHORT_TTS_HARD_MAX_TEMPO
+          const compactQuestions = current.naturalDuration > measuredSlot.maximumAvailableDuration * AUTO_SHORT_TTS_HARD_MAX_TEMPO
             ? [current.text, ...candidates].map((text) => compactEnglishDubbingQuestion(text, input.language)).filter((text): text is string => text !== null)
             : []
           // Put grammatical alternatives first for ties in a flat predictor;
@@ -346,7 +345,14 @@ export async function synthesizeDubbingPlan(input: DubbingSynthesisInput): Promi
             const replacement = await prepareNaturalCue(input, cue, candidate.text, signal, attempt + 1)
             const complete = validateVoiceAudioCompleteness(replacement.text, replacement.naturalDuration).ok
             const improved = replacement.naturalDuration < current.naturalDuration - DUBBING_TIMING_TOLERANCE_SECONDS
-            const fits = replacement.naturalDuration <= safeAvailableForRephrase * AUTO_SHORT_TTS_HARD_MAX_TEMPO
+            const replacementSlot = measuredSpeechSlot(
+              input,
+              cue,
+              safeAvailableForRephrase,
+              replacement.naturalDuration,
+              finalCues.at(-1)?.voiceEnd
+            )
+            const fits = replacement.naturalDuration <= replacementSlot.maximumAvailableDuration * AUTO_SHORT_TTS_HARD_MAX_TEMPO
             input.onRephrase?.({
               cueId: cue.id, phase: 'rescue', outcome: !complete ? 'incomplete-audio' : !improved ? 'no-improvement' : fits ? 'accepted' : 'improved-overflow',
               candidateCount: candidates.length, previousSeconds: current.naturalDuration, candidateSeconds: replacement.naturalDuration
@@ -361,7 +367,13 @@ export async function synthesizeDubbingPlan(input: DubbingSynthesisInput): Promi
             }
             // Predictor ordering is only an estimate. Try another distinct
             // option from this ONE LLM response while the best audio overflows.
-            if (current.naturalDuration <= safeAvailableForRephrase * AUTO_SHORT_TTS_HARD_MAX_TEMPO) break
+            if (current.naturalDuration <= measuredSpeechSlot(
+              input,
+              cue,
+              safeAvailableForRephrase,
+              current.naturalDuration,
+              finalCues.at(-1)?.voiceEnd
+            ).maximumAvailableDuration * AUTO_SHORT_TTS_HARD_MAX_TEMPO) break
           }
           if (rescued && !cue.rephrased) rephraseCount++
           if (!ranked.length) {
@@ -374,6 +386,14 @@ export async function synthesizeDubbingPlan(input: DubbingSynthesisInput): Promi
       } else {
         if (!cue.rephrased) fitFirstPassCount++
       }
+
+      measuredSlot = measuredSpeechSlot(
+        input,
+        cue,
+        safeAvailableForRephrase,
+        current.naturalDuration,
+        finalCues.at(-1)?.voiceEnd
+      )
 
       // Pipeline synthesis of the next cue while local audio DSP is processing the current cue
       if (input.prefetchTts && index + 1 < plan.cues.length) {
@@ -396,10 +416,10 @@ export async function synthesizeDubbingPlan(input: DubbingSynthesisInput): Promi
       }
 
       const maxLocalCeiling = Math.min(AUTO_SHORT_TTS_HARD_MAX_TEMPO, Math.max(localCeiling, 1.35))
-      const rawRequiredTempo = current.naturalDuration / window.availableDuration
+      const rawRequiredTempo = current.naturalDuration / measuredSlot.availableDuration
       const preferredTempo = Number(Math.min(maxLocalCeiling, Math.max(globalTempo, rawRequiredTempo)).toFixed(4))
-      const safeAvailable = safeAvailableForRephrase
-      const safeDeadline = cue.start + safeAvailable
+      const safeAvailable = measuredSlot.availableDuration
+      const safeDeadline = measuredSlot.deadline
       // Include the existing emergency deadline BEFORE processing PCM. Cascading
       // two tempo filters costs another process and needlessly processes audio twice.
       const requiredTempo = current.naturalDuration / safeAvailable
@@ -415,7 +435,7 @@ export async function synthesizeDubbingPlan(input: DubbingSynthesisInput): Promi
         finalPath = fitted.path
         actualDuration = validDuration(fitted.duration, cue.id)
       }
-      let voiceEnd = cue.start + actualDuration
+      let voiceEnd = measuredSlot.start + actualDuration
       if (voiceEnd > safeDeadline + DUBBING_TIMING_TOLERANCE_SECONDS) {
         // Retry only a measured adapter overshoot, always from the original PCM.
         const correctedTarget = Math.max(0.001, targetDuration * safeAvailable / actualDuration - 0.01)
@@ -425,7 +445,7 @@ export async function synthesizeDubbingPlan(input: DubbingSynthesisInput): Promi
         const corrected = await input.audio.applyTempo(current.trimmedPath, `${cue.id}-correction`, correctedTarget, signal)
         finalPath = corrected.path
         actualDuration = validDuration(corrected.duration, cue.id)
-        voiceEnd = cue.start + actualDuration
+        voiceEnd = measuredSlot.start + actualDuration
       }
       if (voiceEnd > safeDeadline + DUBBING_TIMING_TOLERANCE_SECONDS) throw new Error(`Cue ${cue.id} vẫn vượt thời lượng sau khi chỉnh nhịp; không cắt lời.`)
       // Report the measured TOTAL acceleration, including an emergency fit.
@@ -437,7 +457,7 @@ export async function synthesizeDubbingPlan(input: DubbingSynthesisInput): Promi
       const subtitleInput = {
         cueId: cue.id,
         sourceIndex: originalSourceIndex >= 0 ? (plan.sourceCues![originalSourceIndex].sourceIndex ?? originalSourceIndex) : index,
-        start: cue.start,
+        start: measuredSlot.start,
         end: voiceEnd,
         finalSpokenText: current.text
       }
@@ -445,12 +465,12 @@ export async function synthesizeDubbingPlan(input: DubbingSynthesisInput): Promi
         ? buildDubbingSubtitleSegments(subtitleInput) : [buildDubbingSubtitle(subtitleInput)]
       subtitles.push(...cueSubtitles)
       const effectiveHardEnd = cue.hardEnd
-      const effectiveAvailable = effectiveHardEnd - cue.start
 
       finalCues.push({
         ...cue,
+        start: measuredSlot.start,
         hardEnd: effectiveHardEnd,
-        availableDuration: effectiveAvailable,
+        availableDuration: safeAvailable,
         translatedText: cue.translatedText,
         finalSpokenText: current.text,
         predictedDuration: predictor.estimate(current.text, { locale: input.language }).seconds,
@@ -465,7 +485,7 @@ export async function synthesizeDubbingPlan(input: DubbingSynthesisInput): Promi
         subtitles: cueSubtitles,
         rephrased: current.rephrased
       })
-      clips.push({ start: cue.start, path: finalPath })
+      clips.push({ start: measuredSlot.start, path: finalPath })
       input.onProgress?.(index + 1, plan.cues.length, cue.id)
     }
 

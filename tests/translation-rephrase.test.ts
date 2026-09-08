@@ -176,8 +176,7 @@ test('inline normalization still rejects duplicate, unknown, invalid, or bare ca
   ]) assert.deepEqual(extractRephrasedTexts(raw, 'c1'), [], raw)
 })
 
-for (const phase of ['preflight', 'rescue'] as const) {
-  test(`inline alternatives through ${phase} send exactly one clean choice to TTS`, async () => {
+test('inline rescue alternatives send exactly one clean choice to TTS', async () => {
     const id = 'cue-0-1490'
     const original = 'Take a close look before eating this crab.'
     const selected = 'Check the crab carefully before eating.'
@@ -189,23 +188,17 @@ for (const phase of ['preflight', 'rescue'] as const) {
       predictor: { profile: { version: 2, samples: 1, weights: [0, 0, 0, 0, 0, 0], residualP90: 0 },
         estimate: (text) => ({ seconds: text === original ? 4 : text.split(/\s+/u).length * 0.2, uncertaintySeconds: 0, confidence: 1 }),
         addSample: () => {} },
-      rephraseBatch: phase === 'preflight' ? async () => {
-        const parsed = responseModule.parseBatchRephraseResponse(raw, [id])
-        assert.equal(parsed.complete, true)
-        return new Map([[id, parsed.items.map((item) => item.text)]])
-      } : undefined,
-      rephrase: phase === 'rescue' ? async () => extractRephrasedTexts(raw, id) : undefined,
+      rephrase: async () => extractRephrasedTexts(raw, id),
       tts: { synthesize: async (request) => { spoken.push(request.text); return { path: request.text } } },
       audio: { trim: async (path) => ({ path, duration: path === original ? 2.311 : 1.8 }),
         applyTempo: async (path, _hint, duration) => ({ path, duration }) }
     })
-    assert.deepEqual(spoken, phase === 'rescue' ? [original, selected] : [selected])
+    assert.deepEqual(spoken, [original, selected])
     assert.equal(result.plan.cues[0].finalSpokenText, selected)
     assert.equal(result.plan.cues[0].subtitles[0].text, selected)
     assert.equal(result.plan.cues[0].translatedText, original)
     assert.ok(result.plan.cues[0].tempo <= 1.45)
-  })
-}
+})
 
 test('rephrase parser rejects continuation and free-form prose', () => {
   const result = parseRephraseResponse('[c1:1] First line\nsecond line', 'c1')
