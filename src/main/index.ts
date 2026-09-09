@@ -1,13 +1,15 @@
 import { app, shell, BrowserWindow, ipcMain, dialog, protocol } from 'electron'
 import { basename, extname, join } from 'node:path'
 
-app.setName('tedia-pros')
-app.setPath('userData', join(app.getPath('appData'), 'tedia-pros'))
+import { resolveAppRuntimeProfile } from './appProfile'
+
+const appRuntimeProfile = resolveAppRuntimeProfile(app.isPackaged)
+app.setName(appRuntimeProfile.appName)
+app.setPath('userData', join(app.getPath('appData'), appRuntimeProfile.userDataDirectory))
 
 import { createReadStream } from 'node:fs'
 import { stat } from 'node:fs/promises'
 import { Readable } from 'node:stream'
-import { APP_BRAND } from '../shared/brand'
 import { migrateLegacyUserData } from './appIdentity'
 
 // Kieu tep cho giao thuc tblao: — thieu Content-Type thi trinh phat doan mo, de sai.
@@ -224,7 +226,7 @@ function createWindow(): void {
     minHeight: 620,
     show: false,
     autoHideMenuBar: true,
-    title: APP_BRAND.displayName,
+    title: appRuntimeProfile.windowTitle,
     icon: join(__dirname, '../../build/icon.png'),
     backgroundColor: '#0f1115',
     webPreferences: {
@@ -390,7 +392,7 @@ app.whenReady().then(async () => {
     }
   })
   registerIpc()
-  logInfo(`${APP_BRAND.displayName} ${app.getVersion()} khởi động · ${process.platform}`)
+  logInfo(`${appRuntimeProfile.windowTitle} ${app.getVersion()} khởi động · ${process.platform}`)
   createWindow()
   void maybeAutoUpdateYtDlp()
   initAutoUpdate(() => mainWindow)

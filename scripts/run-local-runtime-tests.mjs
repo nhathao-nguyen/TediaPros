@@ -47,6 +47,7 @@ const electronMockPlugin = {
 }
 
 const knownTests = [
+  'app-profile.test',
   'sttn-runtime.test',
   'sttn-contract.test',
   'sttn-pipeline.test',
