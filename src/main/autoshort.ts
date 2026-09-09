@@ -20,6 +20,7 @@ import {
   type AutoShortVoiceCueInput,
   type AutoShortDubbingUnit,
   AUTO_SHORT_TTS_MAX_TEMPO,
+  AUTO_SHORT_TTS_HARD_MAX_TEMPO,
   AUTO_SHORT_TTS_TAIL_MARGIN_SECONDS,
   buildAutoShortTtsTrimFilter
 } from './autoShortPolicy'
@@ -29,6 +30,7 @@ import { loadDurationProfile, saveDurationProfile } from './dubbing/profileStore
 import { applyDubbingTranslations, dubbingSpeakingDurations } from './dubbing/translation'
 import { buildTtsCacheKey, getTtsCacheStore } from './dubbing/cache'
 import { synthesizeDubbingPlan } from './dubbing/synthesis'
+import type { DubbingTimeMap } from './dubbing/timeMap'
 import { buildStageKey, hashFileSha256 } from './autoShortStageKeys'
 import { DUBBING_MAX_EARLY_START_SECONDS, DUBBING_PLAN_VERSION, buildDubbingPlan as buildPlan, groupDubbingPlanForSpeech, validateDubbingPlan, type DubbingPlan } from './dubbing/plan'
 import { huongDan, stripOuterQuotes } from './translate-shared'
@@ -250,6 +252,7 @@ export function buildAutoShortCheckpointFingerprint(
     translateTarget: config.translateTarget,
     translateProvider: config.translateProvider,
     translateServerUrl: config.translateServerUrl,
+    translationGuidance: config.translationGuidance,
     paceMode: config.paceMode || 'source-adaptive',
     ttsServerUrl: config.ttsServerUrl,
     ttsModel: config.ttsModel,
@@ -1137,7 +1140,8 @@ async function requestTranslation(
     cues: fullTranslationCues,
     contextBefore: [],
     contextAfter: [],
-    glossary: []
+    glossary: config.translationGuidance?.glossary.map(entry => ({ ...entry })) || [],
+    synopsis: config.translationGuidance?.synopsis
   }
 
   const publish = async (items: readonly TranslationItem[], budget?: TranslationBudgetSnapshot): Promise<SubtitleCue[]> => {
@@ -1574,13 +1578,16 @@ export async function rephraseDubbingCues(
           contextAfter: request.contextAfter || []
         }))
       })
-      const res = await getGlobalResourceManager().withLease(['server-inference'], requestSignal, () => fetch(`${base}/v1/chat/completions`, {
+      const res = await fetch(`${base}/v1/chat/completions`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', ...(localKey ? { Authorization: `Bearer ${localKey}` } : {}) },
         body: JSON.stringify({ model: 'llm-default', messages, temperature: 0.3 }),
         signal: requestSignal
-      }))
-      if (!res.ok) throw new Error(`Rephrase HTTP ${res.status}`)
+      })
+      if (!res.ok) {
+        await res.body?.cancel().catch(() => undefined)
+        throw new Error(`Rephrase HTTP ${res.status}`)
+      }
       const data = await res.json() as { choices?: Array<{ message?: { content?: string }; finish_reason?: string }> }
       const content = data.choices?.[0]?.message?.content?.trim() || ''
       const parsed = recoverBatchRephraseResponse(content, batch.map((request) => request.cueId))
@@ -1597,23 +1604,24 @@ export async function rephraseDubbingCues(
         if (candidates.length) result.set(request.cueId, candidates)
       }
     }
-    const initialBatchLimit = isMeasuredOverflow ? 8 : requests.length
-    for (let offset = 0; offset < requests.length; offset += initialBatchLimit) {
-      requestSignal.throwIfAborted()
-      await requestBatch(requests.slice(offset, offset + initialBatchLimit), false)
-    }
-    // One repair pass for missing/ambiguous cues only, within the original
-    // deadline. Already usable IDs never re-enter the request or get replaced.
-    const missing = requests.filter((request) => !result.has(request.cueId))
-    if (missing.length) logInfo(`[AutoShort:rephrase] phase=${isMeasuredOverflow ? 'batch-rephrase' : 'preflight'} outcome=repair-missing cues=${missing.length} kept=${result.size}`)
-    for (let offset = 0; offset < missing.length; offset += 8) {
-      requestSignal.throwIfAborted()
-      await requestBatch(missing.slice(offset, offset + 8), true)
-    }
+    await getGlobalResourceManager().withLease(['server-inference'], requestSignal, async () => {
+      const initialBatchLimit = isMeasuredOverflow ? 8 : requests.length
+      for (let offset = 0; offset < requests.length; offset += initialBatchLimit) {
+        requestSignal.throwIfAborted()
+        await requestBatch(requests.slice(offset, offset + initialBatchLimit), false)
+      }
+      // One repair pass for missing/ambiguous cues only, within the original
+      // deadline. Already usable IDs never re-enter the request or get replaced.
+      const missing = requests.filter((request) => !result.has(request.cueId))
+      if (missing.length) logInfo(`[AutoShort:rephrase] phase=${isMeasuredOverflow ? 'batch-rephrase' : 'preflight'} outcome=repair-missing cues=${missing.length} kept=${result.size}`)
+      for (let offset = 0; offset < missing.length; offset += 8) {
+        requestSignal.throwIfAborted()
+        await requestBatch(missing.slice(offset, offset + 8), true)
+      }
+    })
   } catch (error) {
-    if (!isAbortError(error) || !signal?.aborted) {
-      logWarn(`[AutoShort] Batch rephrase ${requests.length} cue không thành công: ${errLabel(error)}`)
-    }
+    if (isAbortError(error) && signal?.aborted) throw error
+    logWarn(`[AutoShort] Batch rephrase ${requests.length} cue không thành công: ${errLabel(error)}`)
   }
   return result
 }
@@ -2333,6 +2341,8 @@ export async function synthesizeVoice(
   detectedLanguage?: string | null,
   policy?: AutoShortExecutionPolicy
 ): Promise<{
+  timeMap?: DubbingTimeMap
+  outputDuration: number
   path: string
   clips: Array<{ start: number; path: string }>
   cues: SubtitleCue[]
@@ -2414,23 +2424,25 @@ export async function synthesizeVoice(
   const referenceContentHash = referenceBuffer
     ? createHash('sha256').update(referenceBuffer).digest('hex')
     : null
+  const modelRevision = typeof (selectedModel as { revision?: unknown; model_revision?: unknown }).revision === 'string'
+    ? (selectedModel as { revision: string }).revision
+    : typeof (selectedModel as { model_revision?: unknown }).model_revision === 'string'
+      ? (selectedModel as { model_revision: string }).model_revision
+      : null
   const profileKey = durationProfileKey({
     endpoint: config.ttsServerUrl,
     model: selectedModel.id,
     voice: effectiveVoice,
     language,
     options: config.ttsOptions,
-    referenceAudio: referenceInfo
+    referenceAudio: referenceInfo,
+    referenceContentHash: referenceContentHash || undefined,
+    modelRevision: modelRevision || undefined
   })
   const profileRoot = join(app.getPath('userData'), 'autoshort-duration-profiles')
   const predictor = createDurationPredictor(await loadDurationProfile(profileRoot, profileKey))
   const cacheRoot = join(app.getPath('userData'), 'autoshort-tts-cache-v2')
   const ttsCache = getTtsCacheStore(cacheRoot)
-  const modelRevision = typeof (selectedModel as { revision?: unknown; model_revision?: unknown }).revision === 'string'
-    ? (selectedModel as { revision: string }).revision
-    : typeof (selectedModel as { model_revision?: unknown }).model_revision === 'string'
-      ? (selectedModel as { model_revision: string }).model_revision
-      : null
   const attemptByCue = new Map<string, number>()
   const adapter: Parameters<typeof synthesizeDubbingPlan>[0]['tts'] = {
     async synthesize(request, signal) {
@@ -2532,8 +2544,9 @@ export async function synthesizeVoice(
       return { path: outputPath, duration: actualDuration }
     }
   }
-  logInfo('[AutoShort] Tạo và đo audio TTS thật trước; chỉ cue vượt giới hạn đo được mới có một lượt rephrase cứu lỗi, giữ trần 1.45x.')
+  logInfo(`[AutoShort] Tạo và đo audio TTS thật trước; chỉ cue vượt giới hạn đo được mới có một lượt rephrase cứu lỗi, giữ trần ${AUTO_SHORT_TTS_HARD_MAX_TEMPO.toFixed(2)}x.`)
   const synthesized = await synthesizeDubbingPlan({
+    allowVideoExtension: true,
     plan: translatedPlan,
     language,
     model: selectedModel.id,
@@ -2675,7 +2688,9 @@ export async function synthesizeVoice(
     }
   })
   const planArtifact = join(workDir, 'dubbing-plan.json')
-  await writeFile(planArtifact, JSON.stringify(synthesized.plan, null, 2), 'utf8')
+  await writeFile(planArtifact, JSON.stringify({ ...synthesized.plan,
+    timelineCoordinateSystem: synthesized.timeMap ? 'output' : 'source',
+    originalSourceCues: stableSourceCues, timeMap: synthesized.timeMap }, null, 2), 'utf8')
   artifacts.push({ source: planArtifact, name: 'dubbing-plan.json' })
   const textArtifact = join(workDir, 'final-spoken-text.json')
   await writeFile(textArtifact, JSON.stringify(synthesized.plan.cues.map((cue) => ({
@@ -2692,6 +2707,8 @@ export async function synthesizeVoice(
   return {
     path: join(workDir, 'tts-timeline.wav'),
     clips: synthesized.clips,
+    timeMap: synthesized.timeMap,
+    outputDuration: synthesized.plan.videoDuration,
     cues: synthesized.subtitles as SubtitleCue[],
     dubbingUnits,
     wordTimings: undefined,

@@ -4,6 +4,8 @@ Ngày: 2026-09-08
 Trạng thái: Đã kiểm chứng local; media acceptance pending
 Phạm vi: `src/main/dubbing/` và đường chạy AutoShort có TTS
 
+Đính chính 2026-09-08: synthesis gọi adapter một lần với toàn overflow queue; Local adapter chia HTTP request tối đa 8 cue và giữ một `server-inference` lease tới khi đọc xong response/repair. Candidate được thử tuần tự theo thứ tự xếp hạng và nhận candidate đầu tiên có audio đo thật vừa trần, không claim đã đo mọi candidate để tìm bản ngắn nhất toàn cục. Chi tiết fix sau review nằm tại [review-fixes design](/F:/Son/tool/TediaPros/docs/superpowers/specs/2026-09-08-autoshort-review-fixes-design.md).
+
 ## Mục tiêu
 
 Tách việc tổng hợp TTS và rephrase LLM thành ba pha tuần tự để Local AI Server không phải đổi model qua lại cho từng cue tràn thời lượng, đồng thời giữ nguyên source ledger, protected gap `0.50s`, trần tempo vật lý `1.45x` và toàn bộ lời thoại.
@@ -65,7 +67,7 @@ Batch phase không gọi TTS và không ghi candidate vào duration profile.
 
 ### Pha 3: measured TTS rescue
 
-Chỉ các overflow record có candidate hợp lệ mới được tổng hợp lại. Mỗi candidate được đo/trim thật, kiểm tra completeness và tính slot lại. Chọn candidate ngắn nhất vẫn fit ở tempo tối đa `1.45x`; nếu không candidate nào fit thì giữ diagnostic overflow và kết thúc bằng lỗi rõ ràng.
+Chỉ các overflow record có candidate hợp lệ mới được tổng hợp lại. Candidate được đo/trim tuần tự, kiểm tra completeness và nhận candidate đầu tiên vừa slot ở tempo tối đa `1.45x`; nếu không candidate nào fit thì giữ diagnostic overflow và kết thúc bằng lỗi rõ ràng.
 
 Sau khi rescue hoàn tất, synthesis chạy bước finalization chung cho tất cả cue:
 

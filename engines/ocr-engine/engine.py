@@ -589,12 +589,43 @@ def run_visual_legacy_disk(args):
 
         emit({"type": "info", "frames": len(frame_paths), "fps": 8, "width": args.display_width, "height": args.display_height})
 
-        # Progress tracking wrapper around OCR detector
+        scan_region = {
+            "x0": args.x0,
+            "y0": args.y0,
+            "x1": args.x1,
+            "y1": args.y1,
+        }
+
+        # The legacy transport still has to materialize frames for an older
+        # binary contract, but the detector does not need the whole display
+        # frame.  Crop the requested OCR band (with the same 32px safety halo
+        # as stream-roi), then translate polygons back to display coordinates
+        # before the shared timeline normalizer clips them to scan_region.
+        roi_halo = 32
+        crop_x0 = max(0, args.x0 - roi_halo)
+        crop_y0 = max(0, args.y0 - roi_halo)
+        crop_x1 = min(args.display_width, args.x1 + roi_halo)
+        crop_y1 = min(args.display_height, args.y1 + roi_halo)
+
         total_frames = len(frame_paths)
         processed = [0]
 
         def detect(path):
-            res, _ = ocr(path)
+            frame = cv2.imread(path)
+            if frame is None:
+                raise RuntimeError(f"Không thể đọc khung hình {path} để OCR")
+            crop = frame[crop_y0:crop_y1, crop_x0:crop_x1]
+            res, _ = ocr(crop)
+            display_res = []
+            for item in (res or []):
+                if not item or len(item) < 3:
+                    continue
+                poly, text, score = item[0], item[1], item[2]
+                try:
+                    shifted_poly = [[float(pt[0]) + crop_x0, float(pt[1]) + crop_y0] for pt in poly]
+                except (TypeError, ValueError, IndexError):
+                    continue
+                display_res.append([shifted_poly, text, score])
             processed[0] += 1
             emit({
                 "type": "progress",
@@ -602,7 +633,7 @@ def run_visual_legacy_disk(args):
                 "processed": processed[0],
                 "total": total_frames,
             })
-            return res or []
+            return display_res
 
         meta = {
             "width": args.display_width,
@@ -611,14 +642,8 @@ def run_visual_legacy_disk(args):
             "frame_count": len(frame_paths),
             "geometry_fingerprint": args.geometry_fingerprint,
         }
-        scan_region = {
-            "x0": args.x0,
-            "y0": args.y0,
-            "x1": args.x1,
-            "y1": args.y1,
-        }
 
-        emit({"type": "status", "message": f"Đang quét chữ profile {args.scan_profile}…"})
+        emit({"type": "status", "message": f"Đang quét chữ profile {args.scan_profile} trong vùng OCR…"})
         if args.scan_profile == "accurate":
             timeline = build_accurate_timeline(frame_paths, detect, meta, scan_region)
         else:

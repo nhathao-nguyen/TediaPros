@@ -184,7 +184,9 @@ function domainOf(url: string): string {
 
 let mainWindow: BrowserWindow | null = null
 const autoShortDependencyInstalls = new Map<number, AbortController>()
-const isPrimaryInstance = app.requestSingleInstanceLock()
+const isPrimaryInstance = process.env.TEDIA_PROS_ALLOW_DEV_MULTI_INSTANCE === '1'
+  ? true
+  : app.requestSingleInstanceLock()
 
 if (!isPrimaryInstance) app.quit()
 

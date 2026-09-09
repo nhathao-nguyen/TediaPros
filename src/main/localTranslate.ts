@@ -29,8 +29,9 @@ import { debugRaw, errLabel, logInfo, logWarn } from './logger'
 import { DEFAULT_AI_SERVER_URL, type DichKeyStatus, type SrtBlock } from '../shared/types'
 import type { TranslationAssessment, TranslationInput } from '../shared/translation'
 import type { TranslationBudgetSnapshot } from './translation/budget'
+import type { TranslationGuidance } from '../shared/translation'
 import { getGlobalResourceManager } from './autoShortResourceManager'
-import { buildTranslationMessages } from './translation/prompts'
+import { buildTranslationMessages, buildTranslationBatchMessages } from './translation/prompts'
 import type { TranslationAdapter } from './translation/orchestrator'
 import { translateFileWithAdapter } from './translation/fileRunner'
 
@@ -59,6 +60,7 @@ export interface TranslateOptions {
   onBudget?: (snapshot: TranslationBudgetSnapshot) => Promise<void> | void
   resumeItems?: readonly TranslationItem[]
   restoredBudget?: TranslationBudgetSnapshot
+  translationGuidance?: TranslationGuidance
 }
 
 export const LOCAL_TRANSLATION_DEADLINE_MS = 10 * 60 * 1000
@@ -113,6 +115,10 @@ export function parseRetryAfterMs(value: string | null | undefined, wallNow = Da
     if (!Number.isFinite(seconds)) return null
     return Math.max(0, Math.round(seconds * 1000))
   }
+  // Date.parse also accepts negative numbers and ISO calendar dates, which
+  // are invalid Retry-After values and would bypass the fallback backoff.
+  const httpDate = /^(?:[A-Za-z]{3}, \d{2} [A-Za-z]{3} \d{4} \d{2}:\d{2}:\d{2} GMT|[A-Za-z]+, \d{2}-[A-Za-z]{3}-\d{2} \d{2}:\d{2}:\d{2} GMT|[A-Za-z]{3} [A-Za-z]{3} [ \d]\d \d{2}:\d{2}:\d{2} \d{4})$/u
+  if (!httpDate.test(raw)) return null
   const timestamp = Date.parse(raw)
   if (Number.isNaN(timestamp)) return null
   return Math.max(0, timestamp - wallNow)
@@ -157,7 +163,8 @@ export async function hasLocalKey(): Promise<boolean> {
 export function createLocalTranslationAdapter(
   apiKey: string,
   serverUrl?: string,
-  model = 'llm-default'
+  model = 'llm-default',
+  options: { wallNow?: () => number } = {}
 ): TranslationAdapter {
   const base = normalizeUrl(serverUrl)
   return {
@@ -170,37 +177,91 @@ export function createLocalTranslationAdapter(
       outputTokens: 2_048
     },
     async requestOnce(batch, signal) {
-      const messages = buildTranslationMessages(batch.input, 'id-lines')
-      const response = await getGlobalResourceManager().withLease(['server-inference'], signal, async () => fetch(`${base}/v1/chat/completions`, {
-        method: 'POST',
-        headers: getAuthHeaders(apiKey),
-        body: JSON.stringify({
-          model: model.trim() || 'llm-default',
-          messages,
-          temperature: DEFAULT_LOCAL_TRANSLATION_TEMPERATURE,
-          max_tokens: batch.maxOutputTokens
-        }),
-        signal
-      }))
-      if (!response.ok) {
-        const body = await response.text().catch(() => '')
-        const retryable = response.status === 408 || response.status === 425 || response.status === 429 || response.status >= 500
-        throw Object.assign(new Error(translationHttpError(response.status, body).message), {
-          status: response.status,
-          providerCode: retryable ? 'provider-transient' : response.status === 401 || response.status === 403 ? 'provider-auth' : 'provider-protocol'
+      const messages = buildTranslationBatchMessages(batch, 'id-lines')
+      try {
+        return await getGlobalResourceManager().withLease(['server-inference'], signal, async () => {
+          let response: Response | undefined
+          try {
+            signal.throwIfAborted()
+            response = await fetch(`${base}/v1/chat/completions`, {
+              method: 'POST',
+              headers: getAuthHeaders(apiKey),
+              body: JSON.stringify({
+                model: model.trim() || 'llm-default',
+                messages,
+                temperature: DEFAULT_LOCAL_TRANSLATION_TEMPERATURE,
+                max_tokens: batch.maxOutputTokens
+              }),
+              signal
+            })
+            signal.throwIfAborted()
+            if (!response.ok) {
+              // HTTP status remains authoritative even when its diagnostic body
+              // fails to read. Cancellation must still escape as cancellation.
+              const body = await response.text().catch((error: unknown) => {
+                signal.throwIfAborted()
+                if (error instanceof Error && error.name === 'AbortError') throw error
+                return ''
+              })
+              signal.throwIfAborted()
+              const retryable = response.status === 408 || response.status === 425 || response.status === 429 || response.status >= 500
+              const retryAfterMs = parseRetryAfterMs(response.headers.get('Retry-After'), (options.wallNow ?? Date.now)())
+              throw Object.assign(new Error(translationHttpError(response.status, body).message), {
+                status: response.status,
+                providerCode: retryable ? 'provider-transient' : response.status === 401 || response.status === 403 ? 'provider-auth' : 'provider-protocol',
+                ...(retryable && retryAfterMs !== null ? { retryAfterMs } : {})
+              })
+            }
+            const data = await response.json() as {
+              choices?: Array<{ message?: { content?: string }; finish_reason?: string }>
+              translation?: string
+            }
+            signal.throwIfAborted()
+            return {
+              raw: data.choices?.[0]?.message?.content || data.translation || '',
+              truncated: data.choices?.[0]?.finish_reason === 'length',
+              modelIdentity: model.trim() || 'llm-default'
+            }
+          } finally {
+            // Await cancellation before withLease releases capacity. Consumed or
+            // errored native fetch bodies have already settled their reader.
+            if (response?.body && !response.bodyUsed && !response.body.locked) {
+              await response.body.cancel().catch(() => {})
+            }
+          }
         })
-      }
-      const data = await response.json() as {
-        choices?: Array<{ message?: { content?: string }; finish_reason?: string }>
-        translation?: string
-      }
-      return {
-        raw: data.choices?.[0]?.message?.content || data.translation || '',
-        truncated: data.choices?.[0]?.finish_reason === 'length',
-        modelIdentity: model.trim() || 'llm-default'
+      } catch (error) {
+        if (signal.aborted) {
+          const reason = signal.reason
+          // The orchestrator's per-request timeout is transient; a caller's
+          // custom Error/string reason is still a cancellation, not protocol.
+          if (reason instanceof Error && reason.name === 'TimeoutError') throw reason
+          throw Object.assign(new Error(reason instanceof Error ? reason.message : 'Đã hủy tác vụ dịch', { cause: reason }), {
+            providerCode: 'cancelled'
+          })
+        }
+        if (isLocalTranslationNetworkError(error)) {
+          throw Object.assign(new Error('Mất kết nối tới server dịch', { cause: error }), { providerCode: 'provider-transient' })
+        }
+        throw error
       }
     }
   }
+}
+
+function isLocalTranslationNetworkError(error: unknown): boolean {
+  if (!error || typeof error !== 'object') return false
+  const record = error as { code?: unknown; cause?: unknown }
+  const cause = record.cause && typeof record.cause === 'object' ? record.cause as { code?: unknown } : undefined
+  const code = typeof cause?.code === 'string' ? cause.code : record.code
+  if (typeof code === 'string') {
+    return ['ECONNRESET', 'ECONNREFUSED', 'ECONNABORTED', 'EPIPE', 'ETIMEDOUT', 'EAI_AGAIN', 'ENOTFOUND',
+      'ENETUNREACH', 'EHOSTUNREACH', 'UND_ERR_SOCKET', 'UND_ERR_CONNECT_TIMEOUT', 'UND_ERR_HEADERS_TIMEOUT',
+      'UND_ERR_BODY_TIMEOUT'].includes(code)
+  }
+  // Fetch implementations may omit the low-level cause. Do not classify every
+  // TypeError (invalid URL/payload) or SyntaxError (malformed JSON) as transient.
+  return error instanceof TypeError && !record.cause && /^(?:fetch failed|failed to fetch)$/iu.test(error.message)
 }
 
 function normalizeUrl(url?: string): string {
@@ -547,7 +608,8 @@ export async function localTranslateSrt(
         onBatch: options.onBatch,
         onBudget: options.onBudget,
         resumeItems: options.resumeItems,
-        restoredBudget: options.restoredBudget
+        restoredBudget: options.restoredBudget,
+        translationGuidance: options.translationGuidance
       }
     )
     return { ok: result.ok, error: result.error, assessment: result.assessment, budget: result.budget, modelIdentity: result.modelIdentity }

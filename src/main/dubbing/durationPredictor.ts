@@ -12,22 +12,38 @@ export interface DurationEstimate {
   seconds: number
   uncertaintySeconds: number
   confidence: number
+  calibration?: 'uncalibrated'
+  uncertaintyReasons?: DurationUncertaintyReason[]
 }
+
+export type DurationUncertaintyReason = 'numeral-pronunciation' | 'abbreviation-pronunciation' | 'mixed-script' | 'unknown-locale'
+
+// Keep the six v2 vector terms and trim-only normalization unchanged. These
+// identifiers describe local heuristics, not a backend pronunciation contract.
+export const DURATION_FEATURE_VERSION = 'graphemes-words-numerals-abbreviations-pauses-v2'
+export const DURATION_NORMALIZER_VERSION = 'trim-intl-segmenter-v1'
 
 export interface DurationProfile {
   version: 2
+  featureVersion?: string
+  normalizerVersion?: string
   samples: number
   weights: [number, number, number, number, number, number]
+  /** In-sample fitting diagnostic; never a calibrated prediction interval. */
   residualP90: number
 }
 
 export interface DurationProfileKeyInput {
   endpoint?: string
   model?: string
+  modelRevision?: string
   voice?: string
   language?: string
   options?: unknown
   referenceAudio?: unknown
+  referenceContentHash?: string
+  featureVersion?: string
+  normalizerVersion?: string
 }
 
 interface DurationSample {
@@ -146,13 +162,18 @@ function stableValue(value: unknown): string {
 
 export function durationProfileKey(input: DurationProfileKeyInput): string {
   return createHash('sha256').update(stableValue({
-    version: 2,
+    // Identity migration only; the feature vector remains v2.
+    version: 3,
+    featureVersion: input.featureVersion || DURATION_FEATURE_VERSION,
+    normalizerVersion: input.normalizerVersion || DURATION_NORMALIZER_VERSION,
     endpoint: input.endpoint?.trim() || '',
     model: input.model?.trim() || '',
+    modelRevision: input.modelRevision?.trim() || '',
     voice: input.voice?.trim() || '',
     language: input.language?.trim().toLowerCase() || '',
     options: input.options || {},
-    referenceAudio: input.referenceAudio || null
+    referenceAudio: input.referenceAudio || null,
+    referenceContentHash: input.referenceContentHash?.trim() || ''
   })).digest('hex')
 }
 
@@ -177,11 +198,47 @@ export interface DurationPredictor {
   estimate(text: string, options?: { locale?: string; sourceText?: string; sourceDuration?: number; speed?: number }): DurationEstimate
 }
 
+export function isCompatibleDurationProfile(value: unknown): value is DurationProfile {
+  if (!value || typeof value !== 'object') return false
+  const profile = value as Partial<DurationProfile>
+  return profile.version === 2 &&
+    profile.featureVersion === DURATION_FEATURE_VERSION &&
+    profile.normalizerVersion === DURATION_NORMALIZER_VERSION &&
+    typeof profile.samples === 'number' && Number.isInteger(profile.samples) && profile.samples >= 0 &&
+    Array.isArray(profile.weights) && profile.weights.length === FEATURE_COUNT &&
+    profile.weights.every((weight) => typeof weight === 'number' && Number.isFinite(weight) && weight >= 0) &&
+    typeof profile.residualP90 === 'number' && Number.isFinite(profile.residualP90) && profile.residualP90 >= 0
+}
+
+function pronunciationUncertainty(text: string, locale: string | undefined, features: DurationFeatures): DurationUncertaintyReason[] {
+  const reasons: DurationUncertaintyReason[] = []
+  if (features.numerals > 0) reasons.push('numeral-pronunciation')
+  if (features.abbreviations > 0) reasons.push('abbreviation-pronunciation')
+  const language = locale?.trim().toLowerCase().split(/[-_]/u)[0]
+  // This is an explicit heuristic coverage list, not proof that a voice or
+  // backend supports these locales or pronounces a token in a particular way.
+  if (!language || !['en', 'vi', 'es', 'de', 'fr', 'pt', 'it', 'zh', 'ja', 'ko', 'ru', 'ar', 'hi'].includes(language)) {
+    reasons.push('unknown-locale')
+  }
+  const scriptFamilies = [
+    /\p{Script=Latin}/u, /\p{Script=Cyrillic}/u, /\p{Script=Arabic}/u,
+    /\p{Script=Devanagari}/u,
+    // Han, kana and hangul can normally coexist; do not flag Japanese text
+    // merely because its writing system uses multiple Unicode scripts.
+    /[\p{Script=Han}\p{Script=Hiragana}\p{Script=Katakana}\p{Script=Hangul}]/u
+  ].filter((pattern) => pattern.test(text)).length
+  if (scriptFamilies > 1) reasons.push('mixed-script')
+  return reasons
+}
+
 export function createDurationPredictor(initialProfile?: Partial<DurationProfile>): DurationPredictor {
+  if (!isCompatibleDurationProfile(initialProfile)) initialProfile = undefined
   const samples: DurationSample[] = []
   const initialSampleCount = Math.max(0, Math.floor(initialProfile?.samples || 0))
   const profile: DurationProfile = {
     version: 2,
+    featureVersion: DURATION_FEATURE_VERSION,
+    normalizerVersion: DURATION_NORMALIZER_VERSION,
     samples: initialSampleCount,
     weights: initialProfile?.weights && initialProfile.weights.length === FEATURE_COUNT
       ? initialProfile.weights.map((weight) => Math.max(0, Number(weight) || 0)) as DurationProfile['weights']
@@ -205,16 +262,60 @@ export function createDurationPredictor(initialProfile?: Partial<DurationProfile
       refreshProfile()
     },
     estimate(text, options = {}) {
-      const speed = options.speed && options.speed > 0 ? options.speed : 1
-      const seconds = predictWithWeights(extractDurationFeatures(text, options.locale), profile.weights) / speed
-      const uncertainty = profile.samples >= 3
-        ? profile.residualP90 / speed
-        : Math.max(0.35, seconds * 0.3)
+      const speed = options.speed && Number.isFinite(options.speed) && options.speed > 0 ? options.speed : 1
+      const features = extractDurationFeatures(text, options.locale)
+      const naturalSeconds = predictWithWeights(features, profile.weights)
+      const seconds = naturalSeconds / speed
+      const uncertaintyReasons = pronunciationUncertainty(text, options.locale, features)
+      // An intentionally conservative, uncalibrated reserve. Ambiguous token
+      // counts widen uncertainty; they do not pretend to count spoken syllables.
+      const tokenReserve = features.numerals * 0.12 + features.abbreviations * 0.3
+      const localeReserve = uncertaintyReasons.includes('unknown-locale') ? naturalSeconds * 0.5 : 0
+      const scriptReserve = uncertaintyReasons.includes('mixed-script') ? naturalSeconds * 0.25 : 0
+      const uncertainty = (Math.max(DEFAULT_RESIDUAL_SECONDS, naturalSeconds * 0.3, profile.residualP90) +
+        tokenReserve + localeReserve + scriptReserve) / speed
       return {
         seconds: Number(Math.max(MIN_DURATION_SECONDS, seconds).toFixed(3)),
         uncertaintySeconds: Number(uncertainty.toFixed(3)),
-        confidence: Number(Math.min(0.98, profile.samples / 12).toFixed(3))
+        confidence: 0,
+        calibration: 'uncalibrated',
+        uncertaintyReasons
       }
     }
+  }
+}
+
+export interface DurationEvaluationSample {
+  text: string
+  seconds: number
+  locale?: string
+  speed?: number
+}
+
+/** The caller must supply disjoint held-out samples from the same voice/key.
+ * This read-only report neither fits the predictor nor qualifies a real voice.
+ */
+export function evaluateDurationPredictor(predictor: DurationPredictor, samples: readonly DurationEvaluationSample[]): {
+  samples: number
+  meanAbsoluteErrorSeconds: number | null
+  absoluteErrorP90Seconds: number | null
+  intervalCoverage: number | null
+  voiceQualified: false
+} {
+  const errors: number[] = []
+  let covered = 0
+  for (const sample of samples) {
+    if (!Number.isFinite(sample.seconds) || sample.seconds <= 0) throw new Error('Held-out duration must be positive and finite.')
+    const estimate = predictor.estimate(sample.text, { locale: sample.locale, speed: sample.speed })
+    const error = Math.abs(sample.seconds - estimate.seconds)
+    errors.push(error)
+    if (error <= estimate.uncertaintySeconds) covered++
+  }
+  return {
+    samples: errors.length,
+    meanAbsoluteErrorSeconds: errors.length ? errors.reduce((sum, error) => sum + error, 0) / errors.length : null,
+    absoluteErrorP90Seconds: errors.length ? percentile90(errors) : null,
+    intervalCoverage: errors.length ? covered / errors.length : null,
+    voiceQualified: false
   }
 }

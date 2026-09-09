@@ -14,7 +14,7 @@ import {
   stripOuterQuotes,
   validateTranslationItems
 } from './translate-shared'
-import { buildTranslationMessages } from './translation/prompts'
+import { buildTranslationMessages, buildTranslationBatchMessages } from './translation/prompts'
 import { parseTranslationResponse } from './translation/response'
 import type { TranslationAdapter } from './translation/orchestrator'
 import { translateFileWithAdapter } from './translation/fileRunner'
@@ -142,7 +142,7 @@ export async function createOpenAiTranslationAdapter(key: string): Promise<Trans
     },
     async requestOnce(batch, signal) {
       const model = models[Math.min(cursor++, Math.max(0, models.length - 1))] || firstModel
-      const messages = buildTranslationMessages(batch.input, 'json-items')
+      const messages = buildTranslationBatchMessages(batch, 'json-items')
       const result = await goi(key, model, messages[0].content, messages[1].content, true, undefined, signal)
       if (!result.ok) {
         const retryable = result.lui === true || result.status === 429 || (result.status != null && result.status >= 500)
@@ -260,7 +260,7 @@ export async function translateSrt(
   outPath: string,
   dich: string,
   onProgress?: (done: number, total: number) => void,
-  options: { strict?: boolean; mode?: 'subtitle' | 'dubbing'; concise?: boolean; sourceLanguage?: string | null; contextRadius?: number; signal?: AbortSignal; onBatch?: (items: readonly { id: string; text: string }[], batchIndex: number) => Promise<void> | void; onBudget?: (snapshot: TranslationBudgetSnapshot) => Promise<void> | void; resumeItems?: readonly TranslationItem[]; restoredBudget?: TranslationBudgetSnapshot } = {}
+  options: { strict?: boolean; mode?: 'subtitle' | 'dubbing'; concise?: boolean; sourceLanguage?: string | null; contextRadius?: number; signal?: AbortSignal; onBatch?: (items: readonly { id: string; text: string }[], batchIndex: number) => Promise<void> | void; onBudget?: (snapshot: TranslationBudgetSnapshot) => Promise<void> | void; resumeItems?: readonly TranslationItem[]; restoredBudget?: TranslationBudgetSnapshot; translationGuidance?: import('../shared/translation').TranslationGuidance } = {}
 ): Promise<{ ok: boolean; error?: string; count?: number; assessment?: TranslationAssessment; budget?: TranslationBudgetSnapshot; modelIdentity?: string }> {
   const key = await loadKey()
   if (!key) return { ok: false, error: 'Chưa có API key.' }
@@ -275,7 +275,8 @@ export async function translateSrt(
       onBatch: options.onBatch,
       onBudget: options.onBudget,
       resumeItems: options.resumeItems,
-      restoredBudget: options.restoredBudget
+      restoredBudget: options.restoredBudget,
+      translationGuidance: options.translationGuidance
     })
     return { ok: result.ok, error: result.error, count: result.count, assessment: result.assessment, budget: result.budget, modelIdentity: result.modelIdentity }
   }

@@ -1,4 +1,5 @@
 import { WHISPER_PROTOCOL } from './engineProtocol'
+import { DUBBING_FIXED_MAX_TEMPO } from './dubbing/policy'
 import type { SubtitleCue, TtsModelInfo, WhisperEngineStatus } from '../shared/types'
 export {
   DUBBING_ADAPTIVE_MAX_TEMPO,
@@ -23,7 +24,7 @@ export const AUTO_SHORT_TTS_TAIL_SECONDS = 0.50
 export const AUTO_SHORT_TTS_END_GUARD_SECONDS = 0.12
 export const AUTO_SHORT_TTS_PREFERRED_MAX_TEMPO = 1.10
 export const AUTO_SHORT_TTS_NORMAL_MAX_TEMPO = 1.25
-export const AUTO_SHORT_TTS_HARD_MAX_TEMPO = 1.45
+export const AUTO_SHORT_TTS_HARD_MAX_TEMPO = DUBBING_FIXED_MAX_TEMPO
 export const AUTO_SHORT_TTS_MAX_TEMPO = AUTO_SHORT_TTS_HARD_MAX_TEMPO
 export const AUTO_SHORT_TTS_SEMANTIC_TOLERANCE_SECONDS = 0.06
 
@@ -1017,6 +1018,43 @@ export function validateAutoShortTimelineSync(
     return { ok: false, error: violations.join(' | '), violations, ...(warnings.length ? { warnings } : {}) }
   }
   return { ok: true, violations: [], ...(warnings.length ? { warnings } : {}) }
+}
+
+/**
+ * Final publication gate for measured dubbing evidence. This wrapper is
+ * deliberately pure: values produced by synthesis must either validate as-is
+ * or stop publication so the diagnostic still describes the rendered audio.
+ */
+export function validateAutoShortPublicationTimeline(
+  units: readonly AutoShortDubbingUnit[],
+  videoDuration: number,
+  sourceGroups: readonly AutoShortVoiceCueInput[] = [],
+  targetGroups: readonly AutoShortVoiceCueInput[] = []
+): TimelineSyncValidationResult {
+  const previous = validateAutoShortTimelineSync(units, videoDuration, sourceGroups, targetGroups)
+  const violations = [...previous.violations]
+  if (!Number.isFinite(videoDuration) || videoDuration <= 0) {
+    violations.push('Thời lượng video không hợp lệ.')
+  }
+  if (!units.length && !violations.some((message) => message.includes('rỗng'))) {
+    violations.push('Danh sách dubbing unit rỗng.')
+  }
+  const epsilon = 1e-6
+  for (const current of units) {
+    const duration = current.finalDuration ?? Number.NaN
+    const actualEnd = current.plannedStart + duration
+    if (!Number.isFinite(actualEnd) || !Number.isFinite(current.plannedEnd) || !(duration > 0)) {
+      violations.push(`Unit ${current.id}: thiếu duration audio đo thực hoặc end không hợp lệ.`)
+    } else if (actualEnd > videoDuration + epsilon || current.plannedEnd > videoDuration + epsilon) {
+      violations.push(`Unit ${current.id}: audio vượt EOF/thời lượng video.`)
+    }
+  }
+  return {
+    ok: violations.length === 0,
+    violations,
+    ...(violations.length ? { error: violations.join(' | ') } : {}),
+    ...(previous.warnings?.length ? { warnings: [...previous.warnings] } : {})
+  }
 }
 
 export interface VoiceCompletenessCheckResult {

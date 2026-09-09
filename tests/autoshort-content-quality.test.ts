@@ -1,10 +1,45 @@
 import assert from 'node:assert/strict'
 import test from 'node:test'
-import { assessContentQuality, validateAutoShortContentQuality } from '../src/main/autoShortContentQuality'
+import { assessContentQuality, validateAutoShortContentQuality, validateRephraseSemanticPreservation } from '../src/main/autoShortContentQuality'
 import type { SubtitleCue } from '../src/shared/types'
 
 const cue = (id: string, text: string, sourceIndex: number): SubtitleCue => ({
   id, text, sourceIndex, start: sourceIndex, end: sourceIndex + 1
+})
+
+test('rephrase gate rejects candidates that lose protected meaning', () => {
+  for (const candidate of [
+    'Remove the safety valve before use.',
+    'Do not remove before use.',
+    'Do not remove the safety valve.',
+    'Do not remove the safety valve before 3 uses.',
+    'Do not remove the valve before Alice uses it.'
+  ]) {
+    assert.equal(validateRephraseSemanticPreservation(
+      'Do not remove the safety valve before Alice uses it 2 times.', candidate, 'en'
+    ).ok, false, candidate)
+  }
+})
+
+test('rephrase gate accepts a shorter candidate that keeps anchors and conditions', () => {
+  const result = validateRephraseSemanticPreservation(
+    'Do not remove the safety valve before Alice uses it 2 times.',
+    'Before Alice uses it 2 times, do not remove the safety valve.',
+    'en'
+  )
+  assert.equal(result.ok, true)
+})
+
+test('rephrase gate rejects a dropped object and swapped people', () => {
+  assert.equal(validateRephraseSemanticPreservation(
+    'Turn off the pump before opening the valve.', 'Turn off before opening the valve.', 'en'
+  ).ok, false)
+  assert.equal(validateRephraseSemanticPreservation(
+    'Alice gave Bob the red safety key.', 'Bob gave Alice the red safety key.', 'en'
+  ).ok, false)
+  assert.equal(validateRephraseSemanticPreservation(
+    'Please give Alice the key.', 'Please give Bob the key.', 'en'
+  ).ok, false)
 })
 test('content QA rejects duplicate/missing/unexpected cue mappings and protected number changes', () => {
   const result = validateAutoShortContentQuality({
@@ -94,6 +129,24 @@ test('interrogative question particles across languages do not trigger false neg
   assert.equal(result.findings.filter((f) => f.code === 'protected-token-mismatch').length, 0)
 })
 
+for (const [source, target, warning] of [
+  ['你为什么不去学校？', 'Tại sao bạn đi học?', true],
+  ['不要看星星。', 'Hãy nhìn các vì sao.', true],
+  ['你明天去学校吗？', 'Ngày mai bạn có đi học không?', false],
+  ['你吃饭了吗？', 'Bạn đã ăn cơm chưa?', false],
+  ['我们可以走吗？', 'Chúng ta có thể đi được không?', false],
+  ['不要摸这只狗。', 'Đừng chạm vào con chó này.', false],
+  ['你为什么不去学校？', 'Tại sao bạn không đi học?', false],
+  ['可以走了。', 'Không được đi.', true],
+  ['你吃饭了吗？不要喝酒。', 'Bạn đã ăn cơm chưa? Hãy uống rượu.', true]
+] as const) {
+  test(`polarity evidence: ${source} -> ${target}`, () => {
+    const result = assessContentQuality([cue('a', source, 0)], [cue('a', target, 0)])
+    assert.equal(result.issues.some((issue) => issue.code === 'protected-token-suspect'), warning)
+    assert.ok(result.issues.every((issue) => issue.severity === 'warning'))
+  })
+}
+
 test('CJK numerals match corresponding Arabic digits without warnings', () => {
   const result = validateAutoShortContentQuality({
     sourceCues: [
@@ -109,7 +162,7 @@ test('CJK numerals match corresponding Arabic digits without warnings', () => {
   assert.equal(result.findings.filter((f) => f.code === 'protected-token-mismatch').length, 0)
 })
 
-test('Chinese ordinal cue markers do not become protected quantities', () => {
+test('Chinese sentence labels are treated as cue markers rather than protected quantities', () => {
   const result = validateAutoShortContentQuality({
     sourceCues: [
       cue('a', '第一句。', 0),
@@ -123,3 +176,26 @@ test('Chinese ordinal cue markers do not become protected quantities', () => {
   assert.equal(result.ok, true)
   assert.equal(result.findings.filter((f) => f.code === 'protected-token-mismatch').length, 0)
 })
+
+test('embedded cue markers in translated text are structural protocol errors', () => {
+  const result = validateAutoShortContentQuality({
+    sourceCues: [cue('cue-19-33420', '这是花。', 0)],
+    targetCues: [cue('cue-19-33420', 'This is a flower [cue-20-34200] also called Manjusaka.', 0)]
+  })
+  assert.equal(result.ok, false)
+  assert.ok(result.findings.some((finding) => finding.code === 'embedded-cue-marker' && finding.severity === 'error'))
+})
+
+for (const [source, target, warning] of [
+  ['十二个苹果。', 'Có 12 quả táo.', false],
+  ['十二个苹果。', 'Có 13 quả táo.', true],
+  ['我们一起走吧。', 'Chúng ta cùng đi.', false],
+  ['这是第三次。', 'Đây là lần thứ ba.', false],
+  ['这是第三次。', 'Đây là lần thứ tư.', true],
+  ['这是第3次。', 'This is the third time.', false]
+] as const) {
+  test(`contextual number evidence: ${source} -> ${target}`, () => {
+    const result = assessContentQuality([cue('a', source, 0)], [cue('a', target, 0)])
+    assert.equal(result.issues.some((issue) => issue.code === 'protected-token-suspect'), warning)
+  })
+}

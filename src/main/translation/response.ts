@@ -41,6 +41,40 @@ function normalizeItem(value: unknown): TranslationItem {
   return { id, text }
 }
 
+/**
+ * A few compatibility gateways drop the stable `cue-` prefix from a timed
+ * source ID, or collapse it to a request-local index such as `cue-0`.  Map
+ * those forms only when they resolve to one and only one ID in the current
+ * request.  Ambiguous or unrelated IDs remain untouched and are reported by
+ * the identity validator below.
+ */
+function normalizeResponseItemId(
+  rawId: string,
+  expectedIds: readonly string[],
+  contextIds: readonly string[],
+  itemIndex: number
+): string {
+  const id = rawId.trim()
+  if (!id) return id
+  const known = [...expectedIds, ...contextIds]
+  if (known.includes(id)) return id
+
+  const withoutCuePrefix = (value: string): string => value.replace(/^cue-/iu, '')
+  const suffixMatches = known.filter((candidate) => withoutCuePrefix(candidate) === withoutCuePrefix(id))
+  if (suffixMatches.length === 1) return suffixMatches[0]
+
+  // Some older local gateways number cues relative to the current batch.
+  // Prefer the response position only for the exact `cue-N` shape; this keeps
+  // arbitrary numeric-looking unknown IDs subject to normal validation.
+  const legacyIndex = /^cue-(\d+)$/iu.exec(id)
+  if (legacyIndex) {
+    const index = Number(legacyIndex[1])
+    if (Number.isSafeInteger(index) && expectedIds[index]) return expectedIds[index]
+  }
+  if (/^\d+$/u.test(id) && expectedIds[itemIndex]) return expectedIds[itemIndex]
+  return id
+}
+
 function validateItems(
   items: readonly TranslationItem[],
   expectedIds: readonly string[],
@@ -80,6 +114,23 @@ function validateItems(
   }
   const missing = expectedIds.filter((id) => !seen.has(id))
   if (missing.length > 0) issues.push(issue('missing-id', `Thiếu bản dịch cho ${missing.length} cue.`, missing))
+}
+
+/**
+ * A provider can accidentally copy the `[cue-id]` delimiters from the input
+ * into a spoken translation. That text is syntactically mapped to the first
+ * cue but actually contains the following cues as well, so it must be treated
+ * as untrusted protocol content and sent through the bounded repair path.
+ */
+function embeddedCueMarkers(text: string, knownIds: readonly string[]): string[] {
+  const known = new Set(knownIds.map((id) => id.trim()).filter(Boolean))
+  const markers: string[] = []
+  for (const match of text.matchAll(/\[\s*([^\]\r\n]+?)\s*\]/gu)) {
+    const marker = match[1]?.trim() || ''
+    if (!marker) continue
+    if (/^cue-[\w-]+$/iu.test(marker) || known.has(marker)) markers.push(marker)
+  }
+  return [...new Set(markers)]
 }
 
 /**
@@ -137,6 +188,25 @@ export function parseTranslationResponse(
         }
         items.push({ id: match[1].trim(), text: match[2].trim() })
       }
+    }
+  }
+
+  for (let index = 0; index < items.length; index += 1) {
+    items[index] = {
+      ...items[index],
+      id: normalizeResponseItemId(items[index].id, expected, contextIds, index)
+    }
+  }
+
+  const markerIds = [...expected, ...contextIds]
+  for (const item of items) {
+    const markers = embeddedCueMarkers(item.text, markerIds)
+    if (markers.length > 0) {
+      issues.push(issue(
+        'unparsed-content',
+        `Cue ${item.id || '(rỗng)'} chứa nhãn cue trong nội dung đọc (${markers.slice(0, 3).join(', ')}).`,
+        [item.id]
+      ))
     }
   }
 

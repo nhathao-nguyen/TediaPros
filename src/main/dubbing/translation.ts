@@ -1,16 +1,16 @@
 import { buildTranslationContext, type TranslationCueContext } from '../translate-shared'
 import type { DubbingPlan, DubbingPlanCue } from './plan'
-import { deriveDubbingWindows, DUBBING_PROTECTED_GAP_SECONDS } from './policy'
+import { deriveDubbingWindows } from './policy'
 import type { DubbingSourceCue } from './plan'
 
 /** Same deadline as the measured audio fit, including the protected next-cue gap. */
 export function dubbingSpeakingDurations(cues: readonly DubbingSourceCue[], videoDuration: number): number[] {
-  return deriveDubbingWindows(cues, videoDuration).map((window, index) => {
-    const nextStart = cues[index + 1]?.start ?? videoDuration
-    const deadline = Math.min(videoDuration, window.hardEnd,
-      nextStart > window.start ? nextStart - DUBBING_PROTECTED_GAP_SECONDS : videoDuration)
-    return Math.max(0, deadline - window.start)
-  })
+  // `deriveDubbingWindow` already applies the effective inter-cue gap. For
+  // very short adjacent cues that gap is intentionally reduced below the
+  // normal 0.5s reserve; subtracting the full constant again here turns a
+  // valid window into zero and makes `validDuration` reject the cue before
+  // synthesis. Reuse the derived window as the single source of truth.
+  return deriveDubbingWindows(cues, videoDuration).map((window) => window.availableDuration)
 }
 
 export interface DubbingTranslationCue extends TranslationCueContext {

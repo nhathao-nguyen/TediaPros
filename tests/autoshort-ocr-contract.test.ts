@@ -58,6 +58,20 @@ test('legacy config migrates to manual and accurate', () => {
   }
 })
 
+test('translation guidance rejects malformed and oversized input at IPC boundary', () => {
+  for (const translationGuidance of [
+    { synopsis: 'x'.repeat(2001), glossary: [] },
+    { synopsis: '', glossary: [{ source: '', target: 'van' }] },
+    { synopsis: '', glossary: [{ source: '阀门', target: 12 }] },
+    { synopsis: '', glossary: [{ source: '阀门', target: 'van' }, { source: '阀门', target: 'khóa' }] }
+  ]) {
+    assert.equal(validateAutoShortStartRequest(autoShortRequest({ translationGuidance } as never)).ok, false)
+  }
+  assert.equal(validateAutoShortStartRequest(autoShortRequest({ translationGuidance: {
+    synopsis: 'Video hướng dẫn thiết bị', glossary: [{ source: '阀门', target: 'van' }]
+  } })).ok, true)
+})
+
 test('explicit unknown blur mode is rejected', () => {
   const invalid = autoShortRequest({ blurMode: 'band' as never })
   const result = validateAutoShortStartRequest(invalid)

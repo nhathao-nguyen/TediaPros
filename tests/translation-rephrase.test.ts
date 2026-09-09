@@ -12,6 +12,11 @@ import { parseSrt } from '../src/shared/subtitles'
 import { buildDubbingPlan } from '../src/main/dubbing/plan'
 import { synthesizeDubbingPlan } from '../src/main/dubbing/synthesis'
 import * as dubbingTranslation from '../src/main/dubbing/translation'
+import {
+  AutoShortResourceManager,
+  getGlobalResourceManager,
+  setGlobalResourceManager
+} from '../src/main/autoShortResourceManager'
 
 test('rephrase parser accepts at most three grounded candidates', () => {
   const result = parseRephraseResponse('[c1:1] Do not touch it.\n[c1:2] Please do not touch it.', 'c1')
@@ -93,6 +98,81 @@ test('local measured-overflow batches are capped at eight cues and carry measure
   } finally { globalThis.fetch = previousFetch }
 })
 
+test('local batch rephrase retains the inference lease until every response body is consumed', async () => {
+  const { rephraseDubbingCues } = await import('../src/main/autoshort') as any
+  const previousFetch = globalThis.fetch
+  const previousManager = getGlobalResourceManager()
+  const manager = new AutoShortResourceManager({ 'server-inference': 1 })
+  setGlobalResourceManager(manager)
+  let releaseBodies!: () => void
+  const bodyGate = new Promise<void>((resolve) => { releaseBodies = resolve })
+  let fetchStarted!: () => void
+  const fetchGate = new Promise<void>((resolve) => { fetchStarted = resolve })
+  let competitorEntered = false
+  globalThis.fetch = async (_url, init) => {
+    const rows = JSON.parse(String(init?.body)).messages[1].content
+      .split('\n').filter((line: string) => line.startsWith('{')).map((line: string) => JSON.parse(line))
+    const content = rows.map((row: { id: string }) => `[${row.id}:1] Short ${row.id}.`).join('\n')
+    const encoded = new TextEncoder().encode(JSON.stringify({ choices: [{ message: { content, finish_reason: 'stop' } }] }))
+    fetchStarted()
+    return new Response(new ReadableStream({
+      start(controller) {
+        void bodyGate.then(() => {
+          controller.enqueue(encoded)
+          controller.close()
+        })
+      }
+    }))
+  }
+  try {
+    const rephrase = rephraseDubbingCues(
+      { translateProvider: 'local', translateServerUrl: 'http://fixture.invalid' },
+      Array.from({ length: 9 }, (_, index) => ({
+        cueId: `lease-${index}`,
+        currentText: `Original ${index}.`,
+        targetDuration: 1,
+        measuredDuration: 2,
+        maxDuration: 1.45
+      })),
+      'en'
+    )
+    await fetchGate
+    const competitor = manager.withLease(['server-inference'], undefined, async () => {
+      competitorEntered = true
+    })
+    await new Promise<void>((resolve) => setImmediate(resolve))
+    assert.equal(competitorEntered, false)
+    releaseBodies()
+    await rephrase
+    await competitor
+    assert.equal(competitorEntered, true)
+  } finally {
+    releaseBodies?.()
+    globalThis.fetch = previousFetch
+    setGlobalResourceManager(previousManager)
+  }
+})
+
+test('local batch rephrase cancels an HTTP error body before releasing its lease', async () => {
+  const { rephraseDubbingCues } = await import('../src/main/autoshort') as any
+  const previousFetch = globalThis.fetch
+  let bodyCancelled = false
+  globalThis.fetch = async () => new Response(new ReadableStream({
+    cancel() { bodyCancelled = true }
+  }), { status: 503 })
+  try {
+    const result = await rephraseDubbingCues(
+      { translateProvider: 'local', translateServerUrl: 'http://fixture.invalid' },
+      [{ cueId: 'http-error', currentText: 'Long line.', targetDuration: 1, measuredDuration: 2, maxDuration: 1.45 }],
+      'en'
+    )
+    assert.deepEqual([...result], [])
+    assert.equal(bodyCancelled, true)
+  } finally {
+    globalThis.fetch = previousFetch
+  }
+})
+
 test('measured rescue prompt carries the observed voice duration and feasible word budget', () => {
   const messages = buildRephraseMessages({ targetLocale: 'en', cues: [{
     id: 'cue-0-2320', sourceText: '吃鸡之前记得仔细看看',
@@ -128,7 +208,7 @@ test('measured 0.9s question rescue handles duplicate unhelpful LLM output withi
     rephrase: async () => { llmCalls++; return ['Is this cow edible?', 'Can you eat this cow?', 'Is this cow edible?'] },
     tts: { synthesize: async (request) => { if (request.cueId === 'cue-52-82640') questionTexts.push(request.text); return { path: request.text } } },
     audio: {
-      trim: async (path) => ({ path, duration: path === 'Is this cow edible?' ? 1.425397 : path === 'Can you eat this cow?' ? 1.348934 : 1.07 }),
+      trim: async (path) => ({ path, duration: path === 'Is this cow edible?' ? 1.8 : path === 'Can you eat this cow?' ? 1.7 : 1.07 }),
       applyTempo: async (path, _hint, duration) => ({ path, duration })
     }
   })
@@ -222,7 +302,7 @@ test('inline rescue alternatives send exactly one clean choice to TTS', async ()
         addSample: () => {} },
       rephrase: async () => extractRephrasedTexts(raw, id),
       tts: { synthesize: async (request) => { spoken.push(request.text); return { path: request.text } } },
-      audio: { trim: async (path) => ({ path, duration: path === original ? 2.311 : 1.8 }),
+      audio: { trim: async (path) => ({ path, duration: path === original ? 2.84 : 1.8 }),
         applyTempo: async (path, _hint, duration) => ({ path, duration }) }
     })
     assert.deepEqual(spoken, [original, selected])

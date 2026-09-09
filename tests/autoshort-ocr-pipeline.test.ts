@@ -14,6 +14,8 @@ import type {
 } from '../src/shared/types'
 import {
   createAutoShortItemProcessor,
+  mergeRecoveredTranslationItems,
+  isCompatibleOcrTransport,
   type AutoShortItemCoordinatorDeps,
   type AutoShortItemContext
 } from '../src/main/autoShortItemCoordinator'
@@ -52,6 +54,13 @@ const mockMeta: Meta = {
   containerDurationSeconds: 10,
   frameRate: 25
 }
+
+test('visual OCR cache accepts a legacy artifact after stream negotiation fallback', () => {
+  assert.equal(isCompatibleOcrTransport('stream-roi', 'legacy-disk'), true)
+  assert.equal(isCompatibleOcrTransport('stream-full', undefined), true)
+  assert.equal(isCompatibleOcrTransport('legacy-disk', 'stream-roi'), false)
+  assert.equal(isCompatibleOcrTransport('stream-roi', 'stream-full'), false)
+})
 
 function sampleTimeline(): OcrVisualTimeline {
   return {
@@ -337,6 +346,95 @@ test('Step 9.2: RED OCR-only automatic reuse (single visual OCR call, same timel
   } finally {
     await rm(root, { recursive: true, force: true })
   }
+})
+
+test('AutoShort anchors OCR and its timed mask to video stream duration when audio has a tail', async () => {
+  const root = await mkdtemp(join(tmpdir(), 'tedia-pipe-ocr-stream-duration-'))
+  try {
+    const videoFile = join(root, 'input.mp4')
+    await writeFile(videoFile, 'dummy-video-content')
+    const outDir = join(root, 'out')
+    await mkdir(outDir)
+    let ocrDuration: number | undefined
+    let maskDuration: number | undefined
+
+    const deps: AutoShortItemCoordinatorDeps = {
+      resolveFfmpeg: async () => 'ffmpeg.exe',
+      resolveFfprobe: async () => 'ffprobe.exe',
+      probeMedia: async () => ({
+        ...mockMeta,
+        giay: 10.03,
+        videoDurationSeconds: 10,
+        containerDurationSeconds: 10.03
+      }),
+      runVisualOcr: async (options) => {
+        ocrDuration = options.videoDurationSeconds
+        return {
+          timeline: sampleTimeline(),
+          sourceSrtPath: 'source.engine.srt',
+          sidecarPath: 'visual-cues.json',
+          engineVersion: '1.2.0',
+          engineProtocol: 'ocr-local/1',
+          visualSegmentCount: 1,
+          boxSegmentCount: 1
+        }
+      },
+      writeTimedMask: async (_timeline, options) => {
+        maskDuration = options.durationSeconds
+        const maskFile = join(root, 'mask.mkv')
+        await writeFile(maskFile, 'mask-bytes')
+        return {
+          maskPath: maskFile,
+          durationSeconds: options.durationSeconds,
+          frameCount: 80,
+          width: 1280,
+          height: 720
+        }
+      },
+      burn: async () => {
+        const output = join(outDir, 'input-phude.mp4')
+        await writeFile(output, 'rendered-video')
+        return { ok: true, output }
+      }
+    }
+
+    const result = await createAutoShortItemProcessor(deps)({
+      jobId: 'job-ocr-stream-duration',
+      request: {
+        items: [{ id: 'item-ocr-stream-duration', filePath: videoFile }],
+        config: baseConfig({ outputDir: outDir })
+      },
+      item: { id: 'item-ocr-stream-duration', filePath: videoFile },
+      index: 0,
+      total: 1,
+      signal: new AbortController().signal,
+      emit: () => {},
+      checkpointDir: join(root, 'checkpoint'),
+      workDir: join(root, 'work'),
+      artifactDir: join(root, 'audit'),
+      separationProviderState: { mode: 'auto' }
+    })
+
+    assert.equal(result.status, 'done')
+    assert.equal(ocrDuration, 10)
+    assert.equal(maskDuration, 10)
+  } finally {
+    await rm(root, { recursive: true, force: true })
+  }
+})
+
+test('AutoShort does not duplicate checkpoint cues when strict translation already emitted the full SRT', () => {
+  const reusablePartial = [
+    { id: 'cue-1', text: 'old translation' },
+    { id: 'cue-2', text: 'checkpoint translation' }
+  ]
+  const translated = [
+    { id: 'cue-1', text: 'new translation' },
+    { id: 'cue-2', text: 'new checkpoint translation' },
+    { id: 'cue-3', text: 'fresh translation' }
+  ]
+
+  assert.deepEqual(mergeRecoveredTranslationItems(reusablePartial, translated), translated)
 })
 
 test('AutoShort keeps each rendered video and its audit folder under one item output directory', async () => {

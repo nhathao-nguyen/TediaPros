@@ -62,6 +62,31 @@ export interface TranslationInput {
   contextBefore: TranslationCue[]
   contextAfter: TranslationCue[]
   glossary: Array<{ source: string; target: string }>
+  synopsis?: string
+}
+
+export interface TranslationGuidance {
+  synopsis?: string
+  glossary: Array<{ source: string; target: string }>
+}
+
+/** Validate optional, user-authored context before it crosses the IPC boundary. */
+export function translationGuidanceError(value: unknown): string | null {
+  if (value == null) return null
+  if (typeof value !== 'object' || Array.isArray(value)) return 'Ngữ cảnh dịch không hợp lệ.'
+  const raw = value as Record<string, unknown>
+  if (raw.synopsis != null && (typeof raw.synopsis !== 'string' || raw.synopsis.length > 2000)) return 'Mô tả nội dung tối đa 2000 ký tự.'
+  if (!Array.isArray(raw.glossary) || raw.glossary.length > 50) return 'Glossary tối đa 50 thuật ngữ.'
+  const seen = new Set<string>()
+  for (const item of raw.glossary) {
+    if (!item || typeof item !== 'object' || Array.isArray(item)) return 'Thuật ngữ dịch không hợp lệ.'
+    const entry = item as Record<string, unknown>
+    if (typeof entry.source !== 'string' || typeof entry.target !== 'string' || !entry.source.trim() || !entry.target.trim() || entry.source.length > 160 || entry.target.length > 160) return 'Mỗi thuật ngữ cần bản gốc và bản dịch, tối đa 160 ký tự mỗi phần.'
+    const source = entry.source.trim().normalize('NFC')
+    if (seen.has(source)) return 'Thuật ngữ nguồn bị trùng trong glossary.'
+    seen.add(source)
+  }
+  return null
 }
 
 export interface TranslationItem {

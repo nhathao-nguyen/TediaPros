@@ -877,6 +877,7 @@ export interface AutoShortConfig {
   translateTarget: string
   translateProvider: DichProvider
   translateServerUrl?: string
+  translationGuidance?: import('./translation').TranslationGuidance
   videoTitle?: VideoTitleConfig
   ttsEnabled: boolean
   ttsServerUrl?: string

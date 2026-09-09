@@ -6,18 +6,54 @@ import {
   createTranslationBudget
 } from '../src/main/translation/budget'
 
+// Retain coverage of the optional bounded policy while production defaults to unlimited.
+const createLimitedBudget = (
+  planned: number,
+  now: () => number,
+  restored?: Parameters<typeof createTranslationBudget>[2]
+) => createTranslationBudget(planned, now, restored, true)
+
+test('default translation accounting does not cap requests or elapsed time', () => {
+  let now = 0
+  const budget = createTranslationBudget(1, () => now)
+  for (let index = 0; index < 25; index++) {
+    budget.charge('normal', `b${index}`)
+    budget.charge('recovery', 'b0')
+  }
+  now = 86_400_000
+  assert.equal(budget.remainingMs(), Number.POSITIVE_INFINITY)
+  const persisted = JSON.parse(JSON.stringify(budget.snapshot()))
+  assert.equal(persisted.normalUsed, 25)
+  assert.equal(persisted.recoveryUsed, 25)
+  const resumed = createTranslationBudget(1, () => now, persisted)
+  resumed.charge('recovery', 'b0')
+  assert.equal(resumed.snapshot().recoveryUsed, 26)
+  assert.equal(resumed.canSplit('b0', 1), true)
+})
+
+test('default mode resumes an exhausted legacy budget without resetting counters', () => {
+  const seed = createTranslationBudget(1, () => 0).snapshot()
+  const resumed = createTranslationBudget(1, () => 0, {
+    ...seed, normalUsed: 1, recoveryUsed: 4, activeElapsedMs: seed.activeBudgetMs,
+    perBatch: { b0: { normalCharged: true, recoveryUsed: 4, splitDepth: 0, repairSets: [], transportRetries: {} } }
+  })
+  resumed.charge('recovery', 'b0')
+  assert.equal(resumed.snapshot().recoveryUsed, 5)
+  assert.equal(resumed.remainingMs(), Number.POSITIVE_INFINITY)
+})
+
 test('five normal batches share four recovery credits and restore without reset', () => {
-  const budget = createTranslationBudget(5, () => 0)
+  const budget = createLimitedBudget(5, () => 0)
   for (let i = 0; i < 5; i++) budget.charge('normal', `b${i}`)
   for (let i = 0; i < 4; i++) budget.charge('recovery', 'b0')
   assert.throws(() => budget.charge('recovery', 'b1'), TranslationBudgetExhaustedError)
   assert.equal(budget.snapshot().recoveryUsed, 4)
-  const resumed = createTranslationBudget(5, () => 0, budget.snapshot())
+  const resumed = createLimitedBudget(5, () => 0, budget.snapshot())
   assert.throws(() => resumed.charge('recovery', 'b1'), TranslationBudgetExhaustedError)
 })
 
 test('normal charge is idempotent and per-batch recovery/split limits are finite', () => {
-  const budget = createTranslationBudget(1, () => 0)
+  const budget = createLimitedBudget(1, () => 0)
   budget.charge('normal', 'b0')
   budget.charge('normal', 'b0')
   assert.equal(budget.snapshot().normalUsed, 1)
@@ -54,12 +90,12 @@ test('restoring malformed or over-quota snapshots is rejected', () => {
   const budget = createTranslationBudget(2, () => 0)
   const snapshot = budget.snapshot()
   assert.throws(() => createTranslationBudget(2, () => 0, { ...snapshot, recoveryUsed: Number.NaN }))
-  assert.throws(() => createTranslationBudget(2, () => 0, { ...snapshot, normalUsed: 3 }))
+  assert.throws(() => createLimitedBudget(2, () => 0, { ...snapshot, normalUsed: 3 }))
 })
 
 test('restoring a lower persisted quota never increases it', () => {
   const snapshot = createTranslationBudget(2, () => 0).snapshot()
-  const resumed = createTranslationBudget(2, () => 0, {
+  const resumed = createLimitedBudget(2, () => 0, {
     ...snapshot,
     recoveryLimit: 1,
     activeBudgetMs: 600_000

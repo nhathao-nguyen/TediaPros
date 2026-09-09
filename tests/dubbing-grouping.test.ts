@@ -69,6 +69,16 @@ test('grouping preserves question, speaker, sentence and pause boundaries plus a
   assert.equal(synthesized.plan.cues[3].subtitles[0].sourceIndex, 4)
 })
 
+test('short adjacent cues keep their reduced effective window', () => {
+  const sources = [
+    { id: 'short-a', start: 84.34, end: 84.72, text: '能走' },
+    { id: 'short-b', start: 84.72, end: 86.52, text: '这是公路' }
+  ]
+  const durations = dubbingSpeakingDurations(sources, 90)
+  assert.ok(durations[0] > 0, `expected a positive window, got ${durations[0]}`)
+  assert.ok(durations[0] < 0.5, `expected the reduced effective gap, got ${durations[0]}`)
+})
+
 test('grouped speech is measured before any duration-prediction rewrite', async () => {
   const source = Array.from({ length: 18 }, (_, i) => [
     { id: `s${i}a`, start: i * 4, end: i * 4 + 0.5, text: '这是第一部分' },
@@ -110,7 +120,7 @@ test('measured overflow splits complete translated sentences at source boundarie
     rephrase: async () => { rephraseCalls++; return ['must not be requested'] },
     tts: { synthesize: async (request) => { spoken.push(request.text); return { path: request.text } } },
     audio: {
-      trim: async (path) => ({ path, duration: path.startsWith('Sentence 1.') && path.includes('Sentence 5.') ? 10 : 0.9 }),
+      trim: async (path) => ({ path, duration: path.startsWith('Sentence 1.') && path.includes('Sentence 5.') ? 12 : 0.9 }),
       applyTempo: async (path, _hint, duration) => ({ path, duration })
     }
   })

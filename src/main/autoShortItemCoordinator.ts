@@ -24,7 +24,12 @@ import {
   isSttnRemoval,
   effectiveAutoShortOcrProfile
 } from '../shared/autoShortOcrBlur'
-import { projectOcrTimelineToSubtitleCues, validateOcrVisualTimeline, type OcrVisualTimeline } from '../shared/ocrVisualTimeline'
+import {
+  projectOcrTimelineToSubtitleCues,
+  validateOcrVisualTimeline,
+  type OcrVisualTimeline,
+  type OcrVisualTransport
+} from '../shared/ocrVisualTimeline'
 import {
   deriveCanonicalDisplayGeometry,
   normalizedRegionToDisplayPixels
@@ -32,7 +37,7 @@ import {
 import { probeBurnMedia, type burnAutoShort } from './burn'
 import { ocrVideo, type ocrVideoWithVisualTimeline } from './ocr'
 import { transcribeAudio } from './whisper'
-import { validateAutoShortTimelineSync } from './autoShortPolicy'
+import { validateAutoShortPublicationTimeline } from './autoShortPolicy'
 import { fuseWhisperAndOcr, clampAlignedCueTimeline } from '../shared/autoShortAlignment'
 import {
   mustRegenerateOcrSource,
@@ -78,6 +83,8 @@ import type { ArtifactCache } from './autoShortArtifactCache'
 import { resolveTranslationSourceLanguage } from './localTranslatePolicy'
 import { composeAutoShortNarratedAudio } from './autoShortNarratedAudio'
 import { composeAutoShortBackgroundAudio } from './autoShortBackgroundAudio'
+import type { DubbingTimeMap } from './dubbing/timeMap'
+import { retimeDubbingMedia } from './dubbing/retimeMedia'
 import { validateAutoShortMusicTrack } from './autoShortMusicLibrary'
 import { assessContentQuality } from './autoShortContentQuality'
 import { separateSourceAudio } from './separation/pipeline'
@@ -97,6 +104,51 @@ import {
   sanitizeTelemetryPath
 } from './autoShortTelemetry'
 import type { AutoShortStageInfo } from '../shared/types'
+
+/**
+ * OCR and its timed mask are anchored to the video stream.  `Meta.giay` is
+ * kept as the legacy/container duration and may include an audio tail that
+ * is a few frames longer than the video stream.  Passing that container value
+ * to the OCR sidecar makes its stream duration fail exact timeline validation.
+ */
+function visualVideoDuration(meta: { giay: number; videoDurationSeconds?: number | null }): number {
+  return Number.isFinite(meta.videoDurationSeconds) && (meta.videoDurationSeconds || 0) > 0
+    ? meta.videoDurationSeconds as number
+    : meta.giay
+}
+
+/**
+ * Merge a partial translation checkpoint with the canonical SRT emitted by
+ * the translator.  A successful strict translation writes the complete cue
+ * set, so checkpoint entries already present in that SRT must not be appended
+ * a second time and fail the identity validator as duplicate IDs.
+ */
+export function mergeRecoveredTranslationItems(
+  reusablePartial: readonly TranslationItem[],
+  translated: readonly TranslationItem[]
+): TranslationItem[] {
+  const translatedIds = new Set(translated.map((item) => item.id.trim()))
+  return [
+    ...reusablePartial.filter((item) => !translatedIds.has(item.id.trim())),
+    ...translated
+  ]
+}
+
+/**
+ * A visual OCR cache is reusable across a stream request and a legacy-disk
+ * fallback.  Both transports produce the same display-space timeline contract;
+ * the fallback is only an implementation detail of an older installed
+ * runtime.  Do not reuse a stream artifact for an explicitly requested legacy
+ * run because that request may be a deliberate compatibility choice.
+ */
+export function isCompatibleOcrTransport(
+  requested: OcrVisualTransport,
+  cached: OcrVisualTransport | undefined
+): boolean {
+  const actual = cached || 'legacy-disk'
+  if (requested === actual) return true
+  return actual === 'legacy-disk' && (requested === 'stream-full' || requested === 'stream-roi')
+}
 
 export interface AutoShortItemCoordinatorDeps {
   resolveFfmpeg: () => Promise<string | null>
@@ -500,6 +552,7 @@ export function createAutoShortItemProcessor(
       if (!(meta.giay > 0) || !(meta.w > 0) || !(meta.h > 0)) {
         throw new Error('Video không có metadata hợp lệ')
       }
+      const visualDurationSeconds = visualVideoDuration(meta)
 
       const ffmpeg = await deps.resolveFfmpeg()
       if (!ffmpeg) throw new Error('Thiếu FFmpeg để xuất video.')
@@ -542,12 +595,15 @@ export function createAutoShortItemProcessor(
             emitProgress(context, 'extracting_sub', 5, 'Đang quét chữ trong video…', undefined, undefined, { stage: 'visual_ocr', phase: 'running' })
             const ocrDir = join(workDir, 'ocr')
             await mkdir(ocrDir, { recursive: true })
-            const requestedTransport = context.policy?.ocrTransport || 'legacy-disk'
+            const requestedTransport = context.policy?.ocrTransport || 'stream-roi'
             const visualCacheKey = buildStageKey('visual-ocr', {
-              cacheRevision: 'ocr-visual-cues-v1',
+              // Transport is intentionally excluded from the key: a qualified
+              // stream runtime and a legacy fallback both emit the same
+              // display-space timeline.  The revision invalidates artifacts
+              // created before this compatibility rule was introduced.
+              cacheRevision: 'ocr-visual-cues-v2',
               sourceDigest,
               profile: effectiveProfile,
-              requestedTransport,
               geometryFingerprint: geometry.fingerprint,
               displayWidth: geometry.displayWidth,
               displayHeight: geometry.displayHeight,
@@ -560,12 +616,12 @@ export function createAutoShortItemProcessor(
               if (cached) {
                 try {
                   const payload = parseCachedVisualArtifact(JSON.parse(await readFile(cached.path, 'utf8')))
-                  const transportMatches = (payload?.transport || 'legacy-disk') === requestedTransport
+                  const transportMatches = isCompatibleOcrTransport(requestedTransport, payload?.transport)
                   if (payload && transportMatches) {
                     const timeline = validateOcrVisualTimeline(payload.timeline, {
                       width: geometry.displayWidth,
                       height: geometry.displayHeight,
-                      durationSeconds: meta.giay,
+                      durationSeconds: visualDurationSeconds,
                       sampleFps: 8,
                       geometryFingerprint: geometry.fingerprint,
                       scanRegion: ocrRegion
@@ -609,10 +665,10 @@ export function createAutoShortItemProcessor(
                   scanRegion: ocrRegion,
                   profile: effectiveProfile,
                   geometry,
-                  videoDurationSeconds: meta.giay,
+                  videoDurationSeconds: visualDurationSeconds,
                   sampleFps: 8,
                   signal: ocrSignal,
-                  ocrTransport: context.policy?.ocrTransport
+                  ocrTransport: requestedTransport
                 },
                 (p) => {
                   emitProgress(context, 'extracting_sub', 5 + Math.max(0, p.percent) * 0.25, 'Đang quét chữ trong video…', undefined, undefined, { stage: 'visual_ocr', phase: 'running' })
@@ -701,7 +757,7 @@ export function createAutoShortItemProcessor(
             ffprobePath: ffprobe,
             outputPath: maskPath,
             itemWorkDir: workDir,
-            durationSeconds: meta.giay,
+            durationSeconds: visualDurationSeconds,
             signal: branchSignal
           })
         }
@@ -925,6 +981,8 @@ export function createAutoShortItemProcessor(
         const targetLocale = normalizeTranslationLocale(config.translateTarget)
         const translationMode = config.ttsEnabled ? 'dubbing' : 'subtitle'
         const translationInput = buildTranslationInput(sourceCues, sourceLanguage, targetLocale, translationMode)
+        translationInput.glossary = config.translationGuidance?.glossary.map(entry => ({ ...entry })) || []
+        translationInput.synopsis = config.translationGuidance?.synopsis
         const model = translationModelIdentity(config)
         const translationKey = buildTranslationIdentity(translationInput, {
           provider: config.translateProvider,
@@ -933,11 +991,11 @@ export function createAutoShortItemProcessor(
           profileId: model.profileId,
           promptVersion: TRANSLATION_PROMPT_VERSION,
           parserVersion: TRANSLATION_PARSER_VERSION,
-          plannerVersion: 'translation-plan-v2',
+          plannerVersion: 'translation-plan-v3',
           assessmentVersion: 'translation-assessment-v2',
           options: {
             sourceDigest,
-            contextRadius: 1,
+            contextRadius: 2,
             videoDuration: config.ttsEnabled ? meta.giay : undefined,
             mode: translationMode,
             strict: true
@@ -1089,10 +1147,10 @@ export function createAutoShortItemProcessor(
             }, reusablePartial, checkpoint.translationBudget, meta.giay)
             providerTranslationAssessment = strictResult.assessment
             const translated = parseSrt(await readFile(targetSrtPath, 'utf8')).cues.filter((cue) => cue.text.trim())
-            const restored = revalidate([
-              ...reusablePartial,
-              ...translated.map((cue) => ({ id: cue.id, text: cue.text }))
-            ])
+            const restored = revalidate(mergeRecoveredTranslationItems(
+              reusablePartial,
+              translated.map((cue) => ({ id: cue.id, text: cue.text }))
+            ))
             if (!restored) throw new Error('SRT đích không vượt qua kiểm tra identity/quality; không ghi đè bằng bản dịch không chắc chắn.')
             await writeFile(targetSrtPath, serializeSrt(restored), 'utf8')
             translatedCueCount = restored.length
@@ -1227,6 +1285,8 @@ export function createAutoShortItemProcessor(
       }
 
       let stitchedAudioPath: string | null = null
+      let outputDuration = meta.giay
+      let dubbingTimeMap: DubbingTimeMap | undefined
       let renderSrtPath = targetSrtPath
       let renderDisplayStyle = config.subtitleDisplayStyle || 'standard'
       let finalWordTimings: any = undefined
@@ -1264,37 +1324,17 @@ export function createAutoShortItemProcessor(
           return res
         })
 
-        // Resilient timeline clamping: clamp minor floating-point or tail rounding deviations before sync validation
-        if (Array.isArray(synthesized.dubbingUnits) && meta.giay > 0) {
-          for (let i = 0; i < synthesized.dubbingUnits.length; i++) {
-            const u = synthesized.dubbingUnits[i]
-            if (!u) continue
-            // 1. Clamp minor tail overshoot beyond video duration if within a small margin (<= 0.35s)
-            if (u.plannedEnd > meta.giay && u.plannedEnd <= meta.giay + 0.35) {
-              const clampedEnd = meta.giay
-              const dur = Math.max(0.01, clampedEnd - u.plannedStart)
-              u.plannedEnd = clampedEnd
-              u.finalDuration = Number(dur.toFixed(4))
-              if (u.subtitles?.length) {
-                const lastSub = u.subtitles[u.subtitles.length - 1]
-                if (lastSub && lastSub.end > clampedEnd) {
-                  lastSub.end = clampedEnd
-                }
-              }
-            }
-            // 2. Normalize minor floating point drift between finalDuration and plannedEnd - plannedStart
-            if (Number.isFinite(u.finalDuration) && Number.isFinite(u.plannedStart) && Number.isFinite(u.plannedEnd)) {
-              const calculatedDur = u.plannedEnd - u.plannedStart
-              if (Math.abs((u.finalDuration as number) - calculatedDur) > 0.001 && Math.abs((u.finalDuration as number) - calculatedDur) <= 0.015) {
-                u.finalDuration = Number(calculatedDur.toFixed(4))
-              }
-            }
-          }
+        outputDuration = synthesized.outputDuration
+        dubbingTimeMap = synthesized.timeMap
+        if (dubbingTimeMap) {
+          logInfo(`[AutoShort:retiming] sourceSeconds=${meta.giay.toFixed(3)} outputSeconds=${outputDuration.toFixed(3)} maxLocalExtension=40%`)
+          const mapPath = join(workDir, 'dubbing-time-map.json')
+          await writeFile(mapPath, JSON.stringify({ ...dubbingTimeMap, originalSourceCues: sourceCues }, null, 2), 'utf8')
+          artifactEntries.push({ source: mapPath, name: 'dubbing-time-map.json' })
         }
-
-        const syncValidation = validateAutoShortTimelineSync(
+        const syncValidation = validateAutoShortPublicationTimeline(
           synthesized.dubbingUnits,
-          meta.giay,
+          outputDuration,
           synthesized.sourceGroupInputs,
           synthesized.targetGroupInputs
         )
@@ -1310,7 +1350,7 @@ export function createAutoShortItemProcessor(
         await telemetry.withStageSpan('audio', {}, async (span) => {
           await resourceManager.withLease(['local-audio-dsp'], signal, async (lease) => {
             span.recordResourceWait(lease.waitMs || 0)
-            await stitchAudioTimeline(synthesized.clips, meta.giay, workDir, synthesized.path, signal)
+            await stitchAudioTimeline(synthesized.clips, outputDuration, workDir, synthesized.path, signal)
           })
           span.updateCounters({ clipCount: synthesized.clips.length })
         })
@@ -1324,6 +1364,9 @@ export function createAutoShortItemProcessor(
         artifactEntries.push(...synthesized.artifacts)
         const timelineManifestPath = join(workDir, 'tts-timeline.json')
         await writeFile(timelineManifestPath, JSON.stringify({
+          timeMap: dubbingTimeMap,
+          sourceDuration: meta.giay,
+          outputDuration,
           timingWarnings: syncValidation.warnings || [],
           language: synthesized.language,
           voice: synthesized.voice,
@@ -1367,16 +1410,18 @@ export function createAutoShortItemProcessor(
         outputAudioPath = join(workDir, 'tts-bed-mix.wav')
         artifactEntries.push({ source: outputAudioPath, name: 'tts-bed-mix.wav' })
         emitProgress(context, 'stitching_audio', 83, 'Đang trộn âm thanh nền với giọng lồng tiếng…')
-        const bedPath = separatedInstrumentalPath
+        let bedPath = separatedInstrumentalPath
         const narrationPath = stitchedAudioPath
         const mixOutputPath = outputAudioPath
         await resourceManager.withLease(['local-audio-dsp'], signal, async () => {
+          if (dubbingTimeMap) bedPath = await retimeDubbingMedia({ ffmpeg, source: bedPath,
+            workDir, name: 'retimed-instrumental', map: dubbingTimeMap, kind: 'audio', signal })
           await composeAutoShortNarratedAudio({
             ffmpegPath: ffmpeg,
             bedPath,
             narrationPath,
             outputPath: mixOutputPath,
-            durationSeconds: meta.giay,
+            durationSeconds: outputDuration,
             bedMode: 'finite-source',
             bedVolume: 100,
             signal
@@ -1397,7 +1442,7 @@ export function createAutoShortItemProcessor(
             musicPath,
             narrationPath,
             outputPath: mixOutputPath,
-            duration: meta.giay,
+            duration: outputDuration,
             volume: backgroundMusic.volume,
             signal
           })
@@ -1414,12 +1459,25 @@ export function createAutoShortItemProcessor(
         throw visualOutcome.error
       }
       const visualBranch = visualOutcome.value
-      const {
+      let {
         renderVideoPath,
         timedMask,
         visualResultForAudit,
         sttnAudit
       } = visualBranch
+
+      if (dubbingTimeMap) {
+        emitProgress(context, 'rendering_video', 84, 'Đang kéo dài các đoạn thiếu thời gian (tối đa 40%)…')
+        await resourceManager.withLease(['local-cpu-heavy'], signal, async () => {
+          renderVideoPath = await retimeDubbingMedia({ ffmpeg, source: renderVideoPath, workDir,
+            name: 'retimed-video', map: dubbingTimeMap!, kind: 'video', hasAudio: meta.hasAudio && config.audioMode === 'mix', audioSource: item.filePath,
+            frameRate: meta.frameRate, signal })
+          if (timedMask) timedMask = { ...timedMask,
+            path: await retimeDubbingMedia({ ffmpeg, source: timedMask.path, workDir,
+              name: 'retimed-mask', map: dubbingTimeMap!, kind: 'mask', width: timedMask.width, height: timedMask.height, signal }),
+            durationSeconds: outputDuration }
+        })
+      }
 
       const renderMsg = automaticBlur
         ? 'Đang làm mờ OCR, gắn phụ đề và xuất video…'
@@ -1483,7 +1541,7 @@ export function createAutoShortItemProcessor(
               finalOutputPath,
               itemWorkDir: workDir,
               expectedMedia: {
-                durationSeconds: meta.giay,
+                durationSeconds: outputDuration,
                 frameRate: meta.frameRate,
                 requireAudio: Boolean(outputAudioPath || (meta.hasAudio && config.audioMode === 'mix')),
                 durationToleranceFrames: 3

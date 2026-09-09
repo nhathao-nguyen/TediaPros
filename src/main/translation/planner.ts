@@ -2,10 +2,14 @@ import type {
   TranslationCapability as SharedTranslationCapability,
   TranslationInput,
   TranslationItem,
-  TranslationCue
+  TranslationCue,
+  TranslationIssue
 } from '../../shared/translation'
 import { buildSemanticGroups, joinGroupText, type SemanticCue } from '../semanticGrouping'
-import { buildTranslationMessages } from './prompts'
+import { buildTranslationBatchMessages } from './prompts'
+import { fitTranslationSourceContext, selectTranslationSourceContext } from './context'
+
+export const TRANSLATION_PLAN_VERSION = 'translation-plan-v3'
 
 export interface TranslationCapability extends SharedTranslationCapability {
   provider: 'local' | 'gemini' | 'openai' | 'fixture'
@@ -26,6 +30,7 @@ export interface TranslationUnitMapping {
 }
 
 export interface PlannedTranslationBatch {
+  repairIssues?: TranslationIssue[]
   id: string
   input: TranslationInput
   maxOutputTokens: number
@@ -33,7 +38,7 @@ export interface PlannedTranslationBatch {
 }
 
 export interface TranslationPlan {
-  planVersion: 'translation-plan-v2'
+  planVersion: typeof TRANSLATION_PLAN_VERSION
   batches: PlannedTranslationBatch[]
   mapping: TranslationUnitMapping[]
   warnings: string[]
@@ -154,12 +159,11 @@ export function planTranslation(input: TranslationInput, capability: Translation
   const buildBatchInput = (items: typeof units): TranslationInput => ({
     ...source,
     cues: items.map((item) => item.cue),
-    contextBefore: source.contextBefore.map(cloneCue),
-    contextAfter: source.contextAfter.map(cloneCue)
+    ...selectTranslationSourceContext(source, items.map((item) => item.cue), mapping)
   })
 
   const exactInputCost = (items: typeof units): number => {
-    const serialized = JSON.stringify(buildTranslationMessages(buildBatchInput(items), capability.format))
+    const serialized = JSON.stringify(buildTranslationBatchMessages({ input: buildBatchInput(items) }, capability.format))
     return safeTokenCount(capability, serialized)
   }
 
@@ -168,10 +172,12 @@ export function planTranslation(input: TranslationInput, capability: Translation
 
   const flush = (): void => {
     if (pending.length === 0) return
-    const batchInput = buildBatchInput(pending)
+    const batchInput = fitTranslationSourceContext(buildBatchInput(pending), (candidate) =>
+      capability.contextTokens === null ||
+      safeTokenCount(capability, JSON.stringify(buildTranslationBatchMessages({ input: candidate }, capability.format))) + outputTokens <= capability.contextTokens)
     // Count the exact system/user payload sent by every production adapter so
     // batching and context guards do not drift from the wire contract.
-    const inputCost = exactInputCost(pending)
+    const inputCost = safeTokenCount(capability, JSON.stringify(buildTranslationBatchMessages({ input: batchInput }, capability.format)))
     const reservedOutput = outputTokens
     if (capability.contextTokens !== null && inputCost + reservedOutput > capability.contextTokens) {
       warnings.push(`Batch ${batches.length + 1} vượt ngân sách context ước lượng (${inputCost + reservedOutput} > ${capability.contextTokens}).`)
@@ -209,7 +215,7 @@ export function planTranslation(input: TranslationInput, capability: Translation
   if (batches.length === 0) throw new Error('Translation planner produced no batches.')
   const unsupported = capability.contextTokens !== null && warnings.some((warning) => warning.includes('vượt ngân sách context'))
   if (capability.contextTokens === null || capability.outputTokens === null) warnings.push('Provider token limits are unknown; using a bounded compatibility estimate.')
-  return { planVersion: 'translation-plan-v2', batches, mapping, warnings, unsupported }
+  return { planVersion: TRANSLATION_PLAN_VERSION, batches, mapping, warnings, unsupported }
 }
 
 function joinTranslatedParts(parts: readonly string[], targetLocale: string): string {

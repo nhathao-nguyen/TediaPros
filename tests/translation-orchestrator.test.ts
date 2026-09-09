@@ -3,7 +3,27 @@ import test from 'node:test'
 import { translateWithAdapter, type TranslationAdapter } from '../src/main/translation/orchestrator'
 import { createTranslationBudget } from '../src/main/translation/budget'
 import type { TranslationInput } from '../src/shared/translation'
-import type { TranslationCapability } from '../src/main/translation/planner'
+import { planTranslation, type TranslationCapability } from '../src/main/translation/planner'
+import { buildTranslationBatchMessages } from '../src/main/translation/prompts'
+
+test('malformed singleton receives a repair task with parser feedback', async () => {
+  let calls = 0
+  const result = await translateWithAdapter({ ...input, cues: input.cues.slice(0, 1) }, {
+    capability,
+    async requestOnce(batch) {
+      calls++
+      const messages = buildTranslationBatchMessages(batch, 'json-items')
+      if (calls === 1) return { raw: 'bad format', truncated: false, modelIdentity: 'fixture@1' }
+      assert.match(messages[0].content, /task=repair/u)
+      assert.match(messages[1].content, /REPAIR_ISSUES_JSON/u)
+      assert.ok(batch.repairIssues?.length)
+      return { raw: JSON.stringify({ items: [{ id: batch.input.cues[0].id, text: 'First sentence.' }] }), truncated: false, modelIdentity: 'fixture@1' }
+    }
+  }, new AbortController().signal)
+  assert.equal(calls, 2)
+  assert.equal(result.items.length, 1)
+  assert.notEqual(result.assessment.disposition, 'needs-review')
+})
 
 const capability: TranslationCapability = {
   provider: 'fixture', modelIdentity: 'fixture@1', revisionKnown: true, format: 'json-items',
@@ -17,6 +37,63 @@ const input: TranslationInput = {
   ],
   contextBefore: [], contextAfter: [], glossary: []
 }
+
+test('transient retries without Retry-After use bounded increasing jitter backoff', async () => {
+  const sleeps: number[] = []
+  let calls = 0
+  const result = await translateWithAdapter(input, {
+    capability,
+    async requestOnce(batch) {
+      if (++calls < 3) throw Object.assign(new Error('busy'), { status: 503 })
+      return { raw: JSON.stringify({ items: batch.input.cues.map(cue => ({ id: cue.id, text: 'Translation.' })) }), truncated: false, modelIdentity: 'fixture@1' }
+    }
+  }, new AbortController().signal, { sleep: async ms => { sleeps.push(ms) }, random: () => 0.5 })
+  assert.equal(calls, 3)
+  assert.deepEqual(sleeps, [1250, 2500])
+  assert.notEqual(result.assessment.disposition, 'needs-review')
+})
+
+test('oversized Retry-After is capped before reaching the sleep implementation', async () => {
+  const sleeps: number[] = []
+  let calls = 0
+  await translateWithAdapter(input, {
+    capability,
+    async requestOnce(batch) {
+      if (++calls === 1) throw Object.assign(new Error('busy'), { status: 503, retryAfterMs: 3_000_000_000 })
+      return { raw: JSON.stringify({ items: batch.input.cues.map(cue => ({ id: cue.id, text: 'Translation.' })) }), truncated: false, modelIdentity: 'fixture@1' }
+    }
+  }, new AbortController().signal, { sleep: async ms => { sleeps.push(ms) } })
+  assert.deepEqual(sleeps, [30_000])
+})
+
+test('repair payload is rechecked against known context capacity before dispatch', async () => {
+  const source = { ...input, cues: input.cues.slice(0, 1) }
+  const planningCapability: TranslationCapability = { ...capability, contextTokens: null, outputTokens: 1 }
+  const plan = planTranslation(source, planningCapability)
+  const normalCost = JSON.stringify(buildTranslationBatchMessages(plan.batches[0]!, 'json-items')).length
+  let calls = 0
+  const result = await translateWithAdapter(source, {
+    capability: { ...planningCapability, contextTokens: normalCost + 1, countTokens: value => value.length },
+    async requestOnce() {
+      calls++
+      return { raw: 'bad format', truncated: false, modelIdentity: 'fixture@1' }
+    }
+  }, new AbortController().signal, { plan })
+  assert.equal(calls, 1)
+  assert.ok(result.assessment.issues.some(issue => issue.code === 'unsupported-capability'))
+})
+
+test('custom cancellation during backoff stops dispatch and reports cancellation', async () => {
+  const controller = new AbortController()
+  let calls = 0
+  const result = await translateWithAdapter(input, {
+    capability,
+    async requestOnce() { calls++; throw Object.assign(new Error('busy'), { status: 503 }) }
+  }, controller.signal, { sleep: async () => { controller.abort(new Error('stop from UI')); throw controller.signal.reason } })
+  assert.equal(calls, 1)
+  assert.ok(result.assessment.issues.some(issue => issue.code === 'cancelled'))
+  assert.ok(!result.assessment.issues.some(issue => issue.code === 'budget-exhausted'))
+})
 
 test('only missing work is retried and total requests is finite', async () => {
   const requested: string[][] = []
@@ -54,6 +131,27 @@ test('persistent malformed responses terminate with needs-review instead of loop
   assert.ok(result.assessment.issues.some((issue) => issue.code === 'unparsed-content' || issue.code === 'budget-exhausted' || issue.code === 'no-progress'))
 })
 
+test('progressive missing-ID recovery completes after the former per-batch quota', async () => {
+  const source: TranslationInput = { ...input, cues: Array.from({ length: 8 }, (_, index) => ({
+    id: `cue-${index}`, sourceIndex: index, start: index, end: index + 1, groupId: `g${index}`, text: '你好。'
+  })) }
+  let calls = 0
+  const result = await translateWithAdapter(source, {
+    capability,
+    async requestOnce(batch) {
+      calls++
+      return { raw: JSON.stringify({ items: [{ id: batch.input.cues[0].id, text: 'Hello.' }] }),
+        truncated: false, modelIdentity: 'fixture@1' }
+    }
+  }, new AbortController().signal)
+  assert.equal(result.plan.batches.length, 1)
+  assert.equal(calls, 8)
+  assert.equal(result.budget.recoveryUsed, 7)
+  assert.deepEqual(result.items.map((item) => item.id), source.cues.map((cue) => cue.id))
+  assert.notEqual(result.assessment.disposition, 'needs-review')
+  assert.equal(result.assessment.issues.some((item) => item.code === 'budget-exhausted'), false)
+})
+
 test('structured provider auth failure does not retry', async () => {
   let calls = 0
   const adapter: TranslationAdapter = {
@@ -89,7 +187,7 @@ test('expired active budget stops before dispatching another provider request', 
   const budget = createTranslationBudget(1, () => 0, {
     ...seed,
     activeElapsedMs: seed.activeBudgetMs
-  })
+  }, true)
   let calls = 0
   const adapter: TranslationAdapter = {
     capability,
@@ -222,3 +320,24 @@ for (const [label, response] of [
     assert.ok(calls > 1, 'invalid response must not be certified as complete')
   })
 }
+
+test('all branches isolate malformed batches down to single cues', async () => {
+  const source: TranslationInput = { ...input, cues: Array.from({ length: 16 }, (_, index) => ({
+    id: `unit-${index}`, sourceIndex: index, start: index, end: index + 1, groupId: `g${index}`, text: '你好。'
+  })) }
+  let calls = 0
+  const result = await translateWithAdapter(source, {
+    capability,
+    async requestOnce(batch) {
+      calls++
+      return { raw: batch.input.cues.length === 1
+        ? JSON.stringify({ items: [{ id: batch.input.cues[0].id, text: 'Hello.' }] })
+        : 'malformed batch', truncated: false, modelIdentity: 'fixture@1' }
+    }
+  }, new AbortController().signal)
+  assert.equal(result.items.length, 16)
+  assert.notEqual(result.assessment.disposition, 'needs-review')
+  assert.ok(calls <= 31)
+  const restored = createTranslationBudget(result.plan.batches.length, undefined, result.budget)
+  assert.ok(restored.snapshot().perBatch)
+})

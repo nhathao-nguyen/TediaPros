@@ -10,6 +10,8 @@
 
 **Spec:** [docs/superpowers/specs/2026-09-08-autoshort-decoupled-dubbing-design.md](../specs/2026-09-08-autoshort-decoupled-dubbing-design.md)
 
+> Kế hoạch này là lịch sử của đợt decoupling ban đầu. Review ngày 2026-09-08 đã điều chỉnh ownership batch/lease, EOF validation, QA và checkpoint identity tại [autoshort-review-fixes.md](/F:/Son/tool/TediaPros/docs/superpowers/plans/2026-09-08-autoshort-review-fixes.md). Kỳ vọng adapter `[8,2]` bên dưới nay áp dụng cho HTTP chunks; synthesis callback nhận toàn queue một lần.
+
 ## Global Constraints
 
 - Chỉ sửa đường chạy AutoShort có TTS và các test/docs liên quan; không thay đổi IPC, SRT format, provider API public hoặc format cache.

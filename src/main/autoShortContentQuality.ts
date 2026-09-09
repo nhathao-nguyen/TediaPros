@@ -4,12 +4,14 @@ import type {
   TranslationIssue,
   TranslationIssueCode
 } from '../shared/translation'
+import { negationTokensForComparison } from './contentQuality/negation'
+import { extractContextualNumberTokens, normalizeUnicodeDecimalDigits } from './contentQuality/numerals'
 
 export type ContentQualitySeverity = 'error' | 'warning'
 
 export interface ContentQualityFinding {
   severity: ContentQualitySeverity
-  code: 'duplicate-source-id' | 'duplicate-target-id' | 'missing-target-id' | 'unexpected-target-id' | 'empty-target-text' | 'protected-token-mismatch' | 'invalid-source'
+  code: 'duplicate-source-id' | 'duplicate-target-id' | 'missing-target-id' | 'unexpected-target-id' | 'empty-target-text' | 'protected-token-mismatch' | 'embedded-cue-marker' | 'invalid-source'
   cueId?: string
   message: string
 }
@@ -19,11 +21,6 @@ export interface AutoShortContentQualityResult {
   findings: ContentQualityFinding[]
 }
 
-const NEGATION_WORDS = new Set([
-  'không', 'chưa', 'đừng', 'chẳng', 'chả', 'never', 'not', 'no', "don't", "doesn't", "isn't", "wasn't", 'without',
-  '不', '沒', '没', '别', '不要', '無', '无', 'ない', 'ません', '안', '않', 'لا', 'ليس', 'नहीं', 'ไม่'
-])
-
 const ISSUE_CODE_BY_FINDING: Record<ContentQualityFinding['code'], TranslationIssueCode> = {
   'duplicate-source-id': 'invalid-source',
   'duplicate-target-id': 'duplicate-id',
@@ -31,42 +28,19 @@ const ISSUE_CODE_BY_FINDING: Record<ContentQualityFinding['code'], TranslationIs
   'unexpected-target-id': 'unknown-id',
   'empty-target-text': 'empty-text',
   'protected-token-mismatch': 'protected-token-suspect',
+  'embedded-cue-marker': 'provider-protocol',
   'invalid-source': 'invalid-source'
 }
 
-const CJK_DIGIT_MAP: Record<string, string> = {
-  '零': '0', '〇': '0', '一': '1', '二': '2', '两': '2',
-  '三': '3', '四': '4', '五': '5', '六': '6', '七': '7',
-  '八': '8', '九': '9'
-}
-
-function unicodeDigitsToAscii(value: string): string {
-  return Array.from(value).map((character) => {
-    if (CJK_DIGIT_MAP[character] !== undefined) return CJK_DIGIT_MAP[character]
-    const codePoint = character.codePointAt(0) || 0
-    if (codePoint >= 0x0660 && codePoint <= 0x0669) return String(codePoint - 0x0660)
-    if (codePoint >= 0x06f0 && codePoint <= 0x06f9) return String(codePoint - 0x06f0)
-    if (codePoint >= 0x0966 && codePoint <= 0x096f) return String(codePoint - 0x0966)
-    if (codePoint >= 0x0e50 && codePoint <= 0x0e59) return String(codePoint - 0x0e50)
-    return character
-  }).join('')
-}
-
-function isQuestionSentence(text: string): boolean {
-  if (!text) return false
-  if (/[?？]/u.test(text)) return true
-  if (/(?:phải\s+không|đúng\s+không|được\s+không|hả|sao|chăng|chưa)\s*[.!]?$/iu.test(text.trim())) return true
-  if (/[吗呢吧か]\s*[.!]?$/u.test(text.trim())) return true
-  return false
-}
-
 function protectedTokens(text: string): string[] {
-  // Chinese ordinal markers such as 第一/第二 identify cue order, not a
-  // quantity that a translation must repeat. Strip that marker before the
-  // optional CJK digit normalization so generic fixture/translation text
-  // does not become a false protected-number warning.
-  const normalized = unicodeDigitsToAscii(text.normalize('NFKC').replace(/第[零〇一二两三四五六七八九]+/gu, '第')).toLowerCase()
-  const tokens: string[] = []
+  const normalized = normalizeUnicodeDecimalDigits(text.normalize('NFKC')).toLowerCase()
+  const contextual = extractContextualNumberTokens(normalized)
+  const remainder = normalized.split('')
+  for (const span of contextual) {
+    for (let index = span.start; index < span.end; index++) remainder[index] = ' '
+  }
+  const numericRemainder = remainder.join('')
+  const tokens: string[] = contextual.map((span) => span.token)
   // Keep a numeric value and its canonical unit as protected tokens. Unit
   // words often change during translation ("phút" -> "minutes", "%" ->
   // "percent"), so compare their semantic class rather than their spelling.
@@ -90,7 +64,7 @@ function protectedTokens(text: string): string[] {
     [/^(?:meter(?:s)?|metre(?:s)?|m$)/u, 'm']
   ]
   const numberPattern = /[-+]?\d+(?:[.,]\d+)*(?:\s*(%|°|phần\s*trăm|percent(?:age)?|độ|degree(?:s)?|kilogram(?:s)?|kg|milligram(?:s)?|mg|gram(?:s)?|g|kilometer(?:s)?|kilometre(?:s)?|km|centimeter(?:s)?|centimetre(?:s)?|cm|millimeter(?:s)?|millimetre(?:s)?|mm|milliliter(?:s)?|millilitre(?:s)?|ml|liter(?:s)?|litre(?:s)?|lít|l|millisecond(?:s)?|mili\s*giây|ms|second(?:s)?|secs?|giây|s|minute(?:s)?|mins?|phút|phut|hour(?:s)?|giờ|gio|h|day(?:s)?|ngày|year(?:s)?|năm|meter(?:s)?|metre(?:s)?|m))?/giu
-  for (const match of normalized.matchAll(numberPattern)) {
+  for (const match of numericRemainder.matchAll(numberPattern)) {
     const raw = match[0].replace(/\s+/gu, ' ').replace(/,/gu, '.').trim()
     const numeric = raw.match(/^[-+]?\d+(?:\.\d+)*/u)?.[0]
     if (!numeric) continue
@@ -101,16 +75,85 @@ function protectedTokens(text: string): string[] {
       if (canonicalUnit) tokens.push(`unit:${canonicalUnit}`)
     }
   }
-  for (const word of normalized.match(/[\p{L}']+/gu) || []) {
-    if (NEGATION_WORDS.has(word)) tokens.push('neg')
-  }
-  // CJK and several other scripts do not expose whitespace-delimited words.
-  // Treat the presence of a known negation marker as one heuristic signal;
-  // this is deliberately not a hard semantic assertion.
-  if (/(?:不|沒|没|别|不要|無|无|ない|ません|안|않|لا|ليس|नहीं|ไม่)/u.test(normalized) && !tokens.includes('neg')) {
-    tokens.push('neg')
-  }
   return tokens.sort()
+}
+
+export interface RephraseSemanticResult {
+  ok: boolean
+  reasons: Array<'protected-token' | 'named-entity' | 'relation' | 'lexical-anchor'>
+}
+
+const REPHRASE_STOP_WORDS = new Set([
+  'a', 'an', 'and', 'are', 'as', 'at', 'be', 'by', 'do', 'does', 'for', 'from', 'he', 'her', 'his', 'i', 'in',
+  'is', 'it', 'its', 'of', 'on', 'or', 'she', 'that', 'the', 'their', 'them', 'they', 'this', 'to', 'we', 'you',
+  'các', 'có', 'của', 'cho', 'đã', 'đang', 'được', 'là', 'một', 'này', 'những', 'rằng', 'thì', 'và', 'với'
+])
+
+function lexicalAnchors(text: string): Set<string> {
+  return new Set((text.normalize('NFKC').toLowerCase().match(/[\p{L}\p{N}]+/gu) || [])
+    .filter((word) => word.length > 1 && !REPHRASE_STOP_WORDS.has(word) && !/^\p{N}+$/u.test(word)))
+}
+
+function namedAnchors(text: string): string[] {
+  const result: string[] = []
+  for (const match of text.matchAll(/["“”']([^"“”']{2,80})["“”']/gu)) result.push(match[1]!.normalize('NFKC').toLowerCase())
+  const words = text.match(/[\p{L}\p{N}]+/gu) || []
+  words.forEach((word, index) => {
+    const normalized = word.normalize('NFKC').toLowerCase()
+    if (/^[A-Z][A-Za-zÀ-ỹ0-9_-]+$/u.test(word) && index > 0 || /^(?=.*[A-Z])(?=.*[A-Z0-9])[A-Z0-9._-]{2,}$/u.test(word)) {
+      if (!result.includes(normalized)) result.push(normalized)
+    }
+  })
+  return result
+}
+
+function objectAnchors(text: string): Set<string> {
+  const result = new Set<string>()
+  for (const match of text.normalize('NFKC').toLowerCase().matchAll(/\bthe\s+([\p{L}\p{N}_]+)/gu)) {
+    if (match[1] && !REPHRASE_STOP_WORDS.has(match[1])) result.add(match[1])
+  }
+  return result
+}
+
+function relationAnchors(text: string): Set<string> {
+  const normalized = text.normalize('NFKC').toLowerCase()
+  const relations: Array<[string, RegExp]> = [
+    ['before', /\b(?:before|trước\s+khi)\b/u],
+    ['after', /\b(?:after|sau\s+khi)\b/u],
+    ['if', /\b(?:if|nếu)\b/u],
+    ['unless', /\b(?:unless|trừ\s+khi)\b/u],
+    ['because', /\b(?:because|because\s+of|vì|do)\b/u],
+    ['until', /\b(?:until|cho\s+đến\s+khi)\b/u]
+  ]
+  return new Set(relations.filter(([, pattern]) => pattern.test(normalized)).map(([name]) => name))
+}
+
+/** Conservative same-language gate for TTS rescue candidates. It only rejects
+ * evidence that can be checked deterministically; it does not claim complete
+ * semantic equivalence. The original measured text remains the safe fallback. */
+export function validateRephraseSemanticPreservation(
+  currentText: string,
+  candidateText: string,
+  _locale?: string
+): RephraseSemanticResult {
+  const reasons = new Set<RephraseSemanticResult['reasons'][number]>()
+  const polarity = negationTokensForComparison(currentText, candidateText)
+  const currentProtected = [...protectedTokens(currentText), ...polarity.source].sort()
+  const candidateProtected = [...protectedTokens(candidateText), ...polarity.target].sort()
+  if (currentProtected.join('\u0000') !== candidateProtected.join('\u0000')) reasons.add('protected-token')
+
+  const candidateNormalized = candidateText.normalize('NFKC').toLowerCase()
+  const currentNames = namedAnchors(currentText)
+  const candidateNames = namedAnchors(candidateText)
+  // Ignore the first capitalized word because it may only start a sentence;
+  // preserve every later name/acronym and their order.
+  if (currentNames.length >= 1 && currentNames.join('\u0000') !== candidateNames.join('\u0000')) reasons.add('named-entity')
+  if ([...objectAnchors(currentText)].some((anchor) => !lexicalAnchors(candidateText).has(anchor))) reasons.add('lexical-anchor')
+  const currentRelations = relationAnchors(currentText)
+  const candidateRelations = relationAnchors(candidateText)
+  if ([...currentRelations].some((anchor) => !candidateRelations.has(anchor))) reasons.add('relation')
+
+  return { ok: reasons.size === 0, reasons: [...reasons] }
 }
 
 function idCounts(cues: readonly SubtitleCue[]): Map<string, number> {
@@ -157,6 +200,13 @@ export function validateAutoShortContentQuality(input: {
   for (const target of input.targetCues) {
     if (!target.text?.trim()) {
       findings.push({ severity: 'error', code: 'empty-target-text', cueId: target.id, message: `Target cue ${target.id || '(rỗng)'} không có nội dung.` })
+    } else if (/\[\s*cue-[\w-]+\s*\]/iu.test(target.text)) {
+      findings.push({
+        severity: 'error',
+        code: 'embedded-cue-marker',
+        cueId: target.id,
+        message: `Target cue ${target.id || '(rỗng)'} chứa nhãn cue trong nội dung đọc.`
+      })
     }
   }
 
@@ -168,18 +218,9 @@ export function validateAutoShortContentQuality(input: {
       findings.push({ severity: 'error', code: 'empty-target-text', cueId: source.id, message: `Target cue ${source.id} không có nội dung.` })
       continue
     }
-    const sourceTokens = protectedTokens(source.text)
-    const targetTokens = protectedTokens(target.text)
-    const sourceWithoutNeg = sourceTokens.filter((token) => token !== 'neg')
-    const targetWithoutNeg = targetTokens.filter((token) => token !== 'neg')
-    const onlyNegDiffers = sourceWithoutNeg.join('\u0000') === targetWithoutNeg.join('\u0000') &&
-      sourceTokens.includes('neg') !== targetTokens.includes('neg')
-    const isQuestionContext = isQuestionSentence(source.text) || isQuestionSentence(target.text)
-    if (onlyNegDiffers && isQuestionContext) {
-      // Question particles across languages (e.g. Chinese 吗/呢 -> Vietnamese không/chưa)
-      // are interrogative markers rather than semantic polarity reversals.
-      continue
-    }
+    const polarity = negationTokensForComparison(source.text, target.text)
+    const sourceTokens = [...protectedTokens(source.text), ...polarity.source].sort()
+    const targetTokens = [...protectedTokens(target.text), ...polarity.target].sort()
     if (sourceTokens.join('\u0000') !== targetTokens.join('\u0000')) {
       findings.push({
         severity: 'warning',

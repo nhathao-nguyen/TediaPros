@@ -15,6 +15,7 @@ import {
   validateOcrSrtOutput,
   type AutoShortOcrVideoOptions
 } from '../src/main/ocr'
+import { resolveExecutionPolicy } from '../src/main/autoShortExecutionPolicy'
 import { probeRuntimeAsset, probeRuntimeExecutable } from '../src/main/runtimeProbes'
 import type { RuntimeAssetSpec } from '../src/main/runtimeManifest'
 import type { CanonicalDisplayGeometry } from '../src/main/canonicalDisplayGeometry'
@@ -47,6 +48,15 @@ test('OCR transport negotiation defaults to stream-full only for a qualified bin
   const fallback = negotiateOcrVisualTransport('stream-roi', legacy)
   assert.equal(fallback.effective, 'legacy-disk')
   assert.match(fallback.reason || '', /visual-stream-roi-v1/u)
+})
+
+test('AutoShort defaults keep one item but overlap visual OCR and prefer ROI streaming', () => {
+  assert.deepEqual(resolveExecutionPolicy(), {
+    maxActiveItems: 1,
+    overlapIndependentStages: true,
+    prefetchTts: false,
+    ocrTransport: 'stream-roi'
+  })
 })
 
 test('standalone OCR output validation rejects missing, empty, and count-mismatched SRT', () => {

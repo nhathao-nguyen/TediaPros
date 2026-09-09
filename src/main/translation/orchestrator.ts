@@ -9,6 +9,9 @@ import type {
 import { assessContentQuality } from '../autoShortContentQuality'
 import { assessTranslationLanguage } from './language'
 import { parseTranslationResponse } from './response'
+import { selectTranslationSourceContext } from './context'
+import { fitTranslationSourceContext } from './context'
+import { buildTranslationBatchMessages } from './prompts'
 import {
   classifyTranslationError,
   createTranslationBudget,
@@ -50,6 +53,8 @@ export interface TranslateWithAdapterOptions {
   onBatch?: TranslationBatchCallback
   /** Sleep between structured transient retries. Inject a no-op in tests. */
   sleep?: (delayMs: number, signal?: AbortSignal) => Promise<void>
+  /** Random source for bounded transport backoff; independent of content recovery. */
+  random?: () => number
 }
 
 export interface TranslationRunResult extends TranslationBatchResult {
@@ -63,6 +68,7 @@ interface WorkItem {
   requestedIds: string[]
   splitDepth: number
   kind: 'normal' | 'recovery'
+  transportAttempt?: number
 }
 
 function throwIfAborted(signal: AbortSignal): void {
@@ -122,18 +128,45 @@ async function waitForRetry(
   signal: AbortSignal,
   sleep: (delayMs: number, signal?: AbortSignal) => Promise<void>
 ): Promise<void> {
-  const delay = Math.max(0, Math.ceil(delayMs))
+  const delay = Math.min(30_000, Math.max(0, Math.ceil(delayMs)))
   if (delay === 0) return
   const remaining = budget.remainingMs()
   if (remaining <= delay) throw new TranslationBudgetExhaustedError('Retry-After vượt ngân sách thời gian dịch.')
   await sleep(delay, signal)
 }
 
-function childBatch(work: WorkItem, index: number, cues: PlannedTranslationBatch['input']['cues']): PlannedTranslationBatch {
+function countPayloadTokens(capability: TranslationCapability, value: string): number {
+  try {
+    const count = capability.countTokens?.(value)
+    if (typeof count === 'number' && Number.isFinite(count) && count >= 0) return count
+  } catch {
+    // Use the same conservative byte fallback as the planner.
+  }
+  return new TextEncoder().encode(value).length
+}
+
+function fitWorkForDispatch(work: WorkItem, capability: TranslationCapability): PlannedTranslationBatch | null {
+  if (capability.contextTokens === null) return work.batch
+  const fits = (candidate: TranslationInput): boolean => {
+    const payload = JSON.stringify(buildTranslationBatchMessages({ ...work.batch, input: candidate }, capability.format))
+    return countPayloadTokens(capability, payload) + work.batch.maxOutputTokens <= capability.contextTokens!
+  }
+  const input = fitTranslationSourceContext(work.batch.input, fits)
+  return fits(input) ? { ...work.batch, input } : null
+}
+
+function childBatch(
+  work: WorkItem,
+  index: number,
+  cues: PlannedTranslationBatch['input']['cues'],
+  source: TranslationInput,
+  completeMapping: TranslationPlan['mapping']
+): PlannedTranslationBatch {
   const selectedIds = new Set(cues.map((cue) => cue.id))
+  const context = selectTranslationSourceContext(source, cues, completeMapping)
   return {
     id: `${work.batch.id}/split-${index + 1}`,
-    input: { ...work.batch.input, cues: cues.map((cue) => ({ ...cue })) },
+    input: { ...work.batch.input, cues: cues.map((cue) => ({ ...cue })), ...context },
     maxOutputTokens: work.batch.maxOutputTokens,
     mapping: work.batch.mapping.filter((mapping) => selectedIds.has(mapping.unitId))
   }
@@ -259,6 +292,12 @@ export async function translateWithAdapter(
       throwIfAborted(signal)
       const alreadyDone = work.requestedIds.every((id) => accepted.has(id))
       if (alreadyDone) continue
+      const dispatchBatch = fitWorkForDispatch(work, adapter.capability)
+      if (!dispatchBatch) {
+        terminalIssues.push(issue('unsupported-capability', 'Payload dịch/repair vượt giới hạn context đã biết của server.', work.requestedIds))
+        continue
+      }
+      work = { ...work, batch: dispatchBatch }
       if (budget.remainingMs() <= 0) {
         throw new TranslationBudgetExhaustedError('Translation time budget exhausted before dispatch.')
       }
@@ -269,7 +308,7 @@ export async function translateWithAdapter(
       try {
         response = await adapter.requestOnce(work.batch, requestSignal)
       } catch (error) {
-        const failure = classifyTranslationError(timeoutSignal.aborted && !signal.aborted
+        const failure = signal.aborted ? { code: 'cancelled' as const, retryable: false, message: 'Translation cancelled.' } : classifyTranslationError(timeoutSignal.aborted
           ? Object.assign(new Error('Translation request timed out.'), { name: 'TimeoutError' })
           : error)
         if (failure.code === 'cancelled') {
@@ -280,10 +319,19 @@ export async function translateWithAdapter(
           try {
             const requestKey = `${work.originalBatchId}|${work.requestedIds.join(',')}`
             budget.claimTransportRetry(work.originalBatchId, requestKey)
-            await waitForRetry(failure.retryAfterMs ?? 0, budget, signal, sleep)
-            enqueueRecovery(work)
+            const attempt = (work.transportAttempt || 0) + 1
+            const sample = (options.random || Math.random)()
+            const jitter = Number.isFinite(sample) ? Math.max(0, Math.min(1, sample)) : 0.5
+            const backoff = Math.min(10_000, 1000 * 2 ** Math.min(attempt - 1, 4) * (1 + jitter * 0.5))
+            await waitForRetry(failure.retryAfterMs ?? backoff, budget, signal, sleep)
+            throwIfAborted(signal)
+            enqueueRecovery({ ...work, transportAttempt: attempt })
             continue
           } catch (retryError) {
+            if (signal.aborted) {
+              terminalIssues.push(issue('cancelled', 'Dịch đã bị hủy khi chờ thử lại.', work.requestedIds))
+              break
+            }
             terminalIssues.push(issue('budget-exhausted', retryError instanceof Error ? retryError.message : 'Đã hết ngân sách retry.', work.requestedIds))
             break
           }
@@ -334,7 +382,7 @@ export async function translateWithAdapter(
       if (!response.truncated && blockingParserIssues.length === 0 && missingOnly && validItems.length > 0 && missingIds.length < work.requestedIds.length) {
         const missingCues = work.batch.input.cues.filter((cue) => missingIds.includes(cue.id))
         if (missingCues.length > 0) {
-          enqueueRecovery({ ...work, requestedIds: missingIds, batch: { ...work.batch, id: `${work.batch.id}/missing`, input: { ...work.batch.input, cues: missingCues }, mapping: work.batch.mapping.filter((mapping) => missingIds.includes(mapping.unitId)) } })
+          enqueueRecovery({ ...work, requestedIds: missingIds, batch: { ...work.batch, id: `${work.batch.id}/missing`, input: { ...work.batch.input, cues: missingCues, ...selectTranslationSourceContext(input, missingCues, plan.mapping) }, mapping: work.batch.mapping.filter((mapping) => missingIds.includes(mapping.unitId)) } })
           continue
         }
       }
@@ -344,8 +392,8 @@ export async function translateWithAdapter(
         try {
           budget.recordSplit(work.originalBatchId, work.splitDepth + 1)
           const midpoint = Math.ceil(work.batch.input.cues.length / 2)
-          enqueueRecovery({ ...work, batch: childBatch(work, 0, work.batch.input.cues.slice(0, midpoint)), requestedIds: work.batch.input.cues.slice(0, midpoint).map((cue) => cue.id), splitDepth: work.splitDepth + 1 })
-          enqueueRecovery({ ...work, batch: childBatch(work, 1, work.batch.input.cues.slice(midpoint)), requestedIds: work.batch.input.cues.slice(midpoint).map((cue) => cue.id), splitDepth: work.splitDepth + 1 })
+          enqueueRecovery({ ...work, batch: childBatch(work, 0, work.batch.input.cues.slice(0, midpoint), input, plan.mapping), requestedIds: work.batch.input.cues.slice(0, midpoint).map((cue) => cue.id), splitDepth: work.splitDepth + 1 })
+          enqueueRecovery({ ...work, batch: childBatch(work, 1, work.batch.input.cues.slice(midpoint), input, plan.mapping), requestedIds: work.batch.input.cues.slice(midpoint).map((cue) => cue.id), splitDepth: work.splitDepth + 1 })
           continue
         } catch (splitError) {
           terminalIssues.push(issue('budget-exhausted', splitError instanceof Error ? splitError.message : 'Không thể chia batch trong ngân sách.', work.requestedIds))
@@ -354,7 +402,7 @@ export async function translateWithAdapter(
         const idSetKey = work.requestedIds.join(',')
         try {
           budget.claimFormatRepair(work.originalBatchId, idSetKey)
-          enqueueRecovery(work)
+          enqueueRecovery({ ...work, batch: { ...work.batch, repairIssues: parsed.issues } })
           continue
         } catch {
           // The next branch records the bounded terminal state.

@@ -1,7 +1,7 @@
 import { readFile, rename, rm, writeFile } from 'node:fs/promises'
 import { randomUUID } from 'node:crypto'
 import { parseSrt, serializeSrt, type SubtitleCue } from '../../shared/subtitles'
-import type { TranslationAssessment, TranslationInput, TranslationItem } from '../../shared/translation'
+import { translationGuidanceError, type TranslationAssessment, type TranslationInput, type TranslationItem } from '../../shared/translation'
 import type { TranslationBudgetSnapshot } from './budget'
 import { mapTranslationsStrict } from './response'
 import { assessTranslationLanguage } from './language'
@@ -16,6 +16,7 @@ export interface TranslationFileRunnerOptions {
   onBudget?: (snapshot: TranslationBudgetSnapshot) => Promise<void> | void
   resumeItems?: readonly TranslationItem[]
   restoredBudget?: TranslationBudgetSnapshot
+  translationGuidance?: import('../../shared/translation').TranslationGuidance
 }
 
 export interface TranslationFileRunnerResult {
@@ -71,6 +72,8 @@ export async function translateFileWithAdapter(
 ): Promise<TranslationFileRunnerResult> {
   try {
     throwIfAborted(options.signal)
+    const guidanceError = translationGuidanceError(options.translationGuidance)
+    if (guidanceError) throw new Error(guidanceError)
     const parsed = parseSrt(await readFile(inputPath, 'utf8'))
     if (parsed.warnings.length > 0) throw new Error(`SRT nguồn có dòng không hợp lệ: ${parsed.warnings[0]?.message || 'parser warning'}`)
     const source = parsed.cues.filter((cue) => cue.text.trim())
@@ -92,7 +95,8 @@ export async function translateFileWithAdapter(
       cues: full,
       contextBefore: [],
       contextAfter: [],
-      glossary: []
+      glossary: options.translationGuidance?.glossary.map(entry => ({ ...entry })) || [],
+      synopsis: options.translationGuidance?.synopsis
     }
     if (pending.length === 0) {
       options.onProgress?.(source.length, source.length)

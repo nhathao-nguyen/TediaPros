@@ -11,6 +11,7 @@ import type {
 } from './types'
 import { isAutoShortSeparationPreset } from './autoShortSeparation'
 import { validateVideoTitleConfig } from './videoTitle'
+import { translationGuidanceError } from './translation'
 
 export type AutoShortValidation =
   | { ok: true; value: AutoShortStartRequest }
@@ -223,6 +224,8 @@ function validateConfigRecord(raw: Record<string, unknown>): AutoShortConfig | s
     }
   }
   if (!PROVIDERS.has(raw.translateProvider as string)) return 'Nhà cung cấp dịch không hợp lệ.'
+  const guidanceError = translationGuidanceError(raw.translationGuidance)
+  if (guidanceError) return guidanceError
   if (raw.videoTitle != null) {
     const error = validateVideoTitleConfig(raw.videoTitle)
     if (error) return error

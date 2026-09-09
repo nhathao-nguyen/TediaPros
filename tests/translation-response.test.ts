@@ -50,3 +50,28 @@ test('context ids are tolerated as non-output evidence but never mapped', () => 
   assert.deepEqual(result.items, [{ id: 'a', text: 'A' }])
   assert.equal(result.issues.find((issue) => issue.code === 'unknown-id')?.severity, 'warning')
 })
+
+test('embedded cue delimiters are rejected instead of becoming spoken text', () => {
+  const result = parseTranslationResponse(
+    '[cue-19-33420] This is the flower [cue-20-34200] also called Manjusaka',
+    'id-lines',
+    ['cue-19-33420', 'cue-20-34200'],
+    false
+  )
+  assert.equal(result.complete, false)
+  assert.ok(result.issues.some((issue) => issue.code === 'unparsed-content'))
+})
+
+test('normalizes a gateway ID that dropped the cue prefix', () => {
+  const result = parseTranslationResponse(
+    '[32-49700] A shark fact\n[cue-33-51400] Another fact',
+    'id-lines',
+    ['cue-32-49700', 'cue-33-51400'],
+    false
+  )
+  assert.equal(result.complete, true)
+  assert.deepEqual(result.items, [
+    { id: 'cue-32-49700', text: 'A shark fact' },
+    { id: 'cue-33-51400', text: 'Another fact' }
+  ])
+})

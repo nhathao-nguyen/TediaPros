@@ -56,10 +56,19 @@ export function buildTranslationIdentity(input: TranslationInput, identity: Tran
     sourceLanguage: input.sourceLanguage,
     targetLocale: input.targetLocale,
     mode: input.mode,
-    cues: input.cues.map((cue) => ({ id: cue.id, sourceIndex: cue.sourceIndex, start: cue.start, end: cue.end, groupId: cue.groupId, text: cue.text })),
+    cues: input.cues.map((cue) => ({
+      id: cue.id,
+      sourceIndex: cue.sourceIndex,
+      start: cue.start,
+      end: cue.end,
+      groupId: cue.groupId,
+      text: cue.text,
+      ...(cue.speakingDuration === undefined ? {} : { speakingDuration: cue.speakingDuration })
+    })),
     contextBefore: input.contextBefore.map((cue) => ({ id: cue.id, sourceIndex: cue.sourceIndex, start: cue.start, end: cue.end, groupId: cue.groupId, text: cue.text })),
     contextAfter: input.contextAfter.map((cue) => ({ id: cue.id, sourceIndex: cue.sourceIndex, start: cue.start, end: cue.end, groupId: cue.groupId, text: cue.text })),
-    glossary: input.glossary.map((entry) => ({ source: entry.source, target: entry.target }))
+    glossary: input.glossary.map((entry) => ({ source: entry.source, target: entry.target })),
+    synopsis: input.synopsis || ''
   }
   const canonicalIdentity = {
     provider: identity.provider,
@@ -125,8 +134,8 @@ export function createTranslationRetryGeneration(checkpoint: TranslationCheckpoi
   next.failures = {}
   next.inFlight = undefined
   next.assessment = undefined
-  // A manual retry is a new generation for UI/state purposes, but it must
-  // consume the same durable request, recovery and time budget. Resetting
-  // these counters would turn repeated clicks into an unbounded retry loop.
+  // A manual retry is a new generation for UI/state purposes. Preserve durable
+  // accounting even while quota enforcement is temporarily disabled; the
+  // active budget policy decides whether these counters limit dispatch.
   return next
 }

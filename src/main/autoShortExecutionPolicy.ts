@@ -7,9 +7,12 @@ export interface AutoShortExecutionPolicy {
 
 export const CONSERVATIVE_POLICY: Readonly<AutoShortExecutionPolicy> = Object.freeze({
   maxActiveItems: 1,
-  overlapIndependentStages: false,
+  // Keep one item at a time to protect GPU/RAM, but overlap the independent
+  // visual branch with translation/TTS.  The OCR transport itself negotiates
+  // back to legacy-disk when an older runtime is installed.
+  overlapIndependentStages: true,
   prefetchTts: false,
-  ocrTransport: 'legacy-disk'
+  ocrTransport: 'stream-roi'
 })
 
 export function resolveExecutionPolicy(

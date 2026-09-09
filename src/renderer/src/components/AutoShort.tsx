@@ -26,6 +26,7 @@ import {
   type TtsModelInfo,
   type WhisperDevice
 } from '../../../shared/types'
+import { translationGuidanceError, type TranslationGuidance } from '../../../shared/translation'
 import { isAutomaticOcrProcessing, isSttnRemoval, normalizeAutoShortBlurMode, normalizeAutoShortOcrBlurProfile } from '../../../shared/autoShortOcrBlur'
 import { createAutoShortMusicAssignments } from '../../../shared/autoShortBackgroundMusic'
 import { localMediaSource } from '../lib/localMedia'
@@ -98,6 +99,19 @@ function normalizeTtsLanguageCode(code: string): string {
     rus: 'ru'
   }
   return aliases[value] || value
+}
+
+function parseTranslationGuidance(synopsis: string, glossaryText: string): { value?: TranslationGuidance; error?: string } {
+  const glossary: TranslationGuidance['glossary'] = []
+  for (const [index, rawLine] of glossaryText.split(/\r?\n/u).entries()) {
+    const line = rawLine.trim()
+    if (!line) continue
+    const match = line.match(/^(.+?)\s*(?:=>|=)\s*(.+)$/u)
+    if (!match) return { error: `Glossary dòng ${index + 1} cần có dạng: từ nguồn = bản dịch.` }
+    glossary.push({ source: match[1]!.trim(), target: match[2]!.trim() })
+  }
+  const value: TranslationGuidance = { synopsis: synopsis.trim() || undefined, glossary }
+  return translationGuidanceError(value) ? { error: translationGuidanceError(value)! } : { value }
 }
 
 function defaultSubtitleRegion(width: number, height: number): Region {
@@ -208,6 +222,8 @@ export default function AutoShort(): JSX.Element {
     'tblao.autoshort.transProvider',
     'local'
   )
+  const [translationSynopsis, setTranslationSynopsis] = usePersistedState('tblao.autoshort.translationSynopsis', '')
+  const [translationGlossaryText, setTranslationGlossaryText] = usePersistedState('tblao.autoshort.translationGlossary', '')
   const [apiKeyInput, setApiKeyInput] = useState('')
   const [hasStoredKey, setHasStoredKey] = useState(false)
   const [keyTesting, setKeyTesting] = useState(false)
@@ -878,6 +894,11 @@ export default function AutoShort(): JSX.Element {
       setRetryPendingIdList([])
       return
     }
+    const guidance = parseTranslationGuidance(translationSynopsis, translationGlossaryText)
+    if (translateTarget !== 'none' && guidance.error) {
+      alert(guidance.error)
+      return
+    }
     setDependencyAction('batch')
     let backgroundMusicConfig: AutoShortBackgroundMusicConfig | undefined
     if (ttsEnabled && audioMode === 'replace' && backgroundMusicEnabled) {
@@ -992,6 +1013,7 @@ export default function AutoShort(): JSX.Element {
       translateTarget,
       translateProvider,
       translateServerUrl: ttsServerUrl,
+      translationGuidance: translateTarget !== 'none' ? guidance.value : undefined,
       videoTitle: titleEnabled ? {
         provider: titleProvider,
         language: translateTarget !== 'none' ? translateTarget : 'auto',
@@ -1540,6 +1562,23 @@ export default function AutoShort(): JSX.Element {
                           onChange={(event) => setTtsServerUrl(event.target.value)}
                           placeholder={DEFAULT_AI_SERVER_URL} />
                       </label>}
+
+                      <details className="autoshort-key-card">
+                        <summary>Ngữ cảnh và glossary (tùy chọn)</summary>
+                        <label className="field editor-field">
+                          <span>Mô tả ngắn nội dung</span>
+                          <textarea value={translationSynopsis} disabled={isRunning} maxLength={2000} rows={3}
+                            onChange={(event) => setTranslationSynopsis(event.target.value)}
+                            placeholder="Ví dụ: video hướng dẫn an toàn khi dùng máy cắt." />
+                        </label>
+                        <label className="field editor-field">
+                          <span>Glossary — mỗi dòng: từ nguồn = bản dịch</span>
+                          <textarea value={translationGlossaryText} disabled={isRunning} rows={4}
+                            onChange={(event) => setTranslationGlossaryText(event.target.value)}
+                            placeholder={'安全阀 = van an toàn\n小王 = Tiểu Vương'} />
+                        </label>
+                        <small className="muted">Tối đa 50 thuật ngữ; ngữ cảnh chỉ hỗ trợ dịch và không tạo thêm cue.</small>
+                      </details>
 
                       <div className="autoshort-key-card">
                         <div className="autoshort-key-header">

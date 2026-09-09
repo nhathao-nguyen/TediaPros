@@ -9,6 +9,8 @@ export interface TranslationBatchBudgetState {
 }
 
 export interface TranslationBudgetSnapshot {
+  /** Missing on legacy checkpoints; quotas are advisory when false. */
+  limitsEnforced?: boolean
   plannedRequests: number
   recoveryLimit: number
   normalUsed: number
@@ -52,6 +54,9 @@ const MAX_TRANSPORT_RETRIES = 2
 const MAX_FORMAT_REPAIRS = 1
 const MAX_SPLIT_DEPTH = 2
 
+/** Temporary user override (2026-09-08): retain accounting, disable quotas. */
+export const TRANSLATION_BUDGET_LIMITS_ENABLED = false
+
 function finiteNonNegative(value: unknown, label: string): number {
   if (typeof value !== 'number' || !Number.isFinite(value) || value < 0) {
     throw new Error(`Invalid translation budget ${label}.`)
@@ -59,12 +64,12 @@ function finiteNonNegative(value: unknown, label: string): number {
   return value
 }
 
-function cloneBatchState(value?: Partial<TranslationBatchBudgetState>): TranslationBatchBudgetState {
+function cloneBatchState(value?: Partial<TranslationBatchBudgetState>, enforceLimits = true): TranslationBatchBudgetState {
   const normalCharged = value?.normalCharged === true
   const recoveryUsed = Math.floor(finiteNonNegative(value?.recoveryUsed ?? 0, 'recoveryUsed'))
   const splitDepth = Math.floor(finiteNonNegative(value?.splitDepth ?? 0, 'splitDepth'))
-  if (recoveryUsed > MAX_RECOVERY_PER_BATCH) throw new Error('Invalid translation budget per-batch recovery quota.')
-  if (splitDepth > MAX_SPLIT_DEPTH) throw new Error('Invalid translation budget split depth.')
+  if (enforceLimits && recoveryUsed > MAX_RECOVERY_PER_BATCH) throw new Error('Invalid translation budget per-batch recovery quota.')
+  if (enforceLimits && splitDepth > MAX_SPLIT_DEPTH) throw new Error('Invalid translation budget split depth.')
   const repairSets = [...new Set((value?.repairSets || []).filter((item): item is string => typeof item === 'string' && item.length > 0))]
   if (repairSets.length > MAX_FORMAT_REPAIRS * 1000) throw new Error('Invalid translation budget repair state.')
   const transportRetries: Record<string, number> = {}
@@ -89,20 +94,21 @@ function restoreSnapshot(
   plannedRequests: number,
   maximumRecoveryLimit: number,
   maximumActiveBudgetMs: number,
-  restored: TranslationBudgetSnapshot
+  restored: TranslationBudgetSnapshot,
+  enforceLimits: boolean
 ): TranslationBudgetSnapshot {
-  if (!restored || restored.plannedRequests !== plannedRequests) throw new Error('Translation budget plan changed while restoring.')
+  if (!restored || (enforceLimits && restored.plannedRequests !== plannedRequests)) throw new Error('Translation budget plan changed while restoring.')
   const recoveryLimit = Math.floor(finiteNonNegative(restored.recoveryLimit, 'recoveryLimit'))
   const activeBudgetMs = finiteNonNegative(restored.activeBudgetMs, 'activeBudgetMs')
-  if (recoveryLimit > maximumRecoveryLimit || activeBudgetMs > maximumActiveBudgetMs) {
+  if (enforceLimits && (recoveryLimit > maximumRecoveryLimit || activeBudgetMs > maximumActiveBudgetMs)) {
     throw new Error('Translation budget quotas cannot increase during restore.')
   }
   const normalUsed = Math.floor(finiteNonNegative(restored.normalUsed, 'normalUsed'))
   const recoveryUsed = Math.floor(finiteNonNegative(restored.recoveryUsed, 'recoveryUsed'))
   const activeElapsedMs = finiteNonNegative(restored.activeElapsedMs, 'activeElapsedMs')
-  if (normalUsed > plannedRequests || recoveryUsed > recoveryLimit) throw new Error('Translation budget usage exceeds its plan.')
+  if (enforceLimits && (normalUsed > plannedRequests || recoveryUsed > recoveryLimit)) throw new Error('Translation budget usage exceeds its plan.')
   const perBatch: Record<string, TranslationBatchBudgetState> = {}
-  for (const [batchId, state] of Object.entries(restored.perBatch || {})) perBatch[batchId] = cloneBatchState(state)
+  for (const [batchId, state] of Object.entries(restored.perBatch || {})) perBatch[batchId] = cloneBatchState(state, enforceLimits)
   const countedNormal = Object.values(perBatch).filter((state) => state.normalCharged).length
   const countedRecovery = Object.values(perBatch).reduce((sum, state) => sum + state.recoveryUsed, 0)
   if (countedNormal > normalUsed || countedRecovery > recoveryUsed) throw new Error('Translation budget per-batch state is inconsistent.')
@@ -112,7 +118,8 @@ function restoreSnapshot(
 export function createTranslationBudget(
   plannedRequests: number,
   now: () => number = () => (typeof performance !== 'undefined' ? performance.now() : Date.now()),
-  restored?: TranslationBudgetSnapshot
+  restored?: TranslationBudgetSnapshot,
+  enforceLimits: boolean = TRANSLATION_BUDGET_LIMITS_ENABLED
 ): TranslationBudget {
   assertPlan(plannedRequests)
   // A resumed run may contain fewer pending cues than the original plan. The
@@ -121,12 +128,12 @@ export function createTranslationBudget(
   const effectivePlannedRequests = restored
     ? Math.max(plannedRequests, Math.floor(finiteNonNegative(restored.plannedRequests, 'plannedRequests')))
     : plannedRequests
-  if (restored && restored.plannedRequests < plannedRequests) {
+  if (enforceLimits && restored && restored.plannedRequests < plannedRequests) {
     throw new TranslationBudgetExhaustedError('Translation plan grew while restoring its durable budget.')
   }
   const planned = assertPlan(effectivePlannedRequests)
   let state: TranslationBudgetSnapshot = restored
-    ? restoreSnapshot(effectivePlannedRequests, planned.recoveryLimit, planned.activeBudgetMs, restored)
+    ? restoreSnapshot(effectivePlannedRequests, planned.recoveryLimit, planned.activeBudgetMs, restored, enforceLimits)
     : { plannedRequests: effectivePlannedRequests, recoveryLimit: planned.recoveryLimit, normalUsed: 0, recoveryUsed: 0, activeElapsedMs: 0, activeBudgetMs: planned.activeBudgetMs, perBatch: {} }
   let lastNow = now()
   if (!Number.isFinite(lastNow)) lastNow = 0
@@ -149,12 +156,12 @@ export function createTranslationBudget(
     const item = batch(batchId)
     if (kind === 'normal') {
       if (item.normalCharged) return
-      if (state.normalUsed >= state.plannedRequests) throw new TranslationBudgetExhaustedError('Normal translation request budget exhausted.')
+      if (enforceLimits && state.normalUsed >= state.plannedRequests) throw new TranslationBudgetExhaustedError('Normal translation request budget exhausted.')
       item.normalCharged = true
       state.normalUsed++
       return
     }
-    if (item.recoveryUsed >= MAX_RECOVERY_PER_BATCH || state.recoveryUsed >= state.recoveryLimit) {
+    if (enforceLimits && (item.recoveryUsed >= MAX_RECOVERY_PER_BATCH || state.recoveryUsed >= state.recoveryLimit)) {
       throw new TranslationBudgetExhaustedError('Translation recovery request budget exhausted.')
     }
     item.recoveryUsed++
@@ -181,12 +188,12 @@ export function createTranslationBudget(
   }
 
   const recordSplit = (batchId: string, depth: number): void => {
-    if (!Number.isInteger(depth) || depth < 1 || depth > MAX_SPLIT_DEPTH) {
+    if (!Number.isInteger(depth) || depth < 1 || (enforceLimits && depth > MAX_SPLIT_DEPTH)) {
       throw new TranslationBudgetExhaustedError('Translation split depth exhausted.')
     }
     const item = batch(batchId)
     if (depth < item.splitDepth) return
-    if (depth > item.splitDepth + 1) throw new TranslationBudgetExhaustedError('Translation split depth must advance one level at a time.')
+    if (enforceLimits && depth > item.splitDepth + 1) throw new TranslationBudgetExhaustedError('Translation split depth must advance one level at a time.')
     item.splitDepth = depth
   }
 
@@ -201,11 +208,12 @@ export function createTranslationBudget(
     recordSplit,
     remainingMs: () => {
       touch()
-      return Math.max(0, state.activeBudgetMs - state.activeElapsedMs)
+      return enforceLimits ? Math.max(0, state.activeBudgetMs - state.activeElapsedMs) : Number.POSITIVE_INFINITY
     },
     canSplit: (batchId: string, depth: number) => {
       const item = batch(batchId)
-      return Number.isInteger(depth) && depth < MAX_SPLIT_DEPTH && depth > item.splitDepth && item.recoveryUsed < MAX_RECOVERY_PER_BATCH && state.recoveryUsed < state.recoveryLimit && state.activeElapsedMs < state.activeBudgetMs
+      return Number.isInteger(depth) && depth > 0 && (!enforceLimits || (depth < MAX_SPLIT_DEPTH && depth > item.splitDepth))
+        && (!enforceLimits || (item.recoveryUsed < MAX_RECOVERY_PER_BATCH && state.recoveryUsed < state.recoveryLimit && state.activeElapsedMs < state.activeBudgetMs))
     },
     snapshot: () => {
       touch()
@@ -221,6 +229,7 @@ export function createTranslationBudget(
       }
       state = { ...state, perBatch }
       return {
+        limitsEnforced: enforceLimits,
         plannedRequests: state.plannedRequests,
         recoveryLimit: state.recoveryLimit,
         normalUsed: state.normalUsed,

@@ -11,7 +11,8 @@ export const DUBBING_FINAL_GUARD_SECONDS = 0.12
 export const DUBBING_ADAPTIVE_MIN_TEMPO = 0.9
 export const DUBBING_ADAPTIVE_MAX_TEMPO = 1.25
 export const DUBBING_FIXED_MIN_TEMPO = 0.5
-export const DUBBING_FIXED_MAX_TEMPO = 1.45
+/** Temporary user-authorized ceiling (2026-09-08). */
+export const DUBBING_FIXED_MAX_TEMPO = 1.8
 export const DUBBING_LOCAL_TEMPO_DELTA = 0.03
 export const DUBBING_TIMING_TOLERANCE_SECONDS = 0.005
 
