@@ -1,0 +1,16 @@
+✔ rasterizeOcrMaskFrame allocates exact buffer and paints white islands inside black frame (1.1478ms)
+✔ contained output rejects a junction ancestor that resolves outside the allowed root (7.307ms)
+✔ mask frame planning expands 1 sample, clamps to activeFrameCount, and leaves terminal frame black (1.308ms)
+✔ writeTimedOcrBlurMask rejects timeline with no valid boxes or empty segments (2.4389ms)
+✔ writeTimedOcrBlurMask rejects pre-aborted signal and cleans up work dir (1.2965ms)
+✔ conditional native test: writeTimedOcrBlurMask creates valid FFV1 mask with real managed FFmpeg (5375.9654ms)
+ℹ tests 6
+ℹ suites 0
+ℹ pass 6
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 5470.5002
+
+--- STDERR ---

@@ -84,7 +84,8 @@ test('audio requiring 1.8x fits without rephrase and fixed pace clamps at 1.8x',
   assert.equal(policyModule.AUTO_SHORT_TTS_HARD_MAX_TEMPO, 1.8)
   assert.equal(policyModule.selectFixedPace(2), 1.8)
   const result = await synthesisModule.synthesizeDubbingPlan({
-    plan: planModule.buildDubbingPlan({ videoDuration: 2, paceMode: 'fixed', cues: [
+    // The final 0.12s guard leaves exactly 1.5s for 2.7s of natural speech.
+    plan: planModule.buildDubbingPlan({ videoDuration: 1.62, paceMode: 'fixed', cues: [
       { id: 'at-limit', start: 0, end: 1, text: 'Keep the full meaning.' }
     ] }), language: 'en', model: 'fixture', fixedTempo: 1,
     tts: { synthesize: async () => ({ path: 'natural.wav' }) },
@@ -94,6 +95,35 @@ test('audio requiring 1.8x fits without rephrase and fixed pace clamps at 1.8x',
   })
   assert.equal(result.plan.cues[0].tempo, 1.8)
   assert.equal(result.plan.cues[0].actualDuration, 1.5)
+})
+
+test('speaking budgets reserve the next-cue gap once and use the EOF guard for the last cue', () => {
+  const sources = [
+    { id: 'a', start: 1.49, end: 2.9, text: 'First sentence.' },
+    { id: 'b', start: 3.41, end: 4, text: 'Last sentence.' }
+  ]
+  const durations = translationModule.dubbingSpeakingDurations(sources, 5)
+  // 3.41 - 0.50 - 1.49; 5.00 - 0.12 - 3.41. No second 0.50s reserve at EOF.
+  assert.ok(Math.abs(durations[0] - 1.42) < 1e-9)
+  assert.ok(Math.abs(durations[1] - 1.47) < 1e-9)
+})
+
+test('the last cue uses its EOF window without unnecessary rephrase or excessive tempo', async () => {
+  const result = await synthesisModule.synthesizeDubbingPlan({
+    plan: planModule.buildDubbingPlan({ videoDuration: 1.92, paceMode: 'fixed', cues: [
+      { id: 'last', start: 0, end: 1.42, text: 'Check the crab before eating.' }
+    ] }), language: 'en', model: 'fixture', fixedTempo: 1,
+    tts: { synthesize: async () => ({ path: 'natural.wav' }) },
+    audio: { trim: async (path) => ({ path, duration: 2.84 }),
+      applyTempo: async (path, _hint, duration) => ({ path, duration }) },
+    rephrase: async () => { throw new Error('The measured audio already fits the EOF window') }
+  })
+  assert.equal(result.metrics.overflowCount, 0)
+  assert.equal(result.metrics.rescueAttemptCount, 0)
+  assert.equal(result.plan.cues[0].finalSpokenText, 'Check the crab before eating.')
+  assert.equal(result.plan.cues[0].rephrased, false)
+  assert.ok(Math.abs(result.plan.cues[0].voiceEnd! - 1.8) < 1e-9)
+  assert.equal(result.plan.cues[0].tempo, 1.5778)
 })
 
 test('measured-first synthesis never rewrites a predictor outlier before TTS', async () => {
@@ -144,7 +174,8 @@ test('measured pass completes before one batch adapter and rescue audio begins',
   const candidateByCue = new Map(cueIds.map((cueId) => [cueId, `short-${cueId}`]))
   const result = await synthesisModule.synthesizeDubbingPlan({
     plan: planModule.buildDubbingPlan({
-      videoDuration: 20,
+      // All ten cues have 1.5s, including the last cue before the 0.12s EOF guard.
+      videoDuration: 19.62,
       paceMode: 'fixed',
       cues: cueIds.map((id, index) => ({ id, start: index * 2, end: index * 2 + 1, text: `Original ${id}.` }))
     }),
@@ -181,7 +212,8 @@ test('measured pass completes before one batch adapter and rescue audio begins',
 
 test('predecessor rescue preserves a grouped cue that fits with released lead', async () => {
   const original = planModule.buildDubbingPlan({
-    videoDuration: 3.5,
+    // Preserve the group's 3.0s deadline so it needs the predecessor's released lead.
+    videoDuration: 3.12,
     paceMode: 'fixed',
     cues: [
       { id: 'a', start: 0, end: 1.4, text: 'Opening sentence.' },
@@ -313,7 +345,7 @@ for (const [id, natural, available] of [['cue-0-1490', 2.8, 1.42], ['cue-0-2320'
     for (const replacementFits of [true, false]) {
       let rephrases = 0
       let calls = 0
-      const plan = planModule.buildDubbingPlan({ videoDuration: available + 0.5, cues: [
+      const plan = planModule.buildDubbingPlan({ videoDuration: available + 0.12, cues: [
         { id, start: 0, end: available, text: 'Keep the full meaning.' }
       ] })
       const run = synthesisModule.synthesizeDubbingPlan({
@@ -365,7 +397,7 @@ for (const [id, natural, firstRescue, available, fitted] of [
     const outcomes: string[] = []
     let llmCalls = 0
     const result = await synthesisModule.synthesizeDubbingPlan({
-      plan: planModule.buildDubbingPlan({ videoDuration: available + 0.5, cues: [
+      plan: planModule.buildDubbingPlan({ videoDuration: available + 0.12, cues: [
         { id, start: 0, end: available, text: 'Carefully inspect the food before eating it.' }
       ] }), language: 'en', model: 'fixture',
       predictor: { profile: { version: 2, samples: 1, weights: [0, 0, 0, 0, 0, 0], residualP90: 0 },
@@ -420,7 +452,7 @@ test('measured audio inside the hard ceiling is not rephrased merely to lower lo
 test('embedded candidate labels are rejected even when a rephrase adapter bypasses the parser', async () => {
   let calls = 0
   await assert.rejects(synthesisModule.synthesizeDubbingPlan({
-    plan: planModule.buildDubbingPlan({ videoDuration: 1.92, paceMode: 'fixed', cues: [
+    plan: planModule.buildDubbingPlan({ videoDuration: 1.54, paceMode: 'fixed', cues: [
       { id: 'cue-0-1490', start: 0, end: 1.42, text: 'Check the crab before eating.' }
     ] }), language: 'en', model: 'fixture', fixedTempo: 1,
     predictor: { profile: { version: 2, samples: 1, weights: [0, 0, 0, 0, 0, 0], residualP90: 0 },
@@ -449,7 +481,7 @@ test('a resumed plan with leaked labels is stopped before TTS or cache access', 
 test('a worse rescue preserves the original overflow diagnostic and never applies excessive tempo', async () => {
   let calls = 0
   await assert.rejects(synthesisModule.synthesizeDubbingPlan({
-    plan: planModule.buildDubbingPlan({ videoDuration: 1.92, cues: [
+    plan: planModule.buildDubbingPlan({ videoDuration: 1.54, cues: [
       { id: 'cue-0-1490', start: 0, end: 1.42, text: 'Check the crab before eating.' }
     ] }), language: 'en', model: 'fixture',
     predictor: { profile: { version: 2, samples: 1, weights: [0, 0, 0, 0, 0, 0], residualP90: 0 },
@@ -467,7 +499,7 @@ test('rescue never synthesizes more than three distinct alternatives or recalibr
   const samples: number[] = []
   let rephrases = 0
   await assert.rejects(synthesisModule.synthesizeDubbingPlan({
-    plan: planModule.buildDubbingPlan({ videoDuration: 1.74, cues: [{ id: 'a', start: 0, end: 1.24, text: 'Original text.' }] }),
+    plan: planModule.buildDubbingPlan({ videoDuration: 1.36, cues: [{ id: 'a', start: 0, end: 1.24, text: 'Original text.' }] }),
     language: 'en', model: 'fixture',
     predictor: { profile: { version: 2, samples: 1, weights: [0, 0, 0, 0, 0, 0], residualP90: 0 },
       estimate: () => ({ seconds: 1, uncertaintySeconds: 0, confidence: 1 }), addSample: (_text, seconds) => { samples.push(seconds) } },
@@ -864,7 +896,7 @@ test('synthesis performs at most one rephrase and updates both plan text and sub
   const buildDubbingPlan = (planModule as typeof planModule & { buildDubbingPlan?: PlanBuilder }).buildDubbingPlan!
   const plan = buildDubbingPlan({
     version: 1,
-    videoDuration: 12,
+    videoDuration: 11.62,
     paceMode: 'source-adaptive',
     cues: [{ id: 'long', start: 10, end: 11, text: 'long source' }]
   })

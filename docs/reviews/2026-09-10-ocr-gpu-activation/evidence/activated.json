@@ -1,0 +1,48 @@
+{
+  "phase": "activated",
+  "at": "2026-09-10T01:36:25.8165034Z",
+  "active": "C:\\Users\\PC\\AppData\\Roaming\\tedia-pros\\bin\\ocr-engine",
+  "backup": "C:\\Users\\PC\\AppData\\Roaming\\tedia-pros\\bin\\ocr-engine.cpu-1.2.0-backup-20260910",
+  "receiptBackup": "C:\\Users\\PC\\AppData\\Roaming\\tedia-pros\\runtime-state\\installed-runtime.before-ocr-gpu-20260910.json",
+  "directoryRenameMs": 7.0934,
+  "executableSha256": "fc91f85653d6bd84819338d420dcd08aa646d5fe1867d2dfcddde658a98eb4da",
+  "version": {
+    "type": "version",
+    "protocol": "ocr-local/1",
+    "engine": "rapidocr",
+    "version": "1.2.1",
+    "features": [
+      "directml-fallback",
+      "probe",
+      "rapidocr",
+      "visual-cues-v1",
+      "visual-stream-full-v1",
+      "visual-stream-roi-v1"
+    ],
+    "implementation_fingerprint": "99020e272c77c9b90f46e587eb3b6d5891ebfa24e3d954cff6f66bb1cae34808"
+  },
+  "gpuProbe": {
+    "type": "probe",
+    "protocol": "ocr-local/1",
+    "ready": true,
+    "engine": "rapidocr",
+    "version": "1.2.1",
+    "features": [
+      "directml-fallback",
+      "probe",
+      "rapidocr",
+      "visual-cues-v1",
+      "visual-stream-full-v1",
+      "visual-stream-roi-v1"
+    ],
+    "implementation_fingerprint": "99020e272c77c9b90f46e587eb3b6d5891ebfa24e3d954cff6f66bb1cae34808",
+    "gpu": true,
+    "ocr_provider": {
+      "det": "DmlExecutionProvider",
+      "cls": "DmlExecutionProvider",
+      "rec": "DmlExecutionProvider"
+    }
+  },
+  "appRestarted": false,
+  "processKilled": false
+}

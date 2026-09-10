@@ -102,10 +102,23 @@ jobs:
       - name: Build RapidOCR engine from pinned environment
         shell: pwsh
         run: |
+          $ErrorActionPreference = 'Stop'
           python -m venv (Join-Path $env:RUNNER_TEMP 'ocr-build-venv')
+          if ($LASTEXITCODE -ne 0) { throw 'OCR build virtual environment creation failed.' }
           $python = Join-Path $env:RUNNER_TEMP 'ocr-build-venv\Scripts\python.exe'
-          & $python -m pip install --disable-pip-version-check --no-cache-dir -r engines/ocr-engine/requirements.txt
+          # RapidOCR declares the CPU onnxruntime distribution: do not let the
+          # resolver overwrite the DirectML module. The lock includes all deps.
+          & $python -m pip install --disable-pip-version-check --no-cache-dir --no-deps -r engines/ocr-engine/requirements.txt
+          if ($LASTEXITCODE -ne 0) { throw 'OCR dependency installation failed.' }
+          & $python -c "import importlib.metadata as m; import onnxruntime as o; assert m.version('onnxruntime-directml') == '1.24.4'; assert 'onnxruntime' not in {d.metadata['Name'].lower() for d in m.distributions()}; assert 'DmlExecutionProvider' in o.get_available_providers(); print(o.__version__, o.get_available_providers())"
+          if ($LASTEXITCODE -ne 0) { throw 'OCR DirectML dependency verification failed.' }
+          $env:TEDIAPROS_OCR_MODELS_DIR = Join-Path $env:RUNNER_TEMP 'ocr-models'
+          & $python engines/ocr-engine/prepare_models.py --output $env:TEDIAPROS_OCR_MODELS_DIR
+          if ($LASTEXITCODE -ne 0) { throw 'OCR pinned model preparation failed.' }
+          & $python -m unittest discover -s engines/ocr-engine/tests -p 'test_*.py' -v
+          if ($LASTEXITCODE -ne 0) { throw 'OCR engine tests failed.' }
           & $python -m PyInstaller --clean --noconfirm (Join-Path $PWD 'engines/ocr-engine/ocr-engine.spec') --distpath (Join-Path $env:RUNNER_TEMP 'ocr-dist') --workpath (Join-Path $env:RUNNER_TEMP 'ocr-work')
+          if ($LASTEXITCODE -ne 0) { throw 'OCR PyInstaller build failed.' }
           $target = Join-Path $env:RUNTIME_INPUT_ROOT 'ocr-engine'
           New-Item -ItemType Directory -Force -Path $target | Out-Null
           Copy-Item -Path (Join-Path $env:RUNNER_TEMP 'ocr-dist\ocr-engine\*') -Destination $target -Recurse -Force

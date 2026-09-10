@@ -1,0 +1,502 @@
+{
+  "verifiedAt": "2026-09-09T17:28:16.678Z",
+  "node": "v24.19.0",
+  "installedSha256": "7ac0d6fe1bc497544a60a74cd6ae66878158a8e772ea86c12ce3b1a3e190f781",
+  "installedVersion": [
+    {
+      "type": "version",
+      "protocol": "ocr-local/1",
+      "engine": "rapidocr",
+      "version": "1.2.0",
+      "features": [
+        "directml-fallback",
+        "probe",
+        "rapidocr",
+        "visual-cues-v1",
+        "visual-stream-full-v1",
+        "visual-stream-roi-v1"
+      ],
+      "implementation_fingerprint": "1e0c8bd778d9d97cf129c891e053b0421f5b43b4c3d0914e29e38c63b614c6a4"
+    }
+  ],
+  "installedProbe": [
+    {
+      "type": "probe",
+      "protocol": "ocr-local/1",
+      "ready": true,
+      "engine": "rapidocr",
+      "version": "1.2.0",
+      "features": [
+        "directml-fallback",
+        "probe",
+        "rapidocr",
+        "visual-cues-v1",
+        "visual-stream-full-v1",
+        "visual-stream-roi-v1"
+      ],
+      "implementation_fingerprint": "1e0c8bd778d9d97cf129c891e053b0421f5b43b4c3d0914e29e38c63b614c6a4",
+      "gpu": false
+    }
+  ],
+  "labExecutableSha256": "7013d39ce9682e75acc167a7a5d76ee202e7e8154e7a03b69b395dc4995ecd2d",
+  "labVersion": [
+    {
+      "type": "version",
+      "protocol": "ocr-local/1",
+      "engine": "rapidocr",
+      "version": "1.2.0-lab.1",
+      "features": [
+        "directml-fallback",
+        "probe",
+        "rapidocr",
+        "visual-cues-v1",
+        "visual-stream-full-v1",
+        "visual-stream-roi-v1"
+      ],
+      "implementation_fingerprint": "e063bfad91e9eb0010ee3df876ebfce7f3d6fc04ed32ef97860cbf49366080e6",
+      "experimental": true
+    }
+  ],
+  "labProbes": {
+    "cpu": {
+      "type": "probe",
+      "protocol": "ocr-local/1",
+      "ready": true,
+      "engine": "rapidocr",
+      "version": "1.2.0-lab.1",
+      "features": [
+        "directml-fallback",
+        "probe",
+        "rapidocr",
+        "visual-cues-v1",
+        "visual-stream-full-v1",
+        "visual-stream-roi-v1"
+      ],
+      "implementation_fingerprint": "e063bfad91e9eb0010ee3df876ebfce7f3d6fc04ed32ef97860cbf49366080e6",
+      "gpu": false,
+      "ocr_provider": {
+        "det": "CPUExecutionProvider",
+        "cls": "CPUExecutionProvider",
+        "rec": "CPUExecutionProvider"
+      },
+      "experimental": true
+    },
+    "dml": {
+      "type": "probe",
+      "protocol": "ocr-local/1",
+      "ready": true,
+      "engine": "rapidocr",
+      "version": "1.2.0-lab.1",
+      "features": [
+        "directml-fallback",
+        "probe",
+        "rapidocr",
+        "visual-cues-v1",
+        "visual-stream-full-v1",
+        "visual-stream-roi-v1"
+      ],
+      "implementation_fingerprint": "e063bfad91e9eb0010ee3df876ebfce7f3d6fc04ed32ef97860cbf49366080e6",
+      "gpu": true,
+      "ocr_provider": {
+        "det": "DmlExecutionProvider",
+        "cls": "DmlExecutionProvider",
+        "rec": "DmlExecutionProvider"
+      },
+      "experimental": true
+    }
+  },
+  "dependencies": {
+    "python": "3.12.14 (main, Aug 25 2026, 14:01:42) [MSC v.1944 64 bit (AMD64)]",
+    "providers": [
+      "DmlExecutionProvider",
+      "CPUExecutionProvider"
+    ],
+    "packages": [
+      {
+        "name": "altgraph",
+        "version": "0.17.5"
+      },
+      {
+        "name": "colorama",
+        "version": "0.4.6"
+      },
+      {
+        "name": "flatbuffers",
+        "version": "25.12.19"
+      },
+      {
+        "name": "mpmath",
+        "version": "1.3.0"
+      },
+      {
+        "name": "numpy",
+        "version": "2.2.6"
+      },
+      {
+        "name": "onnxruntime-directml",
+        "version": "1.24.4"
+      },
+      {
+        "name": "opencv-python",
+        "version": "4.11.0.86"
+      },
+      {
+        "name": "packaging",
+        "version": "26.3"
+      },
+      {
+        "name": "pefile",
+        "version": "2023.2.7"
+      },
+      {
+        "name": "pillow",
+        "version": "11.3.0"
+      },
+      {
+        "name": "protobuf",
+        "version": "7.36.1"
+      },
+      {
+        "name": "psutil",
+        "version": "7.0.0"
+      },
+      {
+        "name": "pyclipper",
+        "version": "1.3.0.post6"
+      },
+      {
+        "name": "pyinstaller",
+        "version": "6.15.0"
+      },
+      {
+        "name": "pyinstaller-hooks-contrib",
+        "version": "2026.7"
+      },
+      {
+        "name": "pywin32-ctypes",
+        "version": "0.2.3"
+      },
+      {
+        "name": "PyYAML",
+        "version": "6.0.2"
+      },
+      {
+        "name": "rapidocr-onnxruntime",
+        "version": "1.4.4"
+      },
+      {
+        "name": "setuptools",
+        "version": "84.0.0"
+      },
+      {
+        "name": "shapely",
+        "version": "2.1.1"
+      },
+      {
+        "name": "six",
+        "version": "1.17.0"
+      },
+      {
+        "name": "sympy",
+        "version": "1.14.0"
+      },
+      {
+        "name": "tqdm",
+        "version": "4.67.1"
+      }
+    ]
+  },
+  "models": [
+    {
+      "model": "ch_PP-OCRv3_det_infer.onnx",
+      "installed": "3439588c030faea393a54515f51e983d8e155b19a2e8aba7891934c1cf0de526",
+      "source": "3439588c030faea393a54515f51e983d8e155b19a2e8aba7891934c1cf0de526",
+      "bundled": "3439588c030faea393a54515f51e983d8e155b19a2e8aba7891934c1cf0de526"
+    },
+    {
+      "model": "ch_PP-OCRv3_rec_infer.onnx",
+      "installed": "897a3ededb38fee0dae2c1ccee38241f37df202c9509e3abca02e9217c5ee615",
+      "source": "897a3ededb38fee0dae2c1ccee38241f37df202c9509e3abca02e9217c5ee615",
+      "bundled": "897a3ededb38fee0dae2c1ccee38241f37df202c9509e3abca02e9217c5ee615"
+    },
+    {
+      "model": "ch_ppocr_mobile_v2.0_cls_infer.onnx",
+      "installed": "e47acedf663230f8863ff1ab0e64dd2d82b838fceb5957146dab185a89d6215c",
+      "source": "e47acedf663230f8863ff1ab0e64dd2d82b838fceb5957146dab185a89d6215c",
+      "bundled": "e47acedf663230f8863ff1ab0e64dd2d82b838fceb5957146dab185a89d6215c"
+    }
+  ],
+  "files": [
+    {
+      "file": "source/engine.py",
+      "bytes": 30911,
+      "sha256": "69dbfba2a66a5fc7ffe108b47d9a75299d3a82b5dc963a1cf6af50e98a7d29d8"
+    },
+    {
+      "file": "source/visual_timeline.py",
+      "bytes": 20009,
+      "sha256": "57ea39ef596119a1a01aca027087f10d44d26e246ba85813ecf4584aff006828"
+    },
+    {
+      "file": "source/lab_provider.py",
+      "bytes": 2643,
+      "sha256": "4ecbd5cdc996d833e157e2390e94739a0718b58f076f7785ccf9144ae6b3f673"
+    },
+    {
+      "file": "source/test_provider_reporting.py",
+      "bytes": 1857,
+      "sha256": "9eb2139be69012e6db00e67c127c31155e58d325ccf6a24d7a6f20b34f231725"
+    },
+    {
+      "file": "source/canary.py",
+      "bytes": 1996,
+      "sha256": "2094378b0b875619cf3eb48b669dea7a1c204d88d8ae0fe3ae06f8c1f60cefb2"
+    },
+    {
+      "file": "runner.ts",
+      "bytes": 6698,
+      "sha256": "59d7e2b010a7b992175ceb497ae17eaba894b9e10bda84db2311fbf642b34f49"
+    },
+    {
+      "file": "runner.mjs",
+      "bytes": 1338010,
+      "sha256": "b175a1e01e0eac82c8760b5b99a45fd7c7bcb3b9bc72cdaa18f1e2b84cc2e199"
+    },
+    {
+      "file": "monitor.py",
+      "bytes": 3923,
+      "sha256": "13094051d4e1f83d4b9923a24d5c8152eef6bfc6e156a39a76a9f764ea9f7680"
+    },
+    {
+      "file": "build-runner.mjs",
+      "bytes": 1683,
+      "sha256": "63c3427d6701e0f95ac86c74a3bfe35e8f50d7b22b58916313aaf19ba85e5224"
+    },
+    {
+      "file": "compare.mjs",
+      "bytes": 4613,
+      "sha256": "93fdbdd295e332826fab840d980a87cd154c489570fc37ef065a773793474c03"
+    }
+  ],
+  "cases": [
+    {
+      "result": {
+        "variant": "cpu-full-c",
+        "operation": "run",
+        "status": "done",
+        "wallMs": 694687.9798,
+        "stageMs": {
+          "ocr": 600832.9856,
+          "mask": 11843.823199999984,
+          "render": 81666.46250000002
+        },
+        "ocr": {
+          "engineVersion": "1.2.0-lab.1",
+          "transport": "stream-roi",
+          "fingerprint": "e063bfad91e9eb0010ee3df876ebfce7f3d6fc04ed32ef97860cbf49366080e6",
+          "providers": {
+            "det": "CPUExecutionProvider",
+            "cls": "CPUExecutionProvider",
+            "rec": "CPUExecutionProvider"
+          },
+          "visualSegments": 1225,
+          "boxSegments": 1247
+        },
+        "ocrCalls": 1,
+        "networkRequests": 0,
+        "abortToSettledMs": null,
+        "allocationsAfter": {
+          "local-cpu-heavy": 0,
+          "local-gpu-heavy": 0,
+          "server-inference": 0
+        },
+        "outputPath": "F:\\Son\\tool\\TediaPros\\.runner-staging\\ocr-gpu-lab-20260909-v1\\runs\\cpu-full-c\\output\\source-phude.mp4",
+        "outputBytes": 203283033,
+        "sourceSha256": "d063313c1c908ac1f760d48ec290f8a40a130ec0e916333910fefab0889ffeb6"
+      },
+      "elapsedSeconds": 694.9530000000013,
+      "remainingObservedChildPids": []
+    },
+    {
+      "result": {
+        "variant": "dml-full-c",
+        "operation": "run",
+        "status": "done",
+        "wallMs": 286488.4326,
+        "stageMs": {
+          "ocr": 197230.6494,
+          "mask": 11719.141399999993,
+          "render": 77084.02180000002
+        },
+        "ocr": {
+          "engineVersion": "1.2.0-lab.1",
+          "transport": "stream-roi",
+          "fingerprint": "e063bfad91e9eb0010ee3df876ebfce7f3d6fc04ed32ef97860cbf49366080e6",
+          "providers": {
+            "det": "DmlExecutionProvider",
+            "cls": "DmlExecutionProvider",
+            "rec": "DmlExecutionProvider"
+          },
+          "visualSegments": 1225,
+          "boxSegments": 1247
+        },
+        "ocrCalls": 1,
+        "networkRequests": 0,
+        "abortToSettledMs": null,
+        "allocationsAfter": {
+          "local-cpu-heavy": 0,
+          "local-gpu-heavy": 0,
+          "server-inference": 0
+        },
+        "outputPath": "F:\\Son\\tool\\TediaPros\\.runner-staging\\ocr-gpu-lab-20260909-v1\\runs\\dml-full-c\\output\\source-phude.mp4",
+        "outputBytes": 203283033,
+        "sourceSha256": "d063313c1c908ac1f760d48ec290f8a40a130ec0e916333910fefab0889ffeb6"
+      },
+      "elapsedSeconds": 286.82800000000134,
+      "remainingObservedChildPids": []
+    },
+    {
+      "result": {
+        "variant": "dml-cancel-e",
+        "operation": "cancel",
+        "status": "cancelled",
+        "error": "Đã hủy tác vụ",
+        "wallMs": 3812.4105,
+        "stageMs": {
+          "ocr": 3643.5385
+        },
+        "ocr": null,
+        "ocrCalls": 1,
+        "networkRequests": 0,
+        "abortToSettledMs": 232.38700000000017,
+        "allocationsAfter": {
+          "local-cpu-heavy": 0,
+          "local-gpu-heavy": 0,
+          "server-inference": 0
+        },
+        "outputBytes": 0,
+        "sourceSha256": "d063313c1c908ac1f760d48ec290f8a40a130ec0e916333910fefab0889ffeb6"
+      },
+      "elapsedSeconds": 4.014999999999418,
+      "remainingObservedChildPids": []
+    },
+    {
+      "result": {
+        "variant": "invalid-fail-e",
+        "operation": "fail",
+        "status": "error",
+        "error": "Error: OCR engine thất bại: Lab provider must be cpu or dml",
+        "wallMs": 596.3088,
+        "stageMs": {
+          "ocr": 434.3135
+        },
+        "ocr": null,
+        "ocrCalls": 1,
+        "networkRequests": 0,
+        "abortToSettledMs": null,
+        "allocationsAfter": {
+          "local-cpu-heavy": 0,
+          "local-gpu-heavy": 0,
+          "server-inference": 0
+        },
+        "outputBytes": 0,
+        "sourceSha256": "d063313c1c908ac1f760d48ec290f8a40a130ec0e916333910fefab0889ffeb6"
+      },
+      "elapsedSeconds": 0.8119999999980791,
+      "remainingObservedChildPids": []
+    },
+    {
+      "result": {
+        "variant": "dml-after-cancel-e",
+        "operation": "smoke",
+        "status": "done",
+        "wallMs": 8171.3451000000005,
+        "stageMs": {
+          "ocr": 5327.0608999999995,
+          "mask": 406.35530000000017,
+          "render": 2325.3224999999993
+        },
+        "ocr": {
+          "engineVersion": "1.2.0-lab.1",
+          "transport": "stream-roi",
+          "fingerprint": "e063bfad91e9eb0010ee3df876ebfce7f3d6fc04ed32ef97860cbf49366080e6",
+          "providers": {
+            "det": "DmlExecutionProvider",
+            "cls": "DmlExecutionProvider",
+            "rec": "DmlExecutionProvider"
+          },
+          "visualSegments": 14,
+          "boxSegments": 14
+        },
+        "ocrCalls": 1,
+        "networkRequests": 0,
+        "abortToSettledMs": null,
+        "allocationsAfter": {
+          "local-cpu-heavy": 0,
+          "local-gpu-heavy": 0,
+          "server-inference": 0
+        },
+        "outputPath": "F:\\Son\\tool\\TediaPros\\.runner-staging\\ocr-gpu-lab-20260909-v1\\runs\\dml-after-cancel-e\\output\\source-smoke-phude.mp4",
+        "outputBytes": 3058515,
+        "sourceSha256": "45253e32371787c6171f5afd4db4c52a314fc5f159c3d418cf0a7bf73ea1e48d"
+      },
+      "elapsedSeconds": 8.344000000004598,
+      "remainingObservedChildPids": []
+    }
+  ],
+  "canary": {
+    "providers": {
+      "det": "DmlExecutionProvider",
+      "cls": "DmlExecutionProvider",
+      "rec": "DmlExecutionProvider"
+    },
+    "samples": [
+      {
+        "seconds": 5,
+        "elapsed_ms": 976,
+        "boxes": 1,
+        "text": [
+          "这种螃蟹能吃吗"
+        ]
+      },
+      {
+        "seconds": 35,
+        "elapsed_ms": 185,
+        "boxes": 1,
+        "text": [
+          "可能合有寄生虫"
+        ]
+      },
+      {
+        "seconds": 90,
+        "elapsed_ms": 146,
+        "boxes": 1,
+        "text": [
+          "这是蚝里蟹"
+        ]
+      }
+    ],
+    "profiles": {
+      "det": {
+        "path": "F:\\Son\\tool\\TediaPros\\.runner-staging\\ocr-gpu-lab-20260909-v1\\canary-dml\\session-0_2026-09-09_23-44-31.json",
+        "node_events": {
+          "DmlExecutionProvider": 606
+        }
+      },
+      "cls": {
+        "path": "F:\\Son\\tool\\TediaPros\\.runner-staging\\ocr-gpu-lab-20260909-v1\\canary-dml\\session-1_2026-09-09_23-44-32.json",
+        "node_events": {
+          "DmlExecutionProvider": 465
+        }
+      },
+      "rec": {
+        "path": "F:\\Son\\tool\\TediaPros\\.runner-staging\\ocr-gpu-lab-20260909-v1\\canary-dml\\session-2_2026-09-09_23-44-32.json",
+        "node_events": {
+          "DmlExecutionProvider": 822,
+          "CPUExecutionProvider": 24
+        }
+      }
+    }
+  },
+  "status": "PASS"
+}

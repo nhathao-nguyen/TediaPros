@@ -1,0 +1,2480 @@
+{
+  "variant": "dml-full-c",
+  "returncode": 0,
+  "elapsedSeconds": 286.82800000000134,
+  "sampling": "approximate process-tree CPU/RSS; GPU stats include other applications",
+  "logicalCpus": 12,
+  "remainingObservedChildPids": [],
+  "samples": [
+    {
+      "seconds": 0.0,
+      "treeRssBytes": 6090752,
+      "cpuPercentMachine": 130.21,
+      "gpuDeviceMemoryMiB": 652,
+      "gpuDeviceUtilization": 25,
+      "pids": [
+        20604,
+        5756
+      ]
+    },
+    {
+      "seconds": 1.61,
+      "treeRssBytes": 243785728,
+      "cpuPercentMachine": 9.95,
+      "gpuDeviceMemoryMiB": 615,
+      "gpuDeviceUtilization": 23,
+      "pids": [
+        20604,
+        5756,
+        8052,
+        20472
+      ]
+    },
+    {
+      "seconds": 3.19,
+      "treeRssBytes": 760901632,
+      "cpuPercentMachine": 15.68,
+      "gpuDeviceMemoryMiB": 1026,
+      "gpuDeviceUtilization": 26,
+      "pids": [
+        20604,
+        5756,
+        8052,
+        20472,
+        12124
+      ]
+    },
+    {
+      "seconds": 4.77,
+      "treeRssBytes": 785252352,
+      "cpuPercentMachine": 13.53,
+      "gpuDeviceMemoryMiB": 1020,
+      "gpuDeviceUtilization": 29,
+      "pids": [
+        20604,
+        5756,
+        8052,
+        20472,
+        12124
+      ]
+    },
+    {
+      "seconds": 6.36,
+      "treeRssBytes": 762589184,
+      "cpuPercentMachine": 11.03,
+      "gpuDeviceMemoryMiB": 1020,
+      "gpuDeviceUtilization": 30,
+      "pids": [
+        20604,
+        5756,
+        8052,
+        20472,
+        12124
+      ]
+    },
+    {
+      "seconds": 7.94,
+      "treeRssBytes": 762961920,
+      "cpuPercentMachine": 10.23,
+      "gpuDeviceMemoryMiB": 1021,
+      "gpuDeviceUtilization": 27,
+      "pids": [
+        20604,
+        5756,
+        8052,
+        20472,
+        12124
+      ]
+    },
+    {
+      "seconds": 9.52,
+      "treeRssBytes": 787132416,
+      "cpuPercentMachine": 12.54,
+      "gpuDeviceMemoryMiB": 1021,
+      "gpuDeviceUtilization": 30,
+      "pids": [
+        20604,
+        5756,
+        8052,
+        20472,
+        12124
+      ]
+    },
+    {
+      "seconds": 11.09,
+      "treeRssBytes": 804831232,
+      "cpuPercentMachine": 10.97,
+      "gpuDeviceMemoryMiB": 1032,
+      "gpuDeviceUtilization": 31,
+      "pids": [
+        20604,
+        5756,
+        8052,
+        20472,
+        12124
+      ]
+    },
+    {
+      "seconds": 12.67,
+      "treeRssBytes": 755904512,
+      "cpuPercentMachine": 12.21,
+      "gpuDeviceMemoryMiB": 1032,
+      "gpuDeviceUtilization": 32,
+      "pids": [
+        20604,
+        5756,
+        8052,
+        20472,
+        12124
+      ]
+    },
+    {
+      "seconds": 14.25,
+      "treeRssBytes": 756019200,
+      "cpuPercentMachine": 13.04,
+      "gpuDeviceMemoryMiB": 1032,
+      "gpuDeviceUtilization": 32,
+      "pids": [
+        20604,
+        5756,
+        8052,
+        20472,
+        12124
+      ]
+    },
+    {
+      "seconds": 15.83,
+      "treeRssBytes": 756674560,
+      "cpuPercentMachine": 11.88,
+      "gpuDeviceMemoryMiB": 1031,
+      "gpuDeviceUtilization": 34,
+      "pids": [
+        20604,
+        5756,
+        8052,
+        20472,
+        12124
+      ]
+    },
+    {
+      "seconds": 17.41,
+      "treeRssBytes": 789233664,
+      "cpuPercentMachine": 13.94,
+      "gpuDeviceMemoryMiB": 1031,
+      "gpuDeviceUtilization": 31,
+      "pids": [
+        20604,
+        5756,
+        8052,
+        20472,
+        12124
+      ]
+    },
+    {
+      "seconds": 18.99,
+      "treeRssBytes": 789606400,
+      "cpuPercentMachine": 11.3,
+      "gpuDeviceMemoryMiB": 1108,
+      "gpuDeviceUtilization": 32,
+      "pids": [
+        20604,
+        5756,
+        8052,
+        20472,
+        12124
+      ]
+    },
+    {
+      "seconds": 20.58,
+      "treeRssBytes": 823005184,
+      "cpuPercentMachine": 11.77,
+      "gpuDeviceMemoryMiB": 1086,
+      "gpuDeviceUtilization": 32,
+      "pids": [
+        20604,
+        5756,
+        8052,
+        20472,
+        12124
+      ]
+    },
+    {
+      "seconds": 22.16,
+      "treeRssBytes": 789737472,
+      "cpuPercentMachine": 12.78,
+      "gpuDeviceMemoryMiB": 1038,
+      "gpuDeviceUtilization": 31,
+      "pids": [
+        20604,
+        5756,
+        8052,
+        20472,
+        12124
+      ]
+    },
+    {
+      "seconds": 23.74,
+      "treeRssBytes": 790114304,
+      "cpuPercentMachine": 14.77,
+      "gpuDeviceMemoryMiB": 1030,
+      "gpuDeviceUtilization": 33,
+      "pids": [
+        20604,
+        5756,
+        8052,
+        20472,
+        12124
+      ]
+    },
+    {
+      "seconds": 25.31,
+      "treeRssBytes": 806440960,
+      "cpuPercentMachine": 13.86,
+      "gpuDeviceMemoryMiB": 1030,
+      "gpuDeviceUtilization": 34,
+      "pids": [
+        20604,
+        5756,
+        8052,
+        20472,
+        12124
+      ]
+    },
+    {
+      "seconds": 26.91,
+      "treeRssBytes": 758665216,
+      "cpuPercentMachine": 13.4,
+      "gpuDeviceMemoryMiB": 1030,
+      "gpuDeviceUtilization": 31,
+      "pids": [
+        20604,
+        5756,
+        8052,
+        20472,
+        12124
+      ]
+    },
+    {
+      "seconds": 28.49,
+      "treeRssBytes": 758792192,
+      "cpuPercentMachine": 11.72,
+      "gpuDeviceMemoryMiB": 1030,
+      "gpuDeviceUtilization": 32,
+      "pids": [
+        20604,
+        5756,
+        8052,
+        20472,
+        12124
+      ]
+    },
+    {
+      "seconds": 30.06,
+      "treeRssBytes": 790482944,
+      "cpuPercentMachine": 12.21,
+      "gpuDeviceMemoryMiB": 1030,
+      "gpuDeviceUtilization": 35,
+      "pids": [
+        20604,
+        5756,
+        8052,
+        20472,
+        12124
+      ]
+    },
+    {
+      "seconds": 31.64,
+      "treeRssBytes": 821850112,
+      "cpuPercentMachine": 12.79,
+      "gpuDeviceMemoryMiB": 1030,
+      "gpuDeviceUtilization": 32,
+      "pids": [
+        20604,
+        5756,
+        8052,
+        20472,
+        12124
+      ]
+    },
+    {
+      "seconds": 33.22,
+      "treeRssBytes": 759365632,
+      "cpuPercentMachine": 11.88,
+      "gpuDeviceMemoryMiB": 1030,
+      "gpuDeviceUtilization": 32,
+      "pids": [
+        20604,
+        5756,
+        8052,
+        20472,
+        12124
+      ]
+    },
+    {
+      "seconds": 34.8,
+      "treeRssBytes": 795426816,
+      "cpuPercentMachine": 14.77,
+      "gpuDeviceMemoryMiB": 1030,
+      "gpuDeviceUtilization": 32,
+      "pids": [
+        20604,
+        5756,
+        8052,
+        20472,
+        12124
+      ]
+    },
+    {
+      "seconds": 36.38,
+      "treeRssBytes": 759443456,
+      "cpuPercentMachine": 11.39,
+      "gpuDeviceMemoryMiB": 1030,
+      "gpuDeviceUtilization": 32,
+      "pids": [
+        20604,
+        5756,
+        8052,
+        20472,
+        12124
+      ]
+    },
+    {
+      "seconds": 37.97,
+      "treeRssBytes": 790622208,
+      "cpuPercentMachine": 13.4,
+      "gpuDeviceMemoryMiB": 1030,
+      "gpuDeviceUtilization": 35,
+      "pids": [
+        20604,
+        5756,
+        8052,
+        20472,
+        12124
+      ]
+    },
+    {
+      "seconds": 39.55,
+      "treeRssBytes": 802750464,
+      "cpuPercentMachine": 11.47,
+      "gpuDeviceMemoryMiB": 1035,
+      "gpuDeviceUtilization": 34,
+      "pids": [
+        20604,
+        5756,
+        8052,
+        20472,
+        12124
+      ]
+    },
+    {
+      "seconds": 41.12,
+      "treeRssBytes": 782512128,
+      "cpuPercentMachine": 12.21,
+      "gpuDeviceMemoryMiB": 1031,
+      "gpuDeviceUtilization": 32,
+      "pids": [
+        20604,
+        5756,
+        8052,
+        20472,
+        12124
+      ]
+    },
+    {
+      "seconds": 42.72,
+      "treeRssBytes": 791138304,
+      "cpuPercentMachine": 14.38,
+      "gpuDeviceMemoryMiB": 1031,
+      "gpuDeviceUtilization": 33,
+      "pids": [
+        20604,
+        5756,
+        8052,
+        20472,
+        12124
+      ]
+    },
+    {
+      "seconds": 44.28,
+      "treeRssBytes": 760078336,
+      "cpuPercentMachine": 12.83,
+      "gpuDeviceMemoryMiB": 1031,
+      "gpuDeviceUtilization": 34,
+      "pids": [
+        20604,
+        5756,
+        8052,
+        20472,
+        12124
+      ]
+    },
+    {
+      "seconds": 45.86,
+      "treeRssBytes": 791289856,
+      "cpuPercentMachine": 14.19,
+      "gpuDeviceMemoryMiB": 1031,
+      "gpuDeviceUtilization": 31,
+      "pids": [
+        20604,
+        5756,
+        8052,
+        20472,
+        12124
+      ]
+    },
+    {
+      "seconds": 47.45,
+      "treeRssBytes": 802942976,
+      "cpuPercentMachine": 12.34,
+      "gpuDeviceMemoryMiB": 1040,
+      "gpuDeviceUtilization": 34,
+      "pids": [
+        20604,
+        5756,
+        8052,
+        20472,
+        12124
+      ]
+    },
+    {
+      "seconds": 49.03,
+      "treeRssBytes": 762441728,
+      "cpuPercentMachine": 12.04,
+      "gpuDeviceMemoryMiB": 1040,
+      "gpuDeviceUtilization": 33,
+      "pids": [
+        20604,
+        5756,
+        8052,
+        20472,
+        12124
+      ]
+    },
+    {
+      "seconds": 50.61,
+      "treeRssBytes": 793624576,
+      "cpuPercentMachine": 12.29,
+      "gpuDeviceMemoryMiB": 1040,
+      "gpuDeviceUtilization": 36,
+      "pids": [
+        20604,
+        5756,
+        8052,
+        20472,
+        12124
+      ]
+    },
+    {
+      "seconds": 52.19,
+      "treeRssBytes": 804073472,
+      "cpuPercentMachine": 13.2,
+      "gpuDeviceMemoryMiB": 1040,
+      "gpuDeviceUtilization": 30,
+      "pids": [
+        20604,
+        5756,
+        8052,
+        20472,
+        12124
+      ]
+    },
+    {
+      "seconds": 53.77,
+      "treeRssBytes": 761188352,
+      "cpuPercentMachine": 11.3,
+      "gpuDeviceMemoryMiB": 1040,
+      "gpuDeviceUtilization": 34,
+      "pids": [
+        20604,
+        5756,
+        8052,
+        20472,
+        12124
+      ]
+    },
+    {
+      "seconds": 55.34,
+      "treeRssBytes": 758337536,
+      "cpuPercentMachine": 13.28,
+      "gpuDeviceMemoryMiB": 1040,
+      "gpuDeviceUtilization": 30,
+      "pids": [
+        20604,
+        5756,
+        8052,
+        20472,
+        12124
+      ]
+    },
+    {
+      "seconds": 56.94,
+      "treeRssBytes": 760852480,
+      "cpuPercentMachine": 15.28,
+      "gpuDeviceMemoryMiB": 1040,
+      "gpuDeviceUtilization": 32,
+      "pids": [
+        20604,
+        5756,
+        8052,
+        20472,
+        12124
+      ]
+    },
+    {
+      "seconds": 58.52,
+      "treeRssBytes": 790929408,
+      "cpuPercentMachine": 12.87,
+      "gpuDeviceMemoryMiB": 1030,
+      "gpuDeviceUtilization": 32,
+      "pids": [
+        20604,
+        5756,
+        8052,
+        20472,
+        12124
+      ]
+    },
+    {
+      "seconds": 60.09,
+      "treeRssBytes": 782225408,
+      "cpuPercentMachine": 14.03,
+      "gpuDeviceMemoryMiB": 1030,
+      "gpuDeviceUtilization": 33,
+      "pids": [
+        20604,
+        5756,
+        8052,
+        20472,
+        12124
+      ]
+    },
+    {
+      "seconds": 61.67,
+      "treeRssBytes": 759881728,
+      "cpuPercentMachine": 12.05,
+      "gpuDeviceMemoryMiB": 1030,
+      "gpuDeviceUtilization": 31,
+      "pids": [
+        20604,
+        5756,
+        8052,
+        20472,
+        12124
+      ]
+    },
+    {
+      "seconds": 63.25,
+      "treeRssBytes": 789573632,
+      "cpuPercentMachine": 12.95,
+      "gpuDeviceMemoryMiB": 1030,
+      "gpuDeviceUtilization": 32,
+      "pids": [
+        20604,
+        5756,
+        8052,
+        20472,
+        12124
+      ]
+    },
+    {
+      "seconds": 64.83,
+      "treeRssBytes": 794902528,
+      "cpuPercentMachine": 12.62,
+      "gpuDeviceMemoryMiB": 1030,
+      "gpuDeviceUtilization": 30,
+      "pids": [
+        20604,
+        5756,
+        8052,
+        20472,
+        12124
+      ]
+    },
+    {
+      "seconds": 66.41,
+      "treeRssBytes": 786001920,
+      "cpuPercentMachine": 14.27,
+      "gpuDeviceMemoryMiB": 1030,
+      "gpuDeviceUtilization": 32,
+      "pids": [
+        20604,
+        5756,
+        8052,
+        20472,
+        12124
+      ]
+    },
+    {
+      "seconds": 68.0,
+      "treeRssBytes": 791183360,
+      "cpuPercentMachine": 12.75,
+      "gpuDeviceMemoryMiB": 1030,
+      "gpuDeviceUtilization": 32,
+      "pids": [
+        20604,
+        5756,
+        8052,
+        20472,
+        12124
+      ]
+    },
+    {
+      "seconds": 69.58,
+      "treeRssBytes": 777748480,
+      "cpuPercentMachine": 11.47,
+      "gpuDeviceMemoryMiB": 1030,
+      "gpuDeviceUtilization": 34,
+      "pids": [
+        20604,
+        5756,
+        8052,
+        20472,
+        12124
+      ]
+    },
+    {
+      "seconds": 71.16,
+      "treeRssBytes": 784506880,
+      "cpuPercentMachine": 14.35,
+      "gpuDeviceMemoryMiB": 1030,
+      "gpuDeviceUtilization": 31,
+      "pids": [
+        20604,
+        5756,
+        8052,
+        20472,
+        12124
+      ]
+    },
+    {
+      "seconds": 72.74,
+      "treeRssBytes": 795820032,
+      "cpuPercentMachine": 14.11,
+      "gpuDeviceMemoryMiB": 1030,
+      "gpuDeviceUtilization": 35,
+      "pids": [
+        20604,
+        5756,
+        8052,
+        20472,
+        12124
+      ]
+    },
+    {
+      "seconds": 74.31,
+      "treeRssBytes": 807280640,
+      "cpuPercentMachine": 11.72,
+      "gpuDeviceMemoryMiB": 1030,
+      "gpuDeviceUtilization": 34,
+      "pids": [
+        20604,
+        5756,
+        8052,
+        20472,
+        12124
+      ]
+    },
+    {
+      "seconds": 75.89,
+      "treeRssBytes": 761966592,
+      "cpuPercentMachine": 14.77,
+      "gpuDeviceMemoryMiB": 1030,
+      "gpuDeviceUtilization": 33,
+      "pids": [
+        20604,
+        5756,
+        8052,
+        20472,
+        12124
+      ]
+    },
+    {
+      "seconds": 77.47,
+      "treeRssBytes": 762208256,
+      "cpuPercentMachine": 13.78,
+      "gpuDeviceMemoryMiB": 1030,
+      "gpuDeviceUtilization": 29,
+      "pids": [
+        20604,
+        5756,
+        8052,
+        20472,
+        12124
+      ]
+    },
+    {
+      "seconds": 79.03,
+      "treeRssBytes": 793395200,
+      "cpuPercentMachine": 12.91,
+      "gpuDeviceMemoryMiB": 1030,
+      "gpuDeviceUtilization": 32,
+      "pids": [
+        20604,
+        5756,
+        8052,
+        20472,
+        12124
+      ]
+    },
+    {
+      "seconds": 80.61,
+      "treeRssBytes": 792322048,
+      "cpuPercentMachine": 12.71,
+      "gpuDeviceMemoryMiB": 1030,
+      "gpuDeviceUtilization": 31,
+      "pids": [
+        20604,
+        5756,
+        8052,
+        20472,
+        12124
+      ]
+    },
+    {
+      "seconds": 82.2,
+      "treeRssBytes": 792698880,
+      "cpuPercentMachine": 11.44,
+      "gpuDeviceMemoryMiB": 1030,
+      "gpuDeviceUtilization": 35,
+      "pids": [
+        20604,
+        5756,
+        8052,
+        20472,
+        12124
+      ]
+    },
+    {
+      "seconds": 83.78,
+      "treeRssBytes": 760041472,
+      "cpuPercentMachine": 13.28,
+      "gpuDeviceMemoryMiB": 1105,
+      "gpuDeviceUtilization": 32,
+      "pids": [
+        20604,
+        5756,
+        8052,
+        20472,
+        12124
+      ]
+    },
+    {
+      "seconds": 85.36,
+      "treeRssBytes": 788504576,
+      "cpuPercentMachine": 14.19,
+      "gpuDeviceMemoryMiB": 1084,
+      "gpuDeviceUtilization": 31,
+      "pids": [
+        20604,
+        5756,
+        8052,
+        20472,
+        12124
+      ]
+    },
+    {
+      "seconds": 86.94,
+      "treeRssBytes": 787173376,
+      "cpuPercentMachine": 14.03,
+      "gpuDeviceMemoryMiB": 1036,
+      "gpuDeviceUtilization": 32,
+      "pids": [
+        20604,
+        5756,
+        8052,
+        20472,
+        12124
+      ]
+    },
+    {
+      "seconds": 88.52,
+      "treeRssBytes": 786956288,
+      "cpuPercentMachine": 12.87,
+      "gpuDeviceMemoryMiB": 1031,
+      "gpuDeviceUtilization": 34,
+      "pids": [
+        20604,
+        5756,
+        8052,
+        20472,
+        12124
+      ]
+    },
+    {
+      "seconds": 90.11,
+      "treeRssBytes": 786976768,
+      "cpuPercentMachine": 11.27,
+      "gpuDeviceMemoryMiB": 1031,
+      "gpuDeviceUtilization": 32,
+      "pids": [
+        20604,
+        5756,
+        8052,
+        20472,
+        12124
+      ]
+    },
+    {
+      "seconds": 91.69,
+      "treeRssBytes": 795664384,
+      "cpuPercentMachine": 18.07,
+      "gpuDeviceMemoryMiB": 1031,
+      "gpuDeviceUtilization": 31,
+      "pids": [
+        20604,
+        5756,
+        8052,
+        20472,
+        12124
+      ]
+    },
+    {
+      "seconds": 93.27,
+      "treeRssBytes": 770785280,
+      "cpuPercentMachine": 11.96,
+      "gpuDeviceMemoryMiB": 1031,
+      "gpuDeviceUtilization": 32,
+      "pids": [
+        20604,
+        5756,
+        8052,
+        20472,
+        12124
+      ]
+    },
+    {
+      "seconds": 94.84,
+      "treeRssBytes": 756031488,
+      "cpuPercentMachine": 11.22,
+      "gpuDeviceMemoryMiB": 1031,
+      "gpuDeviceUtilization": 31,
+      "pids": [
+        20604,
+        5756,
+        8052,
+        20472,
+        12124
+      ]
+    },
+    {
+      "seconds": 96.42,
+      "treeRssBytes": 795664384,
+      "cpuPercentMachine": 12.13,
+      "gpuDeviceMemoryMiB": 1031,
+      "gpuDeviceUtilization": 31,
+      "pids": [
+        20604,
+        5756,
+        8052,
+        20472,
+        12124
+      ]
+    },
+    {
+      "seconds": 98.0,
+      "treeRssBytes": 804077568,
+      "cpuPercentMachine": 11.88,
+      "gpuDeviceMemoryMiB": 1031,
+      "gpuDeviceUtilization": 29,
+      "pids": [
+        20604,
+        5756,
+        8052,
+        20472,
+        12124
+      ]
+    },
+    {
+      "seconds": 99.59,
+      "treeRssBytes": 756178944,
+      "cpuPercentMachine": 11.52,
+      "gpuDeviceMemoryMiB": 1031,
+      "gpuDeviceUtilization": 29,
+      "pids": [
+        20604,
+        5756,
+        8052,
+        20472,
+        12124
+      ]
+    },
+    {
+      "seconds": 101.17,
+      "treeRssBytes": 793513984,
+      "cpuPercentMachine": 12.71,
+      "gpuDeviceMemoryMiB": 1031,
+      "gpuDeviceUtilization": 31,
+      "pids": [
+        20604,
+        5756,
+        8052,
+        20472,
+        12124
+      ]
+    },
+    {
+      "seconds": 102.75,
+      "treeRssBytes": 791568384,
+      "cpuPercentMachine": 12.95,
+      "gpuDeviceMemoryMiB": 1033,
+      "gpuDeviceUtilization": 34,
+      "pids": [
+        20604,
+        5756,
+        8052,
+        20472,
+        12124
+      ]
+    },
+    {
+      "seconds": 104.33,
+      "treeRssBytes": 757420032,
+      "cpuPercentMachine": 10.31,
+      "gpuDeviceMemoryMiB": 1033,
+      "gpuDeviceUtilization": 29,
+      "pids": [
+        20604,
+        5756,
+        8052,
+        20472,
+        12124
+      ]
+    },
+    {
+      "seconds": 105.91,
+      "treeRssBytes": 764403712,
+      "cpuPercentMachine": 11.63,
+      "gpuDeviceMemoryMiB": 1033,
+      "gpuDeviceUtilization": 31,
+      "pids": [
+        20604,
+        5756,
+        8052,
+        20472,
+        12124
+      ]
+    },
+    {
+      "seconds": 107.49,
+      "treeRssBytes": 757448704,
+      "cpuPercentMachine": 13.61,
+      "gpuDeviceMemoryMiB": 1033,
+      "gpuDeviceUtilization": 32,
+      "pids": [
+        20604,
+        5756,
+        8052,
+        20472,
+        12124
+      ]
+    },
+    {
+      "seconds": 109.06,
+      "treeRssBytes": 757489664,
+      "cpuPercentMachine": 11.8,
+      "gpuDeviceMemoryMiB": 1033,
+      "gpuDeviceUtilization": 29,
+      "pids": [
+        20604,
+        5756,
+        8052,
+        20472,
+        12124
+      ]
+    },
+    {
+      "seconds": 110.64,
+      "treeRssBytes": 788623360,
+      "cpuPercentMachine": 12.05,
+      "gpuDeviceMemoryMiB": 1033,
+      "gpuDeviceUtilization": 28,
+      "pids": [
+        20604,
+        5756,
+        8052,
+        20472,
+        12124
+      ]
+    },
+    {
+      "seconds": 112.22,
+      "treeRssBytes": 757538816,
+      "cpuPercentMachine": 13.04,
+      "gpuDeviceMemoryMiB": 1033,
+      "gpuDeviceUtilization": 29,
+      "pids": [
+        20604,
+        5756,
+        8052,
+        20472,
+        12124
+      ]
+    },
+    {
+      "seconds": 113.8,
+      "treeRssBytes": 788623360,
+      "cpuPercentMachine": 14.03,
+      "gpuDeviceMemoryMiB": 1120,
+      "gpuDeviceUtilization": 34,
+      "pids": [
+        20604,
+        5756,
+        8052,
+        20472,
+        12124
+      ]
+    },
+    {
+      "seconds": 115.38,
+      "treeRssBytes": 757538816,
+      "cpuPercentMachine": 10.64,
+      "gpuDeviceMemoryMiB": 1118,
+      "gpuDeviceUtilization": 29,
+      "pids": [
+        20604,
+        5756,
+        8052,
+        20472,
+        12124
+      ]
+    },
+    {
+      "seconds": 116.97,
+      "treeRssBytes": 788656128,
+      "cpuPercentMachine": 11.03,
+      "gpuDeviceMemoryMiB": 1048,
+      "gpuDeviceUtilization": 33,
+      "pids": [
+        20604,
+        5756,
+        8052,
+        20472,
+        12124
+      ]
+    },
+    {
+      "seconds": 118.56,
+      "treeRssBytes": 788668416,
+      "cpuPercentMachine": 13.48,
+      "gpuDeviceMemoryMiB": 1040,
+      "gpuDeviceUtilization": 31,
+      "pids": [
+        20604,
+        5756,
+        8052,
+        20472,
+        12124
+      ]
+    },
+    {
+      "seconds": 120.14,
+      "treeRssBytes": 757592064,
+      "cpuPercentMachine": 12.62,
+      "gpuDeviceMemoryMiB": 1032,
+      "gpuDeviceUtilization": 32,
+      "pids": [
+        20604,
+        5756,
+        8052,
+        20472,
+        12124
+      ]
+    },
+    {
+      "seconds": 121.72,
+      "treeRssBytes": 788701184,
+      "cpuPercentMachine": 11.39,
+      "gpuDeviceMemoryMiB": 1032,
+      "gpuDeviceUtilization": 33,
+      "pids": [
+        20604,
+        5756,
+        8052,
+        20472,
+        12124
+      ]
+    },
+    {
+      "seconds": 123.3,
+      "treeRssBytes": 757604352,
+      "cpuPercentMachine": 13.78,
+      "gpuDeviceMemoryMiB": 1032,
+      "gpuDeviceUtilization": 30,
+      "pids": [
+        20604,
+        5756,
+        8052,
+        20472,
+        12124
+      ]
+    },
+    {
+      "seconds": 124.89,
+      "treeRssBytes": 757596160,
+      "cpuPercentMachine": 12.91,
+      "gpuDeviceMemoryMiB": 1032,
+      "gpuDeviceUtilization": 32,
+      "pids": [
+        20604,
+        5756,
+        8052,
+        20472,
+        12124
+      ]
+    },
+    {
+      "seconds": 126.47,
+      "treeRssBytes": 788705280,
+      "cpuPercentMachine": 13.37,
+      "gpuDeviceMemoryMiB": 1032,
+      "gpuDeviceUtilization": 34,
+      "pids": [
+        20604,
+        5756,
+        8052,
+        20472,
+        12124
+      ]
+    },
+    {
+      "seconds": 128.05,
+      "treeRssBytes": 780926976,
+      "cpuPercentMachine": 12.62,
+      "gpuDeviceMemoryMiB": 1032,
+      "gpuDeviceUtilization": 33,
+      "pids": [
+        20604,
+        5756,
+        8052,
+        20472,
+        12124
+      ]
+    },
+    {
+      "seconds": 129.62,
+      "treeRssBytes": 782151680,
+      "cpuPercentMachine": 11.63,
+      "gpuDeviceMemoryMiB": 1032,
+      "gpuDeviceUtilization": 31,
+      "pids": [
+        20604,
+        5756,
+        8052,
+        20472,
+        12124
+      ]
+    },
+    {
+      "seconds": 131.2,
+      "treeRssBytes": 758079488,
+      "cpuPercentMachine": 12.38,
+      "gpuDeviceMemoryMiB": 1032,
+      "gpuDeviceUtilization": 32,
+      "pids": [
+        20604,
+        5756,
+        8052,
+        20472,
+        12124
+      ]
+    },
+    {
+      "seconds": 132.78,
+      "treeRssBytes": 808173568,
+      "cpuPercentMachine": 11.87,
+      "gpuDeviceMemoryMiB": 1032,
+      "gpuDeviceUtilization": 33,
+      "pids": [
+        20604,
+        5756,
+        8052,
+        20472,
+        12124
+      ]
+    },
+    {
+      "seconds": 134.36,
+      "treeRssBytes": 798748672,
+      "cpuPercentMachine": 13.61,
+      "gpuDeviceMemoryMiB": 1032,
+      "gpuDeviceUtilization": 31,
+      "pids": [
+        20604,
+        5756,
+        8052,
+        20472,
+        12124
+      ]
+    },
+    {
+      "seconds": 135.94,
+      "treeRssBytes": 789737472,
+      "cpuPercentMachine": 12.46,
+      "gpuDeviceMemoryMiB": 1032,
+      "gpuDeviceUtilization": 30,
+      "pids": [
+        20604,
+        5756,
+        8052,
+        20472,
+        12124
+      ]
+    },
+    {
+      "seconds": 137.53,
+      "treeRssBytes": 789127168,
+      "cpuPercentMachine": 13.56,
+      "gpuDeviceMemoryMiB": 1032,
+      "gpuDeviceUtilization": 32,
+      "pids": [
+        20604,
+        5756,
+        8052,
+        20472,
+        12124
+      ]
+    },
+    {
+      "seconds": 139.11,
+      "treeRssBytes": 789139456,
+      "cpuPercentMachine": 12.13,
+      "gpuDeviceMemoryMiB": 1095,
+      "gpuDeviceUtilization": 30,
+      "pids": [
+        20604,
+        5756,
+        8052,
+        20472,
+        12124
+      ]
+    },
+    {
+      "seconds": 140.69,
+      "treeRssBytes": 778031104,
+      "cpuPercentMachine": 12.87,
+      "gpuDeviceMemoryMiB": 1047,
+      "gpuDeviceUtilization": 32,
+      "pids": [
+        20604,
+        5756,
+        8052,
+        20472,
+        12124
+      ]
+    },
+    {
+      "seconds": 142.27,
+      "treeRssBytes": 789155840,
+      "cpuPercentMachine": 12.21,
+      "gpuDeviceMemoryMiB": 1047,
+      "gpuDeviceUtilization": 32,
+      "pids": [
+        20604,
+        5756,
+        8052,
+        20472,
+        12124
+      ]
+    },
+    {
+      "seconds": 143.84,
+      "treeRssBytes": 758067200,
+      "cpuPercentMachine": 12.54,
+      "gpuDeviceMemoryMiB": 1032,
+      "gpuDeviceUtilization": 34,
+      "pids": [
+        20604,
+        5756,
+        8052,
+        20472,
+        12124
+      ]
+    },
+    {
+      "seconds": 145.42,
+      "treeRssBytes": 789176320,
+      "cpuPercentMachine": 11.06,
+      "gpuDeviceMemoryMiB": 1032,
+      "gpuDeviceUtilization": 31,
+      "pids": [
+        20604,
+        5756,
+        8052,
+        20472,
+        12124
+      ]
+    },
+    {
+      "seconds": 147.0,
+      "treeRssBytes": 758091776,
+      "cpuPercentMachine": 9.57,
+      "gpuDeviceMemoryMiB": 1107,
+      "gpuDeviceUtilization": 35,
+      "pids": [
+        20604,
+        5756,
+        8052,
+        20472,
+        12124
+      ]
+    },
+    {
+      "seconds": 148.58,
+      "treeRssBytes": 817729536,
+      "cpuPercentMachine": 12.46,
+      "gpuDeviceMemoryMiB": 1038,
+      "gpuDeviceUtilization": 31,
+      "pids": [
+        20604,
+        5756,
+        8052,
+        20472,
+        12124
+      ]
+    },
+    {
+      "seconds": 150.16,
+      "treeRssBytes": 789209088,
+      "cpuPercentMachine": 15.01,
+      "gpuDeviceMemoryMiB": 1038,
+      "gpuDeviceUtilization": 34,
+      "pids": [
+        20604,
+        5756,
+        8052,
+        20472,
+        12124
+      ]
+    },
+    {
+      "seconds": 151.74,
+      "treeRssBytes": 758120448,
+      "cpuPercentMachine": 11.55,
+      "gpuDeviceMemoryMiB": 1107,
+      "gpuDeviceUtilization": 31,
+      "pids": [
+        20604,
+        5756,
+        8052,
+        20472,
+        12124
+      ]
+    },
+    {
+      "seconds": 153.31,
+      "treeRssBytes": 811114496,
+      "cpuPercentMachine": 11.55,
+      "gpuDeviceMemoryMiB": 1086,
+      "gpuDeviceUtilization": 32,
+      "pids": [
+        20604,
+        5756,
+        8052,
+        20472,
+        12124
+      ]
+    },
+    {
+      "seconds": 154.89,
+      "treeRssBytes": 781578240,
+      "cpuPercentMachine": 12.71,
+      "gpuDeviceMemoryMiB": 1038,
+      "gpuDeviceUtilization": 32,
+      "pids": [
+        20604,
+        5756,
+        8052,
+        20472,
+        12124
+      ]
+    },
+    {
+      "seconds": 156.47,
+      "treeRssBytes": 758181888,
+      "cpuPercentMachine": 11.39,
+      "gpuDeviceMemoryMiB": 1038,
+      "gpuDeviceUtilization": 34,
+      "pids": [
+        20604,
+        5756,
+        8052,
+        20472,
+        12124
+      ]
+    },
+    {
+      "seconds": 158.05,
+      "treeRssBytes": 789291008,
+      "cpuPercentMachine": 12.21,
+      "gpuDeviceMemoryMiB": 1108,
+      "gpuDeviceUtilization": 32,
+      "pids": [
+        20604,
+        5756,
+        8052,
+        20472,
+        12124
+      ]
+    },
+    {
+      "seconds": 159.62,
+      "treeRssBytes": 758198272,
+      "cpuPercentMachine": 13.86,
+      "gpuDeviceMemoryMiB": 1086,
+      "gpuDeviceUtilization": 30,
+      "pids": [
+        20604,
+        5756,
+        8052,
+        20472,
+        12124
+      ]
+    },
+    {
+      "seconds": 161.2,
+      "treeRssBytes": 804442112,
+      "cpuPercentMachine": 12.29,
+      "gpuDeviceMemoryMiB": 1038,
+      "gpuDeviceUtilization": 32,
+      "pids": [
+        20604,
+        5756,
+        8052,
+        20472,
+        12124
+      ]
+    },
+    {
+      "seconds": 162.78,
+      "treeRssBytes": 790982656,
+      "cpuPercentMachine": 13.69,
+      "gpuDeviceMemoryMiB": 1037,
+      "gpuDeviceUtilization": 34,
+      "pids": [
+        20604,
+        5756,
+        8052,
+        20472,
+        12124
+      ]
+    },
+    {
+      "seconds": 164.36,
+      "treeRssBytes": 796459008,
+      "cpuPercentMachine": 13.28,
+      "gpuDeviceMemoryMiB": 1033,
+      "gpuDeviceUtilization": 31,
+      "pids": [
+        20604,
+        5756,
+        8052,
+        20472,
+        12124
+      ]
+    },
+    {
+      "seconds": 165.94,
+      "treeRssBytes": 812482560,
+      "cpuPercentMachine": 12.46,
+      "gpuDeviceMemoryMiB": 1033,
+      "gpuDeviceUtilization": 32,
+      "pids": [
+        20604,
+        5756,
+        8052,
+        20472,
+        12124
+      ]
+    },
+    {
+      "seconds": 167.52,
+      "treeRssBytes": 758034432,
+      "cpuPercentMachine": 12.79,
+      "gpuDeviceMemoryMiB": 1033,
+      "gpuDeviceUtilization": 31,
+      "pids": [
+        20604,
+        5756,
+        8052,
+        20472,
+        12124
+      ]
+    },
+    {
+      "seconds": 169.11,
+      "treeRssBytes": 804003840,
+      "cpuPercentMachine": 12.42,
+      "gpuDeviceMemoryMiB": 1106,
+      "gpuDeviceUtilization": 31,
+      "pids": [
+        20604,
+        5756,
+        8052,
+        20472,
+        12124
+      ]
+    },
+    {
+      "seconds": 170.69,
+      "treeRssBytes": 758992896,
+      "cpuPercentMachine": 14.52,
+      "gpuDeviceMemoryMiB": 1038,
+      "gpuDeviceUtilization": 34,
+      "pids": [
+        20604,
+        5756,
+        8052,
+        20472,
+        12124
+      ]
+    },
+    {
+      "seconds": 172.27,
+      "treeRssBytes": 790110208,
+      "cpuPercentMachine": 12.71,
+      "gpuDeviceMemoryMiB": 1108,
+      "gpuDeviceUtilization": 32,
+      "pids": [
+        20604,
+        5756,
+        8052,
+        20472,
+        12124
+      ]
+    },
+    {
+      "seconds": 173.84,
+      "treeRssBytes": 756531200,
+      "cpuPercentMachine": 12.54,
+      "gpuDeviceMemoryMiB": 1089,
+      "gpuDeviceUtilization": 32,
+      "pids": [
+        20604,
+        5756,
+        8052,
+        20472,
+        12124
+      ]
+    },
+    {
+      "seconds": 175.42,
+      "treeRssBytes": 759029760,
+      "cpuPercentMachine": 12.71,
+      "gpuDeviceMemoryMiB": 1041,
+      "gpuDeviceUtilization": 32,
+      "pids": [
+        20604,
+        5756,
+        8052,
+        20472,
+        12124
+      ]
+    },
+    {
+      "seconds": 177.0,
+      "treeRssBytes": 759046144,
+      "cpuPercentMachine": 12.38,
+      "gpuDeviceMemoryMiB": 1033,
+      "gpuDeviceUtilization": 31,
+      "pids": [
+        20604,
+        5756,
+        8052,
+        20472,
+        12124
+      ]
+    },
+    {
+      "seconds": 178.58,
+      "treeRssBytes": 759054336,
+      "cpuPercentMachine": 11.8,
+      "gpuDeviceMemoryMiB": 1033,
+      "gpuDeviceUtilization": 40,
+      "pids": [
+        20604,
+        5756,
+        8052,
+        20472,
+        12124
+      ]
+    },
+    {
+      "seconds": 180.16,
+      "treeRssBytes": 808570880,
+      "cpuPercentMachine": 12.04,
+      "gpuDeviceMemoryMiB": 1033,
+      "gpuDeviceUtilization": 33,
+      "pids": [
+        20604,
+        5756,
+        8052,
+        20472,
+        12124
+      ]
+    },
+    {
+      "seconds": 181.74,
+      "treeRssBytes": 759087104,
+      "cpuPercentMachine": 11.47,
+      "gpuDeviceMemoryMiB": 1033,
+      "gpuDeviceUtilization": 33,
+      "pids": [
+        20604,
+        5756,
+        8052,
+        20472,
+        12124
+      ]
+    },
+    {
+      "seconds": 183.33,
+      "treeRssBytes": 790208512,
+      "cpuPercentMachine": 12.91,
+      "gpuDeviceMemoryMiB": 1033,
+      "gpuDeviceUtilization": 31,
+      "pids": [
+        20604,
+        5756,
+        8052,
+        20472,
+        12124
+      ]
+    },
+    {
+      "seconds": 184.91,
+      "treeRssBytes": 790204416,
+      "cpuPercentMachine": 12.45,
+      "gpuDeviceMemoryMiB": 1033,
+      "gpuDeviceUtilization": 32,
+      "pids": [
+        20604,
+        5756,
+        8052,
+        20472,
+        12124
+      ]
+    },
+    {
+      "seconds": 186.49,
+      "treeRssBytes": 759119872,
+      "cpuPercentMachine": 10.97,
+      "gpuDeviceMemoryMiB": 1107,
+      "gpuDeviceUtilization": 29,
+      "pids": [
+        20604,
+        5756,
+        8052,
+        20472,
+        12124
+      ]
+    },
+    {
+      "seconds": 188.06,
+      "treeRssBytes": 769839104,
+      "cpuPercentMachine": 11.55,
+      "gpuDeviceMemoryMiB": 1098,
+      "gpuDeviceUtilization": 31,
+      "pids": [
+        20604,
+        5756,
+        8052,
+        20472,
+        12124
+      ]
+    },
+    {
+      "seconds": 189.64,
+      "treeRssBytes": 825118720,
+      "cpuPercentMachine": 12.71,
+      "gpuDeviceMemoryMiB": 1049,
+      "gpuDeviceUtilization": 35,
+      "pids": [
+        20604,
+        5756,
+        8052,
+        20472,
+        12124
+      ]
+    },
+    {
+      "seconds": 191.22,
+      "treeRssBytes": 759152640,
+      "cpuPercentMachine": 11.8,
+      "gpuDeviceMemoryMiB": 1042,
+      "gpuDeviceUtilization": 31,
+      "pids": [
+        20604,
+        5756,
+        8052,
+        20472,
+        12124
+      ]
+    },
+    {
+      "seconds": 192.8,
+      "treeRssBytes": 790257664,
+      "cpuPercentMachine": 12.79,
+      "gpuDeviceMemoryMiB": 1042,
+      "gpuDeviceUtilization": 32,
+      "pids": [
+        20604,
+        5756,
+        8052,
+        20472,
+        12124
+      ]
+    },
+    {
+      "seconds": 194.38,
+      "treeRssBytes": 781832192,
+      "cpuPercentMachine": 10.4,
+      "gpuDeviceMemoryMiB": 1042,
+      "gpuDeviceUtilization": 35,
+      "pids": [
+        20604,
+        5756,
+        8052,
+        20472,
+        12124
+      ]
+    },
+    {
+      "seconds": 195.95,
+      "treeRssBytes": 612139008,
+      "cpuPercentMachine": 12.21,
+      "gpuDeviceMemoryMiB": 1115,
+      "gpuDeviceUtilization": 38,
+      "pids": [
+        20604,
+        5756,
+        8052,
+        20472,
+        12124
+      ]
+    },
+    {
+      "seconds": 197.55,
+      "treeRssBytes": 423182336,
+      "cpuPercentMachine": 8.9,
+      "gpuDeviceMemoryMiB": 1047,
+      "gpuDeviceUtilization": 39,
+      "pids": [
+        20604,
+        5756,
+        8052,
+        20472
+      ]
+    },
+    {
+      "seconds": 199.12,
+      "treeRssBytes": 249384960,
+      "cpuPercentMachine": 61.56,
+      "gpuDeviceMemoryMiB": 685,
+      "gpuDeviceUtilization": 7,
+      "pids": [
+        20604,
+        5756,
+        6456,
+        18812
+      ]
+    },
+    {
+      "seconds": 200.74,
+      "treeRssBytes": 85118976,
+      "cpuPercentMachine": 8.41,
+      "gpuDeviceMemoryMiB": 687,
+      "gpuDeviceUtilization": 12,
+      "pids": [
+        20604,
+        5756
+      ]
+    },
+    {
+      "seconds": 202.31,
+      "treeRssBytes": 94072832,
+      "cpuPercentMachine": 9.32,
+      "gpuDeviceMemoryMiB": 614,
+      "gpuDeviceUtilization": 16,
+      "pids": [
+        20604,
+        5756
+      ]
+    },
+    {
+      "seconds": 203.89,
+      "treeRssBytes": 107315200,
+      "cpuPercentMachine": 8.5,
+      "gpuDeviceMemoryMiB": 614,
+      "gpuDeviceUtilization": 26,
+      "pids": [
+        20604,
+        5756,
+        6500,
+        10788
+      ]
+    },
+    {
+      "seconds": 205.47,
+      "treeRssBytes": 101097472,
+      "cpuPercentMachine": 8.33,
+      "gpuDeviceMemoryMiB": 597,
+      "gpuDeviceUtilization": 23,
+      "pids": [
+        20604,
+        5756,
+        6500,
+        10788
+      ]
+    },
+    {
+      "seconds": 207.05,
+      "treeRssBytes": 178278400,
+      "cpuPercentMachine": 12.95,
+      "gpuDeviceMemoryMiB": 597,
+      "gpuDeviceUtilization": 23,
+      "pids": [
+        20604,
+        5756,
+        23504,
+        19024
+      ]
+    },
+    {
+      "seconds": 208.64,
+      "treeRssBytes": 180011008,
+      "cpuPercentMachine": 15.85,
+      "gpuDeviceMemoryMiB": 597,
+      "gpuDeviceUtilization": 26,
+      "pids": [
+        20604,
+        5756,
+        23504,
+        19024
+      ]
+    },
+    {
+      "seconds": 210.22,
+      "treeRssBytes": 604057600,
+      "cpuPercentMachine": 4.79,
+      "gpuDeviceMemoryMiB": 779,
+      "gpuDeviceUtilization": 22,
+      "pids": [
+        20604,
+        5756,
+        24564,
+        23428
+      ]
+    },
+    {
+      "seconds": 211.8,
+      "treeRssBytes": 1016848384,
+      "cpuPercentMachine": 51.24,
+      "gpuDeviceMemoryMiB": 799,
+      "gpuDeviceUtilization": 9,
+      "pids": [
+        20604,
+        5756,
+        24564,
+        23428
+      ]
+    },
+    {
+      "seconds": 213.42,
+      "treeRssBytes": 1017667584,
+      "cpuPercentMachine": 57.45,
+      "gpuDeviceMemoryMiB": 799,
+      "gpuDeviceUtilization": 8,
+      "pids": [
+        20604,
+        5756,
+        24564,
+        23428
+      ]
+    },
+    {
+      "seconds": 215.03,
+      "treeRssBytes": 1017851904,
+      "cpuPercentMachine": 51.27,
+      "gpuDeviceMemoryMiB": 799,
+      "gpuDeviceUtilization": 9,
+      "pids": [
+        20604,
+        5756,
+        24564,
+        23428
+      ]
+    },
+    {
+      "seconds": 216.66,
+      "treeRssBytes": 1020547072,
+      "cpuPercentMachine": 50.96,
+      "gpuDeviceMemoryMiB": 799,
+      "gpuDeviceUtilization": 9,
+      "pids": [
+        20604,
+        5756,
+        24564,
+        23428
+      ]
+    },
+    {
+      "seconds": 218.27,
+      "treeRssBytes": 1021386752,
+      "cpuPercentMachine": 48.96,
+      "gpuDeviceMemoryMiB": 799,
+      "gpuDeviceUtilization": 18,
+      "pids": [
+        20604,
+        5756,
+        24564,
+        23428
+      ]
+    },
+    {
+      "seconds": 219.91,
+      "treeRssBytes": 1021468672,
+      "cpuPercentMachine": 43.09,
+      "gpuDeviceMemoryMiB": 799,
+      "gpuDeviceUtilization": 21,
+      "pids": [
+        20604,
+        5756,
+        24564,
+        23428
+      ]
+    },
+    {
+      "seconds": 221.53,
+      "treeRssBytes": 1021509632,
+      "cpuPercentMachine": 55.53,
+      "gpuDeviceMemoryMiB": 799,
+      "gpuDeviceUtilization": 20,
+      "pids": [
+        20604,
+        5756,
+        24564,
+        23428
+      ]
+    },
+    {
+      "seconds": 223.14,
+      "treeRssBytes": 1021562880,
+      "cpuPercentMachine": 49.61,
+      "gpuDeviceMemoryMiB": 799,
+      "gpuDeviceUtilization": 20,
+      "pids": [
+        20604,
+        5756,
+        24564,
+        23428
+      ]
+    },
+    {
+      "seconds": 224.77,
+      "treeRssBytes": 1022013440,
+      "cpuPercentMachine": 56.17,
+      "gpuDeviceMemoryMiB": 799,
+      "gpuDeviceUtilization": 21,
+      "pids": [
+        20604,
+        5756,
+        24564,
+        23428
+      ]
+    },
+    {
+      "seconds": 226.36,
+      "treeRssBytes": 1022042112,
+      "cpuPercentMachine": 57.26,
+      "gpuDeviceMemoryMiB": 799,
+      "gpuDeviceUtilization": 20,
+      "pids": [
+        20604,
+        5756,
+        24564,
+        23428
+      ]
+    },
+    {
+      "seconds": 227.99,
+      "treeRssBytes": 1022513152,
+      "cpuPercentMachine": 56.17,
+      "gpuDeviceMemoryMiB": 799,
+      "gpuDeviceUtilization": 21,
+      "pids": [
+        20604,
+        5756,
+        24564,
+        23428
+      ]
+    },
+    {
+      "seconds": 229.59,
+      "treeRssBytes": 1022898176,
+      "cpuPercentMachine": 51.14,
+      "gpuDeviceMemoryMiB": 799,
+      "gpuDeviceUtilization": 20,
+      "pids": [
+        20604,
+        5756,
+        24564,
+        23428
+      ]
+    },
+    {
+      "seconds": 231.22,
+      "treeRssBytes": 1023365120,
+      "cpuPercentMachine": 49.04,
+      "gpuDeviceMemoryMiB": 799,
+      "gpuDeviceUtilization": 21,
+      "pids": [
+        20604,
+        5756,
+        24564,
+        23428
+      ]
+    },
+    {
+      "seconds": 232.84,
+      "treeRssBytes": 1023365120,
+      "cpuPercentMachine": 51.52,
+      "gpuDeviceMemoryMiB": 799,
+      "gpuDeviceUtilization": 21,
+      "pids": [
+        20604,
+        5756,
+        24564,
+        23428
+      ]
+    },
+    {
+      "seconds": 234.47,
+      "treeRssBytes": 1023410176,
+      "cpuPercentMachine": 49.68,
+      "gpuDeviceMemoryMiB": 799,
+      "gpuDeviceUtilization": 20,
+      "pids": [
+        20604,
+        5756,
+        24564,
+        23428
+      ]
+    },
+    {
+      "seconds": 236.09,
+      "treeRssBytes": 1025368064,
+      "cpuPercentMachine": 54.25,
+      "gpuDeviceMemoryMiB": 799,
+      "gpuDeviceUtilization": 21,
+      "pids": [
+        20604,
+        5756,
+        24564,
+        23428
+      ]
+    },
+    {
+      "seconds": 237.7,
+      "treeRssBytes": 1025503232,
+      "cpuPercentMachine": 51.47,
+      "gpuDeviceMemoryMiB": 799,
+      "gpuDeviceUtilization": 20,
+      "pids": [
+        20604,
+        5756,
+        24564,
+        23428
+      ]
+    },
+    {
+      "seconds": 239.34,
+      "treeRssBytes": 1025536000,
+      "cpuPercentMachine": 56.65,
+      "gpuDeviceMemoryMiB": 799,
+      "gpuDeviceUtilization": 21,
+      "pids": [
+        20604,
+        5756,
+        24564,
+        23428
+      ]
+    },
+    {
+      "seconds": 240.97,
+      "treeRssBytes": 1025822720,
+      "cpuPercentMachine": 49.04,
+      "gpuDeviceMemoryMiB": 799,
+      "gpuDeviceUtilization": 21,
+      "pids": [
+        20604,
+        5756,
+        24564,
+        23428
+      ]
+    },
+    {
+      "seconds": 242.58,
+      "treeRssBytes": 1025839104,
+      "cpuPercentMachine": 49.69,
+      "gpuDeviceMemoryMiB": 799,
+      "gpuDeviceUtilization": 20,
+      "pids": [
+        20604,
+        5756,
+        24564,
+        23428
+      ]
+    },
+    {
+      "seconds": 244.2,
+      "treeRssBytes": 1025867776,
+      "cpuPercentMachine": 52.08,
+      "gpuDeviceMemoryMiB": 799,
+      "gpuDeviceUtilization": 21,
+      "pids": [
+        20604,
+        5756,
+        24564,
+        23428
+      ]
+    },
+    {
+      "seconds": 245.81,
+      "treeRssBytes": 1025904640,
+      "cpuPercentMachine": 55.88,
+      "gpuDeviceMemoryMiB": 799,
+      "gpuDeviceUtilization": 20,
+      "pids": [
+        20604,
+        5756,
+        24564,
+        23428
+      ]
+    },
+    {
+      "seconds": 247.45,
+      "treeRssBytes": 1026306048,
+      "cpuPercentMachine": 54.23,
+      "gpuDeviceMemoryMiB": 799,
+      "gpuDeviceUtilization": 21,
+      "pids": [
+        20604,
+        5756,
+        24564,
+        23428
+      ]
+    },
+    {
+      "seconds": 249.08,
+      "treeRssBytes": 1026338816,
+      "cpuPercentMachine": 47.36,
+      "gpuDeviceMemoryMiB": 799,
+      "gpuDeviceUtilization": 21,
+      "pids": [
+        20604,
+        5756,
+        24564,
+        23428
+      ]
+    },
+    {
+      "seconds": 250.69,
+      "treeRssBytes": 1026363392,
+      "cpuPercentMachine": 56.29,
+      "gpuDeviceMemoryMiB": 788,
+      "gpuDeviceUtilization": 20,
+      "pids": [
+        20604,
+        5756,
+        24564,
+        23428
+      ]
+    },
+    {
+      "seconds": 252.31,
+      "treeRssBytes": 1026400256,
+      "cpuPercentMachine": 60.42,
+      "gpuDeviceMemoryMiB": 788,
+      "gpuDeviceUtilization": 20,
+      "pids": [
+        20604,
+        5756,
+        24564,
+        23428
+      ]
+    },
+    {
+      "seconds": 253.94,
+      "treeRssBytes": 1026416640,
+      "cpuPercentMachine": 53.61,
+      "gpuDeviceMemoryMiB": 863,
+      "gpuDeviceUtilization": 21,
+      "pids": [
+        20604,
+        5756,
+        24564,
+        23428
+      ]
+    },
+    {
+      "seconds": 255.56,
+      "treeRssBytes": 1027211264,
+      "cpuPercentMachine": 47.52,
+      "gpuDeviceMemoryMiB": 795,
+      "gpuDeviceUtilization": 21,
+      "pids": [
+        20604,
+        5756,
+        24564,
+        23428
+      ]
+    },
+    {
+      "seconds": 257.17,
+      "treeRssBytes": 1027710976,
+      "cpuPercentMachine": 52.92,
+      "gpuDeviceMemoryMiB": 878,
+      "gpuDeviceUtilization": 22,
+      "pids": [
+        20604,
+        5756,
+        24564,
+        23428
+      ]
+    },
+    {
+      "seconds": 258.78,
+      "treeRssBytes": 1028194304,
+      "cpuPercentMachine": 48.69,
+      "gpuDeviceMemoryMiB": 853,
+      "gpuDeviceUtilization": 21,
+      "pids": [
+        20604,
+        5756,
+        24564,
+        23428
+      ]
+    },
+    {
+      "seconds": 260.42,
+      "treeRssBytes": 1028218880,
+      "cpuPercentMachine": 51.29,
+      "gpuDeviceMemoryMiB": 805,
+      "gpuDeviceUtilization": 20,
+      "pids": [
+        20604,
+        5756,
+        24564,
+        23428
+      ]
+    },
+    {
+      "seconds": 262.03,
+      "treeRssBytes": 1031450624,
+      "cpuPercentMachine": 53.54,
+      "gpuDeviceMemoryMiB": 791,
+      "gpuDeviceUtilization": 20,
+      "pids": [
+        20604,
+        5756,
+        24564,
+        23428
+      ]
+    },
+    {
+      "seconds": 263.67,
+      "treeRssBytes": 1031491584,
+      "cpuPercentMachine": 55.34,
+      "gpuDeviceMemoryMiB": 788,
+      "gpuDeviceUtilization": 21,
+      "pids": [
+        20604,
+        5756,
+        24564,
+        23428
+      ]
+    },
+    {
+      "seconds": 265.3,
+      "treeRssBytes": 1032003584,
+      "cpuPercentMachine": 54.97,
+      "gpuDeviceMemoryMiB": 788,
+      "gpuDeviceUtilization": 21,
+      "pids": [
+        20604,
+        5756,
+        24564,
+        23428
+      ]
+    },
+    {
+      "seconds": 266.92,
+      "treeRssBytes": 1032536064,
+      "cpuPercentMachine": 57.93,
+      "gpuDeviceMemoryMiB": 788,
+      "gpuDeviceUtilization": 21,
+      "pids": [
+        20604,
+        5756,
+        24564,
+        23428
+      ]
+    },
+    {
+      "seconds": 268.53,
+      "treeRssBytes": 1032556544,
+      "cpuPercentMachine": 58.15,
+      "gpuDeviceMemoryMiB": 788,
+      "gpuDeviceUtilization": 20,
+      "pids": [
+        20604,
+        5756,
+        24564,
+        23428
+      ]
+    },
+    {
+      "seconds": 270.16,
+      "treeRssBytes": 1032912896,
+      "cpuPercentMachine": 50.24,
+      "gpuDeviceMemoryMiB": 788,
+      "gpuDeviceUtilization": 20,
+      "pids": [
+        20604,
+        5756,
+        24564,
+        23428
+      ]
+    },
+    {
+      "seconds": 271.77,
+      "treeRssBytes": 1032929280,
+      "cpuPercentMachine": 47.34,
+      "gpuDeviceMemoryMiB": 788,
+      "gpuDeviceUtilization": 21,
+      "pids": [
+        20604,
+        5756,
+        24564,
+        23428
+      ]
+    },
+    {
+      "seconds": 273.39,
+      "treeRssBytes": 1032974336,
+      "cpuPercentMachine": 58.97,
+      "gpuDeviceMemoryMiB": 788,
+      "gpuDeviceUtilization": 20,
+      "pids": [
+        20604,
+        5756,
+        24564,
+        23428
+      ]
+    },
+    {
+      "seconds": 275.02,
+      "treeRssBytes": 1033256960,
+      "cpuPercentMachine": 52.88,
+      "gpuDeviceMemoryMiB": 788,
+      "gpuDeviceUtilization": 20,
+      "pids": [
+        20604,
+        5756,
+        24564,
+        23428
+      ]
+    },
+    {
+      "seconds": 276.64,
+      "treeRssBytes": 1033269248,
+      "cpuPercentMachine": 52.4,
+      "gpuDeviceMemoryMiB": 788,
+      "gpuDeviceUtilization": 20,
+      "pids": [
+        20604,
+        5756,
+        24564,
+        23428
+      ]
+    },
+    {
+      "seconds": 278.28,
+      "treeRssBytes": 1034022912,
+      "cpuPercentMachine": 48.72,
+      "gpuDeviceMemoryMiB": 788,
+      "gpuDeviceUtilization": 20,
+      "pids": [
+        20604,
+        5756,
+        24564,
+        23428
+      ]
+    },
+    {
+      "seconds": 279.92,
+      "treeRssBytes": 503734272,
+      "cpuPercentMachine": 16.67,
+      "gpuDeviceMemoryMiB": 587,
+      "gpuDeviceUtilization": 18,
+      "pids": [
+        20604,
+        5756,
+        22420,
+        19160
+      ]
+    },
+    {
+      "seconds": 281.53,
+      "treeRssBytes": 510246912,
+      "cpuPercentMachine": 75.78,
+      "gpuDeviceMemoryMiB": 587,
+      "gpuDeviceUtilization": 12,
+      "pids": [
+        20604,
+        5756,
+        22420,
+        19160
+      ]
+    },
+    {
+      "seconds": 283.14,
+      "treeRssBytes": 514641920,
+      "cpuPercentMachine": 70.73,
+      "gpuDeviceMemoryMiB": 587,
+      "gpuDeviceUtilization": 23,
+      "pids": [
+        20604,
+        5756,
+        22420,
+        19160
+      ]
+    },
+    {
+      "seconds": 284.75,
+      "treeRssBytes": 514293760,
+      "cpuPercentMachine": 72.75,
+      "gpuDeviceMemoryMiB": 587,
+      "gpuDeviceUtilization": 23,
+      "pids": [
+        20604,
+        5756,
+        22420,
+        19160
+      ]
+    },
+    {
+      "seconds": 286.36,
+      "treeRssBytes": 514289664,
+      "cpuPercentMachine": 68.74,
+      "gpuDeviceMemoryMiB": 587,
+      "gpuDeviceUtilization": 23,
+      "pids": [
+        20604,
+        5756,
+        22420,
+        19160
+      ]
+    }
+  ]
+}

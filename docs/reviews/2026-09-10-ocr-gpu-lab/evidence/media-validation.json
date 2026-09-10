@@ -1,0 +1,348 @@
+{
+  "verifiedAt": "2026-09-09T17:30:43.114Z",
+  "passed": true,
+  "outputByteIdentical": true,
+  "fullDecodePassed": true,
+  "results": [
+    {
+      "variant": "cpu-full-c",
+      "sha256": "d40315332c2d97a34bb39b51670fe2da671ad3774965ca40d11e2df5a468466f",
+      "outputPath": "F:\\Son\\tool\\TediaPros\\.runner-staging\\ocr-gpu-lab-20260909-v1\\runs\\cpu-full-c\\output\\source-phude.mp4",
+      "metadata": {
+        "streams": [
+          {
+            "index": 0,
+            "codec_name": "h264",
+            "codec_long_name": "H.264 / AVC / MPEG-4 AVC / MPEG-4 part 10",
+            "profile": "Main",
+            "codec_type": "video",
+            "codec_tag_string": "avc1",
+            "codec_tag": "0x31637661",
+            "mime_codec_string": "avc1.4d4028",
+            "width": 1080,
+            "height": 1920,
+            "coded_width": 1080,
+            "coded_height": 1920,
+            "has_b_frames": 2,
+            "sample_aspect_ratio": "1:1",
+            "display_aspect_ratio": "9:16",
+            "pix_fmt": "yuv420p",
+            "level": 40,
+            "color_range": "tv",
+            "color_space": "bt709",
+            "color_transfer": "bt709",
+            "color_primaries": "bt709",
+            "chroma_location": "left",
+            "field_order": "progressive",
+            "is_avc": "true",
+            "nal_length_size": "4",
+            "id": "0x1",
+            "r_frame_rate": "30/1",
+            "avg_frame_rate": "30/1",
+            "time_base": "1/15360",
+            "start_pts": 0,
+            "start_time": "0.000000",
+            "duration_ts": 2560000,
+            "duration": "166.666667",
+            "bit_rate": "9694065",
+            "bits_per_raw_sample": "8",
+            "nb_frames": "5000",
+            "extradata_size": 58,
+            "disposition": {
+              "default": 1,
+              "dub": 0,
+              "original": 0,
+              "comment": 0,
+              "lyrics": 0,
+              "karaoke": 0,
+              "forced": 0,
+              "hearing_impaired": 0,
+              "visual_impaired": 0,
+              "clean_effects": 0,
+              "attached_pic": 0,
+              "timed_thumbnails": 0,
+              "non_diegetic": 0,
+              "captions": 0,
+              "descriptions": 0,
+              "metadata": 0,
+              "dependent": 0,
+              "still_image": 0,
+              "multilayer": 0
+            },
+            "tags": {
+              "language": "und",
+              "handler_name": "VideoHandler",
+              "encoder": "Lavc62.33.100 h264_nvenc"
+            }
+          },
+          {
+            "index": 1,
+            "codec_name": "aac",
+            "codec_long_name": "AAC (Advanced Audio Coding)",
+            "profile": "HE-AACv2",
+            "codec_type": "audio",
+            "codec_tag_string": "mp4a",
+            "codec_tag": "0x6134706d",
+            "mime_codec_string": "mp4a.40.29",
+            "sample_fmt": "fltp",
+            "sample_rate": "44100",
+            "channels": 2,
+            "channel_layout": "stereo",
+            "bits_per_sample": 0,
+            "initial_padding": 0,
+            "id": "0x2",
+            "r_frame_rate": "0/0",
+            "avg_frame_rate": "0/0",
+            "time_base": "1/44100",
+            "start_pts": 0,
+            "start_time": "0.000000",
+            "duration_ts": 7351294,
+            "duration": "166.696009",
+            "bit_rate": "56810",
+            "nb_frames": "3593",
+            "extradata_size": 4,
+            "disposition": {
+              "default": 1,
+              "dub": 0,
+              "original": 0,
+              "comment": 0,
+              "lyrics": 0,
+              "karaoke": 0,
+              "forced": 0,
+              "hearing_impaired": 0,
+              "visual_impaired": 0,
+              "clean_effects": 0,
+              "attached_pic": 0,
+              "timed_thumbnails": 0,
+              "non_diegetic": 0,
+              "captions": 0,
+              "descriptions": 0,
+              "metadata": 0,
+              "dependent": 0,
+              "still_image": 0,
+              "multilayer": 0
+            },
+            "tags": {
+              "language": "und",
+              "handler_name": "SoundHandler"
+            }
+          }
+        ],
+        "format": {
+          "filename": "F:\\Son\\tool\\TediaPros\\.runner-staging\\ocr-gpu-lab-20260909-v1\\runs\\cpu-full-c\\output\\source-phude.mp4",
+          "nb_streams": 2,
+          "nb_programs": 0,
+          "nb_stream_groups": 0,
+          "format_name": "mov,mp4,m4a,3gp,3g2,mj2",
+          "format_long_name": "QuickTime / MOV",
+          "start_time": "0.000000",
+          "duration": "166.696009",
+          "size": "203283033",
+          "bit_rate": "9755868",
+          "probe_score": 100,
+          "tags": {
+            "major_brand": "isom",
+            "minor_version": "512",
+            "compatible_brands": "isomiso2avc1mp41",
+            "encoder": "Lavf62.17.100",
+            "comment": "vid:v0d00fg10000da23v4fog65hjlmj0pr0"
+          }
+        }
+      }
+    },
+    {
+      "variant": "dml-full-c",
+      "sha256": "d40315332c2d97a34bb39b51670fe2da671ad3774965ca40d11e2df5a468466f",
+      "outputPath": "F:\\Son\\tool\\TediaPros\\.runner-staging\\ocr-gpu-lab-20260909-v1\\runs\\dml-full-c\\output\\source-phude.mp4",
+      "metadata": {
+        "streams": [
+          {
+            "index": 0,
+            "codec_name": "h264",
+            "codec_long_name": "H.264 / AVC / MPEG-4 AVC / MPEG-4 part 10",
+            "profile": "Main",
+            "codec_type": "video",
+            "codec_tag_string": "avc1",
+            "codec_tag": "0x31637661",
+            "mime_codec_string": "avc1.4d4028",
+            "width": 1080,
+            "height": 1920,
+            "coded_width": 1080,
+            "coded_height": 1920,
+            "has_b_frames": 2,
+            "sample_aspect_ratio": "1:1",
+            "display_aspect_ratio": "9:16",
+            "pix_fmt": "yuv420p",
+            "level": 40,
+            "color_range": "tv",
+            "color_space": "bt709",
+            "color_transfer": "bt709",
+            "color_primaries": "bt709",
+            "chroma_location": "left",
+            "field_order": "progressive",
+            "is_avc": "true",
+            "nal_length_size": "4",
+            "id": "0x1",
+            "r_frame_rate": "30/1",
+            "avg_frame_rate": "30/1",
+            "time_base": "1/15360",
+            "start_pts": 0,
+            "start_time": "0.000000",
+            "duration_ts": 2560000,
+            "duration": "166.666667",
+            "bit_rate": "9694065",
+            "bits_per_raw_sample": "8",
+            "nb_frames": "5000",
+            "extradata_size": 58,
+            "disposition": {
+              "default": 1,
+              "dub": 0,
+              "original": 0,
+              "comment": 0,
+              "lyrics": 0,
+              "karaoke": 0,
+              "forced": 0,
+              "hearing_impaired": 0,
+              "visual_impaired": 0,
+              "clean_effects": 0,
+              "attached_pic": 0,
+              "timed_thumbnails": 0,
+              "non_diegetic": 0,
+              "captions": 0,
+              "descriptions": 0,
+              "metadata": 0,
+              "dependent": 0,
+              "still_image": 0,
+              "multilayer": 0
+            },
+            "tags": {
+              "language": "und",
+              "handler_name": "VideoHandler",
+              "encoder": "Lavc62.33.100 h264_nvenc"
+            }
+          },
+          {
+            "index": 1,
+            "codec_name": "aac",
+            "codec_long_name": "AAC (Advanced Audio Coding)",
+            "profile": "HE-AACv2",
+            "codec_type": "audio",
+            "codec_tag_string": "mp4a",
+            "codec_tag": "0x6134706d",
+            "mime_codec_string": "mp4a.40.29",
+            "sample_fmt": "fltp",
+            "sample_rate": "44100",
+            "channels": 2,
+            "channel_layout": "stereo",
+            "bits_per_sample": 0,
+            "initial_padding": 0,
+            "id": "0x2",
+            "r_frame_rate": "0/0",
+            "avg_frame_rate": "0/0",
+            "time_base": "1/44100",
+            "start_pts": 0,
+            "start_time": "0.000000",
+            "duration_ts": 7351294,
+            "duration": "166.696009",
+            "bit_rate": "56810",
+            "nb_frames": "3593",
+            "extradata_size": 4,
+            "disposition": {
+              "default": 1,
+              "dub": 0,
+              "original": 0,
+              "comment": 0,
+              "lyrics": 0,
+              "karaoke": 0,
+              "forced": 0,
+              "hearing_impaired": 0,
+              "visual_impaired": 0,
+              "clean_effects": 0,
+              "attached_pic": 0,
+              "timed_thumbnails": 0,
+              "non_diegetic": 0,
+              "captions": 0,
+              "descriptions": 0,
+              "metadata": 0,
+              "dependent": 0,
+              "still_image": 0,
+              "multilayer": 0
+            },
+            "tags": {
+              "language": "und",
+              "handler_name": "SoundHandler"
+            }
+          }
+        ],
+        "format": {
+          "filename": "F:\\Son\\tool\\TediaPros\\.runner-staging\\ocr-gpu-lab-20260909-v1\\runs\\dml-full-c\\output\\source-phude.mp4",
+          "nb_streams": 2,
+          "nb_programs": 0,
+          "nb_stream_groups": 0,
+          "format_name": "mov,mp4,m4a,3gp,3g2,mj2",
+          "format_long_name": "QuickTime / MOV",
+          "start_time": "0.000000",
+          "duration": "166.696009",
+          "size": "203283033",
+          "bit_rate": "9755868",
+          "probe_score": 100,
+          "tags": {
+            "major_brand": "isom",
+            "minor_version": "512",
+            "compatible_brands": "isomiso2avc1mp41",
+            "encoder": "Lavf62.17.100",
+            "comment": "vid:v0d00fg10000da23v4fog65hjlmj0pr0"
+          }
+        }
+      }
+    }
+  ],
+  "scratch": [
+    {
+      "variant": "cpu-full-c",
+      "remainingWorkEntries": 0
+    },
+    {
+      "variant": "dml-after-cancel-d",
+      "remainingWorkEntries": 0
+    },
+    {
+      "variant": "dml-after-cancel-e",
+      "remainingWorkEntries": 0
+    },
+    {
+      "variant": "dml-cancel-d",
+      "remainingWorkEntries": 0
+    },
+    {
+      "variant": "dml-cancel-e",
+      "remainingWorkEntries": 0
+    },
+    {
+      "variant": "dml-full-b",
+      "remainingWorkEntries": 0
+    },
+    {
+      "variant": "dml-full-c",
+      "remainingWorkEntries": 0
+    },
+    {
+      "variant": "dml-smoke-c",
+      "remainingWorkEntries": 0
+    },
+    {
+      "variant": "invalid-fail-d",
+      "remainingWorkEntries": 0
+    },
+    {
+      "variant": "invalid-fail-e",
+      "remainingWorkEntries": 0
+    }
+  ],
+  "visualSamples": [
+    "gpu-5.png",
+    "gpu-35.png",
+    "gpu-90.png",
+    "source-35.png"
+  ]
+}

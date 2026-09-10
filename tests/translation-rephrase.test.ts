@@ -295,7 +295,8 @@ test('inline rescue alternatives send exactly one clean choice to TTS', async ()
     const raw = `[${id}:1] ${selected} [${id}:2] Take a good look at this crab before you eat it. [${id}:3] Inspect the crab closely before eating.`
     const spoken: string[] = []
     const result = await synthesizeDubbingPlan({
-      plan: buildDubbingPlan({ videoDuration: 1.92, cues: [{ id, start: 0, end: 1.42, text: original }] }),
+      // The 0.12s EOF guard leaves 1.42s; the original really overflows at 1.80x.
+      plan: buildDubbingPlan({ videoDuration: 1.54, cues: [{ id, start: 0, end: 1.42, text: original }] }),
       language: 'en', model: 'fixture',
       predictor: { profile: { version: 2, samples: 1, weights: [0, 0, 0, 0, 0, 0], residualP90: 0 },
         estimate: (text) => ({ seconds: text === original ? 4 : text.split(/\s+/u).length * 0.2, uncertaintySeconds: 0, confidence: 1 }),
@@ -359,7 +360,8 @@ test('AutoShort sends video-aware timing to the local translator and preserves s
       const data = prompt.split('\n').filter((line) => /^\[.*?\] \{/u.test(line)).map((line) => JSON.parse(line.slice(line.indexOf('{'))))
       assert.equal(data.length, 2)
       assert.ok(Math.abs(data[0].speaking_duration_seconds - 1.42) < 0.001)
-      assert.ok(Math.abs(data[1].speaking_duration_seconds - 1.09) < 0.001)
+      // Last cue: 5.00 - 0.12 - 3.41, not another inter-cue 0.50s reserve.
+      assert.ok(Math.abs(data[1].speaking_duration_seconds - 1.47) < 0.001)
       inspected = true
       return new Response(JSON.stringify({ choices: [{ message: { content: cues.map((cue, i) => `[${cue.id}] ${i ? 'This crab is edible.' : 'Which crabs are edible?'}`).join('\n') }, finish_reason: 'stop' }] }))
     }

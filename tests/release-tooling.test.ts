@@ -472,10 +472,10 @@ test('Task 11.2: runtime-v5 default is used across all distribution configs, wor
   assert.match(separatorPacker, /runtimeVersion\s*\|\|\s*['"]runtime-v5['"]/u)
 })
 
-test('Task 11.3: OCR capability requires 1.2.0, ocr-local/1, and exact capabilities without duplicates', async () => {
+test('Task 11.3: OCR capability requires 1.2.1, ocr-local/1, and exact capabilities without duplicates', async () => {
   const runtimeInputs = JSON.parse(await readFile(join(process.cwd(), 'distribution', 'runtime-inputs.json'), 'utf8'))
   const ocr = runtimeInputs.assets['ocr-engine']
-  assert.equal(ocr.version, '1.2.0')
+  assert.equal(ocr.version, '1.2.1')
   assert.equal(ocr.protocol, 'ocr-local/1')
   assert.deepEqual(ocr.capabilities, [
     'probe',

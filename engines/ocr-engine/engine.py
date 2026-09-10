@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""ocr-engine — doc chu chay tren video, xuat .srt va visual cues timeline (1.2.0)
+"""ocr-engine — doc chu chay tren video, xuat .srt va visual cues timeline (1.2.1)
 
 Giao thuc: JSON-lines ra stdout:
   {"type":"info","frames":183,"fps":8}
@@ -17,6 +17,7 @@ import sys
 import tempfile
 import threading
 import numpy as np
+from ocr_models import resolve_ocr_models
 
 from visual_timeline import (
     FEATURES,
@@ -39,13 +40,15 @@ from visual_timeline import (
     OCR_VISUAL_MAX_BOXES_PER_SEGMENT,
 )
 
-VERSION = "1.2.0"
+VERSION = "1.2.1"
 PROTOCOL = "ocr-local/1"
 ENGINE_NAME = "rapidocr"
 IMPLEMENTATION_FINGERPRINT = hashlib.sha256(
-    b"tediapros-ocr-engine|1.2.0|visual-stream-full-v1|visual-stream-roi-v1|halo=32|fps=8"
+    b"tediapros-ocr-engine|1.2.1|visual-stream-full-v1|visual-stream-roi-v1|halo=32|fps=8"
+    b"|rapidocr=1.4.4|ort-win=directml-1.24.4|models=ppocrv3-pinned|provider=auto-dml-cpu-v1"
 ).hexdigest()
 VISUAL_TRANSPORTS = ("legacy-disk", "stream-full", "stream-roi")
+_OCR_INIT_LOCK = threading.Lock()
 
 
 def resolve_visual_transport(transport, legacy_disk_extract=False):
@@ -80,7 +83,7 @@ def _session_providers(candidate):
         providers = getattr(value, "providers", None)
         if isinstance(providers, (list, tuple)) and providers:
             return [str(provider) for provider in providers]
-        for attr in ("session", "ort_session", "_session", "model"):
+        for attr in ("infer", "session", "ort_session", "_session", "model"):
             try:
                 nested = getattr(value, attr, None)
             except Exception:
@@ -95,6 +98,7 @@ def get_ocr_provider_report(ocr):
     report = {}
     for component in ("det", "cls", "rec"):
         candidates = [
+            getattr(ocr, f"text_{component}", None),
             getattr(ocr, f"{component}_model", None),
             getattr(ocr, f"_{component}_model", None),
             getattr(ocr, component, None),
@@ -115,6 +119,10 @@ except Exception:
 
 
 def emit(obj):
+    if obj.get("type") == "done":
+        # All transports must identify the runtime that produced the result;
+        # otherwise the main process uses its legacy 1.1.0 compatibility default.
+        obj = {**obj, "version": VERSION}
     sys.stdout.write(json.dumps(obj, ensure_ascii=False) + "\n")
     sys.stdout.flush()
 
@@ -183,33 +191,81 @@ def probe_duration(ffprobe, video):
     raise RuntimeError(f"Không thể xác định thời lượng video cho {video}")
 
 
-def gpu_that_su_chay():
-    """Thu THAT xem DirectML co an khong."""
-    try:
-        import onnxruntime as ort
-        if "DmlExecutionProvider" not in ort.get_available_providers():
-            return False
-        import rapidocr_onnxruntime, os as _os, glob as _glob
-        md = _glob.glob(_os.path.join(_os.path.dirname(rapidocr_onnxruntime.__file__), "models", "*det*.onnx"))
-        if not md:
-            return False
-        s = ort.InferenceSession(md[0], providers=["DmlExecutionProvider", "CPUExecutionProvider"])
-        return "DmlExecutionProvider" in s.get_providers()
-    except Exception:
-        return False
+def gpu_that_su_chay(ocr=None):
+    """Report the three live OCR sessions, not a separate detector capability probe."""
+    return all(value == "DmlExecutionProvider" for value in get_ocr_provider_report(ocr).values())
 
 
 def tao_ocr():
-    """Tao RapidOCR uu tien DirectML (GPU), tu tut CPU neu khong duoc."""
+    """Prefer DML; auto mode falls back once on initialization, with an explicit reason."""
+    import onnxruntime as ort
     from rapidocr_onnxruntime import RapidOCR
-    if gpu_that_su_chay():
+    from rapidocr_onnxruntime.utils.infer_engine import OrtInferSession
+
+    device = os.environ.get("TEDIAPROS_OCR_DEVICE", "auto")
+    if device not in ("auto", "cpu", "dml"):
+        raise ValueError("OCR device must be auto, cpu or dml")
+    # Verify weights before the GPU fallback boundary: corrupted weights must
+    # never silently select a different model or be mistaken for a GPU problem.
+    model_options = resolve_ocr_models()
+
+    def construct(use_dml):
+        # RapidOCR 1.4.4 does not expose these ORT options in its config. Keep
+        # the pinned adapter scoped to creation and restore it even on failure.
+        with _OCR_INIT_LOCK:
+            original_options = OrtInferSession._init_sess_opts
+
+            def session_options(config):
+                options = original_options(config)
+                options.enable_mem_pattern = False
+                options.execution_mode = ort.ExecutionMode.ORT_SEQUENTIAL
+                return options
+
+            OrtInferSession._init_sess_opts = staticmethod(session_options)
+            try:
+                ocr = RapidOCR(
+                    **model_options,
+                    det_use_dml=use_dml, cls_use_dml=use_dml, rec_use_dml=use_dml,
+                    det_use_cuda=False, cls_use_cuda=False, rec_use_cuda=False,
+                    det_std=[0.229, 0.224, 0.225], det_mean=[0.485, 0.456, 0.406],
+                    det_limit_type="min", det_limit_side_len=736,
+                )
+            finally:
+                OrtInferSession._init_sess_opts = staticmethod(original_options)
+        expected = "DmlExecutionProvider" if use_dml else "CPUExecutionProvider"
+        report = get_ocr_provider_report(ocr)
+        if any(value != expected for value in report.values()):
+            raise RuntimeError(f"OCR expected {expected}, received {report}")
+        for component in ("det", "cls", "rec"):
+            part = getattr(ocr, f"text_{component}")
+            wrapper = part.session if component == "rec" else part.infer
+            disable = getattr(wrapper.session, "disable_fallback", None)
+            if callable(disable):
+                # Native execution errors go to the parent watchdog/queue;
+                # do not silently replace a live DML session with CPU mid-item.
+                disable()
+        return ocr
+
+    fallback_reason = None
+    if device != "cpu":
         try:
-            o = RapidOCR(det_use_dml=True, cls_use_dml=True, rec_use_dml=True)
-            emit({"type": "status", "message": "Dùng tăng tốc GPU…"})
-            return o
-        except Exception:
-            pass
-    return RapidOCR()
+            if "DmlExecutionProvider" not in ort.get_available_providers():
+                raise RuntimeError("DmlExecutionProvider is unavailable")
+            ocr = construct(True)
+            emit({"type": "status", "message": "OCR: dùng GPU DirectML",
+                  "ocr_provider": get_ocr_provider_report(ocr)})
+            return ocr
+        except Exception as error:
+            if device == "dml":
+                raise
+            fallback_reason = str(error)[:500]
+    ocr = construct(False)
+    status = {"type": "status", "message": "OCR: dùng CPU", "ocr_provider": get_ocr_provider_report(ocr)}
+    if fallback_reason:
+        status["fallback_reason"] = fallback_reason
+        status["message"] = "OCR: GPU không khả dụng, chuyển về CPU"
+    emit(status)
+    return ocr
 
 
 def kill_process_tree(proc):
@@ -766,6 +822,8 @@ def main():
     p = argparse.ArgumentParser(description="ocr-engine")
     p.add_argument("--version", action="store_true", help="in phien ban va protocol")
     p.add_argument("--probe", action="store_true", help="kiem tra kha nang chay thuc te")
+    p.add_argument("--device", choices=["auto", "cpu", "dml"], default=None,
+                   help="auto uu tien GPU va du phong CPU; dml yeu cau GPU; cpu ep CPU")
     p.add_argument("--input", help="file video")
     p.add_argument("--output", help="file .srt xuat ra")
     p.add_argument("--visual-cues-output", help="file .json chua visual cues timeline")
@@ -783,6 +841,8 @@ def main():
     p.add_argument("--visual-transport", choices=VISUAL_TRANSPORTS, default=None,
                    help="transport visual: legacy-disk, stream-full hoac stream-roi")
     args = p.parse_args()
+    if args.device is not None:
+        os.environ["TEDIAPROS_OCR_DEVICE"] = args.device
 
     try:
         args.visual_transport = resolve_visual_transport(
@@ -806,7 +866,7 @@ def main():
 
     if args.probe:
         try:
-            tao_ocr()
+            probe_ocr = tao_ocr()
             emit({
                 "type": "probe",
                 "protocol": PROTOCOL,
@@ -815,7 +875,8 @@ def main():
                 "version": VERSION,
                 "features": FEATURES,
                 "implementation_fingerprint": IMPLEMENTATION_FINGERPRINT,
-                "gpu": gpu_that_su_chay(),
+                "gpu": gpu_that_su_chay(probe_ocr),
+                "ocr_provider": get_ocr_provider_report(probe_ocr),
             })
             return 0
         except Exception as e:

@@ -42,10 +42,10 @@
       }
     },
     "ocr-engine": {
-      "version": "1.2.0",
+      "version": "1.2.1",
       "entrypoint": "ocr-engine.exe",
       "protocol": "ocr-local/1",
-      "implementationFingerprint": "1e0c8bd778d9d97cf129c891e053b0421f5b43b4c3d0914e29e38c63b614c6a4",
+      "implementationFingerprint": "99020e272c77c9b90f46e587eb3b6d5891ebfa24e3d954cff6f66bb1cae34808",
       "capabilities": ["probe", "rapidocr", "directml-fallback", "visual-cues-v1", "visual-stream-full-v1", "visual-stream-roi-v1"],
       "source": {
         "provider": "TediaPros",

@@ -1,0 +1,30 @@
+{
+  "capturedAt": "2026-09-10T01:41:38.330Z",
+  "source": "Actual packaged-app child PID 19384; parent TediaPros PID 16276 unchanged",
+  "timelinePath": "C:/Users/PC/AppData/Local/Temp/tblao-autoshort-0376932e-5cce-4a15-a8be-f40e352f201c-157c8c48/ocr/ocr-1420c54b-3400-4cdd-a746-3f28840c6086/visual-cues.json",
+  "implementationFingerprint": "99020e272c77c9b90f46e587eb3b6d5891ebfa24e3d954cff6f66bb1cae34808",
+  "providers": {
+    "det": "DmlExecutionProvider",
+    "cls": "DmlExecutionProvider",
+    "rec": "DmlExecutionProvider"
+  },
+  "transport": "stream-roi",
+  "profile": "accurate",
+  "video": {
+    "width": 1080,
+    "height": 1920,
+    "durationSeconds": 127.166667,
+    "sampleFps": 8,
+    "frameCount": 1017,
+    "geometryFingerprint": "024544d6e5ce667b7b2a953ac6e3ebb2c90e2d55c1911ac970d6025e44082b6c"
+  },
+  "scanRegion": {
+    "x0": 0,
+    "y0": 1382,
+    "x1": 1080,
+    "y1": 1617
+  },
+  "segments": 1003,
+  "boxes": 1013,
+  "boundary": "OCR finished and wrote a real visual timeline. Full translation/TTS/render completion is not asserted."
+}

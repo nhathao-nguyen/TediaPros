@@ -4,11 +4,24 @@ import os
 import subprocess
 import sys
 import unittest
+import contextlib
+import io
+
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+import engine
 
 ENGINE = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "engine.py"))
 
 
 class EngineCliTests(unittest.TestCase):
+    def test_done_event_reports_runtime_version_without_changing_caller_payload(self):
+        payload = {"type": "done", "output": "fixture.srt", "count": 1}
+        output = io.StringIO()
+        with contextlib.redirect_stdout(output):
+            engine.emit(payload)
+        self.assertEqual(json.loads(output.getvalue())["version"], engine.VERSION)
+        self.assertNotIn("version", payload)
+
     def test_version_output_matches_contract(self):
         completed = subprocess.run(
             [sys.executable, ENGINE, "--version"],
@@ -23,7 +36,7 @@ class EngineCliTests(unittest.TestCase):
             "type": "version",
             "protocol": "ocr-local/1",
             "engine": "rapidocr",
-            "version": "1.2.0",
+            "version": "1.2.1",
             "features": [
                 "directml-fallback",
                 "probe",
@@ -32,7 +45,7 @@ class EngineCliTests(unittest.TestCase):
                 "visual-stream-full-v1",
                 "visual-stream-roi-v1",
             ],
-            "implementation_fingerprint": "1e0c8bd778d9d97cf129c891e053b0421f5b43b4c3d0914e29e38c63b614c6a4",
+            "implementation_fingerprint": "99020e272c77c9b90f46e587eb3b6d5891ebfa24e3d954cff6f66bb1cae34808",
         })
 
     def test_probe_output_matches_contract_when_mocked(self):
@@ -59,7 +72,7 @@ class EngineCliTests(unittest.TestCase):
         self.assertEqual(data["type"], "probe")
         self.assertEqual(data["protocol"], "ocr-local/1")
         self.assertEqual(data["engine"], "rapidocr")
-        self.assertEqual(data["version"], "1.2.0")
+        self.assertEqual(data["version"], "1.2.1")
         self.assertEqual(data["ready"], True)
         self.assertEqual(data["features"], [
             "directml-fallback",

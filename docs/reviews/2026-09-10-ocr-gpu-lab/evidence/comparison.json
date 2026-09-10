@@ -1,0 +1,126 @@
+{
+  "scope": "real AutoShort coordinator: OCR, timed mask, subtitle render; no translation/TTS/separation/title",
+  "inputVideo": {
+    "width": 1080,
+    "height": 1920,
+    "durationSeconds": 166.666667,
+    "sampleFps": 8,
+    "frameCount": 1333,
+    "geometryFingerprint": "024544d6e5ce667b7b2a953ac6e3ebb2c90e2d55c1911ac970d6025e44082b6c"
+  },
+  "results": [
+    {
+      "variant": "cpu-full-c",
+      "operation": "run",
+      "status": "done",
+      "wallMs": 694687.9798,
+      "stageMs": {
+        "ocr": 600832.9856,
+        "mask": 11843.823199999984,
+        "render": 81666.46250000002
+      },
+      "ocr": {
+        "engineVersion": "1.2.0-lab.1",
+        "transport": "stream-roi",
+        "fingerprint": "e063bfad91e9eb0010ee3df876ebfce7f3d6fc04ed32ef97860cbf49366080e6",
+        "providers": {
+          "det": "CPUExecutionProvider",
+          "cls": "CPUExecutionProvider",
+          "rec": "CPUExecutionProvider"
+        },
+        "visualSegments": 1225,
+        "boxSegments": 1247
+      },
+      "ocrCalls": 1,
+      "networkRequests": 0,
+      "abortToSettledMs": null,
+      "allocationsAfter": {
+        "local-cpu-heavy": 0,
+        "local-gpu-heavy": 0,
+        "server-inference": 0
+      },
+      "outputPath": "F:\\Son\\tool\\TediaPros\\.runner-staging\\ocr-gpu-lab-20260909-v1\\runs\\cpu-full-c\\output\\source-phude.mp4",
+      "outputBytes": 203283033,
+      "sourceSha256": "d063313c1c908ac1f760d48ec290f8a40a130ec0e916333910fefab0889ffeb6",
+      "ocrInterior": {
+        "sampleCount": 368,
+        "sampledMeanCpuPercent": 56.39609065588805,
+        "sampledPeakDeviceVramMiB": 895,
+        "sampledPeakTreeRssMiB": 652.3515625,
+        "window": "approximate interior of OCR, excluding 5 seconds at each edge"
+      },
+      "processElapsedSeconds": 694.9530000000013,
+      "sampledMeanCpuPercent": 54.831157772789794,
+      "sampledPeakCpuPercent": 75.24,
+      "sampledPeakTreeRssMiB": 988.26953125,
+      "sampledPeakDeviceVramMiB": 895,
+      "sampledPeakDeviceGpuPercent": 34,
+      "remainingChildPids": [],
+      "srtSha256": "0128d1b97ac26af08396b8123415df92555c7b7676b079b082acf9b6d2da64ab"
+    },
+    {
+      "variant": "dml-full-c",
+      "operation": "run",
+      "status": "done",
+      "wallMs": 286488.4326,
+      "stageMs": {
+        "ocr": 197230.6494,
+        "mask": 11719.141399999993,
+        "render": 77084.02180000002
+      },
+      "ocr": {
+        "engineVersion": "1.2.0-lab.1",
+        "transport": "stream-roi",
+        "fingerprint": "e063bfad91e9eb0010ee3df876ebfce7f3d6fc04ed32ef97860cbf49366080e6",
+        "providers": {
+          "det": "DmlExecutionProvider",
+          "cls": "DmlExecutionProvider",
+          "rec": "DmlExecutionProvider"
+        },
+        "visualSegments": 1225,
+        "boxSegments": 1247
+      },
+      "ocrCalls": 1,
+      "networkRequests": 0,
+      "abortToSettledMs": null,
+      "allocationsAfter": {
+        "local-cpu-heavy": 0,
+        "local-gpu-heavy": 0,
+        "server-inference": 0
+      },
+      "outputPath": "F:\\Son\\tool\\TediaPros\\.runner-staging\\ocr-gpu-lab-20260909-v1\\runs\\dml-full-c\\output\\source-phude.mp4",
+      "outputBytes": 203283033,
+      "sourceSha256": "d063313c1c908ac1f760d48ec290f8a40a130ec0e916333910fefab0889ffeb6",
+      "ocrInterior": {
+        "sampleCount": 118,
+        "sampledMeanCpuPercent": 12.62424158822893,
+        "sampledPeakDeviceVramMiB": 1120,
+        "sampledPeakTreeRssMiB": 786.89453125,
+        "window": "approximate interior of OCR, excluding 5 seconds at each edge"
+      },
+      "processElapsedSeconds": 286.82800000000134,
+      "sampledMeanCpuPercent": 23.735012536638752,
+      "sampledPeakCpuPercent": 75.78,
+      "sampledPeakTreeRssMiB": 986.12109375,
+      "sampledPeakDeviceVramMiB": 1120,
+      "sampledPeakDeviceGpuPercent": 40,
+      "remainingChildPids": [],
+      "srtSha256": "0128d1b97ac26af08396b8123415df92555c7b7676b079b082acf9b6d2da64ab"
+    }
+  ],
+  "ocrSpeedup": 3.04634694165338,
+  "pipelineSpeedup": 2.4248377970985486,
+  "pipelineTimeReductionPercent": 58.760128153868486,
+  "sourceSrtIdentical": true,
+  "segmentCounts": [
+    1225,
+    1225
+  ],
+  "changedSegmentsWithoutConfidence": 0,
+  "maskFrameCounts": [
+    1335,
+    1335
+  ],
+  "identicalMaskFrames": 1335,
+  "changedSegments": []
+}

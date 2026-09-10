@@ -1,0 +1,164 @@
+{
+  "passed": true,
+  "at": "2026-09-10T01:36:23.838Z",
+  "executableSha256": "fc91f85653d6bd84819338d420dcd08aa646d5fe1867d2dfcddde658a98eb4da",
+  "implementationFingerprint": "99020e272c77c9b90f46e587eb3b6d5891ebfa24e3d954cff6f66bb1cae34808",
+  "pythonTests": 46,
+  "localRuntimeTests": 98,
+  "testSuites": 8,
+  "typecheck": "passed (see typecheck.log)",
+  "artifactFiles": 551,
+  "artifactBytes": 280943195,
+  "sourceAndStagedTreeSha256Matched": true,
+  "smokeSrtSha256": "1e5a4a81f0ab15bce99bce250af847af453d7b5b4c57a51db17557ba72bbd611",
+  "smokeMp4Sha256": "e7db04b062fc900a5524fc3cfa5f9829e08873d7a9f4efddd2bf5371c9fcb395",
+  "maskFramesExact": 26,
+  "videoDecode": "passed -xerror",
+  "cases": {
+    "auto-final-smoke": {
+      "variant": "auto-final-smoke",
+      "operation": "smoke",
+      "status": "done",
+      "wallMs": 17055.2119,
+      "stageMs": {
+        "ocr": 9982.097600000001,
+        "mask": 531.7014999999992,
+        "render": 6398.010399999999
+      },
+      "ocr": {
+        "engineVersion": "1.2.1",
+        "transport": "stream-roi",
+        "fingerprint": "99020e272c77c9b90f46e587eb3b6d5891ebfa24e3d954cff6f66bb1cae34808",
+        "providers": {
+          "det": "DmlExecutionProvider",
+          "cls": "DmlExecutionProvider",
+          "rec": "DmlExecutionProvider"
+        },
+        "visualSegments": 14,
+        "boxSegments": 14
+      },
+      "ocrCalls": 1,
+      "networkRequests": 0,
+      "abortToSettledMs": null,
+      "allocationsAfter": {
+        "local-cpu-heavy": 0,
+        "local-gpu-heavy": 0,
+        "server-inference": 0
+      },
+      "outputPath": "F:\\Son\\tool\\TediaPros\\.runner-staging\\ocr-gpu-runtime-20260910\\runs\\auto-final-smoke\\output\\source-smoke-phude.mp4",
+      "outputBytes": 1901319,
+      "sourceSha256": "45253e32371787c6171f5afd4db4c52a314fc5f159c3d418cf0a7bf73ea1e48d"
+    },
+    "cpu-final-smoke": {
+      "variant": "cpu-final-smoke",
+      "operation": "smoke",
+      "status": "done",
+      "wallMs": 20330.6697,
+      "stageMs": {
+        "ocr": 15453.960200000001,
+        "mask": 443.08880000000136,
+        "render": 3980.5252
+      },
+      "ocr": {
+        "engineVersion": "1.2.1",
+        "transport": "stream-roi",
+        "fingerprint": "99020e272c77c9b90f46e587eb3b6d5891ebfa24e3d954cff6f66bb1cae34808",
+        "providers": {
+          "det": "CPUExecutionProvider",
+          "cls": "CPUExecutionProvider",
+          "rec": "CPUExecutionProvider"
+        },
+        "visualSegments": 14,
+        "boxSegments": 14
+      },
+      "ocrCalls": 1,
+      "networkRequests": 0,
+      "abortToSettledMs": null,
+      "allocationsAfter": {
+        "local-cpu-heavy": 0,
+        "local-gpu-heavy": 0,
+        "server-inference": 0
+      },
+      "outputPath": "F:\\Son\\tool\\TediaPros\\.runner-staging\\ocr-gpu-runtime-20260910\\runs\\cpu-final-smoke\\output\\source-smoke-phude.mp4",
+      "outputBytes": 1901319,
+      "sourceSha256": "45253e32371787c6171f5afd4db4c52a314fc5f159c3d418cf0a7bf73ea1e48d"
+    },
+    "auto-final-cancel": {
+      "variant": "auto-final-cancel",
+      "operation": "cancel",
+      "status": "cancelled",
+      "error": "Đã hủy tác vụ",
+      "wallMs": 5641.4668,
+      "stageMs": {
+        "ocr": 5385.9053
+      },
+      "ocr": null,
+      "ocrCalls": 1,
+      "networkRequests": 0,
+      "abortToSettledMs": 321.1894000000002,
+      "allocationsAfter": {
+        "local-cpu-heavy": 0,
+        "local-gpu-heavy": 0,
+        "server-inference": 0
+      },
+      "outputBytes": 0,
+      "sourceSha256": "d063313c1c908ac1f760d48ec290f8a40a130ec0e916333910fefab0889ffeb6"
+    },
+    "invalid-final-fail-b": {
+      "variant": "invalid-final-fail-b",
+      "operation": "fail",
+      "status": "error",
+      "error": "Error: OCR engine thất bại: OCR device must be auto, cpu or dml",
+      "wallMs": 574.605,
+      "stageMs": {
+        "ocr": 414.45129999999995
+      },
+      "ocr": null,
+      "ocrCalls": 1,
+      "networkRequests": 0,
+      "abortToSettledMs": null,
+      "allocationsAfter": {
+        "local-cpu-heavy": 0,
+        "local-gpu-heavy": 0,
+        "server-inference": 0
+      },
+      "outputBytes": 0,
+      "sourceSha256": "d063313c1c908ac1f760d48ec290f8a40a130ec0e916333910fefab0889ffeb6"
+    },
+    "auto-final-rerun": {
+      "variant": "auto-final-rerun",
+      "operation": "smoke",
+      "status": "done",
+      "wallMs": 11234.8757,
+      "stageMs": {
+        "ocr": 6644.161,
+        "mask": 434.16780000000017,
+        "render": 4054.8459000000003
+      },
+      "ocr": {
+        "engineVersion": "1.2.1",
+        "transport": "stream-roi",
+        "fingerprint": "99020e272c77c9b90f46e587eb3b6d5891ebfa24e3d954cff6f66bb1cae34808",
+        "providers": {
+          "det": "DmlExecutionProvider",
+          "cls": "DmlExecutionProvider",
+          "rec": "DmlExecutionProvider"
+        },
+        "visualSegments": 14,
+        "boxSegments": 14
+      },
+      "ocrCalls": 1,
+      "networkRequests": 0,
+      "abortToSettledMs": null,
+      "allocationsAfter": {
+        "local-cpu-heavy": 0,
+        "local-gpu-heavy": 0,
+        "server-inference": 0
+      },
+      "outputPath": "F:\\Son\\tool\\TediaPros\\.runner-staging\\ocr-gpu-runtime-20260910\\runs\\auto-final-rerun\\output\\source-smoke-phude.mp4",
+      "outputBytes": 1901319,
+      "sourceSha256": "45253e32371787c6171f5afd4db4c52a314fc5f159c3d418cf0a7bf73ea1e48d"
+    }
+  },
+  "boundary": "Private real main-path harness; no renderer click or full AI server workflow. Active user batch was not stopped. Independent review unavailable due to quota; main-agent scoped diff review completed."
+}

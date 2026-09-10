@@ -30,6 +30,11 @@ Nếu xử lý ngây thơ:
    - *Hard Ceiling:* `1.80x` (Mức tạm thời theo yêu cầu người dùng ngày 2026-09-08).
 2. **Khoảng đệm bảo vệ (Protected Silence Gap):**
    - Duy trì tối thiểu `0.50s` khoảng lặng tự nhiên trước câu tiếp theo để tai người kịp nghỉ ngơi và tiếp nhận thông tin.
+   - Phân biệt với **guard cuối video `0.12s`**: khi không còn cue tiếp theo,
+     cửa sổ thoại kết thúc tại `videoDuration - 0.12`. Translation budget và
+     measured synthesis cùng dùng `deriveDubbingWindow()`, không trừ thêm
+     `0.50s` ở EOF. Fixture kiểm thử overflow phải tính từ cửa sổ này, không
+     nhầm duration nguồn của cue với toàn bộ thời gian còn được phép đọc.
 3. **Cắt tỉa khoảng lặng vật lý (Calibrated Silence Trimming):**
    - Sử dụng bộ lọc phát hiện âm thanh ở ngưỡng `-50 dB` với độ trễ bắt đầu `30ms` và độ trễ kết thúc `100ms` để loại bỏ phần thừa của tệp TTS sinh ra mà không làm mòn âm đầu/âm cuối.
 4. **Cấp khe thoại đo được thay vì nuốt chữ (Measured Speech Slot vs. Silent Drop):**
