@@ -1,0 +1,329 @@
+{
+  "drag": [
+    {
+      "zoom": 100,
+      "pointerDy": -60,
+      "actualDy": -60.09375,
+      "hit": "rbox rbox-sub ",
+      "before": {
+        "x": 89.96875,
+        "y": 473.296875,
+        "width": 622.0625,
+        "height": 49.6875,
+        "top": 473.296875,
+        "right": 712.03125,
+        "bottom": 522.984375,
+        "left": 89.96875
+      },
+      "after": {
+        "x": 89.96875,
+        "y": 413.203125,
+        "width": 622.0625,
+        "height": 49.6875,
+        "top": 413.203125,
+        "right": 712.03125,
+        "bottom": 462.890625,
+        "left": 89.96875
+      }
+    },
+    {
+      "zoom": 120,
+      "pointerDy": -60,
+      "actualDy": -49.6875,
+      "hit": "rbox rbox-sub ",
+      "before": {
+        "x": 89.96875,
+        "y": 428.203125,
+        "width": 622.0625,
+        "height": 49.6875,
+        "top": 428.203125,
+        "right": 712.03125,
+        "bottom": 477.890625,
+        "left": 89.96875
+      },
+      "after": {
+        "x": 89.96875,
+        "y": 378.515625,
+        "width": 622.0625,
+        "height": 49.6875,
+        "top": 378.515625,
+        "right": 712.03125,
+        "bottom": 428.203125,
+        "left": 89.96875
+      }
+    }
+  ],
+  "keyboard": [
+    {
+      "label": "Zoom",
+      "desired": "110",
+      "steps": [
+        {
+          "char": "1",
+          "displayed": "100"
+        },
+        {
+          "char": "1",
+          "displayed": "120"
+        },
+        {
+          "char": "0",
+          "displayed": "120"
+        }
+      ],
+      "stored": {
+        "zoom": 120,
+        "brightness": 0,
+        "saturation": 100,
+        "contrast": 100
+      }
+    },
+    {
+      "label": "Độ sáng",
+      "desired": "-5",
+      "steps": [
+        {
+          "char": "-",
+          "displayed": "0"
+        },
+        {
+          "char": "5",
+          "displayed": "05"
+        }
+      ],
+      "stored": {
+        "zoom": 120,
+        "brightness": 5,
+        "saturation": 100,
+        "contrast": 100
+      }
+    },
+    {
+      "label": "Tương phản",
+      "desired": "103",
+      "steps": [
+        {
+          "char": "1",
+          "displayed": "50"
+        },
+        {
+          "char": "0",
+          "displayed": "150"
+        },
+        {
+          "char": "3",
+          "displayed": "150"
+        }
+      ],
+      "stored": {
+        "zoom": 120,
+        "brightness": 5,
+        "saturation": 100,
+        "contrast": 150
+      }
+    }
+  ],
+  "layout": [
+    {
+      "width": 1440,
+      "panel": {
+        "x": 583.34375,
+        "y": 74,
+        "width": 360,
+        "height": 262,
+        "top": 74,
+        "right": 943.34375,
+        "bottom": 336,
+        "left": 583.34375
+      },
+      "parent": {
+        "x": 18,
+        "y": 14,
+        "width": 1026,
+        "height": 660,
+        "top": 14,
+        "right": 1044,
+        "bottom": 674,
+        "left": 18
+      },
+      "viewport": 1424,
+      "clipped": false
+    },
+    {
+      "width": 1280,
+      "panel": {
+        "x": 423.34375,
+        "y": 74,
+        "width": 360,
+        "height": 262,
+        "top": 74,
+        "right": 783.34375,
+        "bottom": 336,
+        "left": 423.34375
+      },
+      "parent": {
+        "x": 18,
+        "y": 14,
+        "width": 866,
+        "height": 660,
+        "top": 14,
+        "right": 884,
+        "bottom": 674,
+        "left": 18
+      },
+      "viewport": 1264,
+      "clipped": false
+    },
+    {
+      "width": 1180,
+      "panel": {
+        "x": 163.109375,
+        "y": 101,
+        "width": 360,
+        "height": 262,
+        "top": 101,
+        "right": 523.109375,
+        "bottom": 363,
+        "left": 163.109375
+      },
+      "parent": {
+        "x": 18,
+        "y": 14,
+        "width": 766,
+        "height": 660,
+        "top": 14,
+        "right": 784,
+        "bottom": 674,
+        "left": 18
+      },
+      "viewport": 1164,
+      "clipped": false
+    },
+    {
+      "width": 1100,
+      "panel": {
+        "x": 163.109375,
+        "y": 101,
+        "width": 360,
+        "height": 262,
+        "top": 101,
+        "right": 523.109375,
+        "bottom": 363,
+        "left": 163.109375
+      },
+      "parent": {
+        "x": 18,
+        "y": 14,
+        "width": 686,
+        "height": 660,
+        "top": 14,
+        "right": 704,
+        "bottom": 674,
+        "left": 18
+      },
+      "viewport": 1084,
+      "clipped": false
+    },
+    {
+      "width": 1024,
+      "panel": {
+        "x": 163.109375,
+        "y": 101,
+        "width": 360,
+        "height": 262,
+        "top": 101,
+        "right": 523.109375,
+        "bottom": 363,
+        "left": 163.109375
+      },
+      "parent": {
+        "x": 18,
+        "y": 14,
+        "width": 610,
+        "height": 660,
+        "top": 14,
+        "right": 628,
+        "bottom": 674,
+        "left": 18
+      },
+      "viewport": 1008,
+      "clipped": false
+    },
+    {
+      "width": 960,
+      "panel": {
+        "x": 257.734375,
+        "y": 101,
+        "width": 360,
+        "height": 262,
+        "top": 101,
+        "right": 617.734375,
+        "bottom": 363,
+        "left": 257.734375
+      },
+      "parent": {
+        "x": 18,
+        "y": 14,
+        "width": 546,
+        "height": 660,
+        "top": 14,
+        "right": 564,
+        "bottom": 674,
+        "left": 18
+      },
+      "viewport": 944,
+      "clipped": true
+    },
+    {
+      "width": 900,
+      "panel": {
+        "x": 197.734375,
+        "y": 101,
+        "width": 360,
+        "height": 262,
+        "top": 101,
+        "right": 557.734375,
+        "bottom": 363,
+        "left": 197.734375
+      },
+      "parent": {
+        "x": 18,
+        "y": 14,
+        "width": 486,
+        "height": 653,
+        "top": 14,
+        "right": 504,
+        "bottom": 667,
+        "left": 18
+      },
+      "viewport": 884,
+      "clipped": true
+    },
+    {
+      "width": 800,
+      "panel": {
+        "x": 289.734375,
+        "y": 101,
+        "width": 360,
+        "height": 262,
+        "top": 101,
+        "right": 649.734375,
+        "bottom": 363,
+        "left": 289.734375
+      },
+      "parent": {
+        "x": 18,
+        "y": 14,
+        "width": 386,
+        "height": 541,
+        "top": 14,
+        "right": 404,
+        "bottom": 555,
+        "left": 18
+      },
+      "viewport": 784,
+      "clipped": true
+    }
+  ],
+  "errors": []
+}

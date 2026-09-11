@@ -1,0 +1,15 @@
+?? .ai/
+?? docs/adr/
+?? docs/architecture.md
+?? docs/domain.md
+?? docs/project-atlas/
+?? out-codex-check-20260906-budget-final/
+?? out-codex-check-20260906-no-request-cap/
+?? out-codex-check-20260906-translation/
+?? out-codex-check-20260906/
+?? out-codex-check/
+?? src/renderer/out-codex-check-20260906-budget-final/
+?? src/renderer/out-codex-check-20260906-no-request-cap/
+?? src/renderer/out-codex-check-20260906-translation/
+?? src/renderer/out-codex-check-20260906/
+?? src/renderer/out-codex-check/

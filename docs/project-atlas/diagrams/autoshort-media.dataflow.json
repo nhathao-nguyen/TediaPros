@@ -1,0 +1,257 @@
+{
+  "schema_version": 1,
+  "diagram_type": "dataflow",
+  "meta": {
+    "title": "Dong Chay Du Lieu Da Phuong Tien AutoShort (Data Flow)",
+    "output": "autoshort-media.dataflow.html",
+    "viewBox": [
+      1080,
+      760
+    ],
+    "animation": "trace",
+    "quality_profile": "showcase",
+    "views": [
+      {
+        "id": "media-pipeline",
+        "label": "Luong du lieu am thanh & phu de",
+        "focus": [
+          "input_vid",
+          "audio_wav",
+          "whisper_asr",
+          "dub_wav",
+          "final_vid"
+        ],
+        "note": "Tu video goc phan tach audio, boc bang va ghep thanh pham."
+      },
+      {
+        "id": "vision-path",
+        "label": "Luong thi giac & Phuc hoi",
+        "focus": [
+          "input_vid",
+          "frames_rgb",
+          "ocr_boxes",
+          "mask_rgb",
+          "final_vid"
+        ],
+        "note": "Trang thai mat na Planar RGB de blur phu de goc."
+      }
+    ]
+  },
+  "stages": [
+    {
+      "label": "Nguon Vao"
+    },
+    {
+      "label": "Tach Lop"
+    },
+    {
+      "label": "Trich Xuat AI"
+    },
+    {
+      "label": "Bien Doi Media"
+    },
+    {
+      "label": "Thanh Pham"
+    }
+  ],
+  "nodes": [
+    {
+      "id": "input_vid",
+      "type": "frontend",
+      "label": "Video Goc",
+      "sublabel": "MP4/MOV",
+      "stage": 0,
+      "row": 2,
+      "tag": "source"
+    },
+    {
+      "id": "audio_wav",
+      "type": "backend",
+      "label": "Audio 16k",
+      "sublabel": "PCM Mono",
+      "stage": 1,
+      "row": 0,
+      "tag": "demux"
+    },
+    {
+      "id": "frames_rgb",
+      "type": "backend",
+      "label": "Frames RGB",
+      "sublabel": "8 FPS",
+      "stage": 1,
+      "row": 4,
+      "tag": "sample"
+    },
+    {
+      "id": "whisper_asr",
+      "type": "messagebus",
+      "label": "Whisper ASR",
+      "sublabel": "Speech Tokens",
+      "stage": 2,
+      "row": 0,
+      "tag": "offline"
+    },
+    {
+      "id": "ocr_boxes",
+      "type": "messagebus",
+      "label": "OCR Vision",
+      "sublabel": "Bounding Box",
+      "stage": 2,
+      "row": 4,
+      "tag": "detect"
+    },
+    {
+      "id": "dub_wav",
+      "type": "cloud",
+      "label": "Audio TTS",
+      "sublabel": "1.10x-1.45x",
+      "stage": 3,
+      "row": 0,
+      "tag": "dub"
+    },
+    {
+      "id": "ass_sub",
+      "type": "database",
+      "label": "Phu De ASS",
+      "sublabel": "Deterministic",
+      "stage": 3,
+      "row": 2,
+      "tag": "layout"
+    },
+    {
+      "id": "mask_rgb",
+      "type": "security",
+      "label": "Mask RGB",
+      "sublabel": "Planar Blur",
+      "stage": 3,
+      "row": 4,
+      "tag": "mask"
+    },
+    {
+      "id": "final_vid",
+      "type": "frontend",
+      "label": "Video Final",
+      "sublabel": "Hardsub & Dub",
+      "stage": 4,
+      "row": 2,
+      "tag": "output"
+    }
+  ],
+  "flows": [
+    {
+      "id": "f_demux",
+      "from": "input_vid",
+      "to": "audio_wav",
+      "label": "Demux Audio",
+      "classification": "pcm",
+      "variant": "emphasis"
+    },
+    {
+      "id": "f_sample",
+      "from": "input_vid",
+      "to": "frames_rgb",
+      "label": "Sample Video",
+      "classification": "video",
+      "variant": "default"
+    },
+    {
+      "id": "f_asr",
+      "from": "audio_wav",
+      "to": "whisper_asr",
+      "label": "Inference",
+      "classification": "speech",
+      "variant": "emphasis",
+      "route": "straight"
+    },
+    {
+      "id": "f_ocr",
+      "from": "frames_rgb",
+      "to": "ocr_boxes",
+      "label": "Detect OCR",
+      "classification": "box",
+      "variant": "default",
+      "route": "straight"
+    },
+    {
+      "id": "f_tts",
+      "from": "whisper_asr",
+      "to": "dub_wav",
+      "label": "TTS Voice",
+      "classification": "synth",
+      "variant": "emphasis",
+      "route": "straight",
+      "labelAt": [
+        690,
+        200
+      ]
+    },
+    {
+      "id": "f_sub_gen",
+      "from": "whisper_asr",
+      "to": "ass_sub",
+      "label": "ASS Subtitle",
+      "classification": "geom",
+      "variant": "default",
+      "labelAt": [
+        655,
+        270
+      ]
+    },
+    {
+      "id": "f_mask",
+      "from": "ocr_boxes",
+      "to": "mask_rgb",
+      "label": "Planar Mask",
+      "classification": "alpha",
+      "variant": "security",
+      "route": "straight"
+    },
+    {
+      "id": "f_dub_mix",
+      "from": "dub_wav",
+      "to": "final_vid",
+      "label": "Mux Dub",
+      "classification": "mux",
+      "variant": "emphasis"
+    },
+    {
+      "id": "f_sub_burn",
+      "from": "ass_sub",
+      "to": "final_vid",
+      "label": "Hardsub",
+      "classification": "burn",
+      "variant": "emphasis",
+      "route": "straight",
+      "labelAt": [
+        755,
+        428
+      ]
+    },
+    {
+      "id": "f_blur_merge",
+      "from": "mask_rgb",
+      "to": "final_vid",
+      "label": "RGB Merge",
+      "classification": "merge",
+      "variant": "security"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "emerald",
+      "title": "3 Luong Xu Ly Song Song",
+      "items": [
+        "Audio (Row 0), Subtitle (Row 2), Vision Blur (Row 4) tach biet",
+        "FFmpeg hoi tu ca 3 luong thanh pham tai Stage cuoi"
+      ]
+    },
+    {
+      "dot": "cyan",
+      "title": "Bao Toan Chat Luong Mau Sac",
+      "items": [
+        "Mat na Planar RGB chong lem kenh mau YUV 4:2:0",
+        "ASS geometry tinh toan wrap text theo chieu rong thuc te"
+      ]
+    }
+  ]
+}

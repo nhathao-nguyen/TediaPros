@@ -1,0 +1,24 @@
+{
+  "schemaVersion": 1,
+  "ok": true,
+  "command": "deliver",
+  "type": "dataflow",
+  "input": "f:\\Son\\tool\\TediaPros\\docs\\project-atlas\\diagrams\\autoshort-media.dataflow.json",
+  "output": "f:\\Son\\tool\\TediaPros\\docs\\project-atlas\\diagrams\\autoshort-media.dataflow.html",
+  "specification": {
+    "sha256": "922845593f187cca291128343e66a955b09359f3e8b1b14497a9402d5dc753c2",
+    "bytes": 5631
+  },
+  "artifact": {
+    "sha256": "f36fc9797eee379d06a34884351c1a24305db37d524f5594ec0b0d4fcabd7503",
+    "bytes": 718222
+  },
+  "validation": {
+    "checksPassed": 9,
+    "checkCount": 9,
+    "compositionProfile": "showcase",
+    "compositionStatus": "pass",
+    "errors": 0,
+    "warnings": 0
+  }
+}

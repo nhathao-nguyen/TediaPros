@@ -1,0 +1,22 @@
+{
+  "verifiedAt": "2026-09-08T08:27:20.0030474+07:00",
+  "url": "http://localhost:5173/",
+  "httpStatus": 200,
+  "windows": [
+    {
+      "pid": 16440,
+      "parentPid": 21272,
+      "title": "TediaPros",
+      "responding": true,
+      "path": "F:\\Son\\tool\\TediaPros\\.worktrees\\codex-autoshort-optimization\\node_modules\\electron\\dist\\electron.exe",
+      "commandLine": "F:\\Son\\tool\\TediaPros\\.worktrees\\codex-autoshort-optimization\\node_modules\\electron\\dist\\electron.exe ."
+    }
+  ],
+  "rendererPids": [
+    19692
+  ],
+  "rendererParentPids": [
+    16440
+  ],
+  "worktree": "F:\\Son\\tool\\TediaPros\\.worktrees\\codex-autoshort-optimization"
+}

@@ -83,8 +83,8 @@ test('local production adapter is provider-neutral and uses the shared bounded o
     cues: [{ id: 'cue-0', sourceIndex: 0, start: 0, end: 1, groupId: 'g', text: 'Xin chào' }],
     contextBefore: [], contextAfter: [], glossary: []
   }, adapter, new AbortController().signal)
-  assert.equal(result.assessment.disposition, 'with-warnings')
-  assert.ok(result.assessment.issues.every((issue) => issue.severity === 'warning'))
+  assert.equal(result.assessment.disposition, 'validated')
+  assert.equal(result.assessment.issues.length, 0)
   assert.equal(calls, 1)
 })
 
@@ -117,7 +117,7 @@ test('AutoShort translateStrict uses canonical IDs and publishes only after full
     calls++
     const body = JSON.parse(String(init?.body))
     const ids = [...String(body.messages[1].content).matchAll(/^\[([^\]]+)\]/gmu)].map((match) => match[1])
-    return contentReply(ids.map((id) => `[${id}] translated ${id}`).join('\n'))
+    return contentReply(ids.map((id) => `[${id}] ${id.startsWith('cue-0-') ? 'Hello' : 'Goodbye'}`).join('\n'))
   }
   const config = {
     translateProvider: 'local',
@@ -128,7 +128,7 @@ test('AutoShort translateStrict uses canonical IDs and publishes only after full
   await translateStrict(config, input, output, () => {}, new AbortController().signal, 'vi')
   assert.equal(calls, 1)
   const translated = parseSrt(await readFile(output, 'utf8'))
-  assert.deepEqual(translated.map((cue) => cue.text), ['translated cue-0-0', 'translated cue-1-2000'])
+  assert.deepEqual(translated.map((cue) => cue.text), ['Hello', 'Goodbye'])
   assert.deepEqual(translated.map((cue) => cue.time), ['00:00:00,000 --> 00:00:01,000', '00:00:02,000 --> 00:00:03,000'])
 }))
 
@@ -178,7 +178,7 @@ test('AutoShort strict path blocks a strong cross-script echo with structured ev
         value.translationAssessment.issues?.some((issue) => issue.code === 'language-suspect' && issue.severity === 'error') === true
     }
   )
-  assert.equal(calls, 1)
+  assert.equal(calls, 2)
 }))
 
 test('translation retry rehydrates its checkpoint after a main-process restart', async () => fixture(async (_input, _output) => {

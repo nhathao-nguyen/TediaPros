@@ -1,0 +1,38 @@
+[
+  {
+    "mode": "editor",
+    "passed": true,
+    "shape": {
+      "ratio": 0.5615212527964206,
+      "source": 1.7791560527190164,
+      "top": 152.953125,
+      "left": 0,
+      "same": true,
+      "time": 0.6
+    },
+    "caption": null,
+    "seek": true,
+    "playPause": true,
+    "resize": true
+  },
+  {
+    "mode": "autoshort",
+    "passed": true,
+    "shape": {
+      "ratio": 0.5613026819923371,
+      "source": 1.7784522003034902,
+      "top": 178.609375,
+      "left": 0,
+      "same": true,
+      "time": 0.6
+    },
+    "caption": {
+      "font": 9.15312,
+      "width": 66.65625,
+      "height": 10.984375
+    },
+    "seek": true,
+    "playPause": true,
+    "resize": true
+  }
+]

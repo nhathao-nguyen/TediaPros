@@ -1,4 +1,4 @@
-import type { CSSProperties, JSX } from 'react'
+import type { JSX } from 'react'
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import {
   DEFAULT_AI_SERVER_URL,
@@ -24,8 +24,11 @@ import {
   type SubtitleDisplayStyle,
   type SubtitleLayoutProfile,
   type TtsModelInfo,
+  type VideoSeoOptions,
+  type VideoAdjustments,
   type WhisperDevice
 } from '../../../shared/types'
+import { DEFAULT_VIDEO_SEO_OPTIONS } from '../../../shared/videoSeo'
 import { translationGuidanceError, type TranslationGuidance } from '../../../shared/translation'
 import { isAutomaticOcrProcessing, isSttnRemoval, normalizeAutoShortBlurMode, normalizeAutoShortOcrBlurProfile } from '../../../shared/autoShortOcrBlur'
 import { createAutoShortMusicAssignments } from '../../../shared/autoShortBackgroundMusic'
@@ -33,11 +36,17 @@ import { localMediaSource } from '../lib/localMedia'
 import { useTabOutputDir } from '../lib/outputDir'
 import { usePersistedState } from '../lib/persist'
 import { fitVideoInBounds } from '../lib/videoGeometry'
+import { portraitFrame } from '../../../shared/portraitFrame'
+import { PortraitBlurButton, PortraitFramePreview } from './PortraitFramePreview'
+import VideoAdjustmentsControl from './VideoAdjustmentsControl'
+import { DEFAULT_VIDEO_ADJUSTMENTS, normalizeVideoAdjustments, videoAdjustmentPreviewStyle } from '../../../shared/videoAdjustments'
 import { useVideoTransport } from '../hooks/useVideoTransport'
 import { runLatestAutoShortMusicFolderRequest } from '../lib/latestAutoShortMusicFolderRequest'
 import { createAutoShortProgressCoalescer } from '../lib/autoshortProgressCoalescer'
 import RegionBox, { type Region } from './RegionBox'
 import VideoTitleSettings from './VideoTitleSettings'
+import GeminiKeys from './GeminiKeys'
+import VideoSeoResult from './VideoSeoResult'
 
 const PALETTE = [
   '#e8a13c',
@@ -164,6 +173,22 @@ export default function AutoShort(): JSX.Element {
   const previewPanelRef = useRef<HTMLElement | null>(null)
 
   const [videoH, setVideoH] = useState(0)
+  const [portraitBlur, setPortraitBlur] = usePersistedState('tblao.autoshort.portraitBlur', false)
+  const [videoAdjustments, setVideoAdjustments] = usePersistedState<VideoAdjustments>(
+    'tblao.autoshort.videoAdjustments.v1',
+    { ...DEFAULT_VIDEO_ADJUSTMENTS }
+  )
+  const normalizedVideoAdjustments = useMemo(() => {
+    try {
+      return normalizeVideoAdjustments(videoAdjustments)
+    } catch {
+      return { ...DEFAULT_VIDEO_ADJUSTMENTS }
+    }
+  }, [videoAdjustments])
+  const adjustmentPreviewStyle = useMemo(
+    () => videoAdjustmentPreviewStyle(normalizedVideoAdjustments),
+    [normalizedVideoAdjustments]
+  )
   const [videoW, setVideoW] = useState(0)
   const [videoDuration, setVideoDuration] = useState(0)
   const [currentTime, setCurrentTime] = useState(0)
@@ -216,8 +241,10 @@ export default function AutoShort(): JSX.Element {
   const [whisperLanguage, setWhisperLanguage] = usePersistedState('tblao.autoshort.whisperLanguage', 'auto')
   const [translateTarget, setTranslateTarget] = usePersistedState('tblao.autoshort.transLang', 'none')
   const [titleEnabled, setTitleEnabled] = usePersistedState('tblao.autoshort.videoTitle', false)
-  const [titleProvider] = usePersistedState<DichProvider>('tblao.videoTitle.provider', 'gemini')
-  const [titleServerUrl] = usePersistedState('tblao.videoTitle.serverUrl', DEFAULT_AI_SERVER_URL)
+  const [titleProvider, setTitleProvider] = usePersistedState<DichProvider>('tblao.videoTitle.provider', 'gemini')
+  const [titleServerUrl, setTitleServerUrl] = usePersistedState('tblao.videoTitle.serverUrl', DEFAULT_AI_SERVER_URL)
+  const [titleLanguage, setTitleLanguage] = usePersistedState('tblao.autoshort.videoSeoLanguage', 'auto')
+  const [titleSeoOptions, setTitleSeoOptions] = usePersistedState<VideoSeoOptions>('tblao.videoSeo.options.v1', { ...DEFAULT_VIDEO_SEO_OPTIONS })
   const [translateProvider, setTranslateProvider] = usePersistedState<DichProvider>(
     'tblao.autoshort.transProvider',
     'local'
@@ -457,6 +484,7 @@ export default function AutoShort(): JSX.Element {
         title: result.title,
         titlePath: result.titlePath,
         titleError: result.titleError,
+        seoMetadata: result.seoMetadata,
         translationAssessment: result.translationAssessment,
         translationIdentity: result.translationIdentity
       } : item))
@@ -468,7 +496,7 @@ export default function AutoShort(): JSX.Element {
       total: event.totalCount,
       message: event.cancelledCount > 0
         ? `Đã dừng: ${event.completedCount}/${event.totalCount} video hoàn tất`
-        : `Đã xử lý ${event.completedCount}/${event.totalCount} video${event.warningCount ? ` · ${event.warningCount} cảnh báo` : ''}${event.needsReviewCount ? ` · ${event.needsReviewCount} cần kiểm tra` : ''}`
+        : `Đã xử lý ${event.completedCount}/${event.totalCount} video${event.needsReviewCount ? ` · ${event.needsReviewCount} cần kiểm tra` : ''}`
     })
     setIsRunning(false)
     setActiveJobId(null)
@@ -661,13 +689,14 @@ export default function AutoShort(): JSX.Element {
 
     if (availableW <= 0 || availableH <= 0) return
 
-    const fitted = fitVideoInBounds(videoW, videoH, availableW, availableH)
+    const frame = portraitBlur ? portraitFrame(videoW, videoH) : null
+    const fitted = fitVideoInBounds(frame?.width ?? videoW, frame?.height ?? videoH, availableW, availableH)
     if (fitted) {
       setPreviewStageSize(fitted)
-      setBoxW(fitted.width)
-      setBoxH(fitted.height)
+      setBoxW(frame ? fitted.width * frame.contentWidth / frame.width : fitted.width)
+      setBoxH(frame ? fitted.height * frame.contentHeight / frame.height : fitted.height)
     }
-  }, [videoH, videoW])
+  }, [videoH, videoW, portraitBlur])
 
   useLayoutEffect(() => {
     const shell = stageShellRef.current
@@ -946,6 +975,7 @@ export default function AutoShort(): JSX.Element {
       title: undefined,
       titlePath: undefined,
       titleError: undefined,
+      seoMetadata: undefined,
       translationAssessment: undefined,
       translationIdentity: undefined,
       currentStepMessage: 'Đang trong hàng đợi…'
@@ -980,6 +1010,8 @@ export default function AutoShort(): JSX.Element {
     })
 
     const config: AutoShortConfig = {
+      portraitBlur,
+      videoAdjustments: normalizedVideoAdjustments,
       subtitleMethod,
       whisperModel: selectedWhisperModel,
       whisperDevice,
@@ -1016,8 +1048,9 @@ export default function AutoShort(): JSX.Element {
       translationGuidance: translateTarget !== 'none' ? guidance.value : undefined,
       videoTitle: titleEnabled ? {
         provider: titleProvider,
-        language: translateTarget !== 'none' ? translateTarget : 'auto',
-        serverUrl: titleProvider === 'local' ? titleServerUrl : undefined
+        language: titleLanguage,
+        serverUrl: titleProvider === 'local' ? titleServerUrl : undefined,
+        seo: titleSeoOptions
       } : undefined,
       ttsEnabled,
       ttsServerUrl,
@@ -1186,7 +1219,9 @@ export default function AutoShort(): JSX.Element {
               </span>
             </div>
 
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <div className="editor-preview-actions">
+              <PortraitBlurButton enabled={portraitBlur} onChange={setPortraitBlur} disabled={isRunning} />
+              <VideoAdjustmentsControl value={normalizedVideoAdjustments} onChange={setVideoAdjustments} disabled={isRunning} />
               {tasks.length > 0 && (
                 <select
                   value={selectedTask?.id || ''}
@@ -1238,18 +1273,15 @@ export default function AutoShort(): JSX.Element {
           {/* Sân khấu video + Bounding box RegionBox */}
           <div ref={stageShellRef} className="editor-stage-shell">
             {selectedTask ? (
-              <div
-                className="ocr-video editor-stage-video"
-                style={
-                  videoW > 0 && videoH > 0
-                    ? ({
-                      aspectRatio: `${videoW} / ${videoH}`,
-                      width: previewStageSize.width > 0 ? `${previewStageSize.width}px` : undefined,
-                      height: previewStageSize.height > 0 ? `${previewStageSize.height}px` : undefined,
-                      overflow: 'hidden'
-                    } as CSSProperties)
-                    : undefined
-                }
+              <PortraitFramePreview
+                enabled={portraitBlur}
+                videoRef={videoRef}
+                source={previewPath}
+                videoWidth={videoW}
+                videoHeight={videoH}
+                width={previewStageSize.width}
+                height={previewStageSize.height}
+                adjustments={normalizedVideoAdjustments}
               >
                 <video
                   ref={videoRef}
@@ -1268,7 +1300,7 @@ export default function AutoShort(): JSX.Element {
                   }}
                   onTimeUpdate={(e) => setCurrentTime(e.currentTarget.currentTime)}
                   onClick={() => void transport.togglePlayback()}
-                  style={{ width: '100%', height: '100%', display: 'block', objectFit: 'fill' }}
+                  style={{ width: '100%', height: '100%', display: 'block', objectFit: 'fill', ...adjustmentPreviewStyle }}
                 />
 
                 {videoH > 0 && previewStageSize.width > 0 && (
@@ -1306,6 +1338,7 @@ export default function AutoShort(): JSX.Element {
                     subtitleText="Mẫu chữ xuất ra"
                     subtitleDisplayStyle={displayStyle}
                     subtitleFontSize={fontSize > 0 ? fontSize : undefined}
+                    scaleSubtitleToVideo={portraitBlur}
                     highlightColor={highlightColor}
                     highlightPop={highlightPop}
                     textColor={textColor}
@@ -1315,9 +1348,10 @@ export default function AutoShort(): JSX.Element {
                     bgColor={bgColor}
                     bgOpacity={bgOpacity}
                     showSafeArea={showSafeArea}
+                    previewZoom={normalizedVideoAdjustments.zoom}
                   />
                 )}
-              </div>
+              </PortraitFramePreview>
             ) : (
               <button
                 className="editor-empty-stage"
@@ -1540,7 +1574,10 @@ export default function AutoShort(): JSX.Element {
                   </label>
 
                   <VideoTitleSettings enabled={titleEnabled} onEnabledChange={setTitleEnabled}
-                    language={translateTarget !== 'none' ? translateTarget : 'auto'} disabled={isRunning} />
+                    language={titleLanguage} onLanguageChange={setTitleLanguage}
+                    provider={titleProvider} onProviderChange={setTitleProvider}
+                    serverUrl={titleServerUrl} onServerUrlChange={setTitleServerUrl}
+                    seo={titleSeoOptions} onSeoChange={setTitleSeoOptions} disabled={isRunning} />
 
                   {translateTarget !== 'none' && (
                     <>
@@ -1581,6 +1618,7 @@ export default function AutoShort(): JSX.Element {
                       </details>
 
                       <div className="autoshort-key-card">
+                        {translateProvider === 'gemini' ? <GeminiKeys disabled={isRunning} onChanged={setHasStoredKey} /> : <>
                         <div className="autoshort-key-header">
                           <span className="muted small">
                             {translateProvider === 'local'
@@ -1653,6 +1691,7 @@ export default function AutoShort(): JSX.Element {
                             {keyFeedback.message}
                           </div>
                         )}
+                        </>}
                       </div>
                     </>
                   )}
@@ -2470,14 +2509,16 @@ export default function AutoShort(): JSX.Element {
                               {task.percent > 0 && ` (${task.percent}%)`}
                             </div>
                             {task.error && <div className="queue-item-msg" style={{ color: 'var(--danger)' }}>{task.error}</div>}
-                            {task.title && <div className="queue-item-msg small" style={{ whiteSpace: 'normal', overflowWrap: 'anywhere' }}>Tiêu đề: {task.title}</div>}
+                            {task.seoMetadata
+                              ? <VideoSeoResult metadata={task.seoMetadata} titlePath={task.titlePath} />
+                              : task.title && <div className="queue-item-msg small" style={{ whiteSpace: 'normal', overflowWrap: 'anywhere' }}>Tiêu đề: {task.title}</div>}
                             {task.titleError && <div className="queue-item-msg small" role="status" style={{ color: 'var(--danger)', whiteSpace: 'normal', overflowWrap: 'anywhere' }}>
                               Chưa có tieude.txt: {task.titleError}
                             </div>}
-                            {task.translationAssessment && task.translationAssessment.issues.length > 0 && (
-                              <details className="queue-item-msg small" style={{ color: task.translationAssessment.disposition === 'needs-review' ? 'var(--danger)' : 'var(--warning, #b7791f)' }}>
+                            {task.translationAssessment?.disposition === 'needs-review' && task.translationAssessment.issues.length > 0 && (
+                              <details className="queue-item-msg small" style={{ color: 'var(--danger)' }}>
                                 <summary>
-                                  {task.translationAssessment.disposition === 'needs-review' ? 'Cần kiểm tra bản dịch' : `Hoàn tất · ${task.translationAssessment.issues.length} cảnh báo`}
+                                  Cần kiểm tra bản dịch
                                 </summary>
                                 <ul style={{ margin: '4px 0 0 16px', padding: 0 }}>
                                   {task.translationAssessment.issues.slice(0, 8).map((issue, issueIndex) => (
@@ -2499,7 +2540,7 @@ export default function AutoShort(): JSX.Element {
                                 Chuẩn bị thử lại dịch
                               </button>
                             )}
-                            {task.titlePath && <button type="button" className="btn ghost sm"
+                            {task.titlePath && !task.seoMetadata && <button type="button" className="btn ghost sm"
                               onClick={(event) => { event.stopPropagation(); void window.api.openPath(task.titlePath!) }}>
                               Mở tieude.txt
                             </button>}

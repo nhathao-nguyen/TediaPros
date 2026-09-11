@@ -1,0 +1,2346 @@
+{
+  "version": 3,
+  "paceMode": "source-adaptive",
+  "videoDuration": 166.696009,
+  "globalTempo": 1.096,
+  "cues": [
+    {
+      "cueId": "cue-0-1490",
+      "start": 1.49,
+      "preferredEnd": 3.41,
+      "hardEnd": 2.91,
+      "availableDuration": 1.4200000000000002,
+      "id": "cue-0-1490",
+      "sourceCueIds": [
+        "cue-0-1490"
+      ],
+      "sourceText": "吃螃蟹前妓的仔細看看",
+      "sourceStart": 1.49,
+      "sourceEnd": 3.41,
+      "translatedText": "Take a close look before eating crab.",
+      "finalSpokenText": "Inspect the crab before eating.",
+      "predictedDuration": 1.806,
+      "naturalDuration": 1.750045,
+      "actualDuration": 1.402993,
+      "predictionUncertainty": 0.08,
+      "tempo": 1.2474,
+      "plannedDuration": 1.4200000000000002,
+      "voiceEnd": 2.8929929999999997,
+      "localTempoAdjustment": 0.1514,
+      "audioPath": "F:\\Son\\tool\\TediaPros\\.worktrees\\codex-autoshort-optimization\\.ai\\tasks\\2026-09-08-dubbing-group-evidence3\\bf03032d-1fc8-4051-8fe9-149fdd31cc7f\\cue-0-1490-tempo.wav",
+      "subtitles": [
+        {
+          "id": "cue-0-1490-subtitle",
+          "sourceIndex": 0,
+          "start": 1.49,
+          "end": 2.8929929999999997,
+          "text": "Inspect the crab before eating.",
+          "timingQuality": "cue"
+        }
+      ],
+      "rephrased": true
+    },
+    {
+      "cueId": "cue-1-3410",
+      "start": 3.41,
+      "preferredEnd": 5.23,
+      "hardEnd": 5.03,
+      "availableDuration": 1.62,
+      "id": "cue-1-3410",
+      "sourceCueIds": [
+        "cue-1-3410"
+      ],
+      "sourceText": "這種螃蟹能吃嗎?",
+      "sourceStart": 3.41,
+      "sourceEnd": 5.23,
+      "translatedText": "Is this crab edible?",
+      "finalSpokenText": "Is this crab edible?",
+      "predictedDuration": 1.645,
+      "naturalDuration": 1.451043,
+      "actualDuration": 1.302993,
+      "predictionUncertainty": 0.22,
+      "tempo": 1.1136,
+      "plannedDuration": 1.3239443430656934,
+      "voiceEnd": 4.712993,
+      "localTempoAdjustment": 0.0176,
+      "audioPath": "F:\\Son\\tool\\TediaPros\\.worktrees\\codex-autoshort-optimization\\.ai\\tasks\\2026-09-08-dubbing-group-evidence3\\bf03032d-1fc8-4051-8fe9-149fdd31cc7f\\cue-1-3410-tempo.wav",
+      "subtitles": [
+        {
+          "id": "cue-1-3410-subtitle",
+          "sourceIndex": 1,
+          "start": 3.41,
+          "end": 4.712993,
+          "text": "Is this crab edible?",
+          "timingQuality": "cue"
+        }
+      ],
+      "rephrased": false
+    },
+    {
+      "cueId": "cue-2-5530",
+      "start": 5.53,
+      "preferredEnd": 14.01,
+      "hardEnd": 13.51,
+      "availableDuration": 7.9799999999999995,
+      "id": "cue-2-5530",
+      "sourceCueIds": [
+        "cue-2-5530",
+        "cue-3-6410",
+        "cue-4-8630",
+        "cue-5-10150",
+        "cue-6-11030",
+        "cue-7-12310"
+      ],
+      "sourceText": "這是紫地蟹主要以山上的靈芝草為食固稱靈芝蟹可印肉少且價格還貴吃它不如吃大閘蟹",
+      "sourceStart": 5.53,
+      "sourceEnd": 14.01,
+      "translatedText": "It's a purple land crab. It mainly eats mountain lingzhi grass. Hence it's called lingzhi crab. But the meat is scarce. And it's expensive. Better eat hairy crab instead.",
+      "finalSpokenText": "It's a lingzhi crab eating mountain grass, but with little meat and high cost, choose hairy crab instead.",
+      "predictedDuration": 6.605,
+      "naturalDuration": 5.562086,
+      "actualDuration": 5.055147,
+      "predictionUncertainty": 1.247,
+      "tempo": 1.1003,
+      "plannedDuration": 5.07489598540146,
+      "voiceEnd": 10.585147,
+      "localTempoAdjustment": 0.0043,
+      "audioPath": "F:\\Son\\tool\\TediaPros\\.worktrees\\codex-autoshort-optimization\\.ai\\tasks\\2026-09-08-dubbing-group-evidence3\\bf03032d-1fc8-4051-8fe9-149fdd31cc7f\\cue-2-5530-tempo.wav",
+      "subtitles": [
+        {
+          "id": "cue-2-5530-subtitle-1",
+          "sourceIndex": 2,
+          "start": 5.53,
+          "end": 8.592252509615385,
+          "text": "It's a lingzhi crab eating mountain grass, but with little meat",
+          "timingQuality": "cue"
+        },
+        {
+          "id": "cue-2-5530-subtitle-2",
+          "sourceIndex": 2,
+          "start": 8.592252509615385,
+          "end": 10.585147,
+          "text": "and high cost, choose hairy crab instead.",
+          "timingQuality": "cue"
+        }
+      ],
+      "rephrased": true
+    },
+    {
+      "cueId": "cue-8-14010",
+      "start": 14.01,
+      "preferredEnd": 15.75,
+      "hardEnd": 15.61,
+      "availableDuration": 1.5999999999999996,
+      "id": "cue-8-14010",
+      "sourceCueIds": [
+        "cue-8-14010"
+      ],
+      "sourceText": "這種螃蟹能吃嗎?",
+      "sourceStart": 14.01,
+      "sourceEnd": 15.75,
+      "translatedText": "Is this crab edible?",
+      "finalSpokenText": "Is this crab edible?",
+      "predictedDuration": 1.887,
+      "naturalDuration": 1.451043,
+      "actualDuration": 1.302993,
+      "predictionUncertainty": 1.639,
+      "tempo": 1.1136,
+      "plannedDuration": 1.3239443430656934,
+      "voiceEnd": 15.312993,
+      "localTempoAdjustment": 0.0176,
+      "audioPath": "F:\\Son\\tool\\TediaPros\\.worktrees\\codex-autoshort-optimization\\.ai\\tasks\\2026-09-08-dubbing-group-evidence3\\bf03032d-1fc8-4051-8fe9-149fdd31cc7f\\cue-8-14010-tempo.wav",
+      "subtitles": [
+        {
+          "id": "cue-8-14010-subtitle",
+          "sourceIndex": 8,
+          "start": 14.01,
+          "end": 15.312993,
+          "text": "Is this crab edible?",
+          "timingQuality": "cue"
+        }
+      ],
+      "rephrased": false
+    },
+    {
+      "cueId": "cue-9-16110",
+      "start": 16.11,
+      "preferredEnd": 23.53,
+      "hardEnd": 23.03,
+      "availableDuration": 6.920000000000002,
+      "id": "cue-9-16110",
+      "sourceCueIds": [
+        "cue-9-16110",
+        "cue-10-17770",
+        "cue-11-19210",
+        "cue-12-21290"
+      ],
+      "sourceText": "這是強壯武裝緊握蟹可僅應難處理可實的蟹肉和膏非常有限吃它不如買根蟹棒解解蟬",
+      "sourceStart": 16.11,
+      "sourceEnd": 23.53,
+      "translatedText": "It's a strong armed tight crab. But it's hard to handle. The meat and roe are very limited. Better buy crab sticks instead.",
+      "finalSpokenText": "This crab is hard to handle with little meat or roe; buy crab sticks instead.",
+      "predictedDuration": 4.565,
+      "naturalDuration": 4.643129,
+      "actualDuration": 4.21644,
+      "predictionUncertainty": 0.32,
+      "tempo": 1.1012,
+      "plannedDuration": 4.236431569343066,
+      "voiceEnd": 20.326439999999998,
+      "localTempoAdjustment": 0.0052,
+      "audioPath": "F:\\Son\\tool\\TediaPros\\.worktrees\\codex-autoshort-optimization\\.ai\\tasks\\2026-09-08-dubbing-group-evidence3\\bf03032d-1fc8-4051-8fe9-149fdd31cc7f\\cue-9-16110-tempo.wav",
+      "subtitles": [
+        {
+          "id": "cue-9-16110-subtitle-1",
+          "sourceIndex": 9,
+          "start": 16.11,
+          "end": 19.49424789473684,
+          "text": "This crab is hard to handle with little meat or roe; buy crab",
+          "timingQuality": "cue"
+        },
+        {
+          "id": "cue-9-16110-subtitle-2",
+          "sourceIndex": 9,
+          "start": 19.49424789473684,
+          "end": 20.326439999999998,
+          "text": "sticks instead.",
+          "timingQuality": "cue"
+        }
+      ],
+      "rephrased": true
+    },
+    {
+      "cueId": "cue-13-23530",
+      "start": 23.53,
+      "preferredEnd": 25.21,
+      "hardEnd": 25.15,
+      "availableDuration": 1.6199999999999974,
+      "id": "cue-13-23530",
+      "sourceCueIds": [
+        "cue-13-23530"
+      ],
+      "sourceText": "這種螃蟹能吃嗎?",
+      "sourceStart": 23.53,
+      "sourceEnd": 25.21,
+      "translatedText": "Is this crab edible?",
+      "finalSpokenText": "Is this crab edible?",
+      "predictedDuration": 1.602,
+      "naturalDuration": 1.451043,
+      "actualDuration": 1.302993,
+      "predictionUncertainty": 0.331,
+      "tempo": 1.1136,
+      "plannedDuration": 1.3239443430656934,
+      "voiceEnd": 24.832993000000002,
+      "localTempoAdjustment": 0.0176,
+      "audioPath": "F:\\Son\\tool\\TediaPros\\.worktrees\\codex-autoshort-optimization\\.ai\\tasks\\2026-09-08-dubbing-group-evidence3\\bf03032d-1fc8-4051-8fe9-149fdd31cc7f\\cue-13-23530-tempo.wav",
+      "subtitles": [
+        {
+          "id": "cue-13-23530-subtitle",
+          "sourceIndex": 13,
+          "start": 23.53,
+          "end": 24.832993000000002,
+          "text": "Is this crab edible?",
+          "timingQuality": "cue"
+        }
+      ],
+      "rephrased": false
+    },
+    {
+      "cueId": "cue-14-25650",
+      "start": 25.65,
+      "preferredEnd": 31.07,
+      "hardEnd": 30.57,
+      "availableDuration": 4.920000000000002,
+      "id": "cue-14-25650",
+      "sourceCueIds": [
+        "cue-14-25650",
+        "cue-15-26870",
+        "cue-16-29330"
+      ],
+      "sourceText": "這是巨型圖示蟹能吃 但整體鮮甜味不足吃它不如吃大閘蟹",
+      "sourceStart": 25.65,
+      "sourceEnd": 31.07,
+      "translatedText": "It's a giant icon crab. Edible, but lacks sweetness. Better eat hairy crab instead.",
+      "finalSpokenText": "Edible but not sweet enough; choose hairy crab instead.",
+      "predictedDuration": 4.591,
+      "naturalDuration": 3.596848,
+      "actualDuration": 3.261542,
+      "predictionUncertainty": 2.281,
+      "tempo": 1.1028,
+      "plannedDuration": 3.281795620437956,
+      "voiceEnd": 28.911541999999997,
+      "localTempoAdjustment": 0.0068,
+      "audioPath": "F:\\Son\\tool\\TediaPros\\.worktrees\\codex-autoshort-optimization\\.ai\\tasks\\2026-09-08-dubbing-group-evidence3\\bf03032d-1fc8-4051-8fe9-149fdd31cc7f\\cue-14-25650-tempo.wav",
+      "subtitles": [
+        {
+          "id": "cue-14-25650-subtitle",
+          "sourceIndex": 14,
+          "start": 25.65,
+          "end": 28.911541999999997,
+          "text": "Edible but not sweet enough; choose hairy crab instead.",
+          "timingQuality": "cue"
+        }
+      ],
+      "rephrased": true
+    },
+    {
+      "cueId": "cue-17-31070",
+      "start": 31.07,
+      "preferredEnd": 32.83,
+      "hardEnd": 32.63,
+      "availableDuration": 1.5600000000000023,
+      "id": "cue-17-31070",
+      "sourceCueIds": [
+        "cue-17-31070"
+      ],
+      "sourceText": "這種螃蟹能吃嗎?",
+      "sourceStart": 31.07,
+      "sourceEnd": 32.83,
+      "translatedText": "Is this crab edible?",
+      "finalSpokenText": "Is this crab edible?",
+      "predictedDuration": 1.848,
+      "naturalDuration": 1.451043,
+      "actualDuration": 1.302993,
+      "predictionUncertainty": 2.3,
+      "tempo": 1.1136,
+      "plannedDuration": 1.3239443430656934,
+      "voiceEnd": 32.372993,
+      "localTempoAdjustment": 0.0176,
+      "audioPath": "F:\\Son\\tool\\TediaPros\\.worktrees\\codex-autoshort-optimization\\.ai\\tasks\\2026-09-08-dubbing-group-evidence3\\bf03032d-1fc8-4051-8fe9-149fdd31cc7f\\cue-17-31070-tempo.wav",
+      "subtitles": [
+        {
+          "id": "cue-17-31070-subtitle",
+          "sourceIndex": 17,
+          "start": 31.07,
+          "end": 32.372993,
+          "text": "Is this crab edible?",
+          "timingQuality": "cue"
+        }
+      ],
+      "rephrased": false
+    },
+    {
+      "cueId": "cue-18-33130",
+      "start": 33.13,
+      "preferredEnd": 38.09,
+      "hardEnd": 37.59,
+      "availableDuration": 4.460000000000001,
+      "id": "cue-18-33130",
+      "sourceCueIds": [
+        "cue-18-33130",
+        "cue-19-34370",
+        "cue-20-35910",
+        "cue-21-37230"
+      ],
+      "sourceText": "這是官式圓肘蟹可能含有寄生蟲主要用來觀賞不能吃",
+      "sourceStart": 33.13,
+      "sourceEnd": 38.09,
+      "translatedText": "It's an official round elbow crab. It may contain parasites. Used mainly for display. Not edible.",
+      "finalSpokenText": "This display crab may contain parasites and is not edible.",
+      "predictedDuration": 4.688,
+      "naturalDuration": 3.770136,
+      "actualDuration": 3.419229,
+      "predictionUncertainty": 2.277,
+      "tempo": 1.1026,
+      "plannedDuration": 3.4399051094890507,
+      "voiceEnd": 36.549229000000004,
+      "localTempoAdjustment": 0.0066,
+      "audioPath": "F:\\Son\\tool\\TediaPros\\.worktrees\\codex-autoshort-optimization\\.ai\\tasks\\2026-09-08-dubbing-group-evidence3\\bf03032d-1fc8-4051-8fe9-149fdd31cc7f\\cue-18-33130-tempo.wav",
+      "subtitles": [
+        {
+          "id": "cue-18-33130-subtitle",
+          "sourceIndex": 18,
+          "start": 33.13,
+          "end": 36.549229000000004,
+          "text": "This display crab may contain parasites and is not edible.",
+          "timingQuality": "cue"
+        }
+      ],
+      "rephrased": true
+    },
+    {
+      "cueId": "cue-22-38090",
+      "start": 38.09,
+      "preferredEnd": 39.71,
+      "hardEnd": 39.61,
+      "availableDuration": 1.519999999999996,
+      "id": "cue-22-38090",
+      "sourceCueIds": [
+        "cue-22-38090"
+      ],
+      "sourceText": "這種螃蟹能吃嗎?",
+      "sourceStart": 38.09,
+      "sourceEnd": 39.71,
+      "translatedText": "Is this crab edible?",
+      "finalSpokenText": "Is this crab edible?",
+      "predictedDuration": 1.838,
+      "naturalDuration": 1.451043,
+      "actualDuration": 1.302993,
+      "predictionUncertainty": 2.289,
+      "tempo": 1.1136,
+      "plannedDuration": 1.3239443430656934,
+      "voiceEnd": 39.392993000000004,
+      "localTempoAdjustment": 0.0176,
+      "audioPath": "F:\\Son\\tool\\TediaPros\\.worktrees\\codex-autoshort-optimization\\.ai\\tasks\\2026-09-08-dubbing-group-evidence3\\bf03032d-1fc8-4051-8fe9-149fdd31cc7f\\cue-22-38090-tempo.wav",
+      "subtitles": [
+        {
+          "id": "cue-22-38090-subtitle",
+          "sourceIndex": 22,
+          "start": 38.09,
+          "end": 39.392993000000004,
+          "text": "Is this crab edible?",
+          "timingQuality": "cue"
+        }
+      ],
+      "rephrased": false
+    },
+    {
+      "cueId": "cue-23-40110",
+      "start": 40.11,
+      "preferredEnd": 45.63,
+      "hardEnd": 45.13,
+      "availableDuration": 5.020000000000003,
+      "id": "cue-23-40110",
+      "sourceCueIds": [
+        "cue-23-40110",
+        "cue-24-40850",
+        "cue-25-42170",
+        "cue-26-44370"
+      ],
+      "sourceText": "這是箭蟹長得跟蜘蛛一樣千萬不要在評論區答MJ 不信你試試看",
+      "sourceStart": 40.11,
+      "sourceEnd": 45.63,
+      "translatedText": "It's a crab arrow Looks like a spider Don't answer MJ in the comments Try it yourself if you don't believe",
+      "finalSpokenText": "This spider-looking crab is dangerous. Don't answer MJ; try it yourself if you don't believe.",
+      "predictedDuration": 7.662,
+      "naturalDuration": 6.26839,
+      "actualDuration": 5.003583,
+      "predictionUncertainty": 2.333,
+      "tempo": 1.2528,
+      "plannedDuration": 5.019932730039241,
+      "voiceEnd": 45.113583,
+      "localTempoAdjustment": 0.1568,
+      "audioPath": "F:\\Son\\tool\\TediaPros\\.worktrees\\codex-autoshort-optimization\\.ai\\tasks\\2026-09-08-dubbing-group-evidence3\\bf03032d-1fc8-4051-8fe9-149fdd31cc7f\\cue-23-40110-tempo.wav",
+      "subtitles": [
+        {
+          "id": "cue-23-40110-subtitle-1",
+          "sourceIndex": 23,
+          "start": 40.11,
+          "end": 43.48197984782608,
+          "text": "This spider-looking crab is dangerous. Don't answer MJ; try it",
+          "timingQuality": "cue"
+        },
+        {
+          "id": "cue-23-40110-subtitle-2",
+          "sourceIndex": 23,
+          "start": 43.48197984782608,
+          "end": 45.113583,
+          "text": "yourself if you don't believe.",
+          "timingQuality": "cue"
+        }
+      ],
+      "rephrased": true
+    },
+    {
+      "cueId": "cue-27-45630",
+      "start": 45.63,
+      "preferredEnd": 47.31,
+      "hardEnd": 47.23,
+      "availableDuration": 1.5999999999999943,
+      "id": "cue-27-45630",
+      "sourceCueIds": [
+        "cue-27-45630"
+      ],
+      "sourceText": "這種螃蟹能吃嗎?",
+      "sourceStart": 45.63,
+      "sourceEnd": 47.31,
+      "translatedText": "Can you eat this crab?",
+      "finalSpokenText": "Is this one edible?",
+      "predictedDuration": 1.752,
+      "naturalDuration": 1.861383,
+      "actualDuration": 1.580159,
+      "predictionUncertainty": 2.333,
+      "tempo": 1.178,
+      "plannedDuration": 1.5999510056730273,
+      "voiceEnd": 47.210159000000004,
+      "localTempoAdjustment": 0.082,
+      "audioPath": "F:\\Son\\tool\\TediaPros\\.worktrees\\codex-autoshort-optimization\\.ai\\tasks\\2026-09-08-dubbing-group-evidence3\\bf03032d-1fc8-4051-8fe9-149fdd31cc7f\\cue-27-45630-tempo.wav",
+      "subtitles": [
+        {
+          "id": "cue-27-45630-subtitle",
+          "sourceIndex": 27,
+          "start": 45.63,
+          "end": 47.210159000000004,
+          "text": "Is this one edible?",
+          "timingQuality": "cue"
+        }
+      ],
+      "rephrased": true
+    },
+    {
+      "cueId": "cue-28-47730",
+      "start": 47.73,
+      "preferredEnd": 53.35,
+      "hardEnd": 52.85,
+      "availableDuration": 5.1200000000000045,
+      "id": "cue-28-47730",
+      "sourceCueIds": [
+        "cue-28-47730",
+        "cue-29-48750",
+        "cue-30-50070",
+        "cue-31-51610"
+      ],
+      "sourceText": "這是觀光蟹俗稱鬼面蟹肉質少且口感一般吃它不如吃大閘蟹",
+      "sourceStart": 47.73,
+      "sourceEnd": 53.35,
+      "translatedText": "It's a tourist crab Also known as ghost-faced crab Little meat and average taste Better to eat hairy crab",
+      "finalSpokenText": "This ghost-faced crab has little meat and average taste; go for hairy crab.",
+      "predictedDuration": 5.513,
+      "naturalDuration": 5.328209,
+      "actualDuration": 4.841338,
+      "predictionUncertainty": 1.12,
+      "tempo": 1.1006,
+      "plannedDuration": 4.8615045620437956,
+      "voiceEnd": 52.571338,
+      "localTempoAdjustment": 0.0046,
+      "audioPath": "F:\\Son\\tool\\TediaPros\\.worktrees\\codex-autoshort-optimization\\.ai\\tasks\\2026-09-08-dubbing-group-evidence3\\bf03032d-1fc8-4051-8fe9-149fdd31cc7f\\cue-28-47730-tempo.wav",
+      "subtitles": [
+        {
+          "id": "cue-28-47730-subtitle-1",
+          "sourceIndex": 28,
+          "start": 47.73,
+          "end": 51.85167964864865,
+          "text": "This ghost-faced crab has little meat and average taste; go for",
+          "timingQuality": "cue"
+        },
+        {
+          "id": "cue-28-47730-subtitle-2",
+          "sourceIndex": 28,
+          "start": 51.85167964864865,
+          "end": 52.571338,
+          "text": "hairy crab.",
+          "timingQuality": "cue"
+        }
+      ],
+      "rephrased": true
+    },
+    {
+      "cueId": "cue-32-53350",
+      "start": 53.35,
+      "preferredEnd": 55.07,
+      "hardEnd": 54.95,
+      "availableDuration": 1.6000000000000014,
+      "id": "cue-32-53350",
+      "sourceCueIds": [
+        "cue-32-53350"
+      ],
+      "sourceText": "這種螃蟹能吃嗎?",
+      "sourceStart": 53.35,
+      "sourceEnd": 55.07,
+      "translatedText": "Can you eat this crab?",
+      "finalSpokenText": "Is this one edible?",
+      "predictedDuration": 1.598,
+      "naturalDuration": 1.861383,
+      "actualDuration": 1.580159,
+      "predictionUncertainty": 1.322,
+      "tempo": 1.178,
+      "plannedDuration": 1.5999510056730273,
+      "voiceEnd": 54.930159,
+      "localTempoAdjustment": 0.082,
+      "audioPath": "F:\\Son\\tool\\TediaPros\\.worktrees\\codex-autoshort-optimization\\.ai\\tasks\\2026-09-08-dubbing-group-evidence3\\bf03032d-1fc8-4051-8fe9-149fdd31cc7f\\cue-32-53350-tempo.wav",
+      "subtitles": [
+        {
+          "id": "cue-32-53350-subtitle",
+          "sourceIndex": 32,
+          "start": 53.35,
+          "end": 54.930159,
+          "text": "Is this one edible?",
+          "timingQuality": "cue"
+        }
+      ],
+      "rephrased": true
+    },
+    {
+      "cueId": "cue-33-55450",
+      "start": 55.45,
+      "preferredEnd": 61.67,
+      "hardEnd": 61.17,
+      "availableDuration": 5.719999999999999,
+      "id": "cue-33-55450",
+      "sourceCueIds": [
+        "cue-33-55450",
+        "cue-34-56770",
+        "cue-35-58270",
+        "cue-36-59510"
+      ],
+      "sourceText": "這是巨圓清蟹能吃肉質細嫩營養價值高屬於非常頂級的海蟹之一",
+      "sourceStart": 55.45,
+      "sourceEnd": 61.67,
+      "translatedText": "It's a giant round clear crab Meat is tender and edible High nutritional value One of the top-tier sea crabs",
+      "finalSpokenText": "Giant round clear crab: tender, edible meat, high nutrition; a top-tier sea crab.",
+      "predictedDuration": 6.156,
+      "naturalDuration": 5.739184,
+      "actualDuration": 5.216644,
+      "predictionUncertainty": 1.252,
+      "tempo": 1.1002,
+      "plannedDuration": 5.236481751824817,
+      "voiceEnd": 60.666644000000005,
+      "localTempoAdjustment": 0.0042,
+      "audioPath": "F:\\Son\\tool\\TediaPros\\.worktrees\\codex-autoshort-optimization\\.ai\\tasks\\2026-09-08-dubbing-group-evidence3\\bf03032d-1fc8-4051-8fe9-149fdd31cc7f\\cue-33-55450-tempo.wav",
+      "subtitles": [
+        {
+          "id": "cue-33-55450-subtitle-1",
+          "sourceIndex": 33,
+          "start": 55.45,
+          "end": 59.4928991,
+          "text": "Giant round clear crab: tender, edible meat, high nutrition; a",
+          "timingQuality": "cue"
+        },
+        {
+          "id": "cue-33-55450-subtitle-2",
+          "sourceIndex": 33,
+          "start": 59.4928991,
+          "end": 60.666644000000005,
+          "text": "top-tier sea crab.",
+          "timingQuality": "cue"
+        }
+      ],
+      "rephrased": true
+    },
+    {
+      "cueId": "cue-37-61670",
+      "start": 61.67,
+      "preferredEnd": 63.37,
+      "hardEnd": 63.21,
+      "availableDuration": 1.5399999999999991,
+      "id": "cue-37-61670",
+      "sourceCueIds": [
+        "cue-37-61670"
+      ],
+      "sourceText": "這種螃蟹能吃嗎?",
+      "sourceStart": 61.67,
+      "sourceEnd": 63.37,
+      "translatedText": "Can you eat this crab?",
+      "finalSpokenText": "Is this crab edible?",
+      "predictedDuration": 1.694,
+      "naturalDuration": 1.451043,
+      "actualDuration": 1.302993,
+      "predictionUncertainty": 1.231,
+      "tempo": 1.1136,
+      "plannedDuration": 1.3239443430656934,
+      "voiceEnd": 62.972993,
+      "localTempoAdjustment": 0.0176,
+      "audioPath": "F:\\Son\\tool\\TediaPros\\.worktrees\\codex-autoshort-optimization\\.ai\\tasks\\2026-09-08-dubbing-group-evidence3\\bf03032d-1fc8-4051-8fe9-149fdd31cc7f\\cue-37-61670-tempo.wav",
+      "subtitles": [
+        {
+          "id": "cue-37-61670-subtitle",
+          "sourceIndex": 37,
+          "start": 61.67,
+          "end": 62.972993,
+          "text": "Is this crab edible?",
+          "timingQuality": "cue"
+        }
+      ],
+      "rephrased": true
+    },
+    {
+      "cueId": "cue-38-63710",
+      "start": 63.71,
+      "preferredEnd": 69.93,
+      "hardEnd": 69.43,
+      "availableDuration": 5.720000000000006,
+      "id": "cue-38-63710",
+      "sourceCueIds": [
+        "cue-38-63710",
+        "cue-39-64930",
+        "cue-40-66890",
+        "cue-41-68590"
+      ],
+      "sourceText": "這是正值愛節蟹肉理全是麻痺性毒素蟹黃更是劇毒無比打死都不能吃",
+      "sourceStart": 63.71,
+      "sourceEnd": 69.93,
+      "translatedText": "It's a love-festival crab Filled with paralytic toxins Roe is extremely poisonous Never eat it under any circumstances",
+      "finalSpokenText": "Love-festival crab: paralytic toxins in meat, poisonous roe; absolutely do not eat.",
+      "predictedDuration": 7.905,
+      "naturalDuration": 6.501043,
+      "actualDuration": 5.687551,
+      "predictionUncertainty": 3.708,
+      "tempo": 1.143,
+      "plannedDuration": 5.720000000000006,
+      "voiceEnd": 69.397551,
+      "localTempoAdjustment": 0.047,
+      "audioPath": "F:\\Son\\tool\\TediaPros\\.worktrees\\codex-autoshort-optimization\\.ai\\tasks\\2026-09-08-dubbing-group-evidence3\\bf03032d-1fc8-4051-8fe9-149fdd31cc7f\\cue-38-63710-tempo.wav",
+      "subtitles": [
+        {
+          "id": "cue-38-63710-subtitle-1",
+          "sourceIndex": 38,
+          "start": 63.71,
+          "end": 67.87162268292684,
+          "text": "Love-festival crab: paralytic toxins in meat, poisonous roe;",
+          "timingQuality": "cue"
+        },
+        {
+          "id": "cue-38-63710-subtitle-2",
+          "sourceIndex": 38,
+          "start": 67.87162268292684,
+          "end": 69.397551,
+          "text": "absolutely do not eat.",
+          "timingQuality": "cue"
+        }
+      ],
+      "rephrased": true
+    },
+    {
+      "cueId": "cue-42-69930",
+      "start": 69.93,
+      "preferredEnd": 71.65,
+      "hardEnd": 71.51,
+      "availableDuration": 1.5799999999999983,
+      "id": "cue-42-69930",
+      "sourceCueIds": [
+        "cue-42-69930"
+      ],
+      "sourceText": "這種螃蟹能吃嗎?",
+      "sourceStart": 69.93,
+      "sourceEnd": 71.65,
+      "translatedText": "Can you eat this crab?",
+      "finalSpokenText": "Is this crab edible?",
+      "predictedDuration": 2.094,
+      "naturalDuration": 1.451043,
+      "actualDuration": 1.302993,
+      "predictionUncertainty": 2.145,
+      "tempo": 1.1136,
+      "plannedDuration": 1.3239443430656934,
+      "voiceEnd": 71.23299300000001,
+      "localTempoAdjustment": 0.0176,
+      "audioPath": "F:\\Son\\tool\\TediaPros\\.worktrees\\codex-autoshort-optimization\\.ai\\tasks\\2026-09-08-dubbing-group-evidence3\\bf03032d-1fc8-4051-8fe9-149fdd31cc7f\\cue-42-69930-tempo.wav",
+      "subtitles": [
+        {
+          "id": "cue-42-69930-subtitle",
+          "sourceIndex": 42,
+          "start": 69.93,
+          "end": 71.23299300000001,
+          "text": "Is this crab edible?",
+          "timingQuality": "cue"
+        }
+      ],
+      "rephrased": true
+    },
+    {
+      "cueId": "cue-43-72010",
+      "start": 72.01,
+      "preferredEnd": 78.47,
+      "hardEnd": 77.97,
+      "availableDuration": 5.959999999999994,
+      "id": "cue-43-72010",
+      "sourceCueIds": [
+        "cue-43-72010",
+        "cue-44-73410",
+        "cue-45-75790",
+        "cue-46-77250"
+      ],
+      "sourceText": "這是同住熟弱蟹也是世界上毒性最強的螃蟹目前還無藥可解千萬不能吃",
+      "sourceStart": 72.01,
+      "sourceEnd": 78.47,
+      "translatedText": "This is the venomous crab. It's one of the most toxic crabs in the world. There's currently no cure. Never eat it.",
+      "finalSpokenText": "Venomous crab: world's most toxic, no cure available; never eat.",
+      "predictedDuration": 6.078,
+      "naturalDuration": 4.742222,
+      "actualDuration": 4.306621,
+      "predictionUncertainty": 2.097,
+      "tempo": 1.1011,
+      "plannedDuration": 4.326844890510949,
+      "voiceEnd": 76.316621,
+      "localTempoAdjustment": 0.0051,
+      "audioPath": "F:\\Son\\tool\\TediaPros\\.worktrees\\codex-autoshort-optimization\\.ai\\tasks\\2026-09-08-dubbing-group-evidence3\\bf03032d-1fc8-4051-8fe9-149fdd31cc7f\\cue-43-72010-tempo.wav",
+      "subtitles": [
+        {
+          "id": "cue-43-72010-subtitle",
+          "sourceIndex": 43,
+          "start": 72.01,
+          "end": 76.316621,
+          "text": "Venomous crab: world's most toxic, no cure available; never eat.",
+          "timingQuality": "cue"
+        }
+      ],
+      "rephrased": true
+    },
+    {
+      "cueId": "cue-47-78470",
+      "start": 78.47,
+      "preferredEnd": 80.13,
+      "hardEnd": 79.95,
+      "availableDuration": 1.480000000000004,
+      "id": "cue-47-78470",
+      "sourceCueIds": [
+        "cue-47-78470"
+      ],
+      "sourceText": "這種螃蟹能吃嗎?",
+      "sourceStart": 78.47,
+      "sourceEnd": 80.13,
+      "translatedText": "Can you eat this crab?",
+      "finalSpokenText": "Is this crab edible?",
+      "predictedDuration": 2.079,
+      "naturalDuration": 1.451043,
+      "actualDuration": 1.302993,
+      "predictionUncertainty": 2.124,
+      "tempo": 1.1136,
+      "plannedDuration": 1.3239443430656934,
+      "voiceEnd": 79.772993,
+      "localTempoAdjustment": 0.0176,
+      "audioPath": "F:\\Son\\tool\\TediaPros\\.worktrees\\codex-autoshort-optimization\\.ai\\tasks\\2026-09-08-dubbing-group-evidence3\\bf03032d-1fc8-4051-8fe9-149fdd31cc7f\\cue-47-78470-tempo.wav",
+      "subtitles": [
+        {
+          "id": "cue-47-78470-subtitle",
+          "sourceIndex": 47,
+          "start": 78.47,
+          "end": 79.772993,
+          "text": "Is this crab edible?",
+          "timingQuality": "cue"
+        }
+      ],
+      "rephrased": true
+    },
+    {
+      "cueId": "cue-48-80450",
+      "start": 80.45,
+      "preferredEnd": 87.95,
+      "hardEnd": 87.45,
+      "availableDuration": 7,
+      "id": "cue-48-80450",
+      "sourceCueIds": [
+        "cue-48-80450",
+        "cue-49-81690",
+        "cue-50-83870",
+        "cue-51-84930",
+        "cue-52-87130"
+      ],
+      "sourceText": "這是紅色幽靈蟹海綿寶寶裡蟹老闆的圓形肉量極少體內可能含毒素與污染物不能吃",
+      "sourceStart": 80.45,
+      "sourceEnd": 87.95,
+      "translatedText": "This is the ghost crab. It's round like Mr. Krabs from SpongeBob. It has very little meat. It may contain toxins and pollutants. Don't eat it.",
+      "finalSpokenText": "Ghost crab (Mr. Krabs type): little meat, possible toxins/pollutants; do not eat.",
+      "predictedDuration": 7.203,
+      "naturalDuration": 5.566349,
+      "actualDuration": 5.05941,
+      "predictionUncertainty": 1.71,
+      "tempo": 1.1002,
+      "plannedDuration": 5.078785583941605,
+      "voiceEnd": 85.50941,
+      "localTempoAdjustment": 0.0042,
+      "audioPath": "F:\\Son\\tool\\TediaPros\\.worktrees\\codex-autoshort-optimization\\.ai\\tasks\\2026-09-08-dubbing-group-evidence3\\bf03032d-1fc8-4051-8fe9-149fdd31cc7f\\cue-48-80450-tempo.wav",
+      "subtitles": [
+        {
+          "id": "cue-48-80450-subtitle-1",
+          "sourceIndex": 48,
+          "start": 80.45,
+          "end": 83.61213125,
+          "text": "Ghost crab (Mr. Krabs type): little meat, possible",
+          "timingQuality": "cue"
+        },
+        {
+          "id": "cue-48-80450-subtitle-2",
+          "sourceIndex": 48,
+          "start": 83.61213125,
+          "end": 85.50941,
+          "text": "toxins/pollutants; do not eat.",
+          "timingQuality": "cue"
+        }
+      ],
+      "rephrased": true
+    },
+    {
+      "cueId": "cue-53-87950",
+      "start": 87.95,
+      "preferredEnd": 89.57,
+      "hardEnd": 89.41,
+      "availableDuration": 1.4599999999999937,
+      "id": "cue-53-87950",
+      "sourceCueIds": [
+        "cue-53-87950"
+      ],
+      "sourceText": "這種螃蟹能吃嗎?",
+      "sourceStart": 87.95,
+      "sourceEnd": 89.57,
+      "translatedText": "Can you eat this crab?",
+      "finalSpokenText": "Is this crab edible?",
+      "predictedDuration": 1.975,
+      "naturalDuration": 1.451043,
+      "actualDuration": 1.302993,
+      "predictionUncertainty": 1.732,
+      "tempo": 1.1136,
+      "plannedDuration": 1.3239443430656934,
+      "voiceEnd": 89.252993,
+      "localTempoAdjustment": 0.0176,
+      "audioPath": "F:\\Son\\tool\\TediaPros\\.worktrees\\codex-autoshort-optimization\\.ai\\tasks\\2026-09-08-dubbing-group-evidence3\\bf03032d-1fc8-4051-8fe9-149fdd31cc7f\\cue-53-87950-tempo.wav",
+      "subtitles": [
+        {
+          "id": "cue-53-87950-subtitle",
+          "sourceIndex": 53,
+          "start": 87.95,
+          "end": 89.252993,
+          "text": "Is this crab edible?",
+          "timingQuality": "cue"
+        }
+      ],
+      "rephrased": true
+    },
+    {
+      "cueId": "cue-54-89910",
+      "start": 89.91,
+      "preferredEnd": 96.41,
+      "hardEnd": 95.91,
+      "availableDuration": 6,
+      "id": "cue-54-89910",
+      "sourceCueIds": [
+        "cue-54-89910",
+        "cue-55-90830",
+        "cue-56-91870",
+        "cue-57-94450",
+        "cue-58-95270"
+      ],
+      "sourceText": "這是好禮蟹也叫豆蟹專門寄生在生蠔裡的小傢伙個頭雖小但味道賊好",
+      "sourceStart": 89.91,
+      "sourceEnd": 96.41,
+      "translatedText": "This is the gift crab. Also called a bean crab. It's a tiny creature that lives inside raw oysters. Though it's small. The taste is amazing.",
+      "finalSpokenText": "This is the gift crab, also called a bean crab. Tiny and parasitic in oysters, it tastes amazing.",
+      "predictedDuration": 6.93,
+      "naturalDuration": 7.032925,
+      "actualDuration": 5.982086,
+      "predictionUncertainty": 1.126,
+      "tempo": 1.1757,
+      "plannedDuration": 5.999765398396178,
+      "voiceEnd": 95.89208599999999,
+      "localTempoAdjustment": 0.0797,
+      "audioPath": "F:\\Son\\tool\\TediaPros\\.worktrees\\codex-autoshort-optimization\\.ai\\tasks\\2026-09-08-dubbing-group-evidence3\\bf03032d-1fc8-4051-8fe9-149fdd31cc7f\\cue-54-89910-tempo.wav",
+      "subtitles": [
+        {
+          "id": "cue-54-89910-subtitle-1",
+          "sourceIndex": 54,
+          "start": 89.91,
+          "end": 93.39955016666666,
+          "text": "This is the gift crab, also called a bean crab. Tiny and",
+          "timingQuality": "cue"
+        },
+        {
+          "id": "cue-54-89910-subtitle-2",
+          "sourceIndex": 54,
+          "start": 93.39955016666666,
+          "end": 95.89208599999999,
+          "text": "parasitic in oysters, it tastes amazing.",
+          "timingQuality": "cue"
+        }
+      ],
+      "rephrased": true
+    },
+    {
+      "cueId": "cue-59-96410",
+      "start": 96.41,
+      "preferredEnd": 97.95,
+      "hardEnd": 97.77,
+      "availableDuration": 1.3599999999999994,
+      "id": "cue-59-96410",
+      "sourceCueIds": [
+        "cue-59-96410"
+      ],
+      "sourceText": "這種螃蟹能吃嗎?",
+      "sourceStart": 96.41,
+      "sourceEnd": 97.95,
+      "translatedText": "Can you eat this crab?",
+      "finalSpokenText": "Is this crab edible?",
+      "predictedDuration": 1.68,
+      "naturalDuration": 1.451043,
+      "actualDuration": 1.302993,
+      "predictionUncertainty": 1.108,
+      "tempo": 1.1136,
+      "plannedDuration": 1.3239443430656934,
+      "voiceEnd": 97.712993,
+      "localTempoAdjustment": 0.0176,
+      "audioPath": "F:\\Son\\tool\\TediaPros\\.worktrees\\codex-autoshort-optimization\\.ai\\tasks\\2026-09-08-dubbing-group-evidence3\\bf03032d-1fc8-4051-8fe9-149fdd31cc7f\\cue-59-96410-tempo.wav",
+      "subtitles": [
+        {
+          "id": "cue-59-96410-subtitle",
+          "sourceIndex": 59,
+          "start": 96.41,
+          "end": 97.712993,
+          "text": "Is this crab edible?",
+          "timingQuality": "cue"
+        }
+      ],
+      "rephrased": true
+    },
+    {
+      "cueId": "cue-60-98270",
+      "start": 98.27,
+      "preferredEnd": 102.91,
+      "hardEnd": 102.41,
+      "availableDuration": 4.140000000000001,
+      "id": "cue-60-98270",
+      "sourceCueIds": [
+        "cue-60-98270",
+        "cue-61-99290",
+        "cue-62-102070"
+      ],
+      "sourceText": "這是紅斑嫖蟹它也被稱為七星蟹或七眼蟹有毒不能吃",
+      "sourceStart": 98.27,
+      "sourceEnd": 102.91,
+      "translatedText": "This is the red-spotted crab. It's also called the seven-star crab or seven-eye crab. It's poisonous and inedible.",
+      "finalSpokenText": "The red-spotted crab, or seven-star/seven-eye crab, is poisonous and inedible.",
+      "predictedDuration": 5.964,
+      "naturalDuration": 5.825306,
+      "actualDuration": 4.129025,
+      "predictionUncertainty": 0.515,
+      "tempo": 1.4108,
+      "plannedDuration": 4.140000000000001,
+      "voiceEnd": 102.399025,
+      "localTempoAdjustment": 0.3148,
+      "audioPath": "F:\\Son\\tool\\TediaPros\\.worktrees\\codex-autoshort-optimization\\.ai\\tasks\\2026-09-08-dubbing-group-evidence3\\bf03032d-1fc8-4051-8fe9-149fdd31cc7f\\cue-60-98270-tempo.wav",
+      "subtitles": [
+        {
+          "id": "cue-60-98270-subtitle-1",
+          "sourceIndex": 60,
+          "start": 98.27,
+          "end": 101.70191688311688,
+          "text": "The red-spotted crab, or seven-star/seven-eye crab, is poisonous",
+          "timingQuality": "cue"
+        },
+        {
+          "id": "cue-60-98270-subtitle-2",
+          "sourceIndex": 60,
+          "start": 101.70191688311688,
+          "end": 102.399025,
+          "text": "and inedible.",
+          "timingQuality": "cue"
+        }
+      ],
+      "rephrased": true
+    },
+    {
+      "cueId": "cue-63-102910",
+      "start": 102.91,
+      "preferredEnd": 104.59,
+      "hardEnd": 104.47,
+      "availableDuration": 1.5600000000000023,
+      "id": "cue-63-102910",
+      "sourceCueIds": [
+        "cue-63-102910"
+      ],
+      "sourceText": "這種螃蟹能吃嗎?",
+      "sourceStart": 102.91,
+      "sourceEnd": 104.59,
+      "translatedText": "Can you eat this crab?",
+      "finalSpokenText": "Is this crab edible?",
+      "predictedDuration": 1.576,
+      "naturalDuration": 1.451043,
+      "actualDuration": 1.302993,
+      "predictionUncertainty": 0.536,
+      "tempo": 1.1136,
+      "plannedDuration": 1.3239443430656934,
+      "voiceEnd": 104.212993,
+      "localTempoAdjustment": 0.0176,
+      "audioPath": "F:\\Son\\tool\\TediaPros\\.worktrees\\codex-autoshort-optimization\\.ai\\tasks\\2026-09-08-dubbing-group-evidence3\\bf03032d-1fc8-4051-8fe9-149fdd31cc7f\\cue-63-102910-tempo.wav",
+      "subtitles": [
+        {
+          "id": "cue-63-102910-subtitle",
+          "sourceIndex": 63,
+          "start": 102.91,
+          "end": 104.212993,
+          "text": "Is this crab edible?",
+          "timingQuality": "cue"
+        }
+      ],
+      "rephrased": true
+    },
+    {
+      "cueId": "cue-64-104970",
+      "start": 104.97,
+      "preferredEnd": 109.83,
+      "hardEnd": 109.33,
+      "availableDuration": 4.359999999999999,
+      "id": "cue-64-104970",
+      "sourceCueIds": [
+        "cue-64-104970",
+        "cue-65-106310",
+        "cue-66-108910"
+      ],
+      "sourceText": "這是雷諾士林斑蟹體內含有合吞毒素和麻痺性被毒不能吃",
+      "sourceStart": 104.97,
+      "sourceEnd": 109.83,
+      "translatedText": "This is the Red-lined Swimming Crab. It contains tetrodotoxin and paralytic shellfish toxin. Do not eat it.",
+      "finalSpokenText": "This Red-lined Swimming Crab contains tetrodotoxin and paralytic shellfish toxin; do not eat it.",
+      "predictedDuration": 6.364,
+      "naturalDuration": 5.666553,
+      "actualDuration": 4.341995,
+      "predictionUncertainty": 0.661,
+      "tempo": 1.3051,
+      "plannedDuration": 4.359893052242826,
+      "voiceEnd": 109.311995,
+      "localTempoAdjustment": 0.2091,
+      "audioPath": "F:\\Son\\tool\\TediaPros\\.worktrees\\codex-autoshort-optimization\\.ai\\tasks\\2026-09-08-dubbing-group-evidence3\\bf03032d-1fc8-4051-8fe9-149fdd31cc7f\\cue-64-104970-tempo.wav",
+      "subtitles": [
+        {
+          "id": "cue-64-104970-subtitle-1",
+          "sourceIndex": 64,
+          "start": 104.97,
+          "end": 107.89513347368421,
+          "text": "This Red-lined Swimming Crab contains tetrodotoxin and paralytic",
+          "timingQuality": "cue"
+        },
+        {
+          "id": "cue-64-104970-subtitle-2",
+          "sourceIndex": 64,
+          "start": 107.89513347368421,
+          "end": 109.311995,
+          "text": "shellfish toxin; do not eat it.",
+          "timingQuality": "cue"
+        }
+      ],
+      "rephrased": true
+    },
+    {
+      "cueId": "cue-67-109830",
+      "start": 109.83,
+      "preferredEnd": 111.51,
+      "hardEnd": 111.43,
+      "availableDuration": 1.6000000000000085,
+      "id": "cue-67-109830",
+      "sourceCueIds": [
+        "cue-67-109830"
+      ],
+      "sourceText": "這種螃蟹能吃嗎?",
+      "sourceStart": 109.83,
+      "sourceEnd": 111.51,
+      "translatedText": "Is this crab edible?",
+      "finalSpokenText": "Is this crab edible?",
+      "predictedDuration": 1.554,
+      "naturalDuration": 1.451043,
+      "actualDuration": 1.302993,
+      "predictionUncertainty": 0.661,
+      "tempo": 1.1136,
+      "plannedDuration": 1.3239443430656934,
+      "voiceEnd": 111.132993,
+      "localTempoAdjustment": 0.0176,
+      "audioPath": "F:\\Son\\tool\\TediaPros\\.worktrees\\codex-autoshort-optimization\\.ai\\tasks\\2026-09-08-dubbing-group-evidence3\\bf03032d-1fc8-4051-8fe9-149fdd31cc7f\\cue-67-109830-tempo.wav",
+      "subtitles": [
+        {
+          "id": "cue-67-109830-subtitle",
+          "sourceIndex": 67,
+          "start": 109.83,
+          "end": 111.132993,
+          "text": "Is this crab edible?",
+          "timingQuality": "cue"
+        }
+      ],
+      "rephrased": false
+    },
+    {
+      "cueId": "cue-68-111930",
+      "start": 111.93,
+      "preferredEnd": 116.45,
+      "hardEnd": 115.95,
+      "availableDuration": 4.019999999999996,
+      "id": "cue-68-111930",
+      "sourceCueIds": [
+        "cue-68-111930",
+        "cue-69-112710",
+        "cue-70-113450",
+        "cue-71-114830"
+      ],
+      "sourceText": "這是椰子蟹能吃因常年吃椰肉蟹肉自帶天然椰香",
+      "sourceStart": 111.93,
+      "sourceEnd": 116.45,
+      "translatedText": "This is the Coconut Crab. It is edible. Because it eats coconut meat year-round. The meat has a natural coconut aroma.",
+      "finalSpokenText": "This is the Coconut Crab; its coconut meat diet provides a natural coconut aroma.",
+      "predictedDuration": 5.285,
+      "naturalDuration": 5.303129,
+      "actualDuration": 4.005079,
+      "predictionUncertainty": 0.681,
+      "tempo": 1.3241,
+      "plannedDuration": 4.019958308065495,
+      "voiceEnd": 115.935079,
+      "localTempoAdjustment": 0.2281,
+      "audioPath": "F:\\Son\\tool\\TediaPros\\.worktrees\\codex-autoshort-optimization\\.ai\\tasks\\2026-09-08-dubbing-group-evidence3\\bf03032d-1fc8-4051-8fe9-149fdd31cc7f\\cue-68-111930-tempo.wav",
+      "subtitles": [
+        {
+          "id": "cue-68-111930-subtitle-1",
+          "sourceIndex": 68,
+          "start": 111.93,
+          "end": 114.833682275,
+          "text": "This is the Coconut Crab; its coconut meat diet provides a",
+          "timingQuality": "cue"
+        },
+        {
+          "id": "cue-68-111930-subtitle-2",
+          "sourceIndex": 68,
+          "start": 114.833682275,
+          "end": 115.935079,
+          "text": "natural coconut aroma.",
+          "timingQuality": "cue"
+        }
+      ],
+      "rephrased": true
+    },
+    {
+      "cueId": "cue-72-116450",
+      "start": 116.45,
+      "preferredEnd": 118.25,
+      "hardEnd": 117.95,
+      "availableDuration": 1.5,
+      "id": "cue-72-116450",
+      "sourceCueIds": [
+        "cue-72-116450"
+      ],
+      "sourceText": "這種螃蟹能吃嗎?",
+      "sourceStart": 116.45,
+      "sourceEnd": 118.25,
+      "translatedText": "Is this crab edible?",
+      "finalSpokenText": "Is this crab edible?",
+      "predictedDuration": 1.549,
+      "naturalDuration": 1.451043,
+      "actualDuration": 1.302993,
+      "predictionUncertainty": 0.681,
+      "tempo": 1.1136,
+      "plannedDuration": 1.3239443430656934,
+      "voiceEnd": 117.752993,
+      "localTempoAdjustment": 0.0176,
+      "audioPath": "F:\\Son\\tool\\TediaPros\\.worktrees\\codex-autoshort-optimization\\.ai\\tasks\\2026-09-08-dubbing-group-evidence3\\bf03032d-1fc8-4051-8fe9-149fdd31cc7f\\cue-72-116450-tempo.wav",
+      "subtitles": [
+        {
+          "id": "cue-72-116450-subtitle",
+          "sourceIndex": 72,
+          "start": 116.45,
+          "end": 117.752993,
+          "text": "Is this crab edible?",
+          "timingQuality": "cue"
+        }
+      ],
+      "rephrased": false
+    },
+    {
+      "cueId": "cue-73-118450",
+      "start": 118.45,
+      "preferredEnd": 123.99,
+      "hardEnd": 123.49,
+      "availableDuration": 5.039999999999992,
+      "id": "cue-73-118450",
+      "sourceCueIds": [
+        "cue-73-118450",
+        "cue-74-119590",
+        "cue-75-121030",
+        "cue-76-123050"
+      ],
+      "sourceText": "這是花紋細咬蟹也叫做全脊蟹通常只做微觀賞蟹飼養不建議吃",
+      "sourceStart": 118.45,
+      "sourceEnd": 123.99,
+      "translatedText": "This is the Zebra Mud Crab. Also known as the Full-spine Crab. Usually kept only as a pet. Not recommended for eating.",
+      "finalSpokenText": "This is the Zebra Mud Crab, also the Full-spine Crab. A pet only, not for eating.",
+      "predictedDuration": 5.746,
+      "naturalDuration": 6.019932,
+      "actualDuration": 5.021542,
+      "predictionUncertainty": 0.648,
+      "tempo": 1.1988,
+      "plannedDuration": 5.039999999999992,
+      "voiceEnd": 123.471542,
+      "localTempoAdjustment": 0.1028,
+      "audioPath": "F:\\Son\\tool\\TediaPros\\.worktrees\\codex-autoshort-optimization\\.ai\\tasks\\2026-09-08-dubbing-group-evidence3\\bf03032d-1fc8-4051-8fe9-149fdd31cc7f\\cue-73-118450-tempo.wav",
+      "subtitles": [
+        {
+          "id": "cue-73-118450-subtitle-1",
+          "sourceIndex": 73,
+          "start": 118.45,
+          "end": 122.153387225,
+          "text": "This is the Zebra Mud Crab, also the Full-spine Crab. A pet",
+          "timingQuality": "cue"
+        },
+        {
+          "id": "cue-73-118450-subtitle-2",
+          "sourceIndex": 73,
+          "start": 122.153387225,
+          "end": 123.471542,
+          "text": "only, not for eating.",
+          "timingQuality": "cue"
+        }
+      ],
+      "rephrased": true
+    },
+    {
+      "cueId": "cue-77-123990",
+      "start": 123.99,
+      "preferredEnd": 125.71,
+      "hardEnd": 125.61,
+      "availableDuration": 1.6200000000000045,
+      "id": "cue-77-123990",
+      "sourceCueIds": [
+        "cue-77-123990"
+      ],
+      "sourceText": "這種螃蟹能吃嗎?",
+      "sourceStart": 123.99,
+      "sourceEnd": 125.71,
+      "translatedText": "Is this crab edible?",
+      "finalSpokenText": "Is this crab edible?",
+      "predictedDuration": 1.551,
+      "naturalDuration": 1.451043,
+      "actualDuration": 1.302993,
+      "predictionUncertainty": 0.649,
+      "tempo": 1.1136,
+      "plannedDuration": 1.3239443430656934,
+      "voiceEnd": 125.292993,
+      "localTempoAdjustment": 0.0176,
+      "audioPath": "F:\\Son\\tool\\TediaPros\\.worktrees\\codex-autoshort-optimization\\.ai\\tasks\\2026-09-08-dubbing-group-evidence3\\bf03032d-1fc8-4051-8fe9-149fdd31cc7f\\cue-77-123990-tempo.wav",
+      "subtitles": [
+        {
+          "id": "cue-77-123990-subtitle",
+          "sourceIndex": 77,
+          "start": 123.99,
+          "end": 125.292993,
+          "text": "Is this crab edible?",
+          "timingQuality": "cue"
+        }
+      ],
+      "rephrased": false
+    },
+    {
+      "cueId": "cue-78-126110",
+      "start": 126.11,
+      "preferredEnd": 131.57,
+      "hardEnd": 131.07,
+      "availableDuration": 4.959999999999994,
+      "id": "cue-78-126110",
+      "sourceCueIds": [
+        "cue-78-126110",
+        "cue-79-127290",
+        "cue-80-128550",
+        "cue-81-130390"
+      ],
+      "sourceText": "這是兇狠求婦蟹不僅看著兇猛且含麻痺性被類毒素千萬不能吃",
+      "sourceStart": 126.11,
+      "sourceEnd": 131.57,
+      "translatedText": "This is the Tiger Crab. Not only does it look fierce. It also contains paralytic shellfish toxin. Never eat it.",
+      "finalSpokenText": "The fierce-looking Tiger Crab holds paralytic shellfish toxin; do not eat it.",
+      "predictedDuration": 5.194,
+      "naturalDuration": 4.237846,
+      "actualDuration": 3.846825,
+      "predictionUncertainty": 0.726,
+      "tempo": 1.1016,
+      "plannedDuration": 3.866647810218978,
+      "voiceEnd": 129.956825,
+      "localTempoAdjustment": 0.0056,
+      "audioPath": "F:\\Son\\tool\\TediaPros\\.worktrees\\codex-autoshort-optimization\\.ai\\tasks\\2026-09-08-dubbing-group-evidence3\\bf03032d-1fc8-4051-8fe9-149fdd31cc7f\\cue-78-126110-tempo.wav",
+      "subtitles": [
+        {
+          "id": "cue-78-126110-subtitle-1",
+          "sourceIndex": 78,
+          "start": 126.11,
+          "end": 129.24819934210527,
+          "text": "The fierce-looking Tiger Crab holds paralytic shellfish toxin;",
+          "timingQuality": "cue"
+        },
+        {
+          "id": "cue-78-126110-subtitle-2",
+          "sourceIndex": 78,
+          "start": 129.24819934210527,
+          "end": 129.956825,
+          "text": "do not eat it.",
+          "timingQuality": "cue"
+        }
+      ],
+      "rephrased": true
+    },
+    {
+      "cueId": "cue-82-131570",
+      "start": 131.57,
+      "preferredEnd": 133.21,
+      "hardEnd": 133.09,
+      "availableDuration": 1.5200000000000102,
+      "id": "cue-82-131570",
+      "sourceCueIds": [
+        "cue-82-131570"
+      ],
+      "sourceText": "這種螃蟹能吃嗎?",
+      "sourceStart": 131.57,
+      "sourceEnd": 133.21,
+      "translatedText": "Is this crab edible?",
+      "finalSpokenText": "Is this crab edible?",
+      "predictedDuration": 1.534,
+      "naturalDuration": 1.451043,
+      "actualDuration": 1.302993,
+      "predictionUncertainty": 0.64,
+      "tempo": 1.1136,
+      "plannedDuration": 1.3239443430656934,
+      "voiceEnd": 132.87299299999998,
+      "localTempoAdjustment": 0.0176,
+      "audioPath": "F:\\Son\\tool\\TediaPros\\.worktrees\\codex-autoshort-optimization\\.ai\\tasks\\2026-09-08-dubbing-group-evidence3\\bf03032d-1fc8-4051-8fe9-149fdd31cc7f\\cue-82-131570-tempo.wav",
+      "subtitles": [
+        {
+          "id": "cue-82-131570-subtitle",
+          "sourceIndex": 82,
+          "start": 131.57,
+          "end": 132.87299299999998,
+          "text": "Is this crab edible?",
+          "timingQuality": "cue"
+        }
+      ],
+      "rephrased": false
+    },
+    {
+      "cueId": "cue-83-133590",
+      "start": 133.59,
+      "preferredEnd": 139.91,
+      "hardEnd": 139.41,
+      "availableDuration": 5.819999999999993,
+      "id": "cue-83-133590",
+      "sourceCueIds": [
+        "cue-83-133590",
+        "cue-84-134770",
+        "cue-85-135890",
+        "cue-86-136950",
+        "cue-87-137990",
+        "cue-88-139030"
+      ],
+      "sourceText": "這是聖誕島紅蟹體內含乙酸且食性雜肉少水多苦澀難食不能吃",
+      "sourceStart": 133.59,
+      "sourceEnd": 139.91,
+      "translatedText": "These are Christmas Island red crabs containing acetic acid and omnivorous little meat, lots of water bitter and hard to eat don't eat them",
+      "finalSpokenText": "Avoid eating these crabs: they contain acetic acid, are omnivorous, lack meat, are watery, and taste bitter.",
+      "predictedDuration": 7.319,
+      "naturalDuration": 7.01517,
+      "actualDuration": 5.800998,
+      "predictionUncertainty": 0.658,
+      "tempo": 1.2093,
+      "plannedDuration": 5.819785963165755,
+      "voiceEnd": 139.390998,
+      "localTempoAdjustment": 0.1133,
+      "audioPath": "F:\\Son\\tool\\TediaPros\\.worktrees\\codex-autoshort-optimization\\.ai\\tasks\\2026-09-08-dubbing-group-evidence3\\bf03032d-1fc8-4051-8fe9-149fdd31cc7f\\cue-83-133590-tempo.wav",
+      "subtitles": [
+        {
+          "id": "cue-83-133590-subtitle-1",
+          "sourceIndex": 83,
+          "start": 133.59,
+          "end": 136.57182140186916,
+          "text": "Avoid eating these crabs: they contain acetic acid, are",
+          "timingQuality": "cue"
+        },
+        {
+          "id": "cue-83-133590-subtitle-2",
+          "sourceIndex": 83,
+          "start": 136.57182140186916,
+          "end": 139.390998,
+          "text": "omnivorous, lack meat, are watery, and taste bitter.",
+          "timingQuality": "cue"
+        }
+      ],
+      "rephrased": true
+    },
+    {
+      "cueId": "cue-89-139910",
+      "start": 139.91,
+      "preferredEnd": 141.57,
+      "hardEnd": 141.43,
+      "availableDuration": 1.5200000000000102,
+      "id": "cue-89-139910",
+      "sourceCueIds": [
+        "cue-89-139910"
+      ],
+      "sourceText": "這種螃蟹能吃嗎?",
+      "sourceStart": 139.91,
+      "sourceEnd": 141.57,
+      "translatedText": "Can you eat these crabs?",
+      "finalSpokenText": "Are these crabs edible?",
+      "predictedDuration": 1.714,
+      "naturalDuration": 1.813175,
+      "actualDuration": 1.503288,
+      "predictionUncertainty": 0.659,
+      "tempo": 1.2061,
+      "plannedDuration": 1.5199723363232458,
+      "voiceEnd": 141.413288,
+      "localTempoAdjustment": 0.1101,
+      "audioPath": "F:\\Son\\tool\\TediaPros\\.worktrees\\codex-autoshort-optimization\\.ai\\tasks\\2026-09-08-dubbing-group-evidence3\\bf03032d-1fc8-4051-8fe9-149fdd31cc7f\\cue-89-139910-tempo.wav",
+      "subtitles": [
+        {
+          "id": "cue-89-139910-subtitle",
+          "sourceIndex": 89,
+          "start": 139.91,
+          "end": 141.413288,
+          "text": "Are these crabs edible?",
+          "timingQuality": "cue"
+        }
+      ],
+      "rephrased": true
+    },
+    {
+      "cueId": "cue-90-141930",
+      "start": 141.93,
+      "preferredEnd": 146.49,
+      "hardEnd": 145.99,
+      "availableDuration": 4.060000000000002,
+      "id": "cue-90-141930",
+      "sourceCueIds": [
+        "cue-90-141930",
+        "cue-91-142630",
+        "cue-92-143370",
+        "cue-93-144350",
+        "cue-94-145310"
+      ],
+      "sourceText": "這是沙蟹能吃肉質細嫩味道鮮美有多種吃法",
+      "sourceStart": 141.93,
+      "sourceEnd": 146.49,
+      "translatedText": "These are sand crabs edible tender meat delicious taste many ways to cook them",
+      "finalSpokenText": "These are sand crabs edible tender meat delicious taste many ways to cook them",
+      "predictedDuration": 4.841,
+      "naturalDuration": 4.416803,
+      "actualDuration": 4.010181,
+      "predictionUncertainty": 0.69,
+      "tempo": 1.1014,
+      "plannedDuration": 4.029929744525547,
+      "voiceEnd": 145.940181,
+      "localTempoAdjustment": 0.0054,
+      "audioPath": "F:\\Son\\tool\\TediaPros\\.worktrees\\codex-autoshort-optimization\\.ai\\tasks\\2026-09-08-dubbing-group-evidence3\\bf03032d-1fc8-4051-8fe9-149fdd31cc7f\\cue-90-141930-tempo.wav",
+      "subtitles": [
+        {
+          "id": "cue-90-141930-subtitle-1",
+          "sourceIndex": 90,
+          "start": 141.93,
+          "end": 145.05481636363635,
+          "text": "These are sand crabs edible tender meat delicious taste many",
+          "timingQuality": "cue"
+        },
+        {
+          "id": "cue-90-141930-subtitle-2",
+          "sourceIndex": 90,
+          "start": 145.05481636363635,
+          "end": 145.940181,
+          "text": "ways to cook them",
+          "timingQuality": "cue"
+        }
+      ],
+      "rephrased": false
+    },
+    {
+      "cueId": "cue-95-146490",
+      "start": 146.49,
+      "preferredEnd": 148.13,
+      "hardEnd": 147.89,
+      "availableDuration": 1.3999999999999773,
+      "id": "cue-95-146490",
+      "sourceCueIds": [
+        "cue-95-146490"
+      ],
+      "sourceText": "這種螃蟹能吃嗎?",
+      "sourceStart": 146.49,
+      "sourceEnd": 148.13,
+      "translatedText": "Can you eat these crabs?",
+      "finalSpokenText": "Can you eat these crabs?",
+      "predictedDuration": 1.8,
+      "naturalDuration": 1.432086,
+      "actualDuration": 1.286259,
+      "predictionUncertainty": 0.697,
+      "tempo": 1.1134,
+      "plannedDuration": 1.306647810218978,
+      "voiceEnd": 147.776259,
+      "localTempoAdjustment": 0.0174,
+      "audioPath": "F:\\Son\\tool\\TediaPros\\.worktrees\\codex-autoshort-optimization\\.ai\\tasks\\2026-09-08-dubbing-group-evidence3\\bf03032d-1fc8-4051-8fe9-149fdd31cc7f\\cue-95-146490-tempo.wav",
+      "subtitles": [
+        {
+          "id": "cue-95-146490-subtitle",
+          "sourceIndex": 95,
+          "start": 146.49,
+          "end": 147.776259,
+          "text": "Can you eat these crabs?",
+          "timingQuality": "cue"
+        }
+      ],
+      "rephrased": true
+    },
+    {
+      "cueId": "cue-96-148390",
+      "start": 148.39,
+      "preferredEnd": 155.33,
+      "hardEnd": 154.83,
+      "availableDuration": 6.440000000000026,
+      "id": "cue-96-148390",
+      "sourceCueIds": [
+        "cue-96-148390",
+        "cue-97-149290",
+        "cue-98-150950",
+        "cue-99-152110",
+        "cue-100-153770"
+      ],
+      "sourceText": "這是皇帝蟹玄冥巨大擬冰蟹蟹肉非常飽滿帶有濃郁的海洋鮮味吃起來很有滿足感",
+      "sourceStart": 148.39,
+      "sourceEnd": 155.33,
+      "translatedText": "These are emperor crabs giant ice crabs very full of crab meat with rich ocean freshness very satisfying to eat",
+      "finalSpokenText": "These are emperor crabs giant ice crabs very full of crab meat with rich ocean freshness very satisfying to eat",
+      "predictedDuration": 6.901,
+      "naturalDuration": 7.282426,
+      "actualDuration": 6.420884,
+      "predictionUncertainty": 0.657,
+      "tempo": 1.1342,
+      "plannedDuration": 6.440000000000026,
+      "voiceEnd": 154.810884,
+      "localTempoAdjustment": 0.0382,
+      "audioPath": "F:\\Son\\tool\\TediaPros\\.worktrees\\codex-autoshort-optimization\\.ai\\tasks\\2026-09-08-dubbing-group-evidence3\\bf03032d-1fc8-4051-8fe9-149fdd31cc7f\\cue-96-148390-tempo.wav",
+      "subtitles": [
+        {
+          "id": "cue-96-148390-subtitle-1",
+          "sourceIndex": 96,
+          "start": 148.39,
+          "end": 152.0090437090909,
+          "text": "These are emperor crabs giant ice crabs very full of crab meat",
+          "timingQuality": "cue"
+        },
+        {
+          "id": "cue-96-148390-subtitle-2",
+          "sourceIndex": 96,
+          "start": 152.0090437090909,
+          "end": 154.810884,
+          "text": "with rich ocean freshness very satisfying to eat",
+          "timingQuality": "cue"
+        }
+      ],
+      "rephrased": false
+    },
+    {
+      "cueId": "cue-101-155330",
+      "start": 155.33,
+      "preferredEnd": 157.05,
+      "hardEnd": 156.85,
+      "availableDuration": 1.5199999999999818,
+      "id": "cue-101-155330",
+      "sourceCueIds": [
+        "cue-101-155330"
+      ],
+      "sourceText": "這種螃蟹能吃嗎?",
+      "sourceStart": 155.33,
+      "sourceEnd": 157.05,
+      "translatedText": "Can you eat these crabs?",
+      "finalSpokenText": "Are these crabs edible?",
+      "predictedDuration": 1.701,
+      "naturalDuration": 1.813175,
+      "actualDuration": 1.503288,
+      "predictionUncertainty": 0.658,
+      "tempo": 1.2061,
+      "plannedDuration": 1.5199723363232458,
+      "voiceEnd": 156.833288,
+      "localTempoAdjustment": 0.1101,
+      "audioPath": "F:\\Son\\tool\\TediaPros\\.worktrees\\codex-autoshort-optimization\\.ai\\tasks\\2026-09-08-dubbing-group-evidence3\\bf03032d-1fc8-4051-8fe9-149fdd31cc7f\\cue-101-155330-tempo.wav",
+      "subtitles": [
+        {
+          "id": "cue-101-155330-subtitle",
+          "sourceIndex": 101,
+          "start": 155.33,
+          "end": 156.833288,
+          "text": "Are these crabs edible?",
+          "timingQuality": "cue"
+        }
+      ],
+      "rephrased": true
+    },
+    {
+      "cueId": "cue-102-157350",
+      "start": 157.35,
+      "preferredEnd": 165.87,
+      "hardEnd": 166.576009,
+      "availableDuration": 9.226009000000005,
+      "id": "cue-102-157350",
+      "sourceCueIds": [
+        "cue-102-157350",
+        "cue-103-158270",
+        "cue-104-159710",
+        "cue-105-161550",
+        "cue-106-163390",
+        "cue-107-164770"
+      ],
+      "sourceText": "這是沙仁蟹玄冥該是巨熬蟹世界上最大的螃蟹其蟹肉主要集中在腸腿口感軟嫩鮮甜帶獨特清香",
+      "sourceStart": 157.35,
+      "sourceEnd": 165.87,
+      "translatedText": "This is the sand crab. Xuanming should be the giant boiled crab. The world's largest crab. Its meat is mainly in the legs. Soft, tender, fresh, and sweet. With a unique fresh aroma.",
+      "finalSpokenText": "This is the sand crab. Xuanming should be the giant boiled crab, the world's largest. Its meat is in the legs, soft, tender, fresh, sweet, and uniquely aromatic.",
+      "predictedDuration": 10.77,
+      "naturalDuration": 10.548186,
+      "actualDuration": 8.82712,
+      "predictionUncertainty": 0.658,
+      "tempo": 1.195,
+      "plannedDuration": 8.84600900000001,
+      "voiceEnd": 166.17712,
+      "localTempoAdjustment": 0.099,
+      "audioPath": "F:\\Son\\tool\\TediaPros\\.worktrees\\codex-autoshort-optimization\\.ai\\tasks\\2026-09-08-dubbing-group-evidence3\\bf03032d-1fc8-4051-8fe9-149fdd31cc7f\\cue-102-157350-tempo.wav",
+      "subtitles": [
+        {
+          "id": "cue-102-157350-subtitle-1",
+          "sourceIndex": 102,
+          "start": 157.35,
+          "end": 160.90305459119497,
+          "text": "This is the sand crab. Xuanming should be the giant boiled crab,",
+          "timingQuality": "cue"
+        },
+        {
+          "id": "cue-102-157350-subtitle-2",
+          "sourceIndex": 102,
+          "start": 160.90305459119497,
+          "end": 164.17852679245283,
+          "text": "the world's largest. Its meat is in the legs, soft, tender,",
+          "timingQuality": "cue"
+        },
+        {
+          "id": "cue-102-157350-subtitle-3",
+          "sourceIndex": 102,
+          "start": 164.17852679245283,
+          "end": 166.17712,
+          "text": "fresh, sweet, and uniquely aromatic.",
+          "timingQuality": "cue"
+        }
+      ],
+      "rephrased": true
+    }
+  ],
+  "sourceCues": [
+    {
+      "id": "cue-0-1490",
+      "start": 1.49,
+      "end": 3.41,
+      "text": "吃螃蟹前妓的仔細看看"
+    },
+    {
+      "id": "cue-1-3410",
+      "start": 3.41,
+      "end": 5.23,
+      "text": "這種螃蟹能吃嗎?"
+    },
+    {
+      "id": "cue-2-5530",
+      "start": 5.53,
+      "end": 6.41,
+      "text": "這是紫地蟹"
+    },
+    {
+      "id": "cue-3-6410",
+      "start": 6.41,
+      "end": 8.63,
+      "text": "主要以山上的靈芝草為食"
+    },
+    {
+      "id": "cue-4-8630",
+      "start": 8.63,
+      "end": 10.15,
+      "text": "固稱靈芝蟹"
+    },
+    {
+      "id": "cue-5-10150",
+      "start": 10.15,
+      "end": 11.03,
+      "text": "可印肉少"
+    },
+    {
+      "id": "cue-6-11030",
+      "start": 11.03,
+      "end": 12.31,
+      "text": "且價格還貴"
+    },
+    {
+      "id": "cue-7-12310",
+      "start": 12.31,
+      "end": 14.01,
+      "text": "吃它不如吃大閘蟹"
+    },
+    {
+      "id": "cue-8-14010",
+      "start": 14.01,
+      "end": 15.75,
+      "text": "這種螃蟹能吃嗎?"
+    },
+    {
+      "id": "cue-9-16110",
+      "start": 16.11,
+      "end": 17.77,
+      "text": "這是強壯武裝緊握蟹"
+    },
+    {
+      "id": "cue-10-17770",
+      "start": 17.77,
+      "end": 19.21,
+      "text": "可僅應難處理"
+    },
+    {
+      "id": "cue-11-19210",
+      "start": 19.21,
+      "end": 21.29,
+      "text": "可實的蟹肉和膏非常有限"
+    },
+    {
+      "id": "cue-12-21290",
+      "start": 21.29,
+      "end": 23.53,
+      "text": "吃它不如買根蟹棒解解蟬"
+    },
+    {
+      "id": "cue-13-23530",
+      "start": 23.53,
+      "end": 25.21,
+      "text": "這種螃蟹能吃嗎?"
+    },
+    {
+      "id": "cue-14-25650",
+      "start": 25.65,
+      "end": 26.87,
+      "text": "這是巨型圖示蟹"
+    },
+    {
+      "id": "cue-15-26870",
+      "start": 26.87,
+      "end": 29.33,
+      "text": "能吃 但整體鮮甜味不足"
+    },
+    {
+      "id": "cue-16-29330",
+      "start": 29.33,
+      "end": 31.07,
+      "text": "吃它不如吃大閘蟹"
+    },
+    {
+      "id": "cue-17-31070",
+      "start": 31.07,
+      "end": 32.83,
+      "text": "這種螃蟹能吃嗎?"
+    },
+    {
+      "id": "cue-18-33130",
+      "start": 33.13,
+      "end": 34.37,
+      "text": "這是官式圓肘蟹"
+    },
+    {
+      "id": "cue-19-34370",
+      "start": 34.37,
+      "end": 35.91,
+      "text": "可能含有寄生蟲"
+    },
+    {
+      "id": "cue-20-35910",
+      "start": 35.91,
+      "end": 37.23,
+      "text": "主要用來觀賞"
+    },
+    {
+      "id": "cue-21-37230",
+      "start": 37.23,
+      "end": 38.09,
+      "text": "不能吃"
+    },
+    {
+      "id": "cue-22-38090",
+      "start": 38.09,
+      "end": 39.71,
+      "text": "這種螃蟹能吃嗎?"
+    },
+    {
+      "id": "cue-23-40110",
+      "start": 40.11,
+      "end": 40.85,
+      "text": "這是箭蟹"
+    },
+    {
+      "id": "cue-24-40850",
+      "start": 40.85,
+      "end": 42.17,
+      "text": "長得跟蜘蛛一樣"
+    },
+    {
+      "id": "cue-25-42170",
+      "start": 42.17,
+      "end": 44.37,
+      "text": "千萬不要在評論區答MJ"
+    },
+    {
+      "id": "cue-26-44370",
+      "start": 44.37,
+      "end": 45.63,
+      "text": "不信你試試看"
+    },
+    {
+      "id": "cue-27-45630",
+      "start": 45.63,
+      "end": 47.31,
+      "text": "這種螃蟹能吃嗎?"
+    },
+    {
+      "id": "cue-28-47730",
+      "start": 47.73,
+      "end": 48.75,
+      "text": "這是觀光蟹"
+    },
+    {
+      "id": "cue-29-48750",
+      "start": 48.75,
+      "end": 50.07,
+      "text": "俗稱鬼面蟹"
+    },
+    {
+      "id": "cue-30-50070",
+      "start": 50.07,
+      "end": 51.61,
+      "text": "肉質少且口感一般"
+    },
+    {
+      "id": "cue-31-51610",
+      "start": 51.61,
+      "end": 53.35,
+      "text": "吃它不如吃大閘蟹"
+    },
+    {
+      "id": "cue-32-53350",
+      "start": 53.35,
+      "end": 55.07,
+      "text": "這種螃蟹能吃嗎?"
+    },
+    {
+      "id": "cue-33-55450",
+      "start": 55.45,
+      "end": 56.77,
+      "text": "這是巨圓清蟹"
+    },
+    {
+      "id": "cue-34-56770",
+      "start": 56.77,
+      "end": 58.27,
+      "text": "能吃肉質細嫩"
+    },
+    {
+      "id": "cue-35-58270",
+      "start": 58.27,
+      "end": 59.51,
+      "text": "營養價值高"
+    },
+    {
+      "id": "cue-36-59510",
+      "start": 59.51,
+      "end": 61.67,
+      "text": "屬於非常頂級的海蟹之一"
+    },
+    {
+      "id": "cue-37-61670",
+      "start": 61.67,
+      "end": 63.37,
+      "text": "這種螃蟹能吃嗎?"
+    },
+    {
+      "id": "cue-38-63710",
+      "start": 63.71,
+      "end": 64.93,
+      "text": "這是正值愛節蟹"
+    },
+    {
+      "id": "cue-39-64930",
+      "start": 64.93,
+      "end": 66.89,
+      "text": "肉理全是麻痺性毒素"
+    },
+    {
+      "id": "cue-40-66890",
+      "start": 66.89,
+      "end": 68.59,
+      "text": "蟹黃更是劇毒無比"
+    },
+    {
+      "id": "cue-41-68590",
+      "start": 68.59,
+      "end": 69.93,
+      "text": "打死都不能吃"
+    },
+    {
+      "id": "cue-42-69930",
+      "start": 69.93,
+      "end": 71.65,
+      "text": "這種螃蟹能吃嗎?"
+    },
+    {
+      "id": "cue-43-72010",
+      "start": 72.01,
+      "end": 73.41,
+      "text": "這是同住熟弱蟹"
+    },
+    {
+      "id": "cue-44-73410",
+      "start": 73.41,
+      "end": 75.79,
+      "text": "也是世界上毒性最強的螃蟹"
+    },
+    {
+      "id": "cue-45-75790",
+      "start": 75.79,
+      "end": 77.25,
+      "text": "目前還無藥可解"
+    },
+    {
+      "id": "cue-46-77250",
+      "start": 77.25,
+      "end": 78.47,
+      "text": "千萬不能吃"
+    },
+    {
+      "id": "cue-47-78470",
+      "start": 78.47,
+      "end": 80.13,
+      "text": "這種螃蟹能吃嗎?"
+    },
+    {
+      "id": "cue-48-80450",
+      "start": 80.45,
+      "end": 81.69,
+      "text": "這是紅色幽靈蟹"
+    },
+    {
+      "id": "cue-49-81690",
+      "start": 81.69,
+      "end": 83.87,
+      "text": "海綿寶寶裡蟹老闆的圓形"
+    },
+    {
+      "id": "cue-50-83870",
+      "start": 83.87,
+      "end": 84.93,
+      "text": "肉量極少"
+    },
+    {
+      "id": "cue-51-84930",
+      "start": 84.93,
+      "end": 87.13,
+      "text": "體內可能含毒素與污染物"
+    },
+    {
+      "id": "cue-52-87130",
+      "start": 87.13,
+      "end": 87.95,
+      "text": "不能吃"
+    },
+    {
+      "id": "cue-53-87950",
+      "start": 87.95,
+      "end": 89.57,
+      "text": "這種螃蟹能吃嗎?"
+    },
+    {
+      "id": "cue-54-89910",
+      "start": 89.91,
+      "end": 90.83,
+      "text": "這是好禮蟹"
+    },
+    {
+      "id": "cue-55-90830",
+      "start": 90.83,
+      "end": 91.87,
+      "text": "也叫豆蟹"
+    },
+    {
+      "id": "cue-56-91870",
+      "start": 91.87,
+      "end": 94.45,
+      "text": "專門寄生在生蠔裡的小傢伙"
+    },
+    {
+      "id": "cue-57-94450",
+      "start": 94.45,
+      "end": 95.27,
+      "text": "個頭雖小"
+    },
+    {
+      "id": "cue-58-95270",
+      "start": 95.27,
+      "end": 96.41,
+      "text": "但味道賊好"
+    },
+    {
+      "id": "cue-59-96410",
+      "start": 96.41,
+      "end": 97.95,
+      "text": "這種螃蟹能吃嗎?"
+    },
+    {
+      "id": "cue-60-98270",
+      "start": 98.27,
+      "end": 99.29,
+      "text": "這是紅斑嫖蟹"
+    },
+    {
+      "id": "cue-61-99290",
+      "start": 99.29,
+      "end": 102.07,
+      "text": "它也被稱為七星蟹或七眼蟹"
+    },
+    {
+      "id": "cue-62-102070",
+      "start": 102.07,
+      "end": 102.91,
+      "text": "有毒不能吃"
+    },
+    {
+      "id": "cue-63-102910",
+      "start": 102.91,
+      "end": 104.59,
+      "text": "這種螃蟹能吃嗎?"
+    },
+    {
+      "id": "cue-64-104970",
+      "start": 104.97,
+      "end": 106.31,
+      "text": "這是雷諾士林斑蟹"
+    },
+    {
+      "id": "cue-65-106310",
+      "start": 106.31,
+      "end": 108.91,
+      "text": "體內含有合吞毒素和麻痺性被毒"
+    },
+    {
+      "id": "cue-66-108910",
+      "start": 108.91,
+      "end": 109.83,
+      "text": "不能吃"
+    },
+    {
+      "id": "cue-67-109830",
+      "start": 109.83,
+      "end": 111.51,
+      "text": "這種螃蟹能吃嗎?"
+    },
+    {
+      "id": "cue-68-111930",
+      "start": 111.93,
+      "end": 112.71,
+      "text": "這是椰子蟹"
+    },
+    {
+      "id": "cue-69-112710",
+      "start": 112.71,
+      "end": 113.45,
+      "text": "能吃"
+    },
+    {
+      "id": "cue-70-113450",
+      "start": 113.45,
+      "end": 114.83,
+      "text": "因常年吃椰肉"
+    },
+    {
+      "id": "cue-71-114830",
+      "start": 114.83,
+      "end": 116.45,
+      "text": "蟹肉自帶天然椰香"
+    },
+    {
+      "id": "cue-72-116450",
+      "start": 116.45,
+      "end": 118.25,
+      "text": "這種螃蟹能吃嗎?"
+    },
+    {
+      "id": "cue-73-118450",
+      "start": 118.45,
+      "end": 119.59,
+      "text": "這是花紋細咬蟹"
+    },
+    {
+      "id": "cue-74-119590",
+      "start": 119.59,
+      "end": 121.03,
+      "text": "也叫做全脊蟹"
+    },
+    {
+      "id": "cue-75-121030",
+      "start": 121.03,
+      "end": 123.05,
+      "text": "通常只做微觀賞蟹飼養"
+    },
+    {
+      "id": "cue-76-123050",
+      "start": 123.05,
+      "end": 123.99,
+      "text": "不建議吃"
+    },
+    {
+      "id": "cue-77-123990",
+      "start": 123.99,
+      "end": 125.71,
+      "text": "這種螃蟹能吃嗎?"
+    },
+    {
+      "id": "cue-78-126110",
+      "start": 126.11,
+      "end": 127.29,
+      "text": "這是兇狠求婦蟹"
+    },
+    {
+      "id": "cue-79-127290",
+      "start": 127.29,
+      "end": 128.55,
+      "text": "不僅看著兇猛"
+    },
+    {
+      "id": "cue-80-128550",
+      "start": 128.55,
+      "end": 130.39,
+      "text": "且含麻痺性被類毒素"
+    },
+    {
+      "id": "cue-81-130390",
+      "start": 130.39,
+      "end": 131.57,
+      "text": "千萬不能吃"
+    },
+    {
+      "id": "cue-82-131570",
+      "start": 131.57,
+      "end": 133.21,
+      "text": "這種螃蟹能吃嗎?"
+    },
+    {
+      "id": "cue-83-133590",
+      "start": 133.59,
+      "end": 134.77,
+      "text": "這是聖誕島紅蟹"
+    },
+    {
+      "id": "cue-84-134770",
+      "start": 134.77,
+      "end": 135.89,
+      "text": "體內含乙酸"
+    },
+    {
+      "id": "cue-85-135890",
+      "start": 135.89,
+      "end": 136.95,
+      "text": "且食性雜"
+    },
+    {
+      "id": "cue-86-136950",
+      "start": 136.95,
+      "end": 137.99,
+      "text": "肉少水多"
+    },
+    {
+      "id": "cue-87-137990",
+      "start": 137.99,
+      "end": 139.03,
+      "text": "苦澀難食"
+    },
+    {
+      "id": "cue-88-139030",
+      "start": 139.03,
+      "end": 139.91,
+      "text": "不能吃"
+    },
+    {
+      "id": "cue-89-139910",
+      "start": 139.91,
+      "end": 141.57,
+      "text": "這種螃蟹能吃嗎?"
+    },
+    {
+      "id": "cue-90-141930",
+      "start": 141.93,
+      "end": 142.63,
+      "text": "這是沙蟹"
+    },
+    {
+      "id": "cue-91-142630",
+      "start": 142.63,
+      "end": 143.37,
+      "text": "能吃"
+    },
+    {
+      "id": "cue-92-143370",
+      "start": 143.37,
+      "end": 144.35,
+      "text": "肉質細嫩"
+    },
+    {
+      "id": "cue-93-144350",
+      "start": 144.35,
+      "end": 145.31,
+      "text": "味道鮮美"
+    },
+    {
+      "id": "cue-94-145310",
+      "start": 145.31,
+      "end": 146.49,
+      "text": "有多種吃法"
+    },
+    {
+      "id": "cue-95-146490",
+      "start": 146.49,
+      "end": 148.13,
+      "text": "這種螃蟹能吃嗎?"
+    },
+    {
+      "id": "cue-96-148390",
+      "start": 148.39,
+      "end": 149.29,
+      "text": "這是皇帝蟹"
+    },
+    {
+      "id": "cue-97-149290",
+      "start": 149.29,
+      "end": 150.95,
+      "text": "玄冥巨大擬冰蟹"
+    },
+    {
+      "id": "cue-98-150950",
+      "start": 150.95,
+      "end": 152.11,
+      "text": "蟹肉非常飽滿"
+    },
+    {
+      "id": "cue-99-152110",
+      "start": 152.11,
+      "end": 153.77,
+      "text": "帶有濃郁的海洋鮮味"
+    },
+    {
+      "id": "cue-100-153770",
+      "start": 153.77,
+      "end": 155.33,
+      "text": "吃起來很有滿足感"
+    },
+    {
+      "id": "cue-101-155330",
+      "start": 155.33,
+      "end": 157.05,
+      "text": "這種螃蟹能吃嗎?"
+    },
+    {
+      "id": "cue-102-157350",
+      "start": 157.35,
+      "end": 158.27,
+      "text": "這是沙仁蟹"
+    },
+    {
+      "id": "cue-103-158270",
+      "start": 158.27,
+      "end": 159.71,
+      "text": "玄冥該是巨熬蟹"
+    },
+    {
+      "id": "cue-104-159710",
+      "start": 159.71,
+      "end": 161.55,
+      "text": "世界上最大的螃蟹"
+    },
+    {
+      "id": "cue-105-161550",
+      "start": 161.55,
+      "end": 163.39,
+      "text": "其蟹肉主要集中在腸腿"
+    },
+    {
+      "id": "cue-106-163390",
+      "start": 163.39,
+      "end": 164.77,
+      "text": "口感軟嫩鮮甜"
+    },
+    {
+      "id": "cue-107-164770",
+      "start": 164.77,
+      "end": 165.87,
+      "text": "帶獨特清香"
+    }
+  ],
+  "createdAt": "2026-09-08T01:06:29.020Z"
+}

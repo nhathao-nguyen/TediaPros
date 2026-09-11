@@ -1,4 +1,5 @@
 import type { VideoTitleConfig } from './types'
+import { validateVideoSeoOptions } from './videoSeo'
 
 /** Validate renderer-provided title settings without importing a Node module. */
 export function validateVideoTitleConfig(raw: unknown): string | null {
@@ -29,5 +30,7 @@ export function validateVideoTitleConfig(raw: unknown): string | null {
       return 'Địa chỉ AI tạo tiêu đề không hợp lệ.'
     }
   }
+  const seoError = validateVideoSeoOptions(config.seo)
+  if (seoError) return seoError
   return null
 }

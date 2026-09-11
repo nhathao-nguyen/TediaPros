@@ -1,0 +1,70 @@
+{
+  "assertion": "REPRODUCED: baseline valid, HEAD rejects before LLM",
+  "results": [
+    {
+      "version": "BASE 481ae06",
+      "outcome": "PASS",
+      "initialGroups": [
+        [
+          "a"
+        ],
+        [
+          "b1",
+          "b2"
+        ]
+      ],
+      "validation": {
+        "ok": true,
+        "violations": []
+      },
+      "final": [
+        {
+          "id": "a",
+          "sourceCueIds": [
+            "a"
+          ],
+          "start": 0,
+          "end": 0.5,
+          "tempo": 1
+        },
+        {
+          "id": "b1",
+          "sourceCueIds": [
+            "b1",
+            "b2"
+          ],
+          "start": 1.7586206896551724,
+          "end": 3,
+          "tempo": 1.45
+        }
+      ],
+      "trace": [
+        "tts:Opening sentence.",
+        "llm:a",
+        "tts:Short opener.",
+        "tts:First translated part. Second translated part."
+      ]
+    },
+    {
+      "version": "HEAD",
+      "outcome": "FAIL",
+      "initialGroups": [
+        [
+          "a"
+        ],
+        [
+          "b1",
+          "b2"
+        ]
+      ],
+      "error": "Cue b1 có audio không hợp lệ.",
+      "trace": [
+        "tts:Opening sentence.",
+        "tts:First translated part. Second translated part.",
+        "split:b1",
+        "tts:Opening sentence.",
+        "tts:First translated part."
+      ]
+    }
+  ]
+}

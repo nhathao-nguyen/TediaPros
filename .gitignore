@@ -8,6 +8,10 @@ dist-engine/
 build/
 *.tsbuildinfo
 /release-artifacts/
+/.runner-staging/
+/dist-preupdate-*/
+/assets.stale-before-build/
+/electron.vite.config.*.mjs
 
 # Logs
 *.log

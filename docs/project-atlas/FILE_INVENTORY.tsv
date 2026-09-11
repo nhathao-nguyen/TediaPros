@@ -1,0 +1,471 @@
+Path	Category	Size_Bytes	Lines	Git_Status	Survey_Status	Unread_Reason	Covered_In_Docs
+.ai/policies/permissions.md	Docs/Tooling: AI Agent Workflows & Tasks	4138	56	untracked	đọc đầy đủ		docs/project-atlas/DEVELOPMENT.md
+.ai/tasks/INDEX.md	Docs/Tooling: AI Agent Workflows & Tasks	2333	39	untracked	đọc đầy đủ		docs/project-atlas/DEVELOPMENT.md
+.ai/tasks/TASK-20260907-ai-operating-layer.md	Docs/Tooling: AI Agent Workflows & Tasks	4487	64	untracked	đọc đầy đủ		docs/project-atlas/DEVELOPMENT.md
+.ai/tasks/TASK_TEMPLATE.md	Docs/Tooling: AI Agent Workflows & Tasks	1700	69	untracked	đọc đầy đủ		docs/project-atlas/DEVELOPMENT.md
+.ai/workflows/bugfix.md	Docs/Tooling: AI Agent Workflows & Tasks	2846	62	untracked	đọc đầy đủ		docs/project-atlas/DEVELOPMENT.md
+.ai/workflows/feature.md	Docs/Tooling: AI Agent Workflows & Tasks	2811	56	untracked	đọc đầy đủ		docs/project-atlas/DEVELOPMENT.md
+.ai/workflows/refactor.md	Docs/Tooling: AI Agent Workflows & Tasks	2366	47	untracked	đọc đầy đủ		docs/project-atlas/DEVELOPMENT.md
+.ai/workflows/review.md	Docs/Tooling: AI Agent Workflows & Tasks	2976	44	untracked	đọc đầy đủ		docs/project-atlas/DEVELOPMENT.md
+.gitattributes	Config/Legal: Project Root Configuration	133	5	tracked	đọc đầy đủ		docs/project-atlas/CONFIGURATION.md; docs/project-atlas/SECURITY_AND_LICENSE.md
+.github/workflows/build-mac-engines.yml	CI/CD: GitHub Actions Workflows	2028	64	tracked	đọc đầy đủ		docs/project-atlas/BUILD_AND_RELEASE.md
+.github/workflows/build-windows-runtime.yml	CI/CD: GitHub Actions Workflows	13039	227	tracked	đọc đầy đủ		docs/project-atlas/BUILD_AND_RELEASE.md
+.github/workflows/release-app.yml	CI/CD: GitHub Actions Workflows	2735	106	tracked	đọc đầy đủ		docs/project-atlas/BUILD_AND_RELEASE.md
+.gitignore	Config/Legal: Project Root Configuration	1957	98	tracked	đọc đầy đủ		docs/project-atlas/CONFIGURATION.md; docs/project-atlas/SECURITY_AND_LICENSE.md
+AUTO_SHORT_CONFIG_NOTE_2026-09-06.md	Config/Legal: Project Root Configuration	4800	96	tracked	đọc đầy đủ		docs/project-atlas/CONFIGURATION.md; docs/project-atlas/SECURITY_AND_LICENSE.md
+LICENSE	Config/Legal: Project Root Configuration	4668	135	tracked	đọc đầy đủ		docs/project-atlas/CONFIGURATION.md; docs/project-atlas/SECURITY_AND_LICENSE.md
+NOTICE	Config/Legal: Project Root Configuration	539	14	tracked	đọc đầy đủ		docs/project-atlas/CONFIGURATION.md; docs/project-atlas/SECURITY_AND_LICENSE.md
+README.md	Config/Legal: Project Root Configuration	7669	136	tracked	đọc đầy đủ		docs/project-atlas/CONFIGURATION.md; docs/project-atlas/SECURITY_AND_LICENSE.md
+RELEASE_NOTES.md	Config/Legal: Project Root Configuration	2325	39	tracked	đọc đầy đủ		docs/project-atlas/CONFIGURATION.md; docs/project-atlas/SECURITY_AND_LICENSE.md
+SESSION_CHAT_LOG.md	Config/Legal: Project Root Configuration	17467	218	tracked	đọc đầy đủ		docs/project-atlas/CONFIGURATION.md; docs/project-atlas/SECURITY_AND_LICENSE.md
+THIRD-PARTY-NOTICES.txt	Config/Legal: Project Root Configuration	14458	278	tracked	đọc đầy đủ		docs/project-atlas/CONFIGURATION.md; docs/project-atlas/SECURITY_AND_LICENSE.md
+build/icon.ico	Asset: Build App Icons & Graphic	75501	-1	tracked	chỉ kiểm kê	Tệp hình ảnh biểu tượng nhị phân PNG/ICO cho Electron builder	docs/project-atlas/BUILD_AND_RELEASE.md
+build/icon.png	Asset: Build App Icons & Graphic	666010	-1	tracked	chỉ kiểm kê	Tệp hình ảnh biểu tượng nhị phân PNG/ICO cho Electron builder	docs/project-atlas/BUILD_AND_RELEASE.md
+build/iconnew.png	Asset: Build App Icons & Graphic	1515692	-1	tracked	chỉ kiểm kê	Tệp hình ảnh biểu tượng nhị phân PNG/ICO cho Electron builder	docs/project-atlas/BUILD_AND_RELEASE.md
+build/tediapros-source.png	Asset: Build App Icons & Graphic	740087	-1	tracked	chỉ kiểm kê	Tệp hình ảnh biểu tượng nhị phân PNG/ICO cho Electron builder	docs/project-atlas/BUILD_AND_RELEASE.md
+distribution/runtime-inputs.json	Manifests: Release & Checksum Pins	3484	98	tracked	đọc đầy đủ		docs/project-atlas/BUILD_AND_RELEASE.md; docs/project-atlas/SECURITY_AND_LICENSE.md
+distribution/separator-model-inputs.json	Manifests: Release & Checksum Pins	2542	72	tracked	đọc đầy đủ		docs/project-atlas/BUILD_AND_RELEASE.md; docs/project-atlas/SECURITY_AND_LICENSE.md
+distribution/separator-release-status.json	Manifests: Release & Checksum Pins	280	12	tracked	đọc đầy đủ		docs/project-atlas/BUILD_AND_RELEASE.md; docs/project-atlas/SECURITY_AND_LICENSE.md
+docs/adr/001-hybrid-electron-python-engines.md	Docs: Architecture Decision Records	2802	43	untracked	đọc đầy đủ		docs/project-atlas/ARCHITECTURE.md; docs/project-atlas/EVIDENCE.md
+docs/adr/002-typed-ipc-contracts.md	Docs: Architecture Decision Records	2483	34	untracked	đọc đầy đủ		docs/project-atlas/ARCHITECTURE.md; docs/project-atlas/EVIDENCE.md
+docs/adr/003-on-demand-runtime-with-sha256-verification.md	Docs: Architecture Decision Records	2471	41	untracked	đọc đầy đủ		docs/project-atlas/ARCHITECTURE.md; docs/project-atlas/EVIDENCE.md
+docs/adr/004-planar-rgb-for-ocr-blurring.md	Docs: Architecture Decision Records	2651	43	untracked	đọc đầy đủ		docs/project-atlas/ARCHITECTURE.md; docs/project-atlas/EVIDENCE.md
+docs/adr/005-source-anchored-dubbing-tempo-policy.md	Docs: Architecture Decision Records	3293	45	untracked	đọc đầy đủ		docs/project-atlas/ARCHITECTURE.md; docs/project-atlas/EVIDENCE.md
+docs/adr/006-sttn-inpainting-vs-masked-blur.md	Docs: Architecture Decision Records	2951	47	untracked	đọc đầy đủ		docs/project-atlas/ARCHITECTURE.md; docs/project-atlas/EVIDENCE.md
+docs/adr/007-deterministic-ass-subtitle-geometry.md	Docs: Architecture Decision Records	2795	41	untracked	đọc đầy đủ		docs/project-atlas/ARCHITECTURE.md; docs/project-atlas/EVIDENCE.md
+docs/architecture.md	Docs: Core Architecture & Domain	7021	153	untracked	đọc đầy đủ		docs/project-atlas/ARCHITECTURE.md; docs/project-atlas/GLOSSARY.md
+docs/benchmarks/2026-09-04-separator-hardware-acceptance.md	Docs: Benchmark Audits & Qualifications	3037	60	tracked	đọc đầy đủ		docs/project-atlas/EVIDENCE.md; docs/project-atlas/TESTING.md
+docs/benchmarks/2026-09-04-separator-model-qualification.md	Docs: Benchmark Audits & Qualifications	1772	33	tracked	đọc đầy đủ		docs/project-atlas/EVIDENCE.md; docs/project-atlas/TESTING.md
+docs/benchmarks/2026-09-05-blur-audit.md	Docs: Benchmark Audits & Qualifications	15804	142	tracked	đọc đầy đủ		docs/project-atlas/EVIDENCE.md; docs/project-atlas/TESTING.md
+docs/benchmarks/2026-09-05-ocr-blur-acceptance.md	Docs: Benchmark Audits & Qualifications	5144	106	tracked	đọc đầy đủ		docs/project-atlas/EVIDENCE.md; docs/project-atlas/TESTING.md
+docs/benchmarks/2026-09-05-subtitle-inpainting-repo-review.md	Docs: Benchmark Audits & Qualifications	9593	80	tracked	đọc đầy đủ		docs/project-atlas/EVIDENCE.md; docs/project-atlas/TESTING.md
+docs/benchmarks/2026-09-06-autoshort-client-remediation-acceptance.md	Docs: Benchmark Audits & Qualifications	5553	58	tracked	đọc đầy đủ		docs/project-atlas/EVIDENCE.md; docs/project-atlas/TESTING.md
+docs/benchmarks/2026-09-06-autoshort-throughput-audit.md	Docs: Benchmark Audits & Qualifications	11329	151	tracked	đọc đầy đủ		docs/project-atlas/EVIDENCE.md; docs/project-atlas/TESTING.md
+docs/benchmarks/2026-09-06-backend-quality-speed.md	Docs: Benchmark Audits & Qualifications	13331	95	tracked	đọc đầy đủ		docs/project-atlas/EVIDENCE.md; docs/project-atlas/TESTING.md
+docs/benchmarks/2026-09-06-gemini-throughput-review.md	Docs: Benchmark Audits & Qualifications	13779	117	tracked	đọc đầy đủ		docs/project-atlas/EVIDENCE.md; docs/project-atlas/TESTING.md
+docs/benchmarks/2026-09-06-sttn-acceptance.md	Docs: Benchmark Audits & Qualifications	5546	92	tracked	đọc đầy đủ		docs/project-atlas/EVIDENCE.md; docs/project-atlas/TESTING.md
+docs/benchmarks/2026-09-06-sttn-duration-fix.md	Docs: Benchmark Audits & Qualifications	4907	81	tracked	đọc đầy đủ		docs/project-atlas/EVIDENCE.md; docs/project-atlas/TESTING.md
+docs/benchmarks/2026-09-06-sttn-storage-optimization.md	Docs: Benchmark Audits & Qualifications	6924	121	tracked	đọc đầy đủ		docs/project-atlas/EVIDENCE.md; docs/project-atlas/TESTING.md
+docs/benchmarks/2026-09-06-tempo-export-fix.md	Docs: Benchmark Audits & Qualifications	1823	34	tracked	đọc đầy đủ		docs/project-atlas/EVIDENCE.md; docs/project-atlas/TESTING.md
+docs/benchmarks/2026-09-07-translation-cue-format-fix.md	Docs: Benchmark Audits & Qualifications	4637	41	tracked	đọc đầy đủ		docs/project-atlas/EVIDENCE.md; docs/project-atlas/TESTING.md
+docs/domain.md	Docs: Core Architecture & Domain	6542	83	untracked	đọc đầy đủ		docs/project-atlas/ARCHITECTURE.md; docs/project-atlas/GLOSSARY.md
+docs/superpowers/plans/2026-08-27-neeyut-blao-reset-and-cuda-path.md	Docs: Historical Specs & Implementation Plans	4787	70	tracked	đọc đầy đủ		docs/project-atlas/GAPS_AND_DOC_DRIFT.md; docs/project-atlas/EVIDENCE.md
+docs/superpowers/plans/2026-08-28-autoshort-cue-voice-e2e.md	Docs: Historical Specs & Implementation Plans	4819	66	tracked	đọc đầy đủ		docs/project-atlas/GAPS_AND_DOC_DRIFT.md; docs/project-atlas/EVIDENCE.md
+docs/superpowers/plans/2026-08-29-autoshort-hardcode-audit.md	Docs: Historical Specs & Implementation Plans	8762	94	tracked	đọc đầy đủ		docs/project-atlas/GAPS_AND_DOC_DRIFT.md; docs/project-atlas/EVIDENCE.md
+docs/superpowers/plans/2026-08-29-autoshort-translation-repair.md	Docs: Historical Specs & Implementation Plans	6178	78	tracked	đọc đầy đủ		docs/project-atlas/GAPS_AND_DOC_DRIFT.md; docs/project-atlas/EVIDENCE.md
+docs/superpowers/plans/2026-08-30-autoshort-background-music.md	Docs: Historical Specs & Implementation Plans	32987	809	tracked	đọc đầy đủ		docs/project-atlas/GAPS_AND_DOC_DRIFT.md; docs/project-atlas/EVIDENCE.md
+docs/superpowers/plans/2026-08-30-autoshort-dubbing-finalization.md	Docs: Historical Specs & Implementation Plans	16071	243	tracked	đọc đầy đủ		docs/project-atlas/GAPS_AND_DOC_DRIFT.md; docs/project-atlas/EVIDENCE.md
+docs/superpowers/plans/2026-08-30-autoshort-source-anchored-dubbing.md	Docs: Historical Specs & Implementation Plans	23214	361	tracked	đọc đầy đủ		docs/project-atlas/GAPS_AND_DOC_DRIFT.md; docs/project-atlas/EVIDENCE.md
+docs/superpowers/plans/2026-08-30-tediapros-runtime-migration.md	Docs: Historical Specs & Implementation Plans	3713	38	tracked	đọc đầy đủ		docs/project-atlas/GAPS_AND_DOC_DRIFT.md; docs/project-atlas/EVIDENCE.md
+docs/superpowers/plans/2026-09-04-autoshort-client-vocal-separation.md	Docs: Historical Specs & Implementation Plans	94488	2041	tracked	đọc đầy đủ		docs/project-atlas/GAPS_AND_DOC_DRIFT.md; docs/project-atlas/EVIDENCE.md
+docs/superpowers/plans/2026-09-04-autoshort-ocr-timed-text-blur.md	Docs: Historical Specs & Implementation Plans	64942	1339	tracked	đọc đầy đủ		docs/project-atlas/GAPS_AND_DOC_DRIFT.md; docs/project-atlas/EVIDENCE.md
+docs/superpowers/plans/2026-09-05-autoshort-ocr-timed-text-blur-detailed.md	Docs: Historical Specs & Implementation Plans	137158	2455	tracked	đọc đầy đủ		docs/project-atlas/GAPS_AND_DOC_DRIFT.md; docs/project-atlas/EVIDENCE.md
+docs/superpowers/plans/2026-09-05-local-runtime-dev-mode.md	Docs: Historical Specs & Implementation Plans	3876	67	tracked	đọc đầy đủ		docs/project-atlas/GAPS_AND_DOC_DRIFT.md; docs/project-atlas/EVIDENCE.md
+docs/superpowers/plans/2026-09-05-sttn-subtitle-removal.md	Docs: Historical Specs & Implementation Plans	5598	63	tracked	đọc đầy đủ		docs/project-atlas/GAPS_AND_DOC_DRIFT.md; docs/project-atlas/EVIDENCE.md
+docs/superpowers/plans/2026-09-06-autoshort-client-remediation.md	Docs: Historical Specs & Implementation Plans	32400	307	tracked	đọc đầy đủ		docs/project-atlas/GAPS_AND_DOC_DRIFT.md; docs/project-atlas/EVIDENCE.md
+docs/superpowers/plans/2026-09-06-autoshort-throughput.md	Docs: Historical Specs & Implementation Plans	19986	300	tracked	đọc đầy đủ		docs/project-atlas/GAPS_AND_DOC_DRIFT.md; docs/project-atlas/EVIDENCE.md
+docs/superpowers/plans/codex-handoff-c6-c10.md	Docs: Historical Specs & Implementation Plans	11429	287	tracked	đọc đầy đủ		docs/project-atlas/GAPS_AND_DOC_DRIFT.md; docs/project-atlas/EVIDENCE.md
+docs/superpowers/specs/2026-08-29-autoshort-translation-contract-design.md	Docs: Historical Specs & Implementation Plans	6538	77	tracked	đọc đầy đủ		docs/project-atlas/GAPS_AND_DOC_DRIFT.md; docs/project-atlas/EVIDENCE.md
+docs/superpowers/specs/2026-08-30-autoshort-background-music-design.md	Docs: Historical Specs & Implementation Plans	5418	101	tracked	đọc đầy đủ		docs/project-atlas/GAPS_AND_DOC_DRIFT.md; docs/project-atlas/EVIDENCE.md
+docs/superpowers/specs/2026-08-30-autoshort-source-anchored-dubbing-design.md	Docs: Historical Specs & Implementation Plans	9298	63	tracked	đọc đầy đủ		docs/project-atlas/GAPS_AND_DOC_DRIFT.md; docs/project-atlas/EVIDENCE.md
+docs/superpowers/specs/2026-08-30-tediapros-runtime-migration-design.md	Docs: Historical Specs & Implementation Plans	6023	75	tracked	đọc đầy đủ		docs/project-atlas/GAPS_AND_DOC_DRIFT.md; docs/project-atlas/EVIDENCE.md
+docs/superpowers/specs/2026-09-04-autoshort-client-vocal-separation-design.md	Docs: Historical Specs & Implementation Plans	22457	480	tracked	đọc đầy đủ		docs/project-atlas/GAPS_AND_DOC_DRIFT.md; docs/project-atlas/EVIDENCE.md
+docs/superpowers/specs/2026-09-04-autoshort-ocr-timed-text-blur-design.md	Docs: Historical Specs & Implementation Plans	32725	677	tracked	đọc đầy đủ		docs/project-atlas/GAPS_AND_DOC_DRIFT.md; docs/project-atlas/EVIDENCE.md
+docs/superpowers/specs/2026-09-05-sttn-subtitle-removal-design.md	Docs: Historical Specs & Implementation Plans	2951	13	tracked	đọc đầy đủ		docs/project-atlas/GAPS_AND_DOC_DRIFT.md; docs/project-atlas/EVIDENCE.md
+docs/superpowers/specs/2026-09-06-autoshort-throughput-design.md	Docs: Historical Specs & Implementation Plans	22026	344	tracked	đọc đầy đủ		docs/project-atlas/GAPS_AND_DOC_DRIFT.md; docs/project-atlas/EVIDENCE.md
+electron-builder.yml	Config/Legal: Project Root Configuration	2196	82	tracked	đọc đầy đủ		docs/project-atlas/CONFIGURATION.md; docs/project-atlas/SECURITY_AND_LICENSE.md
+electron.vite.config.ts	Config/Legal: Project Root Configuration	987	40	tracked	đọc đầy đủ		docs/project-atlas/CONFIGURATION.md; docs/project-atlas/SECURITY_AND_LICENSE.md
+engines/douyin-engine/.dockerignore	Source: Engine Python Douyin Downloader	142	16	tracked	đọc đầy đủ		docs/project-atlas/modules/downloader-douyin.md; docs/project-atlas/flows/douyin-flow.md
+engines/douyin-engine/.gitignore	Source: Engine Python Douyin Downloader	539	52	tracked	đọc đầy đủ		docs/project-atlas/modules/downloader-douyin.md; docs/project-atlas/flows/douyin-flow.md
+engines/douyin-engine/CHAY_DOUYIN.bat	Source: Engine Python Douyin Downloader	2133	77	tracked	đọc đầy đủ		docs/project-atlas/modules/downloader-douyin.md; docs/project-atlas/flows/douyin-flow.md
+engines/douyin-engine/Dockerfile	Source: Engine Python Douyin Downloader	370	19	tracked	đọc đầy đủ		docs/project-atlas/modules/downloader-douyin.md; docs/project-atlas/flows/douyin-flow.md
+engines/douyin-engine/LICENSE	Source: Engine Python Douyin Downloader	1064	21	tracked	đọc đầy đủ		docs/project-atlas/modules/downloader-douyin.md; docs/project-atlas/flows/douyin-flow.md
+engines/douyin-engine/PROJECT_SUMMARY.md	Source: Engine Python Douyin Downloader	4808	140	tracked	đọc đầy đủ		docs/project-atlas/modules/downloader-douyin.md; docs/project-atlas/flows/douyin-flow.md
+engines/douyin-engine/README.md	Source: Engine Python Douyin Downloader	18222	580	tracked	đọc đầy đủ		docs/project-atlas/modules/downloader-douyin.md; docs/project-atlas/flows/douyin-flow.md
+engines/douyin-engine/README.zh-CN.md	Source: Engine Python Douyin Downloader	17050	590	tracked	đọc đầy đủ		docs/project-atlas/modules/downloader-douyin.md; docs/project-atlas/flows/douyin-flow.md
+engines/douyin-engine/THONGSO.png	Source: Engine Python Douyin Downloader	50294	-1	tracked	đọc đầy đủ		docs/project-atlas/modules/downloader-douyin.md; docs/project-atlas/flows/douyin-flow.md
+engines/douyin-engine/__init__.py	Source: Engine Python Douyin Downloader	22	1	tracked	đọc đầy đủ		docs/project-atlas/modules/downloader-douyin.md; docs/project-atlas/flows/douyin-flow.md
+engines/douyin-engine/auth/__init__.py	Source: Engine Python Douyin Downloader	134	4	tracked	đọc đầy đủ		docs/project-atlas/modules/downloader-douyin.md; docs/project-atlas/flows/douyin-flow.md
+engines/douyin-engine/auth/cookie_manager.py	Source: Engine Python Douyin Downloader	2087	64	tracked	đọc đầy đủ		docs/project-atlas/modules/downloader-douyin.md; docs/project-atlas/flows/douyin-flow.md
+engines/douyin-engine/auth/ms_token_manager.py	Source: Engine Python Douyin Downloader	4938	154	tracked	đọc đầy đủ		docs/project-atlas/modules/downloader-douyin.md; docs/project-atlas/flows/douyin-flow.md
+engines/douyin-engine/cli/__init__.py	Source: Engine Python Douyin Downloader	43	3	tracked	đọc đầy đủ		docs/project-atlas/modules/downloader-douyin.md; docs/project-atlas/flows/douyin-flow.md
+engines/douyin-engine/cli/main.py	Source: Engine Python Douyin Downloader	13886	392	tracked	đọc đầy đủ		docs/project-atlas/modules/downloader-douyin.md; docs/project-atlas/flows/douyin-flow.md
+engines/douyin-engine/cli/progress_display.py	Source: Engine Python Douyin Downloader	10148	292	tracked	đọc đầy đủ		docs/project-atlas/modules/downloader-douyin.md; docs/project-atlas/flows/douyin-flow.md
+engines/douyin-engine/config.example.yml	Source: Engine Python Douyin Downloader	2060	104	tracked	đọc đầy đủ		docs/project-atlas/modules/downloader-douyin.md; docs/project-atlas/flows/douyin-flow.md
+engines/douyin-engine/config/__init__.py	Source: Engine Python Douyin Downloader	129	4	tracked	đọc đầy đủ		docs/project-atlas/modules/downloader-douyin.md; docs/project-atlas/flows/douyin-flow.md
+engines/douyin-engine/config/config_loader.py	Source: Engine Python Douyin Downloader	10368	287	tracked	đọc đầy đủ		docs/project-atlas/modules/downloader-douyin.md; docs/project-atlas/flows/douyin-flow.md
+engines/douyin-engine/config/default_config.py	Source: Engine Python Douyin Downloader	2211	80	tracked	đọc đầy đủ		docs/project-atlas/modules/downloader-douyin.md; docs/project-atlas/flows/douyin-flow.md
+engines/douyin-engine/control/__init__.py	Source: Engine Python Douyin Downloader	177	5	tracked	đọc đầy đủ		docs/project-atlas/modules/downloader-douyin.md; docs/project-atlas/flows/douyin-flow.md
+engines/douyin-engine/control/queue_manager.py	Source: Engine Python Douyin Downloader	1387	37	tracked	đọc đầy đủ		docs/project-atlas/modules/downloader-douyin.md; docs/project-atlas/flows/douyin-flow.md
+engines/douyin-engine/control/rate_limiter.py	Source: Engine Python Douyin Downloader	873	28	tracked	đọc đầy đủ		docs/project-atlas/modules/downloader-douyin.md; docs/project-atlas/flows/douyin-flow.md
+engines/douyin-engine/control/retry_handler.py	Source: Engine Python Douyin Downloader	989	29	tracked	đọc đầy đủ		docs/project-atlas/modules/downloader-douyin.md; docs/project-atlas/flows/douyin-flow.md
+engines/douyin-engine/core/__init__.py	Source: Engine Python Douyin Downloader	336	13	tracked	đọc đầy đủ		docs/project-atlas/modules/downloader-douyin.md; docs/project-atlas/flows/douyin-flow.md
+engines/douyin-engine/core/api_client.py	Source: Engine Python Douyin Downloader	40060	1066	tracked	đọc đầy đủ		docs/project-atlas/modules/downloader-douyin.md; docs/project-atlas/flows/douyin-flow.md
+engines/douyin-engine/core/comments_collector.py	Source: Engine Python Douyin Downloader	4354	122	tracked	đọc đầy đủ		docs/project-atlas/modules/downloader-douyin.md; docs/project-atlas/flows/douyin-flow.md
+engines/douyin-engine/core/discovery.py	Source: Engine Python Douyin Downloader	3772	129	tracked	đọc đầy đủ		docs/project-atlas/modules/downloader-douyin.md; docs/project-atlas/flows/douyin-flow.md
+engines/douyin-engine/core/downloader_base.py	Source: Engine Python Douyin Downloader	28158	756	tracked	đọc đầy đủ		docs/project-atlas/modules/downloader-douyin.md; docs/project-atlas/flows/douyin-flow.md
+engines/douyin-engine/core/downloader_factory.py	Source: Engine Python Douyin Downloader	2378	65	tracked	đọc đầy đủ		docs/project-atlas/modules/downloader-douyin.md; docs/project-atlas/flows/douyin-flow.md
+engines/douyin-engine/core/live_downloader.py	Source: Engine Python Douyin Downloader	11162	295	tracked	đọc đầy đủ		docs/project-atlas/modules/downloader-douyin.md; docs/project-atlas/flows/douyin-flow.md
+engines/douyin-engine/core/mix_downloader.py	Source: Engine Python Douyin Downloader	4591	122	tracked	đọc đầy đủ		docs/project-atlas/modules/downloader-douyin.md; docs/project-atlas/flows/douyin-flow.md
+engines/douyin-engine/core/music_downloader.py	Source: Engine Python Douyin Downloader	8107	222	tracked	đọc đầy đủ		docs/project-atlas/modules/downloader-douyin.md; docs/project-atlas/flows/douyin-flow.md
+engines/douyin-engine/core/transcript_manager.py	Source: Engine Python Douyin Downloader	8953	259	tracked	đọc đầy đủ		docs/project-atlas/modules/downloader-douyin.md; docs/project-atlas/flows/douyin-flow.md
+engines/douyin-engine/core/url_parser.py	Source: Engine Python Douyin Downloader	3121	108	tracked	đọc đầy đủ		docs/project-atlas/modules/downloader-douyin.md; docs/project-atlas/flows/douyin-flow.md
+engines/douyin-engine/core/user_downloader.py	Source: Engine Python Douyin Downloader	11637	298	tracked	đọc đầy đủ		docs/project-atlas/modules/downloader-douyin.md; docs/project-atlas/flows/douyin-flow.md
+engines/douyin-engine/core/user_mode_registry.py	Source: Engine Python Douyin Downloader	1040	34	tracked	đọc đầy đủ		docs/project-atlas/modules/downloader-douyin.md; docs/project-atlas/flows/douyin-flow.md
+engines/douyin-engine/core/user_modes/__init__.py	Source: Engine Python Douyin Downloader	575	17	tracked	đọc đầy đủ		docs/project-atlas/modules/downloader-douyin.md; docs/project-atlas/flows/douyin-flow.md
+engines/douyin-engine/core/user_modes/base_strategy.py	Source: Engine Python Douyin Downloader	9283	257	tracked	đọc đầy đủ		docs/project-atlas/modules/downloader-douyin.md; docs/project-atlas/flows/douyin-flow.md
+engines/douyin-engine/core/user_modes/collect_mix_strategy.py	Source: Engine Python Douyin Downloader	2307	69	tracked	đọc đầy đủ		docs/project-atlas/modules/downloader-douyin.md; docs/project-atlas/flows/douyin-flow.md
+engines/douyin-engine/core/user_modes/collect_strategy.py	Source: Engine Python Douyin Downloader	2955	80	tracked	đọc đầy đủ		docs/project-atlas/modules/downloader-douyin.md; docs/project-atlas/flows/douyin-flow.md
+engines/douyin-engine/core/user_modes/like_strategy.py	Source: Engine Python Douyin Downloader	176	6	tracked	đọc đầy đủ		docs/project-atlas/modules/downloader-douyin.md; docs/project-atlas/flows/douyin-flow.md
+engines/douyin-engine/core/user_modes/mix_strategy.py	Source: Engine Python Douyin Downloader	823	28	tracked	đọc đầy đủ		docs/project-atlas/modules/downloader-douyin.md; docs/project-atlas/flows/douyin-flow.md
+engines/douyin-engine/core/user_modes/music_strategy.py	Source: Engine Python Douyin Downloader	835	28	tracked	đọc đầy đủ		docs/project-atlas/modules/downloader-douyin.md; docs/project-atlas/flows/douyin-flow.md
+engines/douyin-engine/core/user_modes/post_strategy.py	Source: Engine Python Douyin Downloader	3363	92	tracked	đọc đầy đủ		docs/project-atlas/modules/downloader-douyin.md; docs/project-atlas/flows/douyin-flow.md
+engines/douyin-engine/core/video_downloader.py	Source: Engine Python Douyin Downloader	1793	50	tracked	đọc đầy đủ		docs/project-atlas/modules/downloader-douyin.md; docs/project-atlas/flows/douyin-flow.md
+engines/douyin-engine/dy-engine.spec	Source: Engine Python Douyin Downloader	1444	60	tracked	đọc đầy đủ		docs/project-atlas/modules/downloader-douyin.md; docs/project-atlas/flows/douyin-flow.md
+engines/douyin-engine/huong_dan.txt	Source: Engine Python Douyin Downloader	3487	131	tracked	đọc đầy đủ		docs/project-atlas/modules/downloader-douyin.md; docs/project-atlas/flows/douyin-flow.md
+engines/douyin-engine/img/fuye.jpg	Source: Engine Python Douyin Downloader	577361	-1	tracked	đọc đầy đủ		docs/project-atlas/modules/downloader-douyin.md; docs/project-atlas/flows/douyin-flow.md
+engines/douyin-engine/img/logo.png	Source: Engine Python Douyin Downloader	142595	-1	tracked	đọc đầy đủ		docs/project-atlas/modules/downloader-douyin.md; docs/project-atlas/flows/douyin-flow.md
+engines/douyin-engine/pyproject.toml	Source: Engine Python Douyin Downloader	1689	71	tracked	đọc đầy đủ		docs/project-atlas/modules/downloader-douyin.md; docs/project-atlas/flows/douyin-flow.md
+engines/douyin-engine/requirements.txt	Source: Engine Python Douyin Downloader	140	8	tracked	đọc đầy đủ		docs/project-atlas/modules/downloader-douyin.md; docs/project-atlas/flows/douyin-flow.md
+engines/douyin-engine/rthook_dy.py	Source: Engine Python Douyin Downloader	653	21	tracked	đọc đầy đủ		docs/project-atlas/modules/downloader-douyin.md; docs/project-atlas/flows/douyin-flow.md
+engines/douyin-engine/run.py	Source: Engine Python Douyin Downloader	372	15	tracked	đọc đầy đủ		docs/project-atlas/modules/downloader-douyin.md; docs/project-atlas/flows/douyin-flow.md
+engines/douyin-engine/server/__init__.py	Source: Engine Python Douyin Downloader	323	13	tracked	đọc đầy đủ		docs/project-atlas/modules/downloader-douyin.md; docs/project-atlas/flows/douyin-flow.md
+engines/douyin-engine/server/app.py	Source: Engine Python Douyin Downloader	5723	171	tracked	đọc đầy đủ		docs/project-atlas/modules/downloader-douyin.md; docs/project-atlas/flows/douyin-flow.md
+engines/douyin-engine/server/jobs.py	Source: Engine Python Douyin Downloader	5910	165	tracked	đọc đầy đủ		docs/project-atlas/modules/downloader-douyin.md; docs/project-atlas/flows/douyin-flow.md
+engines/douyin-engine/storage/__init__.py	Source: Engine Python Douyin Downloader	245	7	tracked	đọc đầy đủ		docs/project-atlas/modules/downloader-douyin.md; docs/project-atlas/flows/douyin-flow.md
+engines/douyin-engine/storage/database.py	Source: Engine Python Douyin Downloader	6973	189	tracked	đọc đầy đủ		docs/project-atlas/modules/downloader-douyin.md; docs/project-atlas/flows/douyin-flow.md
+engines/douyin-engine/storage/file_manager.py	Source: Engine Python Douyin Downloader	4620	129	tracked	đọc đầy đủ		docs/project-atlas/modules/downloader-douyin.md; docs/project-atlas/flows/douyin-flow.md
+engines/douyin-engine/storage/metadata_handler.py	Source: Engine Python Douyin Downloader	1231	35	tracked	đọc đầy đủ		docs/project-atlas/modules/downloader-douyin.md; docs/project-atlas/flows/douyin-flow.md
+engines/douyin-engine/tests/test_api_client.py	Source: Engine Python Douyin Downloader	14182	426	tracked	đọc đầy đủ		docs/project-atlas/modules/downloader-douyin.md; docs/project-atlas/flows/douyin-flow.md
+engines/douyin-engine/tests/test_cli_main.py	Source: Engine Python Douyin Downloader	2942	104	tracked	đọc đầy đủ		docs/project-atlas/modules/downloader-douyin.md; docs/project-atlas/flows/douyin-flow.md
+engines/douyin-engine/tests/test_comments_collector.py	Source: Engine Python Douyin Downloader	3722	123	tracked	đọc đầy đủ		docs/project-atlas/modules/downloader-douyin.md; docs/project-atlas/flows/douyin-flow.md
+engines/douyin-engine/tests/test_config_loader.py	Source: Engine Python Douyin Downloader	8082	327	tracked	đọc đầy đủ		docs/project-atlas/modules/downloader-douyin.md; docs/project-atlas/flows/douyin-flow.md
+engines/douyin-engine/tests/test_config_validation.py	Source: Engine Python Douyin Downloader	1043	27	tracked	đọc đầy đủ		docs/project-atlas/modules/downloader-douyin.md; docs/project-atlas/flows/douyin-flow.md
+engines/douyin-engine/tests/test_cookie_fetcher.py	Source: Engine Python Douyin Downloader	4579	169	tracked	đọc đầy đủ		docs/project-atlas/modules/downloader-douyin.md; docs/project-atlas/flows/douyin-flow.md
+engines/douyin-engine/tests/test_cookie_manager.py	Source: Engine Python Douyin Downloader	1259	51	tracked	đọc đầy đủ		docs/project-atlas/modules/downloader-douyin.md; docs/project-atlas/flows/douyin-flow.md
+engines/douyin-engine/tests/test_cookie_utils.py	Source: Engine Python Douyin Downloader	800	28	tracked	đọc đầy đủ		docs/project-atlas/modules/downloader-douyin.md; docs/project-atlas/flows/douyin-flow.md
+engines/douyin-engine/tests/test_database.py	Source: Engine Python Douyin Downloader	3338	119	tracked	đọc đầy đủ		docs/project-atlas/modules/downloader-douyin.md; docs/project-atlas/flows/douyin-flow.md
+engines/douyin-engine/tests/test_discovery.py	Source: Engine Python Douyin Downloader	3335	107	tracked	đọc đầy đủ		docs/project-atlas/modules/downloader-douyin.md; docs/project-atlas/flows/douyin-flow.md
+engines/douyin-engine/tests/test_downloader_factory.py	Source: Engine Python Douyin Downloader	1877	54	tracked	đọc đầy đủ		docs/project-atlas/modules/downloader-douyin.md; docs/project-atlas/flows/douyin-flow.md
+engines/douyin-engine/tests/test_file_manager.py	Source: Engine Python Douyin Downloader	3370	113	tracked	đọc đầy đủ		docs/project-atlas/modules/downloader-douyin.md; docs/project-atlas/flows/douyin-flow.md
+engines/douyin-engine/tests/test_live_downloader.py	Source: Engine Python Douyin Downloader	9817	327	tracked	đọc đầy đủ		docs/project-atlas/modules/downloader-douyin.md; docs/project-atlas/flows/douyin-flow.md
+engines/douyin-engine/tests/test_media_quality.py	Source: Engine Python Douyin Downloader	4418	123	tracked	đọc đầy đủ		docs/project-atlas/modules/downloader-douyin.md; docs/project-atlas/flows/douyin-flow.md
+engines/douyin-engine/tests/test_mix_downloader.py	Source: Engine Python Douyin Downloader	3110	93	tracked	đọc đầy đủ		docs/project-atlas/modules/downloader-douyin.md; docs/project-atlas/flows/douyin-flow.md
+engines/douyin-engine/tests/test_ms_token_manager.py	Source: Engine Python Douyin Downloader	641	22	tracked	đọc đầy đủ		docs/project-atlas/modules/downloader-douyin.md; docs/project-atlas/flows/douyin-flow.md
+engines/douyin-engine/tests/test_music_downloader.py	Source: Engine Python Douyin Downloader	5470	166	tracked	đọc đầy đủ		docs/project-atlas/modules/downloader-douyin.md; docs/project-atlas/flows/douyin-flow.md
+engines/douyin-engine/tests/test_notifier.py	Source: Engine Python Douyin Downloader	4857	156	tracked	đọc đầy đủ		docs/project-atlas/modules/downloader-douyin.md; docs/project-atlas/flows/douyin-flow.md
+engines/douyin-engine/tests/test_progress_display.py	Source: Engine Python Douyin Downloader	3161	93	tracked	đọc đầy đủ		docs/project-atlas/modules/downloader-douyin.md; docs/project-atlas/flows/douyin-flow.md
+engines/douyin-engine/tests/test_rate_limiter.py	Source: Engine Python Douyin Downloader	601	25	tracked	đọc đầy đủ		docs/project-atlas/modules/downloader-douyin.md; docs/project-atlas/flows/douyin-flow.md
+engines/douyin-engine/tests/test_retry_handler.py	Source: Engine Python Douyin Downloader	1187	48	tracked	đọc đầy đủ		docs/project-atlas/modules/downloader-douyin.md; docs/project-atlas/flows/douyin-flow.md
+engines/douyin-engine/tests/test_server.py	Source: Engine Python Douyin Downloader	6026	180	tracked	đọc đầy đủ		docs/project-atlas/modules/downloader-douyin.md; docs/project-atlas/flows/douyin-flow.md
+engines/douyin-engine/tests/test_transcript_manager.py	Source: Engine Python Douyin Downloader	3360	99	tracked	đọc đầy đủ		docs/project-atlas/modules/downloader-douyin.md; docs/project-atlas/flows/douyin-flow.md
+engines/douyin-engine/tests/test_url_parser.py	Source: Engine Python Douyin Downloader	2434	78	tracked	đọc đầy đủ		docs/project-atlas/modules/downloader-douyin.md; docs/project-atlas/flows/douyin-flow.md
+engines/douyin-engine/tests/test_user_downloader.py	Source: Engine Python Douyin Downloader	8492	270	tracked	đọc đầy đủ		docs/project-atlas/modules/downloader-douyin.md; docs/project-atlas/flows/douyin-flow.md
+engines/douyin-engine/tests/test_user_downloader_modes.py	Source: Engine Python Douyin Downloader	7068	227	tracked	đọc đầy đủ		docs/project-atlas/modules/downloader-douyin.md; docs/project-atlas/flows/douyin-flow.md
+engines/douyin-engine/tests/test_user_mode_registry.py	Source: Engine Python Douyin Downloader	938	19	tracked	đọc đầy đủ		docs/project-atlas/modules/downloader-douyin.md; docs/project-atlas/flows/douyin-flow.md
+engines/douyin-engine/tests/test_user_mode_strategies.py	Source: Engine Python Douyin Downloader	19101	524	tracked	đọc đầy đủ		docs/project-atlas/modules/downloader-douyin.md; docs/project-atlas/flows/douyin-flow.md
+engines/douyin-engine/tests/test_video_downloader.py	Source: Engine Python Douyin Downloader	22589	741	tracked	đọc đầy đủ		docs/project-atlas/modules/downloader-douyin.md; docs/project-atlas/flows/douyin-flow.md
+engines/douyin-engine/tests/test_xbogus.py	Source: Engine Python Douyin Downloader	411	11	tracked	đọc đầy đủ		docs/project-atlas/modules/downloader-douyin.md; docs/project-atlas/flows/douyin-flow.md
+engines/douyin-engine/tools/__init__.py	Source: Engine Python Douyin Downloader	42	2	tracked	đọc đầy đủ		docs/project-atlas/modules/downloader-douyin.md; docs/project-atlas/flows/douyin-flow.md
+engines/douyin-engine/tools/cookie_fetcher.py	Source: Engine Python Douyin Downloader	11846	376	tracked	đọc đầy đủ		docs/project-atlas/modules/downloader-douyin.md; docs/project-atlas/flows/douyin-flow.md
+engines/douyin-engine/utils/__init__.py	Source: Engine Python Douyin Downloader	344	14	tracked	đọc đầy đủ		docs/project-atlas/modules/downloader-douyin.md; docs/project-atlas/flows/douyin-flow.md
+engines/douyin-engine/utils/abogus.py	Source: Engine Python Douyin Downloader	34538	877	tracked	đọc đầy đủ		docs/project-atlas/modules/downloader-douyin.md; docs/project-atlas/flows/douyin-flow.md
+engines/douyin-engine/utils/cookie_utils.py	Source: Engine Python Douyin Downloader	1357	45	tracked	đọc đầy đủ		docs/project-atlas/modules/downloader-douyin.md; docs/project-atlas/flows/douyin-flow.md
+engines/douyin-engine/utils/helpers.py	Source: Engine Python Douyin Downloader	751	24	tracked	đọc đầy đủ		docs/project-atlas/modules/downloader-douyin.md; docs/project-atlas/flows/douyin-flow.md
+engines/douyin-engine/utils/logger.py	Source: Engine Python Douyin Downloader	1502	52	tracked	đọc đầy đủ		docs/project-atlas/modules/downloader-douyin.md; docs/project-atlas/flows/douyin-flow.md
+engines/douyin-engine/utils/notifier.py	Source: Engine Python Douyin Downloader	7882	241	tracked	đọc đầy đủ		docs/project-atlas/modules/downloader-douyin.md; docs/project-atlas/flows/douyin-flow.md
+engines/douyin-engine/utils/validators.py	Source: Engine Python Douyin Downloader	2656	88	tracked	đọc đầy đủ		docs/project-atlas/modules/downloader-douyin.md; docs/project-atlas/flows/douyin-flow.md
+engines/douyin-engine/utils/xbogus.py	Source: Engine Python Douyin Downloader	6792	202	tracked	đọc đầy đủ		docs/project-atlas/modules/downloader-douyin.md; docs/project-atlas/flows/douyin-flow.md
+engines/ocr-engine/engine.py	Source: Engine Python RapidOCR	29364	834	tracked	đọc đầy đủ		docs/project-atlas/modules/ocr-vision.md; docs/project-atlas/flows/ocr-asr-flow.md
+engines/ocr-engine/ocr-engine.spec	Source: Engine Python RapidOCR	1134	54	tracked	đọc đầy đủ		docs/project-atlas/modules/ocr-vision.md; docs/project-atlas/flows/ocr-asr-flow.md
+engines/ocr-engine/requirements.txt	Source: Engine Python RapidOCR	270	12	tracked	đọc đầy đủ		docs/project-atlas/modules/ocr-vision.md; docs/project-atlas/flows/ocr-asr-flow.md
+engines/ocr-engine/tests/__init__.py	Source: Engine Python RapidOCR	24	1	tracked	đọc đầy đủ		docs/project-atlas/modules/ocr-vision.md; docs/project-atlas/flows/ocr-asr-flow.md
+engines/ocr-engine/tests/test_engine_cli.py	Source: Engine Python RapidOCR	9946	265	tracked	đọc đầy đủ		docs/project-atlas/modules/ocr-vision.md; docs/project-atlas/flows/ocr-asr-flow.md
+engines/ocr-engine/tests/test_stream_reader.py	Source: Engine Python RapidOCR	7322	175	tracked	đọc đầy đủ		docs/project-atlas/modules/ocr-vision.md; docs/project-atlas/flows/ocr-asr-flow.md
+engines/ocr-engine/tests/test_visual_timeline.py	Source: Engine Python RapidOCR	22507	561	tracked	đọc đầy đủ		docs/project-atlas/modules/ocr-vision.md; docs/project-atlas/flows/ocr-asr-flow.md
+engines/ocr-engine/visual_timeline.py	Source: Engine Python RapidOCR	20009	641	tracked	đọc đầy đủ		docs/project-atlas/modules/ocr-vision.md; docs/project-atlas/flows/ocr-asr-flow.md
+engines/separator-engine/audio_io.py	Source: Engine Python MDX Separation	2551	65	tracked	đọc đầy đủ		docs/project-atlas/modules/separation.md; docs/project-atlas/flows/separation-flow.md
+engines/separator-engine/engine.py	Source: Engine Python MDX Separation	8525	241	tracked	đọc đầy đủ		docs/project-atlas/modules/separation.md; docs/project-atlas/flows/separation-flow.md
+engines/separator-engine/mdx.py	Source: Engine Python MDX Separation	6207	154	tracked	đọc đầy đủ		docs/project-atlas/modules/separation.md; docs/project-atlas/flows/separation-flow.md
+engines/separator-engine/protocol.py	Source: Engine Python MDX Separation	500	17	tracked	đọc đầy đủ		docs/project-atlas/modules/separation.md; docs/project-atlas/flows/separation-flow.md
+engines/separator-engine/requirements.txt	Source: Engine Python MDX Separation	80	4	tracked	đọc đầy đủ		docs/project-atlas/modules/separation.md; docs/project-atlas/flows/separation-flow.md
+engines/separator-engine/separator-engine.spec	Source: Engine Python MDX Separation	1208	56	tracked	đọc đầy đủ		docs/project-atlas/modules/separation.md; docs/project-atlas/flows/separation-flow.md
+engines/separator-engine/tests/test_audio_io.py	Source: Engine Python MDX Separation	2758	76	tracked	đọc đầy đủ		docs/project-atlas/modules/separation.md; docs/project-atlas/flows/separation-flow.md
+engines/separator-engine/tests/test_mdx.py	Source: Engine Python MDX Separation	2456	61	tracked	đọc đầy đủ		docs/project-atlas/modules/separation.md; docs/project-atlas/flows/separation-flow.md
+engines/separator-engine/tests/test_protocol.py	Source: Engine Python MDX Separation	1335	41	tracked	đọc đầy đủ		docs/project-atlas/modules/separation.md; docs/project-atlas/flows/separation-flow.md
+engines/sttn-engine/LICENSE-STTN	Source: Engine Python STTN Inpainting	1078	21	tracked	đọc đầy đủ		docs/project-atlas/modules/inpainting.md; docs/project-atlas/flows/blur-inpaint-flow.md
+engines/sttn-engine/README.md	Source: Engine Python STTN Inpainting	3499	60	tracked	đọc đầy đủ		docs/project-atlas/modules/inpainting.md; docs/project-atlas/flows/blur-inpaint-flow.md
+engines/sttn-engine/build-windows.ps1	Source: Engine Python STTN Inpainting	1157	15	tracked	đọc đầy đủ		docs/project-atlas/modules/inpainting.md; docs/project-atlas/flows/blur-inpaint-flow.md
+engines/sttn-engine/engine.py	Source: Engine Python STTN Inpainting	3577	81	tracked	đọc đầy đủ		docs/project-atlas/modules/inpainting.md; docs/project-atlas/flows/blur-inpaint-flow.md
+engines/sttn-engine/inference.py	Source: Engine Python STTN Inpainting	3591	72	tracked	đọc đầy đủ		docs/project-atlas/modules/inpainting.md; docs/project-atlas/flows/blur-inpaint-flow.md
+engines/sttn-engine/masking.py	Source: Engine Python STTN Inpainting	5172	117	tracked	đọc đầy đủ		docs/project-atlas/modules/inpainting.md; docs/project-atlas/flows/blur-inpaint-flow.md
+engines/sttn-engine/network.py	Source: Engine Python STTN Inpainting	7952	198	tracked	đọc đầy đủ		docs/project-atlas/modules/inpainting.md; docs/project-atlas/flows/blur-inpaint-flow.md
+engines/sttn-engine/package_runtime.py	Source: Engine Python STTN Inpainting	2380	44	tracked	đọc đầy đủ		docs/project-atlas/modules/inpainting.md; docs/project-atlas/flows/blur-inpaint-flow.md
+engines/sttn-engine/requirements.txt	Source: Engine Python STTN Inpainting	165	6	tracked	đọc đầy đủ		docs/project-atlas/modules/inpainting.md; docs/project-atlas/flows/blur-inpaint-flow.md
+engines/sttn-engine/sttn-engine.spec	Source: Engine Python STTN Inpainting	737	16	tracked	đọc đầy đủ		docs/project-atlas/modules/inpainting.md; docs/project-atlas/flows/blur-inpaint-flow.md
+engines/sttn-engine/tests/test_engine_cli.py	Source: Engine Python STTN Inpainting	1915	41	tracked	đọc đầy đủ		docs/project-atlas/modules/inpainting.md; docs/project-atlas/flows/blur-inpaint-flow.md
+engines/sttn-engine/tests/test_inference.py	Source: Engine Python STTN Inpainting	1230	40	tracked	đọc đầy đủ		docs/project-atlas/modules/inpainting.md; docs/project-atlas/flows/blur-inpaint-flow.md
+engines/sttn-engine/tests/test_masking.py	Source: Engine Python STTN Inpainting	3223	83	tracked	đọc đầy đủ		docs/project-atlas/modules/inpainting.md; docs/project-atlas/flows/blur-inpaint-flow.md
+engines/sttn-engine/tests/test_media_process.py	Source: Engine Python STTN Inpainting	1589	42	tracked	đọc đầy đủ		docs/project-atlas/modules/inpainting.md; docs/project-atlas/flows/blur-inpaint-flow.md
+engines/sttn-engine/tests/test_video.py	Source: Engine Python STTN Inpainting	15960	287	tracked	đọc đầy đủ		docs/project-atlas/modules/inpainting.md; docs/project-atlas/flows/blur-inpaint-flow.md
+engines/sttn-engine/video.py	Source: Engine Python STTN Inpainting	16920	381	tracked	đọc đầy đủ		docs/project-atlas/modules/inpainting.md; docs/project-atlas/flows/blur-inpaint-flow.md
+engines/whisper-engine/engine.py	Source: Engine Python Whisper ASR	12881	357	tracked	đọc đầy đủ		docs/project-atlas/modules/ocr-vision.md; docs/project-atlas/flows/ocr-asr-flow.md
+engines/whisper-engine/requirements.txt	Source: Engine Python Whisper ASR	442	14	tracked	đọc đầy đủ		docs/project-atlas/modules/ocr-vision.md; docs/project-atlas/flows/ocr-asr-flow.md
+engines/whisper-engine/rthook_whisper.py	Source: Engine Python Whisper ASR	344	10	tracked	đọc đầy đủ		docs/project-atlas/modules/ocr-vision.md; docs/project-atlas/flows/ocr-asr-flow.md
+engines/whisper-engine/whisper-engine.spec	Source: Engine Python Whisper ASR	1290	55	tracked	đọc đầy đủ		docs/project-atlas/modules/ocr-vision.md; docs/project-atlas/flows/ocr-asr-flow.md
+out-codex-check-20260906-budget-final/main/index.js	Artifact: Untracked Test Build Bundle	765905	18371	untracked	chỉ kiểm kê	Tệp bundle JavaScript/CSS/HTML sinh tự động từ script test cục bộ ngày 2026-09-06	docs/project-atlas/SCOPE.md; docs/project-atlas/GAPS_AND_DOC_DRIFT.md
+out-codex-check-20260906-budget-final/preload/index.js	Artifact: Untracked Test Build Bundle	14041	233	untracked	chỉ kiểm kê	Tệp bundle JavaScript/CSS/HTML sinh tự động từ script test cục bộ ngày 2026-09-06	docs/project-atlas/SCOPE.md; docs/project-atlas/GAPS_AND_DOC_DRIFT.md
+out-codex-check-20260906-no-request-cap/main/index.js	Artifact: Untracked Test Build Bundle	765905	18371	untracked	chỉ kiểm kê	Tệp bundle JavaScript/CSS/HTML sinh tự động từ script test cục bộ ngày 2026-09-06	docs/project-atlas/SCOPE.md; docs/project-atlas/GAPS_AND_DOC_DRIFT.md
+out-codex-check-20260906-no-request-cap/preload/index.js	Artifact: Untracked Test Build Bundle	14041	233	untracked	chỉ kiểm kê	Tệp bundle JavaScript/CSS/HTML sinh tự động từ script test cục bộ ngày 2026-09-06	docs/project-atlas/SCOPE.md; docs/project-atlas/GAPS_AND_DOC_DRIFT.md
+out-codex-check-20260906-translation/main/index.js	Artifact: Untracked Test Build Bundle	765820	18371	untracked	chỉ kiểm kê	Tệp bundle JavaScript/CSS/HTML sinh tự động từ script test cục bộ ngày 2026-09-06	docs/project-atlas/SCOPE.md; docs/project-atlas/GAPS_AND_DOC_DRIFT.md
+out-codex-check-20260906-translation/preload/index.js	Artifact: Untracked Test Build Bundle	14041	233	untracked	chỉ kiểm kê	Tệp bundle JavaScript/CSS/HTML sinh tự động từ script test cục bộ ngày 2026-09-06	docs/project-atlas/SCOPE.md; docs/project-atlas/GAPS_AND_DOC_DRIFT.md
+out-codex-check-20260906/main/index.js	Artifact: Untracked Test Build Bundle	762838	18311	untracked	chỉ kiểm kê	Tệp bundle JavaScript/CSS/HTML sinh tự động từ script test cục bộ ngày 2026-09-06	docs/project-atlas/SCOPE.md; docs/project-atlas/GAPS_AND_DOC_DRIFT.md
+out-codex-check-20260906/preload/index.js	Artifact: Untracked Test Build Bundle	14041	233	untracked	chỉ kiểm kê	Tệp bundle JavaScript/CSS/HTML sinh tự động từ script test cục bộ ngày 2026-09-06	docs/project-atlas/SCOPE.md; docs/project-atlas/GAPS_AND_DOC_DRIFT.md
+out-codex-check/main/index.js	Artifact: Untracked Test Build Bundle	760523	18247	untracked	chỉ kiểm kê	Tệp bundle JavaScript/CSS/HTML sinh tự động từ script test cục bộ ngày 2026-09-06	docs/project-atlas/SCOPE.md; docs/project-atlas/GAPS_AND_DOC_DRIFT.md
+out-codex-check/preload/index.js	Artifact: Untracked Test Build Bundle	14041	233	untracked	chỉ kiểm kê	Tệp bundle JavaScript/CSS/HTML sinh tự động từ script test cục bộ ngày 2026-09-06	docs/project-atlas/SCOPE.md; docs/project-atlas/GAPS_AND_DOC_DRIFT.md
+package-lock.json	Config: Dependency Lockfile	256782	7307	tracked	chỉ kiểm kê	Tệp lockfile dependencies sinh tự động của npm (>15,000 dòng)	docs/project-atlas/DEVELOPMENT.md
+package.json	Config/Legal: Project Root Configuration	2520	51	tracked	đọc đầy đủ		docs/project-atlas/CONFIGURATION.md; docs/project-atlas/SECURITY_AND_LICENSE.md
+resources/fonts/README.md	Asset: Font Binary Files	1805	44	tracked	chỉ kiểm kê	Tệp font nhị phân TTF phục vụ hiển thị phụ đề Libass	docs/project-atlas/modules/subtitles-burn.md
+resources/fonts/catalog.json	Asset: Font Binary Files	819	38	tracked	chỉ kiểm kê	Tệp font nhị phân TTF phục vụ hiển thị phụ đề Libass	docs/project-atlas/modules/subtitles-burn.md
+resources/fonts/licenses/NOTICES.md	Asset: Font Binary Files	692	27	tracked	chỉ kiểm kê	Tệp font nhị phân TTF phục vụ hiển thị phụ đề Libass	docs/project-atlas/modules/subtitles-burn.md
+resources/fonts/licenses/OFL-1.1.txt	Asset: Font Binary Files	4005	84	tracked	chỉ kiểm kê	Tệp font nhị phân TTF phục vụ hiển thị phụ đề Libass	docs/project-atlas/modules/subtitles-burn.md
+resources/fonts/manifest.json	Asset: Font Binary Files	2916	65	tracked	chỉ kiểm kê	Tệp font nhị phân TTF phục vụ hiển thị phụ đề Libass	docs/project-atlas/modules/subtitles-burn.md
+scripts/bundle-and-run-autoshort.mjs	Tooling: Maintenance & Release Scripts	731	25	tracked	đọc đầy đủ		docs/project-atlas/DEVELOPMENT.md; docs/project-atlas/BUILD_AND_RELEASE.md
+scripts/bundle-and-run-real-test.mjs	Tooling: Maintenance & Release Scripts	738	25	tracked	đọc đầy đủ		docs/project-atlas/DEVELOPMENT.md; docs/project-atlas/BUILD_AND_RELEASE.md
+scripts/dubbing-tempo-acceptance.mjs	Tooling: Maintenance & Release Scripts	4504	77	tracked	đọc đầy đủ		docs/project-atlas/DEVELOPMENT.md; docs/project-atlas/BUILD_AND_RELEASE.md
+scripts/execute-autoshort-cli.mjs	Tooling: Maintenance & Release Scripts	6323	187	tracked	đọc đầy đủ		docs/project-atlas/DEVELOPMENT.md; docs/project-atlas/BUILD_AND_RELEASE.md
+scripts/font-pack-utils.mjs	Tooling: Maintenance & Release Scripts	10082	265	tracked	đọc đầy đủ		docs/project-atlas/DEVELOPMENT.md; docs/project-atlas/BUILD_AND_RELEASE.md
+scripts/generate-ocr-blur-fixture.mjs	Tooling: Maintenance & Release Scripts	12065	303	tracked	đọc đầy đủ		docs/project-atlas/DEVELOPMENT.md; docs/project-atlas/BUILD_AND_RELEASE.md
+scripts/generate-separator-test-fixtures.py	Tooling: Maintenance & Release Scripts	4101	104	tracked	đọc đầy đủ		docs/project-atlas/DEVELOPMENT.md; docs/project-atlas/BUILD_AND_RELEASE.md
+scripts/ocr-blur-acceptance-main.ts	Tooling: Maintenance & Release Scripts	7603	221	tracked	đọc đầy đủ		docs/project-atlas/DEVELOPMENT.md; docs/project-atlas/BUILD_AND_RELEASE.md
+scripts/pack-runtime-release.mjs	Tooling: Maintenance & Release Scripts	14564	361	tracked	đọc đầy đủ		docs/project-atlas/DEVELOPMENT.md; docs/project-atlas/BUILD_AND_RELEASE.md
+scripts/pack-separator-model-release.mjs	Tooling: Maintenance & Release Scripts	5116	150	tracked	đọc đầy đủ		docs/project-atlas/DEVELOPMENT.md; docs/project-atlas/BUILD_AND_RELEASE.md
+scripts/prepare-fonts.mjs	Tooling: Maintenance & Release Scripts	2868	92	tracked	đọc đầy đủ		docs/project-atlas/DEVELOPMENT.md; docs/project-atlas/BUILD_AND_RELEASE.md
+scripts/publish-github-release.mjs	Tooling: Maintenance & Release Scripts	7532	169	tracked	đọc đầy đủ		docs/project-atlas/DEVELOPMENT.md; docs/project-atlas/BUILD_AND_RELEASE.md
+scripts/requirements-separator-qualification.txt	Tooling: Maintenance & Release Scripts	29	1	tracked	đọc đầy đủ		docs/project-atlas/DEVELOPMENT.md; docs/project-atlas/BUILD_AND_RELEASE.md
+scripts/run-autoshort-pipeline.ts	Tooling: Maintenance & Release Scripts	8117	196	tracked	đọc đầy đủ		docs/project-atlas/DEVELOPMENT.md; docs/project-atlas/BUILD_AND_RELEASE.md
+scripts/run-ffmpeg-ocr-mask-probe.mjs	Tooling: Maintenance & Release Scripts	2863	99	tracked	đọc đầy đủ		docs/project-atlas/DEVELOPMENT.md; docs/project-atlas/BUILD_AND_RELEASE.md
+scripts/run-local-runtime-tests.mjs	Tooling: Maintenance & Release Scripts	3302	102	tracked	đọc đầy đủ		docs/project-atlas/DEVELOPMENT.md; docs/project-atlas/BUILD_AND_RELEASE.md
+scripts/run-subtitle-smoke.mjs	Tooling: Maintenance & Release Scripts	1375	48	tracked	đọc đầy đủ		docs/project-atlas/DEVELOPMENT.md; docs/project-atlas/BUILD_AND_RELEASE.md
+scripts/separator_qualification.py	Tooling: Maintenance & Release Scripts	7759	180	tracked	đọc đầy đủ		docs/project-atlas/DEVELOPMENT.md; docs/project-atlas/BUILD_AND_RELEASE.md
+scripts/smoke-subtitles.ts	Tooling: Maintenance & Release Scripts	19092	494	tracked	đọc đầy đủ		docs/project-atlas/DEVELOPMENT.md; docs/project-atlas/BUILD_AND_RELEASE.md
+scripts/sttn-acceptance-main.ts	Tooling: Maintenance & Release Scripts	3271	56	tracked	đọc đầy đủ		docs/project-atlas/DEVELOPMENT.md; docs/project-atlas/BUILD_AND_RELEASE.md
+scripts/sttn-codec-benchmark.py	Tooling: Maintenance & Release Scripts	2112	50	tracked	đọc đầy đủ		docs/project-atlas/DEVELOPMENT.md; docs/project-atlas/BUILD_AND_RELEASE.md
+scripts/sttn-storage-benchmark.py	Tooling: Maintenance & Release Scripts	4534	105	tracked	đọc đầy đủ		docs/project-atlas/DEVELOPMENT.md; docs/project-atlas/BUILD_AND_RELEASE.md
+scripts/sttn-update-local-main.ts	Tooling: Maintenance & Release Scripts	4106	62	tracked	đọc đầy đủ		docs/project-atlas/DEVELOPMENT.md; docs/project-atlas/BUILD_AND_RELEASE.md
+scripts/verify-fonts.mjs	Tooling: Maintenance & Release Scripts	469	16	tracked	đọc đầy đủ		docs/project-atlas/DEVELOPMENT.md; docs/project-atlas/BUILD_AND_RELEASE.md
+scripts/verify-ocr-blur-media.mjs	Tooling: Maintenance & Release Scripts	10802	327	tracked	đọc đầy đủ		docs/project-atlas/DEVELOPMENT.md; docs/project-atlas/BUILD_AND_RELEASE.md
+scripts/verify-packaged-app.mjs	Tooling: Maintenance & Release Scripts	2696	105	tracked	đọc đầy đủ		docs/project-atlas/DEVELOPMENT.md; docs/project-atlas/BUILD_AND_RELEASE.md
+scripts/verify-packaged-fonts.mjs	Tooling: Maintenance & Release Scripts	2012	60	tracked	đọc đầy đủ		docs/project-atlas/DEVELOPMENT.md; docs/project-atlas/BUILD_AND_RELEASE.md
+scripts/verify-release-assets.mjs	Tooling: Maintenance & Release Scripts	2563	55	tracked	đọc đầy đủ		docs/project-atlas/DEVELOPMENT.md; docs/project-atlas/BUILD_AND_RELEASE.md
+scripts/verify-release.mjs	Tooling: Maintenance & Release Scripts	2122	49	tracked	đọc đầy đủ		docs/project-atlas/DEVELOPMENT.md; docs/project-atlas/BUILD_AND_RELEASE.md
+scripts/verify-runtime-release.mjs	Tooling: Maintenance & Release Scripts	12929	272	tracked	đọc đầy đủ		docs/project-atlas/DEVELOPMENT.md; docs/project-atlas/BUILD_AND_RELEASE.md
+scripts/verify-separator-model-release.mjs	Tooling: Maintenance & Release Scripts	5132	138	tracked	đọc đầy đủ		docs/project-atlas/DEVELOPMENT.md; docs/project-atlas/BUILD_AND_RELEASE.md
+src/main/appIdentity.ts	Source: Main Process Orchestrator	1988	59	tracked	đọc đầy đủ		docs/project-atlas/modules/main-core.md; docs/project-atlas/ARCHITECTURE.md
+src/main/audioPreview.ts	Source: Main Process Orchestrator	3502	95	tracked	đọc đầy đủ		docs/project-atlas/modules/main-core.md; docs/project-atlas/ARCHITECTURE.md
+src/main/autoShortAudit.ts	Source: Main Process Orchestrator	2545	75	tracked	đọc đầy đủ		docs/project-atlas/modules/autoshort.md; docs/project-atlas/flows/autoshort-e2e.md
+src/main/autoShortBackgroundAudio.ts	Source: Main Process Orchestrator	1588	52	tracked	đọc đầy đủ		docs/project-atlas/modules/autoshort.md; docs/project-atlas/flows/autoshort-e2e.md
+src/main/autoShortDiskBudget.ts	Source: Main Process Orchestrator	9273	263	tracked	đọc đầy đủ		docs/project-atlas/modules/autoshort.md; docs/project-atlas/flows/autoshort-e2e.md
+src/main/autoShortExecutionPolicy.ts	Source: Main Process Orchestrator	1052	35	tracked	đọc đầy đủ		docs/project-atlas/modules/autoshort.md; docs/project-atlas/flows/autoshort-e2e.md
+src/main/autoShortItemCoordinator.ts	Source: Main Process Orchestrator	48105	1055	tracked	đọc đầy đủ		docs/project-atlas/modules/autoshort.md; docs/project-atlas/flows/autoshort-e2e.md
+src/main/autoShortItemScope.ts	Source: Main Process Orchestrator	2636	106	tracked	đọc đầy đủ		docs/project-atlas/modules/autoshort.md; docs/project-atlas/flows/autoshort-e2e.md
+src/main/autoShortMusicLibrary.ts	Source: Main Process Orchestrator	2946	65	tracked	đọc đầy đủ		docs/project-atlas/modules/autoshort.md; docs/project-atlas/flows/autoshort-e2e.md
+src/main/autoShortNarratedAudio.ts	Source: Main Process Orchestrator	4897	125	tracked	đọc đầy đủ		docs/project-atlas/modules/autoshort.md; docs/project-atlas/flows/autoshort-e2e.md
+src/main/autoShortOcrCheckpoint.ts	Source: Main Process Orchestrator	1841	51	tracked	đọc đầy đủ		docs/project-atlas/modules/autoshort.md; docs/project-atlas/flows/autoshort-e2e.md
+src/main/autoShortPolicy.ts	Source: Main Process Orchestrator	45558	1221	tracked	đọc đầy đủ		docs/project-atlas/modules/autoshort.md; docs/project-atlas/flows/autoshort-e2e.md
+src/main/autoShortQueueRunner.ts	Source: Main Process Orchestrator	3020	84	tracked	đọc đầy đủ		docs/project-atlas/modules/autoshort.md; docs/project-atlas/flows/autoshort-e2e.md
+src/main/autoShortResourceManager.ts	Source: Main Process Orchestrator	6285	206	tracked	đọc đầy đủ		docs/project-atlas/modules/autoshort.md; docs/project-atlas/flows/autoshort-e2e.md
+src/main/autoShortTelemetry.ts	Source: Main Process Orchestrator	26885	722	tracked	đọc đầy đủ		docs/project-atlas/modules/autoshort.md; docs/project-atlas/flows/autoshort-e2e.md
+src/main/autoshort.ts	Source: Main Process Orchestrator	117025	2743	tracked	đọc đầy đủ		docs/project-atlas/modules/autoshort.md; docs/project-atlas/flows/autoshort-e2e.md
+src/main/burn.ts	Source: Main Process Orchestrator	70290	1877	tracked	đọc đầy đủ		docs/project-atlas/modules/subtitles-burn.md; docs/project-atlas/flows/burn-subtitles-flow.md
+src/main/burnInputPlanner.ts	Source: Main Process Orchestrator	2012	64	tracked	đọc đầy đủ		docs/project-atlas/modules/subtitles-burn.md; docs/project-atlas/flows/burn-subtitles-flow.md
+src/main/canonicalDisplayGeometry.ts	Source: Main Process Orchestrator	8082	255	tracked	đọc đầy đủ		docs/project-atlas/modules/main-core.md; docs/project-atlas/ARCHITECTURE.md
+src/main/cookies.ts	Source: Main Process Orchestrator	32821	955	tracked	đọc đầy đủ		docs/project-atlas/modules/downloader-douyin.md; docs/project-atlas/flows/downloader-flow.md
+src/main/deps.ts	Source: Main Process Orchestrator	19642	562	tracked	đọc đầy đủ		docs/project-atlas/modules/runtime-infra.md; docs/project-atlas/flows/runtime-provisioning-flow.md
+src/main/distributionConfig.ts	Source: Main Process Orchestrator	4535	117	tracked	đọc đầy đủ		docs/project-atlas/modules/main-core.md; docs/project-atlas/ARCHITECTURE.md
+src/main/douyin.ts	Source: Main Process Orchestrator	9012	255	tracked	đọc đầy đủ		docs/project-atlas/modules/downloader-douyin.md; docs/project-atlas/flows/downloader-flow.md
+src/main/douyinCookies.ts	Source: Main Process Orchestrator	4918	145	tracked	đọc đầy đủ		docs/project-atlas/modules/downloader-douyin.md; docs/project-atlas/flows/downloader-flow.md
+src/main/dubbing/cache.ts	Source: Main Dubbing Subsystem	9565	275	tracked	đọc đầy đủ		docs/project-atlas/modules/dubbing.md; docs/project-atlas/flows/dubbing-tts-flow.md
+src/main/dubbing/durationPredictor.ts	Source: Main Dubbing Subsystem	8854	220	tracked	đọc đầy đủ		docs/project-atlas/modules/dubbing.md; docs/project-atlas/flows/dubbing-tts-flow.md
+src/main/dubbing/plan.ts	Source: Main Dubbing Subsystem	7439	212	tracked	đọc đầy đủ		docs/project-atlas/modules/dubbing.md; docs/project-atlas/flows/dubbing-tts-flow.md
+src/main/dubbing/policy.ts	Source: Main Dubbing Subsystem	6165	155	tracked	đọc đầy đủ		docs/project-atlas/modules/dubbing.md; docs/project-atlas/flows/dubbing-tts-flow.md
+src/main/dubbing/profileStore.ts	Source: Main Dubbing Subsystem	1594	33	tracked	đọc đầy đủ		docs/project-atlas/modules/dubbing.md; docs/project-atlas/flows/dubbing-tts-flow.md
+src/main/dubbing/subtitles.ts	Source: Main Dubbing Subsystem	1285	38	tracked	đọc đầy đủ		docs/project-atlas/modules/dubbing.md; docs/project-atlas/flows/dubbing-tts-flow.md
+src/main/dubbing/synthesis.ts	Source: Main Dubbing Subsystem	14959	375	tracked	đọc đầy đủ		docs/project-atlas/modules/dubbing.md; docs/project-atlas/flows/dubbing-tts-flow.md
+src/main/dubbing/translation.ts	Source: Main Dubbing Subsystem	4362	123	tracked	đọc đầy đủ		docs/project-atlas/modules/dubbing.md; docs/project-atlas/flows/dubbing-tts-flow.md
+src/main/dubbingDuration.ts	Source: Main Process Orchestrator	44	1	tracked	đọc đầy đủ		docs/project-atlas/modules/main-core.md; docs/project-atlas/ARCHITECTURE.md
+src/main/engineProtocol.ts	Source: Main Process Orchestrator	1267	35	tracked	đọc đầy đủ		docs/project-atlas/modules/main-core.md; docs/project-atlas/ARCHITECTURE.md
+src/main/ffmpegOcrMaskProbe.ts	Source: Main Process Orchestrator	15526	492	tracked	đọc đầy đủ		docs/project-atlas/modules/ocr-vision.md; docs/project-atlas/flows/ocr-asr-flow.md
+src/main/fontMeasure.ts	Source: Main Process Orchestrator	1722	51	tracked	đọc đầy đủ		docs/project-atlas/modules/subtitles-burn.md; docs/project-atlas/flows/burn-subtitles-flow.md
+src/main/fonts.ts	Source: Main Process Orchestrator	24385	690	tracked	đọc đầy đủ		docs/project-atlas/modules/subtitles-burn.md; docs/project-atlas/flows/burn-subtitles-flow.md
+src/main/gemini.ts	Source: Main Process Orchestrator	11920	323	tracked	đọc đầy đủ		docs/project-atlas/modules/main-core.md; docs/project-atlas/ARCHITECTURE.md
+src/main/gpu.ts	Source: Main Process Orchestrator	2858	74	tracked	đọc đầy đủ		docs/project-atlas/modules/main-core.md; docs/project-atlas/ARCHITECTURE.md
+src/main/index.ts	Source: Main Process Orchestrator	40268	1085	tracked	đọc đầy đủ		docs/project-atlas/modules/main-core.md; docs/project-atlas/ARCHITECTURE.md
+src/main/inpainting/assets.ts	Source: Main Inpainting Subsystem	9172	158	tracked	đọc đầy đủ		docs/project-atlas/modules/inpainting.md; docs/project-atlas/flows/blur-inpaint-flow.md
+src/main/inpainting/runner.ts	Source: Main Inpainting Subsystem	10315	167	tracked	đọc đầy đủ		docs/project-atlas/modules/inpainting.md; docs/project-atlas/flows/blur-inpaint-flow.md
+src/main/localAssets.ts	Source: Main Process Orchestrator	1606	43	tracked	đọc đầy đủ		docs/project-atlas/modules/main-core.md; docs/project-atlas/ARCHITECTURE.md
+src/main/localTranslate.ts	Source: Main Process Orchestrator	30112	711	tracked	đọc đầy đủ		docs/project-atlas/modules/main-core.md; docs/project-atlas/ARCHITECTURE.md
+src/main/localTranslatePolicy.ts	Source: Main Process Orchestrator	1741	39	tracked	đọc đầy đủ		docs/project-atlas/modules/main-core.md; docs/project-atlas/ARCHITECTURE.md
+src/main/logger.ts	Source: Main Process Orchestrator	7932	188	tracked	đọc đầy đủ		docs/project-atlas/modules/main-core.md; docs/project-atlas/ARCHITECTURE.md
+src/main/modelCatalog.ts	Source: Main Process Orchestrator	2103	66	tracked	đọc đầy đủ		docs/project-atlas/modules/main-core.md; docs/project-atlas/ARCHITECTURE.md
+src/main/modelStore.ts	Source: Main Process Orchestrator	6149	158	tracked	đọc đầy đủ		docs/project-atlas/modules/main-core.md; docs/project-atlas/ARCHITECTURE.md
+src/main/ocr.ts	Source: Main Process Orchestrator	23323	674	tracked	đọc đầy đủ		docs/project-atlas/modules/ocr-vision.md; docs/project-atlas/flows/ocr-asr-flow.md
+src/main/ocrMask.ts	Source: Main Process Orchestrator	14141	461	tracked	đọc đầy đủ		docs/project-atlas/modules/ocr-vision.md; docs/project-atlas/flows/ocr-asr-flow.md
+src/main/openai.ts	Source: Main Process Orchestrator	10784	329	tracked	đọc đầy đủ		docs/project-atlas/modules/main-core.md; docs/project-atlas/ARCHITECTURE.md
+src/main/processTree.ts	Source: Main Process Orchestrator	1212	38	tracked	đọc đầy đủ		docs/project-atlas/modules/main-core.md; docs/project-atlas/ARCHITECTURE.md
+src/main/proxy.ts	Source: Main Process Orchestrator	3124	81	tracked	đọc đầy đủ		docs/project-atlas/modules/main-core.md; docs/project-atlas/ARCHITECTURE.md
+src/main/runtimeInstaller.ts	Source: Main Process Orchestrator	6984	151	tracked	đọc đầy đủ		docs/project-atlas/modules/runtime-infra.md; docs/project-atlas/flows/runtime-provisioning-flow.md
+src/main/runtimeManifest.ts	Source: Main Process Orchestrator	7143	173	tracked	đọc đầy đủ		docs/project-atlas/modules/runtime-infra.md; docs/project-atlas/flows/runtime-provisioning-flow.md
+src/main/runtimeProbes.ts	Source: Main Process Orchestrator	12895	306	tracked	đọc đầy đủ		docs/project-atlas/modules/runtime-infra.md; docs/project-atlas/flows/runtime-provisioning-flow.md
+src/main/runtimeResolver.ts	Source: Main Process Orchestrator	5801	173	tracked	đọc đầy đủ		docs/project-atlas/modules/runtime-infra.md; docs/project-atlas/flows/runtime-provisioning-flow.md
+src/main/safeContainedPath.ts	Source: Main Process Orchestrator	3274	107	tracked	đọc đầy đủ		docs/project-atlas/modules/main-core.md; docs/project-atlas/ARCHITECTURE.md
+src/main/semanticGrouping.ts	Source: Main Process Orchestrator	9021	303	tracked	đọc đầy đủ		docs/project-atlas/modules/main-core.md; docs/project-atlas/ARCHITECTURE.md
+src/main/separation/disk.ts	Source: Main Separation Subsystem	506	12	tracked	đọc đầy đủ		docs/project-atlas/modules/separation.md; docs/project-atlas/flows/separation-flow.md
+src/main/separation/media.ts	Source: Main Separation Subsystem	8907	292	tracked	đọc đầy đủ		docs/project-atlas/modules/separation.md; docs/project-atlas/flows/separation-flow.md
+src/main/separation/modelInstaller.ts	Source: Main Separation Subsystem	8195	246	tracked	đọc đầy đủ		docs/project-atlas/modules/separation.md; docs/project-atlas/flows/separation-flow.md
+src/main/separation/modelManifest.ts	Source: Main Separation Subsystem	7084	177	tracked	đọc đầy đủ		docs/project-atlas/modules/separation.md; docs/project-atlas/flows/separation-flow.md
+src/main/separation/modelStore.ts	Source: Main Separation Subsystem	2196	82	tracked	đọc đầy đủ		docs/project-atlas/modules/separation.md; docs/project-atlas/flows/separation-flow.md
+src/main/separation/pipeline.ts	Source: Main Separation Subsystem	4838	164	tracked	đọc đầy đủ		docs/project-atlas/modules/separation.md; docs/project-atlas/flows/separation-flow.md
+src/main/separation/releaseGate.ts	Source: Main Separation Subsystem	2318	66	tracked	đọc đầy đủ		docs/project-atlas/modules/separation.md; docs/project-atlas/flows/separation-flow.md
+src/main/separation/runner.ts	Source: Main Separation Subsystem	11430	383	tracked	đọc đầy đủ		docs/project-atlas/modules/separation.md; docs/project-atlas/flows/separation-flow.md
+src/main/sitePolicy.ts	Source: Main Process Orchestrator	2219	65	tracked	đọc đầy đủ		docs/project-atlas/modules/main-core.md; docs/project-atlas/ARCHITECTURE.md
+src/main/subtitlePlanner.ts	Source: Main Process Orchestrator	1670	56	tracked	đọc đầy đủ		docs/project-atlas/modules/main-core.md; docs/project-atlas/ARCHITECTURE.md
+src/main/support.ts	Source: Main Process Orchestrator	9264	223	tracked	đọc đầy đủ		docs/project-atlas/modules/main-core.md; docs/project-atlas/ARCHITECTURE.md
+src/main/translate-shared.ts	Source: Main Process Orchestrator	16215	337	tracked	đọc đầy đủ		docs/project-atlas/modules/main-core.md; docs/project-atlas/ARCHITECTURE.md
+src/main/tts.ts	Source: Main Process Orchestrator	19119	493	tracked	đọc đầy đủ		docs/project-atlas/modules/main-core.md; docs/project-atlas/ARCHITECTURE.md
+src/main/updater.ts	Source: Main Process Orchestrator	1179	31	tracked	đọc đầy đủ		docs/project-atlas/modules/main-core.md; docs/project-atlas/ARCHITECTURE.md
+src/main/video2x.ts	Source: Main Process Orchestrator	9827	319	tracked	đọc đầy đủ		docs/project-atlas/modules/main-core.md; docs/project-atlas/ARCHITECTURE.md
+src/main/videoTitle.ts	Source: Main Process Orchestrator	12906	266	tracked	đọc đầy đủ		docs/project-atlas/modules/main-core.md; docs/project-atlas/ARCHITECTURE.md
+src/main/whisper.ts	Source: Main Process Orchestrator	15868	374	tracked	đọc đầy đủ		docs/project-atlas/modules/main-core.md; docs/project-atlas/ARCHITECTURE.md
+src/main/whisperPaths.ts	Source: Main Process Orchestrator	465	14	tracked	đọc đầy đủ		docs/project-atlas/modules/main-core.md; docs/project-atlas/ARCHITECTURE.md
+src/main/ytdlp.ts	Source: Main Process Orchestrator	35449	1135	tracked	đọc đầy đủ		docs/project-atlas/modules/downloader-douyin.md; docs/project-atlas/flows/downloader-flow.md
+src/preload/index.d.ts	Source: Preload Bridge	114	9	tracked	đọc đầy đủ		docs/project-atlas/modules/preload.md; docs/project-atlas/CONTRACTS.md
+src/preload/index.ts	Source: Preload Bridge	20027	416	tracked	đọc đầy đủ		docs/project-atlas/modules/preload.md; docs/project-atlas/CONTRACTS.md
+src/renderer/index.html	Source: Renderer HTML Entry	540	16	tracked	đọc đầy đủ		docs/project-atlas/modules/renderer.md
+src/renderer/out-codex-check-20260906-budget-final/renderer/assets/index-DRdkvLJ2.css	Artifact: Untracked Test Build Bundle	108633	5184	untracked	chỉ kiểm kê	Tệp bundle JavaScript/CSS/HTML sinh tự động từ script test cục bộ ngày 2026-09-06	docs/project-atlas/SCOPE.md; docs/project-atlas/GAPS_AND_DOC_DRIFT.md
+src/renderer/out-codex-check-20260906-budget-final/renderer/assets/index-DWSX148c.js	Artifact: Untracked Test Build Bundle	1098345	23447	untracked	chỉ kiểm kê	Tệp bundle JavaScript/CSS/HTML sinh tự động từ script test cục bộ ngày 2026-09-06	docs/project-atlas/SCOPE.md; docs/project-atlas/GAPS_AND_DOC_DRIFT.md
+src/renderer/out-codex-check-20260906-budget-final/renderer/assets/tediapros-logo-CvEPTvXg.png	Artifact: Untracked Test Build Bundle	740087	-1	untracked	chỉ kiểm kê	Tệp bundle JavaScript/CSS/HTML sinh tự động từ script test cục bộ ngày 2026-09-06	docs/project-atlas/SCOPE.md; docs/project-atlas/GAPS_AND_DOC_DRIFT.md
+src/renderer/out-codex-check-20260906-budget-final/renderer/index.html	Artifact: Untracked Test Build Bundle	640	17	untracked	chỉ kiểm kê	Tệp bundle JavaScript/CSS/HTML sinh tự động từ script test cục bộ ngày 2026-09-06	docs/project-atlas/SCOPE.md; docs/project-atlas/GAPS_AND_DOC_DRIFT.md
+src/renderer/out-codex-check-20260906-budget-final/renderer/pcm-tap.js	Artifact: Untracked Test Build Bundle	613	15	untracked	chỉ kiểm kê	Tệp bundle JavaScript/CSS/HTML sinh tự động từ script test cục bộ ngày 2026-09-06	docs/project-atlas/SCOPE.md; docs/project-atlas/GAPS_AND_DOC_DRIFT.md
+src/renderer/out-codex-check-20260906-no-request-cap/renderer/assets/index-DRdkvLJ2.css	Artifact: Untracked Test Build Bundle	108633	5184	untracked	chỉ kiểm kê	Tệp bundle JavaScript/CSS/HTML sinh tự động từ script test cục bộ ngày 2026-09-06	docs/project-atlas/SCOPE.md; docs/project-atlas/GAPS_AND_DOC_DRIFT.md
+src/renderer/out-codex-check-20260906-no-request-cap/renderer/assets/index-DWSX148c.js	Artifact: Untracked Test Build Bundle	1098345	23447	untracked	chỉ kiểm kê	Tệp bundle JavaScript/CSS/HTML sinh tự động từ script test cục bộ ngày 2026-09-06	docs/project-atlas/SCOPE.md; docs/project-atlas/GAPS_AND_DOC_DRIFT.md
+src/renderer/out-codex-check-20260906-no-request-cap/renderer/assets/tediapros-logo-CvEPTvXg.png	Artifact: Untracked Test Build Bundle	740087	-1	untracked	chỉ kiểm kê	Tệp bundle JavaScript/CSS/HTML sinh tự động từ script test cục bộ ngày 2026-09-06	docs/project-atlas/SCOPE.md; docs/project-atlas/GAPS_AND_DOC_DRIFT.md
+src/renderer/out-codex-check-20260906-no-request-cap/renderer/index.html	Artifact: Untracked Test Build Bundle	640	17	untracked	chỉ kiểm kê	Tệp bundle JavaScript/CSS/HTML sinh tự động từ script test cục bộ ngày 2026-09-06	docs/project-atlas/SCOPE.md; docs/project-atlas/GAPS_AND_DOC_DRIFT.md
+src/renderer/out-codex-check-20260906-no-request-cap/renderer/pcm-tap.js	Artifact: Untracked Test Build Bundle	613	15	untracked	chỉ kiểm kê	Tệp bundle JavaScript/CSS/HTML sinh tự động từ script test cục bộ ngày 2026-09-06	docs/project-atlas/SCOPE.md; docs/project-atlas/GAPS_AND_DOC_DRIFT.md
+src/renderer/out-codex-check-20260906-translation/renderer/assets/index-DRdkvLJ2.css	Artifact: Untracked Test Build Bundle	108633	5184	untracked	chỉ kiểm kê	Tệp bundle JavaScript/CSS/HTML sinh tự động từ script test cục bộ ngày 2026-09-06	docs/project-atlas/SCOPE.md; docs/project-atlas/GAPS_AND_DOC_DRIFT.md
+src/renderer/out-codex-check-20260906-translation/renderer/assets/index-DWSX148c.js	Artifact: Untracked Test Build Bundle	1098345	23447	untracked	chỉ kiểm kê	Tệp bundle JavaScript/CSS/HTML sinh tự động từ script test cục bộ ngày 2026-09-06	docs/project-atlas/SCOPE.md; docs/project-atlas/GAPS_AND_DOC_DRIFT.md
+src/renderer/out-codex-check-20260906-translation/renderer/assets/tediapros-logo-CvEPTvXg.png	Artifact: Untracked Test Build Bundle	740087	-1	untracked	chỉ kiểm kê	Tệp bundle JavaScript/CSS/HTML sinh tự động từ script test cục bộ ngày 2026-09-06	docs/project-atlas/SCOPE.md; docs/project-atlas/GAPS_AND_DOC_DRIFT.md
+src/renderer/out-codex-check-20260906-translation/renderer/index.html	Artifact: Untracked Test Build Bundle	640	17	untracked	chỉ kiểm kê	Tệp bundle JavaScript/CSS/HTML sinh tự động từ script test cục bộ ngày 2026-09-06	docs/project-atlas/SCOPE.md; docs/project-atlas/GAPS_AND_DOC_DRIFT.md
+src/renderer/out-codex-check-20260906-translation/renderer/pcm-tap.js	Artifact: Untracked Test Build Bundle	613	15	untracked	chỉ kiểm kê	Tệp bundle JavaScript/CSS/HTML sinh tự động từ script test cục bộ ngày 2026-09-06	docs/project-atlas/SCOPE.md; docs/project-atlas/GAPS_AND_DOC_DRIFT.md
+src/renderer/out-codex-check-20260906/renderer/assets/index-DRdkvLJ2.css	Artifact: Untracked Test Build Bundle	108633	5184	untracked	chỉ kiểm kê	Tệp bundle JavaScript/CSS/HTML sinh tự động từ script test cục bộ ngày 2026-09-06	docs/project-atlas/SCOPE.md; docs/project-atlas/GAPS_AND_DOC_DRIFT.md
+src/renderer/out-codex-check-20260906/renderer/assets/index-DWSX148c.js	Artifact: Untracked Test Build Bundle	1098345	23447	untracked	chỉ kiểm kê	Tệp bundle JavaScript/CSS/HTML sinh tự động từ script test cục bộ ngày 2026-09-06	docs/project-atlas/SCOPE.md; docs/project-atlas/GAPS_AND_DOC_DRIFT.md
+src/renderer/out-codex-check-20260906/renderer/assets/tediapros-logo-CvEPTvXg.png	Artifact: Untracked Test Build Bundle	740087	-1	untracked	chỉ kiểm kê	Tệp bundle JavaScript/CSS/HTML sinh tự động từ script test cục bộ ngày 2026-09-06	docs/project-atlas/SCOPE.md; docs/project-atlas/GAPS_AND_DOC_DRIFT.md
+src/renderer/out-codex-check-20260906/renderer/index.html	Artifact: Untracked Test Build Bundle	640	17	untracked	chỉ kiểm kê	Tệp bundle JavaScript/CSS/HTML sinh tự động từ script test cục bộ ngày 2026-09-06	docs/project-atlas/SCOPE.md; docs/project-atlas/GAPS_AND_DOC_DRIFT.md
+src/renderer/out-codex-check-20260906/renderer/pcm-tap.js	Artifact: Untracked Test Build Bundle	613	15	untracked	chỉ kiểm kê	Tệp bundle JavaScript/CSS/HTML sinh tự động từ script test cục bộ ngày 2026-09-06	docs/project-atlas/SCOPE.md; docs/project-atlas/GAPS_AND_DOC_DRIFT.md
+src/renderer/out-codex-check/renderer/assets/index-DRdkvLJ2.css	Artifact: Untracked Test Build Bundle	108633	5184	untracked	chỉ kiểm kê	Tệp bundle JavaScript/CSS/HTML sinh tự động từ script test cục bộ ngày 2026-09-06	docs/project-atlas/SCOPE.md; docs/project-atlas/GAPS_AND_DOC_DRIFT.md
+src/renderer/out-codex-check/renderer/assets/index-DWSX148c.js	Artifact: Untracked Test Build Bundle	1098345	23447	untracked	chỉ kiểm kê	Tệp bundle JavaScript/CSS/HTML sinh tự động từ script test cục bộ ngày 2026-09-06	docs/project-atlas/SCOPE.md; docs/project-atlas/GAPS_AND_DOC_DRIFT.md
+src/renderer/out-codex-check/renderer/assets/tediapros-logo-CvEPTvXg.png	Artifact: Untracked Test Build Bundle	740087	-1	untracked	chỉ kiểm kê	Tệp bundle JavaScript/CSS/HTML sinh tự động từ script test cục bộ ngày 2026-09-06	docs/project-atlas/SCOPE.md; docs/project-atlas/GAPS_AND_DOC_DRIFT.md
+src/renderer/out-codex-check/renderer/index.html	Artifact: Untracked Test Build Bundle	640	17	untracked	chỉ kiểm kê	Tệp bundle JavaScript/CSS/HTML sinh tự động từ script test cục bộ ngày 2026-09-06	docs/project-atlas/SCOPE.md; docs/project-atlas/GAPS_AND_DOC_DRIFT.md
+src/renderer/out-codex-check/renderer/pcm-tap.js	Artifact: Untracked Test Build Bundle	613	15	untracked	chỉ kiểm kê	Tệp bundle JavaScript/CSS/HTML sinh tự động từ script test cục bộ ngày 2026-09-06	docs/project-atlas/SCOPE.md; docs/project-atlas/GAPS_AND_DOC_DRIFT.md
+src/renderer/public/pcm-tap.js	Asset: Web Worker / Static	613	15	tracked	đọc đầy đủ		docs/project-atlas/modules/renderer.md
+src/renderer/src/App.tsx	Source: Renderer Frontend UI	9069	280	tracked	đọc đầy đủ		docs/project-atlas/modules/renderer.md; docs/project-atlas/PRODUCT.md
+src/renderer/src/assets/tediapros-logo.png	Source: Renderer Frontend UI	740087	-1	tracked	đọc đầy đủ		docs/project-atlas/modules/renderer.md; docs/project-atlas/PRODUCT.md
+src/renderer/src/components/AudioText.tsx	Source: Renderer Frontend UI	25650	668	tracked	đọc đầy đủ		docs/project-atlas/modules/renderer.md; docs/project-atlas/PRODUCT.md
+src/renderer/src/components/AutoShort.tsx	Source: Renderer Frontend UI	119144	2544	tracked	đọc đầy đủ		docs/project-atlas/modules/renderer.md; docs/project-atlas/PRODUCT.md
+src/renderer/src/components/Douyin.tsx	Source: Renderer Frontend UI	19046	537	tracked	đọc đầy đủ		docs/project-atlas/modules/renderer.md; docs/project-atlas/PRODUCT.md
+src/renderer/src/components/Downloader.tsx	Source: Renderer Frontend UI	64488	1696	tracked	đọc đầy đủ		docs/project-atlas/modules/renderer.md; docs/project-atlas/PRODUCT.md
+src/renderer/src/components/GeminiHelp.tsx	Source: Renderer Frontend UI	3070	84	tracked	đọc đầy đủ		docs/project-atlas/modules/renderer.md; docs/project-atlas/PRODUCT.md
+src/renderer/src/components/GeminiKey.tsx	Source: Renderer Frontend UI	6499	178	tracked	đọc đầy đủ		docs/project-atlas/modules/renderer.md; docs/project-atlas/PRODUCT.md
+src/renderer/src/components/License.tsx	Source: Renderer Frontend UI	8942	268	tracked	đọc đầy đủ		docs/project-atlas/modules/renderer.md; docs/project-atlas/PRODUCT.md
+src/renderer/src/components/LinkInput.tsx	Source: Renderer Frontend UI	1405	54	tracked	đọc đầy đủ		docs/project-atlas/modules/renderer.md; docs/project-atlas/PRODUCT.md
+src/renderer/src/components/Logs.tsx	Source: Renderer Frontend UI	7103	179	tracked	đọc đầy đủ		docs/project-atlas/modules/renderer.md; docs/project-atlas/PRODUCT.md
+src/renderer/src/components/OpenAIHelp.tsx	Source: Renderer Frontend UI	2435	70	tracked	đọc đầy đủ		docs/project-atlas/modules/renderer.md; docs/project-atlas/PRODUCT.md
+src/renderer/src/components/RegionBox.tsx	Source: Renderer Frontend UI	23332	626	tracked	đọc đầy đủ		docs/project-atlas/modules/renderer.md; docs/project-atlas/PRODUCT.md
+src/renderer/src/components/RunControls.tsx	Source: Renderer Frontend UI	1555	62	tracked	đọc đầy đủ		docs/project-atlas/modules/renderer.md; docs/project-atlas/PRODUCT.md
+src/renderer/src/components/ScreenText.tsx	Source: Renderer Frontend UI	15684	424	tracked	đọc đầy đủ		docs/project-atlas/modules/renderer.md; docs/project-atlas/PRODUCT.md
+src/renderer/src/components/SetupScreen.tsx	Source: Renderer Frontend UI	2925	93	tracked	đọc đầy đủ		docs/project-atlas/modules/renderer.md; docs/project-atlas/PRODUCT.md
+src/renderer/src/components/SupportErrorBoundary.tsx	Source: Renderer Frontend UI	2364	70	tracked	đọc đầy đủ		docs/project-atlas/modules/renderer.md; docs/project-atlas/PRODUCT.md
+src/renderer/src/components/VideoEditor.tsx	Source: Renderer Frontend UI	62821	1603	tracked	đọc đầy đủ		docs/project-atlas/modules/renderer.md; docs/project-atlas/PRODUCT.md
+src/renderer/src/components/VideoEnhance.tsx	Source: Renderer Frontend UI	34618	975	tracked	đọc đầy đủ		docs/project-atlas/modules/renderer.md; docs/project-atlas/PRODUCT.md
+src/renderer/src/components/VideoTitleSettings.tsx	Source: Renderer Frontend UI	6166	150	tracked	đọc đầy đủ		docs/project-atlas/modules/renderer.md; docs/project-atlas/PRODUCT.md
+src/renderer/src/components/Voice.tsx	Source: Renderer Frontend UI	38477	982	tracked	đọc đầy đủ		docs/project-atlas/modules/renderer.md; docs/project-atlas/PRODUCT.md
+src/renderer/src/hooks/useAudioMixPreview.ts	Source: Renderer Frontend UI	10453	307	tracked	đọc đầy đủ		docs/project-atlas/modules/renderer.md; docs/project-atlas/PRODUCT.md
+src/renderer/src/hooks/useSubtitlePreview.ts	Source: Renderer Frontend UI	4563	163	tracked	đọc đầy đủ		docs/project-atlas/modules/renderer.md; docs/project-atlas/PRODUCT.md
+src/renderer/src/hooks/useVideoTransport.ts	Source: Renderer Frontend UI	3497	118	tracked	đọc đầy đủ		docs/project-atlas/modules/renderer.md; docs/project-atlas/PRODUCT.md
+src/renderer/src/lib/dichProvider.ts	Source: Renderer Frontend UI	437	14	tracked	đọc đầy đủ		docs/project-atlas/modules/renderer.md; docs/project-atlas/PRODUCT.md
+src/renderer/src/lib/format.ts	Source: Renderer Frontend UI	746	23	tracked	đọc đầy đủ		docs/project-atlas/modules/renderer.md; docs/project-atlas/PRODUCT.md
+src/renderer/src/lib/latestAutoShortMusicFolderRequest.ts	Source: Renderer Frontend UI	659	21	tracked	đọc đầy đủ		docs/project-atlas/modules/renderer.md; docs/project-atlas/PRODUCT.md
+src/renderer/src/lib/license.ts	Source: Renderer Frontend UI	548	12	tracked	đọc đầy đủ		docs/project-atlas/modules/renderer.md; docs/project-atlas/PRODUCT.md
+src/renderer/src/lib/localMedia.ts	Source: Renderer Frontend UI	326	10	tracked	đọc đầy đủ		docs/project-atlas/modules/renderer.md; docs/project-atlas/PRODUCT.md
+src/renderer/src/lib/outputDir.ts	Source: Renderer Frontend UI	917	35	tracked	đọc đầy đủ		docs/project-atlas/modules/renderer.md; docs/project-atlas/PRODUCT.md
+src/renderer/src/lib/persist.ts	Source: Renderer Frontend UI	2039	71	tracked	đọc đầy đủ		docs/project-atlas/modules/renderer.md; docs/project-atlas/PRODUCT.md
+src/renderer/src/lib/useQueueRunner.ts	Source: Renderer Frontend UI	2969	89	tracked	đọc đầy đủ		docs/project-atlas/modules/renderer.md; docs/project-atlas/PRODUCT.md
+src/renderer/src/lib/videoGeometry.ts	Source: Renderer Frontend UI	953	35	tracked	đọc đầy đủ		docs/project-atlas/modules/renderer.md; docs/project-atlas/PRODUCT.md
+src/renderer/src/main.tsx	Source: Renderer Frontend UI	1230	43	tracked	đọc đầy đủ		docs/project-atlas/modules/renderer.md; docs/project-atlas/PRODUCT.md
+src/renderer/src/styles.css	Source: Renderer Frontend UI	382	12	tracked	đọc đầy đủ		docs/project-atlas/modules/renderer.md; docs/project-atlas/PRODUCT.md
+src/renderer/src/styles/audiotext.css	Source: Renderer Frontend UI	4759	230	tracked	đọc đầy đủ		docs/project-atlas/modules/renderer.md; docs/project-atlas/PRODUCT.md
+src/renderer/src/styles/autoshort.css	Source: Renderer Frontend UI	15562	845	tracked	đọc đầy đủ		docs/project-atlas/modules/renderer.md; docs/project-atlas/PRODUCT.md
+src/renderer/src/styles/base.css	Source: Renderer Frontend UI	9403	378	tracked	đọc đầy đủ		docs/project-atlas/modules/renderer.md; docs/project-atlas/PRODUCT.md
+src/renderer/src/styles/douyin.css	Source: Renderer Frontend UI	1485	86	tracked	đọc đầy đủ		docs/project-atlas/modules/renderer.md; docs/project-atlas/PRODUCT.md
+src/renderer/src/styles/downloader.css	Source: Renderer Frontend UI	20900	1041	tracked	đọc đầy đủ		docs/project-atlas/modules/renderer.md; docs/project-atlas/PRODUCT.md
+src/renderer/src/styles/editor.css	Source: Renderer Frontend UI	19726	830	tracked	đọc đầy đủ		docs/project-atlas/modules/renderer.md; docs/project-atlas/PRODUCT.md
+src/renderer/src/styles/enhance.css	Source: Renderer Frontend UI	6364	332	tracked	đọc đầy đủ		docs/project-atlas/modules/renderer.md; docs/project-atlas/PRODUCT.md
+src/renderer/src/styles/license.css	Source: Renderer Frontend UI	3938	193	tracked	đọc đầy đủ		docs/project-atlas/modules/renderer.md; docs/project-atlas/PRODUCT.md
+src/renderer/src/styles/logs.css	Source: Renderer Frontend UI	5812	259	tracked	đọc đầy đủ		docs/project-atlas/modules/renderer.md; docs/project-atlas/PRODUCT.md
+src/renderer/src/styles/screentext.css	Source: Renderer Frontend UI	10309	448	tracked	đọc đầy đủ		docs/project-atlas/modules/renderer.md; docs/project-atlas/PRODUCT.md
+src/renderer/src/styles/setup.css	Source: Renderer Frontend UI	170	12	tracked	đọc đầy đủ		docs/project-atlas/modules/renderer.md; docs/project-atlas/PRODUCT.md
+src/renderer/src/styles/voice.css	Source: Renderer Frontend UI	10224	540	tracked	đọc đầy đủ		docs/project-atlas/modules/renderer.md; docs/project-atlas/PRODUCT.md
+src/renderer/src/vite-env.d.ts	Source: Renderer Frontend UI	38	1	tracked	đọc đầy đủ		docs/project-atlas/modules/renderer.md; docs/project-atlas/PRODUCT.md
+src/shared/audioMix.ts	Source: Shared Contract	1076	31	tracked	đọc đầy đủ		docs/project-atlas/modules/shared.md; docs/project-atlas/CONTRACTS.md
+src/shared/autoShortAlignment.ts	Source: Shared Contract	11903	256	tracked	đọc đầy đủ		docs/project-atlas/modules/shared.md; docs/project-atlas/CONTRACTS.md
+src/shared/autoShortBackgroundMusic.ts	Source: Shared Contract	1767	42	tracked	đọc đầy đủ		docs/project-atlas/modules/shared.md; docs/project-atlas/CONTRACTS.md
+src/shared/autoShortContract.ts	Source: Shared Contract	14260	326	tracked	đọc đầy đủ		docs/project-atlas/modules/shared.md; docs/project-atlas/CONTRACTS.md
+src/shared/autoShortOcrBlur.ts	Source: Shared Contract	1543	39	tracked	đọc đầy đủ		docs/project-atlas/modules/shared.md; docs/project-atlas/CONTRACTS.md
+src/shared/autoShortSeparation.ts	Source: Shared Contract	987	25	tracked	đọc đầy đủ		docs/project-atlas/modules/shared.md; docs/project-atlas/CONTRACTS.md
+src/shared/brand.ts	Source: Shared Contract	356	12	tracked	đọc đầy đủ		docs/project-atlas/modules/shared.md; docs/project-atlas/CONTRACTS.md
+src/shared/domains.ts	Source: Shared Contract	2760	80	tracked	đọc đầy đủ		docs/project-atlas/modules/shared.md; docs/project-atlas/CONTRACTS.md
+src/shared/ocrVisualTimeline.ts	Source: Shared Contract	19615	562	tracked	đọc đầy đủ		docs/project-atlas/modules/shared.md; docs/project-atlas/CONTRACTS.md
+src/shared/sites.ts	Source: Shared Contract	2394	69	tracked	đọc đầy đủ		docs/project-atlas/modules/shared.md; docs/project-atlas/CONTRACTS.md
+src/shared/subWrap.ts	Source: Shared Contract	5845	200	tracked	đọc đầy đủ		docs/project-atlas/modules/shared.md; docs/project-atlas/CONTRACTS.md
+src/shared/subtitleEffects.ts	Source: Shared Contract	23510	665	tracked	đọc đầy đủ		docs/project-atlas/modules/shared.md; docs/project-atlas/CONTRACTS.md
+src/shared/subtitleLayout.ts	Source: Shared Contract	8873	244	tracked	đọc đầy đủ		docs/project-atlas/modules/shared.md; docs/project-atlas/CONTRACTS.md
+src/shared/subtitles.ts	Source: Shared Contract	6627	193	tracked	đọc đầy đủ		docs/project-atlas/modules/shared.md; docs/project-atlas/CONTRACTS.md
+src/shared/types.ts	Source: Shared Contract	29301	1219	tracked	đọc đầy đủ		docs/project-atlas/modules/shared.md; docs/project-atlas/CONTRACTS.md
+src/shared/urlSafety.ts	Source: Shared Contract	325	9	tracked	đọc đầy đủ		docs/project-atlas/modules/shared.md; docs/project-atlas/CONTRACTS.md
+src/shared/version.ts	Source: Shared Contract	582	14	tracked	đọc đầy đủ		docs/project-atlas/modules/shared.md; docs/project-atlas/CONTRACTS.md
+src/shared/videoTitle.ts	Source: Shared Contract	1516	33	tracked	đọc đầy đủ		docs/project-atlas/modules/shared.md; docs/project-atlas/CONTRACTS.md
+src/shared/ytdlpErrors.ts	Source: Shared Contract	5323	141	tracked	đọc đầy đủ		docs/project-atlas/modules/shared.md; docs/project-atlas/CONTRACTS.md
+tests/autoshort-disk-budget.test.ts	Tests: Automated Test Suites & Fixtures	4350	129	tracked	đọc đầy đủ		docs/project-atlas/TESTING.md
+tests/autoshort-item-scope.test.ts	Tests: Automated Test Suites & Fixtures	10402	302	tracked	đọc đầy đủ		docs/project-atlas/TESTING.md
+tests/autoshort-ocr-burn.test.ts	Tests: Automated Test Suites & Fixtures	9071	253	tracked	đọc đầy đủ		docs/project-atlas/TESTING.md
+tests/autoshort-ocr-contract.test.ts	Tests: Automated Test Suites & Fixtures	5737	169	tracked	đọc đầy đủ		docs/project-atlas/TESTING.md
+tests/autoshort-ocr-pipeline.test.ts	Tests: Automated Test Suites & Fixtures	33820	934	tracked	đọc đầy đủ		docs/project-atlas/TESTING.md
+tests/autoshort-ocr-runtime.test.ts	Tests: Automated Test Suites & Fixtures	28085	850	tracked	đọc đầy đủ		docs/project-atlas/TESTING.md
+tests/autoshort-queue-throughput.test.ts	Tests: Automated Test Suites & Fixtures	4889	156	tracked	đọc đầy đủ		docs/project-atlas/TESTING.md
+tests/autoshort-resource-manager.test.ts	Tests: Automated Test Suites & Fixtures	9867	295	tracked	đọc đầy đủ		docs/project-atlas/TESTING.md
+tests/autoshort-telemetry.test.ts	Tests: Automated Test Suites & Fixtures	12459	328	tracked	đọc đầy đủ		docs/project-atlas/TESTING.md
+tests/autoshort-tts-cache.test.ts	Tests: Automated Test Suites & Fixtures	5182	133	tracked	đọc đầy đủ		docs/project-atlas/TESTING.md
+tests/autoshort-tts-pipeline.test.ts	Tests: Automated Test Suites & Fixtures	10267	317	tracked	đọc đầy đủ		docs/project-atlas/TESTING.md
+tests/autoshort-video-title.test.ts	Tests: Automated Test Suites & Fixtures	2072	42	tracked	đọc đầy đủ		docs/project-atlas/TESTING.md
+tests/burn-video-title.test.ts	Tests: Automated Test Suites & Fixtures	15590	326	tracked	đọc đầy đủ		docs/project-atlas/TESTING.md
+tests/canonical-display-geometry.test.ts	Tests: Automated Test Suites & Fixtures	7240	176	tracked	đọc đầy đủ		docs/project-atlas/TESTING.md
+tests/canonical-runtime-migration.test.ts	Tests: Automated Test Suites & Fixtures	12831	322	tracked	đọc đầy đủ		docs/project-atlas/TESTING.md
+tests/dubbing-plan.test.ts	Tests: Automated Test Suites & Fixtures	20273	433	tracked	đọc đầy đủ		docs/project-atlas/TESTING.md
+tests/e2e-autoshort.test.ts	Tests: Automated Test Suites & Fixtures	6726	175	tracked	đọc đầy đủ		docs/project-atlas/TESTING.md
+tests/fixtures/separator/README.md	Tests: Automated Test Suites & Fixtures	1404	36	tracked	đọc đầy đủ		docs/project-atlas/TESTING.md
+tests/local-runtime.test.ts	Tests: Automated Test Suites & Fixtures	112676	2442	tracked	đọc đầy đủ		docs/project-atlas/TESTING.md
+tests/local-translation.test.ts	Tests: Automated Test Suites & Fixtures	14911	294	tracked	đọc đầy đủ		docs/project-atlas/TESTING.md
+tests/ocr-mask.test.ts	Tests: Automated Test Suites & Fixtures	8482	292	tracked	đọc đầy đủ		docs/project-atlas/TESTING.md
+tests/ocr-visual-timeline.test.ts	Tests: Automated Test Suites & Fixtures	12714	394	tracked	đọc đầy đủ		docs/project-atlas/TESTING.md
+tests/python/test_separator_qualification.py	Tests: Automated Test Suites & Fixtures	2244	50	tracked	đọc đầy đủ		docs/project-atlas/TESTING.md
+tests/release-tooling.test.ts	Tests: Automated Test Suites & Fixtures	32069	692	tracked	đọc đầy đủ		docs/project-atlas/TESTING.md
+tests/separator-contract.test.ts	Tests: Automated Test Suites & Fixtures	3191	81	tracked	đọc đầy đủ		docs/project-atlas/TESTING.md
+tests/separator-pipeline.test.ts	Tests: Automated Test Suites & Fixtures	8090	218	tracked	đọc đầy đủ		docs/project-atlas/TESTING.md
+tests/separator-runtime.test.ts	Tests: Automated Test Suites & Fixtures	21631	557	tracked	đọc đầy đủ		docs/project-atlas/TESTING.md
+tests/sttn-contract.test.ts	Tests: Automated Test Suites & Fixtures	2922	63	tracked	đọc đầy đủ		docs/project-atlas/TESTING.md
+tests/sttn-pipeline.test.ts	Tests: Automated Test Suites & Fixtures	11090	189	tracked	đọc đầy đủ		docs/project-atlas/TESTING.md
+tests/sttn-runtime.test.ts	Tests: Automated Test Suites & Fixtures	10417	165	tracked	đọc đầy đủ		docs/project-atlas/TESTING.md
+tests/video-title.test.ts	Tests: Automated Test Suites & Fixtures	14033	259	tracked	đọc đầy đủ		docs/project-atlas/TESTING.md
+tsconfig.json	Config/Legal: Project Root Configuration	119	7	tracked	đọc đầy đủ		docs/project-atlas/CONFIGURATION.md; docs/project-atlas/SECURITY_AND_LICENSE.md
+tsconfig.node.json	Config/Legal: Project Root Configuration	448	21	tracked	đọc đầy đủ		docs/project-atlas/CONFIGURATION.md; docs/project-atlas/SECURITY_AND_LICENSE.md
+tsconfig.web.json	Config/Legal: Project Root Configuration	557	25	tracked	đọc đầy đủ		docs/project-atlas/CONFIGURATION.md; docs/project-atlas/SECURITY_AND_LICENSE.md

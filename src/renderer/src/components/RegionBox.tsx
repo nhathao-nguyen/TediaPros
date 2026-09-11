@@ -19,6 +19,11 @@ import {
   subtitleFontSizeForBox,
   wrapWidthFromBox
 } from '../../../shared/subWrap'
+import {
+  videoAdjustmentPreviewCoordinate,
+  videoAdjustmentPreviewSize,
+  videoAdjustmentSourceDelta
+} from '../../../shared/videoAdjustments'
 
 function measureCanvasText(fontCss: string, text: string): number {
   if (!text) return 0
@@ -78,6 +83,8 @@ interface Props {
   subtitleDisplayStyle?: SubtitleDisplayStyle
   /** Co chu pixel video do main tinh cung mot lan voi ASS. */
   subtitleFontSize?: number
+  /** Match the final composition when the source is shrunk into a portrait frame. */
+  scaleSubtitleToVideo?: boolean
   highlightColor?: string
   highlightPop?: boolean
   textColor?: string
@@ -87,6 +94,8 @@ interface Props {
   bgColor?: string
   bgOpacity?: number
   showSafeArea?: boolean
+  /** Zoom applied to the source image; subtitle placement remains unchanged. */
+  previewZoom?: number
 }
 
 type DragType = 'move' | 'top' | 'bot' | 'left' | 'right' | 'top-left' | 'top-right' | 'bot-left' | 'bot-right'
@@ -118,6 +127,7 @@ export default function RegionBox({
   subtitleTime = 0,
   subtitleDisplayStyle = 'standard',
   subtitleFontSize,
+  scaleSubtitleToVideo = false,
   highlightColor = '#43e7d5',
   highlightPop = true,
   textColor = '#ffffff',
@@ -126,7 +136,8 @@ export default function RegionBox({
   bgEnabled = false,
   bgColor = '#000000',
   bgOpacity = 60,
-  showSafeArea = false
+  showSafeArea = false,
+  previewZoom = 100
 }: Props): JSX.Element {
   const keo = useRef<{
     target: 'blur' | 'sub' | 'ocr'
@@ -139,6 +150,7 @@ export default function RegionBox({
 
   const sx = videoW > 0 && boxW > 0 ? videoW / boxW : 1
   const sy = videoH > 0 && boxH > 0 ? videoH / boxH : 1
+  const zoomRatio = previewZoom / 100
 
   const batBlur =
     (id: string, r: Region, kieu: DragType) =>
@@ -169,8 +181,9 @@ export default function RegionBox({
     (e: MouseEvent) => {
       const k = keo.current
       if (!k) return
-      const dy = (e.clientY - k.y) * sy
-      const dx = (e.clientX - k.x) * sx
+      const interactionZoom = k.target === 'sub' ? 100 : previewZoom
+      const dy = videoAdjustmentSourceDelta(e.clientY - k.y, videoH, boxH, interactionZoom)
+      const dx = videoAdjustmentSourceDelta(e.clientX - k.x, videoW, boxW, interactionZoom)
 
       const MIN_H = Math.max(20, Math.round(videoH * 0.03))
       const MIN_W = Math.max(40, Math.round(videoW * 0.05))
@@ -206,7 +219,7 @@ export default function RegionBox({
         setOcrRegion(updated)
       }
     },
-    [sx, sy, videoH, videoW, regions, updateRegion, setSubRegion, setOcrRegion]
+    [boxH, boxW, previewZoom, videoH, videoW, regions, updateRegion, setSubRegion, setOcrRegion]
   )
 
   useEffect(() => {
@@ -221,8 +234,14 @@ export default function RegionBox({
     }
   }, [chuot])
 
-  const pct = (v: number): string => `${videoH > 0 ? (v / videoH) * 100 : 0}%`
-  const pctX = (v: number): string => `${videoW > 0 ? (v / videoW) * 100 : 0}%`
+  const rawPct = (v: number): string => `${videoH > 0 ? (v / videoH) * 100 : 0}%`
+  const rawPctX = (v: number): string => `${videoW > 0 ? (v / videoW) * 100 : 0}%`
+  const pct = (v: number): string => `${videoAdjustmentPreviewCoordinate(v, videoH, previewZoom)}%`
+  const pctX = (v: number): string => `${videoAdjustmentPreviewCoordinate(v, videoW, previewZoom)}%`
+  const pctSize = (v: number): string => `${videoAdjustmentPreviewSize(v, videoH, previewZoom)}%`
+  const pctSizeX = (v: number): string => `${videoAdjustmentPreviewSize(v, videoW, previewZoom)}%`
+  const boundedPct = (v: number): string => `${Math.max(0, Math.min(100, videoAdjustmentPreviewCoordinate(v, videoH, previewZoom)))}%`
+  const boundedPctX = (v: number): string => `${Math.max(0, Math.min(100, videoAdjustmentPreviewCoordinate(v, videoW, previewZoom)))}%`
 
   const list = regions || []
   const blurVisible = showBlurEffect ?? xemMo
@@ -230,20 +249,17 @@ export default function RegionBox({
   const activeRegion = list.find((item) => item.id === currentActiveId)
 
   // Cỡ chữ mẫu = burn (bh * 0.7), quy về pixel preview qua sy
-  const previewFontSize = subRegion && videoH > 0
-    ? Math.max(
-        12,
-        Math.round(
-          (subtitleFontSize ??
-            subtitleFontSizeForBox({
-              boxWidth: subRegion.x1 - subRegion.x0,
-              boxHeight: subRegion.y1 - subRegion.y0,
-              videoWidth: videoW,
-              videoHeight: videoH
-            })) / sy
-        )
-      )
-    : 16
+  const sourceFontSize = subRegion && videoH > 0
+    ? subtitleFontSize ?? subtitleFontSizeForBox({
+        boxWidth: subRegion.x1 - subRegion.x0,
+        boxHeight: subRegion.y1 - subRegion.y0,
+        videoWidth: videoW,
+        videoHeight: videoH
+      })
+    : 16 * sy
+  const previewFontSize = scaleSubtitleToVideo
+    ? sourceFontSize / sy
+    : Math.max(12, Math.round(sourceFontSize / sy))
 
   // Xuong dong mau: do px that (canvas) vs chieu ngang khung (video px)
   const sample = subtitleText === undefined ? 'Mẫu chữ xuất ra' : subtitleText
@@ -328,13 +344,17 @@ export default function RegionBox({
     [subtitleCues, subtitleDisplayStyle, wrapPreviewText]
   )
 
-  const boxPadPreview = Math.max(4, Math.round(previewFontSize * 0.26))
+  const boxPadPreview = scaleSubtitleToVideo
+    ? Math.max(8, Math.round(sourceFontSize * 0.26)) / sy
+    : Math.max(4, Math.round(previewFontSize * 0.26))
   // Phuong an A: gan vuong nhu ASS (blur), khong pill
-  const boxRadiusPreview = Math.max(2, Math.round(previewFontSize * 0.06))
+  const boxRadiusPreview = scaleSubtitleToVideo
+    ? Math.max(2, Math.round(sourceFontSize * 0.06)) / sy
+    : Math.max(2, Math.round(previewFontSize * 0.06))
 
   const outlineShadow = (() => {
     const previewScale = Math.max(sy, 0.001)
-    const px = Math.max(0, Math.min(8, Math.round((outlinePx / previewScale) * 2) / 2))
+    const px = Math.max(0, Math.min(8, Math.round((outlinePx / (scaleSubtitleToVideo ? 1 : previewScale)) * 2) / 2))
     if (px <= 0) return 'none'
     const parts: string[] = []
     const step = 0.5
@@ -342,8 +362,8 @@ export default function RegionBox({
       for (let y = -px; y <= px + 1e-9; y += step) {
         if (Math.abs(x) < 1e-9 && Math.abs(y) < 1e-9) continue
         if (x * x + y * y > px * px + px * 0.5) continue
-        const xr = Math.round(x * 2) / 2
-        const yr = Math.round(y * 2) / 2
+        const xr = Math.round(x * 2) / 2 / (scaleSubtitleToVideo ? previewScale : 1)
+        const yr = Math.round(y * 2) / 2 / (scaleSubtitleToVideo ? previewScale : 1)
         parts.push(`${xr}px ${yr}px 0 ${outlineColor}`)
       }
     }
@@ -373,23 +393,23 @@ export default function RegionBox({
       {/* Vùng mờ xung quanh active blur region */}
       {xemMo && activeRegion && (
         <>
-          <div className="rbox-mo" style={{ top: 0, height: pct(activeRegion.y0) }} />
-          <div className="rbox-mo" style={{ top: pct(activeRegion.y1), bottom: 0 }} />
+          <div className="rbox-mo" style={{ top: 0, height: boundedPct(activeRegion.y0) }} />
+          <div className="rbox-mo" style={{ top: boundedPct(activeRegion.y1), bottom: 0 }} />
           <div
             className="rbox-mo"
             style={{
-              top: pct(activeRegion.y0),
-              height: pct(activeRegion.y1 - activeRegion.y0),
+              top: boundedPct(activeRegion.y0),
+              height: `${Math.max(0, Math.min(100, videoAdjustmentPreviewCoordinate(activeRegion.y1, videoH, previewZoom)) - Math.max(0, videoAdjustmentPreviewCoordinate(activeRegion.y0, videoH, previewZoom)))}%`,
               left: 0,
-              width: pctX(activeRegion.x0)
+              width: boundedPctX(activeRegion.x0)
             }}
           />
           <div
             className="rbox-mo"
             style={{
-              top: pct(activeRegion.y0),
-              height: pct(activeRegion.y1 - activeRegion.y0),
-              left: pctX(activeRegion.x1),
+              top: boundedPct(activeRegion.y0),
+              height: `${Math.max(0, Math.min(100, videoAdjustmentPreviewCoordinate(activeRegion.y1, videoH, previewZoom)) - Math.max(0, videoAdjustmentPreviewCoordinate(activeRegion.y0, videoH, previewZoom)))}%`,
+              left: boundedPctX(activeRegion.x1),
               right: 0
             }}
           />
@@ -405,9 +425,9 @@ export default function RegionBox({
             className={`rbox ${blurVisible ? 'rbox-lammo' : ''} ${isActive && blurInteractive ? 'active' : ''} ${blurInteractive ? '' : 'rbox-passive'}`}
             style={{
               top: pct(r.y0),
-              height: pct(r.y1 - r.y0),
+              height: pctSize(r.y1 - r.y0),
               left: pctX(r.x0),
-              width: pctX(r.x1 - r.x0),
+              width: pctSizeX(r.x1 - r.x0),
               borderColor: r.color
             }}
             onMouseDown={
@@ -454,10 +474,10 @@ export default function RegionBox({
         <div
           className={`rbox rbox-sub ${subInteractive ? '' : 'rbox-passive'}`}
           style={{
-            top: pct(subRegion.y0),
-            height: pct(subRegion.y1 - subRegion.y0),
-            left: pctX(subRegion.x0),
-            width: pctX(subRegion.x1 - subRegion.x0)
+            top: rawPct(subRegion.y0),
+            height: rawPct(subRegion.y1 - subRegion.y0),
+            left: rawPctX(subRegion.x0),
+            width: rawPctX(subRegion.x1 - subRegion.x0)
           }}
           onMouseDown={subInteractive ? batSub('move') : undefined}
           title="Khung phụ đề: Kéo di chuyển vị trí · Kéo các điểm mút góc/cạnh để thay đổi cỡ chữ"
@@ -491,7 +511,7 @@ export default function RegionBox({
                   ? {
                       background: bgRgba,
                       borderRadius: boxRadiusPreview,
-                      padding: `${Math.max(3, Math.round(boxPadPreview * 0.55))}px ${boxPadPreview}px`
+                      padding: `${scaleSubtitleToVideo ? boxPadPreview * 0.55 : Math.max(3, Math.round(boxPadPreview * 0.55))}px ${boxPadPreview}px`
                     }
                   : {})
               }}
@@ -595,9 +615,9 @@ export default function RegionBox({
           className={`rbox rbox-ocr ${ocrInteractive ? '' : 'rbox-passive'}`}
           style={{
             top: pct(ocrRegion.y0),
-            height: pct(ocrRegion.y1 - ocrRegion.y0),
+            height: pctSize(ocrRegion.y1 - ocrRegion.y0),
             left: pctX(ocrRegion.x0),
-            width: pctX(ocrRegion.x1 - ocrRegion.x0)
+            width: pctSizeX(ocrRegion.x1 - ocrRegion.x0)
           }}
           onMouseDown={ocrInteractive ? batOcr('move') : undefined}
           title="Khung đọc chữ: kéo để di chuyển, kéo các cạnh để thay đổi kích thước"

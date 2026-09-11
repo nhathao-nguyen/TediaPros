@@ -1,0 +1,40 @@
+{
+  "verifiedAt": "2026-09-08T01:25:55.557Z",
+  "liveFinished": false,
+  "scope": "Real TTS WAV duration/tempo, grouped timeline and current caption metadata; no full video render or semantic certification.",
+  "results": [
+    {
+      "checkpoint": "11ed92e2-66c3-4ad8-99fb-b879a14639b1",
+      "sourceCues": 96,
+      "units": 32,
+      "captions": 50,
+      "maxPhysicalTempo": 1.3855008368413044,
+      "minGapSeconds": 0.5141500000000008,
+      "videoDuration": 142.175011,
+      "finalVoiceEnd": 140.406236,
+      "ok": true
+    },
+    {
+      "checkpoint": "bf03032d-1fc8-4051-8fe9-149fdd31cc7f",
+      "sourceCues": 108,
+      "units": 41,
+      "captions": 59,
+      "maxPhysicalTempo": 1.410818776829881,
+      "minGapSeconds": 0.510975000000002,
+      "videoDuration": 166.696009,
+      "finalVoiceEnd": 166.17712,
+      "ok": true
+    },
+    {
+      "checkpoint": "899932d5-067b-4acd-8a8d-89d0bc8fdcf2",
+      "sourceCues": 118,
+      "units": 40,
+      "captions": 68,
+      "maxPhysicalTempo": 1.4412160243946854,
+      "minGapSeconds": 0.5130159999999933,
+      "videoDuration": 188.197007,
+      "finalVoiceEnd": 187.67675699999998,
+      "ok": true
+    }
+  ]
+}

@@ -1,0 +1,18 @@
+{
+  "verifiedAt": "2026-09-08T01:38:18.382Z",
+  "liveFinished": true,
+  "scope": "Real TTS WAV duration/tempo, grouped timeline and current caption metadata; no full video render or semantic certification.",
+  "results": [
+    {
+      "checkpoint": "cecd1b20-843e-4225-ad0b-f152f6dafb99",
+      "sourceCues": 56,
+      "units": 31,
+      "captions": 45,
+      "maxPhysicalTempo": 1.424132870648458,
+      "minGapSeconds": 0.5110879999999938,
+      "videoDuration": 126.663991,
+      "finalVoiceEnd": 125.722358,
+      "ok": true
+    }
+  ]
+}

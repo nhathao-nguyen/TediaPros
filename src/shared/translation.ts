@@ -61,6 +61,8 @@ export interface TranslationInput {
   cues: TranslationCue[]
   contextBefore: TranslationCue[]
   contextAfter: TranslationCue[]
+  /** Complete bounded source groups, retained as read-only context across partial retries. */
+  sourceSpeechGroups?: ReadonlyArray<{ id: string; cues: readonly TranslationCue[] }>
   glossary: Array<{ source: string; target: string }>
   synopsis?: string
 }

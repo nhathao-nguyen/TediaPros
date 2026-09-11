@@ -5,11 +5,33 @@ import { planTranslation, restoreOriginalCues, type TranslationCapability } from
 import type { TranslationInput } from '../src/shared/translation'
 import { buildTranslationBatchMessages } from '../src/main/translation/prompts'
 import { parseTranslationResponse } from '../src/main/translation/response'
+import { buildDubbingPlan, groupDubbingPlanForSpeech } from '../src/main/dubbing/plan'
 
 const capability: TranslationCapability = {
   provider: 'local', modelIdentity: 'fixture@1', revisionKnown: true, format: 'json-items',
   contextTokens: 4096, outputTokens: 512, countTokens: (text) => Buffer.byteLength(text, 'utf8')
 }
+
+test('dubbing establishes shared source speech groups before provider batching', () => {
+  const cues = [
+    { id: 'intro', start: 57, end: 58.68, text: '铺地板装台面。' },
+    { id: 'cue-45-58680', start: 58.68, end: 59.92, text: '遇到墙脚转折尺寸' },
+    { id: 'cue-46-59920', start: 59.92, end: 60.72, text: '总对不上怎么办？' },
+    { id: 'answer', start: 60.72, end: 62.44, text: '用尺子贴合墙脚和木板边缘' }
+  ].map((cue, sourceIndex) => ({ ...cue, sourceIndex, groupId: `cue-${sourceIndex}` }))
+  const input: TranslationInput = { sourceLanguage: 'zh', targetLocale: 'fr', mode: 'dubbing', cues, contextBefore: [], contextAfter: [], glossary: [] }
+  const before = JSON.stringify(input)
+  const plan = planTranslation(input, { ...capability, contextTokens: null })
+  const requested = plan.batches.flatMap(batch => batch.input.cues)
+  assert.equal(requested[1].groupId, requested[2].groupId)
+  assert.notEqual(requested[0].groupId, requested[1].groupId)
+  assert.notEqual(requested[2].groupId, requested[3].groupId)
+  const groups = [...new Set(requested.map(cue => cue.groupId))].map(id => requested.filter(cue => cue.groupId === id).map(cue => cue.id))
+  const speech = groupDubbingPlanForSpeech(buildDubbingPlan({ videoDuration: 64, cues }), 'fr')
+  assert.deepEqual(groups, speech.cues.map(cue => cue.sourceCueIds))
+  assert.equal(JSON.stringify(input), before)
+  assert.deepEqual(requested.map(({ id, start, end, text }) => ({ id, start, end, text })), cues.map(({ id, start, end, text }) => ({ id, start, end, text })))
+})
 
 test('Korean context keeps word spacing while CJK remains compact', () => {
   assert.equal(joinGroupText([{ text: '나는' }, { text: '학생입니다' }], 'ko'), '나는 학생입니다')
@@ -31,6 +53,55 @@ test('all source spans survive internal long-cue planning and restore', () => {
   const restored = restoreOriginalCues(input.cues.map((cue) => ({ ...cue })), spans.map((mapping) => ({ id: mapping.unitId, text: `T${mapping.partIndex}` })), spans, 'en')
   assert.equal(restored[0]?.id, 'a')
   assert.match(restored[0]?.text || '', /^T1/iu)
+})
+
+test('a long dubbing speech group keeps its identity across bounded internal requests', () => {
+  const text = 'A long source fragment. '.repeat(1600)
+  const input: TranslationInput = {
+    sourceLanguage: 'en', targetLocale: 'fr', mode: 'dubbing',
+    cues: [{ id: 'long', sourceIndex: 0, start: 0, end: 300, groupId: 'cue-0', text }],
+    contextBefore: [], contextAfter: [], glossary: []
+  }
+  const plan = planTranslation(input, { ...capability, contextTokens: null, outputTokens: 64 })
+  assert.ok(plan.batches.length > 1)
+  assert.ok(plan.batches.every(batch => batch.input.cues.length <= 24))
+  assert.ok(plan.batches.every(batch => batch.input.cues.reduce((sum, cue) => sum + cue.text.length + 64, 0) <= 20_000))
+  assert.ok(plan.batches.flatMap(batch => batch.input.cues).every(cue => cue.groupId === 'source-speech-v1:long'))
+  assert.equal(plan.mapping.map(part => text.slice(part.startOffset, part.endOffset)).join(''), text)
+})
+
+test('repairing an internal part still receives its complete bounded source group', () => {
+  const cues = [
+    { id: 'long', sourceIndex: 0, start: 0, end: 8, text: 'fragment '.repeat(30), groupId: 'old-0' },
+    { id: 'last', sourceIndex: 1, start: 8, end: 10, text: 'never proceed.', groupId: 'old-1' }
+  ]
+  const input: TranslationInput = { sourceLanguage: 'en', targetLocale: 'fr', mode: 'dubbing', cues, contextBefore: [], contextAfter: [], glossary: [] }
+  const plan = planTranslation(input, { ...capability, contextTokens: null, outputTokens: 64 })
+  const batch = plan.batches[0]
+  const part = batch.input.cues.find(cue => cue.id.includes('/part-'))!
+  assert.ok(part)
+  const messages = buildTranslationBatchMessages({
+    ...batch, input: { ...batch.input, cues: [part], contextBefore: [], contextAfter: [] },
+    repairIssues: [{ code: 'missing-id', severity: 'error', confidence: 'certain', cueIds: [part.id], message: 'missing' }]
+  }, 'json-items')
+  const context = messages[1].content.split('[SOURCE_GROUP_CONTEXT_JSONL]')[1].split('[/SOURCE_GROUP_CONTEXT_JSONL]')[0]
+  assert.match(context, /never proceed\./u)
+  assert.match(context, /"ids":\["long","last"\]/u)
+})
+
+test('sparse internal parts of an oversized singleton are not joined into a fabricated source sentence', () => {
+  const input: TranslationInput = {
+    sourceLanguage: 'en', targetLocale: 'fr', mode: 'dubbing',
+    cues: [{ id: 'long', sourceIndex: 0, start: 0, end: 120, groupId: 'cue-0', text: 'A source fragment. '.repeat(100) }],
+    contextBefore: [], contextAfter: [], glossary: []
+  }
+  const batch = planTranslation(input, { ...capability, contextTokens: null, outputTokens: 64 }).batches[0]
+  assert.ok(batch.input.cues.length > 2)
+  const messages = buildTranslationBatchMessages({ ...batch, input: {
+    ...batch.input, cues: [batch.input.cues[0], batch.input.cues.at(-1)!], contextBefore: [], contextAfter: []
+  } }, 'json-items')
+  const groupContext = messages[1].content.split('[SOURCE_GROUP_CONTEXT_JSONL]')[1].split('[/SOURCE_GROUP_CONTEXT_JSONL]')[0]
+  assert.equal(groupContext.trim(), '')
 })
 
 test('planner preserves a short cue ID and source timing', () => {

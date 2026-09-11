@@ -85,3 +85,16 @@ Người dùng đã đồng ý kéo dài hình tối đa khoảng 30–40%. Tri�
 - Nếu vẫn cần hơn 40%, dừng với cue ID và phần trăm cần kéo dài; không tự nới trần, cắt lời hay giả thành công. Đây không phải cam kết mọi video/provider đều thành công.
 
 Kiểm chứng: test planner/synthesis cho giới hạn từng đoạn, nhóm ngữ nghĩa, ledger gốc, khoảng nghỉ và tempo; fixture FFmpeg thật đối chiếu chuyển cảnh và chuyển âm tại mốc được map cho video, mask và audio riêng. Chưa nghiệm thu lại batch video thực tế với TTS server.
+
+## Chốt nhóm thoại từ nguồn trước dịch — 2026-09-10
+
+Lỗi video `7635582620131374579`, cue `cue-45-58680`, cho thấy dấu hỏi trong bản dịch có thể biến một mảnh câu nguồn thành đoạn TTS đơn lẻ quá ngắn. `sourceSpeechGrouping.ts` nay xác lập nhóm chỉ từ text/timing nguồn trước khi chia request dịch; `groupDubbingPlanForSpeech` dùng cùng thuật toán cho TTS. Dấu câu và độ dài bản dịch không được thay đổi ranh giới nhóm.
+
+- Kết thúc câu nguồn đóng nhóm **sau** cue cuối câu; không tự ngắt trước cue có dấu hỏi. Dấu hỏi Arabic `؟` cũng được nhận diện. Đổi người nói và khoảng nghỉ từ 0.60s tiếp tục tạo ranh giới.
+- Đoạn nguồn không có dấu câu dùng phân hoạch cân bằng theo toàn đoạn, tối đa 6 cue, 15s và 300 ký tự nguồn cho nhóm nhiều cue. Một cue nguồn quá dài vẫn giữ ID để planner chia đơn vị request nội bộ, không tự sửa timestamp. Đây là heuristic có giới hạn, không phải bằng chứng hiểu đúng mọi ranh giới ngữ nghĩa.
+- Translation gán `source-speech-v1:<first-cue-id>` trước resume/recovery. ID/timestamp/text của mỗi cue nguồn vẫn bất biến; provider vẫn trả từng ID gốc. `sourceSpeechGroups` giữ bản sao nhóm nguồn hoàn chỉnh làm ngữ cảnh chỉ đọc, kể cả khi cue giữa đã dịch thành công, tránh ghép hai đầu thành câu bị mất phủ định.
+- Prompt `translation-v10` yêu cầu giữ mảnh câu đúng ID và không chuyển phần hỏi/phủ định/sự kiện sang cue kế bên. Version mới vô hiệu hóa việc tái dùng bản dịch theo prompt cũ qua identity hiện có; không xóa source checkpoint.
+- Nhóm thoại và request provider là hai khái niệm riêng: một nhóm vẫn có thể trải qua nhiều request khi chạm context hoặc giới hạn 24 đơn vị/20.000 ký tự ước lượng. Metadata nhóm được giữ nguyên qua chia request, retry và resume.
+- Tiếp tục đo WAV thật, rephrase, structural split sau đo, tempo tối đa 1.80x và kéo dài hình tối đa 40% từng đoạn. Không bảo đảm mọi bản dịch/TTS đều vừa thời lượng.
+
+Kiểm chứng hồi quy dùng đúng 54 cue nguồn đã lưu của video trên, cặp câu hỏi nhiều cue, dấu câu Pháp/Arabic, giữ ledger, resume thưa có phủ định ở giữa, missing-ID recovery và chia cue dài. Test offline chứng minh hành vi code; chưa chạy lại dịch/TTS provider thật hoặc cập nhật app cài đặt.

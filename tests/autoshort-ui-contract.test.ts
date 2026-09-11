@@ -65,3 +65,23 @@ test('AutoShort exposes a typed cache clear action and keeps it disabled while r
   assert.match(component, /window\.api\.autoShortClearCache\(\)/u)
   assert.match(component, /disabled=\{isRunning \|\| cacheAction\}/u)
 })
+
+test('both video workflows pass live locale and SEO options into metadata generation', async () => {
+  const autoShort = await readFile(join(process.cwd(), 'src/renderer/src/components/AutoShort.tsx'), 'utf8')
+  const editor = await readFile(join(process.cwd(), 'src/renderer/src/components/VideoEditor.tsx'), 'utf8')
+  const settings = await readFile(join(process.cwd(), 'src/renderer/src/components/VideoTitleSettings.tsx'), 'utf8')
+  for (const component of [autoShort, editor]) {
+    assert.match(component, /seo:\s*titleSeoOptions/u)
+    assert.match(component, /onSeoChange=\{setTitleSeoOptions\}/u)
+    assert.match(component, /onProviderChange=\{setTitleProvider\}/u)
+  }
+  assert.match(autoShort, /language:\s*titleLanguage/u)
+  assert.match(autoShort, /onLanguageChange=\{setTitleLanguage\}/u)
+  assert.match(editor, /setBurnSeoMetadata\(result\.seoMetadata/u)
+  const seoResult = await readFile(join(process.cwd(), 'src/renderer/src/components/VideoSeoResult.tsx'), 'utf8')
+  assert.match(seoResult, /normalizeVideoSeoMetadata\(metadata\)/u)
+  assert.match(seoResult, /hashtags\.join\(' '\)/u)
+  assert.match(settings, /new Intl\.DisplayNames/u)
+  assert.match(settings, /list=\{countryListId\}/u)
+  assert.match(settings, /value="auto">Tự động theo locale/u)
+})

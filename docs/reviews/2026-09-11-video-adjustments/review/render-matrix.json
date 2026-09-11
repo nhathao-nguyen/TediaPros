@@ -1,0 +1,74 @@
+[
+  {
+    "name": "manual-subfalse-portraitfalse",
+    "passed": true,
+    "width": 320,
+    "height": 180,
+    "frames": 4,
+    "duration": 0.4,
+    "audioPcmSha256Matches": true
+  },
+  {
+    "name": "manual-subfalse-portraittrue",
+    "passed": true,
+    "width": 1080,
+    "height": 1920,
+    "frames": 4,
+    "duration": 0.4,
+    "audioPcmSha256Matches": true
+  },
+  {
+    "name": "manual-subtrue-portraitfalse",
+    "passed": true,
+    "width": 320,
+    "height": 180,
+    "frames": 4,
+    "duration": 0.4,
+    "audioPcmSha256Matches": true
+  },
+  {
+    "name": "manual-subtrue-portraittrue",
+    "passed": true,
+    "width": 1080,
+    "height": 1920,
+    "frames": 4,
+    "duration": 0.4,
+    "audioPcmSha256Matches": true
+  },
+  {
+    "name": "ocr-subfalse-portraitfalse",
+    "passed": true,
+    "width": 320,
+    "height": 180,
+    "frames": 4,
+    "duration": 0.4,
+    "audioPcmSha256Matches": true
+  },
+  {
+    "name": "ocr-subfalse-portraittrue",
+    "passed": true,
+    "width": 1080,
+    "height": 1920,
+    "frames": 4,
+    "duration": 0.4,
+    "audioPcmSha256Matches": true
+  },
+  {
+    "name": "ocr-subtrue-portraitfalse",
+    "passed": true,
+    "width": 320,
+    "height": 180,
+    "frames": 4,
+    "duration": 0.4,
+    "audioPcmSha256Matches": true
+  },
+  {
+    "name": "ocr-subtrue-portraittrue",
+    "passed": true,
+    "width": 1080,
+    "height": 1920,
+    "frames": 4,
+    "duration": 0.4,
+    "audioPcmSha256Matches": true
+  }
+]

@@ -1,0 +1,102 @@
+[
+  {
+    "path": ".ai/tasks/2026-09-08-dubbing-group-audit.json",
+    "sha256": "124ECB4A22B9B34220910658E0355E20832B1279E6A7C4A5AE912520CAB91251",
+    "bytes": 47750
+  },
+  {
+    "path": ".ai/tasks/2026-09-08-dubbing-group-audit.mjs",
+    "sha256": "5A36A35149B7627DE80A4B32A474997FD8A97D70801132A4B810230BFB83B254",
+    "bytes": 1978
+  },
+  {
+    "path": ".ai/tasks/2026-09-08-dubbing-group-evidence3/report.json",
+    "sha256": "5DAC11746A77F382DABA89662BB6EBBEE6D8996DAFECE40E24F94FFCA2471E0D",
+    "bytes": 242893
+  },
+  {
+    "path": ".ai/tasks/2026-09-08-dubbing-group-evidence3/verified/11ed92e2-66c3-4ad8-99fb-b879a14639b1-plan.json",
+    "sha256": "F28ED6EE5E07F29CF6A0D2E615089B872C7376DCA067F7D5385F0035519B23CB",
+    "bytes": 61892
+  },
+  {
+    "path": ".ai/tasks/2026-09-08-dubbing-group-evidence3/verified/899932d5-067b-4acd-8a8d-89d0bc8fdcf2-plan.json",
+    "sha256": "894E54BB0DED940F44EDF18FC7266B55EB1BAB9A29D453A0E8124666FFCD4539",
+    "bytes": 79058
+  },
+  {
+    "path": ".ai/tasks/2026-09-08-dubbing-group-evidence3/verified/bf03032d-1fc8-4051-8fe9-149fdd31cc7f-plan.json",
+    "sha256": "B4B175D5AA7408139EE9CEAFAB48263028F680CE4827765971E5F7FEB9B24BD4",
+    "bytes": 74214
+  },
+  {
+    "path": ".ai/tasks/2026-09-08-dubbing-group-evidence3/verified/summary.json",
+    "sha256": "716DE81445AC89E6C196B744C9F1B0696CEF5A354A4A675FE638A1A8421E37BB",
+    "bytes": 1177
+  },
+  {
+    "path": ".ai/tasks/2026-09-08-dubbing-group-evidence4/report.json",
+    "sha256": "1CC1DA64FFF3D6473B1B7C170926FF75E8282F6270BB415FFF96E41AE080B223",
+    "bytes": 60555
+  },
+  {
+    "path": ".ai/tasks/2026-09-08-dubbing-group-evidence4/verified/cecd1b20-843e-4225-ad0b-f152f6dafb99-plan.json",
+    "sha256": "7000D41FCD74E8F898BC6D16E5010F0C44E1D3D4B6B789278EDA93CDE4A38026",
+    "bytes": 53209
+  },
+  {
+    "path": ".ai/tasks/2026-09-08-dubbing-group-evidence4/verified/summary.json",
+    "sha256": "81B9161AFD58301C1D121C2927D47069F7D0019B455856693FDC8997BE779B92",
+    "bytes": 540
+  },
+  {
+    "path": ".ai/tasks/2026-09-08-dubbing-group-live.ts",
+    "sha256": "5B8A3B62C19B98CBF624C8C9EA623F05E2650351EEE8802873619942B776CDE5",
+    "bytes": 10651
+  },
+  {
+    "path": ".ai/tasks/2026-09-08-dubbing-group-verify.mjs",
+    "sha256": "E2A328736028E749DBE216E608903AF726683FA014E432AFD40BFA373F0103A6",
+    "bytes": 4769
+  },
+  {
+    "path": ".ai/tasks/2026-09-08-dubbing-grouping-activation.json",
+    "sha256": "7E491F064A41648FA29498AF0CB24E33F9568DDE204716834AC7C9ED332BD768",
+    "bytes": 690
+  },
+  {
+    "path": ".ai/tasks/2026-09-08-dubbing-grouping-build-manifest.json",
+    "sha256": "58A594D50DFDE3D67A402738BB915713E3337D743F7110923ED6E83F3866F8A8",
+    "bytes": 1460
+  },
+  {
+    "path": ".ai/tasks/2026-09-08-dubbing-grouping-final-summary.json",
+    "sha256": "763575FE0F451B87037CB656081577119AE94CDB800D5A2C5A088B92B8DEA2E2",
+    "bytes": 2299
+  },
+  {
+    "path": ".ai/tasks/2026-09-08-dubbing-profile-audit.ts",
+    "sha256": "125567F87FAA057D21FD5A8AF0C88AA076CE5193DBE8D625A9FB48C838AC23C0",
+    "bytes": 2617
+  },
+  {
+    "path": ".ai/tasks/2026-09-08-rephrase-final-activation.json",
+    "sha256": "EC49F8CB947D39AFAF47A2D6CC084D87E12E4820EFE8BD6CDF71281DF9C53294",
+    "bytes": 682
+  },
+  {
+    "path": ".ai/tasks/2026-09-08-rephrase-live-evidence6/report.json",
+    "sha256": "308E8FA24D1ECAD105114AA100C08DF0BAB49583115973177268A56055321ABE",
+    "bytes": 2653
+  },
+  {
+    "path": ".ai/tasks/2026-09-08-rephrase-live.mjs",
+    "sha256": "C9D86F2EC52477AA64770DDE146A75C753093496C9C823983CCA5B3BCBB94682",
+    "bytes": 1750
+  },
+  {
+    "path": ".ai/tasks/2026-09-08-rephrase-live.ts",
+    "sha256": "89621CB993570A90977141826DE5B940647C2372F12094065425F504EA791859",
+    "bytes": 8881
+  }
+]

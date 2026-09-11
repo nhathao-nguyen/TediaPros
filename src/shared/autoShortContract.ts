@@ -9,6 +9,7 @@ import type {
   SubtitleDisplayStyle,
   SubtitleLayoutProfile
 } from './types'
+import { normalizeVideoAdjustments } from './videoAdjustments'
 import { isAutoShortSeparationPreset } from './autoShortSeparation'
 import { validateVideoTitleConfig } from './videoTitle'
 import { translationGuidanceError } from './translation'
@@ -210,6 +211,15 @@ function validateConfigRecord(raw: Record<string, unknown>): AutoShortConfig | s
       if (error) return error
     }
   }
+  if (raw.portraitBlur != null && typeof raw.portraitBlur !== 'boolean') return 'Cấu hình khung 9:16 không hợp lệ.'
+  if (raw.videoAdjustments != null) {
+    if (!isRecord(raw.videoAdjustments)) return 'Cấu hình chỉnh hình ảnh không hợp lệ.'
+    try {
+      normalizeVideoAdjustments(raw.videoAdjustments)
+    } catch {
+      return 'Cấu hình chỉnh hình ảnh không hợp lệ.'
+    }
+  }
   if (typeof raw.lamMo !== 'boolean' || typeof raw.ttsEnabled !== 'boolean' || typeof raw.voiceOverMode !== 'boolean') return 'Cấu hình bật/tắt không hợp lệ.'
   if (typeof raw.translateTarget !== 'string' || !raw.translateTarget.trim() || raw.translateTarget.length > 64) return 'Ngôn ngữ đích không hợp lệ.'
   if (raw.translateTarget !== 'none') {
@@ -294,6 +304,7 @@ function validateConfigRecord(raw: Record<string, unknown>): AutoShortConfig | s
 
   return {
     ...(raw as unknown as AutoShortConfig),
+    videoAdjustments: normalizeVideoAdjustments(raw.videoAdjustments as any),
     blurRegions: raw.lamMo === true && raw.blurMode === 'sttn' ? [] : raw.blurRegions as AutoShortBlurRegion[],
     ocrRegion: (raw.ocrRegion as AutoShortNormalizedRegion | null | undefined) ?? null,
     subRegion: (raw.subRegion as AutoShortNormalizedRegion | null | undefined) ?? null,

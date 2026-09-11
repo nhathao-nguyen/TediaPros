@@ -33,6 +33,7 @@ import {
   BurnFontPreviewData,
   DichProvider,
   GeminiStatus,
+  GeminiKeysResult,
   LogEntry,
   RendererIssueReport,
   OcrEngineStatus,
@@ -285,6 +286,10 @@ const api = {
 
   // Alias cu
   geminiHasKey: (): Promise<boolean> => ipcRenderer.invoke('gemini:hasKey'),
+  geminiListKeys: (): Promise<GeminiKeysResult> => ipcRenderer.invoke('gemini:listKeys'),
+  geminiAddKeys: (keys: string): Promise<GeminiKeysResult> => ipcRenderer.invoke('gemini:addKeys', keys),
+  geminiReplaceKeys: (keys: string): Promise<GeminiKeysResult> => ipcRenderer.invoke('gemini:replaceKeys', keys),
+  geminiRemoveKey: (id: string): Promise<GeminiKeysResult> => ipcRenderer.invoke('gemini:removeKey', id),
   geminiSaveKey: (key: string): Promise<void> => ipcRenderer.invoke('gemini:saveKey', key),
   geminiCheckKey: (key: string): Promise<GeminiStatus> => ipcRenderer.invoke('gemini:checkKey', key),
   geminiTranslateSrt: (

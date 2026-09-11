@@ -1,0 +1,68 @@
+{
+  "verifiedAt": "2026-09-08T08:39:22.9389276+07:00",
+  "scope": "Full dubbing TTS/trim/tempo/subtitles and timeline validation on four saved checkpoints; no OCR/inpainting/render acceptance or semantic certification",
+  "worktree": "F:\\Son\\tool\\TediaPros\\.worktrees\\codex-autoshort-optimization",
+  "sourceCount": 378.0,
+  "speechUnits": 144.0,
+  "captions": 222.0,
+  "maxPhysicalTempo": 1.4412160243946854,
+  "minGapSeconds": 0.510975000000002,
+  "testCount": 563,
+  "suites": 53,
+  "typecheck": "pass",
+  "build": "pass",
+  "appMainPid": 16440,
+  "appUrl": "http://localhost:5173/",
+  "liveEvidence": [
+    "2026-09-08-dubbing-group-evidence3/verified/summary.json",
+    "2026-09-08-dubbing-group-evidence4/verified/summary.json"
+  ],
+  "predictor": "Fresh per-video predictor; configured app profile has268samples and was preserved",
+  "cache": "Reuse of exact text/voice WAV and exact JSON LLM response; new candidates synthesized live",
+  "results": [
+    {
+      "checkpoint": "11ed92e2-66c3-4ad8-99fb-b879a14639b1",
+      "sourceCues": 96,
+      "units": 32,
+      "captions": 50,
+      "maxPhysicalTempo": 1.3855008368413044,
+      "minGapSeconds": 0.5141500000000008,
+      "videoDuration": 142.175011,
+      "finalVoiceEnd": 140.406236,
+      "ok": true
+    },
+    {
+      "checkpoint": "bf03032d-1fc8-4051-8fe9-149fdd31cc7f",
+      "sourceCues": 108,
+      "units": 41,
+      "captions": 59,
+      "maxPhysicalTempo": 1.410818776829881,
+      "minGapSeconds": 0.510975000000002,
+      "videoDuration": 166.696009,
+      "finalVoiceEnd": 166.17712,
+      "ok": true
+    },
+    {
+      "checkpoint": "899932d5-067b-4acd-8a8d-89d0bc8fdcf2",
+      "sourceCues": 118,
+      "units": 40,
+      "captions": 68,
+      "maxPhysicalTempo": 1.4412160243946854,
+      "minGapSeconds": 0.5130159999999933,
+      "videoDuration": 188.197007,
+      "finalVoiceEnd": 187.67675699999998,
+      "ok": true
+    },
+    {
+      "checkpoint": "cecd1b20-843e-4225-ad0b-f152f6dafb99",
+      "sourceCues": 56,
+      "units": 31,
+      "captions": 45,
+      "maxPhysicalTempo": 1.424132870648458,
+      "minGapSeconds": 0.5110879999999938,
+      "videoDuration": 126.663991,
+      "finalVoiceEnd": 125.722358,
+      "ok": true
+    }
+  ]
+}

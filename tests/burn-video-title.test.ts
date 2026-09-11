@@ -7,7 +7,14 @@ import { tmpdir } from 'node:os'
 import { dirname, join } from 'node:path'
 import { test } from 'node:test'
 import { burnAutoShort, burnSubtitle, cancelBurn, completeBurnVideoTitle } from '../src/main/burn'
-import type { BurnProgress, BurnReq, BurnResult } from '../src/shared/types'
+import type { BurnProgress, BurnReq, BurnResult, VideoSeoMetadata } from '../src/shared/types'
+
+const seo = (title: string): VideoSeoMetadata => ({
+  title,
+  description: 'Video mô tả chính xác nội dung trong phụ đề.',
+  tags: ['nội dung video', 'phụ đề'],
+  hashtags: ['#noidungvideo', '#phude']
+})
 
 async function fixture() {
   const root = await mkdtemp(join(tmpdir(), 'tedia-burn-title-'))
@@ -46,14 +53,16 @@ test('burn title uses the exported SRT language and video stream duration, then 
           [0, 1.5, 'Cách cây trao đổi chất.'],
           [1.5, 2, 'Rễ cây hút nước từ đất.']
         ])
-        return title
+        return seo(title)
       }
     })
     assert.equal(completed.ok, true)
     assert.equal(completed.output, f.video)
     assert.equal(completed.title, title)
+    assert.deepEqual(completed.seoMetadata, seo(title))
     assert.equal(completed.titlePath, join(f.root, 'tieude.txt'))
-    assert.equal((await readFile(completed.titlePath!, 'utf8')).trim(), title)
+    assert.equal(await readFile(completed.titlePath!, 'utf8'),
+      `${title}\n\nDescription:\nVideo mô tả chính xác nội dung trong phụ đề.\n\nTags:\nnội dung video, phụ đề\n\nHashtags:\n#noidungvideo #phude\n`)
     assert.equal(await readFile(f.video, 'utf8'), 'completed video sentinel')
     assert.match(progress[0].message!, /AI.*tiêu đề/u)
   } finally { await f.cleanup() }
@@ -80,7 +89,7 @@ test('cancelling title generation aborts the provider and preserves the complete
     let writeCount = 0
     const completion = completeBurnVideoTitle(f.result, f.req, () => {}, controller.signal, {
       probe,
-      generate: async (_cues, _config, signal) => new Promise<string>((_resolve, reject) => {
+      generate: async (_cues, _config, signal) => new Promise<VideoSeoMetadata>((_resolve, reject) => {
         signal!.addEventListener('abort', () => reject(new Error('provider stopped')), { once: true })
         notifyStarted()
       }),
@@ -105,7 +114,7 @@ test('cancellation after provider completion still prevents a title write', asyn
     let writeCount = 0
     const completed = await completeBurnVideoTitle(f.result, f.req, () => {}, controller.signal, {
       probe,
-      generate: async () => { controller.abort(); return 'Tiêu đề đã tạo' },
+      generate: async () => { controller.abort(); return seo('Tiêu đề đã tạo') },
       write: async () => { writeCount++; return '' }
     })
     assert.equal(completed.ok, true)
@@ -120,7 +129,7 @@ test('provider failure and empty title preserve video without exposing provider 
     let writeCount = 0
     for (const generate of [
       async () => { throw new Error('secret-key-sentinel https://private-server.example/api C:\\private\\token.json') },
-      async () => '  \n '
+      async () => ({ title: '', description: '', tags: [], hashtags: [] }) as VideoSeoMetadata
     ]) {
       const completed = await completeBurnVideoTitle(f.result, f.req, () => {}, new AbortController().signal, {
         probe, generate, write: async () => { writeCount++; return '' }
@@ -141,7 +150,7 @@ test('existing sidecar is preserved and reported as a title save failure after s
   try {
     await writeFile(join(f.root, 'tieude.txt'), 'Existing user title')
     const completed = await completeBurnVideoTitle(f.result, f.req, () => {}, new AbortController().signal, {
-      probe, generate: async () => 'New generated title'
+      probe, generate: async () => seo('New generated title')
     })
     assert.equal(completed.ok, true)
     assert.equal(completed.output, f.video)
@@ -155,7 +164,7 @@ test('unknown output duration or SRT entirely outside the export never causes an
   const f = await fixture()
   try {
     let generateCount = 0
-    const io = { generate: async () => { generateCount++; return 'Wrong title' } }
+    const io = { generate: async () => { generateCount++; return seo('Wrong title') } }
     const noDuration = await completeBurnVideoTitle(f.result, f.req, () => {}, new AbortController().signal, {
       ...io, probe: async () => ({ w: 320, h: 180, giay: 0, hasAudio: false })
     })
@@ -203,6 +212,7 @@ test('real FFmpeg render writes the AI sidecar for Auto Short and direct burn, t
   let notifySecondCall!: () => void
   const secondCall = new Promise<void>((resolve) => { notifySecondCall = resolve })
   const title = 'How plant roots absorb water'
+  const metadata = seo(title)
   const server = createServer(async (request, response) => {
     const chunks: Buffer[] = []
     for await (const chunk of request) chunks.push(Buffer.from(chunk))
@@ -212,7 +222,7 @@ test('real FFmpeg render writes the AI sidecar for Auto Short and direct burn, t
       return // The third title request stays pending until cancelBurn aborts it.
     }
     response.writeHead(200, { 'Content-Type': 'application/json' })
-    response.end(JSON.stringify({ choices: [{ message: { content: JSON.stringify({ title }) } }] }))
+    response.end(JSON.stringify({ choices: [{ message: { content: JSON.stringify(metadata) } }] }))
   })
   try {
     process.env.TEDIAPROS_TEST_USER_DATA = userData
@@ -269,10 +279,12 @@ test('real FFmpeg render writes the AI sidecar for Auto Short and direct burn, t
     assert.equal(autoResult.ok, true, autoResult.error)
     assert.equal(autoResult.titleError, undefined)
     assert.equal(autoResult.title, title)
+    assert.deepEqual(autoResult.seoMetadata, metadata)
     assert.ok(autoResult.output)
     assert.equal(dirname(autoResult.output!), autoOutputDir)
     assert.equal(dirname(autoResult.output!), dirname(autoResult.titlePath!))
-    assert.equal((await readFile(autoResult.titlePath!, 'utf8')).trim(), title)
+    assert.equal(await readFile(autoResult.titlePath!, 'utf8'),
+      `${title}\n\nDescription:\n${metadata.description}\n\nTags:\n${metadata.tags.join(', ')}\n\nHashtags:\n${metadata.hashtags.join(' ')}\n`)
     const autoProbeResult = spawnSync(join(runtime, 'ffprobe.exe'), [
       '-v', 'error', '-select_streams', 'v:0',
       '-show_entries', 'stream=codec_name,profile,pix_fmt', '-of', 'json', autoResult.output!
@@ -287,10 +299,12 @@ test('real FFmpeg render writes the AI sidecar for Auto Short and direct burn, t
     assert.equal(result.ok, true, result.error)
     assert.equal(result.titleError, undefined)
     assert.equal(result.title, title)
+    assert.deepEqual(result.seoMetadata, metadata)
     assert.ok(result.output)
     assert.notEqual(dirname(result.output!), root)
     assert.equal(dirname(result.output!), dirname(result.titlePath!))
-    assert.equal((await readFile(result.titlePath!, 'utf8')).trim(), title)
+    assert.equal(await readFile(result.titlePath!, 'utf8'),
+      `${title}\n\nDescription:\n${metadata.description}\n\nTags:\n${metadata.tags.join(', ')}\n\nHashtags:\n${metadata.hashtags.join(' ')}\n`)
     const probeResult = spawnSync(join(runtime, 'ffprobe.exe'), [
       '-v', 'error', '-show_entries', 'stream=codec_type,duration', '-of', 'json', result.output!
     ], { windowsHide: true, encoding: 'utf8' })
@@ -313,7 +327,8 @@ test('real FFmpeg render writes the AI sidecar for Auto Short and direct burn, t
     assert.notEqual(stopped.output, result.output)
     assert.match(stopped.titleError!, /Đã dừng tạo tiêu đề/u)
     assert.equal(existsSync(join(dirname(stopped.output!), 'tieude.txt')), false)
-    assert.equal((await readFile(result.titlePath!, 'utf8')).trim(), title)
+    assert.equal(await readFile(result.titlePath!, 'utf8'),
+      `${title}\n\nDescription:\n${metadata.description}\n\nTags:\n${metadata.tags.join(', ')}\n\nHashtags:\n${metadata.hashtags.join(' ')}\n`)
     context.diagnostic('Actual 2-second FFmpeg video + loopback AI title verified; cancellation preserved second MP4 and existing first title.')
   } finally {
     cancelBurn()

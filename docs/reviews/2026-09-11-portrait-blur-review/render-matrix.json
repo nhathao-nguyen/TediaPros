@@ -1,0 +1,92 @@
+[
+  {
+    "name": "landscape",
+    "sourceDisplay": [
+      640,
+      360
+    ],
+    "output": [
+      1080,
+      1920
+    ],
+    "frames": 4,
+    "duration": "0.400000",
+    "audioPcmSha256": "d126baa94a92a75cf4b642ab20a9a78d0fcbaa056048c1602f616e14eb6cc90b",
+    "rotation": []
+  },
+  {
+    "name": "square",
+    "sourceDisplay": [
+      480,
+      480
+    ],
+    "output": [
+      1080,
+      1920
+    ],
+    "frames": 4,
+    "duration": "0.400000",
+    "audioPcmSha256": "d126baa94a92a75cf4b642ab20a9a78d0fcbaa056048c1602f616e14eb6cc90b",
+    "rotation": []
+  },
+  {
+    "name": "portrait",
+    "sourceDisplay": [
+      360,
+      640
+    ],
+    "output": [
+      1080,
+      1920
+    ],
+    "frames": 4,
+    "duration": "0.400000",
+    "audioPcmSha256": "d126baa94a92a75cf4b642ab20a9a78d0fcbaa056048c1602f616e14eb6cc90b",
+    "rotation": []
+  },
+  {
+    "name": "narrow",
+    "sourceDisplay": [
+      200,
+      800
+    ],
+    "output": [
+      1080,
+      1920
+    ],
+    "frames": 4,
+    "duration": "0.400000",
+    "audioPcmSha256": "d126baa94a92a75cf4b642ab20a9a78d0fcbaa056048c1602f616e14eb6cc90b",
+    "rotation": []
+  },
+  {
+    "name": "anamorphic",
+    "sourceDisplay": [
+      768,
+      576
+    ],
+    "output": [
+      1080,
+      1920
+    ],
+    "frames": 4,
+    "duration": "0.400000",
+    "audioPcmSha256": "d126baa94a92a75cf4b642ab20a9a78d0fcbaa056048c1602f616e14eb6cc90b",
+    "rotation": []
+  },
+  {
+    "name": "rotation90",
+    "sourceDisplay": [
+      360,
+      640
+    ],
+    "output": [
+      1080,
+      1920
+    ],
+    "frames": 4,
+    "duration": "0.400000",
+    "audioPcmSha256": "d126baa94a92a75cf4b642ab20a9a78d0fcbaa056048c1602f616e14eb6cc90b",
+    "rotation": []
+  }
+]

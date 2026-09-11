@@ -1,0 +1,35 @@
+.editor-stage-head {
+  flex-wrap: wrap;
+}
+.editor-preview-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.portrait-blur-toggle {
+  white-space: nowrap;
+}
+.portrait-frame-preview {
+  overflow: hidden;
+  background: #02050a;
+}
+.portrait-frame-background {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  transform: scale(1.1);
+  pointer-events: none;
+}
+.portrait-frame-content {
+  position: absolute;
+  overflow: hidden;
+}
+.portrait-frame-content[data-video-adjustments] > video {
+  transform-origin: center;
+}
+.portrait-frame-preview[data-portrait-blur='true'] video {
+  border-radius: 0;
+}

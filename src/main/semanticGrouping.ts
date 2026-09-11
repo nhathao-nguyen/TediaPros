@@ -83,7 +83,7 @@ export function parseCueTiming(cue: SemanticCue): { start?: number; end?: number
 /**
  * Nhận diện dấu kết thúc câu trên nhiều hệ thống chữ viết (Latin, CJK, Arabic, Devanagari...).
  */
-const SENTENCE_TERMINAL_REGEX = /[.!?。！？…۔।॥]["'”’»›)\]})）】」』]*\s*$/u
+const SENTENCE_TERMINAL_REGEX = /[.!?。！？؟…۔।॥]["'”’»›)\]})）】」』]*\s*$/u
 
 export function isSentenceTerminal(text: string): boolean {
   const clean = text.trim()

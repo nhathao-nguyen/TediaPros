@@ -1,0 +1,280 @@
+{
+  "schema_version": 1,
+  "diagram_type": "sequence",
+  "meta": {
+    "title": "Trinh Tu Thuc Thi Mot Video Trong AutoShort (Sequence Trace)",
+    "output": "autoshort-execution.sequence.html",
+    "viewBox": [
+      860,
+      840
+    ],
+    "animation": "trace",
+    "visual_preset": "signal-flow",
+    "quality_profile": "showcase",
+    "views": [
+      {
+        "id": "init-and-reserve",
+        "label": "Khoi tao & Kiem tra dia",
+        "focus": [
+          "renderer",
+          "preload",
+          "coord",
+          "storage"
+        ],
+        "note": "Kiem tra han ngach dia 685MB truoc khi bat dau tiep nhan video."
+      },
+      {
+        "id": "extract-and-dub",
+        "label": "Trich xuat & Long tieng",
+        "focus": [
+          "coord",
+          "sidecar",
+          "ffmpeg"
+        ],
+        "note": "Phan tich am thanh Whisper, quet OCR va tong hop giong doc TTS."
+      },
+      {
+        "id": "render-and-clean",
+        "label": "Render & Thu hoi don dep",
+        "focus": [
+          "coord",
+          "ffmpeg",
+          "storage",
+          "preload",
+          "renderer"
+        ],
+        "note": "Ghep phu de ASS, blur RGB va don sach scratch dir."
+      }
+    ]
+  },
+  "participants": [
+    {
+      "id": "renderer",
+      "type": "frontend",
+      "label": "React UI",
+      "sublabel": "Zustand"
+    },
+    {
+      "id": "preload",
+      "type": "security",
+      "label": "Preload",
+      "sublabel": "IPC Bridge"
+    },
+    {
+      "id": "coord",
+      "type": "backend",
+      "label": "Coord",
+      "sublabel": "Item Runner"
+    },
+    {
+      "id": "storage",
+      "type": "database",
+      "label": "Storage",
+      "sublabel": "Disk Guard"
+    },
+    {
+      "id": "sidecar",
+      "type": "messagebus",
+      "label": "Sidecar",
+      "sublabel": "OCR/Whisper"
+    },
+    {
+      "id": "ffmpeg",
+      "type": "cloud",
+      "label": "FFmpeg",
+      "sublabel": "Render/Mux"
+    }
+  ],
+  "segments": [
+    {
+      "from": 140,
+      "to": 310,
+      "label": "Khoi Tao & Kiem Tra Dia"
+    },
+    {
+      "from": 320,
+      "to": 560,
+      "label": "Trich Xuat & Long Tieng"
+    },
+    {
+      "from": 570,
+      "to": 750,
+      "label": "Render & Don Dep Tai Nguyen"
+    }
+  ],
+  "messages": [
+    {
+      "from": "renderer",
+      "to": "preload",
+      "y": 160,
+      "label": "start(item)",
+      "variant": "emphasis"
+    },
+    {
+      "from": "preload",
+      "to": "coord",
+      "y": 205,
+      "label": "ipc: start-item",
+      "variant": "emphasis"
+    },
+    {
+      "from": "coord",
+      "to": "storage",
+      "y": 250,
+      "label": "checkHeadroom(685MB)",
+      "variant": "security"
+    },
+    {
+      "from": "storage",
+      "to": "coord",
+      "y": 295,
+      "label": "OK: reserved scratch",
+      "variant": "return"
+    },
+    {
+      "from": "coord",
+      "to": "sidecar",
+      "y": 340,
+      "label": "runSpeechOcr(video)",
+      "variant": "emphasis"
+    },
+    {
+      "from": "sidecar",
+      "to": "coord",
+      "y": 385,
+      "label": "return {words, boxes}",
+      "variant": "return"
+    },
+    {
+      "from": "coord",
+      "to": "preload",
+      "y": 430,
+      "label": "notifyProgress(phase: dub)",
+      "variant": "dashed"
+    },
+    {
+      "from": "preload",
+      "to": "renderer",
+      "y": 475,
+      "label": "onProgressUpdate(60%)",
+      "variant": "dashed"
+    },
+    {
+      "from": "coord",
+      "to": "sidecar",
+      "y": 520,
+      "label": "synthesizeTts(text)",
+      "variant": "emphasis"
+    },
+    {
+      "from": "sidecar",
+      "to": "coord",
+      "y": 555,
+      "label": "return dub.wav",
+      "variant": "return"
+    },
+    {
+      "from": "coord",
+      "to": "ffmpeg",
+      "y": 595,
+      "label": "renderPlanarRgbAss()",
+      "variant": "emphasis"
+    },
+    {
+      "from": "ffmpeg",
+      "to": "coord",
+      "y": 635,
+      "label": "output.mp4 finished",
+      "variant": "return"
+    },
+    {
+      "from": "coord",
+      "to": "storage",
+      "y": 675,
+      "label": "cleanupScratchDir()",
+      "variant": "security"
+    },
+    {
+      "from": "storage",
+      "to": "coord",
+      "y": 710,
+      "label": "scratch purged",
+      "variant": "return"
+    },
+    {
+      "from": "coord",
+      "to": "preload",
+      "y": 745,
+      "label": "itemCompleted(path)",
+      "variant": "emphasis"
+    }
+  ],
+  "activations": [
+    {
+      "participant": "preload",
+      "from": 155,
+      "to": 215,
+      "type": "security"
+    },
+    {
+      "participant": "coord",
+      "from": 200,
+      "to": 750,
+      "type": "backend"
+    },
+    {
+      "participant": "storage",
+      "from": 245,
+      "to": 300,
+      "type": "database"
+    },
+    {
+      "participant": "sidecar",
+      "from": 335,
+      "to": 390,
+      "type": "messagebus"
+    },
+    {
+      "participant": "sidecar",
+      "from": 515,
+      "to": 560,
+      "type": "messagebus"
+    },
+    {
+      "participant": "ffmpeg",
+      "from": 590,
+      "to": 640,
+      "type": "cloud"
+    },
+    {
+      "participant": "storage",
+      "from": 670,
+      "to": 715,
+      "type": "database"
+    },
+    {
+      "participant": "preload",
+      "from": 740,
+      "to": 750,
+      "type": "security"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "Bao Ve Bo Nho & Dia",
+      "items": [
+        "Disk Headroom 685MB duoc tham dinh truoc",
+        "Purge scratch folder ngay sau khi render xong"
+      ]
+    },
+    {
+      "dot": "rose",
+      "title": "Kiem Soat Chat Luong",
+      "items": [
+        "Tempo duoc kep chan vat ly trong khoang 1.10x - 1.45x",
+        "Planar RGB ngan ngua lem mau YUV khi hardsub"
+      ]
+    }
+  ]
+}

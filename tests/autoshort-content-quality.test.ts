@@ -129,6 +129,15 @@ test('interrogative question particles across languages do not trigger false neg
   assert.equal(result.findings.filter((f) => f.code === 'protected-token-mismatch').length, 0)
 })
 
+test('Chinese A-not-A questions do not look like dropped negation after translation', () => {
+  const result = validateAutoShortContentQuality({
+    sourceCues: [cue('q1', '不同的螃蟹能不能吃？', 0)],
+    targetCues: [cue('q1', 'Which crabs are edible?', 0)]
+  })
+  assert.equal(result.ok, true)
+  assert.equal(result.findings.filter((finding) => finding.code === 'protected-token-mismatch').length, 0)
+})
+
 for (const [source, target, warning] of [
   ['你为什么不去学校？', 'Tại sao bạn đi học?', true],
   ['不要看星星。', 'Hãy nhìn các vì sao.', true],
@@ -160,6 +169,21 @@ test('CJK numerals match corresponding Arabic digits without warnings', () => {
   })
   assert.equal(result.ok, true)
   assert.equal(result.findings.filter((f) => f.code === 'protected-token-mismatch').length, 0)
+})
+
+test('French number words and negation expressions preserve Chinese protected meaning', () => {
+  const result = validateAutoShortContentQuality({
+    sourceCues: [
+      cue('cue-0-0', '海南最美的十四个地方', 0),
+      cue('cue-1-1860', '去过一半此生无憾', 1)
+    ],
+    targetCues: [
+      cue('cue-0-0', "Les quatorze plus beaux endroits d'Hainan", 0),
+      cue('cue-1-1860', 'Si vous en avez visité la moitié, votre vie sera sans regret', 1)
+    ]
+  })
+  assert.equal(result.ok, true)
+  assert.equal(result.findings.filter((finding) => finding.code === 'protected-token-mismatch').length, 0)
 })
 
 test('Chinese sentence labels are treated as cue markers rather than protected quantities', () => {

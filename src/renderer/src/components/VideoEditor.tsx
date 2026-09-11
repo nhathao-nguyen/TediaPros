@@ -1,4 +1,4 @@
-import type { CSSProperties, JSX, MouseEvent as ReactMouseEvent } from 'react'
+import type { JSX, MouseEvent as ReactMouseEvent } from 'react'
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import type {
   BlurRegion,
@@ -9,14 +9,19 @@ import type {
   SubtitleDisplayStyle,
   SubtitleFilePreview,
   SubtitleLayoutProfile,
-  SubtitleRenderPlan
+  SubtitleRenderPlan,
+  VideoSeoMetadata,
+  VideoSeoOptions
 } from '../../../shared/types'
 import { DEFAULT_AI_SERVER_URL } from '../../../shared/types'
+import { DEFAULT_VIDEO_SEO_OPTIONS } from '../../../shared/videoSeo'
 import { automaticSubtitleFontId } from '../../../shared/subtitles'
 import { useTabOutputDir } from '../lib/outputDir'
 import { usePersistedState } from '../lib/persist'
 import { localMediaSource } from '../lib/localMedia'
 import { fitVideoInBounds } from '../lib/videoGeometry'
+import { portraitFrame } from '../../../shared/portraitFrame'
+import { PortraitBlurButton, PortraitFramePreview } from './PortraitFramePreview'
 import { useAudioMixPreview } from '../hooks/useAudioMixPreview'
 import {
   useSubtitlePreview,
@@ -25,6 +30,7 @@ import {
 import { useVideoTransport } from '../hooks/useVideoTransport'
 import RegionBox, { type Region } from './RegionBox'
 import VideoTitleSettings from './VideoTitleSettings'
+import VideoSeoResult from './VideoSeoResult'
 
 const baseName = (path: string): string => path.split(/[\\/]/).pop() || path
 
@@ -96,6 +102,7 @@ export default function VideoEditor({ draft, active = true }: Props): JSX.Elemen
   const [video, setVideo] = useState<string | null>(null)
   const [subtitlePath, setSubtitlePath] = useState('')
   const [videoH, setVideoH] = useState(0)
+  const [portraitBlur, setPortraitBlur] = usePersistedState('tblao.editor.portraitBlur', false)
   const [videoW, setVideoW] = useState(0)
   const [videoDuration, setVideoDuration] = useState(0)
   const [boxH, setBoxH] = useState(0)
@@ -173,10 +180,12 @@ export default function VideoEditor({ draft, active = true }: Props): JSX.Elemen
   const [burnTitle, setBurnTitle] = useState('')
   const [burnTitlePath, setBurnTitlePath] = useState('')
   const [burnTitleError, setBurnTitleError] = useState('')
+  const [burnSeoMetadata, setBurnSeoMetadata] = useState<VideoSeoMetadata | null>(null)
   const [titleEnabled, setTitleEnabled] = usePersistedState('tblao.editor.videoTitleEnabled', false)
   const [titleLanguage, setTitleLanguage] = usePersistedState('tblao.editor.videoTitleLanguage', 'auto')
-  const [titleProvider] = usePersistedState<DichProvider>('tblao.videoTitle.provider', 'gemini')
-  const [aiServerUrl] = usePersistedState('tblao.videoTitle.serverUrl', DEFAULT_AI_SERVER_URL)
+  const [titleProvider, setTitleProvider] = usePersistedState<DichProvider>('tblao.videoTitle.provider', 'gemini')
+  const [aiServerUrl, setAiServerUrl] = usePersistedState('tblao.videoTitle.serverUrl', DEFAULT_AI_SERVER_URL)
+  const [titleSeoOptions, setTitleSeoOptions] = usePersistedState<VideoSeoOptions>('tblao.videoSeo.options.v1', { ...DEFAULT_VIDEO_SEO_OPTIONS })
 
   const videoRef = useRef<HTMLVideoElement | null>(null)
   const previewPanelRef = useRef<HTMLElement | null>(null)
@@ -265,16 +274,19 @@ export default function VideoEditor({ draft, active = true }: Props): JSX.Elemen
     // se do lai ngay sau khi pane duoc dua tro lai layout.
     if (availableW <= 0 || availableH <= 0) return
 
-    const fitted = fitVideoInBounds(videoW, videoH, availableW, availableH)
+    const frame = portraitBlur ? portraitFrame(videoW, videoH) : null
+    const fitted = fitVideoInBounds(frame?.width ?? videoW, frame?.height ?? videoH, availableW, availableH)
     if (!fitted) return
     const { width, height } = fitted
 
     setPreviewStageSize((current) =>
       current.width === width && current.height === height ? current : { width, height }
     )
-    setBoxW((current) => (current === width ? current : width))
-    setBoxH((current) => (current === height ? current : height))
-  }, [videoH, videoW])
+    const contentWidth = frame ? width * frame.contentWidth / frame.width : width
+    const contentHeight = frame ? height * frame.contentHeight / frame.height : height
+    setBoxW((current) => (current === contentWidth ? current : contentWidth))
+    setBoxH((current) => (current === contentHeight ? current : contentHeight))
+  }, [videoH, videoW, portraitBlur])
 
   const refreshFonts = async (): Promise<void> => {
     try {
@@ -296,8 +308,9 @@ export default function VideoEditor({ draft, active = true }: Props): JSX.Elemen
     setBurnTitle('')
     setBurnTitlePath('')
     setBurnTitleError('')
+    setBurnSeoMetadata(null)
     setBurnMessage('')
-  }, [video, subtitlePath, subtitleEnabled, audioEnabled, audioFile, titleEnabled, titleLanguage, titleProvider, draft?.requestId])
+  }, [video, subtitlePath, subtitleEnabled, audioEnabled, audioFile, titleEnabled, titleLanguage, titleProvider, titleSeoOptions, aiServerUrl, draft?.requestId])
 
   useEffect(() => {
     if (!draft || draft.requestId === appliedDraftId.current) return
@@ -603,7 +616,9 @@ export default function VideoEditor({ draft, active = true }: Props): JSX.Elemen
     if (burnState === 'running') return
     const files = await window.api.chooseFiles()
     if (!files.length) return
-    setVideo(files[0])
+    const selectedVideo = files[0]
+    if (selectedVideo === video) return
+    setVideo(selectedVideo)
     setVideoH(0)
     setVideoW(0)
     setPreviewStageSize({ width: 0, height: 0 })
@@ -750,7 +765,7 @@ export default function VideoEditor({ draft, active = true }: Props): JSX.Elemen
       setBurnState('error')
       return
     }
-    if (!subtitleEnabled && !blurEnabled && !audioEnabled) {
+    if (!subtitleEnabled && !blurEnabled && !audioEnabled && !portraitBlur) {
       setBurnError('Hãy bật ít nhất một thay đổi trước khi xuất video.')
       setBurnState('error')
       return
@@ -806,6 +821,7 @@ export default function VideoEditor({ draft, active = true }: Props): JSX.Elemen
     })
 
     const request = {
+      portraitBlur,
       video,
       srt: subtitleEnabled ? subtitlePath : null,
       outputDir,
@@ -832,7 +848,8 @@ export default function VideoEditor({ draft, active = true }: Props): JSX.Elemen
         videoTitle: {
           provider: titleProvider,
           language: titleLanguage,
-          serverUrl: titleProvider === 'local' ? aiServerUrl : undefined
+          serverUrl: titleProvider === 'local' ? aiServerUrl : undefined,
+          seo: titleSeoOptions
         }
       } : {})
     } as BurnReq & {
@@ -867,6 +884,7 @@ export default function VideoEditor({ draft, active = true }: Props): JSX.Elemen
     setBurnTitle(result.title || '')
     setBurnTitlePath(result.titlePath || '')
     setBurnTitleError(result.titleError || '')
+    setBurnSeoMetadata(result.seoMetadata || null)
     setBurnState('done')
   }
 
@@ -962,6 +980,7 @@ export default function VideoEditor({ draft, active = true }: Props): JSX.Elemen
                 {formatTime(currentTime)} / {formatTime(videoDuration)}
               </span>
             </div>
+            <PortraitBlurButton enabled={portraitBlur} onChange={setPortraitBlur} disabled={burnState === 'running'} />
             <div className="editor-stage-status">
               {fullscreenError
                 ? fullscreenError
@@ -985,18 +1004,14 @@ export default function VideoEditor({ draft, active = true }: Props): JSX.Elemen
 
           <div ref={stageShellRef} className="editor-stage-shell">
             {video ? (
-              <div
-                className="ocr-video editor-stage-video"
-                style={
-                  videoW > 0 && videoH > 0
-                    ? ({
-                        aspectRatio: `${videoW} / ${videoH}`,
-                        ['--ocr-ar']: String(videoW / videoH),
-                        width: previewStageSize.width > 0 ? `${previewStageSize.width}px` : undefined,
-                        height: previewStageSize.height > 0 ? `${previewStageSize.height}px` : undefined
-                      } as CSSProperties)
-                    : undefined
-                }
+              <PortraitFramePreview
+                enabled={portraitBlur}
+                videoRef={videoRef}
+                source={video}
+                videoWidth={videoW}
+                videoHeight={videoH}
+                width={previewStageSize.width}
+                height={previewStageSize.height}
               >
                 <video
                   ref={videoRef}
@@ -1030,6 +1045,7 @@ export default function VideoEditor({ draft, active = true }: Props): JSX.Elemen
                     subtitleTime={currentTime}
                     subtitleDisplayStyle={displayStyle}
                     subtitleFontSize={layoutPlan?.options.fontSize}
+                    scaleSubtitleToVideo={portraitBlur}
                     highlightColor={highlightColor}
                     highlightPop={highlightPop}
                     textColor={textColor}
@@ -1041,7 +1057,7 @@ export default function VideoEditor({ draft, active = true }: Props): JSX.Elemen
                     showSafeArea={showSafeArea}
                   />
                 )}
-              </div>
+              </PortraitFramePreview>
             ) : (
               <button className="editor-empty-stage" onClick={chooseVideo}>
                 <span className="editor-empty-mark">▶</span>
@@ -1545,6 +1561,12 @@ export default function VideoEditor({ draft, active = true }: Props): JSX.Elemen
               onEnabledChange={setTitleEnabled}
               language={titleLanguage}
               onLanguageChange={setTitleLanguage}
+              provider={titleProvider}
+              onProviderChange={setTitleProvider}
+              serverUrl={aiServerUrl}
+              onServerUrlChange={setAiServerUrl}
+              seo={titleSeoOptions}
+              onSeoChange={setTitleSeoOptions}
               disabled={burnState === 'running'}
               unavailableReason={hasTitleSubtitles ? undefined : 'Bật phụ đề và chọn SRT hợp lệ để AI tạo tiêu đề theo nội dung video.'}
             />
@@ -1568,8 +1590,10 @@ export default function VideoEditor({ draft, active = true }: Props): JSX.Elemen
                   {baseName(burnOutput)}
                 </button>
               </span>
-              {burnTitle && <span>Tiêu đề: {burnTitle}</span>}
-              {burnTitlePath && (
+              {burnSeoMetadata
+                ? <VideoSeoResult metadata={burnSeoMetadata} titlePath={burnTitlePath || undefined} />
+                : burnTitle && <span>Tiêu đề: {burnTitle}</span>}
+              {burnTitlePath && !burnSeoMetadata && (
                 <button className="link-btn" style={{ justifySelf: 'start' }} onClick={() => window.api.openPath(burnTitlePath)}>
                   Mở tieude.txt
                 </button>
