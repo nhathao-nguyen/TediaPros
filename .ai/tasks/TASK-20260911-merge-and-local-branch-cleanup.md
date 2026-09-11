@@ -1,6 +1,6 @@
 # TASK-20260911-merge-and-local-branch-cleanup: Hợp nhất và dọn local branch
 
-- **Trạng thái:** Đang làm
+- **Trạng thái:** Hoàn thành local
 - **Người thực hiện:** Codex
 - **Thời gian:** 2026-09-11
 
@@ -10,11 +10,11 @@
 
 ## 2. Tiêu Chuẩn Nghiệm Thu (Acceptance Criteria)
 
-- [ ] Toàn bộ mã, tests và tài liệu có chủ đích được commit và merge vào `main`.
-- [ ] Giữ lại tập bằng chứng gọn có checksum; không giữ WAV/cache sinh lại được.
-- [ ] Xóa worktree và local branch đã được hợp nhất.
-- [ ] `main` sạch, không có unmerged path hoặc local branch thừa.
-- [ ] `npm.cmd run typecheck`, `npm.cmd run test:local-runtime`, build và `git diff --check` pass.
+- [x] Toàn bộ mã, tests và tài liệu có chủ đích được commit và merge vào `main`.
+- [x] Giữ lại tập bằng chứng gọn có checksum; không giữ WAV/cache sinh lại được.
+- [x] Xóa worktree và local branch đã được hợp nhất.
+- [x] `main` sạch, không có unmerged path hoặc local branch thừa.
+- [x] `npm.cmd run typecheck`, `npm.cmd run test:local-runtime`, build và `git diff --check` pass.
 
 ## 3. Phạm Vi Triển Khai (Scope & Boundaries)
 
@@ -38,8 +38,28 @@
 
 ## 6. Kiểm Chứng & Bằng Chứng
 
-Kết quả cuối sẽ được cập nhật sau khi merge.
+Các lệnh đã chạy:
+
+```powershell
+npm.cmd run typecheck
+npm.cmd run test:local-runtime
+npm.cmd run build
+node scripts/test-portrait-preview.mjs docs/reviews/2026-09-11-portrait-blur-review
+node scripts/test-video-adjustments-preview.mjs docs/reviews/2026-09-11-video-adjustments
+git diff --check
+```
+
+Kết quả:
+
+- Typecheck node/web: PASS.
+- Full local-runtime suite: PASS toàn bộ suite, 0 FAIL; một test media tùy chọn SKIP theo thiết kế.
+- Build Electron/Vite: PASS; chỉ có cảnh báo chunk động/tĩnh.
+- Electron acceptance 9:16 và video adjustments: PASS.
+- `release-tooling.test`: PASS 26/26 sau khi kiểm tra production allowlist.
+- Commit tích hợp: `753c812`.
+- Merge commit vào `main`: `fdf4163`.
+- Worktree `codex-autoshort-optimization` và branch tương ứng đã xóa sau khi xác minh branch là ancestor và checksum tập giữ lại.
 
 ## 7. Bàn Giao
 
-Không push lên `origin`; người dùng chỉ yêu cầu hợp nhất và dọn local branch.
+Không push lên `origin`; local `main` đang đi trước remote. Stash có sẵn được giữ nguyên để tránh làm mất dữ liệu lịch sử.

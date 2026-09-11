@@ -36,7 +36,7 @@ Khi commit mã nguồn, AI coding agent bắt buộc phải tuân theo cấu tr�
 
 | Mã Task | Tiêu Đề | Trạng Thái | Ngày | Tệp Chi Tiết |
 | :--- | :--- | :--- | :--- | :--- |
-| **TASK-20260911-MERGE-LOCAL-CLEANUP** | Hợp nhất và dọn local branch | 🟡 **Đang làm** | 2026-09-11 | [TASK-20260911-merge-and-local-branch-cleanup.md](TASK-20260911-merge-and-local-branch-cleanup.md) |
+| **TASK-20260911-MERGE-LOCAL-CLEANUP** | Hợp nhất và dọn local branch | ✅ **Hoàn thành local** | 2026-09-11 | [TASK-20260911-merge-and-local-branch-cleanup.md](TASK-20260911-merge-and-local-branch-cleanup.md) |
 | **TASK-20260911-PORTRAIT-BLUR-REVIEW** | Review và sửa chức năng 9:16 nền mờ | ✅ **Đã kiểm chứng local** | 2026-09-11 | [TASK-20260911-portrait-blur-review.md](TASK-20260911-portrait-blur-review.md) |
 | **TASK-20260911-PORTRAIT-BLUR** | Khung 9:16 nền mờ cho preview và xuất video | ✅ **Đã kiểm chứng local** | 2026-09-11 | [TASK-20260911-portrait-blur.md](TASK-20260911-portrait-blur.md) |
 | **TASK-20260907-01** | Thiết lập Hệ Điều Hành Kiến Trúc AI (AI Operating Layer) | ✅ **Hoàn thành** | 2026-09-07 | [.ai/tasks/TASK-20260907-ai-operating-layer.md](file:///f:/Son/tool/TediaPros/.ai/tasks/TASK-20260907-ai-operating-layer.md) |
