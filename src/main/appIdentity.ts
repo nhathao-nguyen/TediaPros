@@ -2,8 +2,10 @@ import { app } from 'electron'
 import { access, copyFile, mkdir, readdir, writeFile } from 'node:fs/promises'
 import { join, normalize } from 'node:path'
 
+const PRODUCTION_USER_DATA_DIRECTORY = 'tedia-pros'
 const LEGACY_USER_DATA_DIRECTORY = 't-blao'
 const MIGRATION_MARKER = '.tediapros-migration-v1'
+const DEV_SEED_MARKER = '.tediapros-dev-seed-v1'
 
 async function exists(path: string): Promise<boolean> {
   try {
@@ -39,7 +41,28 @@ async function copyMissingTree(source: string, target: string): Promise<void> {
  */
 export async function migrateLegacyUserData(): Promise<void> {
   const current = normalize(app.getPath('userData'))
-  const legacy = normalize(join(app.getPath('appData'), LEGACY_USER_DATA_DIRECTORY))
+  const appData = app.getPath('appData')
+  const production = normalize(join(appData, PRODUCTION_USER_DATA_DIRECTORY))
+  const legacy = normalize(join(appData, LEGACY_USER_DATA_DIRECTORY))
+
+  // Seed dev profile from existing production profile if present
+  if (current.toLowerCase() !== production.toLowerCase() && (await exists(production))) {
+    const devMarker = join(current, DEV_SEED_MARKER)
+    if (!(await exists(devMarker))) {
+      try {
+        await copyMissingTree(production, current)
+        await writeFile(
+          devMarker,
+          JSON.stringify({ from: production, seededAt: new Date().toISOString() }),
+          { encoding: 'utf8', flag: 'wx' }
+        )
+      } catch {
+        // Keep startup fail-safe
+      }
+    }
+  }
+
+  // Seed from legacy t-blao if present
   if (current.toLowerCase() === legacy.toLowerCase()) return
 
   const marker = join(current, MIGRATION_MARKER)

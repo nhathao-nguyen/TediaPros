@@ -1,0 +1,24 @@
+{
+  "schemaVersion": 1,
+  "ok": true,
+  "command": "deliver",
+  "type": "workflow",
+  "input": "f:\\Son\\tool\\TediaPros\\docs\\project-atlas\\diagrams\\autoshort-pipeline.workflow.json",
+  "output": "f:\\Son\\tool\\TediaPros\\docs\\project-atlas\\diagrams\\autoshort-pipeline.workflow.html",
+  "specification": {
+    "sha256": "46e562a30a2888665da5171f62e55890c023c5b20b6ed6d2be93c3dc4ba262a3",
+    "bytes": 4837
+  },
+  "artifact": {
+    "sha256": "053e34dc04022d3c7748118ae68f969c40eb70a2569509f033eb284a97030a10",
+    "bytes": 711529
+  },
+  "validation": {
+    "checksPassed": 9,
+    "checkCount": 9,
+    "compositionProfile": "showcase",
+    "compositionStatus": "pass",
+    "errors": 0,
+    "warnings": 0
+  }
+}

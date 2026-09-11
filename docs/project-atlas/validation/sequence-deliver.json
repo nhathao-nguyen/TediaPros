@@ -1,0 +1,24 @@
+{
+  "schemaVersion": 1,
+  "ok": true,
+  "command": "deliver",
+  "type": "sequence",
+  "input": "f:\\Son\\tool\\TediaPros\\docs\\project-atlas\\diagrams\\autoshort-execution.sequence.json",
+  "output": "f:\\Son\\tool\\TediaPros\\docs\\project-atlas\\diagrams\\autoshort-execution.sequence.html",
+  "specification": {
+    "sha256": "1658de330d26b66d7fedc237633d3d393de188f88af4eafa2ce612ce2387aa67",
+    "bytes": 5942
+  },
+  "artifact": {
+    "sha256": "650ba171fc1d00c469202dc7580d73162586491e4bc10d13527a269df7123652",
+    "bytes": 716697
+  },
+  "validation": {
+    "checksPassed": 9,
+    "checkCount": 9,
+    "compositionProfile": "showcase",
+    "compositionStatus": "pass",
+    "errors": 0,
+    "warnings": 0
+  }
+}

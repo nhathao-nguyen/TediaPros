@@ -20,7 +20,7 @@ test('offline qualification is explicit, bounded and redacts case text', () => {
     }
     assert.equal(report.mode, 'offline')
     assert.equal(report.caseCount, 4)
-    assert.equal(report.providerCalls, 10)
+    assert.equal(report.providerCalls, 12)
     assert.equal(report.records.length, 8)
     assert.ok(report.records.every((record) => Number(record.requests) >= 1))
     assert.ok(report.records.every((record) => typeof record.observedDisposition === 'string'))
@@ -44,7 +44,7 @@ test('offline qualification can execute the full 16-locale directed matrix', () 
   assert.equal(result.status, 0, result.stderr)
   const report = JSON.parse(result.stdout) as { caseCount: number; providerCalls: number; records: Array<Record<string, unknown>> }
   assert.equal(report.caseCount, 244)
-  assert.equal(report.providerCalls, 245)
+  assert.equal(report.providerCalls, 309)
   assert.equal(report.records.length, 244)
   assert.ok(report.records.some((record) => record.caseId === 'matrix-zh-en'))
   assert.ok(report.records.every((record) => !('source' in record) && !('reference' in record)))

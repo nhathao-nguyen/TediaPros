@@ -1,0 +1,84 @@
+{
+  "startedAt": "2026-09-07T19:22:21.030Z",
+  "model": "tts-multilingual",
+  "reference": "Voice-short-Anh-funny.mp3",
+  "results": [
+    {
+      "cueId": "cue-0-1490",
+      "source": "吃螃蟹前妓的仔細看看",
+      "original": "Take a close look before eating crab.",
+      "available": 1.4200000000000002,
+      "events": [
+        {
+          "cueId": "cue-0-1490",
+          "phase": "rescue",
+          "outcome": "no-improvement",
+          "candidateCount": 3,
+          "previousSeconds": 2.199252,
+          "candidateSeconds": 2.499728
+        },
+        {
+          "cueId": "cue-0-1490",
+          "phase": "rescue",
+          "outcome": "no-improvement",
+          "candidateCount": 3,
+          "previousSeconds": 2.199252,
+          "candidateSeconds": 2.317347
+        },
+        {
+          "cueId": "cue-0-1490",
+          "phase": "rescue",
+          "outcome": "accepted",
+          "candidateCount": 3,
+          "previousSeconds": 2.199252,
+          "candidateSeconds": 1.666553
+        }
+      ],
+      "spoken": [
+        "Take a close look before eating crab.",
+        "Take a close look at the crab before eating it.",
+        "Inspect the crab carefully before eating.",
+        "Check the crab before eating."
+      ],
+      "originalAudioReplay": ".ai/tasks/2026-09-08-rephrase-live-evidence3",
+      "ok": true,
+      "cue": {
+        "cueId": "cue-0-1490",
+        "start": 1.49,
+        "preferredEnd": 3.41,
+        "hardEnd": 3.29,
+        "availableDuration": 1.8,
+        "id": "cue-0-1490",
+        "sourceCueIds": [
+          "cue-0-1490"
+        ],
+        "sourceText": "吃螃蟹前妓的仔細看看",
+        "sourceStart": 1.49,
+        "sourceEnd": 3.41,
+        "translatedText": "Take a close look before eating crab.",
+        "finalSpokenText": "Check the crab before eating.",
+        "predictedDuration": 2.104,
+        "naturalDuration": 1.666553,
+        "actualDuration": 1.344739,
+        "predictionUncertainty": 0.631,
+        "tempo": 1.2393,
+        "plannedDuration": 1.3641262175656872,
+        "voiceEnd": 2.834739,
+        "localTempoAdjustment": 0.0176,
+        "audioPath": "F:\\Son\\tool\\TediaPros\\.worktrees\\codex-autoshort-optimization\\.ai\\tasks\\2026-09-08-rephrase-live-evidence6\\cue-0-1490-tempo.wav",
+        "subtitles": [
+          {
+            "id": "cue-0-1490-subtitle",
+            "sourceIndex": 0,
+            "start": 1.49,
+            "end": 2.834739,
+            "text": "Check the crab before eating.",
+            "timingQuality": "cue"
+          }
+        ],
+        "rephrased": true
+      }
+    }
+  ],
+  "finishedAt": "2026-09-07T19:23:49.365Z"
+}

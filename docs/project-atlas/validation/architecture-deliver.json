@@ -1,0 +1,24 @@
+{
+  "schemaVersion": 1,
+  "ok": true,
+  "command": "deliver",
+  "type": "architecture",
+  "input": "f:\\Son\\tool\\TediaPros\\docs\\project-atlas\\diagrams\\tediapros-architecture.json",
+  "output": "f:\\Son\\tool\\TediaPros\\docs\\project-atlas\\diagrams\\tediapros-architecture.html",
+  "specification": {
+    "sha256": "ae4ab36a697d0fba03fdc15d8453e9429170a73672212d3a57cccbdfc79d47b9",
+    "bytes": 6102
+  },
+  "artifact": {
+    "sha256": "accb2b8e8e70a746d560c5be25e72ade90d6d4b732c15d5b398dedbc10ed4a7b",
+    "bytes": 717006
+  },
+  "validation": {
+    "checksPassed": 9,
+    "checkCount": 9,
+    "compositionProfile": "showcase",
+    "compositionStatus": "pass",
+    "errors": 0,
+    "warnings": 0
+  }
+}

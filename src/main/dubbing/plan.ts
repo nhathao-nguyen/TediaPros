@@ -1,5 +1,6 @@
 import type { SubtitleCue } from '../../shared/subtitles'
-import { extractSpeaker, isSentenceTerminal, joinGroupText } from '../semanticGrouping'
+import { joinGroupText } from '../semanticGrouping'
+import { groupSourceSpeechCues } from '../sourceSpeechGrouping'
 
 export const DUBBING_PLAN_VERSION = 3 as const
 /**
@@ -175,46 +176,12 @@ export function buildDubbingPlan(input: DubbingPlanInput): DubbingPlan {
   }
 }
 
-/** Rejoin subtitle fragments before synthesis, retaining every original anchor. */
+/** Reuse source-only partitions established before translation, retaining every original anchor. */
 export function groupDubbingPlanForSpeech(plan: DubbingPlan, locale: string): DubbingPlan {
   if (plan.cues.some((cue) => cue.sourceCueIds.length > 1)) return plan
-  const runs: DubbingPlanCue[][] = []
-  const question = (cue: DubbingPlanCue): boolean => /[?？؟]/u.test(cue.sourceText + cue.translatedText)
-  for (const cue of plan.cues) {
-    const current = runs.at(-1)
-    const previous = current?.at(-1)
-    const previousSpeaker = previous ? extractSpeaker(previous.sourceText) : null
-    const speaker = extractSpeaker(cue.sourceText)
-    const boundary = !current || !previous
-      || question(previous) || question(cue) || isSentenceTerminal(previous.sourceText)
-      || (previousSpeaker !== speaker && (previousSpeaker !== null || speaker !== null))
-      // Decimal timestamps (e.g. 1.7 - 1.1) may land just below 0.6.
-      || cue.sourceStart - previous.sourceEnd >= 0.6 - 1e-9
-    if (boundary) runs.push([cue])
-    else current.push(cue)
-  }
-  // Partition each continuous thought as a whole. Greedy max-count slicing
-  // strands a short final warning in a near-zero speech window. Bounded DP
-  // keeps contiguous identities and prefers fewer, reasonably sized windows.
-  const groups = runs.flatMap((run) => {
-    const costs = Array<number>(run.length + 1).fill(Infinity)
-    const ends = Array<number>(run.length)
-    costs[run.length] = 0
-    for (let first = run.length - 1; first >= 0; first--) {
-      let chars = 0
-      for (let last = first; last < Math.min(run.length, first + 6); last++) {
-        chars += run[last].translatedText.length + (last > first ? 1 : 0)
-        if (last > first && (chars > 300 || run[last].sourceEnd - run[first].sourceStart > 15)) break
-        const available = Math.max(0.05, run[last].sourceEnd - run[first].sourceStart - 0.5)
-        const cost = costs[last + 1] + 1 + Math.pow(chars / (25 * available), 2)
-          + Math.max(0, 1.2 - available) * 20
-        if (cost < costs[first]) { costs[first] = cost; ends[first] = last + 1 }
-      }
-    }
-    const result: DubbingPlanCue[][] = []
-    for (let first = 0; first < run.length; first = ends[first]) result.push(run.slice(first, ends[first]))
-    return result
-  })
+  const groups = groupSourceSpeechCues(plan.cues.map(cue => ({
+    id: cue.id, start: cue.sourceStart, end: cue.sourceEnd, text: cue.sourceText, cue
+  }))).map(group => group.cues.map(entry => entry.cue))
   const sourceCues = (plan.sourceCues || plan.cues.map((cue) => ({
     id: cue.id, start: cue.sourceStart, end: cue.sourceEnd, text: cue.sourceText
   }))).map((cue) => ({ ...cue }))

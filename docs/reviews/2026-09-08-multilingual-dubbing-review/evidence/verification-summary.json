@@ -1,0 +1,55 @@
+{
+  "head": "863f55c38822e28046b0f0592c206ca9303aeeb5",
+  "base": "481ae06",
+  "totalTests": 269.0,
+  "totalFail": 0.0,
+  "suites": [
+    {
+      "suite": "autoshort-content-quality.test",
+      "tests": 10,
+      "fail": 0
+    },
+    {
+      "suite": "translation-prompts.test",
+      "tests": 7,
+      "fail": 0
+    },
+    {
+      "suite": "translation-rephrase.test",
+      "tests": 18,
+      "fail": 0
+    },
+    {
+      "suite": "dubbing-plan.test",
+      "tests": 33,
+      "fail": 0
+    },
+    {
+      "suite": "autoshort-tts-pipeline.test",
+      "tests": 5,
+      "fail": 0
+    },
+    {
+      "suite": "dubbing-grouping.test",
+      "tests": 12,
+      "fail": 0
+    },
+    {
+      "suite": "local-translation.test",
+      "tests": 18,
+      "fail": 0
+    },
+    {
+      "suite": "local-runtime.test",
+      "tests": 157,
+      "fail": 0
+    },
+    {
+      "suite": "autoshort-ocr-pipeline.test",
+      "tests": 9,
+      "fail": 0
+    }
+  ],
+  "typecheck": "PASS: npm.cmd run typecheck, exit 0, node and web",
+  "scope": "Local tests and in-memory reproductions only; no live TTS/media acceptance"
+}

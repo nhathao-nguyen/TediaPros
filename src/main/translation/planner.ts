@@ -8,6 +8,8 @@ import type {
 import { buildSemanticGroups, joinGroupText, type SemanticCue } from '../semanticGrouping'
 import { buildTranslationBatchMessages } from './prompts'
 import { fitTranslationSourceContext, selectTranslationSourceContext } from './context'
+import { translationSpeechGroups, withSourceSpeechGroups } from './sourceGroups'
+import { SOURCE_SPEECH_GROUP_PREFIX } from '../sourceSpeechGrouping'
 
 export const TRANSLATION_PLAN_VERSION = 'translation-plan-v3'
 
@@ -95,7 +97,8 @@ function splitCue(cue: TranslationCue, maxChars: number): { cue: TranslationCue;
     const partText = cue.text.slice(offset, endOffset)
     const unitId = `${cue.id}/part-${partIndex}`
     result.push({
-      cue: { ...cue, id: unitId, text: partText, groupId: `${cue.groupId}/part-${partIndex}` },
+      cue: { ...cue, id: unitId, text: partText,
+        groupId: cue.groupId.startsWith(SOURCE_SPEECH_GROUP_PREFIX) ? cue.groupId : `${cue.groupId}/part-${partIndex}` },
       mapping: { unitId, originalId: cue.id, partIndex, startOffset: offset, endOffset }
     })
     offset = endOffset
@@ -135,7 +138,7 @@ function normalizedInput(input: TranslationInput): TranslationInput {
 
 /** Build deterministic, locale-aware translation units and bounded batches. */
 export function planTranslation(input: TranslationInput, capability: TranslationCapability): TranslationPlan {
-  const source = normalizedInput(input)
+  const source = withSourceSpeechGroups(normalizedInput(input))
   const warnings: string[] = []
   const outputTokens = capability.outputTokens == null
     ? 2_048
@@ -146,7 +149,9 @@ export function planTranslation(input: TranslationInput, capability: Translation
 
   // Keep semantic groups intact where possible, while allowing a long cue's
   // internal units to form a bounded request when the provider budget requires.
-  const semanticGroups = buildSemanticGroups(units.map((item) => asSemanticCue(item.cue)), {
+  const semanticGroups = source.mode === 'dubbing'
+    ? translationSpeechGroups(units.map(item => item.cue)).map(cues => ({ cues }))
+    : buildSemanticGroups(units.map((item) => asSemanticCue(item.cue)), {
     maxCuesPerGroup: 6,
     maxGroupChars: Math.max(300, maxChars),
     maxGroupDurationSeconds: 15,
@@ -202,9 +207,10 @@ export function planTranslation(input: TranslationInput, capability: Translation
     const exceedsContext = !fitsContext(candidate)
     const exceedsLegacy = currentCost + groupCost > 20_000 || pending.length + group.length > 24
     if (pending.length > 0 && (exceedsContext || exceedsLegacy)) flush()
-    if (group.length > 1 && !fitsContext(group)) {
+    if (group.length > 1 && (!fitsContext(group) || group.length > 24 || groupCost > 20_000)) {
       for (const item of group) {
-        if (pending.length > 0 && (!fitsContext([...pending, item]) || pending.length >= 24)) flush()
+        const nextCost = pending.reduce((sum, entry) => sum + entry.cue.text.length + 64, 0) + item.cue.text.length + 64
+        if (pending.length > 0 && (!fitsContext([...pending, item]) || pending.length >= 24 || nextCost > 20_000)) flush()
         pending.push(item)
       }
     } else {

@@ -10,3 +10,11 @@ Theo yêu cầu người dùng, `TRANSLATION_BUDGET_LIMITS_ENABLED = false` tron
 - Khi bỏ override tạm thời, bật lại hằng số trên. Bounded mode tiếp tục có test riêng; checkpoint đã vượt quota sẽ cần xử lý rõ ràng khi bật lại, không tự xóa lịch sử sử dụng.
 
 Các item đã ở `needs-review` vẫn cần người dùng chọn thử lại. Bản build mới chỉ có hiệu lực khi ứng dụng được khởi động lại; tiến trình đang chạy giữ mã đã nạp.
+
+## Tự phục hồi cảnh báo chất lượng
+
+- Sau khi nhận đủ cue hợp lệ, pipeline tự chọn các cue có cảnh báo `protected-token-suspect` hoặc `language-suspect`, gửi đúng các cue đó qua một lượt repair và đánh giá lại toàn bộ bản dịch.
+- Lượt repair dùng recovery accounting, bị giới hạn ở một vòng và dừng khi phản hồi không cải thiện để tránh lặp vô hạn.
+- Cảnh báo tương thích do provider không công bố giới hạn token không được hiển thị như việc người dùng phải xử lý; planner vẫn dùng ước lượng hữu hạn để chia batch.
+- Checkpoint/cache còn cảnh báo phải đi qua scheduler để được tự phục hồi. Cảnh báo heuristic còn lại sau lượt repair được giữ trong assessment/log phục vụ chẩn đoán nhưng không hiện trong hàng đợi và không chặn video tiếp tục.
+- Các lỗi cấu trúc chắc chắn như thiếu cue, trùng ID, nội dung rỗng hoặc phản hồi sai protocol vẫn chuyển `needs-review` và chặn xuất bản kết quả không đầy đủ.

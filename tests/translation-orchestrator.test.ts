@@ -6,6 +6,62 @@ import type { TranslationInput } from '../src/shared/translation'
 import { planTranslation, type TranslationCapability } from '../src/main/translation/planner'
 import { buildTranslationBatchMessages } from '../src/main/translation/prompts'
 
+test('dubbing resume and missing-ID recovery retain the original source speech group', async () => {
+  const source: TranslationInput = {
+    sourceLanguage: 'zh', targetLocale: 'en', mode: 'dubbing', contextBefore: [], contextAfter: [], glossary: [],
+    cues: [
+      { id: 'first', sourceIndex: 0, start: 0, end: 1, text: '遇到墙角', groupId: 'cue-0' },
+      { id: 'middle', sourceIndex: 1, start: 1, end: 2, text: '尺寸对不上', groupId: 'cue-1' },
+      { id: 'last', sourceIndex: 2, start: 2, end: 3, text: '怎么办？', groupId: 'cue-2' }
+    ]
+  }
+  const requested: string[][] = []
+  const result = await translateWithAdapter(source, {
+    capability: { provider: 'fixture', modelIdentity: 'fixture@1', revisionKnown: true, format: 'json-items', contextTokens: null, outputTokens: 2048 },
+    async requestOnce(batch) {
+      requested.push(batch.input.cues.map(cue => cue.id))
+      assert.ok(batch.input.cues.every(cue => cue.groupId === 'source-speech-v1:first'))
+      const messages = buildTranslationBatchMessages(batch, 'json-items')
+      const groups = messages[1].content.split('[SOURCE_GROUP_CONTEXT_JSONL]')[1].split('[/SOURCE_GROUP_CONTEXT_JSONL]')[0]
+      assert.match(groups, /"group_id":"source-speech-v1:first"/u)
+      const items = requested.length === 1
+        ? [{ id: 'middle', text: 'when the dimensions do not match' }]
+        : [{ id: 'last', text: 'what should you do?' }]
+      return { raw: JSON.stringify({ items }), truncated: false, modelIdentity: 'fixture@1' }
+    }
+  }, new AbortController().signal, { resumeItems: [{ id: 'first', text: 'At a wall corner' }] })
+  assert.deepEqual(requested, [['middle', 'last'], ['last']])
+  assert.deepEqual(result.items.map(item => item.id), ['first', 'middle', 'last'])
+  assert.notEqual(result.assessment.disposition, 'needs-review')
+})
+
+test('sparse dubbing resume keeps the accepted middle negation in complete read-only group context', async () => {
+  const source: TranslationInput = {
+    sourceLanguage: 'zh', targetLocale: 'en', mode: 'dubbing', contextBefore: [], contextAfter: [], glossary: [],
+    cues: [
+      { id: 'a', sourceIndex: 0, start: 0, end: 1, text: '这个操作', groupId: 'cue-0' },
+      { id: 'b', sourceIndex: 1, start: 1, end: 2, text: '绝对不能', groupId: 'cue-1' },
+      { id: 'c', sourceIndex: 2, start: 2, end: 3, text: '直接执行。', groupId: 'cue-2' }
+    ]
+  }
+  let groupText = ''
+  let requestedIds: string[] = []
+  const result = await translateWithAdapter(source, {
+    capability: { provider: 'fixture', modelIdentity: 'fixture@1', revisionKnown: true, format: 'json-items', contextTokens: null, outputTokens: 2048 },
+    async requestOnce(batch) {
+      requestedIds = batch.input.cues.map(cue => cue.id)
+      const user = buildTranslationBatchMessages(batch, 'json-items')[1].content
+      groupText = user.split('[SOURCE_GROUP_CONTEXT_JSONL]')[1].split('[/SOURCE_GROUP_CONTEXT_JSONL]')[0]
+      return { raw: JSON.stringify({ items: [{ id: 'a', text: 'This operation' }, { id: 'c', text: 'be performed directly.' }] }), truncated: false, modelIdentity: 'fixture@1' }
+    }
+  }, new AbortController().signal, { resumeItems: [{ id: 'b', text: 'must never' }] })
+  assert.match(groupText, /这个操作绝对不能直接执行。/u)
+  assert.match(groupText, /"ids":\["a","b","c"\]/u)
+  assert.deepEqual(requestedIds, ['a', 'c'])
+  assert.deepEqual(result.items.map(item => item.id), ['a', 'b', 'c'])
+  assert.notEqual(result.assessment.disposition, 'needs-review')
+})
+
 test('malformed singleton receives a repair task with parser feedback', async () => {
   let calls = 0
   const result = await translateWithAdapter({ ...input, cues: input.cues.slice(0, 1) }, {
@@ -23,6 +79,86 @@ test('malformed singleton receives a repair task with parser feedback', async ()
   assert.equal(calls, 2)
   assert.equal(result.items.length, 1)
   assert.notEqual(result.assessment.disposition, 'needs-review')
+})
+
+test('content warnings trigger one focused repair before publishing', async () => {
+  let calls = 0
+  const source: TranslationInput = {
+    ...input,
+    cues: [{ id: 'a', sourceIndex: 0, start: 0, end: 1, groupId: 'g0', text: '这里有十四个地方。' }]
+  }
+  const result = await translateWithAdapter(source, {
+    capability,
+    async requestOnce(batch) {
+      calls++
+      if (calls === 1) {
+        return { raw: JSON.stringify({ items: [{ id: 'a', text: 'There are 13 places here.' }] }), truncated: false, modelIdentity: 'fixture@1' }
+      }
+      assert.ok(batch.repairIssues?.some((issue) => issue.code === 'protected-token-suspect'))
+      assert.deepEqual(batch.input.cues.map((cue) => cue.id), ['a'])
+      return { raw: JSON.stringify({ items: [{ id: 'a', text: 'There are 14 places here.' }] }), truncated: false, modelIdentity: 'fixture@1' }
+    }
+  }, new AbortController().signal)
+  assert.equal(calls, 2)
+  assert.deepEqual(result.items, [{ id: 'a', text: 'There are 14 places here.' }])
+  assert.equal(result.assessment.disposition, 'validated')
+})
+
+test('content warning repair stops after one no-progress response', async () => {
+  let calls = 0
+  const source: TranslationInput = {
+    ...input,
+    cues: [{ id: 'a', sourceIndex: 0, start: 0, end: 1, groupId: 'g0', text: '这里有十四个地方。' }]
+  }
+  const result = await translateWithAdapter(source, {
+    capability,
+    async requestOnce() {
+      calls++
+      return { raw: JSON.stringify({ items: [{ id: 'a', text: 'There are 13 places here.' }] }), truncated: false, modelIdentity: 'fixture@1' }
+    }
+  }, new AbortController().signal)
+  assert.equal(calls, 2)
+  assert.equal(result.assessment.disposition, 'with-warnings')
+  assert.ok(result.assessment.issues.some((issue) => issue.code === 'protected-token-suspect'))
+})
+
+test('unknown provider token limits do not surface as a user-action warning after success', async () => {
+  let calls = 0
+  const result = await translateWithAdapter({ ...input, cues: input.cues.slice(0, 1) }, {
+    capability: { ...capability, contextTokens: null, outputTokens: null },
+    async requestOnce() {
+      calls++
+      return { raw: JSON.stringify({ items: [{ id: 'a', text: 'First sentence.' }] }), truncated: false, modelIdentity: 'fixture@1' }
+    }
+  }, new AbortController().signal)
+  assert.equal(calls, 1)
+  assert.equal(result.assessment.disposition, 'validated')
+  assert.equal(result.assessment.issues.length, 0)
+})
+
+test('natural translation of a Chinese A-not-A question needs no quality repair', async () => {
+  let calls = 0
+  const source: TranslationInput = {
+    ...input,
+    mode: 'dubbing',
+    cues: [
+      { id: 'a', sourceIndex: 0, start: 1.49, end: 2.9, speakingDuration: 1.42, groupId: 'g0', text: '不同的螃蟹能不能吃？' },
+      { id: 'b', sourceIndex: 1, start: 3.41, end: 4, speakingDuration: 1.09, groupId: 'g1', text: '这种螃蟹可以吃。' }
+    ]
+  }
+  const result = await translateWithAdapter(source, {
+    capability: { ...capability, format: 'id-lines' },
+    async requestOnce() {
+      calls++
+      return {
+        raw: '[a] Which crabs are edible?\n[b] This crab is edible.',
+        truncated: false,
+        modelIdentity: 'fixture@1'
+      }
+    }
+  }, new AbortController().signal)
+  assert.equal(calls, 1, JSON.stringify(result.assessment))
+  assert.equal(result.assessment.disposition, 'validated', JSON.stringify(result.assessment))
 })
 
 const capability: TranslationCapability = {

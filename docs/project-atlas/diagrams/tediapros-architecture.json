@@ -1,0 +1,294 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "Kien Truc He Thong TediaPros",
+    "output": "tediapros-architecture.html",
+    "quality_profile": "showcase",
+    "views": [
+      {
+        "id": "full-stack",
+        "label": "Toan bo kien truc",
+        "focus": [
+          "ui",
+          "preload",
+          "main",
+          "autoshort",
+          "dubbing",
+          "separation",
+          "ffmpeg",
+          "engines"
+        ],
+        "note": "Kien truc da tang tu Renderer qua Preload den Main Orchestrator va Python Engines."
+      },
+      {
+        "id": "autoshort-core",
+        "label": "Loi AutoShort",
+        "focus": [
+          "autoshort",
+          "dubbing",
+          "separation",
+          "ffmpeg",
+          "engines"
+        ],
+        "note": "Cac phan he dieu phoi truc tiep quy trinh san xuat video tu dong."
+      }
+    ]
+  },
+  "components": [
+    {
+      "id": "ui",
+      "type": "frontend",
+      "label": "Giao Dien React 19",
+      "sublabel": "10 Tabs Chuc Nang",
+      "pos": [
+        40,
+        260
+      ],
+      "size": [
+        140,
+        60
+      ],
+      "tag": "Renderer"
+    },
+    {
+      "id": "preload",
+      "type": "security",
+      "label": "Preload Bridge",
+      "sublabel": "contextBridge TblaoApi",
+      "pos": [
+        260,
+        260
+      ],
+      "size": [
+        140,
+        60
+      ],
+      "tag": "Isolate"
+    },
+    {
+      "id": "main",
+      "type": "backend",
+      "label": "Main Orchestrator",
+      "sublabel": "Electron 34 Core",
+      "pos": [
+        490,
+        260
+      ],
+      "size": [
+        150,
+        60
+      ],
+      "tag": "Node.js"
+    },
+    {
+      "id": "disk",
+      "type": "database",
+      "label": "Disk Budget",
+      "sublabel": "685MB Reserve Ledger",
+      "pos": [
+        490,
+        100
+      ],
+      "size": [
+        150,
+        60
+      ],
+      "tag": "ENOSPC Guard"
+    },
+    {
+      "id": "autoshort",
+      "type": "backend",
+      "label": "AutoShort Coordinator",
+      "sublabel": "QueueRunner & ItemScope",
+      "pos": [
+        730,
+        260
+      ],
+      "size": [
+        160,
+        60
+      ],
+      "tag": "Pipeline"
+    },
+    {
+      "id": "dubbing",
+      "type": "backend",
+      "label": "Dubbing & TTS",
+      "sublabel": "Source-Anchored Tempo",
+      "pos": [
+        730,
+        100
+      ],
+      "size": [
+        160,
+        60
+      ],
+      "tag": "1.10x-1.45x"
+    },
+    {
+      "id": "separation",
+      "type": "backend",
+      "label": "Vocal Separation",
+      "sublabel": "DirectML / CPU Fallback",
+      "pos": [
+        730,
+        420
+      ],
+      "size": [
+        160,
+        60
+      ],
+      "tag": "MDX-Net"
+    },
+    {
+      "id": "ffmpeg",
+      "type": "cloud",
+      "label": "FFmpeg & Libass",
+      "sublabel": "Planar RGB & ASS Burn",
+      "pos": [
+        980,
+        260
+      ],
+      "size": [
+        150,
+        60
+      ],
+      "tag": "Binary"
+    },
+    {
+      "id": "engines",
+      "type": "messagebus",
+      "label": "Python Sidecars",
+      "sublabel": "OCR, Whisper, STTN",
+      "pos": [
+        980,
+        420
+      ],
+      "size": [
+        150,
+        60
+      ],
+      "tag": "Stdio JSONL"
+    }
+  ],
+  "boundaries": [
+    {
+      "kind": "region",
+      "label": "Electron Desktop Shell",
+      "wraps": [
+        "ui",
+        "preload",
+        "main",
+        "disk",
+        "autoshort",
+        "dubbing",
+        "separation"
+      ]
+    },
+    {
+      "kind": "security-group",
+      "label": "Ranh Gioi Bao Mat IPC",
+      "wraps": [
+        "preload",
+        "main"
+      ]
+    },
+    {
+      "kind": "region",
+      "label": "Lop Sidecar & Binaries Ngoai Vi",
+      "wraps": [
+        "ffmpeg",
+        "engines"
+      ]
+    }
+  ],
+  "connections": [
+    {
+      "id": "ui-to-preload",
+      "from": "ui",
+      "to": "preload",
+      "label": "window.api",
+      "variant": "emphasis"
+    },
+    {
+      "id": "preload-to-main",
+      "from": "preload",
+      "to": "main",
+      "label": "IPC",
+      "variant": "security"
+    },
+    {
+      "id": "main-to-disk",
+      "from": "main",
+      "to": "disk",
+      "label": "Reserve",
+      "variant": "default"
+    },
+    {
+      "id": "main-to-autoshort",
+      "from": "main",
+      "to": "autoshort",
+      "label": "Dispatch",
+      "variant": "emphasis"
+    },
+    {
+      "id": "autoshort-to-dubbing",
+      "from": "autoshort",
+      "to": "dubbing",
+      "label": "TTS",
+      "variant": "default"
+    },
+    {
+      "id": "autoshort-to-separation",
+      "from": "autoshort",
+      "to": "separation",
+      "variant": "default"
+    },
+    {
+      "id": "autoshort-to-ffmpeg",
+      "from": "autoshort",
+      "to": "ffmpeg",
+      "label": "Burn ASS",
+      "variant": "emphasis"
+    },
+    {
+      "id": "separation-to-engines",
+      "from": "separation",
+      "to": "engines",
+      "variant": "dashed"
+    },
+    {
+      "id": "autoshort-to-engines",
+      "from": "autoshort",
+      "to": "engines",
+      "variant": "dashed"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "Kien Truc Da Tang",
+      "items": [
+        "Renderer React 19 duoc co lap tuyet doi sau Preload bridge",
+        "Giao thuc tblao: ho tro Range Request xem video cuc bo khong vi pham CORS"
+      ]
+    },
+    {
+      "dot": "emerald",
+      "title": "Bao Ve Tai Nguyen",
+      "items": [
+        "Disk Budget Ledger giu 685MB an toan chong tran dia",
+        "ItemScope tu dong tieu diet process tree khi nguoi dung bam Huy"
+      ]
+    },
+    {
+      "dot": "rose",
+      "title": "Tang Toc & Fallback",
+      "items": [
+        "MDX-Net tang toc DirectX 12 DirectML va tu fallback CPU",
+        "FFmpeg lam mo tren Planar RGB gbrp chong lem mau Chroma"
+      ]
+    }
+  ]
+}

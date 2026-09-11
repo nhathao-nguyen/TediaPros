@@ -1,0 +1,39 @@
+{
+  "builtAt": "2026-09-08T08:15:11.8281111+07:00",
+  "worktree": "F:\\Son\\tool\\TediaPros\\.worktrees\\codex-autoshort-optimization",
+  "head": "7d86614572c6941861ee130e89e4d93e9ae2cc64",
+  "testCount": 563,
+  "suites": 53,
+  "files": [
+    {
+      "path": "src/main/autoshort.ts",
+      "sha256": "4E9DD3C1C4E0F39D9EDA71423D49919FB232CD81CCE31105CFE3700B549B35A4",
+      "modifiedAt": "2026-09-08T07:44:12.1613488+07:00"
+    },
+    {
+      "path": "src/main/dubbing/plan.ts",
+      "sha256": "345CB4AE23D75B9FFD263CC1B466F3EF2213D068E527D3DB16FA63CA694AE233",
+      "modifiedAt": "2026-09-08T07:44:41.3227144+07:00"
+    },
+    {
+      "path": "src/main/dubbing/synthesis.ts",
+      "sha256": "40635FFF1C76D07C5A5572F24F24F55E02BC01CDABA808CBDCD530A4CAE532BF",
+      "modifiedAt": "2026-09-08T08:05:33.7454323+07:00"
+    },
+    {
+      "path": "src/main/dubbing/subtitles.ts",
+      "sha256": "15B924DA858345E4DB50D608EE39D9A2CEA50FF578D75D31BDD87B9DF2A4664F",
+      "modifiedAt": "2026-09-08T06:41:28.6354195+07:00"
+    },
+    {
+      "path": "src/main/dubbing/translation.ts",
+      "sha256": "9AE25995259CC5BF3087EBCDE762FE6401E2011BDAECE466309619251D72BE8B",
+      "modifiedAt": "2026-09-08T08:00:47.2764539+07:00"
+    },
+    {
+      "path": "out/main/index.js",
+      "sha256": "D0FCD2B0BE92CCD29140E48F7659E62BFF46EB0192D57D4B9261A09525CB0A92",
+      "modifiedAt": "2026-09-08T08:08:39.8009761+07:00"
+    }
+  ]
+}

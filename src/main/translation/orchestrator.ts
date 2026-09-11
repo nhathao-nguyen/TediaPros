@@ -12,6 +12,7 @@ import { parseTranslationResponse } from './response'
 import { selectTranslationSourceContext } from './context'
 import { fitTranslationSourceContext } from './context'
 import { buildTranslationBatchMessages } from './prompts'
+import { withSourceSpeechGroups } from './sourceGroups'
 import {
   classifyTranslationError,
   createTranslationBudget,
@@ -55,6 +56,10 @@ export interface TranslateWithAdapterOptions {
   sleep?: (delayMs: number, signal?: AbortSignal) => Promise<void>
   /** Random source for bounded transport backoff; independent of content recovery. */
   random?: () => number
+  /** Internal quality-repair calls disable recursion after one focused pass. */
+  autoRepairContentWarnings?: boolean
+  /** Quality repair consumes recovery accounting even when it uses a fresh sub-plan. */
+  initialRequestKind?: 'normal' | 'recovery'
 }
 
 export interface TranslationRunResult extends TranslationBatchResult {
@@ -181,6 +186,21 @@ function targetSubtitleCues(source: readonly SubtitleCue[], items: readonly Tran
   return source.filter((cue) => byId.has(cue.id)).map((cue) => ({ ...cue, text: byId.get(cue.id) || '' }))
 }
 
+function assessTranslatedItems(input: TranslationInput, items: readonly TranslationItem[]): {
+  issues: TranslationIssue[]
+  languageEvidence: TranslationAssessment['languageEvidence']
+} {
+  const source = sourceSubtitleCues(input)
+  const content = assessContentQuality(source, targetSubtitleCues(source, items))
+  const language = assessTranslationLanguage(input, items)
+  return { issues: [...content.issues, ...language.issues], languageEvidence: language.languageEvidence }
+}
+
+function uniqueIssues(issues: readonly TranslationIssue[]): TranslationIssue[] {
+  return issues.filter((item, index, all) => all.findIndex((candidate) =>
+    candidate.code === item.code && candidate.message === item.message && candidate.cueIds.join(',') === item.cueIds.join(',')) === index)
+}
+
 /**
  * Provider-neutral bounded translation scheduler. Providers perform one
  * request; this loop owns retries, repair, split, validation and cancellation.
@@ -191,6 +211,9 @@ export async function translateWithAdapter(
   signal: AbortSignal,
   options: TranslateWithAdapterOptions = {}
 ): Promise<TranslationRunResult> {
+  // Establish groups on the full ledger, before resume, recovery or quality
+  // repair selects a subset. Those paths must keep the same source identity.
+  input = withSourceSpeechGroups(input)
   const plan = options.plan || planTranslation(input, adapter.capability)
   const budget = options.budget || createTranslationBudget(plan.batches.length, undefined, options.restoredBudget)
   const sleep = options.sleep || (async (delayMs: number, signal?: AbortSignal): Promise<void> => {
@@ -265,11 +288,11 @@ export async function translateWithAdapter(
       // A request that was charged before a crash/restart is recovery work on
       // the next invocation. This prevents an idempotent normal charge from
       // bypassing the shared recovery quota after resume.
-      kind: durableBatchState[batch.id]?.normalCharged ? 'recovery' as const : 'normal' as const
+      kind: options.initialRequestKind || (durableBatchState[batch.id]?.normalCharged ? 'recovery' as const : 'normal' as const)
     } satisfies WorkItem]
   })
   const failures = new Map<string, { fingerprint: string; repeats: number }>()
-  const terminalIssues: TranslationIssue[] = [...plan.warnings.map((message) => issue(
+  const terminalIssues: TranslationIssue[] = [...(plan.unsupported ? plan.warnings : []).map((message) => issue(
     'unsupported-capability',
     message,
     [],
@@ -432,18 +455,72 @@ export async function translateWithAdapter(
     }
   }
 
+  let quality = { issues: [] as TranslationIssue[], languageEvidence: 'unknown' as TranslationAssessment['languageEvidence'] }
+  if (completeUnits && restoredItems.length === input.cues.length) {
+    quality = assessTranslatedItems(input, restoredItems)
+    const repairableIssues = quality.issues.filter((item) =>
+      item.severity === 'warning' &&
+      (item.code === 'protected-token-suspect' || item.code === 'language-suspect') &&
+      item.cueIds.length > 0)
+    const repairIds = [...new Set(repairableIssues.flatMap((item) => item.cueIds))]
+    if (options.autoRepairContentWarnings !== false && repairIds.length > 0) {
+      const selectedCues = input.cues.filter((cue) => repairIds.includes(cue.id))
+      if (selectedCues.length > 0) {
+        const repairInput: TranslationInput = {
+          ...input,
+          cues: selectedCues,
+          ...selectTranslationSourceContext(input, selectedCues)
+        }
+        const baseRepairPlan = planTranslation(repairInput, adapter.capability)
+        const repairPlan: TranslationPlan = {
+          ...baseRepairPlan,
+          batches: baseRepairPlan.batches.map((batch, index) => {
+            const issueCopies = repairableIssues.flatMap((item) => {
+              const cueIds = batch.mapping
+                .filter((mapping) => item.cueIds.includes(mapping.originalId))
+                .map((mapping) => mapping.unitId)
+              return cueIds.length > 0 ? [{ ...item, cueIds }] : []
+            })
+            return { ...batch, id: `quality-repair-${index + 1}-${batch.id}`, repairIssues: issueCopies }
+          })
+        }
+        const repaired = await translateWithAdapter(repairInput, adapter, signal, {
+          plan: repairPlan,
+          budget,
+          beforeDispatch: options.beforeDispatch,
+          sleep,
+          random: options.random,
+          autoRepairContentWarnings: false,
+          initialRequestKind: 'recovery'
+        })
+        if (repaired.assessment.disposition !== 'needs-review' && repaired.items.length === selectedCues.length) {
+          const repairedById = new Map(repaired.items.map((item) => [item.id, item]))
+          restoredItems = restoredItems.map((item) => repairedById.get(item.id) || item)
+          quality = assessTranslatedItems(input, restoredItems)
+          await options.onBatch?.('quality-repair', {
+            items: repaired.items,
+            assessment: {
+              version: 'translation-assessment-v2',
+              disposition: quality.issues.length > 0 ? 'with-warnings' : 'validated',
+              issues: quality.issues,
+              languageEvidence: quality.languageEvidence
+            },
+            modelIdentity
+          }, budget.snapshot())
+        }
+      }
+    }
+  }
+
   const finalIssues = [...terminalIssues]
   let languageEvidence: TranslationAssessment['languageEvidence'] = 'unknown'
   if (completeUnits && restoredItems.length === input.cues.length) {
-    const content = assessContentQuality(sourceSubtitleCues(input), targetSubtitleCues(sourceSubtitleCues(input), restoredItems))
-    finalIssues.push(...content.issues)
-    const language = assessTranslationLanguage(input, restoredItems)
-    finalIssues.push(...language.issues)
-    languageEvidence = language.languageEvidence
+    finalIssues.push(...quality.issues)
+    languageEvidence = quality.languageEvidence
   } else {
     finalIssues.push(issue('missing-id', 'Bản dịch chưa đủ mọi cue nguồn; không xuất bản kết quả một phần.', input.cues.map((cue) => cue.id)))
   }
-  const dedupedIssues = finalIssues.filter((item, index, all) => all.findIndex((candidate) => candidate.code === item.code && candidate.message === item.message && candidate.cueIds.join(',') === item.cueIds.join(',')) === index)
+  const dedupedIssues = uniqueIssues(finalIssues)
   const assessment: TranslationAssessment = {
     version: 'translation-assessment-v2',
     disposition: !completeUnits || dedupedIssues.some((item) => item.severity === 'error') ? 'needs-review' : dedupedIssues.length > 0 ? 'with-warnings' : 'validated',

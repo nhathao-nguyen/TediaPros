@@ -1,0 +1,1947 @@
+{
+  "version": 3,
+  "paceMode": "source-adaptive",
+  "videoDuration": 142.175011,
+  "globalTempo": 1.1942,
+  "cues": [
+    {
+      "cueId": "cue-0-2320",
+      "start": 2.32,
+      "preferredEnd": 4.06,
+      "hardEnd": 3.5599999999999996,
+      "availableDuration": 1.2399999999999998,
+      "id": "cue-0-2320",
+      "sourceCueIds": [
+        "cue-0-2320"
+      ],
+      "sourceText": "吃鸡之前记得仔细看看",
+      "sourceStart": 2.32,
+      "sourceEnd": 4.06,
+      "translatedText": "Remember to check carefully before eating chicken",
+      "finalSpokenText": "Check the chicken before eating.",
+      "predictedDuration": 1.955,
+      "naturalDuration": 1.596463,
+      "actualDuration": 1.218118,
+      "predictionUncertainty": 0.359,
+      "tempo": 1.3106,
+      "plannedDuration": 1.2399712621359222,
+      "voiceEnd": 3.538118,
+      "localTempoAdjustment": 0.1164,
+      "audioPath": "F:\\Son\\tool\\TediaPros\\.worktrees\\codex-autoshort-optimization\\.ai\\tasks\\2026-09-08-dubbing-group-evidence3\\11ed92e2-66c3-4ad8-99fb-b879a14639b1\\cue-0-2320-tempo.wav",
+      "subtitles": [
+        {
+          "id": "cue-0-2320-subtitle",
+          "sourceIndex": 0,
+          "start": 2.32,
+          "end": 3.538118,
+          "text": "Check the chicken before eating.",
+          "timingQuality": "cue"
+        }
+      ],
+      "rephrased": true
+    },
+    {
+      "cueId": "cue-1-4060",
+      "start": 4.06,
+      "preferredEnd": 5.8,
+      "hardEnd": 5.56,
+      "availableDuration": 1.5,
+      "id": "cue-1-4060",
+      "sourceCueIds": [
+        "cue-1-4060"
+      ],
+      "sourceText": "这种鸡能吃吗?",
+      "sourceStart": 4.06,
+      "sourceEnd": 5.8,
+      "translatedText": "Is this kind of chicken edible?",
+      "finalSpokenText": "Is this chicken safe to eat?",
+      "predictedDuration": 2.331,
+      "naturalDuration": 1.569546,
+      "actualDuration": 1.284172,
+      "predictionUncertainty": 0.761,
+      "tempo": 1.2222,
+      "plannedDuration": 1.3143074861832191,
+      "voiceEnd": 5.3441719999999995,
+      "localTempoAdjustment": 0.028,
+      "audioPath": "F:\\Son\\tool\\TediaPros\\.worktrees\\codex-autoshort-optimization\\.ai\\tasks\\2026-09-08-dubbing-group-evidence3\\11ed92e2-66c3-4ad8-99fb-b879a14639b1\\cue-1-4060-tempo.wav",
+      "subtitles": [
+        {
+          "id": "cue-1-4060-subtitle",
+          "sourceIndex": 1,
+          "start": 4.06,
+          "end": 5.3441719999999995,
+          "text": "Is this chicken safe to eat?",
+          "timingQuality": "cue"
+        }
+      ],
+      "rephrased": true
+    },
+    {
+      "cueId": "cue-2-6060",
+      "start": 6.06,
+      "preferredEnd": 12.54,
+      "hardEnd": 12.04,
+      "availableDuration": 5.9799999999999995,
+      "id": "cue-2-6060",
+      "sourceCueIds": [
+        "cue-2-6060",
+        "cue-3-6700",
+        "cue-4-8180",
+        "cue-5-9920",
+        "cue-6-11100"
+      ],
+      "sourceText": "这是豆鸡天天打架运动鸡肉纤维又粗又紧脂肪极少吃它不如吃土鸡",
+      "sourceStart": 6.06,
+      "sourceEnd": 12.54,
+      "translatedText": "This is a bean chicken Fighting daily, lots of exercise Chicken fibers are coarse and tight Very little fat Better to eat earth chicken than this",
+      "finalSpokenText": "This bean chicken is tough and lean from fighting; choose earth chicken instead.",
+      "predictedDuration": 4.735,
+      "naturalDuration": 3.808345,
+      "actualDuration": 3.162063,
+      "predictionUncertainty": 0.926,
+      "tempo": 1.2044,
+      "plannedDuration": 3.1890345000837383,
+      "voiceEnd": 9.222062999999999,
+      "localTempoAdjustment": 0.0102,
+      "audioPath": "F:\\Son\\tool\\TediaPros\\.worktrees\\codex-autoshort-optimization\\.ai\\tasks\\2026-09-08-dubbing-group-evidence3\\11ed92e2-66c3-4ad8-99fb-b879a14639b1\\cue-2-6060-tempo.wav",
+      "subtitles": [
+        {
+          "id": "cue-2-6060-subtitle-1",
+          "sourceIndex": 2,
+          "start": 6.06,
+          "end": 8.581645177215188,
+          "text": "This bean chicken is tough and lean from fighting; choose earth",
+          "timingQuality": "cue"
+        },
+        {
+          "id": "cue-2-6060-subtitle-2",
+          "sourceIndex": 2,
+          "start": 8.581645177215188,
+          "end": 9.222062999999999,
+          "text": "chicken instead.",
+          "timingQuality": "cue"
+        }
+      ],
+      "rephrased": true
+    },
+    {
+      "cueId": "cue-7-12540",
+      "start": 12.54,
+      "preferredEnd": 14.08,
+      "hardEnd": 13.86,
+      "availableDuration": 1.3200000000000003,
+      "id": "cue-7-12540",
+      "sourceCueIds": [
+        "cue-7-12540"
+      ],
+      "sourceText": "这种鸡能吃吗?",
+      "sourceStart": 12.54,
+      "sourceEnd": 14.08,
+      "translatedText": "Is this kind of chicken edible?",
+      "finalSpokenText": "Is this chicken safe to eat?",
+      "predictedDuration": 2.253,
+      "naturalDuration": 1.569546,
+      "actualDuration": 1.284172,
+      "predictionUncertainty": 1.097,
+      "tempo": 1.2222,
+      "plannedDuration": 1.3143074861832191,
+      "voiceEnd": 13.824171999999999,
+      "localTempoAdjustment": 0.028,
+      "audioPath": "F:\\Son\\tool\\TediaPros\\.worktrees\\codex-autoshort-optimization\\.ai\\tasks\\2026-09-08-dubbing-group-evidence3\\11ed92e2-66c3-4ad8-99fb-b879a14639b1\\cue-7-12540-tempo.wav",
+      "subtitles": [
+        {
+          "id": "cue-7-12540-subtitle",
+          "sourceIndex": 7,
+          "start": 12.54,
+          "end": 13.824171999999999,
+          "text": "Is this chicken safe to eat?",
+          "timingQuality": "cue"
+        }
+      ],
+      "rephrased": true
+    },
+    {
+      "cueId": "cue-8-14360",
+      "start": 14.36,
+      "preferredEnd": 21.12,
+      "hardEnd": 20.62,
+      "availableDuration": 6.260000000000002,
+      "id": "cue-8-14360",
+      "sourceCueIds": [
+        "cue-8-14360",
+        "cue-9-15040",
+        "cue-10-16080",
+        "cue-11-17080",
+        "cue-12-18520",
+        "cue-13-19600"
+      ],
+      "sourceText": "这是火鸡尺寸太大极难入味肉质紧实偏柴毫无汁水吃它不如吃土鸡",
+      "sourceStart": 14.36,
+      "sourceEnd": 21.12,
+      "translatedText": "This is a turkey Too big in size Hard to absorb flavors Meat is firm and dry No juice at all Better to eat earth chicken than this",
+      "finalSpokenText": "This turkey is tough, dry, and flavorless; choose earth chicken instead.",
+      "predictedDuration": 4.775,
+      "naturalDuration": 4.554376,
+      "actualDuration": 3.796145,
+      "predictionUncertainty": 1.097,
+      "tempo": 1.1997,
+      "plannedDuration": 3.8137464411321393,
+      "voiceEnd": 18.156145,
+      "localTempoAdjustment": 0.0055,
+      "audioPath": "F:\\Son\\tool\\TediaPros\\.worktrees\\codex-autoshort-optimization\\.ai\\tasks\\2026-09-08-dubbing-group-evidence3\\11ed92e2-66c3-4ad8-99fb-b879a14639b1\\cue-8-14360-tempo.wav",
+      "subtitles": [
+        {
+          "id": "cue-8-14360-subtitle-1",
+          "sourceIndex": 8,
+          "start": 14.36,
+          "end": 17.728410352112675,
+          "text": "This turkey is tough, dry, and flavorless; choose earth chicken",
+          "timingQuality": "cue"
+        },
+        {
+          "id": "cue-8-14360-subtitle-2",
+          "sourceIndex": 8,
+          "start": 17.728410352112675,
+          "end": 18.156145,
+          "text": "instead.",
+          "timingQuality": "cue"
+        }
+      ],
+      "rephrased": true
+    },
+    {
+      "cueId": "cue-14-21120",
+      "start": 21.12,
+      "preferredEnd": 22.62,
+      "hardEnd": 22.4,
+      "availableDuration": 1.2799999999999976,
+      "id": "cue-14-21120",
+      "sourceCueIds": [
+        "cue-14-21120"
+      ],
+      "sourceText": "这种鸡能吃吗?",
+      "sourceStart": 21.12,
+      "sourceEnd": 22.62,
+      "translatedText": "Is this kind of chicken edible?",
+      "finalSpokenText": "Is this chicken safe to eat?",
+      "predictedDuration": 2.232,
+      "naturalDuration": 1.569546,
+      "actualDuration": 1.262698,
+      "predictionUncertainty": 1.18,
+      "tempo": 1.243,
+      "plannedDuration": 1.2799999999999976,
+      "voiceEnd": 22.382698,
+      "localTempoAdjustment": 0.0488,
+      "audioPath": "F:\\Son\\tool\\TediaPros\\.worktrees\\codex-autoshort-optimization\\.ai\\tasks\\2026-09-08-dubbing-group-evidence3\\11ed92e2-66c3-4ad8-99fb-b879a14639b1\\cue-14-21120-tempo.wav",
+      "subtitles": [
+        {
+          "id": "cue-14-21120-subtitle",
+          "sourceIndex": 14,
+          "start": 21.12,
+          "end": 22.382698,
+          "text": "Is this chicken safe to eat?",
+          "timingQuality": "cue"
+        }
+      ],
+      "rephrased": true
+    },
+    {
+      "cueId": "cue-15-22900",
+      "start": 22.9,
+      "preferredEnd": 30.16,
+      "hardEnd": 29.66,
+      "availableDuration": 6.760000000000002,
+      "id": "cue-15-22900",
+      "sourceCueIds": [
+        "cue-15-22900",
+        "cue-16-23780",
+        "cue-17-25040",
+        "cue-18-26780",
+        "cue-19-28600"
+      ],
+      "sourceText": "这是珍珠鸡肉非常紧实如果火候没掌握好就很容易做得又干又柴吃它不如吃土鸡",
+      "sourceStart": 22.9,
+      "sourceEnd": 30.16,
+      "translatedText": "This is a pearl chicken Meat is very firm If the heat isn't controlled well It will easily become dry and tough Better to eat earth chicken than this",
+      "finalSpokenText": "This pearl chicken is firm and dries out easily if overcooked; choose earth chicken instead.",
+      "predictedDuration": 5.441,
+      "naturalDuration": 4.778345,
+      "actualDuration": 3.984036,
+      "predictionUncertainty": 0.662,
+      "tempo": 1.1994,
+      "plannedDuration": 4.001293753140177,
+      "voiceEnd": 26.884036,
+      "localTempoAdjustment": 0.0052,
+      "audioPath": "F:\\Son\\tool\\TediaPros\\.worktrees\\codex-autoshort-optimization\\.ai\\tasks\\2026-09-08-dubbing-group-evidence3\\11ed92e2-66c3-4ad8-99fb-b879a14639b1\\cue-15-22900-tempo.wav",
+      "subtitles": [
+        {
+          "id": "cue-15-22900-subtitle-1",
+          "sourceIndex": 15,
+          "start": 22.9,
+          "end": 25.614398153846153,
+          "text": "This pearl chicken is firm and dries out easily if overcooked;",
+          "timingQuality": "cue"
+        },
+        {
+          "id": "cue-15-22900-subtitle-2",
+          "sourceIndex": 15,
+          "start": 25.614398153846153,
+          "end": 26.884036,
+          "text": "choose earth chicken instead.",
+          "timingQuality": "cue"
+        }
+      ],
+      "rephrased": true
+    },
+    {
+      "cueId": "cue-20-30160",
+      "start": 30.16,
+      "preferredEnd": 31.66,
+      "hardEnd": 31.16,
+      "availableDuration": 1,
+      "id": "cue-20-30160",
+      "sourceCueIds": [
+        "cue-20-30160"
+      ],
+      "sourceText": "这种鸡能吃吗?",
+      "sourceStart": 30.16,
+      "sourceEnd": 31.66,
+      "translatedText": "Is this kind of chicken edible?",
+      "finalSpokenText": "This chicken edible?",
+      "predictedDuration": 1.393,
+      "naturalDuration": 1.365896,
+      "actualDuration": 0.98585,
+      "predictionUncertainty": 0.632,
+      "tempo": 1.3855,
+      "plannedDuration": 1,
+      "voiceEnd": 31.14585,
+      "localTempoAdjustment": 0.1913,
+      "audioPath": "F:\\Son\\tool\\TediaPros\\.worktrees\\codex-autoshort-optimization\\.ai\\tasks\\2026-09-08-dubbing-group-evidence3\\11ed92e2-66c3-4ad8-99fb-b879a14639b1\\cue-20-30160-tempo.wav",
+      "subtitles": [
+        {
+          "id": "cue-20-30160-subtitle",
+          "sourceIndex": 20,
+          "start": 30.16,
+          "end": 31.14585,
+          "text": "This chicken edible?",
+          "timingQuality": "cue"
+        }
+      ],
+      "rephrased": true
+    },
+    {
+      "cueId": "cue-21-31660",
+      "start": 31.66,
+      "preferredEnd": 38.94,
+      "hardEnd": 38.44,
+      "availableDuration": 6.779999999999998,
+      "id": "cue-21-31660",
+      "sourceCueIds": [
+        "cue-21-31660",
+        "cue-22-33280",
+        "cue-23-34480",
+        "cue-24-35520",
+        "cue-25-37200"
+      ],
+      "sourceText": "这是黄金五彩攻击乃五毒克星纯杨之体据说今天是丢病日此时丢下三朵鲜花",
+      "sourceStart": 31.66,
+      "sourceEnd": 38.94,
+      "translatedText": "This is the Golden Five-Color Attack The bane of all five poisons Pure Yang body Today is said to be the Day of Shedding Illness At this moment, three flowers are shed",
+      "finalSpokenText": "Golden Five-Color Attack, bane of five poisons, Pure Yang body. Today is Shedding Illness Day; shed three flowers.",
+      "predictedDuration": 8.238,
+      "naturalDuration": 8.071088,
+      "actualDuration": 6.740181,
+      "predictionUncertainty": 0.831,
+      "tempo": 1.1975,
+      "plannedDuration": 6.758573103332775,
+      "voiceEnd": 38.400181,
+      "localTempoAdjustment": 0.0033,
+      "audioPath": "F:\\Son\\tool\\TediaPros\\.worktrees\\codex-autoshort-optimization\\.ai\\tasks\\2026-09-08-dubbing-group-evidence3\\11ed92e2-66c3-4ad8-99fb-b879a14639b1\\cue-21-31660-tempo.wav",
+      "subtitles": [
+        {
+          "id": "cue-21-31660-subtitle-1",
+          "sourceIndex": 21,
+          "start": 31.66,
+          "end": 35.417800026548676,
+          "text": "Golden Five-Color Attack, bane of five poisons, Pure Yang body.",
+          "timingQuality": "cue"
+        },
+        {
+          "id": "cue-21-31660-subtitle-2",
+          "sourceIndex": 21,
+          "start": 35.417800026548676,
+          "end": 38.400181,
+          "text": "Today is Shedding Illness Day; shed three flowers.",
+          "timingQuality": "cue"
+        }
+      ],
+      "rephrased": true
+    },
+    {
+      "cueId": "cue-26-38940",
+      "start": 38.94,
+      "preferredEnd": 45.72,
+      "hardEnd": 45.22,
+      "availableDuration": 6.280000000000001,
+      "id": "cue-26-38940",
+      "sourceCueIds": [
+        "cue-26-38940",
+        "cue-27-40240",
+        "cue-28-41580",
+        "cue-29-42940",
+        "cue-30-44640"
+      ],
+      "sourceText": "一朵丢掉病痛一朵丢下灾难一朵丢掉烦恼往后全家百毒不清万事顺遂",
+      "sourceStart": 38.94,
+      "sourceEnd": 45.72,
+      "translatedText": "One flower sheds sickness One flower sheds disaster One flower sheds worries From now on, the whole family remains free of all poisons Everything goes smoothly",
+      "finalSpokenText": "Shed sickness, disaster, and worries. The family remains poison-free; everything goes smoothly.",
+      "predictedDuration": 6.657,
+      "naturalDuration": 6.181587,
+      "actualDuration": 5.157302,
+      "predictionUncertainty": 0.83,
+      "tempo": 1.1986,
+      "plannedDuration": 5.176341483838554,
+      "voiceEnd": 44.097302,
+      "localTempoAdjustment": 0.0044,
+      "audioPath": "F:\\Son\\tool\\TediaPros\\.worktrees\\codex-autoshort-optimization\\.ai\\tasks\\2026-09-08-dubbing-group-evidence3\\11ed92e2-66c3-4ad8-99fb-b879a14639b1\\cue-26-38940-tempo.wav",
+      "subtitles": [
+        {
+          "id": "cue-26-38940-subtitle-1",
+          "sourceIndex": 26,
+          "start": 38.94,
+          "end": 42.01243523404255,
+          "text": "Shed sickness, disaster, and worries. The family remains",
+          "timingQuality": "cue"
+        },
+        {
+          "id": "cue-26-38940-subtitle-2",
+          "sourceIndex": 26,
+          "start": 42.01243523404255,
+          "end": 44.097302,
+          "text": "poison-free; everything goes smoothly.",
+          "timingQuality": "cue"
+        }
+      ],
+      "rephrased": true
+    },
+    {
+      "cueId": "cue-31-45720",
+      "start": 45.72,
+      "preferredEnd": 47.18,
+      "hardEnd": 46.88,
+      "availableDuration": 1.1600000000000037,
+      "id": "cue-31-45720",
+      "sourceCueIds": [
+        "cue-31-45720"
+      ],
+      "sourceText": "这种鸡能吃吗?",
+      "sourceStart": 45.72,
+      "sourceEnd": 47.18,
+      "translatedText": "Can this chicken be eaten?",
+      "finalSpokenText": "Is this chicken edible?",
+      "predictedDuration": 1.788,
+      "naturalDuration": 1.392676,
+      "actualDuration": 1.141224,
+      "predictionUncertainty": 0.818,
+      "tempo": 1.2203,
+      "plannedDuration": 1.1599833416625023,
+      "voiceEnd": 46.861224,
+      "localTempoAdjustment": 0.0261,
+      "audioPath": "F:\\Son\\tool\\TediaPros\\.worktrees\\codex-autoshort-optimization\\.ai\\tasks\\2026-09-08-dubbing-group-evidence3\\11ed92e2-66c3-4ad8-99fb-b879a14639b1\\cue-31-45720-tempo.wav",
+      "subtitles": [
+        {
+          "id": "cue-31-45720-subtitle",
+          "sourceIndex": 31,
+          "start": 45.72,
+          "end": 46.861224,
+          "text": "Is this chicken edible?",
+          "timingQuality": "cue"
+        }
+      ],
+      "rephrased": true
+    },
+    {
+      "cueId": "cue-32-47380",
+      "start": 47.38,
+      "preferredEnd": 55.72,
+      "hardEnd": 55.22,
+      "availableDuration": 7.839999999999996,
+      "id": "cue-32-47380",
+      "sourceCueIds": [
+        "cue-32-47380",
+        "cue-33-48220",
+        "cue-34-49660",
+        "cue-35-50840",
+        "cue-36-53700"
+      ],
+      "sourceText": "这是冬涛鸡有鸡中贵族之称好吃是好吃但一只腿的价格都远高于普通鸡吃它还不如吃土鸡来的食慧",
+      "sourceStart": 47.38,
+      "sourceEnd": 55.72,
+      "translatedText": "This is the Dongtao chicken Known as the noble of chickens It tastes good But the price of a single leg far exceeds that of ordinary chickens Eating it is less wise than eating a local chicken",
+      "finalSpokenText": "Dongtao chicken: a noble, tasty breed. But its leg is far too expensive compared to ordinary chickens; local chicken is wiser to eat.",
+      "predictedDuration": 9.043,
+      "naturalDuration": 8.644014,
+      "actualDuration": 7.218413,
+      "predictionUncertainty": 0.857,
+      "tempo": 1.1975,
+      "plannedDuration": 7.238330262937532,
+      "voiceEnd": 54.598413,
+      "localTempoAdjustment": 0.0033,
+      "audioPath": "F:\\Son\\tool\\TediaPros\\.worktrees\\codex-autoshort-optimization\\.ai\\tasks\\2026-09-08-dubbing-group-evidence3\\11ed92e2-66c3-4ad8-99fb-b879a14639b1\\cue-32-47380-tempo.wav",
+      "subtitles": [
+        {
+          "id": "cue-32-47380-subtitle-1",
+          "sourceIndex": 32,
+          "start": 47.38,
+          "end": 50.74124574809161,
+          "text": "Dongtao chicken: a noble, tasty breed. But its leg is far too",
+          "timingQuality": "cue"
+        },
+        {
+          "id": "cue-32-47380-subtitle-2",
+          "sourceIndex": 32,
+          "start": 50.74124574809161,
+          "end": 54.21269627480916,
+          "text": "expensive compared to ordinary chickens; local chicken is wiser",
+          "timingQuality": "cue"
+        },
+        {
+          "id": "cue-32-47380-subtitle-3",
+          "sourceIndex": 32,
+          "start": 54.21269627480916,
+          "end": 54.598413,
+          "text": "to eat.",
+          "timingQuality": "cue"
+        }
+      ],
+      "rephrased": true
+    },
+    {
+      "cueId": "cue-37-55720",
+      "start": 55.72,
+      "preferredEnd": 57.22,
+      "hardEnd": 56.94,
+      "availableDuration": 1.2199999999999989,
+      "id": "cue-37-55720",
+      "sourceCueIds": [
+        "cue-37-55720"
+      ],
+      "sourceText": "这种鸡能吃吗?",
+      "sourceStart": 55.72,
+      "sourceEnd": 57.22,
+      "translatedText": "Can this chicken be eaten?",
+      "finalSpokenText": "Is this chicken edible?",
+      "predictedDuration": 1.796,
+      "naturalDuration": 1.392676,
+      "actualDuration": 1.148503,
+      "predictionUncertainty": 0.847,
+      "tempo": 1.2126,
+      "plannedDuration": 1.166199966504773,
+      "voiceEnd": 56.868503,
+      "localTempoAdjustment": 0.0184,
+      "audioPath": "F:\\Son\\tool\\TediaPros\\.worktrees\\codex-autoshort-optimization\\.ai\\tasks\\2026-09-08-dubbing-group-evidence3\\11ed92e2-66c3-4ad8-99fb-b879a14639b1\\cue-37-55720-tempo.wav",
+      "subtitles": [
+        {
+          "id": "cue-37-55720-subtitle",
+          "sourceIndex": 37,
+          "start": 55.72,
+          "end": 56.868503,
+          "text": "Is this chicken edible?",
+          "timingQuality": "cue"
+        }
+      ],
+      "rephrased": true
+    },
+    {
+      "cueId": "cue-38-57440",
+      "start": 57.44,
+      "preferredEnd": 63.74,
+      "hardEnd": 63.24,
+      "availableDuration": 5.800000000000004,
+      "id": "cue-38-57440",
+      "sourceCueIds": [
+        "cue-38-57440",
+        "cue-39-58460",
+        "cue-40-59460",
+        "cue-41-61660",
+        "cue-42-62960"
+      ],
+      "sourceText": "这是石火�鸡又叫赫陀是世界上最危险的鸟自受保护的冰危物种不能吃",
+      "sourceStart": 57.44,
+      "sourceEnd": 63.74,
+      "translatedText": "This is the Shihuo chicken Also called Hetuo The most dangerous bird in the world A protected endangered species Do not eat it",
+      "finalSpokenText": "Shihuo chicken, also Hetuo: the world's most dangerous, protected bird. Do not eat it.",
+      "predictedDuration": 6.241,
+      "naturalDuration": 6.287302,
+      "actualDuration": 5.244989,
+      "predictionUncertainty": 0.869,
+      "tempo": 1.1987,
+      "plannedDuration": 5.264865181711607,
+      "voiceEnd": 62.684989,
+      "localTempoAdjustment": 0.0045,
+      "audioPath": "F:\\Son\\tool\\TediaPros\\.worktrees\\codex-autoshort-optimization\\.ai\\tasks\\2026-09-08-dubbing-group-evidence3\\11ed92e2-66c3-4ad8-99fb-b879a14639b1\\cue-38-57440-tempo.wav",
+      "subtitles": [
+        {
+          "id": "cue-38-57440-subtitle-1",
+          "sourceIndex": 38,
+          "start": 57.44,
+          "end": 60.83381641176471,
+          "text": "Shihuo chicken, also Hetuo: the world's most dangerous,",
+          "timingQuality": "cue"
+        },
+        {
+          "id": "cue-38-57440-subtitle-2",
+          "sourceIndex": 38,
+          "start": 60.83381641176471,
+          "end": 62.684989,
+          "text": "protected bird. Do not eat it.",
+          "timingQuality": "cue"
+        }
+      ],
+      "rephrased": true
+    },
+    {
+      "cueId": "cue-43-63740",
+      "start": 63.74,
+      "preferredEnd": 65.34,
+      "hardEnd": 65.08,
+      "availableDuration": 1.3399999999999963,
+      "id": "cue-43-63740",
+      "sourceCueIds": [
+        "cue-43-63740"
+      ],
+      "sourceText": "这种鸡能吃吗?",
+      "sourceStart": 63.74,
+      "sourceEnd": 65.34,
+      "translatedText": "Can this chicken be eaten?",
+      "finalSpokenText": "Is this chicken edible?",
+      "predictedDuration": 1.827,
+      "naturalDuration": 1.392676,
+      "actualDuration": 1.148503,
+      "predictionUncertainty": 0.863,
+      "tempo": 1.2126,
+      "plannedDuration": 1.166199966504773,
+      "voiceEnd": 64.888503,
+      "localTempoAdjustment": 0.0184,
+      "audioPath": "F:\\Son\\tool\\TediaPros\\.worktrees\\codex-autoshort-optimization\\.ai\\tasks\\2026-09-08-dubbing-group-evidence3\\11ed92e2-66c3-4ad8-99fb-b879a14639b1\\cue-43-63740-tempo.wav",
+      "subtitles": [
+        {
+          "id": "cue-43-63740-subtitle",
+          "sourceIndex": 43,
+          "start": 63.74,
+          "end": 64.888503,
+          "text": "Is this chicken edible?",
+          "timingQuality": "cue"
+        }
+      ],
+      "rephrased": true
+    },
+    {
+      "cueId": "cue-44-65580",
+      "start": 65.58,
+      "preferredEnd": 73.86,
+      "hardEnd": 73.36,
+      "availableDuration": 7.780000000000001,
+      "id": "cue-44-65580",
+      "sourceCueIds": [
+        "cue-44-65580",
+        "cue-45-66620",
+        "cue-46-69020",
+        "cue-47-70940",
+        "cue-48-72360"
+      ],
+      "sourceText": "这是菊花头鸡鹰头顶羽毛翻卷如菊花得名是肉食观赏两用鸡但肉量少 价格贵吃它不如吃土鸡",
+      "sourceStart": 65.58,
+      "sourceEnd": 73.86,
+      "translatedText": "This is the chrysanthemum-headed chicken. It’s named for its crest feathers curling like chrysanthemums. It’s a dual-purpose meat and ornamental chicken. But it has little meat and is expensive. It’s not as good as eating native chicken.",
+      "finalSpokenText": "Chrysanthemum-headed chicken: named for flower-like crests. Little meat, high price; native chicken is wiser to eat.",
+      "predictedDuration": 8.297,
+      "naturalDuration": 7.210635,
+      "actualDuration": 6.019501,
+      "predictionUncertainty": 0.842,
+      "tempo": 1.1979,
+      "plannedDuration": 6.038046390889298,
+      "voiceEnd": 71.599501,
+      "localTempoAdjustment": 0.0037,
+      "audioPath": "F:\\Son\\tool\\TediaPros\\.worktrees\\codex-autoshort-optimization\\.ai\\tasks\\2026-09-08-dubbing-group-evidence3\\11ed92e2-66c3-4ad8-99fb-b879a14639b1\\cue-44-65580-tempo.wav",
+      "subtitles": [
+        {
+          "id": "cue-44-65580-subtitle-1",
+          "sourceIndex": 44,
+          "start": 65.58,
+          "end": 68.66826573043478,
+          "text": "Chrysanthemum-headed chicken: named for flower-like crests.",
+          "timingQuality": "cue"
+        },
+        {
+          "id": "cue-44-65580-subtitle-2",
+          "sourceIndex": 44,
+          "start": 68.66826573043478,
+          "end": 71.599501,
+          "text": "Little meat, high price; native chicken is wiser to eat.",
+          "timingQuality": "cue"
+        }
+      ],
+      "rephrased": true
+    },
+    {
+      "cueId": "cue-49-73860",
+      "start": 73.86,
+      "preferredEnd": 75.36,
+      "hardEnd": 75.1,
+      "availableDuration": 1.2399999999999949,
+      "id": "cue-49-73860",
+      "sourceCueIds": [
+        "cue-49-73860"
+      ],
+      "sourceText": "这种鸡能吃吗?",
+      "sourceStart": 73.86,
+      "sourceEnd": 75.36,
+      "translatedText": "Can this chicken be eaten?",
+      "finalSpokenText": "Is this chicken edible?",
+      "predictedDuration": 1.745,
+      "naturalDuration": 1.392676,
+      "actualDuration": 1.148503,
+      "predictionUncertainty": 0.837,
+      "tempo": 1.2126,
+      "plannedDuration": 1.166199966504773,
+      "voiceEnd": 75.008503,
+      "localTempoAdjustment": 0.0184,
+      "audioPath": "F:\\Son\\tool\\TediaPros\\.worktrees\\codex-autoshort-optimization\\.ai\\tasks\\2026-09-08-dubbing-group-evidence3\\11ed92e2-66c3-4ad8-99fb-b879a14639b1\\cue-49-73860-tempo.wav",
+      "subtitles": [
+        {
+          "id": "cue-49-73860-subtitle",
+          "sourceIndex": 49,
+          "start": 73.86,
+          "end": 75.008503,
+          "text": "Is this chicken edible?",
+          "timingQuality": "cue"
+        }
+      ],
+      "rephrased": true
+    },
+    {
+      "cueId": "cue-50-75600",
+      "start": 75.6,
+      "preferredEnd": 81.4,
+      "hardEnd": 80.9,
+      "availableDuration": 5.300000000000011,
+      "id": "cue-50-75600",
+      "sourceCueIds": [
+        "cue-50-75600",
+        "cue-51-76820",
+        "cue-52-78200",
+        "cue-53-80400"
+      ],
+      "sourceText": "这是白头波兰鸡也叫帽子鸡是一种著名的观赏鸡和宠物鸡不建议吃",
+      "sourceStart": 75.6,
+      "sourceEnd": 81.4,
+      "translatedText": "This is the white-headed Polish chicken. Also called the hat chicken. It’s a famous ornamental and pet chicken. Not recommended for eating.",
+      "finalSpokenText": "This white-headed Polish chicken, or hat chicken, is a famous ornamental and pet bird. We don't recommend eating it.",
+      "predictedDuration": 7.703,
+      "naturalDuration": 6.496009,
+      "actualDuration": 5.268549,
+      "predictionUncertainty": 0.927,
+      "tempo": 1.233,
+      "plannedDuration": 5.299836012074732,
+      "voiceEnd": 80.868549,
+      "localTempoAdjustment": 0.0388,
+      "audioPath": "F:\\Son\\tool\\TediaPros\\.worktrees\\codex-autoshort-optimization\\.ai\\tasks\\2026-09-08-dubbing-group-evidence3\\11ed92e2-66c3-4ad8-99fb-b879a14639b1\\cue-50-75600-tempo.wav",
+      "subtitles": [
+        {
+          "id": "cue-50-75600-subtitle-1",
+          "sourceIndex": 50,
+          "start": 75.6,
+          "end": 78.39462164347826,
+          "text": "This white-headed Polish chicken, or hat chicken, is a famous",
+          "timingQuality": "cue"
+        },
+        {
+          "id": "cue-50-75600-subtitle-2",
+          "sourceIndex": 50,
+          "start": 78.39462164347826,
+          "end": 80.868549,
+          "text": "ornamental and pet bird. We don't recommend eating it.",
+          "timingQuality": "cue"
+        }
+      ],
+      "rephrased": true
+    },
+    {
+      "cueId": "cue-54-81400",
+      "start": 81.4,
+      "preferredEnd": 83,
+      "hardEnd": 82.8,
+      "availableDuration": 1.3999999999999915,
+      "id": "cue-54-81400",
+      "sourceCueIds": [
+        "cue-54-81400"
+      ],
+      "sourceText": "这种鸡能吃吗?",
+      "sourceStart": 81.4,
+      "sourceEnd": 83,
+      "translatedText": "Can this chicken be eaten?",
+      "finalSpokenText": "Is this chicken edible?",
+      "predictedDuration": 1.7,
+      "naturalDuration": 1.392676,
+      "actualDuration": 1.148503,
+      "predictionUncertainty": 0.925,
+      "tempo": 1.2126,
+      "plannedDuration": 1.166199966504773,
+      "voiceEnd": 82.54850300000001,
+      "localTempoAdjustment": 0.0184,
+      "audioPath": "F:\\Son\\tool\\TediaPros\\.worktrees\\codex-autoshort-optimization\\.ai\\tasks\\2026-09-08-dubbing-group-evidence3\\11ed92e2-66c3-4ad8-99fb-b879a14639b1\\cue-54-81400-tempo.wav",
+      "subtitles": [
+        {
+          "id": "cue-54-81400-subtitle",
+          "sourceIndex": 54,
+          "start": 81.4,
+          "end": 82.54850300000001,
+          "text": "Is this chicken edible?",
+          "timingQuality": "cue"
+        }
+      ],
+      "rephrased": true
+    },
+    {
+      "cueId": "cue-55-83300",
+      "start": 83.3,
+      "preferredEnd": 88.92,
+      "hardEnd": 88.42,
+      "availableDuration": 5.1200000000000045,
+      "id": "cue-55-83300",
+      "sourceCueIds": [
+        "cue-55-83300",
+        "cue-56-84300",
+        "cue-57-86540",
+        "cue-58-87400"
+      ],
+      "sourceText": "这是黑嘴松鸡是国家一级重点保护动物不能吃吃一口五年起步",
+      "sourceStart": 83.3,
+      "sourceEnd": 88.92,
+      "translatedText": "This is the black-beaked partridge. It’s a Class I national protected animal. Cannot be eaten. One bite could cost you five years in prison.",
+      "finalSpokenText": "The black-beaked partridge is a Class I protected animal; do not eat it, as one bite can lead to five years in prison.",
+      "predictedDuration": 7.867,
+      "naturalDuration": 6.953084,
+      "actualDuration": 5.100952,
+      "predictionUncertainty": 0.914,
+      "tempo": 1.3631,
+      "plannedDuration": 5.1200000000000045,
+      "voiceEnd": 88.400952,
+      "localTempoAdjustment": 0.1689,
+      "audioPath": "F:\\Son\\tool\\TediaPros\\.worktrees\\codex-autoshort-optimization\\.ai\\tasks\\2026-09-08-dubbing-group-evidence3\\11ed92e2-66c3-4ad8-99fb-b879a14639b1\\cue-55-83300-tempo.wav",
+      "subtitles": [
+        {
+          "id": "cue-55-83300-subtitle-1",
+          "sourceIndex": 55,
+          "start": 83.3,
+          "end": 86.09026434188034,
+          "text": "The black-beaked partridge is a Class I protected animal; do not",
+          "timingQuality": "cue"
+        },
+        {
+          "id": "cue-55-83300-subtitle-2",
+          "sourceIndex": 55,
+          "start": 86.09026434188034,
+          "end": 88.400952,
+          "text": "eat it, as one bite can lead to five years in prison.",
+          "timingQuality": "cue"
+        }
+      ],
+      "rephrased": true
+    },
+    {
+      "cueId": "cue-59-88920",
+      "start": 88.92,
+      "preferredEnd": 90.44,
+      "hardEnd": 89.94,
+      "availableDuration": 1.019999999999996,
+      "id": "cue-59-88920",
+      "sourceCueIds": [
+        "cue-59-88920"
+      ],
+      "sourceText": "这种鸡能吃吗?",
+      "sourceStart": 88.92,
+      "sourceEnd": 90.44,
+      "translatedText": "Can this chicken be eaten?",
+      "finalSpokenText": "Can you eat this chicken?",
+      "predictedDuration": 1.799,
+      "naturalDuration": 1.216349,
+      "actualDuration": 0.999229,
+      "predictionUncertainty": 0.916,
+      "tempo": 1.2173,
+      "plannedDuration": 1.018547144531904,
+      "voiceEnd": 89.919229,
+      "localTempoAdjustment": 0.0231,
+      "audioPath": "F:\\Son\\tool\\TediaPros\\.worktrees\\codex-autoshort-optimization\\.ai\\tasks\\2026-09-08-dubbing-group-evidence3\\11ed92e2-66c3-4ad8-99fb-b879a14639b1\\cue-59-88920-tempo.wav",
+      "subtitles": [
+        {
+          "id": "cue-59-88920-subtitle",
+          "sourceIndex": 59,
+          "start": 88.92,
+          "end": 89.919229,
+          "text": "Can you eat this chicken?",
+          "timingQuality": "cue"
+        }
+      ],
+      "rephrased": true
+    },
+    {
+      "cueId": "cue-60-90440",
+      "start": 90.44,
+      "preferredEnd": 98.66,
+      "hardEnd": 98.16,
+      "availableDuration": 7.719999999999999,
+      "id": "cue-60-90440",
+      "sourceCueIds": [
+        "cue-60-90440",
+        "cue-61-91700",
+        "cue-62-94240",
+        "cue-63-96340",
+        "cue-64-97160"
+      ],
+      "sourceText": "这是花尾真鸡曾是东北明菜飞龙汤食材但现在是国家二级保护动物不能吃吃了药材缝韧鸡",
+      "sourceStart": 90.44,
+      "sourceEnd": 98.66,
+      "translatedText": "This is the spotted-tailed junglefowl. It was once used in Northeast China’s famous dragon soup. But now it’s a Class II national protected animal. Cannot be eaten. Eating it is a crime.",
+      "finalSpokenText": "This is the spotted-tailed junglefowl. Formerly a dragon soup ingredient, it is now a Class II protected animal. Do not eat it.",
+      "predictedDuration": 9.119,
+      "naturalDuration": 7.940136,
+      "actualDuration": 6.619796,
+      "predictionUncertainty": 1.079,
+      "tempo": 1.1995,
+      "plannedDuration": 6.64891642940881,
+      "voiceEnd": 97.05979599999999,
+      "localTempoAdjustment": 0.0053,
+      "audioPath": "F:\\Son\\tool\\TediaPros\\.worktrees\\codex-autoshort-optimization\\.ai\\tasks\\2026-09-08-dubbing-group-evidence3\\11ed92e2-66c3-4ad8-99fb-b879a14639b1\\cue-60-90440-tempo.wav",
+      "subtitles": [
+        {
+          "id": "cue-60-90440-subtitle-1",
+          "sourceIndex": 60,
+          "start": 90.44,
+          "end": 93.670460448,
+          "text": "This is the spotted-tailed junglefowl. Formerly a dragon soup",
+          "timingQuality": "cue"
+        },
+        {
+          "id": "cue-60-90440-subtitle-2",
+          "sourceIndex": 60,
+          "start": 93.670460448,
+          "end": 96.90092089599999,
+          "text": "ingredient, it is now a Class II protected animal. Do not eat",
+          "timingQuality": "cue"
+        },
+        {
+          "id": "cue-60-90440-subtitle-3",
+          "sourceIndex": 60,
+          "start": 96.90092089599999,
+          "end": 97.05979599999999,
+          "text": "it.",
+          "timingQuality": "cue"
+        }
+      ],
+      "rephrased": true
+    },
+    {
+      "cueId": "cue-65-98660",
+      "start": 98.66,
+      "preferredEnd": 100.26,
+      "hardEnd": 99.98,
+      "availableDuration": 1.3200000000000074,
+      "id": "cue-65-98660",
+      "sourceCueIds": [
+        "cue-65-98660"
+      ],
+      "sourceText": "这种鸡能吃吗?",
+      "sourceStart": 98.66,
+      "sourceEnd": 100.26,
+      "translatedText": "Can this chicken be eaten?",
+      "finalSpokenText": "Is this chicken edible?",
+      "predictedDuration": 1.678,
+      "naturalDuration": 1.392676,
+      "actualDuration": 1.148503,
+      "predictionUncertainty": 1.075,
+      "tempo": 1.2126,
+      "plannedDuration": 1.166199966504773,
+      "voiceEnd": 99.808503,
+      "localTempoAdjustment": 0.0184,
+      "audioPath": "F:\\Son\\tool\\TediaPros\\.worktrees\\codex-autoshort-optimization\\.ai\\tasks\\2026-09-08-dubbing-group-evidence3\\11ed92e2-66c3-4ad8-99fb-b879a14639b1\\cue-65-98660-tempo.wav",
+      "subtitles": [
+        {
+          "id": "cue-65-98660-subtitle",
+          "sourceIndex": 65,
+          "start": 98.66,
+          "end": 99.808503,
+          "text": "Is this chicken edible?",
+          "timingQuality": "cue"
+        }
+      ],
+      "rephrased": true
+    },
+    {
+      "cueId": "cue-66-100480",
+      "start": 100.48,
+      "preferredEnd": 107.06,
+      "hardEnd": 106.56,
+      "availableDuration": 6.079999999999998,
+      "id": "cue-66-100480",
+      "sourceCueIds": [
+        "cue-66-100480",
+        "cue-67-101340",
+        "cue-68-103040",
+        "cue-69-104740",
+        "cue-70-105520"
+      ],
+      "sourceText": "这是绿原鸡机界的颜值天花板属于三油保护动物不能吃吃了药材缝韧鸡",
+      "sourceStart": 100.48,
+      "sourceEnd": 107.06,
+      "translatedText": "This is the Greenland chicken. The peak of beauty in the chicken world. It's a protected animal under the three-oil program. Don't eat it. The medicinal herb-treated Fengteng chicken.",
+      "finalSpokenText": "The Greenland chicken, a three-oil protected beauty peak, cannot be eaten.",
+      "predictedDuration": 5.163,
+      "naturalDuration": 4.655215,
+      "actualDuration": 3.878957,
+      "predictionUncertainty": 0.955,
+      "tempo": 1.2001,
+      "plannedDuration": 3.8981870708424053,
+      "voiceEnd": 104.358957,
+      "localTempoAdjustment": 0.0059,
+      "audioPath": "F:\\Son\\tool\\TediaPros\\.worktrees\\codex-autoshort-optimization\\.ai\\tasks\\2026-09-08-dubbing-group-evidence3\\11ed92e2-66c3-4ad8-99fb-b879a14639b1\\cue-66-100480-tempo.wav",
+      "subtitles": [
+        {
+          "id": "cue-66-100480-subtitle-1",
+          "sourceIndex": 66,
+          "start": 100.48,
+          "end": 103.88072942465755,
+          "text": "The Greenland chicken, a three-oil protected beauty peak, cannot",
+          "timingQuality": "cue"
+        },
+        {
+          "id": "cue-66-100480-subtitle-2",
+          "sourceIndex": 66,
+          "start": 103.88072942465755,
+          "end": 104.358957,
+          "text": "be eaten.",
+          "timingQuality": "cue"
+        }
+      ],
+      "rephrased": true
+    },
+    {
+      "cueId": "cue-71-107060",
+      "start": 107.06,
+      "preferredEnd": 108.54,
+      "hardEnd": 108.3,
+      "availableDuration": 1.2399999999999949,
+      "id": "cue-71-107060",
+      "sourceCueIds": [
+        "cue-71-107060"
+      ],
+      "sourceText": "这种鸡能吃吗?",
+      "sourceStart": 107.06,
+      "sourceEnd": 108.54,
+      "translatedText": "Can this chicken be eaten?",
+      "finalSpokenText": "Edible?",
+      "predictedDuration": 0.749,
+      "naturalDuration": 0.520884,
+      "actualDuration": 0.416508,
+      "predictionUncertainty": 0.955,
+      "tempo": 1.2506,
+      "plannedDuration": 0.4361781946072685,
+      "voiceEnd": 107.476508,
+      "localTempoAdjustment": 0.0564,
+      "audioPath": "F:\\Son\\tool\\TediaPros\\.worktrees\\codex-autoshort-optimization\\.ai\\tasks\\2026-09-08-dubbing-group-evidence3\\11ed92e2-66c3-4ad8-99fb-b879a14639b1\\cue-71-107060-tempo.wav",
+      "subtitles": [
+        {
+          "id": "cue-71-107060-subtitle",
+          "sourceIndex": 71,
+          "start": 107.06,
+          "end": 107.476508,
+          "text": "Edible?",
+          "timingQuality": "cue"
+        }
+      ],
+      "rephrased": true
+    },
+    {
+      "cueId": "cue-72-108800",
+      "start": 108.8,
+      "preferredEnd": 116.88,
+      "hardEnd": 116.38,
+      "availableDuration": 7.579999999999998,
+      "id": "cue-72-108800",
+      "sourceCueIds": [
+        "cue-72-108800",
+        "cue-73-109980",
+        "cue-74-112520",
+        "cue-75-113380",
+        "cue-76-114200",
+        "cue-77-115400"
+      ],
+      "sourceText": "这是鱼铃怀特鸡是一种非常受欢迎的观赏鸡主要用来看价格高肉质很普通吃它不如吃土鸡",
+      "sourceStart": 108.8,
+      "sourceEnd": 116.88,
+      "translatedText": "This is the Yuling White chicken. A very popular ornamental chicken. Mainly used for display. High price. Average meat quality. Better to eat local free-range chicken.",
+      "finalSpokenText": "This Yuling White chicken is an ornamental prize with high value but poor meat; eat local free-range chicken instead.",
+      "predictedDuration": 7.308,
+      "naturalDuration": 7.032426,
+      "actualDuration": 5.864263,
+      "predictionUncertainty": 0.965,
+      "tempo": 1.1992,
+      "plannedDuration": 5.888817618489366,
+      "voiceEnd": 114.66426299999999,
+      "localTempoAdjustment": 0.005,
+      "audioPath": "F:\\Son\\tool\\TediaPros\\.worktrees\\codex-autoshort-optimization\\.ai\\tasks\\2026-09-08-dubbing-group-evidence3\\11ed92e2-66c3-4ad8-99fb-b879a14639b1\\cue-72-108800-tempo.wav",
+      "subtitles": [
+        {
+          "id": "cue-72-108800-subtitle-1",
+          "sourceIndex": 72,
+          "start": 108.8,
+          "end": 112.03545544827585,
+          "text": "This Yuling White chicken is an ornamental prize with high value",
+          "timingQuality": "cue"
+        },
+        {
+          "id": "cue-72-108800-subtitle-2",
+          "sourceIndex": 72,
+          "start": 112.03545544827585,
+          "end": 114.66426299999999,
+          "text": "but poor meat; eat local free-range chicken instead.",
+          "timingQuality": "cue"
+        }
+      ],
+      "rephrased": true
+    },
+    {
+      "cueId": "cue-78-116880",
+      "start": 116.88,
+      "preferredEnd": 118.4,
+      "hardEnd": 118.18,
+      "availableDuration": 1.3000000000000114,
+      "id": "cue-78-116880",
+      "sourceCueIds": [
+        "cue-78-116880"
+      ],
+      "sourceText": "这种鸡能吃吗?",
+      "sourceStart": 116.88,
+      "sourceEnd": 118.4,
+      "translatedText": "Can this chicken be eaten?",
+      "finalSpokenText": "Edible?",
+      "predictedDuration": 0.747,
+      "naturalDuration": 0.520884,
+      "actualDuration": 0.416508,
+      "predictionUncertainty": 0.955,
+      "tempo": 1.2506,
+      "plannedDuration": 0.4361781946072685,
+      "voiceEnd": 117.29650799999999,
+      "localTempoAdjustment": 0.0564,
+      "audioPath": "F:\\Son\\tool\\TediaPros\\.worktrees\\codex-autoshort-optimization\\.ai\\tasks\\2026-09-08-dubbing-group-evidence3\\11ed92e2-66c3-4ad8-99fb-b879a14639b1\\cue-78-116880-tempo.wav",
+      "subtitles": [
+        {
+          "id": "cue-78-116880-subtitle",
+          "sourceIndex": 78,
+          "start": 116.88,
+          "end": 117.29650799999999,
+          "text": "Edible?",
+          "timingQuality": "cue"
+        }
+      ],
+      "rephrased": true
+    },
+    {
+      "cueId": "cue-79-118680",
+      "start": 118.68,
+      "preferredEnd": 124.82,
+      "hardEnd": 124.32,
+      "availableDuration": 5.639999999999986,
+      "id": "cue-79-118680",
+      "sourceCueIds": [
+        "cue-79-118680",
+        "cue-80-119460",
+        "cue-81-121160",
+        "cue-82-122260",
+        "cue-83-123280"
+      ],
+      "sourceText": "这是婆罗门� 世界上最大的鸡非常稀有价格昂贵吃它不如吃土鸡",
+      "sourceStart": 118.68,
+      "sourceEnd": 124.82,
+      "translatedText": "This is the Brahman chicken. The world's largest chicken. Very rare. Expensive. Better to eat local free-range chicken.",
+      "finalSpokenText": "This Brahman chicken is the world's largest, rare, and expensive; eat local free-range chicken instead.",
+      "predictedDuration": 7.026,
+      "naturalDuration": 6.79034,
+      "actualDuration": 5.620816,
+      "predictionUncertainty": 0.96,
+      "tempo": 1.2081,
+      "plannedDuration": 5.639817275747508,
+      "voiceEnd": 124.30081600000001,
+      "localTempoAdjustment": 0.0139,
+      "audioPath": "F:\\Son\\tool\\TediaPros\\.worktrees\\codex-autoshort-optimization\\.ai\\tasks\\2026-09-08-dubbing-group-evidence3\\11ed92e2-66c3-4ad8-99fb-b879a14639b1\\cue-79-118680-tempo.wav",
+      "subtitles": [
+        {
+          "id": "cue-79-118680-subtitle-1",
+          "sourceIndex": 79,
+          "start": 118.68,
+          "end": 121.65572611764706,
+          "text": "This Brahman chicken is the world's largest, rare, and",
+          "timingQuality": "cue"
+        },
+        {
+          "id": "cue-79-118680-subtitle-2",
+          "sourceIndex": 79,
+          "start": 121.65572611764706,
+          "end": 124.30081600000001,
+          "text": "expensive; eat local free-range chicken instead.",
+          "timingQuality": "cue"
+        }
+      ],
+      "rephrased": true
+    },
+    {
+      "cueId": "cue-84-124820",
+      "start": 124.82,
+      "preferredEnd": 126.3,
+      "hardEnd": 126.04,
+      "availableDuration": 1.220000000000013,
+      "id": "cue-84-124820",
+      "sourceCueIds": [
+        "cue-84-124820"
+      ],
+      "sourceText": "这种鸡能吃吗?",
+      "sourceStart": 124.82,
+      "sourceEnd": 126.3,
+      "translatedText": "Can this chicken be eaten?",
+      "finalSpokenText": "Edible?",
+      "predictedDuration": 0.753,
+      "naturalDuration": 0.520884,
+      "actualDuration": 0.416508,
+      "predictionUncertainty": 0.952,
+      "tempo": 1.2506,
+      "plannedDuration": 0.4361781946072685,
+      "voiceEnd": 125.23650799999999,
+      "localTempoAdjustment": 0.0564,
+      "audioPath": "F:\\Son\\tool\\TediaPros\\.worktrees\\codex-autoshort-optimization\\.ai\\tasks\\2026-09-08-dubbing-group-evidence3\\11ed92e2-66c3-4ad8-99fb-b879a14639b1\\cue-84-124820-tempo.wav",
+      "subtitles": [
+        {
+          "id": "cue-84-124820-subtitle",
+          "sourceIndex": 84,
+          "start": 124.82,
+          "end": 125.23650799999999,
+          "text": "Edible?",
+          "timingQuality": "cue"
+        }
+      ],
+      "rephrased": true
+    },
+    {
+      "cueId": "cue-85-126540",
+      "start": 126.54,
+      "preferredEnd": 133.58,
+      "hardEnd": 133.08,
+      "availableDuration": 6.540000000000006,
+      "id": "cue-85-126540",
+      "sourceCueIds": [
+        "cue-85-126540",
+        "cue-86-127420",
+        "cue-87-129320",
+        "cue-88-131260",
+        "cue-89-132060"
+      ],
+      "sourceText": "这是环景制也就是我们常说的野鸡是三油保护野生动物不能吃吃了药材缝韧鸡",
+      "sourceStart": 126.54,
+      "sourceEnd": 133.58,
+      "translatedText": "This is a ring-necked pheasant. Also known as a jungle fowl. It's a protected wildlife species. You can't eat it. Eating medicinal herbs makes it a \"sewn-tendon chicken.\"",
+      "finalSpokenText": "This ring-necked pheasant is protected wildlife and cannot be eaten. Eating medicinal herbs creates a \"sewn-tendon chicken.\"",
+      "predictedDuration": 7.66,
+      "naturalDuration": 7.890635,
+      "actualDuration": 6.519705,
+      "predictionUncertainty": 1.069,
+      "tempo": 1.2103,
+      "plannedDuration": 6.540000000000006,
+      "voiceEnd": 133.059705,
+      "localTempoAdjustment": 0.0161,
+      "audioPath": "F:\\Son\\tool\\TediaPros\\.worktrees\\codex-autoshort-optimization\\.ai\\tasks\\2026-09-08-dubbing-group-evidence3\\11ed92e2-66c3-4ad8-99fb-b879a14639b1\\cue-85-126540-tempo.wav",
+      "subtitles": [
+        {
+          "id": "cue-85-126540-subtitle-1",
+          "sourceIndex": 85,
+          "start": 126.54,
+          "end": 129.77334963414634,
+          "text": "This ring-necked pheasant is protected wildlife and cannot be",
+          "timingQuality": "cue"
+        },
+        {
+          "id": "cue-85-126540-subtitle-2",
+          "sourceIndex": 85,
+          "start": 129.77334963414634,
+          "end": 133.059705,
+          "text": "eaten. Eating medicinal herbs creates a \"sewn-tendon chicken.\"",
+          "timingQuality": "cue"
+        }
+      ],
+      "rephrased": true
+    },
+    {
+      "cueId": "cue-90-133580",
+      "start": 133.58,
+      "preferredEnd": 135.1,
+      "hardEnd": 134.84,
+      "availableDuration": 1.259999999999991,
+      "id": "cue-90-133580",
+      "sourceCueIds": [
+        "cue-90-133580"
+      ],
+      "sourceText": "这种鸡能吃吗?",
+      "sourceStart": 133.58,
+      "sourceEnd": 135.1,
+      "translatedText": "Can this chicken be eaten?",
+      "finalSpokenText": "Edible?",
+      "predictedDuration": 0.726,
+      "naturalDuration": 0.520884,
+      "actualDuration": 0.416508,
+      "predictionUncertainty": 1.061,
+      "tempo": 1.2506,
+      "plannedDuration": 0.4361781946072685,
+      "voiceEnd": 133.996508,
+      "localTempoAdjustment": 0.0564,
+      "audioPath": "F:\\Son\\tool\\TediaPros\\.worktrees\\codex-autoshort-optimization\\.ai\\tasks\\2026-09-08-dubbing-group-evidence3\\11ed92e2-66c3-4ad8-99fb-b879a14639b1\\cue-90-133580-tempo.wav",
+      "subtitles": [
+        {
+          "id": "cue-90-133580-subtitle",
+          "sourceIndex": 90,
+          "start": 133.58,
+          "end": 133.996508,
+          "text": "Edible?",
+          "timingQuality": "cue"
+        }
+      ],
+      "rephrased": true
+    },
+    {
+      "cueId": "cue-91-135340",
+      "start": 135.34,
+      "preferredEnd": 141.48,
+      "hardEnd": 142.055011,
+      "availableDuration": 6.715011000000004,
+      "id": "cue-91-135340",
+      "sourceCueIds": [
+        "cue-91-135340",
+        "cue-92-136620",
+        "cue-93-137560",
+        "cue-94-139460",
+        "cue-95-140180"
+      ],
+      "sourceText": "这是盐鸡乌骨鸡全身乌黑碾里面内脏都是黑的能吃营养价值极高",
+      "sourceStart": 135.34,
+      "sourceEnd": 141.48,
+      "translatedText": "This is a salted black-bone chicken. Its entire body is jet black. Even its organs are black. This one is edible. It has extremely high nutritional value.",
+      "finalSpokenText": "This salted black-bone chicken is entirely black and edible, with extremely high nutritional value.",
+      "predictedDuration": 6.218,
+      "naturalDuration": 6.072472,
+      "actualDuration": 5.066236,
+      "predictionUncertainty": 1.077,
+      "tempo": 1.1986,
+      "plannedDuration": 5.084970691676436,
+      "voiceEnd": 140.406236,
+      "localTempoAdjustment": 0.0044,
+      "audioPath": "F:\\Son\\tool\\TediaPros\\.worktrees\\codex-autoshort-optimization\\.ai\\tasks\\2026-09-08-dubbing-group-evidence3\\11ed92e2-66c3-4ad8-99fb-b879a14639b1\\cue-91-135340-tempo.wav",
+      "subtitles": [
+        {
+          "id": "cue-91-135340-subtitle-1",
+          "sourceIndex": 91,
+          "start": 135.34,
+          "end": 138.44177714285715,
+          "text": "This salted black-bone chicken is entirely black and edible,",
+          "timingQuality": "cue"
+        },
+        {
+          "id": "cue-91-135340-subtitle-2",
+          "sourceIndex": 91,
+          "start": 138.44177714285715,
+          "end": 140.406236,
+          "text": "with extremely high nutritional value.",
+          "timingQuality": "cue"
+        }
+      ],
+      "rephrased": true
+    }
+  ],
+  "sourceCues": [
+    {
+      "id": "cue-0-2320",
+      "start": 2.32,
+      "end": 4.06,
+      "text": "吃鸡之前记得仔细看看"
+    },
+    {
+      "id": "cue-1-4060",
+      "start": 4.06,
+      "end": 5.8,
+      "text": "这种鸡能吃吗?"
+    },
+    {
+      "id": "cue-2-6060",
+      "start": 6.06,
+      "end": 6.7,
+      "text": "这是豆鸡"
+    },
+    {
+      "id": "cue-3-6700",
+      "start": 6.7,
+      "end": 8.18,
+      "text": "天天打架运动"
+    },
+    {
+      "id": "cue-4-8180",
+      "start": 8.18,
+      "end": 9.92,
+      "text": "鸡肉纤维又粗又紧"
+    },
+    {
+      "id": "cue-5-9920",
+      "start": 9.92,
+      "end": 11.1,
+      "text": "脂肪极少"
+    },
+    {
+      "id": "cue-6-11100",
+      "start": 11.1,
+      "end": 12.54,
+      "text": "吃它不如吃土鸡"
+    },
+    {
+      "id": "cue-7-12540",
+      "start": 12.54,
+      "end": 14.08,
+      "text": "这种鸡能吃吗?"
+    },
+    {
+      "id": "cue-8-14360",
+      "start": 14.36,
+      "end": 15.04,
+      "text": "这是火鸡"
+    },
+    {
+      "id": "cue-9-15040",
+      "start": 15.04,
+      "end": 16.08,
+      "text": "尺寸太大"
+    },
+    {
+      "id": "cue-10-16080",
+      "start": 16.08,
+      "end": 17.08,
+      "text": "极难入味"
+    },
+    {
+      "id": "cue-11-17080",
+      "start": 17.08,
+      "end": 18.52,
+      "text": "肉质紧实偏柴"
+    },
+    {
+      "id": "cue-12-18520",
+      "start": 18.52,
+      "end": 19.6,
+      "text": "毫无汁水"
+    },
+    {
+      "id": "cue-13-19600",
+      "start": 19.6,
+      "end": 21.12,
+      "text": "吃它不如吃土鸡"
+    },
+    {
+      "id": "cue-14-21120",
+      "start": 21.12,
+      "end": 22.62,
+      "text": "这种鸡能吃吗?"
+    },
+    {
+      "id": "cue-15-22900",
+      "start": 22.9,
+      "end": 23.78,
+      "text": "这是珍珠鸡"
+    },
+    {
+      "id": "cue-16-23780",
+      "start": 23.78,
+      "end": 25.04,
+      "text": "肉非常紧实"
+    },
+    {
+      "id": "cue-17-25040",
+      "start": 25.04,
+      "end": 26.78,
+      "text": "如果火候没掌握好"
+    },
+    {
+      "id": "cue-18-26780",
+      "start": 26.78,
+      "end": 28.6,
+      "text": "就很容易做得又干又柴"
+    },
+    {
+      "id": "cue-19-28600",
+      "start": 28.6,
+      "end": 30.16,
+      "text": "吃它不如吃土鸡"
+    },
+    {
+      "id": "cue-20-30160",
+      "start": 30.16,
+      "end": 31.66,
+      "text": "这种鸡能吃吗?"
+    },
+    {
+      "id": "cue-21-31660",
+      "start": 31.66,
+      "end": 33.28,
+      "text": "这是黄金五彩攻击"
+    },
+    {
+      "id": "cue-22-33280",
+      "start": 33.28,
+      "end": 34.48,
+      "text": "乃五毒克星"
+    },
+    {
+      "id": "cue-23-34480",
+      "start": 34.48,
+      "end": 35.52,
+      "text": "纯杨之体"
+    },
+    {
+      "id": "cue-24-35520",
+      "start": 35.52,
+      "end": 37.2,
+      "text": "据说今天是丢病日"
+    },
+    {
+      "id": "cue-25-37200",
+      "start": 37.2,
+      "end": 38.94,
+      "text": "此时丢下三朵鲜花"
+    },
+    {
+      "id": "cue-26-38940",
+      "start": 38.94,
+      "end": 40.24,
+      "text": "一朵丢掉病痛"
+    },
+    {
+      "id": "cue-27-40240",
+      "start": 40.24,
+      "end": 41.58,
+      "text": "一朵丢下灾难"
+    },
+    {
+      "id": "cue-28-41580",
+      "start": 41.58,
+      "end": 42.94,
+      "text": "一朵丢掉烦恼"
+    },
+    {
+      "id": "cue-29-42940",
+      "start": 42.94,
+      "end": 44.64,
+      "text": "往后全家百毒不清"
+    },
+    {
+      "id": "cue-30-44640",
+      "start": 44.64,
+      "end": 45.72,
+      "text": "万事顺遂"
+    },
+    {
+      "id": "cue-31-45720",
+      "start": 45.72,
+      "end": 47.18,
+      "text": "这种鸡能吃吗?"
+    },
+    {
+      "id": "cue-32-47380",
+      "start": 47.38,
+      "end": 48.22,
+      "text": "这是冬涛鸡"
+    },
+    {
+      "id": "cue-33-48220",
+      "start": 48.22,
+      "end": 49.66,
+      "text": "有鸡中贵族之称"
+    },
+    {
+      "id": "cue-34-49660",
+      "start": 49.66,
+      "end": 50.84,
+      "text": "好吃是好吃"
+    },
+    {
+      "id": "cue-35-50840",
+      "start": 50.84,
+      "end": 53.7,
+      "text": "但一只腿的价格都远高于普通鸡"
+    },
+    {
+      "id": "cue-36-53700",
+      "start": 53.7,
+      "end": 55.72,
+      "text": "吃它还不如吃土鸡来的食慧"
+    },
+    {
+      "id": "cue-37-55720",
+      "start": 55.72,
+      "end": 57.22,
+      "text": "这种鸡能吃吗?"
+    },
+    {
+      "id": "cue-38-57440",
+      "start": 57.44,
+      "end": 58.08,
+      "text": "这是石火�鸡"
+    },
+    {
+      "id": "cue-39-58460",
+      "start": 58.46,
+      "end": 59.46,
+      "text": "又叫赫陀"
+    },
+    {
+      "id": "cue-40-59460",
+      "start": 59.46,
+      "end": 61.26,
+      "text": "是世界上最危险的鸟"
+    },
+    {
+      "id": "cue-41-61660",
+      "start": 61.66,
+      "end": 62.96,
+      "text": "自受保护的冰危物种"
+    },
+    {
+      "id": "cue-42-62960",
+      "start": 62.96,
+      "end": 63.74,
+      "text": "不能吃"
+    },
+    {
+      "id": "cue-43-63740",
+      "start": 63.74,
+      "end": 65.34,
+      "text": "这种鸡能吃吗?"
+    },
+    {
+      "id": "cue-44-65580",
+      "start": 65.58,
+      "end": 66.62,
+      "text": "这是菊花头鸡"
+    },
+    {
+      "id": "cue-45-66620",
+      "start": 66.62,
+      "end": 69.02,
+      "text": "鹰头顶羽毛翻卷如菊花得名"
+    },
+    {
+      "id": "cue-46-69020",
+      "start": 69.02,
+      "end": 70.94,
+      "text": "是肉食观赏两用鸡"
+    },
+    {
+      "id": "cue-47-70940",
+      "start": 70.94,
+      "end": 72.36,
+      "text": "但肉量少 价格贵"
+    },
+    {
+      "id": "cue-48-72360",
+      "start": 72.36,
+      "end": 73.86,
+      "text": "吃它不如吃土鸡"
+    },
+    {
+      "id": "cue-49-73860",
+      "start": 73.86,
+      "end": 75.36,
+      "text": "这种鸡能吃吗?"
+    },
+    {
+      "id": "cue-50-75600",
+      "start": 75.6,
+      "end": 76.82,
+      "text": "这是白头波兰鸡"
+    },
+    {
+      "id": "cue-51-76820",
+      "start": 76.82,
+      "end": 78.2,
+      "text": "也叫帽子鸡"
+    },
+    {
+      "id": "cue-52-78200",
+      "start": 78.2,
+      "end": 80.4,
+      "text": "是一种著名的观赏鸡和宠物鸡"
+    },
+    {
+      "id": "cue-53-80400",
+      "start": 80.4,
+      "end": 81.4,
+      "text": "不建议吃"
+    },
+    {
+      "id": "cue-54-81400",
+      "start": 81.4,
+      "end": 83,
+      "text": "这种鸡能吃吗?"
+    },
+    {
+      "id": "cue-55-83300",
+      "start": 83.3,
+      "end": 84.3,
+      "text": "这是黑嘴松鸡"
+    },
+    {
+      "id": "cue-56-84300",
+      "start": 84.3,
+      "end": 86.54,
+      "text": "是国家一级重点保护动物"
+    },
+    {
+      "id": "cue-57-86540",
+      "start": 86.54,
+      "end": 87.4,
+      "text": "不能吃"
+    },
+    {
+      "id": "cue-58-87400",
+      "start": 87.4,
+      "end": 88.92,
+      "text": "吃一口五年起步"
+    },
+    {
+      "id": "cue-59-88920",
+      "start": 88.92,
+      "end": 90.44,
+      "text": "这种鸡能吃吗?"
+    },
+    {
+      "id": "cue-60-90440",
+      "start": 90.44,
+      "end": 91.7,
+      "text": "这是花尾真鸡"
+    },
+    {
+      "id": "cue-61-91700",
+      "start": 91.7,
+      "end": 94.24,
+      "text": "曾是东北明菜飞龙汤食材"
+    },
+    {
+      "id": "cue-62-94240",
+      "start": 94.24,
+      "end": 96.34,
+      "text": "但现在是国家二级保护动物"
+    },
+    {
+      "id": "cue-63-96340",
+      "start": 96.34,
+      "end": 97.16,
+      "text": "不能吃"
+    },
+    {
+      "id": "cue-64-97160",
+      "start": 97.16,
+      "end": 98.66,
+      "text": "吃了药材缝韧鸡"
+    },
+    {
+      "id": "cue-65-98660",
+      "start": 98.66,
+      "end": 100.26,
+      "text": "这种鸡能吃吗?"
+    },
+    {
+      "id": "cue-66-100480",
+      "start": 100.48,
+      "end": 101.34,
+      "text": "这是绿原鸡"
+    },
+    {
+      "id": "cue-67-101340",
+      "start": 101.34,
+      "end": 103.04,
+      "text": "机界的颜值天花板"
+    },
+    {
+      "id": "cue-68-103040",
+      "start": 103.04,
+      "end": 104.74,
+      "text": "属于三油保护动物"
+    },
+    {
+      "id": "cue-69-104740",
+      "start": 104.74,
+      "end": 105.52,
+      "text": "不能吃"
+    },
+    {
+      "id": "cue-70-105520",
+      "start": 105.52,
+      "end": 107.06,
+      "text": "吃了药材缝韧鸡"
+    },
+    {
+      "id": "cue-71-107060",
+      "start": 107.06,
+      "end": 108.54,
+      "text": "这种鸡能吃吗?"
+    },
+    {
+      "id": "cue-72-108800",
+      "start": 108.8,
+      "end": 109.98,
+      "text": "这是鱼铃怀特鸡"
+    },
+    {
+      "id": "cue-73-109980",
+      "start": 109.98,
+      "end": 112.52,
+      "text": "是一种非常受欢迎的观赏鸡"
+    },
+    {
+      "id": "cue-74-112520",
+      "start": 112.52,
+      "end": 113.38,
+      "text": "主要用来看"
+    },
+    {
+      "id": "cue-75-113380",
+      "start": 113.38,
+      "end": 114.2,
+      "text": "价格高"
+    },
+    {
+      "id": "cue-76-114200",
+      "start": 114.2,
+      "end": 115.4,
+      "text": "肉质很普通"
+    },
+    {
+      "id": "cue-77-115400",
+      "start": 115.4,
+      "end": 116.88,
+      "text": "吃它不如吃土鸡"
+    },
+    {
+      "id": "cue-78-116880",
+      "start": 116.88,
+      "end": 118.4,
+      "text": "这种鸡能吃吗?"
+    },
+    {
+      "id": "cue-79-118680",
+      "start": 118.68,
+      "end": 119.46,
+      "text": "这是婆罗门�"
+    },
+    {
+      "id": "cue-80-119460",
+      "start": 119.46,
+      "end": 121.16,
+      "text": "世界上最大的鸡"
+    },
+    {
+      "id": "cue-81-121160",
+      "start": 121.16,
+      "end": 122.26,
+      "text": "非常稀有"
+    },
+    {
+      "id": "cue-82-122260",
+      "start": 122.26,
+      "end": 123.28,
+      "text": "价格昂贵"
+    },
+    {
+      "id": "cue-83-123280",
+      "start": 123.28,
+      "end": 124.82,
+      "text": "吃它不如吃土鸡"
+    },
+    {
+      "id": "cue-84-124820",
+      "start": 124.82,
+      "end": 126.3,
+      "text": "这种鸡能吃吗?"
+    },
+    {
+      "id": "cue-85-126540",
+      "start": 126.54,
+      "end": 127.42,
+      "text": "这是环景制"
+    },
+    {
+      "id": "cue-86-127420",
+      "start": 127.42,
+      "end": 129.32,
+      "text": "也就是我们常说的野鸡"
+    },
+    {
+      "id": "cue-87-129320",
+      "start": 129.32,
+      "end": 131.26,
+      "text": "是三油保护野生动物"
+    },
+    {
+      "id": "cue-88-131260",
+      "start": 131.26,
+      "end": 132.06,
+      "text": "不能吃"
+    },
+    {
+      "id": "cue-89-132060",
+      "start": 132.06,
+      "end": 133.58,
+      "text": "吃了药材缝韧鸡"
+    },
+    {
+      "id": "cue-90-133580",
+      "start": 133.58,
+      "end": 135.1,
+      "text": "这种鸡能吃吗?"
+    },
+    {
+      "id": "cue-91-135340",
+      "start": 135.34,
+      "end": 136.62,
+      "text": "这是盐鸡乌骨鸡"
+    },
+    {
+      "id": "cue-92-136620",
+      "start": 136.62,
+      "end": 137.56,
+      "text": "全身乌黑"
+    },
+    {
+      "id": "cue-93-137560",
+      "start": 137.56,
+      "end": 139.46,
+      "text": "碾里面内脏都是黑的"
+    },
+    {
+      "id": "cue-94-139460",
+      "start": 139.46,
+      "end": 140.18,
+      "text": "能吃"
+    },
+    {
+      "id": "cue-95-140180",
+      "start": 140.18,
+      "end": 141.48,
+      "text": "营养价值极高"
+    }
+  ],
+  "createdAt": "2026-09-08T01:05:58.225Z"
+}

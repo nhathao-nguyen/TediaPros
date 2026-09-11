@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react'
 import { DEFAULT_AI_SERVER_URL, DICH_LANGS, type DichProvider } from '../../../shared/types'
 import { usePersistedState } from '../lib/persist'
 import GeminiHelp from './GeminiHelp'
+import GeminiKeys from './GeminiKeys'
 import OpenAIHelp from './OpenAIHelp'
 
 /**
@@ -106,17 +107,15 @@ export default function GeminiKey({
             )}
           </p>
 
-          <div className="gk-row">
+          {provider === 'gemini' ? <GeminiKeys onChanged={setDaLuu} /> : <div className="gk-row">
             <input
               type="password"
               placeholder={
                 daLuu
                   ? '••••••••••  (đã lưu — dán khoá mới để thay)'
-                  : provider === 'gemini'
-                    ? 'Dán Gemini API key vào đây'
-                    : provider === 'openai'
-                      ? 'Dán OpenAI API key vào đây'
-                      : 'Dán Local AI API key (nếu có)'
+                  : provider === 'openai'
+                    ? 'Dán OpenAI API key vào đây'
+                    : 'Dán Local AI API key (nếu có)'
               }
               value={key}
               onChange={(e) => setKey(e.target.value)}
@@ -130,7 +129,7 @@ export default function GeminiKey({
                 Ngắt kết nối
               </button>
             )}
-          </div>
+          </div>}
 
           {kq && (
             <div className={`gk-kq small ${kq.ok ? 'ok' : 'err'}`}>

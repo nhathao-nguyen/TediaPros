@@ -1,0 +1,29 @@
+{
+  "passed": true,
+  "typed": {
+    "zoom": 110,
+    "brightness": -5,
+    "saturation": 100,
+    "contrast": 103
+  },
+  "stored": {
+    "zoom": 112,
+    "brightness": 5,
+    "saturation": 95,
+    "contrast": 103
+  },
+  "submitted": {
+    "zoom": 112,
+    "brightness": 5,
+    "saturation": 95,
+    "contrast": 103
+  },
+  "subtitleDragPixels": -59.59375,
+  "panelVisibility": {
+    "left": 499.734375,
+    "right": 859.734375,
+    "viewport": 1024,
+    "rightEdgeVisible": true
+  },
+  "disabledWhileRunning": true
+}

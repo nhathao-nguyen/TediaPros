@@ -26,7 +26,7 @@ test('one target and one output grammar per request', () => {
   assert.match(messages[0].content, /task=translate/u)
   assert.doesNotMatch(messages.map((message) => message.content).join('\n'), /target_language=auto/u)
   assert.throws(() => buildTranslationMessages({ ...input, targetLocale: 'auto' }, 'json-items'))
-  assert.equal(TRANSLATION_PROMPT_VERSION, 'translation-v9')
+  assert.equal(TRANSLATION_PROMPT_VERSION, 'translation-v10')
   assert.equal(TRANSLATION_PARSER_VERSION, 'translation-parser-v3')
 })
 test('subtitle prompts carry source as data and omit dubbing duration pressure', () => {
@@ -96,6 +96,20 @@ test('dubbing prompts expose the real speaking window including across a batch b
   assert.match(messages[1].content, /"hard_max_natural_seconds":2.556/u)
   assert.match(messages[0].content, /1\.80x tempo ceiling/u)
   assert.match(messages[0].content, /shortest natural wording/u)
+})
+
+test('dubbing prompts identify source fragments as one speech unit without changing output IDs', () => {
+  const source: TranslationInput = { ...input, mode: 'dubbing', cues: [
+    { ...input.cues[0], id: 'first', start: 0, end: 1, text: '遇到墙脚转折尺寸' },
+    { ...input.cues[0], id: 'last', sourceIndex: 1, start: 1, end: 2, text: '总对不上怎么办？' }
+  ] }
+  const messages = buildTranslationMessages(source, 'id-lines')
+  const lines = messages[1].content.split('[SOURCE_CUES_JSONL]')[1].split('[/SOURCE_CUES_JSONL]')[0].trim().split('\n')
+  const cues = lines.map(line => JSON.parse(line.slice(line.indexOf('{'))))
+  assert.deepEqual(cues.map(cue => cue.id), ['first', 'last'])
+  assert.equal(cues[0].group_id, cues[1].group_id)
+  assert.match(messages[0].content, /Do not turn an unfinished fragment into a standalone question/u)
+  assert.match(messages[1].content, /"ids":\["first","last"\]/u)
 })
 
 test('rephrase is editing existing translation with source evidence', () => {

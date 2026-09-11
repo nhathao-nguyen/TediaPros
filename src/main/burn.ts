@@ -3,6 +3,7 @@ import { basename, dirname, isAbsolute, join } from 'node:path'
 import { mkdir, copyFile, readFile, writeFile, stat, rm, rename } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { resolveFfmpeg } from './deps'
+import { appendPortraitFrame } from './portraitFrame'
 import {
   escapeFfmpegFilterPath,
   readBurnFontPreview,
@@ -25,6 +26,7 @@ import type {
   SubtitleLayoutProfile
 } from '../shared/types'
 import { subtitleFontSizeForBox, wrapWidthFromBox } from '../shared/subWrap'
+import { hasVideoAdjustments, normalizeVideoAdjustments, videoAdjustmentFilter } from '../shared/videoAdjustments'
 import {
   formatAssTimestamp,
   parseSrt,
@@ -60,14 +62,15 @@ import type { TimedOcrBlurMask } from './ocrMask'
 import { assertContainedRegularFile } from './safeContainedPath'
 import { randomUUID } from 'node:crypto'
 import {
-  buildVideoTitleInputDigest,
-  generateVideoTitle,
-  prepareVideoTitle,
-  type PreparedVideoTitle,
+  buildVideoSeoInputDigest,
+  generateVideoSeoMetadata,
+  prepareVideoSeoMetadata,
+  type PreparedVideoSeoMetadata,
   reserveVideoTitleOutputDir,
   validateVideoTitleConfig,
-  writeVideoTitle
+  writeVideoSeoMetadata
 } from './videoTitle'
+import { formatVideoSeoMetadata } from '../shared/videoSeo'
 
 /** Parse #RGB / #RRGGBB -> { r,g,b } hoac null. */
 function parseHexColor(hex: string | undefined | null): { r: number; g: number; b: number } | null {
@@ -743,13 +746,16 @@ export function taoFilterComplex(
   batAmThanh = false,
   hasAudioFile = false,
   audioVolume = 100,
-  fontsDir: string | null = null
+  fontsDir: string | null = null,
+  portraitBlur = false,
+  videoAdjustments = normalizeVideoAdjustments(undefined)
 ): string[] {
   const sigma = blurSigmaForDisplayHeight(meta.h)
   const validRegions = lamMo ? regions.filter((r) => r.x1 > r.x0 && r.y1 > r.y0) : []
   const lines: string[] = []
   const canonicalFilter = canonicalDisplayVideoFilter(meta)
-  const hasVideoFilters = validRegions.length > 0 || coAss || Boolean(canonicalFilter)
+  const videoAdjustmentActive = hasVideoAdjustments(videoAdjustments)
+  const hasVideoFilters = validRegions.length > 0 || coAss || Boolean(canonicalFilter) || portraitBlur || videoAdjustmentActive
   let videoInput = '0:v'
   if (canonicalFilter) {
     lines.push(`[0:v]${canonicalFilter}[display]`)
@@ -759,6 +765,13 @@ export function taoFilterComplex(
     fontsDir && coAss
       ? `ass=${assName}:fontsdir=${escapeFfmpegFilterPath(fontsDir)}`
       : `ass=${assName}`
+  const finishVideo = (input: string): void => {
+    const adjustmentFilter = videoAdjustmentFilter(meta, videoAdjustments)
+    const adjustedInput = adjustmentFilter ? 'adjusted' : input
+    if (adjustmentFilter) lines.push(`[${input}]${adjustmentFilter}[adjusted]`)
+    if (portraitBlur) appendPortraitFrame(lines, adjustedInput, meta.w, meta.h, coAss ? assFilter : undefined)
+    else lines.push(`[${adjustedInput}]${coAss ? assFilter : 'null'}[out]`)
+  }
 
   if (hasVideoFilters) {
     const N = validRegions.length
@@ -800,19 +813,18 @@ export function taoFilterComplex(
         x -= x % 2
         y -= y % 2
 
-        const outLbl = i === N - 1 && !coAss ? '[out]' : `[v${i + 1}]`
+        const outLbl = i === N - 1 && !coAss && !portraitBlur && !videoAdjustmentActive ? '[out]' : `[v${i + 1}]`
         lines.push(`[${prev}][b${i}]overlay=${x}:${y}${outLbl}`)
         prev = `v${i + 1}`
       }
 
       // 4. Ghep phu de neu co
-      if (coAss) {
-        lines.push(`[${prev}]${assFilter}[out]`)
+      if (coAss || portraitBlur || videoAdjustmentActive) {
+        finishVideo(prev)
       }
     } else {
       // Chi co ass, khong co blur
-      if (coAss) lines.push(`[${videoInput}]${assFilter}[out]`)
-      else lines.push(`[${videoInput}]null[out]`)
+      finishVideo(videoInput)
     }
   }
 
@@ -839,7 +851,9 @@ export function taoFilterComplexAutomatic(
   assName: string,
   batAmThanh = false,
   audioVolume = 100,
-  fontsDir: string | null = null
+  fontsDir: string | null = null,
+  portraitBlur = false,
+  videoAdjustments = normalizeVideoAdjustments(undefined)
 ): string[] {
   if (plan.maskVideoIndex == null) {
     throw new Error('Cần có mask index cho automatic filter complex.')
@@ -867,13 +881,22 @@ export function taoFilterComplexAutomatic(
   const durationStr = Math.max(0.1, durationSec).toFixed(3)
   lines.push(`[base][blurred][mask]maskedmerge,trim=duration=${durationStr}[masked]`)
 
-  if (coAss) {
+  const adjustmentFilter = videoAdjustmentFilter(meta, videoAdjustments)
+  const adjustedInput = adjustmentFilter ? 'adjusted' : 'masked'
+  if (adjustmentFilter) lines.push(`[masked]${adjustmentFilter}[adjusted]`)
+
+  if (portraitBlur) {
     const assFilter = fontsDir
       ? `ass=${assName}:fontsdir=${escapeFfmpegFilterPath(fontsDir)}`
       : `ass=${assName}`
-    lines.push(`[masked]${assFilter}[out]`)
+    appendPortraitFrame(lines, adjustedInput, meta.w, meta.h, coAss ? assFilter : undefined)
+  } else if (coAss) {
+    const assFilter = fontsDir
+      ? `ass=${assName}:fontsdir=${escapeFfmpegFilterPath(fontsDir)}`
+      : `ass=${assName}`
+    lines.push(`[${adjustedInput}]${assFilter}[out]`)
   } else {
-    lines.push('[masked]null[out]')
+    lines.push(`[${adjustedInput}]null[out]`)
   }
 
   const audio = buildAudioFilter(meta, plan.narrationAudioIndex, batAmThanh, audioVolume)
@@ -990,7 +1013,7 @@ export async function runBurnSubtitleLower(
   const hasTimedMask = Boolean(options.timedMask)
   const hasAudioFile = Boolean(req.batAmThanh && req.amThanhFile)
 
-  if (!hasSrt && !hasBlur && !hasTimedMask && !req.batAmThanh) {
+  if (!hasSrt && !hasBlur && !hasTimedMask && !req.batAmThanh && !req.portraitBlur && !hasVideoAdjustments(req.videoAdjustments)) {
     return { ok: false, error: 'Vui lòng chọn ít nhất 1 vùng làm mờ, tải lên tệp phụ đề hoặc bật cấu hình âm thanh.' }
   }
 
@@ -1077,7 +1100,9 @@ export async function runBurnSubtitleLower(
         assBaseName,
         req.batAmThanh ?? false,
         req.amLuongGoc ?? 100,
-        fontsDir
+        fontsDir,
+        req.portraitBlur === true,
+        req.videoAdjustments
       )
     } else {
       filterArgs = taoFilterComplex(
@@ -1089,7 +1114,9 @@ export async function runBurnSubtitleLower(
         req.batAmThanh ?? false,
         hasAudioFile,
         req.amLuongGoc ?? 100,
-        fontsDir
+        fontsDir,
+        req.portraitBlur === true,
+        req.videoAdjustments
       )
     }
 
@@ -1150,7 +1177,7 @@ async function runBurnSubtitle(
   const hasBlur = Boolean(req.lamMo && regions.length > 0)
   const hasAudioFile = Boolean(req.batAmThanh && req.amThanhFile)
 
-  if (!hasSrt && !hasBlur && !req.batAmThanh) {
+  if (!hasSrt && !hasBlur && !req.batAmThanh && !req.portraitBlur && !hasVideoAdjustments(req.videoAdjustments)) {
     return { ok: false, error: 'Vui lòng chọn ít nhất 1 vùng làm mờ, tải lên tệp phụ đề hoặc bật cấu hình âm thanh.' }
   }
 
@@ -1164,6 +1191,9 @@ async function runBurnSubtitle(
     await copyFile(req.srt, srtTam)
   }
 
+  if ((req.portraitBlur || hasVideoAdjustments(req.videoAdjustments)) && req.mode === 'soft') {
+    return { ok: false, error: 'Chỉnh hình ảnh cần chế độ xuất video có xử lý hình ảnh.' }
+  }
   if (hasSrt && req.mode === 'soft') {
     logInfo(`Dịch màn hình: gắn phụ đề rời vào ${basename(req.video)}…`)
     
@@ -1484,7 +1514,7 @@ export async function burnAutoShort(
   }
   if (options.signal.aborted) forwardTitleAbort()
   else options.signal.addEventListener('abort', forwardTitleAbort, { once: true })
-  let preparedTitlePromise: Promise<PreparedVideoTitle | undefined> | undefined
+  let preparedTitlePromise: Promise<PreparedVideoSeoMetadata | undefined> | undefined
   let published = false
 
   try {
@@ -1513,7 +1543,7 @@ export async function burnAutoShort(
           options.expectedMedia.durationSeconds
         )
         if (titleCues.length > 0) {
-          preparedTitlePromise = prepareVideoTitle(titleCues, renderReq.videoTitle, titleController.signal)
+          preparedTitlePromise = prepareVideoSeoMetadata(titleCues, renderReq.videoTitle, titleController.signal)
             .catch(() => undefined)
         }
       } catch {
@@ -1705,8 +1735,17 @@ export async function validateBurnRequest(raw: unknown): Promise<BurnValidation>
     const error = validateRegion(raw.subRegion, 'Khung phụ đề')
     if (error) return { ok: false, error }
   }
+  if (raw.videoAdjustments != null) {
+    if (!isRecord(raw.videoAdjustments)) return { ok: false, error: 'Cấu hình chỉnh hình ảnh không hợp lệ.' }
+    try {
+      normalizeVideoAdjustments(raw.videoAdjustments)
+    } catch {
+      return { ok: false, error: 'Cấu hình chỉnh hình ảnh không hợp lệ.' }
+    }
+  }
 
   const booleans = [
+    'portraitBlur',
     'lamMo',
     'catSrt',
     'batAmThanh',
@@ -1790,6 +1829,8 @@ export async function validateBurnRequest(raw: unknown): Promise<BurnValidation>
     ...(raw.bandLeft != null ? { bandLeft: raw.bandLeft as number } : {}),
     ...(raw.bandRight != null ? { bandRight: raw.bandRight as number } : {}),
     ...(raw.blurRegions != null ? { blurRegions: raw.blurRegions as BlurRegion[] } : {}),
+    ...(raw.portraitBlur != null ? { portraitBlur: raw.portraitBlur as boolean } : {}),
+    videoAdjustments: normalizeVideoAdjustments(raw.videoAdjustments as any),
     ...(raw.lamMo != null ? { lamMo: raw.lamMo as boolean } : {}),
     ...(raw.subRegion != null ? { subRegion: raw.subRegion as any } : {}),
     ...(raw.catSrt != null ? { catSrt: raw.catSrt as boolean } : {}),
@@ -1825,9 +1866,9 @@ export async function validateBurnRequest(raw: unknown): Promise<BurnValidation>
 interface BurnVideoTitleDependencies {
   probe: typeof probeBurnMedia
   readSubtitle: typeof docFileSrt
-  generate: typeof generateVideoTitle
-  write: typeof writeVideoTitle
-  prepared?: PreparedVideoTitle | Promise<PreparedVideoTitle | undefined>
+  generate: typeof generateVideoSeoMetadata
+  write: typeof writeVideoSeoMetadata
+  prepared?: PreparedVideoSeoMetadata | Promise<PreparedVideoSeoMetadata | undefined>
 }
 
 /** Complete an already rendered video without losing it if the optional title fails. */
@@ -1842,8 +1883,8 @@ export async function completeBurnVideoTitle(
   const io: BurnVideoTitleDependencies = {
     probe: probeBurnMedia,
     readSubtitle: docFileSrt,
-    generate: generateVideoTitle,
-    write: writeVideoTitle,
+    generate: generateVideoSeoMetadata,
+    write: writeVideoSeoMetadata,
     ...dependencies
   }
   let stage: 'subtitle' | 'generate' | 'write' = 'subtitle'
@@ -1865,23 +1906,23 @@ export async function completeBurnVideoTitle(
     const prepared = io.prepared
       ? await Promise.resolve(io.prepared).catch(() => undefined)
       : undefined
-    const actualDigest = buildVideoTitleInputDigest(cues, req.videoTitle)
-    let title: string
-    if (prepared?.inputDigest === actualDigest && prepared.text?.trim()) {
-      title = prepared.text.trim()
+    const actualDigest = buildVideoSeoInputDigest(cues, req.videoTitle)
+    let metadata
+    if (prepared?.inputDigest === actualDigest && prepared.metadata) {
+      metadata = prepared.metadata
     } else if (prepared?.inputDigest === actualDigest && prepared.error) {
       return { ...result, titleError: prepared.error }
     } else {
       // A duration/probe difference invalidates the prepared request. Reuse
       // the existing generator once with the exact post-probe cue window.
       stage = 'generate'
-      title = (await io.generate(cues, req.videoTitle, signal)).trim()
+      metadata = await io.generate(cues, req.videoTitle, signal)
     }
     signal.throwIfAborted()
-    if (!title) throw new Error('Empty video title')
+    formatVideoSeoMetadata(metadata)
     stage = 'write'
-    const titlePath = await io.write(result.output, title)
-    return { ...result, title, titlePath }
+    const titlePath = await io.write(result.output, metadata, req.outputDir)
+    return { ...result, title: metadata.title, titlePath, seoMetadata: metadata }
   } catch {
     if (signal.aborted) {
       return { ...result, titleError: 'Video đã xuất thành công. Đã dừng tạo tiêu đề; chưa lưu tieude.txt.' }

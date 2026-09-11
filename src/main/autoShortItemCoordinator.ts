@@ -1026,11 +1026,11 @@ export function createAutoShortItemProcessor(
 
         let reusedTranslation = false
         let reusablePartial: TranslationItem[] = []
-        const revalidate = (items: readonly TranslationItem[]): SubtitleCue[] | null => {
+        const revalidate = (items: readonly TranslationItem[], requireClean = false): SubtitleCue[] | null => {
           try {
             const mapped = mapTranslationsStrict(sourceCues, items)
             const assessment = assessContentQuality({ sourceCues, targetCues: mapped })
-            if (assessment.disposition === 'needs-review') return null
+            if (assessment.disposition === 'needs-review' || (requireClean && assessment.disposition !== 'validated')) return null
             targetCues = mapped
             translationAssessment = assessment
             checkpoint.translationAssessment = assessment
@@ -1041,7 +1041,7 @@ export function createAutoShortItemProcessor(
         }
 
         if (checkpoint.translatedCues && checkpoint.translationKey === translationKey && checkpoint.translationModelIdentity === model.modelIdentity && checkpoint.translationAssessment?.disposition !== 'needs-review') {
-          const restored = revalidate(checkpoint.translatedCues.map((cue) => ({ id: cue.id, text: cue.text })))
+          const restored = revalidate(checkpoint.translatedCues.map((cue) => ({ id: cue.id, text: cue.text })), true)
           if (restored) {
             logInfo(`[AutoShort] Phục hồi ${restored.length} câu dịch đã được kiểm tra từ checkpoint.`)
             await writeFile(targetSrtPath, serializeSrt(restored), 'utf8')
@@ -1081,7 +1081,7 @@ export function createAutoShortItemProcessor(
           if (cached) {
             try {
               const artifact = parseCachedSubtitleArtifact(JSON.parse(await readFile(cached.path, 'utf8')), translationKey, model.modelIdentity)
-              const restored = artifact ? revalidate(artifact.cues) : null
+              const restored = artifact ? revalidate(artifact.cues, true) : null
               if (restored) {
                 providerTranslationAssessment = artifact?.assessment
                 await writeFile(targetSrtPath, serializeSrt(restored), 'utf8')
@@ -1495,11 +1495,15 @@ export function createAutoShortItemProcessor(
               srt: renderSrtPath,
               videoTitle: config.videoTitle ? {
                 ...config.videoTitle,
-                language: config.translateTarget !== 'none' ? config.translateTarget : 'auto'
+                language: config.videoTitle.language === 'auto' && config.translateTarget !== 'none'
+                  ? config.translateTarget
+                  : config.videoTitle.language
               } : undefined,
               mode: 'burn',
               blurRegions: visualOcrRequired ? [] : blurRegions,
               lamMo: sttnRemoval ? false : config.lamMo,
+              portraitBlur: config.portraitBlur === true,
+              videoAdjustments: config.videoAdjustments,
               subRegion: subtitleRegion,
               fontId: config.fontId,
               textColor: config.textColor,
@@ -1635,6 +1639,7 @@ export function createAutoShortItemProcessor(
         title: burnResult.title,
         titlePath: burnResult.titlePath,
         titleError: burnResult.titleError,
+        seoMetadata: burnResult.seoMetadata,
         translationAssessment,
         translationIdentity,
         diagnosticsIncomplete: finalSummary.diagnosticsIncomplete
@@ -1656,6 +1661,7 @@ export function createAutoShortItemProcessor(
           title: burnResult.title,
           titlePath: burnResult.titlePath,
           titleError: burnResult.titleError,
+          seoMetadata: burnResult.seoMetadata,
           translationAssessment,
           translationIdentity,
           diagnosticsIncomplete: pubSummary?.diagnosticsIncomplete

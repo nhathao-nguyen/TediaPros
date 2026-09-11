@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict'
 import test from 'node:test'
-import { buildVideoTitleInputDigest } from '../src/main/videoTitle'
+import { buildVideoSeoInputDigest } from '../src/main/videoTitle'
 import { completeBurnVideoTitle } from '../src/main/burn'
 import type { BurnReq, BurnResult, SubtitleCue, VideoTitleConfig } from '../src/shared/types'
 
@@ -10,6 +10,12 @@ const cues: SubtitleCue[] = [
 ]
 
 const config: VideoTitleConfig = { provider: 'local', language: 'en', serverUrl: 'http://127.0.0.1:48191' }
+const preparedMetadata = {
+  title: 'Prepared title',
+  description: 'A faithful description of the exported video.',
+  tags: ['faithful video'],
+  hashtags: ['#faithfulvideo']
+}
 const result: BurnResult = { ok: true, output: 'C:\\output\\rendered.mp4' }
 const req: BurnReq = {
   video: 'C:\\input\\source.mp4',
@@ -25,7 +31,7 @@ function deps(captured: { generated: number; writes: number }) {
     readSubtitle: () => 'ignored by the fixture reader',
     generate: async () => {
       captured.generated++
-      return 'Regenerated title'
+      return { ...preparedMetadata, title: 'Regenerated title' }
     },
     write: async () => {
       captured.writes++
@@ -37,8 +43,8 @@ function deps(captured: { generated: number; writes: number }) {
 test('prepared title is committed after render without a second provider call', async () => {
   const captured = { generated: 0, writes: 0 }
   const prepared = {
-    inputDigest: buildVideoTitleInputDigest(cues, config),
-    text: 'Prepared title'
+    inputDigest: buildVideoSeoInputDigest(cues, config),
+    metadata: preparedMetadata
   }
   const completed = await completeBurnVideoTitle(
     result,
@@ -48,6 +54,7 @@ test('prepared title is committed after render without a second provider call', 
     { ...deps(captured), readSubtitle: () => '1\n00:00:00,000 --> 00:00:01,000\nA faithful exported cue.\n\n2\n00:00:01,000 --> 00:00:02,000\nThe tail remains inside the render.\n' , prepared }
   )
   assert.equal(completed.title, 'Prepared title')
+  assert.deepEqual(completed.seoMetadata, preparedMetadata)
   assert.equal(captured.generated, 0)
   assert.equal(captured.writes, 1)
 })
@@ -56,7 +63,7 @@ test('a post-probe duration/input change regenerates a title at most once', asyn
   const captured = { generated: 0, writes: 0 }
   const prepared = {
     inputDigest: '0'.repeat(64),
-    text: 'Stale prepared title'
+    metadata: { ...preparedMetadata, title: 'Stale prepared title' }
   }
   const completed = await completeBurnVideoTitle(
     result,
@@ -73,7 +80,7 @@ test('a post-probe duration/input change regenerates a title at most once', asyn
 test('prepared title failure keeps a valid render and never writes a placeholder', async () => {
   const captured = { generated: 0, writes: 0 }
   const prepared = {
-    inputDigest: buildVideoTitleInputDigest(cues, config),
+    inputDigest: buildVideoSeoInputDigest(cues, config),
     error: 'AI chưa tạo được tiêu đề.'
   }
   const completed = await completeBurnVideoTitle(

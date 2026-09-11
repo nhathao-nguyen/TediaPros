@@ -1,0 +1,220 @@
+{
+  "schema_version": 2,
+  "diagram_type": "workflow",
+  "meta": {
+    "title": "Quy Trinh Xu Ly AutoShort Pipeline",
+    "animation": "trace",
+    "visual_preset": "signal-flow",
+    "quality_profile": "showcase",
+    "views": [
+      {
+        "id": "main-flow",
+        "label": "Luong xu ly chinh",
+        "focus": [
+          "user_input",
+          "coordinator",
+          "sub_extract",
+          "translate",
+          "tts_dub",
+          "burn_render",
+          "final_output"
+        ],
+        "note": "Theo doi mot video tu luc tiep nhan den khi xuat ban thanh pham."
+      }
+    ],
+    "output": "autoshort-pipeline.workflow.html"
+  },
+  "lanes": [
+    {
+      "id": "ui",
+      "label": "Giao Dien Nguoi Dung"
+    },
+    {
+      "id": "coord",
+      "label": "Dieu Phoi & Kiem Soat"
+    },
+    {
+      "id": "worker",
+      "label": "Engines & Render"
+    }
+  ],
+  "phases": [
+    {
+      "id": "intake",
+      "label": "Khoi Tao & Kiem Tra",
+      "fromCol": 0,
+      "toCol": 1
+    },
+    {
+      "id": "process",
+      "label": "Boc Bang & Dich Thuat",
+      "fromCol": 2,
+      "toCol": 3,
+      "variant": "emphasis"
+    },
+    {
+      "id": "render",
+      "label": "Long Tieng & Xuat Ban",
+      "fromCol": 4,
+      "toCol": 5,
+      "variant": "dashed"
+    }
+  ],
+  "groups": [
+    {
+      "id": "control_group",
+      "label": "Dieu Phoi Khoa Hoc",
+      "lane": "coord",
+      "fromCol": 1,
+      "toCol": 3,
+      "variant": "security"
+    },
+    {
+      "id": "media_group",
+      "label": "Xu Ly Da Phuong Tien",
+      "lane": "worker",
+      "fromCol": 2,
+      "toCol": 5,
+      "variant": "emphasis"
+    }
+  ],
+  "mainPath": [
+    "user_input",
+    "coordinator",
+    "sub_extract",
+    "translate",
+    "tts_dub",
+    "burn_render",
+    "final_output"
+  ],
+  "nodes": [
+    {
+      "id": "user_input",
+      "lane": "ui",
+      "col": 0,
+      "type": "frontend",
+      "label": "Chon Video",
+      "sublabel": "1-100 video batch",
+      "width": 130
+    },
+    {
+      "id": "coordinator",
+      "lane": "coord",
+      "col": 1,
+      "type": "backend",
+      "label": "Coordinator",
+      "sublabel": "Disk Guard 685MB",
+      "tag": "Scope Init",
+      "width": 130
+    },
+    {
+      "id": "sub_extract",
+      "lane": "worker",
+      "col": 2,
+      "type": "messagebus",
+      "label": "Whisper & OCR",
+      "sublabel": "ASR + Text Boxes",
+      "tag": "8 FPS Sampling",
+      "width": 130
+    },
+    {
+      "id": "translate",
+      "lane": "coord",
+      "col": 3,
+      "type": "backend",
+      "label": "Dich & Tempo",
+      "sublabel": "Clamp 1.10x-1.45x",
+      "tag": "Strict Context",
+      "width": 130
+    },
+    {
+      "id": "tts_dub",
+      "lane": "worker",
+      "col": 4,
+      "type": "messagebus",
+      "label": "TTS Synthesis",
+      "sublabel": "Source-Anchored",
+      "tag": "Audio Cache",
+      "width": 130
+    },
+    {
+      "id": "burn_render",
+      "lane": "worker",
+      "col": 5,
+      "type": "cloud",
+      "label": "FFmpeg Burn",
+      "sublabel": "Planar RGB & ASS",
+      "tag": "Mux & Blur",
+      "width": 130
+    },
+    {
+      "id": "final_output",
+      "lane": "ui",
+      "col": 5,
+      "type": "frontend",
+      "label": "Xuat Ban Video",
+      "sublabel": "MP4 + Audit Log",
+      "tag": "Finished",
+      "width": 130
+    }
+  ],
+  "edges": [
+    {
+      "id": "e_start",
+      "from": "user_input",
+      "to": "coordinator",
+      "variant": "default"
+    },
+    {
+      "id": "e_coord_extract",
+      "from": "coordinator",
+      "to": "sub_extract",
+      "variant": "emphasis"
+    },
+    {
+      "id": "e_extract_trans",
+      "from": "sub_extract",
+      "to": "translate",
+      "variant": "default"
+    },
+    {
+      "id": "e_trans_tts",
+      "from": "translate",
+      "to": "tts_dub",
+      "variant": "emphasis"
+    },
+    {
+      "id": "e_tts_burn",
+      "from": "tts_dub",
+      "to": "burn_render",
+      "variant": "emphasis"
+    },
+    {
+      "id": "e_burn_final",
+      "from": "burn_render",
+      "to": "final_output",
+      "variant": "emphasis",
+      "role": "return",
+      "fromSide": "top",
+      "toSide": "bottom"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "Dieu Phoi Tuan Tu",
+      "items": [
+        "Hang doi FIFO xu ly tung video mot cach doc lap",
+        "Thu muc scratch .autoshort-item-<id>/ duoc don sach sau khi render"
+      ]
+    },
+    {
+      "dot": "rose",
+      "title": "Cac Cong Chinh Sach",
+      "items": [
+        "Disk Budget ngan tran o dia truoc khi bat dau",
+        "Tempo Gate cam nen am thanh vuot 1.45x de bao toan giong doc"
+      ]
+    }
+  ]
+}

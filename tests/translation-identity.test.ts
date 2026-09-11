@@ -32,9 +32,9 @@ test('identity is stable across object property order and excludes secrets', () 
 })
 
 test('current prompt cannot reuse translation identity from older prompt contracts', () => {
-  assert.equal(TRANSLATION_PROMPT_VERSION, 'translation-v9')
+  assert.equal(TRANSLATION_PROMPT_VERSION, 'translation-v10')
   const after = buildTranslationIdentity(input, { ...identity, promptVersion: TRANSLATION_PROMPT_VERSION })
-  for (const promptVersion of ['translation-v5', 'translation-v6', 'translation-v7', 'translation-v8']) {
+  for (const promptVersion of ['translation-v5', 'translation-v6', 'translation-v7', 'translation-v8', 'translation-v9']) {
     assert.notEqual(buildTranslationIdentity(input, { ...identity, promptVersion }), after)
   }
 })

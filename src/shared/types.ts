@@ -443,6 +443,9 @@ export interface SubtitleFilePreview {
 }
 
 export interface BurnReq {
+  /** Fit the full source into 1080x1920 with a blurred video background. */
+  portraitBlur?: boolean
+  videoAdjustments?: VideoAdjustments
   video: string
   srt?: string | null
   outputDir: string
@@ -496,22 +499,52 @@ export interface BurnResult {
   title?: string
   titlePath?: string
   titleError?: string
+  seoMetadata?: VideoSeoMetadata
 }
 
 /** Nha cung cap dich phu de bang AI. */
 export type DichProvider = 'gemini' | 'openai' | 'local'
+
+export interface VideoSeoOptions {
+  country: string
+  titleStyle: 'auto' | 'title-case' | 'sentence-case' | 'native'
+  channelName: string
+  brandVoice: string
+  descriptionLength: 'short' | 'medium' | 'long'
+  descriptionStyle: 'balanced' | 'seo' | 'storytelling' | 'conversion' | 'educational'
+  keywordTone: 'natural' | 'aggressive' | 'educational' | 'entertainment'
+  keywordDensity: 'light' | 'normal' | 'strong'
+  disclaimerMode: 'auto' | 'none' | 'medical' | 'finance' | 'legal' | 'affiliate' | 'safety' | 'informational'
+}
+
+export interface VideoSeoMetadata {
+  title: string
+  description: string
+  tags: string[]
+  hashtags: string[]
+}
 
 export interface VideoTitleConfig {
   provider: DichProvider
   /** auto follows the language of the exported subtitle text. */
   language: string
   serverUrl?: string
+  seo?: Partial<VideoSeoOptions>
 }
+
+export type ResolvedVideoSeoConfig = Omit<VideoTitleConfig, 'seo'> & { seo: VideoSeoOptions }
 
 export interface GeminiStatus {
   ok: boolean
   message: string
 }
+
+export interface GeminiKeyInfo {
+  id: string
+  masked: string
+}
+
+export type GeminiKeysResult = { ok: true; keys: GeminiKeyInfo[] } | { ok: false; error: string; code?: 'storage-unreadable' }
 
 export type DichKeyStatus = GeminiStatus
 
@@ -845,7 +878,21 @@ export interface AutoShortSeparationReadiness {
 export type AutoShortBlurMode = 'manual' | 'ocr-auto' | 'sttn'
 export type AutoShortOcrBlurProfile = 'accurate' | 'fast'
 
+export interface VideoAdjustments {
+  /** Centred crop zoom as a percentage. */
+  zoom: number
+  /** FFmpeg eq brightness mapped from -20..20 to -0.20..0.20. */
+  brightness: number
+  /** Saturation percentage mapped to FFmpeg eq 0..2. */
+  saturation: number
+  /** Contrast percentage mapped to FFmpeg eq 0.5..1.5. */
+  contrast: number
+}
+
 export interface AutoShortConfig {
+  /** Optional for old saved configurations; absent means original frame. */
+  portraitBlur?: boolean
+  videoAdjustments?: VideoAdjustments
   subtitleMethod: AutoShortSubtitleMethod
   whisperModel: string
   whisperDevice?: WhisperDevice
@@ -1032,6 +1079,7 @@ export interface AutoShortTaskItem {
   title?: string
   titlePath?: string
   titleError?: string
+  seoMetadata?: VideoSeoMetadata
   translationAssessment?: TranslationAssessment
   /** Opaque translation identity used by the explicit retry action. */
   translationIdentity?: string
@@ -1178,6 +1226,7 @@ export interface AutoShortItemResult {
   title?: string
   titlePath?: string
   titleError?: string
+  seoMetadata?: VideoSeoMetadata
   diagnosticsIncomplete?: boolean
   translationAssessment?: TranslationAssessment
   /** Opaque translation identity; never contains source text or credentials. */

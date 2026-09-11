@@ -1,7 +1,4 @@
-import { safeStorage } from 'electron'
-import { readFile, writeFile, rm } from 'node:fs/promises'
-import { join } from 'node:path'
-import { app } from 'electron'
+import { readFile, writeFile } from 'node:fs/promises'
 import { debugRaw, errLabel, logInfo } from './logger'
 import type { GeminiStatus, SrtBlock } from '../shared/types'
 import type { TranslationAssessment, TranslationInput, TranslationItem } from '../shared/translation'
@@ -19,41 +16,25 @@ import { buildTranslationMessages, buildTranslationBatchMessages } from './trans
 import { parseTranslationResponse } from './translation/response'
 import type { TranslationAdapter } from './translation/orchestrator'
 import { translateFileWithAdapter } from './translation/fileRunner'
+import { addGeminiKeys, removeGeminiKey, listGeminiKeys, replaceGeminiKeys, loadGeminiKeys,
+  parseGeminiKeys, rotationForProfile, GeminiKeyRotation, geminiRetryAfterMs, type GeminiRequestResult } from './geminiKeys'
 
 export { parseSrt, buildSrt } from './translate-shared'
 
 const BASE = 'https://generativelanguage.googleapis.com/v1beta'
 
-// ---- Khoa cua user: ma hoa bang DPAPI (Win) / Keychain (mac) ----
-function keyFile(): string {
-  return join(app.getPath('userData'), 'gk.bin')
-}
-
-export async function saveKey(key: string): Promise<void> {
-  const t = key.trim()
-  if (!t) {
-    await rm(keyFile(), { force: true })
-    return
-  }
-  const buf = safeStorage.isEncryptionAvailable()
-    ? safeStorage.encryptString(t)
-    : Buffer.from(t, 'utf-8')
-  await writeFile(keyFile(), buf)
-}
-
+// Preserve the legacy single-key API; the new UI appends/removes through typed IPC.
+export const saveKey = replaceGeminiKeys
+export const addKeys = addGeminiKeys
+export const removeKey = removeGeminiKey
+export const listKeys = listGeminiKeys
 export async function loadKey(): Promise<string> {
-  try {
-    const buf = await readFile(keyFile())
-    return safeStorage.isEncryptionAvailable()
-      ? safeStorage.decryptString(buf)
-      : buf.toString('utf-8')
-  } catch {
-    return ''
-  }
+  return rotationForProfile().preferred(await loadGeminiKeys())
 }
 
 export async function hasKey(): Promise<boolean> {
-  return (await loadKey()).length > 0
+  // Status probes remain non-throwing; the key manager reports read errors explicitly.
+  try { return (await loadKey()).length > 0 } catch { return false }
 }
 
 // ---- Chon model ----
@@ -69,11 +50,13 @@ function diem(n: string): number {
   return s
 }
 
-async function danhSach(key: string): Promise<string[]> {
+async function danhSach(key: string, signal?: AbortSignal): Promise<string[]> {
   let ds: string[] = []
   try {
     // Cung phai co han: mat mang o day thi treo truoc khi kip goi dich.
-    const res = await fetch(`${BASE}/models?key=${key}`, { signal: AbortSignal.timeout(15_000) })
+    signal?.throwIfAborted()
+    const res = await fetch(`${BASE}/models`, { headers: { 'x-goog-api-key': key },
+      signal: signal ? AbortSignal.any([signal, AbortSignal.timeout(15_000)]) : AbortSignal.timeout(15_000) })
     if (res.ok) {
       const d = (await res.json()) as {
         models?: { name?: string; supportedGenerationMethods?: string[] }[]
@@ -87,6 +70,7 @@ async function danhSach(key: string): Promise<string[]> {
         .map((m) => (m.name as string).replace('models/', ''))
     }
   } catch {
+    signal?.throwIfAborted()
     /* rot ve du phong */
   }
   const pool = ds.length ? ds : DU_PHONG
@@ -96,14 +80,7 @@ async function danhSach(key: string): Promise<string[]> {
   return pool.filter((n) => !LOAI.test(n)).sort((a, b) => diem(b) - diem(a)).slice(0, 2)
 }
 
-interface GenKQ {
-  ok: boolean
-  text?: string
-  lui?: boolean
-  status?: number
-  err?: string
-  truncated?: boolean
-}
+type GenKQ = GeminiRequestResult
 
 // fetch cua Node KHONG tu het gio. Google mo ket noi roi im -> cho VINH VIEN,
 // nut quay mai, khong co duong thoat. Bat buoc phai tu dat han.
@@ -131,18 +108,20 @@ async function goi(
   if (sys) body.systemInstruction = { parts: [{ text: sys }] }
   let res: Response
   try {
-    res = await fetch(`${BASE}/models/${model}:generateContent?key=${key}`, {
+    res = await fetch(`${BASE}/models/${model}:generateContent`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json', 'x-goog-api-key': key },
       body: JSON.stringify(body),
       signal: signal ? AbortSignal.any([signal, AbortSignal.timeout(han)]) : AbortSignal.timeout(han)
     })
   } catch (e) {
-    return { ok: false, lui: true, status: 0, err: String(e) }
+    signal?.throwIfAborted()
+    return { ok: false, lui: true, status: 0, err: String(e).split(key).join('[REDACTED]') }
   }
   if (!res.ok) {
     const t = await res.text()
-    return { ok: false, lui: res.status === 429 || res.status >= 500, status: res.status, err: t }
+    return { ok: false, lui: res.status === 429 || res.status >= 500, status: res.status,
+      retryAfterMs: geminiRetryAfterMs(res, t), err: t.split(key).join('[REDACTED]') }
   }
   const d = (await res.json()) as { candidates?: { content?: { parts?: { text?: string }[] }; finishReason?: string }[] }
   const candidate = d.candidates?.[0]
@@ -152,7 +131,7 @@ async function goi(
 }
 
 async function goiCoLui(
-  key: string,
+  key: string | undefined,
   models: string[],
   sys: string,
   user: string,
@@ -164,7 +143,7 @@ async function goiCoLui(
   if (!models.length) return { ok: false, err: 'network: không lấy được danh sách' }
   let cuoi: GenKQ = { ok: false, err: 'hết model' }
   for (const m of models) {
-    const r = await goi(key, m, sys, user, schema, han, signal)
+    const r = await runWithKeys(key, m, candidate => goi(candidate, m, sys, user, schema, han, signal), signal)
     if (r.ok) return r
     debugRaw(`gemini ${m}`, r.err)
     cuoi = r
@@ -173,13 +152,22 @@ async function goiCoLui(
   return cuoi
 }
 
+async function runWithKeys(key: string | undefined, model: string, request: (key: string) => Promise<GenKQ>, signal?: AbortSignal): Promise<GenKQ> {
+  signal?.throwIfAborted()
+  const keys = key === undefined ? await loadGeminiKeys() : parseGeminiKeys(key)
+  // Explicit test/validation keys never silently use another saved credential.
+  const rotation = key === undefined ? rotationForProfile() : new GeminiKeyRotation()
+  return rotation.run(keys, request, signal, model)
+}
+
 /**
  * Kiem tra khoa = gui MOT cau chao that don gian, co tra loi la khoa con song.
  * Khong system instruction, khong schema — cang it thu cang it cho hong.
  * UI chi duoc bao dung/khong: khong ten model, khong so lieu.
  */
 export async function checkKey(key: string): Promise<GeminiStatus> {
-  const k = key.trim() || (await loadKey())
+  const explicit = key.trim() || undefined
+  const k = explicit ? parseGeminiKeys(explicit)[0] : await loadKey()
   if (!k) return { ok: false, message: 'Chưa nhập API key.' }
 
   const models = await danhSach(k)
@@ -192,7 +180,7 @@ export async function checkKey(key: string): Promise<GeminiStatus> {
   let ketHan = 0
   let loiKhac = ''
   for (const m of models) {
-    const r = await goi(k, m, '', 'xin chào', undefined, HAN_KIEM)
+    const r = await runWithKeys(explicit, m, candidate => goi(candidate, m, '', 'xin chào', undefined, HAN_KIEM))
     if (r.ok) return { ok: true, message: 'API KEY của bạn dùng được.' }
     debugRaw(`checkKey ${m}`, r.err)
 
@@ -208,7 +196,7 @@ export async function checkKey(key: string): Promise<GeminiStatus> {
 
   // Di het danh sach, khong cai nao tra loi
   if (ketHan && !loiKhac) {
-    return { ok: false, message: 'API KEY đã dùng hết lượt hôm nay. Vui lòng thử lại sau.' }
+    return { ok: false, message: 'Các khóa Gemini hiện vượt hạn mức. Hãy thử lại sau hoặc thêm khóa còn quota.' }
   }
   return { ok: false, message: `API KEY không dùng được: ${errLabel(loiKhac)}` }
 }
@@ -229,9 +217,10 @@ const SCHEMA = {
   required: ['items']
 }
 
-/** One Gemini request; retries/model fallback belong to the shared scheduler. */
-export async function createGeminiTranslationAdapter(key: string): Promise<TranslationAdapter> {
-  const models = await danhSach(key)
+/** One logical request with finite credential failover; transport retry remains in the scheduler. */
+export async function createGeminiTranslationAdapter(key?: string, signal?: AbortSignal): Promise<TranslationAdapter> {
+  signal?.throwIfAborted()
+  const models = await danhSach(key || await loadKey(), signal)
   let cursor = 0
   const firstModel = models[0] || 'gemini-2.5-flash'
   return {
@@ -240,13 +229,24 @@ export async function createGeminiTranslationAdapter(key: string): Promise<Trans
       format: 'json-items', contextTokens: null, outputTokens: 2_048
     },
     async requestOnce(batch, signal) {
-      const model = models[Math.min(cursor++, Math.max(0, models.length - 1))] || firstModel
+      const start = Math.min(cursor++, Math.max(0, models.length - 1))
+      const candidates = models.length ? [...models.slice(start), ...models.slice(0, start)] : [firstModel]
+      let model = candidates[0]
+      let result: GenKQ = { ok: false }
+      let earliestRetryMs = Infinity
       const messages = buildTranslationBatchMessages(batch, 'json-items')
-      const result = await goi(key, model, messages[0].content, messages[1].content, SCHEMA, undefined, signal)
+      for (const candidateModel of candidates) {
+        model = candidateModel
+        result = await runWithKeys(key, model, candidate => goi(candidate, model, messages[0].content, messages[1].content, SCHEMA, undefined, signal), signal)
+        if (!result.allKeysExhausted) break
+        earliestRetryMs = Math.min(earliestRetryMs, result.retryAfterMs ?? 60_000)
+      }
+      if (result.allKeysExhausted) result.retryAfterMs = earliestRetryMs
       if (!result.ok) {
         const retryable = result.lui === true || result.status === 429 || (result.status != null && result.status >= 500)
         throw Object.assign(new Error(result.err || 'Gemini translation request failed.'), {
           status: result.status,
+          retryAfterMs: result.retryAfterMs,
           providerCode: retryable ? 'provider-transient' : result.status === 401 || result.status === 403 ? 'provider-auth' : 'provider-protocol'
         })
       }
@@ -271,7 +271,7 @@ export async function translateSrt(
   if (!key) return { ok: false, error: 'Chưa có API key.' }
 
   if (options.strict) {
-    const adapter = await createGeminiTranslationAdapter(key)
+    const adapter = await createGeminiTranslationAdapter(undefined, options.signal)
     const result = await translateFileWithAdapter(srtPath, outPath, dich, adapter, {
       sourceLanguage: options.sourceLanguage,
       mode: options.mode || (options.concise ? 'dubbing' : 'subtitle'),
@@ -293,7 +293,7 @@ export async function translateSrt(
   }))
   if (!blocks.length) return { ok: false, error: 'File phụ đề trống.' }
 
-  const models = await danhSach(key)
+  const models = await danhSach(key, options.signal)
   const chunks = options.mode === 'dubbing' ? buildTranslationBatches(blocks) : chia(blocks)
   logInfo(`Dịch phụ đề: ${blocks.length} câu…`)
 
@@ -348,7 +348,7 @@ export async function translateSrt(
       glossary: []
     }
     const messages = buildTranslationMessages(promptInput, 'json-items')
-    const r = await goiCoLui(key, models, messages[0].content, messages[1].content, SCHEMA, undefined, options.signal)
+    const r = await goiCoLui(undefined, models, messages[0].content, messages[1].content, SCHEMA, undefined, options.signal)
     if (!r.ok) return { ok: false, error: errLabel(r.err) }
 
     const parsed = parseTranslationResponse(r.text || '', 'json-items', c.map((block) => block.id || ''), Boolean(r.truncated))
@@ -382,10 +382,11 @@ export async function rephraseGeminiCue(
   userPrompt: string,
   signal?: AbortSignal
 ): Promise<string | null> {
+  signal?.throwIfAborted()
   const key = await loadKey()
   if (!key) return null
-  const models = await danhSach(key)
-  const r = await goiCoLui(key, models, systemPrompt, userPrompt, undefined, undefined, signal)
+  const models = await danhSach(key, signal)
+  const r = await goiCoLui(undefined, models, systemPrompt, userPrompt, undefined, undefined, signal)
   if (!r.ok || !r.text) return null
   return String(r.text)
 }

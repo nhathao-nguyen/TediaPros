@@ -1,0 +1,1724 @@
+[
+  {
+    "id": "11ed92e2-66c3-4ad8-99fb-b879a14639b1",
+    "sourceCount": 96,
+    "unitCount": 32,
+    "validation": {
+      "ok": true,
+      "violations": []
+    },
+    "minWindow": 1,
+    "units": [
+      {
+        "id": "cue-0-2320",
+        "ids": [
+          "cue-0-2320"
+        ],
+        "start": 2.32,
+        "end": 4.06,
+        "window": 1.2399999999999998,
+        "text": "Remember to check carefully before eating chicken"
+      },
+      {
+        "id": "cue-1-4060",
+        "ids": [
+          "cue-1-4060"
+        ],
+        "start": 4.06,
+        "end": 5.8,
+        "window": 1.5,
+        "text": "Is this kind of chicken edible?"
+      },
+      {
+        "id": "cue-2-6060",
+        "ids": [
+          "cue-2-6060",
+          "cue-3-6700",
+          "cue-4-8180",
+          "cue-5-9920",
+          "cue-6-11100"
+        ],
+        "start": 6.06,
+        "end": 12.54,
+        "window": 5.9799999999999995,
+        "text": "This is a bean chicken Fighting daily, lots of exercise Chicken fibers are coarse and tight Very little fat Better to eat earth chicken than this"
+      },
+      {
+        "id": "cue-7-12540",
+        "ids": [
+          "cue-7-12540"
+        ],
+        "start": 12.54,
+        "end": 14.08,
+        "window": 1.3200000000000003,
+        "text": "Is this kind of chicken edible?"
+      },
+      {
+        "id": "cue-8-14360",
+        "ids": [
+          "cue-8-14360",
+          "cue-9-15040",
+          "cue-10-16080",
+          "cue-11-17080",
+          "cue-12-18520",
+          "cue-13-19600"
+        ],
+        "start": 14.36,
+        "end": 21.12,
+        "window": 6.260000000000002,
+        "text": "This is a turkey Too big in size Hard to absorb flavors Meat is firm and dry No juice at all Better to eat earth chicken than this"
+      },
+      {
+        "id": "cue-14-21120",
+        "ids": [
+          "cue-14-21120"
+        ],
+        "start": 21.12,
+        "end": 22.62,
+        "window": 1.2799999999999976,
+        "text": "Is this kind of chicken edible?"
+      },
+      {
+        "id": "cue-15-22900",
+        "ids": [
+          "cue-15-22900",
+          "cue-16-23780",
+          "cue-17-25040",
+          "cue-18-26780",
+          "cue-19-28600"
+        ],
+        "start": 22.9,
+        "end": 30.16,
+        "window": 6.760000000000002,
+        "text": "This is a pearl chicken Meat is very firm If the heat isn't controlled well It will easily become dry and tough Better to eat earth chicken than this"
+      },
+      {
+        "id": "cue-20-30160",
+        "ids": [
+          "cue-20-30160"
+        ],
+        "start": 30.16,
+        "end": 31.66,
+        "window": 1,
+        "text": "Is this kind of chicken edible?"
+      },
+      {
+        "id": "cue-21-31660",
+        "ids": [
+          "cue-21-31660",
+          "cue-22-33280",
+          "cue-23-34480",
+          "cue-24-35520",
+          "cue-25-37200"
+        ],
+        "start": 31.66,
+        "end": 38.94,
+        "window": 6.779999999999998,
+        "text": "This is the Golden Five-Color Attack The bane of all five poisons Pure Yang body Today is said to be the Day of Shedding Illness At this moment, three flowers are shed"
+      },
+      {
+        "id": "cue-26-38940",
+        "ids": [
+          "cue-26-38940",
+          "cue-27-40240",
+          "cue-28-41580",
+          "cue-29-42940",
+          "cue-30-44640"
+        ],
+        "start": 38.94,
+        "end": 45.72,
+        "window": 6.280000000000001,
+        "text": "One flower sheds sickness One flower sheds disaster One flower sheds worries From now on, the whole family remains free of all poisons Everything goes smoothly"
+      },
+      {
+        "id": "cue-31-45720",
+        "ids": [
+          "cue-31-45720"
+        ],
+        "start": 45.72,
+        "end": 47.18,
+        "window": 1.1600000000000037,
+        "text": "Can this chicken be eaten?"
+      },
+      {
+        "id": "cue-32-47380",
+        "ids": [
+          "cue-32-47380",
+          "cue-33-48220",
+          "cue-34-49660",
+          "cue-35-50840",
+          "cue-36-53700"
+        ],
+        "start": 47.38,
+        "end": 55.72,
+        "window": 7.839999999999996,
+        "text": "This is the Dongtao chicken Known as the noble of chickens It tastes good But the price of a single leg far exceeds that of ordinary chickens Eating it is less wise than eating a local chicken"
+      },
+      {
+        "id": "cue-37-55720",
+        "ids": [
+          "cue-37-55720"
+        ],
+        "start": 55.72,
+        "end": 57.22,
+        "window": 1.2199999999999989,
+        "text": "Can this chicken be eaten?"
+      },
+      {
+        "id": "cue-38-57440",
+        "ids": [
+          "cue-38-57440",
+          "cue-39-58460",
+          "cue-40-59460",
+          "cue-41-61660",
+          "cue-42-62960"
+        ],
+        "start": 57.44,
+        "end": 63.74,
+        "window": 5.800000000000004,
+        "text": "This is the Shihuo chicken Also called Hetuo The most dangerous bird in the world A protected endangered species Do not eat it"
+      },
+      {
+        "id": "cue-43-63740",
+        "ids": [
+          "cue-43-63740"
+        ],
+        "start": 63.74,
+        "end": 65.34,
+        "window": 1.3399999999999963,
+        "text": "Can this chicken be eaten?"
+      },
+      {
+        "id": "cue-44-65580",
+        "ids": [
+          "cue-44-65580",
+          "cue-45-66620",
+          "cue-46-69020",
+          "cue-47-70940",
+          "cue-48-72360"
+        ],
+        "start": 65.58,
+        "end": 73.86,
+        "window": 7.780000000000001,
+        "text": "This is the chrysanthemum-headed chicken. It’s named for its crest feathers curling like chrysanthemums. It’s a dual-purpose meat and ornamental chicken. But it has little meat and is expensive. It’s not as good as eating native chicken."
+      },
+      {
+        "id": "cue-49-73860",
+        "ids": [
+          "cue-49-73860"
+        ],
+        "start": 73.86,
+        "end": 75.36,
+        "window": 1.2399999999999949,
+        "text": "Can this chicken be eaten?"
+      },
+      {
+        "id": "cue-50-75600",
+        "ids": [
+          "cue-50-75600",
+          "cue-51-76820",
+          "cue-52-78200",
+          "cue-53-80400"
+        ],
+        "start": 75.6,
+        "end": 81.4,
+        "window": 5.300000000000011,
+        "text": "This is the white-headed Polish chicken. Also called the hat chicken. It’s a famous ornamental and pet chicken. Not recommended for eating."
+      },
+      {
+        "id": "cue-54-81400",
+        "ids": [
+          "cue-54-81400"
+        ],
+        "start": 81.4,
+        "end": 83,
+        "window": 1.3999999999999915,
+        "text": "Can this chicken be eaten?"
+      },
+      {
+        "id": "cue-55-83300",
+        "ids": [
+          "cue-55-83300",
+          "cue-56-84300",
+          "cue-57-86540",
+          "cue-58-87400"
+        ],
+        "start": 83.3,
+        "end": 88.92,
+        "window": 5.1200000000000045,
+        "text": "This is the black-beaked partridge. It’s a Class I national protected animal. Cannot be eaten. One bite could cost you five years in prison."
+      },
+      {
+        "id": "cue-59-88920",
+        "ids": [
+          "cue-59-88920"
+        ],
+        "start": 88.92,
+        "end": 90.44,
+        "window": 1.019999999999996,
+        "text": "Can this chicken be eaten?"
+      },
+      {
+        "id": "cue-60-90440",
+        "ids": [
+          "cue-60-90440",
+          "cue-61-91700",
+          "cue-62-94240",
+          "cue-63-96340",
+          "cue-64-97160"
+        ],
+        "start": 90.44,
+        "end": 98.66,
+        "window": 7.719999999999999,
+        "text": "This is the spotted-tailed junglefowl. It was once used in Northeast China’s famous dragon soup. But now it’s a Class II national protected animal. Cannot be eaten. Eating it is a crime."
+      },
+      {
+        "id": "cue-65-98660",
+        "ids": [
+          "cue-65-98660"
+        ],
+        "start": 98.66,
+        "end": 100.26,
+        "window": 1.3200000000000074,
+        "text": "Can this chicken be eaten?"
+      },
+      {
+        "id": "cue-66-100480",
+        "ids": [
+          "cue-66-100480",
+          "cue-67-101340",
+          "cue-68-103040",
+          "cue-69-104740",
+          "cue-70-105520"
+        ],
+        "start": 100.48,
+        "end": 107.06,
+        "window": 6.079999999999998,
+        "text": "This is the Greenland chicken. The peak of beauty in the chicken world. It's a protected animal under the three-oil program. Don't eat it. The medicinal herb-treated Fengteng chicken."
+      },
+      {
+        "id": "cue-71-107060",
+        "ids": [
+          "cue-71-107060"
+        ],
+        "start": 107.06,
+        "end": 108.54,
+        "window": 1.2399999999999949,
+        "text": "Can this chicken be eaten?"
+      },
+      {
+        "id": "cue-72-108800",
+        "ids": [
+          "cue-72-108800",
+          "cue-73-109980",
+          "cue-74-112520",
+          "cue-75-113380",
+          "cue-76-114200",
+          "cue-77-115400"
+        ],
+        "start": 108.8,
+        "end": 116.88,
+        "window": 7.579999999999998,
+        "text": "This is the Yuling White chicken. A very popular ornamental chicken. Mainly used for display. High price. Average meat quality. Better to eat local free-range chicken."
+      },
+      {
+        "id": "cue-78-116880",
+        "ids": [
+          "cue-78-116880"
+        ],
+        "start": 116.88,
+        "end": 118.4,
+        "window": 1.3000000000000114,
+        "text": "Can this chicken be eaten?"
+      },
+      {
+        "id": "cue-79-118680",
+        "ids": [
+          "cue-79-118680",
+          "cue-80-119460",
+          "cue-81-121160",
+          "cue-82-122260",
+          "cue-83-123280"
+        ],
+        "start": 118.68,
+        "end": 124.82,
+        "window": 5.639999999999986,
+        "text": "This is the Brahman chicken. The world's largest chicken. Very rare. Expensive. Better to eat local free-range chicken."
+      },
+      {
+        "id": "cue-84-124820",
+        "ids": [
+          "cue-84-124820"
+        ],
+        "start": 124.82,
+        "end": 126.3,
+        "window": 1.220000000000013,
+        "text": "Can this chicken be eaten?"
+      },
+      {
+        "id": "cue-85-126540",
+        "ids": [
+          "cue-85-126540",
+          "cue-86-127420",
+          "cue-87-129320",
+          "cue-88-131260",
+          "cue-89-132060"
+        ],
+        "start": 126.54,
+        "end": 133.58,
+        "window": 6.540000000000006,
+        "text": "This is a ring-necked pheasant. Also known as a jungle fowl. It's a protected wildlife species. You can't eat it. Eating medicinal herbs makes it a \"sewn-tendon chicken.\""
+      },
+      {
+        "id": "cue-90-133580",
+        "ids": [
+          "cue-90-133580"
+        ],
+        "start": 133.58,
+        "end": 135.1,
+        "window": 1.259999999999991,
+        "text": "Can this chicken be eaten?"
+      },
+      {
+        "id": "cue-91-135340",
+        "ids": [
+          "cue-91-135340",
+          "cue-92-136620",
+          "cue-93-137560",
+          "cue-94-139460",
+          "cue-95-140180"
+        ],
+        "start": 135.34,
+        "end": 141.48,
+        "window": 6.139999999999986,
+        "text": "This is a salted black-bone chicken. Its entire body is jet black. Even its organs are black. This one is edible. It has extremely high nutritional value."
+      }
+    ]
+  },
+  {
+    "id": "bf03032d-1fc8-4051-8fe9-149fdd31cc7f",
+    "sourceCount": 108,
+    "unitCount": 41,
+    "validation": {
+      "ok": true,
+      "violations": []
+    },
+    "minWindow": 1.3599999999999994,
+    "units": [
+      {
+        "id": "cue-0-1490",
+        "ids": [
+          "cue-0-1490"
+        ],
+        "start": 1.49,
+        "end": 3.41,
+        "window": 1.4200000000000002,
+        "text": "Take a close look before eating crab."
+      },
+      {
+        "id": "cue-1-3410",
+        "ids": [
+          "cue-1-3410"
+        ],
+        "start": 3.41,
+        "end": 5.23,
+        "window": 1.62,
+        "text": "Is this crab edible?"
+      },
+      {
+        "id": "cue-2-5530",
+        "ids": [
+          "cue-2-5530",
+          "cue-3-6410",
+          "cue-4-8630",
+          "cue-5-10150",
+          "cue-6-11030",
+          "cue-7-12310"
+        ],
+        "start": 5.53,
+        "end": 14.01,
+        "window": 7.9799999999999995,
+        "text": "It's a purple land crab. It mainly eats mountain lingzhi grass. Hence it's called lingzhi crab. But the meat is scarce. And it's expensive. Better eat hairy crab instead."
+      },
+      {
+        "id": "cue-8-14010",
+        "ids": [
+          "cue-8-14010"
+        ],
+        "start": 14.01,
+        "end": 15.75,
+        "window": 1.5999999999999996,
+        "text": "Is this crab edible?"
+      },
+      {
+        "id": "cue-9-16110",
+        "ids": [
+          "cue-9-16110",
+          "cue-10-17770",
+          "cue-11-19210",
+          "cue-12-21290"
+        ],
+        "start": 16.11,
+        "end": 23.53,
+        "window": 6.920000000000002,
+        "text": "It's a strong armed tight crab. But it's hard to handle. The meat and roe are very limited. Better buy crab sticks instead."
+      },
+      {
+        "id": "cue-13-23530",
+        "ids": [
+          "cue-13-23530"
+        ],
+        "start": 23.53,
+        "end": 25.21,
+        "window": 1.6199999999999974,
+        "text": "Is this crab edible?"
+      },
+      {
+        "id": "cue-14-25650",
+        "ids": [
+          "cue-14-25650",
+          "cue-15-26870",
+          "cue-16-29330"
+        ],
+        "start": 25.65,
+        "end": 31.07,
+        "window": 4.920000000000002,
+        "text": "It's a giant icon crab. Edible, but lacks sweetness. Better eat hairy crab instead."
+      },
+      {
+        "id": "cue-17-31070",
+        "ids": [
+          "cue-17-31070"
+        ],
+        "start": 31.07,
+        "end": 32.83,
+        "window": 1.5600000000000023,
+        "text": "Is this crab edible?"
+      },
+      {
+        "id": "cue-18-33130",
+        "ids": [
+          "cue-18-33130",
+          "cue-19-34370",
+          "cue-20-35910",
+          "cue-21-37230"
+        ],
+        "start": 33.13,
+        "end": 38.09,
+        "window": 4.460000000000001,
+        "text": "It's an official round elbow crab. It may contain parasites. Used mainly for display. Not edible."
+      },
+      {
+        "id": "cue-22-38090",
+        "ids": [
+          "cue-22-38090"
+        ],
+        "start": 38.09,
+        "end": 39.71,
+        "window": 1.519999999999996,
+        "text": "Is this crab edible?"
+      },
+      {
+        "id": "cue-23-40110",
+        "ids": [
+          "cue-23-40110",
+          "cue-24-40850",
+          "cue-25-42170",
+          "cue-26-44370"
+        ],
+        "start": 40.11,
+        "end": 45.63,
+        "window": 5.020000000000003,
+        "text": "It's a crab arrow Looks like a spider Don't answer MJ in the comments Try it yourself if you don't believe"
+      },
+      {
+        "id": "cue-27-45630",
+        "ids": [
+          "cue-27-45630"
+        ],
+        "start": 45.63,
+        "end": 47.31,
+        "window": 1.5999999999999943,
+        "text": "Can you eat this crab?"
+      },
+      {
+        "id": "cue-28-47730",
+        "ids": [
+          "cue-28-47730",
+          "cue-29-48750",
+          "cue-30-50070",
+          "cue-31-51610"
+        ],
+        "start": 47.73,
+        "end": 53.35,
+        "window": 5.1200000000000045,
+        "text": "It's a tourist crab Also known as ghost-faced crab Little meat and average taste Better to eat hairy crab"
+      },
+      {
+        "id": "cue-32-53350",
+        "ids": [
+          "cue-32-53350"
+        ],
+        "start": 53.35,
+        "end": 55.07,
+        "window": 1.6000000000000014,
+        "text": "Can you eat this crab?"
+      },
+      {
+        "id": "cue-33-55450",
+        "ids": [
+          "cue-33-55450",
+          "cue-34-56770",
+          "cue-35-58270",
+          "cue-36-59510"
+        ],
+        "start": 55.45,
+        "end": 61.67,
+        "window": 5.719999999999999,
+        "text": "It's a giant round clear crab Meat is tender and edible High nutritional value One of the top-tier sea crabs"
+      },
+      {
+        "id": "cue-37-61670",
+        "ids": [
+          "cue-37-61670"
+        ],
+        "start": 61.67,
+        "end": 63.37,
+        "window": 1.5399999999999991,
+        "text": "Can you eat this crab?"
+      },
+      {
+        "id": "cue-38-63710",
+        "ids": [
+          "cue-38-63710",
+          "cue-39-64930",
+          "cue-40-66890",
+          "cue-41-68590"
+        ],
+        "start": 63.71,
+        "end": 69.93,
+        "window": 5.720000000000006,
+        "text": "It's a love-festival crab Filled with paralytic toxins Roe is extremely poisonous Never eat it under any circumstances"
+      },
+      {
+        "id": "cue-42-69930",
+        "ids": [
+          "cue-42-69930"
+        ],
+        "start": 69.93,
+        "end": 71.65,
+        "window": 1.5799999999999983,
+        "text": "Can you eat this crab?"
+      },
+      {
+        "id": "cue-43-72010",
+        "ids": [
+          "cue-43-72010",
+          "cue-44-73410",
+          "cue-45-75790",
+          "cue-46-77250"
+        ],
+        "start": 72.01,
+        "end": 78.47,
+        "window": 5.959999999999994,
+        "text": "This is the venomous crab. It's one of the most toxic crabs in the world. There's currently no cure. Never eat it."
+      },
+      {
+        "id": "cue-47-78470",
+        "ids": [
+          "cue-47-78470"
+        ],
+        "start": 78.47,
+        "end": 80.13,
+        "window": 1.480000000000004,
+        "text": "Can you eat this crab?"
+      },
+      {
+        "id": "cue-48-80450",
+        "ids": [
+          "cue-48-80450",
+          "cue-49-81690",
+          "cue-50-83870",
+          "cue-51-84930",
+          "cue-52-87130"
+        ],
+        "start": 80.45,
+        "end": 87.95,
+        "window": 7,
+        "text": "This is the ghost crab. It's round like Mr. Krabs from SpongeBob. It has very little meat. It may contain toxins and pollutants. Don't eat it."
+      },
+      {
+        "id": "cue-53-87950",
+        "ids": [
+          "cue-53-87950"
+        ],
+        "start": 87.95,
+        "end": 89.57,
+        "window": 1.4599999999999937,
+        "text": "Can you eat this crab?"
+      },
+      {
+        "id": "cue-54-89910",
+        "ids": [
+          "cue-54-89910",
+          "cue-55-90830",
+          "cue-56-91870",
+          "cue-57-94450",
+          "cue-58-95270"
+        ],
+        "start": 89.91,
+        "end": 96.41,
+        "window": 6,
+        "text": "This is the gift crab. Also called a bean crab. It's a tiny creature that lives inside raw oysters. Though it's small. The taste is amazing."
+      },
+      {
+        "id": "cue-59-96410",
+        "ids": [
+          "cue-59-96410"
+        ],
+        "start": 96.41,
+        "end": 97.95,
+        "window": 1.3599999999999994,
+        "text": "Can you eat this crab?"
+      },
+      {
+        "id": "cue-60-98270",
+        "ids": [
+          "cue-60-98270",
+          "cue-61-99290",
+          "cue-62-102070"
+        ],
+        "start": 98.27,
+        "end": 102.91,
+        "window": 4.140000000000001,
+        "text": "This is the red-spotted crab. It's also called the seven-star crab or seven-eye crab. It's poisonous and inedible."
+      },
+      {
+        "id": "cue-63-102910",
+        "ids": [
+          "cue-63-102910"
+        ],
+        "start": 102.91,
+        "end": 104.59,
+        "window": 1.5600000000000023,
+        "text": "Can you eat this crab?"
+      },
+      {
+        "id": "cue-64-104970",
+        "ids": [
+          "cue-64-104970",
+          "cue-65-106310",
+          "cue-66-108910"
+        ],
+        "start": 104.97,
+        "end": 109.83,
+        "window": 4.359999999999999,
+        "text": "This is the Red-lined Swimming Crab. It contains tetrodotoxin and paralytic shellfish toxin. Do not eat it."
+      },
+      {
+        "id": "cue-67-109830",
+        "ids": [
+          "cue-67-109830"
+        ],
+        "start": 109.83,
+        "end": 111.51,
+        "window": 1.6000000000000085,
+        "text": "Is this crab edible?"
+      },
+      {
+        "id": "cue-68-111930",
+        "ids": [
+          "cue-68-111930",
+          "cue-69-112710",
+          "cue-70-113450",
+          "cue-71-114830"
+        ],
+        "start": 111.93,
+        "end": 116.45,
+        "window": 4.019999999999996,
+        "text": "This is the Coconut Crab. It is edible. Because it eats coconut meat year-round. The meat has a natural coconut aroma."
+      },
+      {
+        "id": "cue-72-116450",
+        "ids": [
+          "cue-72-116450"
+        ],
+        "start": 116.45,
+        "end": 118.25,
+        "window": 1.5,
+        "text": "Is this crab edible?"
+      },
+      {
+        "id": "cue-73-118450",
+        "ids": [
+          "cue-73-118450",
+          "cue-74-119590",
+          "cue-75-121030",
+          "cue-76-123050"
+        ],
+        "start": 118.45,
+        "end": 123.99,
+        "window": 5.039999999999992,
+        "text": "This is the Zebra Mud Crab. Also known as the Full-spine Crab. Usually kept only as a pet. Not recommended for eating."
+      },
+      {
+        "id": "cue-77-123990",
+        "ids": [
+          "cue-77-123990"
+        ],
+        "start": 123.99,
+        "end": 125.71,
+        "window": 1.6200000000000045,
+        "text": "Is this crab edible?"
+      },
+      {
+        "id": "cue-78-126110",
+        "ids": [
+          "cue-78-126110",
+          "cue-79-127290",
+          "cue-80-128550",
+          "cue-81-130390"
+        ],
+        "start": 126.11,
+        "end": 131.57,
+        "window": 4.959999999999994,
+        "text": "This is the Tiger Crab. Not only does it look fierce. It also contains paralytic shellfish toxin. Never eat it."
+      },
+      {
+        "id": "cue-82-131570",
+        "ids": [
+          "cue-82-131570"
+        ],
+        "start": 131.57,
+        "end": 133.21,
+        "window": 1.5200000000000102,
+        "text": "Is this crab edible?"
+      },
+      {
+        "id": "cue-83-133590",
+        "ids": [
+          "cue-83-133590",
+          "cue-84-134770",
+          "cue-85-135890",
+          "cue-86-136950",
+          "cue-87-137990",
+          "cue-88-139030"
+        ],
+        "start": 133.59,
+        "end": 139.91,
+        "window": 5.819999999999993,
+        "text": "These are Christmas Island red crabs containing acetic acid and omnivorous little meat, lots of water bitter and hard to eat don't eat them"
+      },
+      {
+        "id": "cue-89-139910",
+        "ids": [
+          "cue-89-139910"
+        ],
+        "start": 139.91,
+        "end": 141.57,
+        "window": 1.5200000000000102,
+        "text": "Can you eat these crabs?"
+      },
+      {
+        "id": "cue-90-141930",
+        "ids": [
+          "cue-90-141930",
+          "cue-91-142630",
+          "cue-92-143370",
+          "cue-93-144350",
+          "cue-94-145310"
+        ],
+        "start": 141.93,
+        "end": 146.49,
+        "window": 4.060000000000002,
+        "text": "These are sand crabs edible tender meat delicious taste many ways to cook them"
+      },
+      {
+        "id": "cue-95-146490",
+        "ids": [
+          "cue-95-146490"
+        ],
+        "start": 146.49,
+        "end": 148.13,
+        "window": 1.3999999999999773,
+        "text": "Can you eat these crabs?"
+      },
+      {
+        "id": "cue-96-148390",
+        "ids": [
+          "cue-96-148390",
+          "cue-97-149290",
+          "cue-98-150950",
+          "cue-99-152110",
+          "cue-100-153770"
+        ],
+        "start": 148.39,
+        "end": 155.33,
+        "window": 6.440000000000026,
+        "text": "These are emperor crabs giant ice crabs very full of crab meat with rich ocean freshness very satisfying to eat"
+      },
+      {
+        "id": "cue-101-155330",
+        "ids": [
+          "cue-101-155330"
+        ],
+        "start": 155.33,
+        "end": 157.05,
+        "window": 1.5199999999999818,
+        "text": "Can you eat these crabs?"
+      },
+      {
+        "id": "cue-102-157350",
+        "ids": [
+          "cue-102-157350",
+          "cue-103-158270",
+          "cue-104-159710",
+          "cue-105-161550",
+          "cue-106-163390",
+          "cue-107-164770"
+        ],
+        "start": 157.35,
+        "end": 165.87,
+        "window": 8.52000000000001,
+        "text": "This is the sand crab. Xuanming should be the giant boiled crab. The world's largest crab. Its meat is mainly in the legs. Soft, tender, fresh, and sweet. With a unique fresh aroma."
+      }
+    ]
+  },
+  {
+    "id": "899932d5-067b-4acd-8a8d-89d0bc8fdcf2",
+    "sourceCount": 118,
+    "unitCount": 40,
+    "validation": {
+      "ok": true,
+      "violations": []
+    },
+    "minWindow": 0.9000000000000057,
+    "units": [
+      {
+        "id": "cue-0-0",
+        "ids": [
+          "cue-0-0"
+        ],
+        "start": 0,
+        "end": 1.76,
+        "window": 1.26,
+        "text": "Remember to check carefully before eating beef"
+      },
+      {
+        "id": "cue-1-1760",
+        "ids": [
+          "cue-1-1760"
+        ],
+        "start": 1.76,
+        "end": 3.44,
+        "window": 1.18,
+        "text": "Is this breed edible?"
+      },
+      {
+        "id": "cue-2-3440",
+        "ids": [
+          "cue-2-3440",
+          "cue-3-5100",
+          "cue-4-5920",
+          "cue-5-7360",
+          "cue-6-8380",
+          "cue-7-10000"
+        ],
+        "start": 3.44,
+        "end": 11.6,
+        "window": 7.66,
+        "text": "It's a Scottish Highland cow Edible But calves are small Low meat yield High rearing costs Better to eat yellow cattle"
+      },
+      {
+        "id": "cue-8-11600",
+        "ids": [
+          "cue-8-11600"
+        ],
+        "start": 11.6,
+        "end": 13.22,
+        "window": 1.120000000000001,
+        "text": "Is this breed edible?"
+      },
+      {
+        "id": "cue-9-13220",
+        "ids": [
+          "cue-9-13220",
+          "cue-10-14800",
+          "cue-11-16420",
+          "cue-12-18800",
+          "cue-13-20420"
+        ],
+        "start": 13.22,
+        "end": 21.1,
+        "window": 7.380000000000001,
+        "text": "It's a Thai Brangus water buffalo Part of Thai bullfighting culture A top-star breed in beauty contests Worth over a million Too expensive"
+      },
+      {
+        "id": "cue-14-21100",
+        "ids": [
+          "cue-14-21100"
+        ],
+        "start": 21.1,
+        "end": 22.76,
+        "window": 1.1600000000000001,
+        "text": "Is this breed edible?"
+      },
+      {
+        "id": "cue-15-22760",
+        "ids": [
+          "cue-15-22760",
+          "cue-16-24600",
+          "cue-17-26500",
+          "cue-18-28960"
+        ],
+        "start": 22.76,
+        "end": 30.72,
+        "window": 7.459999999999997,
+        "text": "It's an Indian Kangrej cow Mainly for plowing and milk Constant confinement makes meat tough and dry Better to eat yellow cattle"
+      },
+      {
+        "id": "cue-19-30720",
+        "ids": [
+          "cue-19-30720"
+        ],
+        "start": 30.72,
+        "end": 32.26,
+        "window": 1.0399999999999991,
+        "text": "Is this breed edible?"
+      },
+      {
+        "id": "cue-20-32260",
+        "ids": [
+          "cue-20-32260",
+          "cue-21-33480",
+          "cue-22-35420",
+          "cue-23-37480"
+        ],
+        "start": 32.26,
+        "end": 39.3,
+        "window": 6.539999999999999,
+        "text": "It's a Thai fighting bull Undergoes long-term high-intensity training Meat fibers become very coarse and hard Taste is far inferior to ordinary yellow cattle"
+      },
+      {
+        "id": "cue-24-39300",
+        "ids": [
+          "cue-24-39300"
+        ],
+        "start": 39.3,
+        "end": 40.88,
+        "window": 1.0800000000000054,
+        "text": "Can this cow be eaten?"
+      },
+      {
+        "id": "cue-25-40880",
+        "ids": [
+          "cue-25-40880",
+          "cue-26-41740",
+          "cue-27-43180",
+          "cue-28-44940"
+        ],
+        "start": 40.88,
+        "end": 47.32,
+        "window": 5.939999999999998,
+        "text": "What to eat, what to eat This is Laozi's Ox Riding Alley Don't pretend not to see it Seeing this is your lucky day"
+      },
+      {
+        "id": "cue-29-47320",
+        "ids": [
+          "cue-29-47320",
+          "cue-30-48780",
+          "cue-31-49920",
+          "cue-32-51020"
+        ],
+        "start": 47.32,
+        "end": 52.22,
+        "window": 4.399999999999999,
+        "text": "Plant three flowers now One brings fortune One brings wealth One brings good luck"
+      },
+      {
+        "id": "cue-33-52220",
+        "ids": [
+          "cue-33-52220"
+        ],
+        "start": 52.22,
+        "end": 53.82,
+        "window": 1.1000000000000014,
+        "text": "Can this cow be eaten?"
+      },
+      {
+        "id": "cue-34-53820",
+        "ids": [
+          "cue-34-53820",
+          "cue-35-55140",
+          "cue-36-56640",
+          "cue-37-57620",
+          "cue-38-58600",
+          "cue-39-60460"
+        ],
+        "start": 53.82,
+        "end": 62.36,
+        "window": 8.04,
+        "text": "This is an albino water buffalo Wide shape, eats well, high tolerance Quite rare And expensive Mostly kept as a specialty exhibit Eating experience far worse than yellow cattle"
+      },
+      {
+        "id": "cue-40-62360",
+        "ids": [
+          "cue-40-62360"
+        ],
+        "start": 62.36,
+        "end": 63.92,
+        "window": 1.0600000000000023,
+        "text": "Can this cow be eaten?"
+      },
+      {
+        "id": "cue-41-63920",
+        "ids": [
+          "cue-41-63920",
+          "cue-42-65140",
+          "cue-43-66680",
+          "cue-44-69700"
+        ],
+        "start": 63.92,
+        "end": 71.34,
+        "window": 6.920000000000002,
+        "text": "This is the Qinling Bell Cow With golden hair horns and bells A first-class protected animal unique to the Qinling Mountains Eating one starts a five-year ban"
+      },
+      {
+        "id": "cue-45-71340",
+        "ids": [
+          "cue-45-71340"
+        ],
+        "start": 71.34,
+        "end": 72.84,
+        "window": 1,
+        "text": "Can this cow be eaten?"
+      },
+      {
+        "id": "cue-46-72840",
+        "ids": [
+          "cue-46-72840",
+          "cue-47-73940",
+          "cue-48-75340",
+          "cue-49-78080",
+          "cue-50-79300",
+          "cue-51-81040"
+        ],
+        "start": 72.84,
+        "end": 82.64,
+        "window": 9.299999999999997,
+        "text": "This is the white-haired cow All white like snow Revered in Tibet as a symbol of purity and good fortune It's edible, it is One can fetch hundreds of thousands Eating it is worse than eating yellow cattle"
+      },
+      {
+        "id": "cue-52-82640",
+        "ids": [
+          "cue-52-82640"
+        ],
+        "start": 82.64,
+        "end": 84.04,
+        "window": 0.9000000000000057,
+        "text": "Is this cow edible?"
+      },
+      {
+        "id": "cue-53-84040",
+        "ids": [
+          "cue-53-84040",
+          "cue-54-85140",
+          "cue-55-87160",
+          "cue-56-87980",
+          "cue-57-90780",
+          "cue-58-91960"
+        ],
+        "start": 84.04,
+        "end": 93.52,
+        "window": 8.97999999999999,
+        "text": "This is the Brahman cow Originating from India In India Locals revere it as the Indian holy cow Besides India It's edible everywhere else"
+      },
+      {
+        "id": "cue-59-93520",
+        "ids": [
+          "cue-59-93520"
+        ],
+        "start": 93.52,
+        "end": 95.1,
+        "window": 1.0799999999999983,
+        "text": "Is this cow edible?"
+      },
+      {
+        "id": "cue-60-95100",
+        "ids": [
+          "cue-60-95100",
+          "cue-61-96360",
+          "cue-62-98680",
+          "cue-63-101020"
+        ],
+        "start": 95.1,
+        "end": 102.68,
+        "window": 7.0800000000000125,
+        "text": "This is the White Horned Cow Though its meat looks tasty It's actually a national level one protected animal Eating it means getting a silver bracelet"
+      },
+      {
+        "id": "cue-64-102680",
+        "ids": [
+          "cue-64-102680"
+        ],
+        "start": 102.68,
+        "end": 104.22,
+        "window": 1.039999999999992,
+        "text": "Is this cow edible?"
+      },
+      {
+        "id": "cue-65-104220",
+        "ids": [
+          "cue-65-104220",
+          "cue-66-105560",
+          "cue-67-106560",
+          "cue-68-107760",
+          "cue-69-109280",
+          "cue-70-110780"
+        ],
+        "start": 104.22,
+        "end": 112.42,
+        "window": 7.700000000000003,
+        "text": "This is the African Bell Cow With a violent temper Strong territorial instincts Running wild year-round The meat is tough and coarse Eating it is worse than eating yellow cattle"
+      },
+      {
+        "id": "cue-71-112420",
+        "ids": [
+          "cue-71-112420"
+        ],
+        "start": 112.42,
+        "end": 113.88,
+        "window": 0.9599999999999937,
+        "text": "Is this cow edible?"
+      },
+      {
+        "id": "cue-72-113880",
+        "ids": [
+          "cue-72-113880",
+          "cue-73-115260",
+          "cue-74-117080",
+          "cue-75-118460",
+          "cue-76-120940"
+        ],
+        "start": 113.88,
+        "end": 122.48,
+        "window": 8.100000000000009,
+        "text": "This is the North American bison. It's edible due to low fat. The meat is dry. Unlike high-fat beef that melts in your mouth. You're better off eating beef."
+      },
+      {
+        "id": "cue-77-122480",
+        "ids": [
+          "cue-77-122480"
+        ],
+        "start": 122.48,
+        "end": 124.06,
+        "window": 1.0799999999999983,
+        "text": "Is this animal edible?"
+      },
+      {
+        "id": "cue-78-124060",
+        "ids": [
+          "cue-78-124060",
+          "cue-79-125120",
+          "cue-80-127140",
+          "cue-81-129280"
+        ],
+        "start": 124.06,
+        "end": 130.94,
+        "window": 6.3799999999999955,
+        "text": "This is the wild banteng. A national first-class protected animal. An ecological engineer of the Qinghai-Tibet Plateau. Eating it gets you a silver bracelet."
+      },
+      {
+        "id": "cue-82-130940",
+        "ids": [
+          "cue-82-130940"
+        ],
+        "start": 130.94,
+        "end": 132.56,
+        "window": 1.1200000000000045,
+        "text": "Is this animal edible?"
+      },
+      {
+        "id": "cue-83-132560",
+        "ids": [
+          "cue-83-132560",
+          "cue-84-133500",
+          "cue-85-134960",
+          "cue-86-137180",
+          "cue-87-139660",
+          "cue-88-141760"
+        ],
+        "start": 132.56,
+        "end": 143.04,
+        "window": 9.97999999999999,
+        "text": "This is the Tibetan antelope. Known as a polar deity. Survived on Earth for 600,000 years. An ancient creature from the ice age. A national first-class protected animal. One bite warrants a five-year sentence."
+      },
+      {
+        "id": "cue-89-143040",
+        "ids": [
+          "cue-89-143040"
+        ],
+        "start": 143.04,
+        "end": 144.6,
+        "window": 1.0600000000000023,
+        "text": "Is this animal edible?"
+      },
+      {
+        "id": "cue-90-144600",
+        "ids": [
+          "cue-90-144600",
+          "cue-91-146740",
+          "cue-92-149160",
+          "cue-93-150640",
+          "cue-94-151960"
+        ],
+        "start": 144.6,
+        "end": 153.44,
+        "window": 8.340000000000003,
+        "text": "This is the Texas Longhorn. A contemplative athlete fed by its long legs. Low meat yield. Large skeletal structure. You're better off eating beef."
+      },
+      {
+        "id": "cue-95-153440",
+        "ids": [
+          "cue-95-153440"
+        ],
+        "start": 153.44,
+        "end": 154.96,
+        "window": 1.0200000000000102,
+        "text": "Is this animal edible?"
+      },
+      {
+        "id": "cue-96-154960",
+        "ids": [
+          "cue-96-154960",
+          "cue-97-156320",
+          "cue-98-158840",
+          "cue-99-160740",
+          "cue-100-162100"
+        ],
+        "start": 154.96,
+        "end": 163.82,
+        "window": 8.359999999999985,
+        "text": "This is the Simmental cattle a world-famous dual-purpose breed with excellent meat quality and taste firm yet tender texture not inferior to local yellow cattle"
+      },
+      {
+        "id": "cue-101-163820",
+        "ids": [
+          "cue-101-163820"
+        ],
+        "start": 163.82,
+        "end": 165.38,
+        "window": 1.0600000000000023,
+        "text": "Is this cattle edible?"
+      },
+      {
+        "id": "cue-102-165380",
+        "ids": [
+          "cue-102-165380",
+          "cue-103-166740",
+          "cue-104-167380"
+        ],
+        "start": 165.38,
+        "end": 169.44,
+        "window": 3.5600000000000023,
+        "text": "This is the Belgian Blue cattle It is edible a beef breed specifically bred for meat"
+      },
+      {
+        "id": "cue-105-169440",
+        "ids": [
+          "cue-105-169440"
+        ],
+        "start": 169.44,
+        "end": 171.08,
+        "window": 1.1400000000000148,
+        "text": "Is this cattle edible?"
+      },
+      {
+        "id": "cue-106-171080",
+        "ids": [
+          "cue-106-171080",
+          "cue-107-171980",
+          "cue-108-173200",
+          "cue-109-175400",
+          "cue-110-177280",
+          "cue-111-178160"
+        ],
+        "start": 171.08,
+        "end": 179.5,
+        "window": 7.9199999999999875,
+        "text": "This is dairy cattle mainly used for milk production they are culled if milk yield drops older age makes the meat tough to prevent foolishness eating it is not as good as yellow cattle"
+      },
+      {
+        "id": "cue-112-179500",
+        "ids": [
+          "cue-112-179500"
+        ],
+        "start": 179.5,
+        "end": 181.04,
+        "window": 1.039999999999992,
+        "text": "Is this cattle edible?"
+      },
+      {
+        "id": "cue-113-181040",
+        "ids": [
+          "cue-113-181040",
+          "cue-114-182300",
+          "cue-115-184820",
+          "cue-116-185600",
+          "cue-117-186620"
+        ],
+        "start": 181.04,
+        "end": 187.58,
+        "window": 6.5400000000000205,
+        "text": "This is the Huangbiao Mao cattle raised freely on highlands with natural yellow fat rich meat aroma firm and chewy edible and delicious"
+      }
+    ]
+  },
+  {
+    "id": "cecd1b20-843e-4225-ad0b-f152f6dafb99",
+    "sourceCount": 56,
+    "unitCount": 31,
+    "validation": {
+      "ok": true,
+      "violations": []
+    },
+    "minWindow": 1.5,
+    "units": [
+      {
+        "id": "cue-0-2460",
+        "ids": [
+          "cue-0-2460"
+        ],
+        "start": 2.46,
+        "end": 4.96,
+        "window": 2,
+        "text": "Found a stone in the wild, take a closer look."
+      },
+      {
+        "id": "cue-1-4960",
+        "ids": [
+          "cue-1-4960"
+        ],
+        "start": 4.96,
+        "end": 7.1,
+        "window": 2.12,
+        "text": "Is this kind of stone pickable, Ah Xian?"
+      },
+      {
+        "id": "cue-2-7580",
+        "ids": [
+          "cue-2-7580",
+          "cue-3-10540",
+          "cue-4-14220"
+        ],
+        "start": 7.58,
+        "end": 16.06,
+        "window": 7.979999999999999,
+        "text": "Yes, it's Fangna stone, also called Flame Stone. Under UV light, it glows with stunning orange-yellow silver light. You can pick it to make a Wenwan bracelet."
+      },
+      {
+        "id": "cue-5-16060",
+        "ids": [
+          "cue-5-16060"
+        ],
+        "start": 16.06,
+        "end": 18.1,
+        "window": 1.9400000000000013,
+        "text": "Is this kind of stone pickable, Ah Xian?"
+      },
+      {
+        "id": "cue-6-18500",
+        "ids": [
+          "cue-6-18500",
+          "cue-7-21420"
+        ],
+        "start": 18.5,
+        "end": 22.98,
+        "window": 3.9800000000000004,
+        "text": "Yes, it's Lanrongjin, good as a decorative piece. Sell it for around 300 yuan."
+      },
+      {
+        "id": "cue-8-22980",
+        "ids": [
+          "cue-8-22980"
+        ],
+        "start": 22.98,
+        "end": 24.96,
+        "window": 1.8599999999999994,
+        "text": "Is this kind of stone pickable, Ah Xian?"
+      },
+      {
+        "id": "cue-9-25340",
+        "ids": [
+          "cue-9-25340",
+          "cue-10-26860",
+          "cue-11-30520",
+          "cue-12-32560"
+        ],
+        "start": 25.34,
+        "end": 34.54,
+        "window": 8.7,
+        "text": "No, don't pick it, it's Lanfan. Scientific name: No Water Flow Acid Bucket, used as pesticide and herbicide. Deadly to frozen plants. Especially dangerous after the honor water."
+      },
+      {
+        "id": "cue-13-34540",
+        "ids": [
+          "cue-13-34540"
+        ],
+        "start": 34.54,
+        "end": 36.54,
+        "window": 1.8599999999999994,
+        "text": "Is this kind of stone pickable, Ah Xian?"
+      },
+      {
+        "id": "cue-14-36900",
+        "ids": [
+          "cue-14-36900",
+          "cue-15-38740",
+          "cue-16-41720",
+          "cue-17-43580"
+        ],
+        "start": 36.9,
+        "end": 47.02,
+        "window": 9.620000000000005,
+        "text": "Pick it quickly, it's Xuephosphor Crystal. Finding it means good luck comes within seven days. At this moment, Songhua's three flowers all bring luck. One brings service luck, one brings good luck, one brings wealth luck."
+      },
+      {
+        "id": "cue-18-47020",
+        "ids": [
+          "cue-18-47020"
+        ],
+        "start": 47.02,
+        "end": 48.98,
+        "window": 1.8200000000000003,
+        "text": "Is this kind of stone pickable, Ah Xian?"
+      },
+      {
+        "id": "cue-19-49340",
+        "ids": [
+          "cue-19-49340",
+          "cue-20-51540"
+        ],
+        "start": 49.34,
+        "end": 54.96,
+        "window": 5.119999999999997,
+        "text": "Absolutely not, it's Gaiyou Mica. Naturally radioactive, very dangerous with long-term contact."
+      },
+      {
+        "id": "cue-21-54960",
+        "ids": [
+          "cue-21-54960"
+        ],
+        "start": 54.96,
+        "end": 56.9,
+        "window": 1.740000000000002,
+        "text": "Is this kind of stone pickable, Ah Xian?"
+      },
+      {
+        "id": "cue-22-57200",
+        "ids": [
+          "cue-22-57200",
+          "cue-23-58920"
+        ],
+        "start": 57.2,
+        "end": 61.82,
+        "window": 4.119999999999997,
+        "text": "Pick it up quickly, this is wood-grain stone. It's collectible; a jin sells for 400 yuan."
+      },
+      {
+        "id": "cue-24-61820",
+        "ids": [
+          "cue-24-61820"
+        ],
+        "start": 61.82,
+        "end": 63.78,
+        "window": 1.8200000000000003,
+        "text": "Can we pick this stone in Axian?"
+      },
+      {
+        "id": "cue-25-64140",
+        "ids": [
+          "cue-25-64140",
+          "cue-26-65960"
+        ],
+        "start": 64.14,
+        "end": 68.2,
+        "window": 3.5600000000000023,
+        "text": "Absolutely not; it's toxic. It's the main mineral for extracting bishuang."
+      },
+      {
+        "id": "cue-27-68200",
+        "ids": [
+          "cue-27-68200"
+        ],
+        "start": 68.2,
+        "end": 70.18,
+        "window": 1.7999999999999972,
+        "text": "Can we pick this stone in Axian?"
+      },
+      {
+        "id": "cue-28-70500",
+        "ids": [
+          "cue-28-70500",
+          "cue-29-72140",
+          "cue-30-74460"
+        ],
+        "start": 70.5,
+        "end": 75.72,
+        "window": 4.719999999999999,
+        "text": "Don't pick it; it's fengqian ore. Long-term contact or inhaling its dust can cause severe poisoning."
+      },
+      {
+        "id": "cue-31-75720",
+        "ids": [
+          "cue-31-75720"
+        ],
+        "start": 75.72,
+        "end": 77.88,
+        "window": 2.0999999999999943,
+        "text": "Can we pick this stone in Axian?"
+      },
+      {
+        "id": "cue-32-78320",
+        "ids": [
+          "cue-32-78320",
+          "cue-33-80140",
+          "cue-34-83300"
+        ],
+        "start": 78.32,
+        "end": 84.74,
+        "window": 5.920000000000002,
+        "text": "Pick it up quickly; this is opal. Known as the queen of gems for its unique play-of-color. A piece can fetch over 1,000 yuan."
+      },
+      {
+        "id": "cue-35-84740",
+        "ids": [
+          "cue-35-84740"
+        ],
+        "start": 84.74,
+        "end": 86.74,
+        "window": 1.5,
+        "text": "Can we pick this stone in Axian?"
+      },
+      {
+        "id": "cue-36-86740",
+        "ids": [
+          "cue-36-86740",
+          "cue-37-89140"
+        ],
+        "start": 86.74,
+        "end": 91.2,
+        "window": 3.960000000000008,
+        "text": "Pick it up quickly; this is rainbow black drug stone. This variety alone is worth over 1,000 yuan."
+      },
+      {
+        "id": "cue-38-91200",
+        "ids": [
+          "cue-38-91200"
+        ],
+        "start": 91.2,
+        "end": 93.2,
+        "window": 1.8199999999999932,
+        "text": "Can we pick this stone in Axian?"
+      },
+      {
+        "id": "cue-39-93520",
+        "ids": [
+          "cue-39-93520",
+          "cue-40-95060"
+        ],
+        "start": 93.52,
+        "end": 97.12,
+        "window": 3.1000000000000085,
+        "text": "Pick it up quickly; this is yun stone. Such a large piece is worth tens of thousands."
+      },
+      {
+        "id": "cue-41-97120",
+        "ids": [
+          "cue-41-97120"
+        ],
+        "start": 97.12,
+        "end": 99.16,
+        "window": 1.8999999999999915,
+        "text": "Can we pick this stone in Axian?"
+      },
+      {
+        "id": "cue-42-99520",
+        "ids": [
+          "cue-42-99520",
+          "cue-43-101040"
+        ],
+        "start": 99.52,
+        "end": 103.58,
+        "window": 3.5600000000000023,
+        "text": "You can pick it; this is yellow iron frame. Also called fish-man spirit; each costs 20 yuan."
+      },
+      {
+        "id": "cue-44-103580",
+        "ids": [
+          "cue-44-103580"
+        ],
+        "start": 103.58,
+        "end": 105.54,
+        "window": 1.7600000000000051,
+        "text": "Can we pick this stone in Axian?"
+      },
+      {
+        "id": "cue-45-105840",
+        "ids": [
+          "cue-45-105840",
+          "cue-46-107540",
+          "cue-47-109520"
+        ],
+        "start": 105.84,
+        "end": 111.42,
+        "window": 5.079999999999998,
+        "text": "Grab it quickly, this is chicken-blood stone. It's known as \"one chicken-blood, three gold.\" A piece this big must be worth hundreds of thousands."
+      },
+      {
+        "id": "cue-48-111420",
+        "ids": [
+          "cue-48-111420"
+        ],
+        "start": 111.42,
+        "end": 113.46,
+        "window": 1.8400000000000034,
+        "text": "Can you find stones like this in A County?"
+      },
+      {
+        "id": "cue-49-113760",
+        "ids": [
+          "cue-49-113760",
+          "cue-50-115600",
+          "cue-51-117320"
+        ],
+        "start": 113.76,
+        "end": 118.92,
+        "window": 4.659999999999997,
+        "text": "Yes, this is natural shoe stone. One pair goes for just two hundred fifty. But a matching pair is worth a lot."
+      },
+      {
+        "id": "cue-52-118920",
+        "ids": [
+          "cue-52-118920"
+        ],
+        "start": 118.92,
+        "end": 120.88,
+        "window": 1.6599999999999966,
+        "text": "Can you find stones like this in A County?"
+      },
+      {
+        "id": "cue-53-121080",
+        "ids": [
+          "cue-53-121080",
+          "cue-54-122900",
+          "cue-55-124340"
+        ],
+        "start": 121.08,
+        "end": 126.32,
+        "window": 5.239999999999995,
+        "text": "Grab it quickly, this is a mold ear stone. It can serve as a crown award stone. This variety must be worth around three thousand."
+      }
+    ]
+  }
+]

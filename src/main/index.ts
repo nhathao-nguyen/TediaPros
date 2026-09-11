@@ -83,6 +83,9 @@ import {
   checkKey as geminiCheckKey,
   hasKey as geminiHasKey,
   saveKey as geminiSaveKey,
+  addKeys as geminiAddKeys,
+  removeKey as geminiRemoveKey,
+  listKeys as geminiListKeys,
   translateSrt as geminiTranslateSrt
 } from './gemini'
 import {
@@ -917,6 +920,30 @@ function registerIpc(): void {
   )
 
   // Alias cu — giu cho goi gemini:* van chay
+  ipcMain.handle('gemini:listKeys', async (event) => {
+    const rejected = rejectUntrustedAutoShortIpc(event)
+    if (rejected) return rejected
+    try { return { ok: true, keys: await geminiListKeys() } }
+    catch { return { ok: false, error: 'Không thể đọc danh sách khóa Gemini.', code: 'storage-unreadable' } }
+  })
+  ipcMain.handle('gemini:addKeys', async (event, value: string) => {
+    const rejected = rejectUntrustedAutoShortIpc(event)
+    if (rejected) return rejected
+    try { await geminiAddKeys(value); return { ok: true, keys: await geminiListKeys() } }
+    catch (error) { return { ok: false, error: error instanceof Error && /^(Danh sách|Tối đa|Mỗi dòng|Hãy nhập)/u.test(error.message) ? error.message : 'Không thể lưu danh sách khóa Gemini.' } }
+  })
+  ipcMain.handle('gemini:replaceKeys', async (event, value: string) => {
+    const rejected = rejectUntrustedAutoShortIpc(event)
+    if (rejected) return rejected
+    try { await geminiSaveKey(value); return { ok: true, keys: await geminiListKeys() } }
+    catch { return { ok: false, error: 'Không thể thay danh sách khóa Gemini. Mỗi dòng cần một khóa hợp lệ, tối đa 20 khóa.' } }
+  })
+  ipcMain.handle('gemini:removeKey', async (event, id: string) => {
+    const rejected = rejectUntrustedAutoShortIpc(event)
+    if (rejected) return rejected
+    try { await geminiRemoveKey(id); return { ok: true, keys: await geminiListKeys() } }
+    catch { return { ok: false, error: 'Không thể xóa khóa Gemini.' } }
+  })
   ipcMain.handle('gemini:hasKey', async () => geminiHasKey())
   ipcMain.handle('gemini:saveKey', async (_e, key: string) => geminiSaveKey(key))
   ipcMain.handle('gemini:checkKey', async (_e, key: string) => geminiCheckKey(key))

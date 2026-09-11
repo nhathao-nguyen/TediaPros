@@ -1193,7 +1193,7 @@ async function requestTranslation(
   } else {
     const key = await loadGeminiKey()
     if (!key.trim()) throw new Error('Chưa có API key Gemini.')
-    adapter = await createGeminiTranslationAdapter(key)
+    adapter = await createGeminiTranslationAdapter(undefined, signal)
   }
   throwIfAborted(signal)
 

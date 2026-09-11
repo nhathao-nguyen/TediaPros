@@ -1,0 +1,107 @@
+{
+  "drag": [],
+  "keyboard": [],
+  "layout": [
+    {
+      "width": 1320,
+      "panel": {
+        "x": 373.109375,
+        "y": 162,
+        "width": 360,
+        "height": 262,
+        "top": 162,
+        "right": 733.109375,
+        "bottom": 424,
+        "left": 373.109375
+      },
+      "parent": {
+        "x": 228,
+        "y": 78,
+        "width": 696,
+        "height": 596,
+        "top": 78,
+        "right": 924,
+        "bottom": 674,
+        "left": 228
+      },
+      "viewport": 1304,
+      "clipped": false
+    },
+    {
+      "width": 1180,
+      "panel": {
+        "x": 392,
+        "y": 162,
+        "width": 360,
+        "height": 262,
+        "top": 162,
+        "right": 752,
+        "bottom": 424,
+        "left": 392
+      },
+      "parent": {
+        "x": 228,
+        "y": 78,
+        "width": 556,
+        "height": 596,
+        "top": 78,
+        "right": 784,
+        "bottom": 674,
+        "left": 228
+      },
+      "viewport": 1164,
+      "clipped": false
+    },
+    {
+      "width": 1100,
+      "panel": {
+        "x": 419.03125,
+        "y": 162,
+        "width": 360,
+        "height": 262,
+        "top": 162,
+        "right": 779.03125,
+        "bottom": 424,
+        "left": 419.03125
+      },
+      "parent": {
+        "x": 228,
+        "y": 78,
+        "width": 476,
+        "height": 589,
+        "top": 78,
+        "right": 704,
+        "bottom": 667,
+        "left": 228
+      },
+      "viewport": 1084,
+      "clipped": true
+    },
+    {
+      "width": 1040,
+      "panel": {
+        "x": 378.03125,
+        "y": 162,
+        "width": 360,
+        "height": 262,
+        "top": 162,
+        "right": 738.03125,
+        "bottom": 424,
+        "left": 378.03125
+      },
+      "parent": {
+        "x": 228,
+        "y": 78,
+        "width": 416,
+        "height": 557,
+        "top": 78,
+        "right": 644,
+        "bottom": 635,
+        "left": 228
+      },
+      "viewport": 1024,
+      "clipped": true
+    }
+  ],
+  "errors": []
+}

@@ -1,0 +1,40 @@
+[
+  {
+    "mode": "editor",
+    "passed": true,
+    "shape": {
+      "ratio": 0.5615212527964206,
+      "source": 1.7791560527190164,
+      "top": 152.953125,
+      "left": 0,
+      "same": true,
+      "time": 0.6
+    },
+    "caption": null,
+    "seek": true,
+    "playPause": true,
+    "resize": true,
+    "sameFileReselection": true
+  },
+  {
+    "mode": "autoshort",
+    "passed": true,
+    "shape": {
+      "ratio": 0.5616161616161616,
+      "source": 1.7793779377937793,
+      "top": 169.375,
+      "left": 0,
+      "same": true,
+      "time": 0.6
+    },
+    "caption": {
+      "font": 8.67969,
+      "width": 63.15625,
+      "height": 10.421875
+    },
+    "seek": true,
+    "playPause": true,
+    "resize": true,
+    "sameFileReselection": null
+  }
+]

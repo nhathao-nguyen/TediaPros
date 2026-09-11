@@ -314,7 +314,7 @@ test('runtime packer archives every canonical kind and verifies the generated ma
   }
 })
 
-test('packaged app verifier and builder configuration strictly exclude separator assets', async () => {
+test('packaged app verifier and production allowlist strictly exclude separator assets', async () => {
   const { findForbiddenFiles } = await import('../scripts/verify-packaged-app.mjs')
   const root = await mkdtemp(join(tmpdir(), 'tedia-sep-pkg-'))
   try {
@@ -338,15 +338,13 @@ test('packaged app verifier and builder configuration strictly exclude separator
       assert.ok(violations.some((v) => v.includes(rel)), `Must detect violation for ${rel}`)
     }
 
-    // Builder configuration
+    // The builder now admits only compiled production bundles and package
+    // metadata. This is stricter than maintaining a growing denylist for each
+    // runtime, model, fixture, and local evidence path.
     const builderYml = await readFile(join(process.cwd(), 'electron-builder.yml'), 'utf8')
-    assert.match(builderYml, /!\*\*\/\*\.onnx/u)
-    assert.match(builderYml, /!separator-models/u)
-    assert.match(builderYml, /!separator-engine/u)
-    assert.match(builderYml, /!separator-model-manifest\.json/u)
-    assert.match(builderYml, /!separator-model-inputs\.json/u)
-    assert.match(builderYml, /!separator-benchmark-results/u)
-    assert.match(builderYml, /!tests\/fixtures\/separator/u)
+    const { load } = await import('js-yaml')
+    const builderConfig = load(builderYml) as { files?: unknown }
+    assert.deepEqual(builderConfig.files, ['out/**/*', 'package.json'])
 
     // Licensing notices
     const notices = await readFile(join(process.cwd(), 'THIRD-PARTY-NOTICES.txt'), 'utf8')

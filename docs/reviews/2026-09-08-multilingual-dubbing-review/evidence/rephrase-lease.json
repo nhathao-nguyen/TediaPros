@@ -1,0 +1,29 @@
+{
+  "assertion": "REPRODUCED: active batch releases server-inference before complete response body",
+  "scope": "Real adapter/resource manager and Node Response, mocked fetch, no live server claim",
+  "results": [
+    {
+      "mode": "previous-active-single",
+      "whileLlmBodyPending": [
+        "llm-body-start"
+      ],
+      "completedTrace": [
+        "llm-body-start",
+        "llm-body-complete",
+        "competing-tts-enters"
+      ]
+    },
+    {
+      "mode": "new-active-batch",
+      "whileLlmBodyPending": [
+        "llm-body-start",
+        "competing-tts-enters"
+      ],
+      "completedTrace": [
+        "llm-body-start",
+        "competing-tts-enters",
+        "llm-body-complete"
+      ]
+    }
+  ]
+}

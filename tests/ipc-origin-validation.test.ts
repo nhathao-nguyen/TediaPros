@@ -35,6 +35,10 @@ test('AutoShort filesystem/process IPC and app navigation use the origin gate', 
     'autoshort:listMusicTracks',
     'autoshort:getReadiness',
     'whisper:modelStatus',
+    'gemini:listKeys',
+    'gemini:addKeys',
+    'gemini:replaceKeys',
+    'gemini:removeKey',
     'whisper:installModel',
     'whisper:stopWorker'
   ]) {

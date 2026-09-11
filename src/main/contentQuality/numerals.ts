@@ -77,6 +77,12 @@ const EN_ORDINALS: Record<string, number> = {
   sixth: 6, seventh: 7, eighth: 8, ninth: 9, tenth: 10
 }
 
+const FR_CARDINALS: Record<string, number> = {
+  deux: 2, trois: 3, quatre: 4, cinq: 5, six: 6, sept: 7, huit: 8, neuf: 9,
+  dix: 10, onze: 11, douze: 12, treize: 13, quatorze: 14, quinze: 15,
+  seize: 16, 'dix-sept': 17, 'dix-huit': 18, 'dix-neuf': 19, vingt: 20
+}
+
 export function extractContextualNumberTokens(raw: string): readonly ContextualNumberToken[] {
   const text = raw.normalize('NFKC')
   const tokens: ContextualNumberToken[] = []
@@ -97,6 +103,10 @@ export function extractContextualNumberTokens(raw: string): readonly ContextualN
   for (const match of text.matchAll(/(?:the\s+)?(first|second|third|fourth|fifth|sixth|seventh|eighth|ninth|tenth|\d+(?:st|nd|rd|th))\s+(?:time|step|chapter|item)/giu)) {
     const word = match[1].toLowerCase()
     add(match.index, match.index + match[0].length, 'ordinal', /^\d/u.test(word) ? Number.parseInt(word, 10) : EN_ORDINALS[word] ?? null)
+  }
+  for (const match of text.matchAll(/\b(deux|trois|quatre|cinq|six|sept|huit|neuf|dix(?:-sept|-huit|-neuf)?|onze|douze|treize|quatorze|quinze|seize|vingt)\b/giu)) {
+    const word = match[1].toLowerCase()
+    add(match.index, match.index + match[0].length, 'num', FR_CARDINALS[word] ?? null)
   }
 
   const cjkNumeral = '[零〇一二两兩三四五六七八九十百千万萬]+'

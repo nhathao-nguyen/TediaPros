@@ -1,0 +1,24 @@
+{
+  "schemaVersion": 1,
+  "ok": true,
+  "command": "deliver",
+  "type": "lifecycle",
+  "input": "f:\\Son\\tool\\TediaPros\\docs\\project-atlas\\diagrams\\autoshort-item.lifecycle.json",
+  "output": "f:\\Son\\tool\\TediaPros\\docs\\project-atlas\\diagrams\\autoshort-item.lifecycle.html",
+  "specification": {
+    "sha256": "c5c72de72c14c2f07a698b6fffbba3ba8239ce99a2d01462a421ea9e031b5175",
+    "bytes": 5739
+  },
+  "artifact": {
+    "sha256": "c7a9cde2202c96c28dfd4905ed91b26b55b33a1e05ad63d38dc8938c2237079f",
+    "bytes": 714017
+  },
+  "validation": {
+    "checksPassed": 9,
+    "checkCount": 9,
+    "compositionProfile": "showcase",
+    "compositionStatus": "pass",
+    "errors": 0,
+    "warnings": 0
+  }
+}

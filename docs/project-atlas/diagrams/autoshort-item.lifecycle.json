@@ -1,0 +1,273 @@
+{
+  "schema_version": 1,
+  "diagram_type": "lifecycle",
+  "meta": {
+    "title": "Vong Doi Trang Thai Video Item Trong AutoShort (Lifecycle)",
+    "output": "autoshort-item.lifecycle.html",
+    "viewBox": [
+      980,
+      660
+    ],
+    "animation": "trace",
+    "quality_profile": "showcase",
+    "views": [
+      {
+        "id": "happy-path",
+        "label": "Tien trinh thanh cong",
+        "focus": [
+          "pending",
+          "extracting",
+          "dubbing",
+          "rendering",
+          "completed"
+        ],
+        "note": "Tu hang doi den hoan tat qua cac buoc tuan tu tren truc chinh."
+      },
+      {
+        "id": "human-and-errors",
+        "label": "Tam dung & Xu ly loi",
+        "focus": [
+          "dubbing",
+          "quota_pause",
+          "rendering",
+          "blocked",
+          "retry_job",
+          "cancelled",
+          "failed"
+        ],
+        "note": "Kiem soat han ngach dia, loi font chu va lenh huy bo."
+      }
+    ]
+  },
+  "lanes": [
+    {
+      "id": "main",
+      "label": "Tien trinh thuc thi"
+    },
+    {
+      "id": "waiting",
+      "label": "Tam dung kiem tra"
+    },
+    {
+      "id": "exceptions",
+      "label": "Vong lap thu lai"
+    },
+    {
+      "id": "terminal",
+      "label": "Cac loi thoat cuoi"
+    }
+  ],
+  "states": [
+    {
+      "id": "pending",
+      "type": "start",
+      "label": "Pending",
+      "sublabel": "tiep nhan",
+      "lane": "main",
+      "col": 0,
+      "step": "01",
+      "tag": "entry"
+    },
+    {
+      "id": "extracting",
+      "type": "active",
+      "label": "Extracting",
+      "sublabel": "OCR & Whisper",
+      "lane": "main",
+      "col": 1,
+      "step": "02",
+      "tag": "vision"
+    },
+    {
+      "id": "dubbing",
+      "type": "active",
+      "label": "Dubbing",
+      "sublabel": "TTS & Tempo",
+      "lane": "main",
+      "col": 2,
+      "step": "03",
+      "tag": "audio"
+    },
+    {
+      "id": "rendering",
+      "type": "decision",
+      "label": "Rendering",
+      "sublabel": "RGB & Hardsub",
+      "lane": "main",
+      "col": 3,
+      "step": "04",
+      "tag": "burn"
+    },
+    {
+      "id": "completed",
+      "type": "success",
+      "label": "Completed",
+      "sublabel": "thanh pham",
+      "lane": "main",
+      "col": 4,
+      "step": "05",
+      "tag": "done"
+    },
+    {
+      "id": "quota_pause",
+      "type": "waiting",
+      "label": "Quota Wait",
+      "sublabel": "thieu 685MB",
+      "lane": "waiting",
+      "col": 0,
+      "tag": "pause"
+    },
+    {
+      "id": "blocked",
+      "type": "waiting",
+      "label": "Font Check",
+      "sublabel": "thieu asset",
+      "lane": "waiting",
+      "col": 1,
+      "tag": "wait"
+    },
+    {
+      "id": "retry_job",
+      "type": "failure",
+      "label": "Retryable",
+      "sublabel": "tam thoi loi",
+      "lane": "exceptions",
+      "col": 0,
+      "yOffset": 78,
+      "tag": "retryable"
+    },
+    {
+      "id": "cancelled",
+      "type": "failure",
+      "label": "Cancelled",
+      "sublabel": "nguoi dung huy",
+      "lane": "terminal",
+      "col": 0,
+      "tag": "terminal"
+    },
+    {
+      "id": "failed",
+      "type": "failure",
+      "label": "Fatal Error",
+      "sublabel": "render crash",
+      "lane": "terminal",
+      "col": 1,
+      "tag": "terminal"
+    }
+  ],
+  "transitions": [
+    {
+      "id": "dub-quota",
+      "from": "dubbing",
+      "to": "quota_pause",
+      "variant": "security",
+      "fromSide": "bottom",
+      "toSide": "top",
+      "route": "straight"
+    },
+    {
+      "id": "render-blocked",
+      "from": "rendering",
+      "to": "blocked",
+      "variant": "default",
+      "route": "drop"
+    },
+    {
+      "id": "dub-retry",
+      "from": "dubbing",
+      "to": "retry_job",
+      "variant": "security",
+      "fromSide": "left",
+      "toSide": "left",
+      "via": [
+        [
+          320,
+          157
+        ],
+        [
+          320,
+          385
+        ]
+      ]
+    },
+    {
+      "id": "retry-dub",
+      "from": "retry_job",
+      "to": "dubbing",
+      "variant": "emphasis",
+      "fromSide": "left",
+      "toSide": "top",
+      "via": [
+        [
+          20,
+          385
+        ],
+        [
+          20,
+          80
+        ],
+        [
+          402,
+          80
+        ]
+      ]
+    },
+    {
+      "id": "block-failed",
+      "from": "blocked",
+      "to": "failed",
+      "variant": "security",
+      "fromSide": "bottom",
+      "toSide": "top",
+      "route": "straight"
+    },
+    {
+      "id": "quota-cancel",
+      "from": "quota_pause",
+      "to": "cancelled",
+      "variant": "security",
+      "fromSide": "bottom",
+      "toSide": "top",
+      "via": [
+        [
+          480,
+          336
+        ],
+        [
+          480,
+          432
+        ],
+        [
+          402,
+          432
+        ]
+      ]
+    }
+  ],
+  "cards": [
+    {
+      "dot": "emerald",
+      "title": "Main Rail Lien Tuc",
+      "items": [
+        "Vong doi gom 5 pha tuan tu mang tren truc chinh duy nhat",
+        "Tu Pending -> Extracting -> Dubbing -> Rendering -> Completed"
+      ]
+    },
+    {
+      "dot": "amber",
+      "title": "Tam Dung & Thu Lai",
+      "items": [
+        "Thieu dia tam dung o Quota Wait",
+        "Loi tam thoi loop ve Dubbing de tiep tuc"
+      ]
+    },
+    {
+      "dot": "rose",
+      "title": "Cac Loi Thoat Cuoi",
+      "items": [
+        "Huy hoac loi nghiem trong se thoat qua Terminal Lane",
+        "Scratch directory luon duoc don sach bat bien"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,1737 @@
+{
+  "startedAt": "2026-09-08T01:25:47.992Z",
+  "model": "tts-multilingual",
+  "voice": "Voice-short-Anh-funny.mp3",
+  "results": [
+    {
+      "checkpoint": "cecd1b20-843e-4225-ad0b-f152f6dafb99",
+      "sourceVideo": "2026-08-21_野外捡石头的时候记得仔细看看_科普_涨知识_石头_石来运转_7676436405978975539.mp4",
+      "videoDuration": 126.663991,
+      "sourceCues": 56,
+      "units": 31,
+      "initialPlan": {
+        "version": 3,
+        "paceMode": "source-adaptive",
+        "videoDuration": 126.663991,
+        "globalTempo": null,
+        "cues": [
+          {
+            "cueId": "cue-0-2460",
+            "start": 2.46,
+            "preferredEnd": 4.96,
+            "hardEnd": 4.46,
+            "availableDuration": 2,
+            "id": "cue-0-2460",
+            "sourceCueIds": [
+              "cue-0-2460"
+            ],
+            "sourceText": "野外捡到石头石,记得仔细看看",
+            "sourceStart": 2.46,
+            "sourceEnd": 4.96,
+            "translatedText": "Found a stone in the wild, take a closer look.",
+            "finalSpokenText": "Found a stone in the wild, take a closer look.",
+            "predictedDuration": null,
+            "naturalDuration": null,
+            "actualDuration": null,
+            "predictionUncertainty": null,
+            "tempo": 1,
+            "plannedDuration": null,
+            "voiceEnd": null,
+            "localTempoAdjustment": 0,
+            "audioPath": null,
+            "subtitles": [],
+            "rephrased": false
+          },
+          {
+            "cueId": "cue-1-4960",
+            "start": 4.96,
+            "preferredEnd": 7.1,
+            "hardEnd": 7.08,
+            "availableDuration": 2.12,
+            "id": "cue-1-4960",
+            "sourceCueIds": [
+              "cue-1-4960"
+            ],
+            "sourceText": "阿县这种石头能捡吗?",
+            "sourceStart": 4.96,
+            "sourceEnd": 7.1,
+            "translatedText": "Is this kind of stone pickable, Ah Xian?",
+            "finalSpokenText": "Is this kind of stone pickable, Ah Xian?",
+            "predictedDuration": null,
+            "naturalDuration": null,
+            "actualDuration": null,
+            "predictionUncertainty": null,
+            "tempo": 1,
+            "plannedDuration": null,
+            "voiceEnd": null,
+            "localTempoAdjustment": 0,
+            "audioPath": null,
+            "subtitles": [],
+            "rephrased": false
+          },
+          {
+            "cueId": "cue-2-7580",
+            "start": 7.58,
+            "preferredEnd": 16.06,
+            "hardEnd": 15.559999999999999,
+            "availableDuration": 7.979999999999999,
+            "id": "cue-2-7580",
+            "sourceCueIds": [
+              "cue-2-7580",
+              "cue-3-10540",
+              "cue-4-14220"
+            ],
+            "sourceText": "可以捡,这是放纳石,也叫火焰石在紫外灯照射下,会发出惊艳的橘黄色银光可以捡来做纹丸手串",
+            "sourceStart": 7.58,
+            "sourceEnd": 16.06,
+            "translatedText": "Yes, it's Fangna stone, also called Flame Stone. Under UV light, it glows with stunning orange-yellow silver light. You can pick it to make a Wenwan bracelet.",
+            "finalSpokenText": "Yes, it's Fangna stone, also called Flame Stone. Under UV light, it glows with stunning orange-yellow silver light. You can pick it to make a Wenwan bracelet.",
+            "predictedDuration": null,
+            "naturalDuration": null,
+            "actualDuration": null,
+            "predictionUncertainty": null,
+            "tempo": 1,
+            "plannedDuration": null,
+            "voiceEnd": null,
+            "localTempoAdjustment": 0,
+            "audioPath": null,
+            "subtitles": [],
+            "rephrased": false
+          },
+          {
+            "cueId": "cue-5-16060",
+            "start": 16.06,
+            "preferredEnd": 18.1,
+            "hardEnd": 18,
+            "availableDuration": 1.9400000000000013,
+            "id": "cue-5-16060",
+            "sourceCueIds": [
+              "cue-5-16060"
+            ],
+            "sourceText": "阿县这种石头能捡吗?",
+            "sourceStart": 16.06,
+            "sourceEnd": 18.1,
+            "translatedText": "Is this kind of stone pickable, Ah Xian?",
+            "finalSpokenText": "Is this kind of stone pickable, Ah Xian?",
+            "predictedDuration": null,
+            "naturalDuration": null,
+            "actualDuration": null,
+            "predictionUncertainty": null,
+            "tempo": 1,
+            "plannedDuration": null,
+            "voiceEnd": null,
+            "localTempoAdjustment": 0,
+            "audioPath": null,
+            "subtitles": [],
+            "rephrased": false
+          },
+          {
+            "cueId": "cue-6-18500",
+            "start": 18.5,
+            "preferredEnd": 22.98,
+            "hardEnd": 22.48,
+            "availableDuration": 3.9800000000000004,
+            "id": "cue-6-18500",
+            "sourceCueIds": [
+              "cue-6-18500",
+              "cue-7-21420"
+            ],
+            "sourceText": "可以捡,这是蓝绒金,可以当个摆件卖个300元左右",
+            "sourceStart": 18.5,
+            "sourceEnd": 22.98,
+            "translatedText": "Yes, it's Lanrongjin, good as a decorative piece. Sell it for around 300 yuan.",
+            "finalSpokenText": "Yes, it's Lanrongjin, good as a decorative piece. Sell it for around 300 yuan.",
+            "predictedDuration": null,
+            "naturalDuration": null,
+            "actualDuration": null,
+            "predictionUncertainty": null,
+            "tempo": 1,
+            "plannedDuration": null,
+            "voiceEnd": null,
+            "localTempoAdjustment": 0,
+            "audioPath": null,
+            "subtitles": [],
+            "rephrased": false
+          },
+          {
+            "cueId": "cue-8-22980",
+            "start": 22.98,
+            "preferredEnd": 24.96,
+            "hardEnd": 24.84,
+            "availableDuration": 1.8599999999999994,
+            "id": "cue-8-22980",
+            "sourceCueIds": [
+              "cue-8-22980"
+            ],
+            "sourceText": "阿县这种石头能捡吗?",
+            "sourceStart": 22.98,
+            "sourceEnd": 24.96,
+            "translatedText": "Is this kind of stone pickable, Ah Xian?",
+            "finalSpokenText": "Is this kind of stone pickable, Ah Xian?",
+            "predictedDuration": null,
+            "naturalDuration": null,
+            "actualDuration": null,
+            "predictionUncertainty": null,
+            "tempo": 1,
+            "plannedDuration": null,
+            "voiceEnd": null,
+            "localTempoAdjustment": 0,
+            "audioPath": null,
+            "subtitles": [],
+            "rephrased": false
+          },
+          {
+            "cueId": "cue-9-25340",
+            "start": 25.34,
+            "preferredEnd": 34.54,
+            "hardEnd": 34.04,
+            "availableDuration": 8.7,
+            "id": "cue-9-25340",
+            "sourceCueIds": [
+              "cue-9-25340",
+              "cue-10-26860",
+              "cue-11-30520",
+              "cue-12-32560"
+            ],
+            "sourceText": "不能捡,这是蓝繁学名无水流酸桶,常用做农药和除草剂对冻植物有致命危害荣誉水后,尤其危险",
+            "sourceStart": 25.34,
+            "sourceEnd": 34.54,
+            "translatedText": "No, don't pick it, it's Lanfan. Scientific name: No Water Flow Acid Bucket, used as pesticide and herbicide. Deadly to frozen plants. Especially dangerous after the honor water.",
+            "finalSpokenText": "No, don't pick it, it's Lanfan. Scientific name: No Water Flow Acid Bucket, used as pesticide and herbicide. Deadly to frozen plants. Especially dangerous after the honor water.",
+            "predictedDuration": null,
+            "naturalDuration": null,
+            "actualDuration": null,
+            "predictionUncertainty": null,
+            "tempo": 1,
+            "plannedDuration": null,
+            "voiceEnd": null,
+            "localTempoAdjustment": 0,
+            "audioPath": null,
+            "subtitles": [],
+            "rephrased": false
+          },
+          {
+            "cueId": "cue-13-34540",
+            "start": 34.54,
+            "preferredEnd": 36.54,
+            "hardEnd": 36.4,
+            "availableDuration": 1.8599999999999994,
+            "id": "cue-13-34540",
+            "sourceCueIds": [
+              "cue-13-34540"
+            ],
+            "sourceText": "阿县这种石头能捡吗?",
+            "sourceStart": 34.54,
+            "sourceEnd": 36.54,
+            "translatedText": "Is this kind of stone pickable, Ah Xian?",
+            "finalSpokenText": "Is this kind of stone pickable, Ah Xian?",
+            "predictedDuration": null,
+            "naturalDuration": null,
+            "actualDuration": null,
+            "predictionUncertainty": null,
+            "tempo": 1,
+            "plannedDuration": null,
+            "voiceEnd": null,
+            "localTempoAdjustment": 0,
+            "audioPath": null,
+            "subtitles": [],
+            "rephrased": false
+          },
+          {
+            "cueId": "cue-14-36900",
+            "start": 36.9,
+            "preferredEnd": 47.02,
+            "hardEnd": 46.52,
+            "availableDuration": 9.620000000000005,
+            "id": "cue-14-36900",
+            "sourceCueIds": [
+              "cue-14-36900",
+              "cue-15-38740",
+              "cue-16-41720",
+              "cue-17-43580"
+            ],
+            "sourceText": "赶紧捡,这是血磷水晶能刷到是你七日之内好运上门的吉兆此时宋花三朵皆运一朵皆服运,一朵皆好运,一朵皆财运",
+            "sourceStart": 36.9,
+            "sourceEnd": 47.02,
+            "translatedText": "Pick it quickly, it's Xuephosphor Crystal. Finding it means good luck comes within seven days. At this moment, Songhua's three flowers all bring luck. One brings service luck, one brings good luck, one brings wealth luck.",
+            "finalSpokenText": "Pick it quickly, it's Xuephosphor Crystal. Finding it means good luck comes within seven days. At this moment, Songhua's three flowers all bring luck. One brings service luck, one brings good luck, one brings wealth luck.",
+            "predictedDuration": null,
+            "naturalDuration": null,
+            "actualDuration": null,
+            "predictionUncertainty": null,
+            "tempo": 1,
+            "plannedDuration": null,
+            "voiceEnd": null,
+            "localTempoAdjustment": 0,
+            "audioPath": null,
+            "subtitles": [],
+            "rephrased": false
+          },
+          {
+            "cueId": "cue-18-47020",
+            "start": 47.02,
+            "preferredEnd": 48.98,
+            "hardEnd": 48.84,
+            "availableDuration": 1.8200000000000003,
+            "id": "cue-18-47020",
+            "sourceCueIds": [
+              "cue-18-47020"
+            ],
+            "sourceText": "阿县这种石头能捡吗?",
+            "sourceStart": 47.02,
+            "sourceEnd": 48.98,
+            "translatedText": "Is this kind of stone pickable, Ah Xian?",
+            "finalSpokenText": "Is this kind of stone pickable, Ah Xian?",
+            "predictedDuration": null,
+            "naturalDuration": null,
+            "actualDuration": null,
+            "predictionUncertainty": null,
+            "tempo": 1,
+            "plannedDuration": null,
+            "voiceEnd": null,
+            "localTempoAdjustment": 0,
+            "audioPath": null,
+            "subtitles": [],
+            "rephrased": false
+          },
+          {
+            "cueId": "cue-19-49340",
+            "start": 49.34,
+            "preferredEnd": 54.96,
+            "hardEnd": 54.46,
+            "availableDuration": 5.119999999999997,
+            "id": "cue-19-49340",
+            "sourceCueIds": [
+              "cue-19-49340",
+              "cue-20-51540"
+            ],
+            "sourceText": "千万不能捡,这是盖油云母具有天然放射性,长期接触,十分危险",
+            "sourceStart": 49.34,
+            "sourceEnd": 54.96,
+            "translatedText": "Absolutely not, it's Gaiyou Mica. Naturally radioactive, very dangerous with long-term contact.",
+            "finalSpokenText": "Absolutely not, it's Gaiyou Mica. Naturally radioactive, very dangerous with long-term contact.",
+            "predictedDuration": null,
+            "naturalDuration": null,
+            "actualDuration": null,
+            "predictionUncertainty": null,
+            "tempo": 1,
+            "plannedDuration": null,
+            "voiceEnd": null,
+            "localTempoAdjustment": 0,
+            "audioPath": null,
+            "subtitles": [],
+            "rephrased": false
+          },
+          {
+            "cueId": "cue-21-54960",
+            "start": 54.96,
+            "preferredEnd": 56.9,
+            "hardEnd": 56.7,
+            "availableDuration": 1.740000000000002,
+            "id": "cue-21-54960",
+            "sourceCueIds": [
+              "cue-21-54960"
+            ],
+            "sourceText": "阿县这种石头能捡吗?",
+            "sourceStart": 54.96,
+            "sourceEnd": 56.9,
+            "translatedText": "Is this kind of stone pickable, Ah Xian?",
+            "finalSpokenText": "Is this kind of stone pickable, Ah Xian?",
+            "predictedDuration": null,
+            "naturalDuration": null,
+            "actualDuration": null,
+            "predictionUncertainty": null,
+            "tempo": 1,
+            "plannedDuration": null,
+            "voiceEnd": null,
+            "localTempoAdjustment": 0,
+            "audioPath": null,
+            "subtitles": [],
+            "rephrased": false
+          },
+          {
+            "cueId": "cue-22-57200",
+            "start": 57.2,
+            "preferredEnd": 61.82,
+            "hardEnd": 61.32,
+            "availableDuration": 4.119999999999997,
+            "id": "cue-22-57200",
+            "sourceCueIds": [
+              "cue-22-57200",
+              "cue-23-58920"
+            ],
+            "sourceText": "赶紧捡,这是木纹石具有收藏价值,一斤能达四百元",
+            "sourceStart": 57.2,
+            "sourceEnd": 61.82,
+            "translatedText": "Pick it up quickly, this is wood-grain stone. It's collectible; a jin sells for 400 yuan.",
+            "finalSpokenText": "Pick it up quickly, this is wood-grain stone. It's collectible; a jin sells for 400 yuan.",
+            "predictedDuration": null,
+            "naturalDuration": null,
+            "actualDuration": null,
+            "predictionUncertainty": null,
+            "tempo": 1,
+            "plannedDuration": null,
+            "voiceEnd": null,
+            "localTempoAdjustment": 0,
+            "audioPath": null,
+            "subtitles": [],
+            "rephrased": false
+          },
+          {
+            "cueId": "cue-24-61820",
+            "start": 61.82,
+            "preferredEnd": 63.78,
+            "hardEnd": 63.64,
+            "availableDuration": 1.8200000000000003,
+            "id": "cue-24-61820",
+            "sourceCueIds": [
+              "cue-24-61820"
+            ],
+            "sourceText": "阿县这种石头能捡吗?",
+            "sourceStart": 61.82,
+            "sourceEnd": 63.78,
+            "translatedText": "Can we pick this stone in Axian?",
+            "finalSpokenText": "Can we pick this stone in Axian?",
+            "predictedDuration": null,
+            "naturalDuration": null,
+            "actualDuration": null,
+            "predictionUncertainty": null,
+            "tempo": 1,
+            "plannedDuration": null,
+            "voiceEnd": null,
+            "localTempoAdjustment": 0,
+            "audioPath": null,
+            "subtitles": [],
+            "rephrased": false
+          },
+          {
+            "cueId": "cue-25-64140",
+            "start": 64.14,
+            "preferredEnd": 68.2,
+            "hardEnd": 67.7,
+            "availableDuration": 3.5600000000000023,
+            "id": "cue-25-64140",
+            "sourceCueIds": [
+              "cue-25-64140",
+              "cue-26-65960"
+            ],
+            "sourceText": "绝对不能捡,这是毒杀是提取批双的主要矿物原料",
+            "sourceStart": 64.14,
+            "sourceEnd": 68.2,
+            "translatedText": "Absolutely not; it's toxic. It's the main mineral for extracting bishuang.",
+            "finalSpokenText": "Absolutely not; it's toxic. It's the main mineral for extracting bishuang.",
+            "predictedDuration": null,
+            "naturalDuration": null,
+            "actualDuration": null,
+            "predictionUncertainty": null,
+            "tempo": 1,
+            "plannedDuration": null,
+            "voiceEnd": null,
+            "localTempoAdjustment": 0,
+            "audioPath": null,
+            "subtitles": [],
+            "rephrased": false
+          },
+          {
+            "cueId": "cue-27-68200",
+            "start": 68.2,
+            "preferredEnd": 70.18,
+            "hardEnd": 70,
+            "availableDuration": 1.7999999999999972,
+            "id": "cue-27-68200",
+            "sourceCueIds": [
+              "cue-27-68200"
+            ],
+            "sourceText": "阿县这种石头能捡吗?",
+            "sourceStart": 68.2,
+            "sourceEnd": 70.18,
+            "translatedText": "Can we pick this stone in Axian?",
+            "finalSpokenText": "Can we pick this stone in Axian?",
+            "predictedDuration": null,
+            "naturalDuration": null,
+            "actualDuration": null,
+            "predictionUncertainty": null,
+            "tempo": 1,
+            "plannedDuration": null,
+            "voiceEnd": null,
+            "localTempoAdjustment": 0,
+            "audioPath": null,
+            "subtitles": [],
+            "rephrased": false
+          },
+          {
+            "cueId": "cue-28-70500",
+            "start": 70.5,
+            "preferredEnd": 75.72,
+            "hardEnd": 75.22,
+            "availableDuration": 4.719999999999999,
+            "id": "cue-28-70500",
+            "sourceCueIds": [
+              "cue-28-70500",
+              "cue-29-72140",
+              "cue-30-74460"
+            ],
+            "sourceText": "不能捡,这是芳千矿长时间接触或吸入其粉尘可能导致千重毒",
+            "sourceStart": 70.5,
+            "sourceEnd": 75.72,
+            "translatedText": "Don't pick it; it's fengqian ore. Long-term contact or inhaling its dust can cause severe poisoning.",
+            "finalSpokenText": "Don't pick it; it's fengqian ore. Long-term contact or inhaling its dust can cause severe poisoning.",
+            "predictedDuration": null,
+            "naturalDuration": null,
+            "actualDuration": null,
+            "predictionUncertainty": null,
+            "tempo": 1,
+            "plannedDuration": null,
+            "voiceEnd": null,
+            "localTempoAdjustment": 0,
+            "audioPath": null,
+            "subtitles": [],
+            "rephrased": false
+          },
+          {
+            "cueId": "cue-31-75720",
+            "start": 75.72,
+            "preferredEnd": 77.88,
+            "hardEnd": 77.82,
+            "availableDuration": 2.0999999999999943,
+            "id": "cue-31-75720",
+            "sourceCueIds": [
+              "cue-31-75720"
+            ],
+            "sourceText": "阿县这种石头能捡吗?",
+            "sourceStart": 75.72,
+            "sourceEnd": 77.88,
+            "translatedText": "Can we pick this stone in Axian?",
+            "finalSpokenText": "Can we pick this stone in Axian?",
+            "predictedDuration": null,
+            "naturalDuration": null,
+            "actualDuration": null,
+            "predictionUncertainty": null,
+            "tempo": 1,
+            "plannedDuration": null,
+            "voiceEnd": null,
+            "localTempoAdjustment": 0,
+            "audioPath": null,
+            "subtitles": [],
+            "rephrased": false
+          },
+          {
+            "cueId": "cue-32-78320",
+            "start": 78.32,
+            "preferredEnd": 84.74,
+            "hardEnd": 84.24,
+            "availableDuration": 5.920000000000002,
+            "id": "cue-32-78320",
+            "sourceCueIds": [
+              "cue-32-78320",
+              "cue-33-80140",
+              "cue-34-83300"
+            ],
+            "sourceText": "赶紧捡,这是欧伯石因独特变彩效应,被誉为宝石皇后一刻能达上千元",
+            "sourceStart": 78.32,
+            "sourceEnd": 84.74,
+            "translatedText": "Pick it up quickly; this is opal. Known as the queen of gems for its unique play-of-color. A piece can fetch over 1,000 yuan.",
+            "finalSpokenText": "Pick it up quickly; this is opal. Known as the queen of gems for its unique play-of-color. A piece can fetch over 1,000 yuan.",
+            "predictedDuration": null,
+            "naturalDuration": null,
+            "actualDuration": null,
+            "predictionUncertainty": null,
+            "tempo": 1,
+            "plannedDuration": null,
+            "voiceEnd": null,
+            "localTempoAdjustment": 0,
+            "audioPath": null,
+            "subtitles": [],
+            "rephrased": false
+          },
+          {
+            "cueId": "cue-35-84740",
+            "start": 84.74,
+            "preferredEnd": 86.74,
+            "hardEnd": 86.24,
+            "availableDuration": 1.5,
+            "id": "cue-35-84740",
+            "sourceCueIds": [
+              "cue-35-84740"
+            ],
+            "sourceText": "阿县这种石头能捡吗?",
+            "sourceStart": 84.74,
+            "sourceEnd": 86.74,
+            "translatedText": "Can we pick this stone in Axian?",
+            "finalSpokenText": "Can we pick this stone in Axian?",
+            "predictedDuration": null,
+            "naturalDuration": null,
+            "actualDuration": null,
+            "predictionUncertainty": null,
+            "tempo": 1,
+            "plannedDuration": null,
+            "voiceEnd": null,
+            "localTempoAdjustment": 0,
+            "audioPath": null,
+            "subtitles": [],
+            "rephrased": false
+          },
+          {
+            "cueId": "cue-36-86740",
+            "start": 86.74,
+            "preferredEnd": 91.2,
+            "hardEnd": 90.7,
+            "availableDuration": 3.960000000000008,
+            "id": "cue-36-86740",
+            "sourceCueIds": [
+              "cue-36-86740",
+              "cue-37-89140"
+            ],
+            "sourceText": "赶紧捡,这是彩虹黑药石这品项不得直个上千元",
+            "sourceStart": 86.74,
+            "sourceEnd": 91.2,
+            "translatedText": "Pick it up quickly; this is rainbow black drug stone. This variety alone is worth over 1,000 yuan.",
+            "finalSpokenText": "Pick it up quickly; this is rainbow black drug stone. This variety alone is worth over 1,000 yuan.",
+            "predictedDuration": null,
+            "naturalDuration": null,
+            "actualDuration": null,
+            "predictionUncertainty": null,
+            "tempo": 1,
+            "plannedDuration": null,
+            "voiceEnd": null,
+            "localTempoAdjustment": 0,
+            "audioPath": null,
+            "subtitles": [],
+            "rephrased": false
+          },
+          {
+            "cueId": "cue-38-91200",
+            "start": 91.2,
+            "preferredEnd": 93.2,
+            "hardEnd": 93.02,
+            "availableDuration": 1.8199999999999932,
+            "id": "cue-38-91200",
+            "sourceCueIds": [
+              "cue-38-91200"
+            ],
+            "sourceText": "阿县这种石头能捡吗?",
+            "sourceStart": 91.2,
+            "sourceEnd": 93.2,
+            "translatedText": "Can we pick this stone in Axian?",
+            "finalSpokenText": "Can we pick this stone in Axian?",
+            "predictedDuration": null,
+            "naturalDuration": null,
+            "actualDuration": null,
+            "predictionUncertainty": null,
+            "tempo": 1,
+            "plannedDuration": null,
+            "voiceEnd": null,
+            "localTempoAdjustment": 0,
+            "audioPath": null,
+            "subtitles": [],
+            "rephrased": false
+          },
+          {
+            "cueId": "cue-39-93520",
+            "start": 93.52,
+            "preferredEnd": 97.12,
+            "hardEnd": 96.62,
+            "availableDuration": 3.1000000000000085,
+            "id": "cue-39-93520",
+            "sourceCueIds": [
+              "cue-39-93520",
+              "cue-40-95060"
+            ],
+            "sourceText": "赶紧捡,这是芸石这么大一块能直个数万元",
+            "sourceStart": 93.52,
+            "sourceEnd": 97.12,
+            "translatedText": "Pick it up quickly; this is yun stone. Such a large piece is worth tens of thousands.",
+            "finalSpokenText": "Pick it up quickly; this is yun stone. Such a large piece is worth tens of thousands.",
+            "predictedDuration": null,
+            "naturalDuration": null,
+            "actualDuration": null,
+            "predictionUncertainty": null,
+            "tempo": 1,
+            "plannedDuration": null,
+            "voiceEnd": null,
+            "localTempoAdjustment": 0,
+            "audioPath": null,
+            "subtitles": [],
+            "rephrased": false
+          },
+          {
+            "cueId": "cue-41-97120",
+            "start": 97.12,
+            "preferredEnd": 99.16,
+            "hardEnd": 99.02,
+            "availableDuration": 1.8999999999999915,
+            "id": "cue-41-97120",
+            "sourceCueIds": [
+              "cue-41-97120"
+            ],
+            "sourceText": "阿县这种石头能捡吗?",
+            "sourceStart": 97.12,
+            "sourceEnd": 99.16,
+            "translatedText": "Can we pick this stone in Axian?",
+            "finalSpokenText": "Can we pick this stone in Axian?",
+            "predictedDuration": null,
+            "naturalDuration": null,
+            "actualDuration": null,
+            "predictionUncertainty": null,
+            "tempo": 1,
+            "plannedDuration": null,
+            "voiceEnd": null,
+            "localTempoAdjustment": 0,
+            "audioPath": null,
+            "subtitles": [],
+            "rephrased": false
+          },
+          {
+            "cueId": "cue-42-99520",
+            "start": 99.52,
+            "preferredEnd": 103.58,
+            "hardEnd": 103.08,
+            "availableDuration": 3.5600000000000023,
+            "id": "cue-42-99520",
+            "sourceCueIds": [
+              "cue-42-99520",
+              "cue-43-101040"
+            ],
+            "sourceText": "可以捡,这是黄铁框也叫鱼人精,一个也就二十元",
+            "sourceStart": 99.52,
+            "sourceEnd": 103.58,
+            "translatedText": "You can pick it; this is yellow iron frame. Also called fish-man spirit; each costs 20 yuan.",
+            "finalSpokenText": "You can pick it; this is yellow iron frame. Also called fish-man spirit; each costs 20 yuan.",
+            "predictedDuration": null,
+            "naturalDuration": null,
+            "actualDuration": null,
+            "predictionUncertainty": null,
+            "tempo": 1,
+            "plannedDuration": null,
+            "voiceEnd": null,
+            "localTempoAdjustment": 0,
+            "audioPath": null,
+            "subtitles": [],
+            "rephrased": false
+          },
+          {
+            "cueId": "cue-44-103580",
+            "start": 103.58,
+            "preferredEnd": 105.54,
+            "hardEnd": 105.34,
+            "availableDuration": 1.7600000000000051,
+            "id": "cue-44-103580",
+            "sourceCueIds": [
+              "cue-44-103580"
+            ],
+            "sourceText": "阿县这种石头能捡吗?",
+            "sourceStart": 103.58,
+            "sourceEnd": 105.54,
+            "translatedText": "Can we pick this stone in Axian?",
+            "finalSpokenText": "Can we pick this stone in Axian?",
+            "predictedDuration": null,
+            "naturalDuration": null,
+            "actualDuration": null,
+            "predictionUncertainty": null,
+            "tempo": 1,
+            "plannedDuration": null,
+            "voiceEnd": null,
+            "localTempoAdjustment": 0,
+            "audioPath": null,
+            "subtitles": [],
+            "rephrased": false
+          },
+          {
+            "cueId": "cue-45-105840",
+            "start": 105.84,
+            "preferredEnd": 111.42,
+            "hardEnd": 110.92,
+            "availableDuration": 5.079999999999998,
+            "id": "cue-45-105840",
+            "sourceCueIds": [
+              "cue-45-105840",
+              "cue-46-107540",
+              "cue-47-109520"
+            ],
+            "sourceText": "赶紧捡,这是鸡血石有一颗鸡血三颗金之称这么大一块不得数十万",
+            "sourceStart": 105.84,
+            "sourceEnd": 111.42,
+            "translatedText": "Grab it quickly, this is chicken-blood stone. It's known as \"one chicken-blood, three gold.\" A piece this big must be worth hundreds of thousands.",
+            "finalSpokenText": "Grab it quickly, this is chicken-blood stone. It's known as \"one chicken-blood, three gold.\" A piece this big must be worth hundreds of thousands.",
+            "predictedDuration": null,
+            "naturalDuration": null,
+            "actualDuration": null,
+            "predictionUncertainty": null,
+            "tempo": 1,
+            "plannedDuration": null,
+            "voiceEnd": null,
+            "localTempoAdjustment": 0,
+            "audioPath": null,
+            "subtitles": [],
+            "rephrased": false
+          },
+          {
+            "cueId": "cue-48-111420",
+            "start": 111.42,
+            "preferredEnd": 113.46,
+            "hardEnd": 113.26,
+            "availableDuration": 1.8400000000000034,
+            "id": "cue-48-111420",
+            "sourceCueIds": [
+              "cue-48-111420"
+            ],
+            "sourceText": "阿县这种石头能捡吗?",
+            "sourceStart": 111.42,
+            "sourceEnd": 113.46,
+            "translatedText": "Can you find stones like this in A County?",
+            "finalSpokenText": "Can you find stones like this in A County?",
+            "predictedDuration": null,
+            "naturalDuration": null,
+            "actualDuration": null,
+            "predictionUncertainty": null,
+            "tempo": 1,
+            "plannedDuration": null,
+            "voiceEnd": null,
+            "localTempoAdjustment": 0,
+            "audioPath": null,
+            "subtitles": [],
+            "rephrased": false
+          },
+          {
+            "cueId": "cue-49-113760",
+            "start": 113.76,
+            "preferredEnd": 118.92,
+            "hardEnd": 118.42,
+            "availableDuration": 4.659999999999997,
+            "id": "cue-49-113760",
+            "sourceCueIds": [
+              "cue-49-113760",
+              "cue-50-115600",
+              "cue-51-117320"
+            ],
+            "sourceText": "可以捡,这是天然鞋石一只也就两百五十要是一对就值钱了",
+            "sourceStart": 113.76,
+            "sourceEnd": 118.92,
+            "translatedText": "Yes, this is natural shoe stone. One pair goes for just two hundred fifty. But a matching pair is worth a lot.",
+            "finalSpokenText": "Yes, this is natural shoe stone. One pair goes for just two hundred fifty. But a matching pair is worth a lot.",
+            "predictedDuration": null,
+            "naturalDuration": null,
+            "actualDuration": null,
+            "predictionUncertainty": null,
+            "tempo": 1,
+            "plannedDuration": null,
+            "voiceEnd": null,
+            "localTempoAdjustment": 0,
+            "audioPath": null,
+            "subtitles": [],
+            "rephrased": false
+          },
+          {
+            "cueId": "cue-52-118920",
+            "start": 118.92,
+            "preferredEnd": 120.88,
+            "hardEnd": 120.58,
+            "availableDuration": 1.6599999999999966,
+            "id": "cue-52-118920",
+            "sourceCueIds": [
+              "cue-52-118920"
+            ],
+            "sourceText": "阿县这种石头能捡吗?",
+            "sourceStart": 118.92,
+            "sourceEnd": 120.88,
+            "translatedText": "Can you find stones like this in A County?",
+            "finalSpokenText": "Can you find stones like this in A County?",
+            "predictedDuration": null,
+            "naturalDuration": null,
+            "actualDuration": null,
+            "predictionUncertainty": null,
+            "tempo": 1,
+            "plannedDuration": null,
+            "voiceEnd": null,
+            "localTempoAdjustment": 0,
+            "audioPath": null,
+            "subtitles": [],
+            "rephrased": false
+          },
+          {
+            "cueId": "cue-53-121080",
+            "start": 121.08,
+            "preferredEnd": 126.32,
+            "hardEnd": 126.54399099999999,
+            "availableDuration": 5.463990999999993,
+            "id": "cue-53-121080",
+            "sourceCueIds": [
+              "cue-53-121080",
+              "cue-54-122900",
+              "cue-55-124340"
+            ],
+            "sourceText": "赶紧捡,这是模耳石可以当个冠赏石这品项不得直个三千块",
+            "sourceStart": 121.08,
+            "sourceEnd": 126.32,
+            "translatedText": "Grab it quickly, this is a mold ear stone. It can serve as a crown award stone. This variety must be worth around three thousand.",
+            "finalSpokenText": "Grab it quickly, this is a mold ear stone. It can serve as a crown award stone. This variety must be worth around three thousand.",
+            "predictedDuration": null,
+            "naturalDuration": null,
+            "actualDuration": null,
+            "predictionUncertainty": null,
+            "tempo": 1,
+            "plannedDuration": null,
+            "voiceEnd": null,
+            "localTempoAdjustment": 0,
+            "audioPath": null,
+            "subtitles": [],
+            "rephrased": false
+          }
+        ],
+        "sourceCues": [
+          {
+            "id": "cue-0-2460",
+            "start": 2.46,
+            "end": 4.96,
+            "text": "野外捡到石头石,记得仔细看看"
+          },
+          {
+            "id": "cue-1-4960",
+            "start": 4.96,
+            "end": 7.1,
+            "text": "阿县这种石头能捡吗?"
+          },
+          {
+            "id": "cue-2-7580",
+            "start": 7.58,
+            "end": 10.54,
+            "text": "可以捡,这是放纳石,也叫火焰石"
+          },
+          {
+            "id": "cue-3-10540",
+            "start": 10.54,
+            "end": 14.22,
+            "text": "在紫外灯照射下,会发出惊艳的橘黄色银光"
+          },
+          {
+            "id": "cue-4-14220",
+            "start": 14.22,
+            "end": 16.06,
+            "text": "可以捡来做纹丸手串"
+          },
+          {
+            "id": "cue-5-16060",
+            "start": 16.06,
+            "end": 18.1,
+            "text": "阿县这种石头能捡吗?"
+          },
+          {
+            "id": "cue-6-18500",
+            "start": 18.5,
+            "end": 21.42,
+            "text": "可以捡,这是蓝绒金,可以当个摆件"
+          },
+          {
+            "id": "cue-7-21420",
+            "start": 21.42,
+            "end": 22.98,
+            "text": "卖个300元左右"
+          },
+          {
+            "id": "cue-8-22980",
+            "start": 22.98,
+            "end": 24.96,
+            "text": "阿县这种石头能捡吗?"
+          },
+          {
+            "id": "cue-9-25340",
+            "start": 25.34,
+            "end": 26.86,
+            "text": "不能捡,这是蓝繁"
+          },
+          {
+            "id": "cue-10-26860",
+            "start": 26.86,
+            "end": 30.52,
+            "text": "学名无水流酸桶,常用做农药和除草剂"
+          },
+          {
+            "id": "cue-11-30520",
+            "start": 30.52,
+            "end": 32.56,
+            "text": "对冻植物有致命危害"
+          },
+          {
+            "id": "cue-12-32560",
+            "start": 32.56,
+            "end": 34.54,
+            "text": "荣誉水后,尤其危险"
+          },
+          {
+            "id": "cue-13-34540",
+            "start": 34.54,
+            "end": 36.54,
+            "text": "阿县这种石头能捡吗?"
+          },
+          {
+            "id": "cue-14-36900",
+            "start": 36.9,
+            "end": 38.74,
+            "text": "赶紧捡,这是血磷水晶"
+          },
+          {
+            "id": "cue-15-38740",
+            "start": 38.74,
+            "end": 41.72,
+            "text": "能刷到是你七日之内好运上门的吉兆"
+          },
+          {
+            "id": "cue-16-41720",
+            "start": 41.72,
+            "end": 43.58,
+            "text": "此时宋花三朵皆运"
+          },
+          {
+            "id": "cue-17-43580",
+            "start": 43.58,
+            "end": 47.02,
+            "text": "一朵皆服运,一朵皆好运,一朵皆财运"
+          },
+          {
+            "id": "cue-18-47020",
+            "start": 47.02,
+            "end": 48.98,
+            "text": "阿县这种石头能捡吗?"
+          },
+          {
+            "id": "cue-19-49340",
+            "start": 49.34,
+            "end": 51.54,
+            "text": "千万不能捡,这是盖油云母"
+          },
+          {
+            "id": "cue-20-51540",
+            "start": 51.54,
+            "end": 54.96,
+            "text": "具有天然放射性,长期接触,十分危险"
+          },
+          {
+            "id": "cue-21-54960",
+            "start": 54.96,
+            "end": 56.9,
+            "text": "阿县这种石头能捡吗?"
+          },
+          {
+            "id": "cue-22-57200",
+            "start": 57.2,
+            "end": 58.92,
+            "text": "赶紧捡,这是木纹石"
+          },
+          {
+            "id": "cue-23-58920",
+            "start": 58.92,
+            "end": 61.82,
+            "text": "具有收藏价值,一斤能达四百元"
+          },
+          {
+            "id": "cue-24-61820",
+            "start": 61.82,
+            "end": 63.78,
+            "text": "阿县这种石头能捡吗?"
+          },
+          {
+            "id": "cue-25-64140",
+            "start": 64.14,
+            "end": 65.96,
+            "text": "绝对不能捡,这是毒杀"
+          },
+          {
+            "id": "cue-26-65960",
+            "start": 65.96,
+            "end": 68.2,
+            "text": "是提取批双的主要矿物原料"
+          },
+          {
+            "id": "cue-27-68200",
+            "start": 68.2,
+            "end": 70.18,
+            "text": "阿县这种石头能捡吗?"
+          },
+          {
+            "id": "cue-28-70500",
+            "start": 70.5,
+            "end": 72.14,
+            "text": "不能捡,这是芳千矿"
+          },
+          {
+            "id": "cue-29-72140",
+            "start": 72.14,
+            "end": 74.46,
+            "text": "长时间接触或吸入其粉尘"
+          },
+          {
+            "id": "cue-30-74460",
+            "start": 74.46,
+            "end": 75.72,
+            "text": "可能导致千重毒"
+          },
+          {
+            "id": "cue-31-75720",
+            "start": 75.72,
+            "end": 77.88,
+            "text": "阿县这种石头能捡吗?"
+          },
+          {
+            "id": "cue-32-78320",
+            "start": 78.32,
+            "end": 80.14,
+            "text": "赶紧捡,这是欧伯石"
+          },
+          {
+            "id": "cue-33-80140",
+            "start": 80.14,
+            "end": 83.3,
+            "text": "因独特变彩效应,被誉为宝石皇后"
+          },
+          {
+            "id": "cue-34-83300",
+            "start": 83.3,
+            "end": 84.74,
+            "text": "一刻能达上千元"
+          },
+          {
+            "id": "cue-35-84740",
+            "start": 84.74,
+            "end": 86.74,
+            "text": "阿县这种石头能捡吗?"
+          },
+          {
+            "id": "cue-36-86740",
+            "start": 86.74,
+            "end": 89.14,
+            "text": "赶紧捡,这是彩虹黑药石"
+          },
+          {
+            "id": "cue-37-89140",
+            "start": 89.14,
+            "end": 91.2,
+            "text": "这品项不得直个上千元"
+          },
+          {
+            "id": "cue-38-91200",
+            "start": 91.2,
+            "end": 93.2,
+            "text": "阿县这种石头能捡吗?"
+          },
+          {
+            "id": "cue-39-93520",
+            "start": 93.52,
+            "end": 95.06,
+            "text": "赶紧捡,这是芸石"
+          },
+          {
+            "id": "cue-40-95060",
+            "start": 95.06,
+            "end": 97.12,
+            "text": "这么大一块能直个数万元"
+          },
+          {
+            "id": "cue-41-97120",
+            "start": 97.12,
+            "end": 99.16,
+            "text": "阿县这种石头能捡吗?"
+          },
+          {
+            "id": "cue-42-99520",
+            "start": 99.52,
+            "end": 101.04,
+            "text": "可以捡,这是黄铁框"
+          },
+          {
+            "id": "cue-43-101040",
+            "start": 101.04,
+            "end": 103.58,
+            "text": "也叫鱼人精,一个也就二十元"
+          },
+          {
+            "id": "cue-44-103580",
+            "start": 103.58,
+            "end": 105.54,
+            "text": "阿县这种石头能捡吗?"
+          },
+          {
+            "id": "cue-45-105840",
+            "start": 105.84,
+            "end": 107.54,
+            "text": "赶紧捡,这是鸡血石"
+          },
+          {
+            "id": "cue-46-107540",
+            "start": 107.54,
+            "end": 109.52,
+            "text": "有一颗鸡血三颗金之称"
+          },
+          {
+            "id": "cue-47-109520",
+            "start": 109.52,
+            "end": 111.42,
+            "text": "这么大一块不得数十万"
+          },
+          {
+            "id": "cue-48-111420",
+            "start": 111.42,
+            "end": 113.46,
+            "text": "阿县这种石头能捡吗?"
+          },
+          {
+            "id": "cue-49-113760",
+            "start": 113.76,
+            "end": 115.6,
+            "text": "可以捡,这是天然鞋石"
+          },
+          {
+            "id": "cue-50-115600",
+            "start": 115.6,
+            "end": 117.32,
+            "text": "一只也就两百五十"
+          },
+          {
+            "id": "cue-51-117320",
+            "start": 117.32,
+            "end": 118.92,
+            "text": "要是一对就值钱了"
+          },
+          {
+            "id": "cue-52-118920",
+            "start": 118.92,
+            "end": 120.88,
+            "text": "阿县这种石头能捡吗?"
+          },
+          {
+            "id": "cue-53-121080",
+            "start": 121.08,
+            "end": 122.9,
+            "text": "赶紧捡,这是模耳石"
+          },
+          {
+            "id": "cue-54-122900",
+            "start": 122.9,
+            "end": 124.34,
+            "text": "可以当个冠赏石"
+          },
+          {
+            "id": "cue-55-124340",
+            "start": 124.34,
+            "end": 126.32,
+            "text": "这品项不得直个三千块"
+          }
+        ],
+        "createdAt": "2026-09-08T01:25:48.079Z"
+      },
+      "events": [
+        {
+          "cueId": "cue-0-2460",
+          "phase": "preflight",
+          "candidateCount": 3,
+          "outcome": "accepted"
+        },
+        {
+          "cueId": "cue-1-4960",
+          "phase": "preflight",
+          "candidateCount": 3,
+          "outcome": "accepted"
+        },
+        {
+          "cueId": "cue-2-7580",
+          "phase": "preflight",
+          "candidateCount": 3,
+          "outcome": "accepted"
+        },
+        {
+          "cueId": "cue-5-16060",
+          "phase": "preflight",
+          "candidateCount": 3,
+          "outcome": "accepted"
+        },
+        {
+          "cueId": "cue-6-18500",
+          "phase": "preflight",
+          "candidateCount": 3,
+          "outcome": "accepted"
+        },
+        {
+          "cueId": "cue-8-22980",
+          "phase": "preflight",
+          "candidateCount": 3,
+          "outcome": "no-improvement"
+        },
+        {
+          "cueId": "cue-9-25340",
+          "phase": "preflight",
+          "candidateCount": 3,
+          "outcome": "accepted"
+        },
+        {
+          "cueId": "cue-13-34540",
+          "phase": "preflight",
+          "candidateCount": 3,
+          "outcome": "accepted"
+        },
+        {
+          "cueId": "cue-14-36900",
+          "phase": "preflight",
+          "candidateCount": 3,
+          "outcome": "accepted"
+        },
+        {
+          "cueId": "cue-18-47020",
+          "phase": "preflight",
+          "candidateCount": 3,
+          "outcome": "accepted"
+        },
+        {
+          "cueId": "cue-19-49340",
+          "phase": "preflight",
+          "candidateCount": 3,
+          "outcome": "no-improvement"
+        },
+        {
+          "cueId": "cue-21-54960",
+          "phase": "preflight",
+          "candidateCount": 3,
+          "outcome": "accepted"
+        },
+        {
+          "cueId": "cue-22-57200",
+          "phase": "preflight",
+          "candidateCount": 3,
+          "outcome": "accepted"
+        },
+        {
+          "cueId": "cue-24-61820",
+          "phase": "preflight",
+          "candidateCount": 3,
+          "outcome": "accepted"
+        },
+        {
+          "cueId": "cue-25-64140",
+          "phase": "preflight",
+          "candidateCount": 3,
+          "outcome": "no-improvement"
+        },
+        {
+          "cueId": "cue-27-68200",
+          "phase": "preflight",
+          "candidateCount": 3,
+          "outcome": "accepted"
+        },
+        {
+          "cueId": "cue-28-70500",
+          "phase": "preflight",
+          "candidateCount": 3,
+          "outcome": "accepted"
+        },
+        {
+          "cueId": "cue-31-75720",
+          "phase": "preflight",
+          "candidateCount": 3,
+          "outcome": "accepted"
+        },
+        {
+          "cueId": "cue-32-78320",
+          "phase": "preflight",
+          "candidateCount": 3,
+          "outcome": "accepted"
+        },
+        {
+          "cueId": "cue-35-84740",
+          "phase": "preflight",
+          "candidateCount": 3,
+          "outcome": "accepted"
+        },
+        {
+          "cueId": "cue-36-86740",
+          "phase": "preflight",
+          "candidateCount": 3,
+          "outcome": "accepted"
+        },
+        {
+          "cueId": "cue-38-91200",
+          "phase": "preflight",
+          "candidateCount": 3,
+          "outcome": "accepted"
+        },
+        {
+          "cueId": "cue-39-93520",
+          "phase": "preflight",
+          "candidateCount": 3,
+          "outcome": "accepted"
+        },
+        {
+          "cueId": "cue-41-97120",
+          "phase": "preflight",
+          "candidateCount": 3,
+          "outcome": "accepted"
+        },
+        {
+          "cueId": "cue-42-99520",
+          "phase": "preflight",
+          "candidateCount": 3,
+          "outcome": "accepted"
+        },
+        {
+          "cueId": "cue-44-103580",
+          "phase": "preflight",
+          "candidateCount": 3,
+          "outcome": "accepted"
+        },
+        {
+          "cueId": "cue-45-105840",
+          "phase": "preflight",
+          "candidateCount": 3,
+          "outcome": "accepted"
+        },
+        {
+          "cueId": "cue-48-111420",
+          "phase": "preflight",
+          "candidateCount": 3,
+          "outcome": "no-improvement"
+        },
+        {
+          "cueId": "cue-49-113760",
+          "phase": "preflight",
+          "candidateCount": 3,
+          "outcome": "accepted"
+        },
+        {
+          "cueId": "cue-52-118920",
+          "phase": "preflight",
+          "candidateCount": 3,
+          "outcome": "accepted"
+        },
+        {
+          "cueId": "cue-53-121080",
+          "phase": "preflight",
+          "candidateCount": 3,
+          "outcome": "accepted"
+        },
+        {
+          "cueId": "cue-5-16060",
+          "phase": "rescue",
+          "outcome": "accepted",
+          "candidateCount": 3,
+          "previousSeconds": 2.938549,
+          "candidateSeconds": 2.194104
+        },
+        {
+          "cueId": "cue-8-22980",
+          "phase": "rescue",
+          "outcome": "accepted",
+          "candidateCount": 3,
+          "previousSeconds": 3.42059,
+          "candidateSeconds": 2.194104
+        },
+        {
+          "cueId": "cue-13-34540",
+          "phase": "rescue",
+          "outcome": "accepted",
+          "candidateCount": 3,
+          "previousSeconds": 2.938549,
+          "candidateSeconds": 2.194104
+        },
+        {
+          "cueId": "cue-18-47020",
+          "phase": "rescue",
+          "outcome": "accepted",
+          "candidateCount": 3,
+          "previousSeconds": 2.938549,
+          "candidateSeconds": 2.194104
+        },
+        {
+          "cueId": "cue-19-49340",
+          "phase": "rescue",
+          "outcome": "accepted",
+          "candidateCount": 3,
+          "previousSeconds": 7.214603,
+          "candidateSeconds": 5.310794
+        },
+        {
+          "cueId": "cue-21-54960",
+          "phase": "rescue",
+          "outcome": "accepted",
+          "candidateCount": 3,
+          "previousSeconds": 2.938549,
+          "candidateSeconds": 2.194104
+        },
+        {
+          "cueId": "cue-42-99520",
+          "phase": "rescue",
+          "outcome": "accepted",
+          "candidateCount": 3,
+          "previousSeconds": 5.580635,
+          "candidateSeconds": 4.537506
+        },
+        {
+          "cueId": "cue-45-105840",
+          "phase": "rescue",
+          "outcome": "accepted",
+          "candidateCount": 3,
+          "previousSeconds": 7.776644,
+          "candidateSeconds": 7.212313
+        }
+      ],
+      "tts": [
+        {
+          "cueId": "cue-0-2460",
+          "text": "Found a stone out there—check it closely.",
+          "cache": true,
+          "hash": "c6132d86303c4ab89f0949569a3ef142aff098c2fd1003e7a7117e04e1503e0d"
+        },
+        {
+          "cueId": "cue-14-36900",
+          "text": "Pick it now. This Xuephosphor Crystal signals seven days of good luck. Songhua's three flowers bring service luck, general luck, and wealth luck respectively.",
+          "cache": true,
+          "hash": "33548009451ae376a9bcc764ccf2f0f4088734dbcccdea3891c5275a02a017a4"
+        },
+        {
+          "cueId": "cue-31-75720",
+          "text": "Pickable in Axian?",
+          "cache": true,
+          "hash": "9611ca43b35512a9e0721ef1810559b3bc2f0508b4a0de99ab1687b53ba49e12"
+        },
+        {
+          "cueId": "cue-1-4960",
+          "text": "Is this pickable, Ah Xian?",
+          "cache": true,
+          "hash": "478a384d9c00bd3528061d7aa4698db8ba0059e62de212751a772c8bcc1bec7a"
+        },
+        {
+          "cueId": "cue-2-7580",
+          "text": "It's Fangna/Flame Stone, glowing orange under UV. Great for Wenwan bracelets.",
+          "cache": true,
+          "hash": "bab493e22c4d09a63894a2844bb710c2c950d82336b2a4835fd659e7b5a62631"
+        },
+        {
+          "cueId": "cue-5-16060",
+          "text": "Is this stone pickable, Ah Xian?",
+          "cache": true,
+          "hash": "285d6aa62f485ce65d06c834cb72627cec6802018879e7ee3014251b647e06d6"
+        },
+        {
+          "cueId": "cue-5-16060",
+          "text": "This stone pickable, Ah Xian?",
+          "cache": true,
+          "hash": "d7337e64ba8409b6d671e6ad22a7df6098a9863135652fba097a1ad4676ee0e4"
+        },
+        {
+          "cueId": "cue-6-18500",
+          "text": "Lanrongjin makes a great display piece; sell for 300 yuan.",
+          "cache": true,
+          "hash": "a20d574d1c6ca94d2fdf4c140be26335f404545b37a0ab90e56e01f34cab208f"
+        },
+        {
+          "cueId": "cue-8-22980",
+          "text": "Is this kind of stone pickable, Ah Xian?",
+          "cache": true,
+          "hash": "10c6cf118f5a0cd9fd063f263699c07e4852f5f6d993b9b152614c14424fbf15"
+        },
+        {
+          "cueId": "cue-8-22980",
+          "text": "This stone pickable, Ah Xian?",
+          "cache": true,
+          "hash": "d7337e64ba8409b6d671e6ad22a7df6098a9863135652fba097a1ad4676ee0e4"
+        },
+        {
+          "cueId": "cue-9-25340",
+          "text": "No, don't pick it. Lanfan is a deadly pesticide to frozen plants. Especially dangerous after honor water.",
+          "cache": false,
+          "hash": "950ec3a1694fbb8cb1f885c61819d6af8b670607fee2d58e22ecabf7572d1d65"
+        },
+        {
+          "cueId": "cue-13-34540",
+          "text": "Is this stone pickable, Ah Xian?",
+          "cache": true,
+          "hash": "285d6aa62f485ce65d06c834cb72627cec6802018879e7ee3014251b647e06d6"
+        },
+        {
+          "cueId": "cue-13-34540",
+          "text": "This stone pickable, Ah Xian?",
+          "cache": true,
+          "hash": "d7337e64ba8409b6d671e6ad22a7df6098a9863135652fba097a1ad4676ee0e4"
+        },
+        {
+          "cueId": "cue-18-47020",
+          "text": "Is this stone pickable, Ah Xian?",
+          "cache": true,
+          "hash": "285d6aa62f485ce65d06c834cb72627cec6802018879e7ee3014251b647e06d6"
+        },
+        {
+          "cueId": "cue-18-47020",
+          "text": "This stone pickable, Ah Xian?",
+          "cache": true,
+          "hash": "d7337e64ba8409b6d671e6ad22a7df6098a9863135652fba097a1ad4676ee0e4"
+        },
+        {
+          "cueId": "cue-19-49340",
+          "text": "Absolutely not, it's Gaiyou Mica. Naturally radioactive, very dangerous with long-term contact.",
+          "cache": false,
+          "hash": "1270b6f8bd7dce834faea2eabce22dd19f69560fdbe2ba6167e9c3ddabc10e9a"
+        },
+        {
+          "cueId": "cue-19-49340",
+          "text": "Do not pick it up. Gaiyou Mica is naturally radioactive and dangerous with long-term exposure.",
+          "cache": false,
+          "hash": "de9228b996486e1cb011bc1af66694a696e8aa194a90c4cf915ba6f81c4a8f6a"
+        },
+        {
+          "cueId": "cue-21-54960",
+          "text": "Is this stone pickable, Ah Xian?",
+          "cache": true,
+          "hash": "285d6aa62f485ce65d06c834cb72627cec6802018879e7ee3014251b647e06d6"
+        },
+        {
+          "cueId": "cue-21-54960",
+          "text": "This stone pickable, Ah Xian?",
+          "cache": true,
+          "hash": "d7337e64ba8409b6d671e6ad22a7df6098a9863135652fba097a1ad4676ee0e4"
+        },
+        {
+          "cueId": "cue-22-57200",
+          "text": "Grab this wood-grain stone fast. It's collectible and worth 400 yuan a jin.",
+          "cache": false,
+          "hash": "13b533622a6d88a536cf62cfca46b53c059e7c42477446a9e59b3b773ade4cd0"
+        },
+        {
+          "cueId": "cue-24-61820",
+          "text": "Can we pick this Axian stone?",
+          "cache": false,
+          "hash": "d281e90da8ef8da7f4bd48b28456dec8b8a269c62e8893d9972808b899ae9b76"
+        },
+        {
+          "cueId": "cue-25-64140",
+          "text": "Absolutely not; it's toxic. It's the main mineral for extracting bishuang.",
+          "cache": false,
+          "hash": "6da4a8d91059b03c4c5d9783a6fbedfc4ddd58e301592d6e8e8b1b8afd99a72a"
+        },
+        {
+          "cueId": "cue-27-68200",
+          "text": "Can we pick this Axian stone?",
+          "cache": true,
+          "hash": "d281e90da8ef8da7f4bd48b28456dec8b8a269c62e8893d9972808b899ae9b76"
+        },
+        {
+          "cueId": "cue-28-70500",
+          "text": "No picking. Fengqian ore dust causes severe poisoning through contact or inhalation.",
+          "cache": false,
+          "hash": "9c250282e23f96ed42e91e4e2257cc4758043ab3aef3364397bba2af509261f6"
+        },
+        {
+          "cueId": "cue-32-78320",
+          "text": "Quick pick: this opal is the queen of gems due to its play-of-color, selling for over 1,000 yuan.",
+          "cache": false,
+          "hash": "178609466f7c65356b39b6e9b5b63b3d16162c1390721760d3069a2bb9392d8b"
+        },
+        {
+          "cueId": "cue-35-84740",
+          "text": "Pickable in Axian?",
+          "cache": true,
+          "hash": "9611ca43b35512a9e0721ef1810559b3bc2f0508b4a0de99ab1687b53ba49e12"
+        },
+        {
+          "cueId": "cue-36-86740",
+          "text": "Quick pick: this rainbow black drug stone variety is worth over 1,000 yuan.",
+          "cache": false,
+          "hash": "ab8dc804c483568e56f30098d2e0b2bff4608a5cf336daea2a665aa47f435004"
+        },
+        {
+          "cueId": "cue-38-91200",
+          "text": "Pickable in Axian?",
+          "cache": true,
+          "hash": "9611ca43b35512a9e0721ef1810559b3bc2f0508b4a0de99ab1687b53ba49e12"
+        },
+        {
+          "cueId": "cue-39-93520",
+          "text": "Quick pick: this yun stone piece is worth tens of thousands.",
+          "cache": false,
+          "hash": "47554de2be3f000d63fa62612ba3bc384f2bc0972a4925e38055d2083d92dae9"
+        },
+        {
+          "cueId": "cue-41-97120",
+          "text": "Pickable in Axian?",
+          "cache": true,
+          "hash": "9611ca43b35512a9e0721ef1810559b3bc2f0508b4a0de99ab1687b53ba49e12"
+        },
+        {
+          "cueId": "cue-42-99520",
+          "text": "Pick it up. This yellow iron frame, called the fish-man spirit, is only twenty yuan each.",
+          "cache": false,
+          "hash": "1db331751847abad940680fd5332a137bed311ede745ae2bd5acf7f744643989"
+        },
+        {
+          "cueId": "cue-42-99520",
+          "text": "Pick it up: this yellow iron frame, the fish-man spirit, is twenty yuan each.",
+          "cache": false,
+          "hash": "465b41e054a0a61749d31749bb716334f008c6bb26cc463d1e042bb77ef1816c"
+        },
+        {
+          "cueId": "cue-44-103580",
+          "text": "Is this stone pickable in Axian?",
+          "cache": false,
+          "hash": "6ee74b429c29e0ad3b16cd5cc676fc366dfce4e0523e8858aed4571fa35cc8c9"
+        },
+        {
+          "cueId": "cue-45-105840",
+          "text": "Grab this quickly. It's chicken-blood stone, \"one chicken-blood, three gold,\" and a piece this big is worth hundreds of thousands.",
+          "cache": false,
+          "hash": "25e7e5ec077bef930c196ec4339aa5576103d08b3db57116cb4c8fa21ede6cc9"
+        },
+        {
+          "cueId": "cue-45-105840",
+          "text": "Grab it now. This chicken-blood stone, \"one blood, three gold,\" is worth hundreds of thousands at this size.",
+          "cache": false,
+          "hash": "48173a74d44bee8d9394303363d9b93db013772e6cc167f7ac4c8be3ed32c449"
+        },
+        {
+          "cueId": "cue-48-111420",
+          "text": "Can you find stones like this in A County?",
+          "cache": false,
+          "hash": "f978df90eb783cfff223cffbf54642be0bcbfa19cd1f8749cbdaac4a80de21f0"
+        },
+        {
+          "cueId": "cue-49-113760",
+          "text": "Yes, this is natural shoe stone. One costs two hundred fifty, but a pair is worth more.",
+          "cache": false,
+          "hash": "c5972abd898990e721e3b46f8ce834d7c02f3f7bec531e4518454d59d893c5b0"
+        },
+        {
+          "cueId": "cue-52-118920",
+          "text": "Is this stone available in A County?",
+          "cache": false,
+          "hash": "f79bae4e55dba20a200388e190e244364d1300469312853bf50ce4f4e347d95a"
+        },
+        {
+          "cueId": "cue-53-121080",
+          "text": "Grab this mold ear stone quickly. It's a crown award stone variety worth around three thousand.",
+          "cache": false,
+          "hash": "0dd7bd2f32c0fd7a02d5009a3c1f8a4d0d49bfb8e6c4751c0443be0aea2fa5a4"
+        }
+      ],
+      "ok": true,
+      "metrics": {
+        "rephraseCount": 29,
+        "fitFirstPassCount": 2,
+        "fitFirstPassRatio": 0.065,
+        "predictorSamples": 39,
+        "predictorResidualP90": 1.846,
+        "globalTempo": 1.25,
+        "averageTempo": 1.2763,
+        "maxTempo": 1.4241,
+        "degraded": true,
+        "prefetchStarted": 0,
+        "prefetchUsed": 0,
+        "prefetchDiscarded": 0,
+        "prefetchWaitMs": 0
+      },
+      "validation": {
+        "ok": true,
+        "violations": []
+      },
+      "sync": {
+        "ok": true,
+        "violations": []
+      },
+      "covered": 56
+    }
+  ],
+  "finishedAt": "2026-09-08T01:37:27.565Z"
+}

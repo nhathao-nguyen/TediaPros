@@ -4,6 +4,7 @@ import * as plans from '../src/main/dubbing/plan'
 import { applyDubbingTranslations, dubbingSpeakingDurations } from '../src/main/dubbing/translation'
 import { synthesizeDubbingPlan } from '../src/main/dubbing/synthesis'
 import { parseSrt } from '../src/shared/subtitles'
+import video30SourceCues from './fixtures/video30-source-cues.json'
 
 const cases = [
   { id: 'cue-2-6060', start: 6.06, split: 6.7, end: 8.18, next: 9.92,
@@ -19,6 +20,53 @@ function group(plan: plans.DubbingPlan): plans.DubbingPlan {
   assert.equal(typeof fn, 'function')
   return fn(plan, 'en')
 }
+
+test('source question fragments stay together even when translation ends the first fragment with a question', () => {
+  const source = [
+    { id: 'intro', start: 57, end: 58.68, text: '铺地板装台面。' },
+    { id: 'cue-45-58680', start: 58.68, end: 59.92, text: '遇到墙脚转折尺寸' },
+    { id: 'cue-46-59920', start: 59.92, end: 60.72, text: '总对不上怎么办？' },
+    { id: 'answer', start: 60.72, end: 62.44, text: '用尺子贴合墙脚和木板边缘' }
+  ]
+  const original = plans.buildDubbingPlan({ videoDuration: 64, cues: source })
+  const translated = applyDubbingTranslations(original, [
+    { id: 'intro', text: 'Pour poser du sol ou installer des comptoirs.' },
+    { id: 'cue-45-58680', text: 'Que faire aux angles et dimensions près des murs ?' },
+    { id: 'cue-46-59920', text: "S'ils ne correspondent jamais." },
+    { id: 'answer', text: 'Appliquez une règle contre le mur et les bords du panneau.' }
+  ])
+  const result = plans.groupDubbingPlanForSpeech(translated, 'fr')
+  assert.deepEqual(result.cues.map(cue => cue.sourceCueIds), [
+    ['intro'], ['cue-45-58680', 'cue-46-59920'], ['answer']
+  ])
+  assert.deepEqual(result.sourceCues, source)
+  assert.equal(result.cues[1].availableDuration, 60.72 - 0.5 - 58.68)
+  assert.equal(plans.validateDubbingPlan(result).ok, true)
+})
+
+test('speech segmentation is fixed by the source before translation length or punctuation is known', () => {
+  const source = Array.from({ length: 8 }, (_, i) => ({ id: `s${i}`, start: i, end: i + 1, text: '连续的原文片段' }))
+  const original = plans.buildDubbingPlan({ videoDuration: 9, cues: source })
+  const expected = group(original).cues.map(cue => cue.sourceCueIds)
+  for (const text of ['A short fragment', 'Que faire aux angles et dimensions près des murs ?', 'متابعة الكلام؟']) {
+    const translated = applyDubbingTranslations(original, source.map(cue => ({ id: cue.id, text })))
+    assert.deepEqual(group(translated).cues.map(cue => cue.sourceCueIds), expected)
+  }
+})
+
+test('video30 original unpunctuated checkpoint keeps cues 45 and 46 together without rewriting source', () => {
+  const sourcePlan = plans.buildDubbingPlan({ videoDuration: 71, cues: video30SourceCues })
+  const translated = applyDubbingTranslations(sourcePlan, video30SourceCues.map(cue => ({
+    id: cue.id, text: cue.id === 'cue-45-58680' ? 'Que faire aux angles et dimensions près des murs ?' : cue.text
+  })))
+  const result = plans.groupDubbingPlanForSpeech(translated, 'fr')
+  const question = result.cues.find(cue => cue.sourceCueIds.includes('cue-45-58680'))!
+  assert.ok(question.sourceCueIds.includes('cue-46-59920'))
+  assert.ok(question.availableDuration > 0.74)
+  assert.deepEqual(result.sourceCues, video30SourceCues)
+  assert.deepEqual(result.cues.flatMap(cue => cue.sourceCueIds), video30SourceCues.map(cue => cue.id))
+  assert.equal(plans.validateDubbingPlan(result).ok, true)
+})
 
 for (const sample of cases) test(`${sample.id} keeps all fragments in one physical speech window`, async () => {
   const sources = sample.source.map((text, i) => ({ id: i ? `${sample.id}-part${i}` : sample.id,
@@ -51,8 +99,8 @@ for (const sample of cases) test(`${sample.id} keeps all fragments in one physic
 
 test('grouping preserves question, speaker, sentence and pause boundaries plus a 0.5s inter-unit gap', async () => {
   const rows = [
-    ['引言', 'Intro', 0, 1], ['能吃吗', 'Edible?', 1, 3],
-    ['这是某种蟹', 'This is a crab', 3.3, 4], ['生活在山中', 'Lives in hills', 4, 5.5],
+    ['引言。', 'Intro', 0, 1], ['能吃吗？', 'Edible?', 1, 3],
+    ['这是某种蟹', 'This is a crab', 3.3, 4], ['生活在山中。', 'Lives in hills', 4, 5.5],
     ['还有别的吗？', 'Anything else?', 5.5, 7],
     ['[SPEAKER_00] 第一部分', 'Part one', 7, 8], ['[SPEAKER_01] 第二部分', 'Part two', 8, 9],
     ['完整句子。', 'A sentence.', 9.7, 11], ['另一句', 'Another', 11, 12]
@@ -101,7 +149,7 @@ test('measured overflow splits complete translated sentences at source boundarie
     { id: 's1', start: 1.4, end: 2.8, text: '源二' },
     { id: 's2', start: 2.8, end: 4.2, text: '源三' },
     { id: 's3', start: 4.2, end: 5.6, text: '源四' },
-    { id: 's4', start: 5.6, end: 7, text: '源五' },
+    { id: 's4', start: 5.6, end: 7, text: '源五。' },
     { id: 'question', start: 7, end: 8, text: '能吃吗?' }
   ]
   const translated = applyDubbingTranslations(
@@ -160,12 +208,12 @@ test('speech groups remain bounded and a still-impossible complete sentence is r
   }), /vượt trần/u)
 })
 
-test('a short final warning stays with its explanation before the next question', () => {
+test('a short final warning stays with its explanation up to the source sentence boundary', () => {
   const source = [
     { id: 'a', start: 33.13, end: 34.37, text: '这是某种蟹' },
     { id: 'b', start: 34.37, end: 35.91, text: '可能有寄生虫' },
     { id: 'c', start: 35.91, end: 37.23, text: '主要用来展示' },
-    { id: 'warning', start: 37.23, end: 38.09, text: '不能吃' },
+    { id: 'warning', start: 37.23, end: 38.09, text: '不能吃。' },
     { id: 'question', start: 38.09, end: 39.71, text: '这种蟹能吃吗？' }
   ]
   const plan = group(plans.buildDubbingPlan({ videoDuration: 41, cues: source }))
@@ -204,11 +252,20 @@ test('group captions retain original SRT index after invalid entries are skipped
   assert.ok(result.subtitles.every(cue => cue.sourceIndex === 2))
 })
 
-test('Arabic question marks separate a question from both neighboring utterances', () => {
+test('Arabic sentence and question endings separate neighboring utterances', () => {
   const original = plans.buildDubbingPlan({ videoDuration: 6, cues: [
-    { id: 'intro', start: 0, end: 1.5, text: 'مقدمة' },
+    { id: 'intro', start: 0, end: 1.5, text: 'مقدمة.' },
     { id: 'question', start: 1.5, end: 3, text: 'هل هذا صالح للأكل؟' },
     { id: 'answer', start: 3, end: 5, text: 'هذا صالح للأكل' }
   ] })
   assert.deepEqual(plans.groupDubbingPlanForSpeech(original, 'ar').cues.map(cue => cue.sourceCueIds), [['intro'], ['question'], ['answer']])
+})
+
+test('a question ending closes a multi-cue Arabic source sentence after its final fragment', () => {
+  const original = plans.buildDubbingPlan({ videoDuration: 6, cues: [
+    { id: 'first', start: 0, end: 1.5, text: 'هل هذا' },
+    { id: 'last', start: 1.5, end: 3, text: 'صالح للأكل؟' },
+    { id: 'answer', start: 3, end: 5, text: 'هذا صالح للأكل' }
+  ] })
+  assert.deepEqual(plans.groupDubbingPlanForSpeech(original, 'ar').cues.map(cue => cue.sourceCueIds), [['first', 'last'], ['answer']])
 })

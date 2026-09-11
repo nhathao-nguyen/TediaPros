@@ -34,6 +34,42 @@ function autoShortRequest(config: Partial<AutoShortConfig> = {}): AutoShortStart
   }
 }
 
+test('portrait setting preserves booleans, defaults off for old config and rejects malformed values', () => {
+  for (const portraitBlur of [undefined, false, true]) {
+    const result = validateAutoShortStartRequest(autoShortRequest({ portraitBlur }))
+    assert.equal(result.ok, true)
+    if (result.ok) assert.equal(result.value.config.portraitBlur, portraitBlur)
+  }
+  for (const portraitBlur of ['true', 1, {}, []]) {
+    assert.equal(validateAutoShortStartRequest(autoShortRequest({ portraitBlur } as never)).ok, false)
+  }
+})
+
+test('video adjustments default legacy configs and reject values outside the public contract', () => {
+  const legacy = validateAutoShortStartRequest(autoShortRequest())
+  assert.equal(legacy.ok, true)
+  if (legacy.ok) {
+    assert.deepEqual(legacy.value.config.videoAdjustments, {
+      zoom: 100, brightness: 0, saturation: 100, contrast: 100
+    })
+  }
+
+  const valid = validateAutoShortStartRequest(autoShortRequest({
+    videoAdjustments: { zoom: 108, brightness: -5, saturation: 95, contrast: 103 }
+  }))
+  assert.equal(valid.ok, true)
+
+  for (const videoAdjustments of [
+    { zoom: 99, brightness: 0, saturation: 100, contrast: 100 },
+    { zoom: 100, brightness: 21, saturation: 100, contrast: 100 },
+    { zoom: 100, brightness: 0, saturation: 201, contrast: 100 },
+    { zoom: 100, brightness: 0, saturation: 100, contrast: 49 },
+    'zoom'
+  ]) {
+    assert.equal(validateAutoShortStartRequest(autoShortRequest({ videoAdjustments } as never)).ok, false)
+  }
+})
+
 test('legacy config migrates to manual and accurate', () => {
   const untypedRequest = {
     items: [{ id: 'video-1', filePath: 'C:\\media\\video.mp4' }],
