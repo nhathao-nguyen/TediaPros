@@ -61,18 +61,18 @@
   },
   {
     "path": ".ai/tasks/2026-09-08-dubbing-grouping-activation.json",
-    "sha256": "7E491F064A41648FA29498AF0CB24E33F9568DDE204716834AC7C9ED332BD768",
-    "bytes": 690
+    "sha256": "B51EACA9BAFF21330CC377C5C2B314572C05D8E0A34978E82EFE09B7BFFFDF23",
+    "bytes": 668
   },
   {
     "path": ".ai/tasks/2026-09-08-dubbing-grouping-build-manifest.json",
-    "sha256": "58A594D50DFDE3D67A402738BB915713E3337D743F7110923ED6E83F3866F8A8",
-    "bytes": 1460
+    "sha256": "4C38B39F7EDC84CFCBA614D1F54B163A813CD2AC71FE78DDF8C30936BA7D8D96",
+    "bytes": 1421
   },
   {
     "path": ".ai/tasks/2026-09-08-dubbing-grouping-final-summary.json",
-    "sha256": "763575FE0F451B87037CB656081577119AE94CDB800D5A2C5A088B92B8DEA2E2",
-    "bytes": 2299
+    "sha256": "0E10253DF04244914FC946CA1AE28BF979533BF2D539924DB576235B5D777A3C",
+    "bytes": 2231
   },
   {
     "path": ".ai/tasks/2026-09-08-dubbing-profile-audit.ts",
@@ -81,8 +81,8 @@
   },
   {
     "path": ".ai/tasks/2026-09-08-rephrase-final-activation.json",
-    "sha256": "EC49F8CB947D39AFAF47A2D6CC084D87E12E4820EFE8BD6CDF71281DF9C53294",
-    "bytes": 682
+    "sha256": "286EC8948743C6EACD0CAF52697FEF17984734C0530B33BD0CE708E0BD0B8790",
+    "bytes": 660
   },
   {
     "path": ".ai/tasks/2026-09-08-rephrase-live-evidence6/report.json",
