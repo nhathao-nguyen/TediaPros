@@ -1,10 +1,7 @@
 import type { AutoShortQueueItemInput } from '../shared/types'
 
-/**
- * This flag is enabled only by the final Core acceptance task. Keeping the
- * authoritative gate in Main prevents an older Renderer from bypassing it.
- */
-export const AUTO_SHORT_TEMPORAL_CUT_CORE_VERIFIED = false
+/** Main remains the authority even when an older Renderer submits a job. */
+export const AUTO_SHORT_TEMPORAL_CUT_CORE_VERIFIED = true
 
 export class AutoShortCutCapabilityError extends Error {
   readonly code = 'CUT_CORE_NOT_VERIFIED' as const

@@ -1,6 +1,6 @@
 # TASK-20260912-AUTOSHORT-CUT-REPAIR: Sửa toàn bộ Cắt đoạn AutoShort
 
-- **Trạng thái:** Đang làm — P00–A03 và lõi B01–B04 đã kiểm chứng; tiếp tục nối validation/resource vào coordinator trước A04/A05.
+- **Trạng thái:** Đang làm — editor/media/pipeline Core đã kiểm chứng và Main execution gate đã mở; còn full-suite/build/app smoke trước bàn giao.
 - **Người thực hiện:** Codex.
 - **Thời gian:** 2026-09-12.
 - **Nhánh/worktree:** `codex/autoshort-cut-repair` tại `.worktrees/codex-autoshort-cut-repair`.
@@ -14,6 +14,7 @@ Sửa 12 findings của review và hoàn thành R01–R18 Core theo spec/plan. G
 - [ ] 12/12 findings có regression và evidence đóng.
 - [ ] 18/18 Core requirements có outcome đạt.
 - [x] P00: cut execution chưa verified bị Main chặn trước journal/model; no-cut vẫn được cho phép.
+- [x] Z gate: cờ Main chỉ được mở sau actual-media validator và coordinator integration pass.
 - [ ] A01–A05, B01–B04, C01–C05, Z01 hoàn tất theo plan.
 - [ ] Typecheck/full relevant tests/build và actual Electron/media matrix đạt theo Z01.
 
@@ -59,8 +60,10 @@ B01–B04 red: thiếu frame-index/compiler/cache helpers; managed FFmpeg 9 bác
 
 A05 UI pass bổ sung: ở harness 696×596, header giảm từ 132px xuống 77px, stage 227px, tools 242px và không overflow khi chưa có range. Timeline kept/removed + playhead, clocks nguồn/còn lại, undo/redo, restore từng đoạn/tất cả và tùy chọn bỏ qua vùng cắt khi xem đã nối. Thêm range 5.250–8.750 cập nhật còn 31.500s; undo khôi phục null và bật redo trong browser smoke.
 
+Pipeline/gate: integration dùng source FFV1+PCM thật 6s, bỏ [2,4), coordinator gửi đúng prepared media 100 frame cho cả ASR stub và renderer stub; `cut-validation.json` được publish trong audit. Journal chấp nhận và phục hồi edit exact-frame v2 qua atomic store. Capability mặc định Main đã chuyển sang execution=true sau 4 capability tests, pipeline test, batch/store/resume, disk/queue và typecheck đều PASS.
+
 Các cảnh báo audit dependency của `npm install` là trạng thái dependency hiện tại, không tự chạy `npm audit fix` ngoài phạm vi.
 
 ## 7. Bàn Giao
 
-Tiếp theo: validator độc lập và budget/lease thật cho prepared media, sau đó A04/A05 và pipeline/publication C. Guard chưa được mở; synthetic media đã chứng minh lịch frame/sample nhưng chưa chứng minh Electron/UI và pipeline AI hoàn chỉnh.
+Tiếp theo: chạy toàn bộ local-runtime, build và actual Electron smoke bằng test profile. Live provider/real OCR/STTN vẫn phải được ghi đúng là chưa kiểm chứng nếu runtime không có trong môi trường smoke.

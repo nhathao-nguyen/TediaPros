@@ -1,4 +1,5 @@
 import { normalizeAutoShortTemporalEdit } from './autoShortTemporalEdit'
+import { validateAutoShortTemporalEditV2 } from './autoShortCutContract'
 
 export type BatchItemState =
   | 'pending'
@@ -27,7 +28,7 @@ export interface BatchItemRecord {
   inputPath: string
   inputDigest: string
   configDigest: string
-  temporalEdit?: import('./autoShortTemporalEdit').AutoShortTemporalEdit
+  temporalEdit?: import('./autoShortTemporalEdit').AutoShortTemporalEdit | import('./autoShortCutContract').AutoShortTemporalEditV2
   ordinal: number
   attempt: number
   state: BatchItemState
@@ -143,7 +144,10 @@ export function validateBatchSnapshot(value: unknown): BatchSnapshot {
     const failure = item.failure === undefined ? undefined : validateFailure(item.failure)
     let temporalEdit
     if (item.temporalEdit !== undefined) {
-      temporalEdit = normalizeAutoShortTemporalEdit(item.temporalEdit)
+      const candidate = item.temporalEdit as { schemaVersion?: unknown }
+      temporalEdit = candidate.schemaVersion === 2
+        ? validateAutoShortTemporalEditV2(item.temporalEdit)
+        : normalizeAutoShortTemporalEdit(item.temporalEdit)
     }
     return {
       itemId,

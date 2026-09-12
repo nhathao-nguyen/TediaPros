@@ -198,15 +198,12 @@ async function initializeBatchJournal(job: AutoShortJob): Promise<void> {
   const now = new Date().toISOString()
   const items: BatchItemRecord[] = []
   for (const [ordinal, item] of job.request.items.entries()) {
-    if (item.temporalEdit?.schemaVersion === 2) {
-      throw new AutoShortCutCapabilityError()
-    }
     items.push({
       itemId: item.id,
       inputPath: item.filePath,
       inputDigest: await hashFileSha256(item.filePath, job.controller.signal),
       configDigest: itemConfigDigest(job.request.config, item),
-      ...(item.temporalEdit?.schemaVersion === 1 ? { temporalEdit: item.temporalEdit } : {}),
+      ...(item.temporalEdit ? { temporalEdit: item.temporalEdit } : {}),
       ordinal,
       attempt: 0,
       state: 'pending'

@@ -38,3 +38,8 @@ test('allows a temporal cut only after the explicit Core gate is enabled', () =>
   assert.doesNotThrow(() => assertCutRunCapability(true, true))
   assert.deepEqual(autoShortTemporalCutCapability(true), { editing: true, execution: true })
 })
+
+test('ships the verified Main capability enabled after media and pipeline gates pass', () => {
+  assert.doesNotThrow(() => assertCutRunCapability(true))
+  assert.deepEqual(autoShortTemporalCutCapability(), { editing: true, execution: true })
+})
