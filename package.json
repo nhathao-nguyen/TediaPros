@@ -1,6 +1,6 @@
 {
   "name": "tedia-pros",
-  "version": "0.1.24",
+  "version": "0.1.25",
   "description": "TediaPros - Trình tải và xử lý video/audio đa nền tảng",
   "main": "./out/main/index.js",
   "author": "NeeyuBL",

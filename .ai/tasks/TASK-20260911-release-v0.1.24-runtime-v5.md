@@ -1,4 +1,4 @@
-# TASK-20260911: Phát hành TediaPros v0.1.24 và runtime-v5
+# TASK-20260911: Phát hành TediaPros v0.1.25 và runtime-v5
 
 - **Trạng thái:** Đang phát hành
 - **Người thực hiện:** Codex
@@ -8,20 +8,20 @@
 
 ## 1. Mục Tiêu (Goal)
 
-Tích hợp và phát hành các thay đổi Auto Short hiện tại dưới phiên bản ứng dụng `v0.1.24`, đồng thời xuất bản `runtime-v5` để máy khác tải đầy đủ các engine Windows theo nhu cầu.
+Tích hợp và phát hành các thay đổi Auto Short hiện tại dưới phiên bản ứng dụng `v0.1.25`, đồng thời xuất bản `runtime-v5` để máy khác tải đầy đủ các engine Windows theo nhu cầu.
 
 ---
 
 ## 2. Tiêu Chuẩn Nghiệm Thu (Acceptance Criteria)
 
-- [x] Version, package lock và release notes đồng bộ ở `0.1.24`.
+- [x] Version, package lock và release notes đồng bộ ở `0.1.25`.
 - [x] Runtime manifest chứa đủ FFmpeg, Whisper, Whisper CUDA, OCR, Video2X, Douyin, Separator và STTN.
 - [x] STTN public asset dùng bản CPU portable nằm trong giới hạn GitHub; build CUDA cục bộ không bị xóa.
 - [x] Typecheck, build, full local-runtime suite và các engine tests đều pass.
 - [x] Installer Windows local qua package/release verification.
-- [ ] Commit được fast-forward vào `main` và push.
-- [ ] GitHub release `runtime-v5` được publish và đủ 8 asset đã verify.
-- [ ] GitHub release `v0.1.24` được publish với installer, blockmap và `latest.yml`.
+- [x] Commit được fast-forward vào `main` và push.
+- [x] GitHub release `runtime-v5` được publish và đủ 8 asset đã verify.
+- [ ] GitHub release `v0.1.25` được publish với installer, blockmap và `latest.yml`.
 
 ---
 
@@ -54,7 +54,7 @@ Tích hợp và phát hành các thay đổi Auto Short hiện tại dưới phi
 ## 6. Kiểm Chứng & Bằng Chứng (Verification & Evidence)
 
 ```powershell
-node scripts/verify-release.mjs v0.1.24
+node scripts/verify-release.mjs v0.1.25
 npm.cmd run typecheck
 npm.cmd run build
 npm.cmd run test:local-runtime
@@ -71,10 +71,10 @@ git diff --check
 - OCR: 47 PASS, 10 environment-dependent skip.
 - STTN: 26 test, 9 PASS và 17 dependency/media-dependent skip trên system Python; CI cài pinned build environment trước khi đóng gói.
 - Separator: 13/13 PASS.
-- Windows package verification: PASS; installer `TediaPros-0.1.24-setup.exe` có SHA-256 `951d512165c446f8f7e54248add4a1f177638094480a366273f08a7ae3d71aef`.
+- Windows package verification của bản `0.1.24`: PASS; installer có SHA-256 `951d512165c446f8f7e54248add4a1f177638094480a366273f08a7ae3d71aef`. Bản `0.1.25` sẽ chạy lại pipeline ứng dụng sau sửa kiểm chứng đường dẫn CI.
 
 ---
 
 ## 7. Bước Tiếp Theo / Ghi Chú Bàn Giao (Handoff Notes)
 
-Cập nhật checklist và URL release sau khi hai workflow GitHub kết thúc. Không gọi release thành công chỉ dựa trên việc push tag; phải xác nhận conclusion và danh sách asset từ GitHub API.
+`v0.1.24` đã được push nhưng workflow dừng trước packaging vì test dùng chuỗi đường dẫn alias 8.3 (`C:\\Users\\RUNNER~1`) khác canonical long path (`C:\\Users\\runneradmin`) cho cùng `tieude.txt`; không có GitHub Release asset được publish. Test đã canonicalize bằng `realpath`; phát hành tiếp dưới `v0.1.25` để giữ tag cũ bất biến. Cập nhật checklist và URL release sau khi workflow mới kết thúc. Không gọi release thành công chỉ dựa trên việc push tag; phải xác nhận conclusion và danh sách asset từ GitHub API.

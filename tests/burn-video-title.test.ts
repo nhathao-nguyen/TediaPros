@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict'
-import { copyFile, mkdir, mkdtemp, readFile, rm, writeFile } from 'node:fs/promises'
+import { copyFile, mkdir, mkdtemp, readFile, realpath, rm, writeFile } from 'node:fs/promises'
 import { existsSync } from 'node:fs'
 import { spawnSync } from 'node:child_process'
 import { createServer } from 'node:http'
@@ -61,7 +61,9 @@ test('burn title uses the exported SRT language and video stream duration, then 
     assert.equal(completed.output, f.video)
     assert.equal(completed.title, title)
     assert.deepEqual(completed.seoMetadata, seo(title))
-    assert.equal(completed.titlePath, join(f.root, 'tieude.txt'))
+    // Windows may expose the same temp directory through an 8.3 alias on
+    // the test side and its canonical long path from the title writer.
+    assert.equal(await realpath(completed.titlePath!), await realpath(join(f.root, 'tieude.txt')))
     assert.equal(await readFile(completed.titlePath!, 'utf8'),
       `${title}\n\nDescription:\nVideo mô tả chính xác nội dung trong phụ đề.\n\nTags:\nnội dung video, phụ đề\n\nHashtags:\n#noidungvideo #phude\n`)
     assert.equal(await readFile(f.video, 'utf8'), 'completed video sentinel')

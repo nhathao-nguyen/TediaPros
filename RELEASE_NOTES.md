@@ -1,3 +1,9 @@
+## TediaPros v0.1.25
+
+### Phát hành Windows
+
+- Sửa kiểm chứng đường dẫn title sidecar trên Windows CI: cùng một thư mục tạm có thể được Node trả về qua alias 8.3 hoặc đường dẫn dài. Test nay canonicalize hai đường dẫn trước khi so sánh, nên không còn chặn đóng gói do khác biểu diễn đường dẫn.
+
 ## TediaPros v0.1.24
 
 ### Auto Short theo vùng OCR
