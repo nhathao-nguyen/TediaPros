@@ -10,10 +10,10 @@
       "capabilities": ["version", "ffprobe", "ocr-mask-v1"],
       "source": {
         "provider": "BtbN/FFmpeg-Builds",
-        "release": "autobuild-2026-08-29-13-12",
-        "asset": "ffmpeg-n9.0.1-11-ge47273f4d9-win64-gpl-9.0.zip",
-        "sha256": "30bac4e9cd39dbd0873077c15afec858c69a31a195b1b41388a62f4de368f3ea",
-        "url": "https://github.com/BtbN/FFmpeg-Builds/releases/download/autobuild-2026-08-29-13-12/ffmpeg-n9.0.1-11-ge47273f4d9-win64-gpl-9.0.zip"
+        "release": "autobuild-2026-09-11-13-20",
+        "asset": "ffmpeg-n9.0.1-29-gad500d59cb-win64-gpl-9.0.zip",
+        "sha256": "af971817c209439bb0374b5e623aca894042aa435426217d0dd5cfd15fb69d1b",
+        "url": "https://github.com/BtbN/FFmpeg-Builds/releases/download/autobuild-2026-09-11-13-20/ffmpeg-n9.0.1-29-gad500d59cb-win64-gpl-9.0.zip"
       }
     },
     "whisper-engine": {

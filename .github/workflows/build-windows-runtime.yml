@@ -141,9 +141,9 @@ jobs:
         shell: pwsh
         run: |
           $archive = Join-Path $env:RUNNER_TEMP 'ffmpeg-pinned.zip'
-          Invoke-WebRequest -Uri 'https://github.com/BtbN/FFmpeg-Builds/releases/download/autobuild-2026-08-29-13-12/ffmpeg-n9.0.1-11-ge47273f4d9-win64-gpl-9.0.zip' -OutFile $archive
+          Invoke-WebRequest -Uri 'https://github.com/BtbN/FFmpeg-Builds/releases/download/autobuild-2026-09-11-13-20/ffmpeg-n9.0.1-29-gad500d59cb-win64-gpl-9.0.zip' -OutFile $archive
           $hash = (Get-FileHash -LiteralPath $archive -Algorithm SHA256).Hash.ToLowerInvariant()
-          if ($hash -ne '30bac4e9cd39dbd0873077c15afec858c69a31a195b1b41388a62f4de368f3ea') { throw "FFmpeg SHA-256 mismatch: $hash" }
+          if ($hash -ne 'af971817c209439bb0374b5e623aca894042aa435426217d0dd5cfd15fb69d1b') { throw "FFmpeg SHA-256 mismatch: $hash" }
           $extract = Join-Path $env:RUNNER_TEMP 'ffmpeg-pinned'
           Expand-Archive -LiteralPath $archive -DestinationPath $extract -Force
           $ffmpeg = Get-ChildItem -LiteralPath $extract -Filter ffmpeg.exe -Recurse | Select-Object -First 1

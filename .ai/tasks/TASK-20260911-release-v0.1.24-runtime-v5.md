@@ -37,6 +37,7 @@ Tích hợp và phát hành các thay đổi Auto Short hiện tại dưới phi
 - `runtime-v5` là release bất biến mới, chưa tồn tại trên GitHub trước lần phát hành này.
 - Workflow tạo từng ZIP engine từ input sạch, kiểm hash/capability rồi mới upload.
 - STTN CUDA 1.1.1 đo thực tế: 4.809.810.691 byte giải nén và 3.481.046.931 byte ZIP, vượt giới hạn một asset GitHub Release. Workflow public vì vậy build PyTorch CPU; model STTN vẫn tải riêng với SHA-256 ghim sẵn.
+- Lần publish đầu tiên dừng ở FFmpeg vì release BtbN `autobuild-2026-08-29-13-12` đã bị gỡ (HTTP 404). Đã re-pin sang asset tĩnh FFmpeg 9.0.1 còn tồn tại của `autobuild-2026-09-11-13-20`, kiểm tra qua GitHub API và ghim SHA-256 `af971817c209439bb0374b5e623aca894042aa435426217d0dd5cfd15fb69d1b`.
 
 ---
 
