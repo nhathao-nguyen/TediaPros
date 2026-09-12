@@ -3,7 +3,7 @@ Browser tab: 1, Title: "AutoShort cut review harness", URL: "http://127.0.0.1:56
 	1 container root
 		2 text Audit harness · commit 0d7fa21 · component/CSS thật, shell cố định để đo layout · không phải app Electron đang chạy
 		3 container
-			4 text Chiều rộng panel 
+			4 text Chiều rộng panel
 			5 pop up button (collapsed, settable) Chiều rộng panel , Value: 696 px, Secondary Actions: Expand
 				6 menu
 					7 (selected) 696 px
@@ -35,7 +35,7 @@ Browser tab: 1, Title: "AutoShort cut review harness", URL: "http://127.0.0.1:56
 				38 button Bỏ sau
 				39 button 0.000000s – 3.000000s
 					40 text 0.000000
-					41 text s – 
+					41 text s –
 					42 text 3.000000
 					43 text s
 				44 button Khôi phục
