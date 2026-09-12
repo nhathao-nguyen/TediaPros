@@ -120,6 +120,7 @@ const knownTests = [
   'autoshort-cut-plan.test',
   'autoshort-cut-resources.test',
   'autoshort-cut-cache.test',
+  'autoshort-cut-validation.test',
   'autoshort-region-geometry.test',
   'autoshort-queue-throughput.test',
   'autoshort-item-scope.test',

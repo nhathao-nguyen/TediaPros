@@ -100,6 +100,7 @@ import { cutAutoShortSourceByFramePlan } from './autoShortCutMedia'
 import { probeAutoShortFrameIndex, upgradeLegacyTemporalEdit } from './autoShortFrameIndex'
 import { compileFrameCutPlan, cutTimeToDecimal } from '../shared/autoShortCutPlan'
 import { semanticFrameEditDigest, semanticTemporalSourceDigest } from './autoShortCutIdentity'
+import { validatePreparedCut } from './autoShortCutValidation'
 import { assessTranslationLanguage, normalizeTranslationLocale } from './translation/language'
 import { mapTranslationsStrict } from './translation/response'
 import { createInvalidSourceAssessment } from './translation/orchestrator'
@@ -615,11 +616,20 @@ export function createAutoShortItemProcessor(
             hasAudio: meta.hasAudio,
             signal
           })
+          const validation = await validatePreparedCut({
+            ffmpegPath: ffmpeg,
+            ffprobePath: ffprobe,
+            sourcePath: item.filePath,
+            preparedPath: result.path,
+            plan: result.plan,
+            signal
+          })
+          if (!validation.ok) throw new Error(`${validation.code}: ${validation.details}`)
           span.updateCounters({
             removedRangeCount: temporalEdit.removedRanges.length,
             outputDurationMs: Math.round(Number(cutTimeToDecimal(result.plan.editedDuration)) * 1000)
           })
-          return { ...result, temporalEdit }
+          return { ...result, temporalEdit, validation }
         })
         processingPath = cut.path
         processingDigest = semanticTemporalSourceDigest(sourceDigest, cut.temporalEdit)
@@ -637,6 +647,9 @@ export function createAutoShortItemProcessor(
         const cutManifestPath = join(workDir, 'cut-plan.json')
         await writeFile(cutManifestPath, JSON.stringify(cut.plan, null, 2), 'utf8')
         artifactEntries.push({ source: cutManifestPath, name: 'cut-plan.json' })
+        const validationManifestPath = join(workDir, 'cut-validation.json')
+        await writeFile(validationManifestPath, JSON.stringify(cut.validation.manifest, null, 2), 'utf8')
+        artifactEntries.push({ source: validationManifestPath, name: 'cut-validation.json' })
       }
       const visualDurationSeconds = visualVideoDuration(processingMeta)
 

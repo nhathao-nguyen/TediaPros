@@ -69,6 +69,7 @@ test('real cut keeps 10-bit frames and a 0.5 second source audio lead-in', { ski
       identity: { sourceDigest: index.identity.sourceDigest, editDigest: 'b'.repeat(64), executorRevision: 'cut-executor-v2', runtimeDigest: 'c'.repeat(64), mediaPolicyDigest: 'd'.repeat(64) }
     })
     const cut = await cutAutoShortSourceByFramePlan({ ffmpeg: ffmpegPath!, sourcePath: source, workDir, plan, hasAudio: true, signal: new AbortController().signal })
+    assert.equal(cut.chunkCount, 1)
     const probed = spawnSync(ffprobe, [
       '-v', 'error', '-count_frames', '-show_entries', 'stream=codec_type,pix_fmt,nb_read_frames,duration,sample_rate,channels', '-of', 'json', cut.path
     ], { windowsHide: true, encoding: 'utf8' })
@@ -89,6 +90,47 @@ test('real cut keeps 10-bit frames and a 0.5 second source audio lead-in', { ski
       if (Math.abs(samples.readInt16LE(index * 2)) > 16) { firstSignal = index; break }
     }
     assert.ok(firstSignal >= 23_900 && firstSignal <= 24_100, `first signal sample ${firstSignal}`)
+  } finally {
+    await rm(root, { recursive: true, force: true })
+  }
+})
+
+test('real cut stages more than 64 keep segments into bounded chunks', { skip: ffmpegPath ? false : 'TEDIAPROS_TEST_FFMPEG is not set' }, async () => {
+  const root = await mkdtemp(join(tmpdir(), 'tedia-cut-chunks-'))
+  const source = join(root, 'source.mkv')
+  const ffprobe = join(dirname(ffmpegPath!), process.platform === 'win32' ? 'ffprobe.exe' : 'ffprobe')
+  try {
+    const generated = spawnSync(ffmpegPath!, [
+      '-y', '-hide_banner', '-loglevel', 'error', '-f', 'lavfi',
+      '-i', 'testsrc2=size=64x64:rate=100:duration=2.6', '-an', '-c:v', 'ffv1', source
+    ], { windowsHide: true, encoding: 'utf8' })
+    assert.equal(generated.status, 0, generated.stderr)
+    const index = await probeAutoShortFrameIndex({
+      ffprobePath: ffprobe, sourcePath: source, itemId: 'chunk-fixture', signal: new AbortController().signal
+    })
+    assert.equal(index.frameCount, 260)
+    const temporalEdit = {
+      ...index.identity, schemaVersion: 2 as const, editId: 'chunk-edit', revision: 1, mode: 'ripple-delete' as const,
+      policyVersion: 'cut-v2' as const,
+      removedRanges: Array.from({ length: 130 }, (_, rangeIndex) => ({
+        id: `remove-${rangeIndex}`,
+        start: index.validatedBoundaries[rangeIndex * 2 + 1],
+        end: index.validatedBoundaries[rangeIndex * 2 + 2]
+      })),
+      reviewResolutions: []
+    }
+    const plan = compileFrameCutPlan({
+      edit: temporalEdit, index,
+      identity: { sourceDigest: index.identity.sourceDigest, editDigest: 'b'.repeat(64), executorRevision: 'cut-executor-v2', runtimeDigest: 'c'.repeat(64), mediaPolicyDigest: 'd'.repeat(64) }
+    })
+    assert.equal(plan.keepSegments.length, 130)
+    const workDir = join(root, 'work')
+    await mkdir(workDir)
+    const cut = await cutAutoShortSourceByFramePlan({ ffmpeg: ffmpegPath!, sourcePath: source, workDir, plan, hasAudio: false, signal: new AbortController().signal })
+    assert.equal(cut.chunkCount, 3)
+    const probed = spawnSync(ffprobe, ['-v', 'error', '-count_frames', '-select_streams', 'v:0', '-show_entries', 'stream=nb_read_frames', '-of', 'default=nw=1:nk=1', cut.path], { windowsHide: true, encoding: 'utf8' })
+    assert.equal(probed.status, 0, probed.stderr)
+    assert.equal(Number(probed.stdout.trim()), 130)
   } finally {
     await rm(root, { recursive: true, force: true })
   }

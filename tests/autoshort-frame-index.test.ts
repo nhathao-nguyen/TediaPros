@@ -37,7 +37,7 @@ test('parses VFR presentation ticks, EOF and audio epoch without average FPS', (
   const index = parseFfprobeFrameIndex({
     itemId: 'item-1', sourceDigest: 'a'.repeat(64),
     videoStream: { time_base: '1/1000', start_pts: 100, duration_ts: 130 },
-    audioStream: { time_base: '1/48000', start_pts: 28_800, sample_rate: '48000', channels: 2 },
+    audioStream: { time_base: '1/48000', start_pts: 28_800, sample_rate: '48000', channels: 2, sample_fmt: 's32', bits_per_raw_sample: '24' },
     frames: [
       { best_effort_timestamp: 100, pkt_duration: 40 },
       { best_effort_timestamp: 140, pkt_duration: 50 },
@@ -48,6 +48,7 @@ test('parses VFR presentation ticks, EOF and audio epoch without average FPS', (
   assert.deepEqual(index.videoEpoch, { num: '1', den: '10' })
   assert.deepEqual(index.sourceDuration, { num: '13', den: '100' })
   assert.deepEqual(index.audio?.startRelativeToVideo, { num: '1', den: '2' })
+  assert.equal(index.audio?.pcmCodec, 'pcm_s24le')
 })
 
 test('keeps frame index pages bounded and requires an explicit valid limit', () => {

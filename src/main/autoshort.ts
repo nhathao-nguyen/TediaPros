@@ -68,7 +68,8 @@ import type { TranslationAssessment, TranslationInput, TranslationItem } from '.
 import type { TranslationBudgetSnapshot } from './translation/budget'
 import { runAutoShortQueue } from './autoShortQueueRunner'
 import { AutoShortResourceManager, getGlobalResourceManager } from './autoShortResourceManager'
-import { getGlobalAutoShortDiskBudget, type DiskReservation } from './autoShortDiskBudget'
+import { getGlobalAutoShortDiskBudget, reserveAutoShortVolumes, type DiskReservation } from './autoShortDiskBudget'
+import { cutVolumeReservations } from './autoShortCutPreparation'
 import { AutoShortTelemetryJobBudget } from './autoShortTelemetry'
 import { resolveExecutionPolicy, CONSERVATIVE_POLICY, type AutoShortExecutionPolicy } from './autoShortExecutionPolicy'
 import { validateAutoShortStartRequest } from '../shared/autoShortContract'
@@ -3134,6 +3135,15 @@ export function estimateAutoShortFutureBytes(inputBytes: number): number {
   )
 }
 
+export function estimateAutoShortCutFutureBytes(inputBytes: number): { scratch: number; output: number; cache: number } {
+  const normalized = Number.isFinite(inputBytes) && inputBytes > 0 ? inputBytes : 0
+  return {
+    scratch: Math.max(AUTOSHORT_MIN_FUTURE_BYTES, Math.ceil(normalized * 8 + AUTOSHORT_FIXED_FUTURE_BYTES)),
+    output: Math.max(AUTOSHORT_FIXED_FUTURE_BYTES, Math.ceil(normalized * 2)),
+    cache: Math.max(64 * 1024 * 1024, Math.ceil(normalized))
+  }
+}
+
 export function autoShortVolumeForPath(filePath: string): string {
   const drive = filePath.match(/^([A-Za-z]):(?:[\\/]|$)/)?.[1]
   if (drive) return `${drive.toUpperCase()}:\\`
@@ -3215,24 +3225,29 @@ async function executeJob(job: AutoShortJob): Promise<AutoShortBatchResult> {
     if (!job.batchSnapshot) await initializeBatchJournal(job)
     await preflight(job)
     const policy = resolveExecutionPolicy(job.request.config?.executionPolicy)
-    // Two-item execution remains an explicit experimental opt-in. When it is
-    // selected, admit each item through the disk ledger before starting any
-    // child process; the conservative production default (1) is unchanged.
-    const diskBudget = policy.maxActiveItems === 2 ? getGlobalAutoShortDiskBudget() : undefined
+    // Every item is admitted through the shared per-volume ledger before any
+    // child process. Two-item execution therefore cannot hide scratch usage on
+    // one drive behind free space reported by a different output drive.
+    const diskBudget = getGlobalAutoShortDiskBudget()
     const retryOutputDirs = new Map<string, string>()
     const queueResults = await runAutoShortQueue({
       items: job.request.items,
       maxActiveItems: policy.maxActiveItems,
       signal: job.controller.signal,
-      admitItem: diskBudget
-        ? async (item, _index, _totalCount, signal) => {
-            const inputInfo = await stat(item.filePath).catch(() => null)
-            const estimate = estimateAutoShortFutureBytes(inputInfo?.size || 0)
-            const volume = autoShortVolumeForPath(job.request.config.outputDir)
-            logInfo(`[AutoShort] disk-admission volume=${volume} estimateBytes=${estimate} item=${safeArtifactSegment(item.id)}`)
-            return diskBudget.reserve(volume, estimate, signal)
-          }
-        : undefined,
+      admitItem: async (item, _index, _totalCount, signal) => {
+        const inputInfo = await stat(item.filePath).catch(() => null)
+        const inputBytes = inputInfo?.size || 0
+        const volumes = item.temporalEdit?.removedRanges.length
+          ? cutVolumeReservations({
+              scratchVolume: autoShortVolumeForPath(app.getPath('temp')),
+              outputVolume: autoShortVolumeForPath(job.request.config.outputDir),
+              cacheVolume: autoShortVolumeForPath(app.getPath('userData')),
+              bytesByVolume: estimateAutoShortCutFutureBytes(inputBytes)
+            })
+          : [{ volume: autoShortVolumeForPath(job.request.config.outputDir), bytes: estimateAutoShortFutureBytes(inputBytes) }]
+        logInfo(`[AutoShort] disk-admission reservations=${volumes.map((entry) => `${entry.volume}:${entry.bytes}`).join(',')} item=${safeArtifactSegment(item.id)}`)
+        return reserveAutoShortVolumes(diskBudget, volumes, signal)
+      },
       processItem: async (item, index, totalCount, reservation, attempt = 1) => {
         const journalItem = job.batchSnapshot?.items.find((entry) => entry.itemId === item.id)
         const itemOutputDir = retryOutputDirs.get(item.id) || journalItem?.reservedOutputDir ||

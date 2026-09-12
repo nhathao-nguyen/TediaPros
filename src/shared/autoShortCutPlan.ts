@@ -24,7 +24,12 @@ export interface CutExecutionPlan {
   sourceDuration: CutTime
   editedDuration: CutTime
   videoEpoch: CutTime
-  audio?: { sampleRate: number; channels: number; startRelativeToVideo: CutTime }
+  audio?: {
+    sampleRate: number
+    channels: number
+    startRelativeToVideo: CutTime
+    pcmCodec?: 'pcm_u8' | 'pcm_s16le' | 'pcm_s24le' | 'pcm_s32le' | 'pcm_f32le' | 'pcm_f64le'
+  }
   keepSegments: CutKeepSegment[]
   joins: { leftSegmentId: string; rightSegmentId: string; editedAt: CutTime }[]
 }

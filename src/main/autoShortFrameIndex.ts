@@ -79,6 +79,20 @@ interface FfprobeStreamInput {
   duration_ts?: unknown
   sample_rate?: unknown
   channels?: unknown
+  sample_fmt?: unknown
+  bits_per_raw_sample?: unknown
+  bits_per_sample?: unknown
+}
+
+export function selectCutPcmCodec(stream: FfprobeStreamInput): NonNullable<CutFrameIndex['audio']>['pcmCodec'] {
+  const format = typeof stream.sample_fmt === 'string' ? stream.sample_fmt.toLowerCase() : ''
+  const rawBits = Number(stream.bits_per_raw_sample || stream.bits_per_sample || 0)
+  if (format === 'u8' || format === 'u8p') return 'pcm_u8'
+  if (format === 's16' || format === 's16p') return 'pcm_s16le'
+  if (format === 's32' || format === 's32p') return rawBits > 0 && rawBits <= 24 ? 'pcm_s24le' : 'pcm_s32le'
+  if (format === 'flt' || format === 'fltp') return 'pcm_f32le'
+  if (format === 'dbl' || format === 'dblp') return 'pcm_f64le'
+  return 'pcm_s32le'
 }
 
 interface FfprobeFrameInput {
@@ -158,7 +172,8 @@ export function parseFfprobeFrameIndex(input: {
     audio = {
       sampleRate: positiveInteger(input.audioStream.sample_rate, 'audio sample rate'),
       channels: positiveInteger(input.audioStream.channels, 'audio channels'),
-      startRelativeToVideo: subtract(audioStart, videoEpoch)
+      startRelativeToVideo: subtract(audioStart, videoEpoch),
+      pcmCodec: selectCutPcmCodec(input.audioStream)
     }
   }
   const frameIndexRevision = createHash('sha256').update(canonicalJson({
@@ -251,7 +266,7 @@ export async function probeAutoShortFrameIndex(input: {
     '-of', 'json', input.sourcePath
   ], input.signal) as { streams?: FfprobeStreamInput[]; frames?: FfprobeFrameInput[] }
   const audioRaw = await captureJson(input.ffprobePath, [
-    '-v', 'error', '-select_streams', 'a:0', '-show_entries', 'stream=codec_type,time_base,start_pts,duration_ts,sample_rate,channels',
+    '-v', 'error', '-select_streams', 'a:0', '-show_entries', 'stream=codec_type,time_base,start_pts,duration_ts,sample_rate,channels,sample_fmt,bits_per_raw_sample,bits_per_sample',
     '-of', 'json', input.sourcePath
   ], input.signal) as { streams?: FfprobeStreamInput[] }
   const videoStream = raw.streams?.[0]

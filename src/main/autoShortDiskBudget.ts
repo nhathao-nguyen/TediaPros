@@ -18,6 +18,38 @@ export interface AutoShortDiskBudgetOptions {
   getFreeBytes?: (volume: string) => Promise<number> | number
 }
 
+/**
+ * Acquire all physical-volume reservations as one queue-owned lease. If any
+ * later volume fails, every earlier reservation is released immediately.
+ */
+export async function reserveAutoShortVolumes(
+  budget: AutoShortDiskBudget,
+  requests: readonly { volume: string; bytes: number }[],
+  signal: AbortSignal
+): Promise<DiskReservation> {
+  const owned: DiskReservation[] = []
+  try {
+    for (const request of requests) {
+      owned.push(await budget.reserve(request.volume, request.bytes, signal))
+    }
+  } catch (error) {
+    for (const reservation of [...owned].reverse()) reservation.release()
+    throw error
+  }
+  let released = false
+  return {
+    update: (remainingBytesToWrite) => {
+      if (released) return
+      for (const reservation of owned) reservation.update(remainingBytesToWrite)
+    },
+    release: () => {
+      if (released) return
+      released = true
+      for (const reservation of [...owned].reverse()) reservation.release()
+    }
+  }
+}
+
 export class AutoShortDiskBudgetError extends Error {
   readonly code: 'ENOSPC' | 'ABORT_ERR'
   readonly volume: string
