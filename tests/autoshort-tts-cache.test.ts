@@ -24,6 +24,14 @@ function validWavBytes(marker = 0): Buffer {
   return bytes
 }
 
+async function waitFor(predicate: () => boolean, timeoutMs = 1_000): Promise<void> {
+  const deadline = Date.now() + timeoutMs
+  while (!predicate()) {
+    if (Date.now() >= deadline) throw new Error('Timed out waiting for the cache producer to start')
+    await new Promise((resolve) => setTimeout(resolve, 5))
+  }
+}
+
 test('TTS cache single-flight commits atomically and never exposes producer temp bytes', async () => {
   const root = await mkdtemp(join(tmpdir(), 'tedia-tts-cache-'))
   try {
@@ -40,7 +48,7 @@ test('TTS cache single-flight commits atomically and never exposes producer temp
 
     const first = store.getOrCreate('same-key', new AbortController().signal, producer)
     const second = store.getOrCreate('same-key', new AbortController().signal, producer)
-    await new Promise((resolve) => setTimeout(resolve, 5))
+    await waitFor(() => producerCalls === 1)
     assert.equal(producerCalls, 1)
     const cachePath = join(root, 'same-key.wav')
     assert.equal(await stat(cachePath).then(() => true).catch(() => false), false)

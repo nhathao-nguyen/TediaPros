@@ -1,8 +1,53 @@
 import assert from 'node:assert/strict'
 import test from 'node:test'
+import { createServer } from 'node:http'
+import { mkdtemp, readFile, rm } from 'node:fs/promises'
+import { tmpdir } from 'node:os'
+import { join } from 'node:path'
 import { synthesizeDubbingPlan } from '../src/main/dubbing/synthesis'
 import { buildDubbingPlan } from '../src/main/dubbing/plan'
 import { applyDubbingTranslations } from '../src/main/dubbing/translation'
+import { generateVoiceClone, isRetryableVoiceCloneGenerationError } from '../src/main/tts'
+
+test('voice clone refreshes only the explicit Chatterbox generation failure once', async () => {
+  assert.equal(isRetryableVoiceCloneGenerationError('chatterbox_generation_failed: Chatterbox generation failed'), true)
+  assert.equal(isRetryableVoiceCloneGenerationError('HTTP 403 Forbidden'), false)
+
+  let requests = 0
+  const wav = Buffer.from('RIFF0000WAVEfmt ')
+  const server = createServer((request, response) => {
+    request.resume()
+    requests++
+    if (requests === 1) {
+      response.writeHead(500, { 'content-type': 'application/json' })
+      response.end(JSON.stringify({ error: { code: 'chatterbox_generation_failed', message: 'Chatterbox generation failed' } }))
+      return
+    }
+    response.writeHead(200, { 'content-type': 'audio/wav' })
+    response.end(wav)
+  })
+  await new Promise<void>((resolve) => server.listen(0, '127.0.0.1', resolve))
+  const address = server.address()
+  assert.ok(address && typeof address === 'object')
+  const scratch = await mkdtemp(join(tmpdir(), 'tedia-chatterbox-recovery-'))
+  const outputPath = join(scratch, 'voice.wav')
+  try {
+    const result = await generateVoiceClone({
+      serverUrl: `http://127.0.0.1:${address.port}`,
+      text: 'A complete sentence.',
+      language: 'en',
+      model: 'tts-multilingual',
+      referenceAudioPath: 'reference.wav',
+      referenceAudioBuffer: Buffer.from('reference-audio')
+    }, undefined, outputPath)
+    assert.equal(result.ok, true)
+    assert.equal(requests, 2)
+    assert.deepEqual(await readFile(outputPath), wav)
+  } finally {
+    await new Promise<void>((resolve, reject) => server.close((error) => error ? reject(error) : resolve()))
+    await rm(scratch, { recursive: true, force: true })
+  }
+})
 
 test('TTS request pipelining (prefetchTts: true) overlaps next cue synthesis with current cue DSP while keeping server in-flight <= 1', async () => {
   const sourcePlan = buildDubbingPlan({

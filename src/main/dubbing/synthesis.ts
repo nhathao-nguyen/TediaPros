@@ -35,7 +35,13 @@ export interface DubbingTtsAdapter {
 
 export interface DubbingAudioAdapter {
   trim(inputPath: string, outputHint: string, signal: AbortSignal): Promise<{ path: string; duration: number }>
-  applyTempo(inputPath: string, outputHint: string, targetDuration: number, signal: AbortSignal): Promise<{ path: string; duration: number }>
+  applyTempo(
+    inputPath: string,
+    outputHint: string,
+    targetDuration: number,
+    signal: AbortSignal,
+    measuredInputDuration?: number
+  ): Promise<{ path: string; duration: number }>
 }
 
 export type DubbingPhase = 'measure' | 'batch-rephrase' | 'rescue' | 'finalize'
@@ -49,6 +55,7 @@ export interface DubbingOverflowRequest {
   maxDuration: number
   contextBefore: string[]
   contextAfter: string[]
+  recoveryAttempt?: 1 | 2
 }
 
 export interface DubbingRephraseAdapter {
@@ -60,6 +67,8 @@ export interface DubbingRephraseAdapter {
 
 export interface DubbingSynthesisInput {
   allowVideoExtension?: boolean
+  /** One automatic retry after the rest of the queue finishes. */
+  recoveryAttempt?: 1 | 2
   plan: DubbingPlan
   language: string
   model: string
@@ -331,7 +340,7 @@ async function prepareNaturalCue(
     voice: input.voice,
     options: input.options,
     speed: 1,
-    cacheMode: 'prefer'
+    cacheMode: input.recoveryAttempt === 2 ? 'bypass' : 'prefer'
   }
   let result = await input.tts.synthesize(request, signal)
   if (!result?.path) throw new Error(`Cue ${cue.id} không trả về audio TTS.`)
@@ -346,7 +355,21 @@ async function prepareNaturalCue(
     if (!result?.path) throw new Error(`Cue ${cue.id} không trả về audio TTS sau khi làm mới cache.`)
     trimmed = await input.audio.trim(result.path, `${cue.id}-trim-${attempt}-fresh`, signal)
   }
-  const duration = validDuration(trimmed.duration, cue.id)
+  let duration = validDuration(trimmed.duration, cue.id)
+  let completeness = validateVoiceAudioCompleteness(text, duration)
+  if (!completeness.ok && attempt === 0) {
+    // A syntactically valid cache entry may still contain repeated/hallucinated
+    // speech. Replace that exact key once and measure the replacement before
+    // any tempo or video-extension decision is made.
+    result = await input.tts.synthesize({ ...request, cacheMode: 'bypass' }, signal)
+    if (!result?.path) throw new Error(`Cue ${cue.id} không trả về audio TTS sau khi làm mới audio bất thường.`)
+    trimmed = await input.audio.trim(result.path, `${cue.id}-trim-${attempt}-quality-refresh`, signal)
+    duration = validDuration(trimmed.duration, cue.id)
+    completeness = validateVoiceAudioCompleteness(text, duration)
+    if (!completeness.ok) {
+      throw new Error(`Cue ${cue.id} có audio TTS không hợp lệ: ${completeness.error || 'không đủ bằng chứng phát âm đầy đủ.'}`)
+    }
+  }
   return {
     cue,
     text: text.trim(),
@@ -440,7 +463,7 @@ export async function synthesizeDubbingPlan(input: DubbingSynthesisInput): Promi
       let finalPath = current.trimmedPath
       let actualDuration = current.naturalDuration
       if (Math.abs(requestedTempo - 1) > DUBBING_TIMING_TOLERANCE_SECONDS || actualDuration > safeAvailable) {
-        const fitted = await input.audio.applyTempo(current.trimmedPath, outputHint, targetDuration, signal)
+        const fitted = await input.audio.applyTempo(current.trimmedPath, outputHint, targetDuration, signal, current.naturalDuration)
         finalPath = fitted.path
         actualDuration = validDuration(fitted.duration, cue.id)
       }
@@ -456,7 +479,7 @@ export async function synthesizeDubbingPlan(input: DubbingSynthesisInput): Promi
         const desiredDuration = Math.min(safeAvailable, Math.max(minimumDuration, targetDuration))
         calibratedTarget *= desiredDuration / actualDuration
         const corrected = await input.audio.applyTempo(
-          current.trimmedPath, `${outputHint}-calibration-${attempt + 1}`, calibratedTarget, signal
+          current.trimmedPath, `${outputHint}-calibration-${attempt + 1}`, calibratedTarget, signal, current.naturalDuration
         )
         finalPath = corrected.path
         actualDuration = validDuration(corrected.duration, cue.id)
@@ -568,7 +591,8 @@ export async function synthesizeDubbingPlan(input: DubbingSynthesisInput): Promi
             measuredDuration: current.naturalDuration,
             maxDuration: slot.maximumAvailableDuration * AUTO_SHORT_TTS_HARD_MAX_TEMPO,
             contextBefore: index > 0 ? [plan.cues[index - 1].sourceText] : [],
-            contextAfter: index + 1 < plan.cues.length ? [plan.cues[index + 1].sourceText] : []
+            contextAfter: index + 1 < plan.cues.length ? [plan.cues[index + 1].sourceText] : [],
+            recoveryAttempt: input.recoveryAttempt || 1
           }
         }
         // A deferred cue fits its source-anchored window if the unresolved
@@ -645,10 +669,13 @@ export async function synthesizeDubbingPlan(input: DubbingSynthesisInput): Promi
       const compactQuestions = [state.current.text, ...candidates]
         .map((text) => compactEnglishDubbingQuestion(text, input.language))
         .filter((text): text is string => text !== null)
+      const semanticBasis = input.recoveryAttempt === 2 && state.cue.sourceText.trim()
+        ? state.cue.sourceText
+        : state.current.text
       const validTexts = [...new Set([...compactQuestions, ...candidates]
         .map((text) => text.trim())
         .filter((text) => text && !containsRephraseLabel(text, [state.cue.id])))].filter((text) =>
-          text === state.current.text.trim() || validateRephraseSemanticPreservation(state.current.text, text, input.language).ok)
+          text === state.current.text.trim() || validateRephraseSemanticPreservation(semanticBasis, text, input.language).ok)
       const ranked = validTexts
         .filter((text) => text !== state.current.text.trim())
         .map((text) => ({ text, predictedSeconds: predictor.estimate(text, { locale: input.language }).seconds }))
@@ -708,7 +735,7 @@ export async function synthesizeDubbingPlan(input: DubbingSynthesisInput): Promi
       let candidateMap: DubbingTimeMap
       try {
         candidateMap = planDubbingTimeMap(plan.videoDuration, measuredStates.map((state) => ({
-          id: state.cue.id, start: state.cue.sourceStart,
+          id: state.cue.id, start: state.cue.sourceStart, sourceEnd: state.cue.sourceEnd,
           naturalDuration: state.current.naturalDuration, availableDuration: state.safeAvailable
         })), AUTO_SHORT_TTS_HARD_MAX_TEMPO)
       } catch (error) {
@@ -803,7 +830,8 @@ export async function synthesizeDubbingPlan(input: DubbingSynthesisInput): Promi
         previousState.current.trimmedPath,
         `${previous.id}-tempo-reflow-${cue.id}`,
         targetDuration,
-        signal
+        signal,
+        naturalDuration
       )
       const actualDuration = validDuration(fitted.duration, previous.id)
       const tempo = Number((naturalDuration / actualDuration).toFixed(4))

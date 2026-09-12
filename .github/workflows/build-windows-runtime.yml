@@ -194,6 +194,32 @@ jobs:
           New-Item -ItemType Directory -Force -Path $target | Out-Null
           Copy-Item -Path (Join-Path $separatorOutput '*') -Destination $target -Recurse -Force
 
+      - name: Build STTN engine from pinned environment
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          python -m venv (Join-Path $env:RUNNER_TEMP 'sttn-build-venv')
+          if ($LASTEXITCODE -ne 0) { throw 'STTN build virtual environment creation failed.' }
+          $python = Join-Path $env:RUNNER_TEMP 'sttn-build-venv\Scripts\python.exe'
+          if (-not (Test-Path -LiteralPath $python -PathType Leaf)) { throw "STTN build Python was not created: $python" }
+          # The CUDA PyTorch tree compresses to more than GitHub's 2 GiB
+          # per-asset limit. Publish the portable CPU engine; CUDA builds remain
+          # available through the local build script for dedicated machines.
+          & $python -m pip install --disable-pip-version-check --no-cache-dir torch==2.7.1 --index-url https://download.pytorch.org/whl/cpu
+          if ($LASTEXITCODE -ne 0) { throw 'STTN PyTorch installation failed.' }
+          & $python -m pip install --disable-pip-version-check --no-cache-dir -r engines/sttn-engine/requirements.txt
+          if ($LASTEXITCODE -ne 0) { throw 'STTN dependency installation failed.' }
+          $env:STTN_TEST_FFMPEG = Join-Path $env:RUNTIME_INPUT_ROOT 'ffmpeg\ffmpeg.exe'
+          & $python -m unittest discover -s engines\sttn-engine\tests -p 'test_*.py' -v
+          if ($LASTEXITCODE -ne 0) { throw 'STTN engine tests failed.' }
+          & $python -m PyInstaller --clean --noconfirm engines/sttn-engine/sttn-engine.spec --distpath (Join-Path $env:RUNNER_TEMP 'sttn-dist') --workpath (Join-Path $env:RUNNER_TEMP 'sttn-work')
+          if ($LASTEXITCODE -ne 0) { throw 'STTN PyInstaller build failed.' }
+          $sttnOutput = Join-Path $env:RUNNER_TEMP 'sttn-dist\sttn-engine'
+          if (-not (Test-Path -LiteralPath $sttnOutput -PathType Container)) { throw "STTN build output is missing: $sttnOutput" }
+          $target = Join-Path $env:RUNTIME_INPUT_ROOT 'sttn-engine'
+          New-Item -ItemType Directory -Force -Path $target | Out-Null
+          Copy-Item -Path (Join-Path $sttnOutput '*') -Destination $target -Recurse -Force
+
       - name: Run native capability probes before packaging
         shell: pwsh
         run: |
@@ -217,8 +243,11 @@ jobs:
           Invoke-NativeProbe (Join-Path $root 'ffmpeg\ffmpeg.exe') @('-version')
           Invoke-NativeProbe (Join-Path $root 'ffmpeg\ffprobe.exe') @('-version')
           Invoke-NativeProbe (Join-Path $root 'separator-engine\separator-engine.exe') @('--version')
+          # The STTN checkpoint is downloaded separately by the application,
+          # so release packaging can probe the engine version without model I/O.
+          Invoke-NativeProbe (Join-Path $root 'sttn-engine\sttn-engine.exe') @('--version')
 
-      - name: Create and verify runtime-v4 manifest from clean artifacts
+      - name: Create and verify runtime manifest from clean artifacts
         shell: pwsh
         run: |
           node scripts/pack-runtime-release.mjs --input-dir $env:RUNTIME_INPUT_ROOT --output-dir release-artifacts --runtime-version $env:RUNTIME_VERSION --platform win32 --arch x64

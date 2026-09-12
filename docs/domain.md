@@ -23,10 +23,11 @@ Tất cả các ngưỡng âm thanh đều được hiệu chuẩn vật lý, đ
 Khi dịch sang ngôn ngữ mới (vd: Tiếng Trung $\rightarrow$ Tiếng Việt), số lượng âm tiết thường dài hơn 15–35%:
 - **Preferred Max Tempo:** `1.10x` (Tối ưu cho độ tự nhiên).
 - **Normal Max Tempo:** `1.25x` (Chấp nhận được đối với video nhịp nhanh).
-- **Hard Max Tempo:** `1.45x` (Trần tối đa tuyệt đối).
-- **Quy tắc không làm mất câu (No Silent Drop):** Nếu thời lượng câu sau khi tăng tốc đến `1.45x` vẫn không vừa khung thời gian có sẵn:
+- **Hard Max Tempo:** `1.80x` (Trần tạm thời đã được chấp thuận).
+- **Quy tắc không làm mất câu (No Silent Drop):** Nếu thời lượng câu sau khi tăng tốc đến `1.80x` vẫn không vừa khung thời gian có sẵn:
   - Nếu nhóm có từ 2 cues trở lên: Tự động tách tại ranh giới cue hợp lý (`shouldSplitAutoShortVoiceGroup`).
-  - Nếu chỉ có 1 cue đơn lẻ: **Báo lỗi rõ ràng**, tuyệt đối không tự ý cắt bỏ âm thanh hoặc nuốt từ của người dùng.
+  - Đoạn hình được làm chậm thêm tối đa 20% (cộng guard DSP 15ms), rồi phát lại phần cuối trong đúng khoảng nguồn của nhóm; tổng phần thêm tối đa 60% mỗi đoạn.
+  - Nếu vẫn không vừa, lưu lỗi và checkpoint, tiếp tục hàng đợi rồi tự thử lại video đúng một lần ở cuối batch.
 
 ---
 
@@ -47,6 +48,15 @@ Khi dịch sang ngôn ngữ mới (vd: Tiếng Trung $\rightarrow$ Tiếng Việ
 - Video nén thông thường sử dụng không gian màu **YUV 4:2:0** (thành phần màu Chroma bị giảm độ phân giải một nửa so với Luma).
 - Khi dùng filter `maskedmerge` của FFmpeg trên YUV 4:2:0, viền của vùng làm mờ sẽ bị lem màu hoặc để lại bóng mờ chữ cũ (ghosting).
 - **Quy chuẩn TediaPros:** Bắt buộc chuyển đổi video sang định dạng **Planar RGB** (`gbrp`), áp dụng mask làm mờ đa tầng với sigma tỷ lệ theo chiều cao khung hình, sau đó mới nén lại về định dạng xuất xưởng.
+
+### 2.4. Tự đặt vị trí phụ đề theo OCR
+
+- `subtitlePlacementMode = ocr-dominant` tái sử dụng visual OCR timeline đã tạo cho `ocr-auto` hoặc STTN; không gọi OCR lần hai.
+- Phạm vi tìm kiếm luôn là `ocrRegion` normalized do người dùng khoanh. Thuật toán không tự đổi sang toàn khung, không mở rộng ROI và không dùng chữ nằm ngoài ROI.
+- Mỗi video được đánh giá độc lập. Vùng hợp lệ phải đồng thời nằm trong nhóm xuất hiện thường xuyên nhất và nhóm có chiều cao chữ điển hình lớn nhất, với dung sai 10% cho nhiễu OCR.
+- Chỉ track có độ phủ ít nhất 25%, confidence trung bình ít nhất 0,75 và tối thiểu hai trạng thái text khác nhau mới được xét. Điều này giảm khả năng chọn logo hoặc tiêu đề cố định.
+- Khi hai tiêu chí xung đột, có nhiều vùng gần ngang nhau, dữ liệu yếu hoặc vùng không đủ chỗ, pipeline dùng `subRegion` do người dùng đặt làm dự phòng. Fallback không thay đổi ROI và không che giấu lỗi OCR/STTN.
+- Vị trí được chọn giữ ổn định suốt video. Cỡ chữ OCR chỉ dùng để chọn vùng; font đầu ra vẫn theo cấu hình và bộ layout ASS hiện có.
 
 ---
 
@@ -94,4 +104,5 @@ Khi dịch sang ngôn ngữ mới (vd: Tiếng Trung $\rightarrow$ Tiếng Việ
 - **Thị trường và locale:** Country định hướng thị trường, không đổi bối cảnh nội dung. Locale tường minh thắng; `auto` theo ngôn ngữ phụ đề đầu ra khi pipeline biết ngôn ngữ đó.
 - **Bộ nhớ thị trường:** Preset local chỉ chứa provider/server/locale và tùy chọn SEO đã whitelist. Khóa API không nằm trong preset.
 - **Publication gate:** Metadata có thể chuẩn bị song song với render, nhưng chỉ ghi sau khi video hợp lệ và digest của cue/config khớp. Lỗi hoặc hủy metadata không xóa video đã xuất; `tieude.txt` có sẵn được giữ nguyên bằng exclusive create.
+- **Ranh giới phản hồi AI:** Chấp nhận JSON trần, code fence hoặc đúng một object JSON nằm trong lời dẫn của provider. Nếu phản hồi có nhiều object JSON, JSON hỏng hoặc object không đạt schema/giới hạn nội dung thì báo lỗi metadata và không ghi `tieude.txt`.
 - **Ranh giới bằng chứng:** Không sinh điểm ranking, authority hoặc citation probability. TediaPros không khẳng định metadata tạo ra sẽ tăng hạng hoặc được hệ thống AI trích dẫn.

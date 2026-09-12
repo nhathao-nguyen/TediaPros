@@ -110,8 +110,8 @@ test('grouping preserves question, speaker, sentence and pause boundaries plus a
   assert.deepEqual(plan.cues.map((cue) => cue.sourceCueIds), [['s0'], ['s1'], ['s2', 's3'], ['s4'], ['s5'], ['s6'], ['s7'], ['s8']])
   assert.deepEqual(plan.cues.flatMap((cue) => cue.sourceCueIds), sources.map((cue) => cue.id))
   const synthesized = await synthesizeDubbingPlan({ plan, language: 'en', model: 'fixture',
-    tts: { synthesize: async () => ({ path: 'pcm' }) },
-    audio: { trim: async () => ({ path: 'pcm', duration: 0.4 }), applyTempo: async (path, _hint, duration) => ({ path, duration }) }
+    tts: { synthesize: async (request) => ({ path: request.cueId }) },
+    audio: { trim: async (path) => ({ path, duration: path === 's2' ? 0.8 : 0.4 }), applyTempo: async (path, _hint, duration) => ({ path, duration }) }
   })
   for (let i = 1; i < synthesized.plan.cues.length; i++) assert.ok(synthesized.plan.cues[i].start - synthesized.plan.cues[i - 1].voiceEnd! >= 0.5 - 0.005)
   assert.equal(synthesized.plan.cues[3].subtitles[0].sourceIndex, 4)

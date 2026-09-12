@@ -5,7 +5,19 @@ import { mkdtemp, rm } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { join, resolve } from 'node:path'
 import { planDubbingTimeMap, mapDubbingTime } from '../src/main/dubbing/timeMap'
-import { retimeDubbingMedia } from '../src/main/dubbing/retimeMedia'
+import { retimeDubbingMedia, retimedSourceAudioGraph } from '../src/main/dubbing/retimeMedia'
+
+test('replay repeats instrumental audio but silences mixed source dialogue', () => {
+  const map = planDubbingTimeMap(4, [
+    { id: 'a', start: 0, sourceEnd: 1.5, naturalDuration: 3.35, availableDuration: 1 },
+    { id: 'b', start: 2, sourceEnd: 3.5, naturalDuration: 1, availableDuration: 1.5 }
+  ], 1.8)
+  const repeated = retimedSourceAudioGraph(map, '0:a', 'repeat')
+  const silenced = retimedSourceAudioGraph(map, '0:a', 'silence')
+  assert.match(repeated, /atrim=start=.*\[ao1\]/u)
+  assert.doesNotMatch(repeated, /volume=0/u)
+  assert.equal(silenced.match(/volume=0/gu)?.length, map.segments.filter((part) => part.mode === 'replay').length)
+})
 
 const ffmpeg = process.env.TEDIAPROS_RETIME_TEST_FFMPEG
 const ffprobe = process.env.TEDIAPROS_RETIME_TEST_FFPROBE
@@ -18,8 +30,8 @@ test('real FFmpeg maps video, OCR mask and source sound to the same extended tim
       '-f', 'lavfi', '-i', "aevalsrc=if(gte(t\\,2)\\,0.5*sin(2*PI*440*t)\\,0):s=44100:d=4",
       '-c:v', 'ffv1', '-c:a', 'pcm_s16le', source])
     const map = planDubbingTimeMap(4, [
-      { id: 'a', start: 0, naturalDuration: 3.4, availableDuration: 1.5 },
-      { id: 'b', start: 2, naturalDuration: 1, availableDuration: 1.5 }
+      { id: 'a', start: 0, sourceEnd: 1.5, naturalDuration: 3.4, availableDuration: 1.5 },
+      { id: 'b', start: 2, sourceEnd: 3.5, naturalDuration: 1, availableDuration: 1.5 }
     ], 1.8)
     for (const kind of ['video', 'mask', 'audio'] as const) {
       const result = await retimeDubbingMedia({ ffmpeg: ffmpeg!, source, workDir: dir, name: kind,

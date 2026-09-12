@@ -97,12 +97,40 @@ test('Windows separator build stops after dependency, test, or PyInstaller failu
   assert.match(step, /separator-dist\\separator-engine[\s\S]{0,400}Separator build output is missing/u)
 })
 
+test('Windows runtime release builds and stages the optional STTN engine', async () => {
+  const workflow = await readFile(join(process.cwd(), '.github', 'workflows', 'build-windows-runtime.yml'), 'utf8')
+  const start = workflow.indexOf('Build STTN engine from pinned environment')
+  const end = workflow.indexOf('Run native capability probes before packaging', start)
+  assert.ok(start >= 0 && end > start, 'STTN build step must be present before capability probes')
+  const step = workflow.slice(start, end)
+  assert.match(step, /torch==2\.7\.1[^\r\n]*download\.pytorch\.org\/whl\/cpu/u)
+  assert.match(step, /unittest discover[^\r\n]*engines\\sttn-engine\\tests/u)
+  assert.match(step, /PyInstaller[^\r\n]*sttn-engine\.spec/u)
+  assert.match(step, /sttn-dist\\sttn-engine[\s\S]{0,400}STTN build output is missing/u)
+  assert.match(step, /RUNTIME_INPUT_ROOT[^\r\n]*sttn-engine/u)
+
+  const inputSpec = JSON.parse(await readFile(join(process.cwd(), 'distribution', 'runtime-inputs.json'), 'utf8'))
+  assert.deepEqual(inputSpec.assets['sttn-engine'], {
+    version: '1.1.1',
+    entrypoint: 'sttn-engine.exe',
+    protocol: 'sttn-engine/1',
+    capabilities: ['cpu', 'timed-mask', 'ffv1', 'preview'],
+    source: {
+      kind: 'repository-build',
+      path: 'engines/sttn-engine',
+      python: '3.12.10',
+      torch: '2.7.1+cpu'
+    }
+  })
+})
+
 test('PyInstaller specs resolve entrypoints and hooks from the spec directory, not the process CWD', async () => {
   const { readFile } = await import('node:fs/promises')
   const specs = [
     ['engines/whisper-engine/whisper-engine.spec', 'engine.py'],
     ['engines/ocr-engine/ocr-engine.spec', 'engine.py'],
-    ['engines/douyin-engine/dy-engine.spec', 'run.py']
+    ['engines/douyin-engine/dy-engine.spec', 'run.py'],
+    ['engines/sttn-engine/sttn-engine.spec', 'engine.py']
   ] as const
   for (const [file, entrypoint] of specs) {
     const source = await readFile(join(process.cwd(), file), 'utf8')
@@ -125,7 +153,7 @@ test('Douyin runtime source contains the storage package required by its CLI and
 test('Windows runtime workflow stops when a native capability probe fails', async () => {
   const workflow = await readFile(join(process.cwd(), '.github', 'workflows', 'build-windows-runtime.yml'), 'utf8')
   const start = workflow.indexOf('Run native capability probes before packaging')
-  const end = workflow.indexOf('Create and verify runtime-v3 manifest from clean artifacts', start)
+  const end = workflow.indexOf('Create and verify runtime manifest from clean artifacts', start)
   const probeStep = workflow.slice(start, end)
   assert.match(probeStep, /LASTEXITCODE\s*-ne\s*0[\s\S]{0,180}(throw|exit)/u)
 })
@@ -133,7 +161,7 @@ test('Windows runtime workflow stops when a native capability probe fails', asyn
 test('Windows runtime workflow uses a headless-safe Video2X startup probe', async () => {
   const workflow = await readFile(join(process.cwd(), '.github', 'workflows', 'build-windows-runtime.yml'), 'utf8')
   const start = workflow.indexOf('Run native capability probes before packaging')
-  const end = workflow.indexOf('Create and verify runtime-v3 manifest from clean artifacts', start)
+  const end = workflow.indexOf('Create and verify runtime manifest from clean artifacts', start)
   const probeStep = workflow.slice(start, end)
   assert.match(probeStep, /video2x\\video2x\.exe'\)\s+@\('--version'\)/u)
   assert.doesNotMatch(probeStep, /video2x\\video2x\.exe'\)\s+@\('-l'\)/u)
@@ -307,7 +335,7 @@ test('runtime packer archives every canonical kind and verifies the generated ma
       arch: inputSpec.arch,
       inputSpecPath
     })
-    assert.equal(Object.keys(result.manifest.assets).length, 7)
+    assert.equal(Object.keys(result.manifest.assets).length, 8)
     assert.equal((await readFile(join(root, 'release', 'runtime-provenance.json'), 'utf8')).includes('runtime-v5'), true)
   } finally {
     await rm(root, { recursive: true, force: true })

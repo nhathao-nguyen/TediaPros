@@ -7,7 +7,10 @@ import {
   type AutoShortSeparationPreset,
   type AutoShortBlurMode,
   type AutoShortOcrBlurProfile,
+  type AutoShortSubtitlePlacementMode,
   type AutoShortConfig,
+  type AutoShortBlurRegion,
+  type AutoShortNormalizedRegion,
   type AutoShortBackgroundMusicConfig,
   type AutoShortBackgroundMusicMode,
   type AutoShortDependencyProgress,
@@ -31,6 +34,7 @@ import {
 import { DEFAULT_VIDEO_SEO_OPTIONS } from '../../../shared/videoSeo'
 import { translationGuidanceError, type TranslationGuidance } from '../../../shared/translation'
 import { isAutomaticOcrProcessing, isSttnRemoval, normalizeAutoShortBlurMode, normalizeAutoShortOcrBlurProfile } from '../../../shared/autoShortOcrBlur'
+import { effectiveAutoShortSubtitlePlacementMode } from '../../../shared/autoShortSubtitlePlacement'
 import { createAutoShortMusicAssignments } from '../../../shared/autoShortBackgroundMusic'
 import { localMediaSource } from '../lib/localMedia'
 import { useTabOutputDir } from '../lib/outputDir'
@@ -43,6 +47,13 @@ import { DEFAULT_VIDEO_ADJUSTMENTS, normalizeVideoAdjustments, videoAdjustmentPr
 import { useVideoTransport } from '../hooks/useVideoTransport'
 import { runLatestAutoShortMusicFolderRequest } from '../lib/latestAutoShortMusicFolderRequest'
 import { createAutoShortProgressCoalescer } from '../lib/autoshortProgressCoalescer'
+import {
+  autoShortNormalizedRegionToPixels,
+  clampAutoShortNormalizedRegion,
+  pixelRegionToAutoShortNormalized,
+  referencePixelsFromVideoHeight,
+  videoPixelsFromReferenceHeight
+} from '../../../shared/autoShortRegionGeometry'
 import RegionBox, { type Region } from './RegionBox'
 import VideoTitleSettings from './VideoTitleSettings'
 import GeminiKeys from './GeminiKeys'
@@ -123,23 +134,25 @@ function parseTranslationGuidance(synopsis: string, glossaryText: string): { val
   return translationGuidanceError(value) ? { error: translationGuidanceError(value)! } : { value }
 }
 
-function defaultSubtitleRegion(width: number, height: number): Region {
+const SUBTITLE_STYLE_REFERENCE_HEIGHT = 1920
+
+function defaultSubtitleRegion(width: number, height: number): AutoShortNormalizedRegion {
   const portrait = height > width
   return {
-    x0: Math.round(width * 0.08),
-    x1: Math.round(width * 0.92),
-    y0: Math.round(height * (portrait ? 0.78 : 0.80)),
-    y1: Math.round(height * (portrait ? 0.90 : 0.92))
+    x0: 0.08,
+    x1: 0.92,
+    y0: portrait ? 0.78 : 0.80,
+    y1: portrait ? 0.90 : 0.92
   }
 }
 
-function defaultOcrRegion(width: number, height: number): Region {
+function defaultOcrRegion(width: number, height: number): AutoShortNormalizedRegion {
   const portrait = height > width
   return {
     x0: 0,
-    x1: width,
-    y0: Math.round(height * (portrait ? 0.72 : 0.74)),
-    y1: Math.round(height * (portrait ? 0.92 : 0.94))
+    x1: 1,
+    y0: portrait ? 0.72 : 0.74,
+    y1: portrait ? 0.92 : 0.94
   }
 }
 
@@ -171,6 +184,7 @@ export default function AutoShort(): JSX.Element {
   const videoRef = useRef<HTMLVideoElement | null>(null)
   const stageShellRef = useRef<HTMLDivElement | null>(null)
   const previewPanelRef = useRef<HTMLElement | null>(null)
+  const previewPathRef = useRef<string | null>(previewPath)
 
   const [videoH, setVideoH] = useState(0)
   const [portraitBlur, setPortraitBlur] = usePersistedState('tblao.autoshort.portraitBlur', false)
@@ -201,9 +215,9 @@ export default function AutoShort(): JSX.Element {
   const transport = useVideoTransport(videoRef, previewPath)
 
   // Subtitle Region & Styles
-  const [subtitleRegion, setSubtitleRegion] = useState<Region | undefined>()
+  const [subtitleRegion, setSubtitleRegion] = useState<AutoShortNormalizedRegion | undefined>()
   // OCR source region is independent from the output subtitle safe-area.
-  const [ocrRegion, setOcrRegion] = useState<Region | undefined>()
+  const [ocrRegion, setOcrRegion] = useState<AutoShortNormalizedRegion | undefined>()
   const [fontId, setFontId] = usePersistedState('tblao.autoshort.fontId', 'auto')
   const [fonts, setFonts] = useState<BurnFontEntry[]>([])
   const [fontsLoaded, setFontsLoaded] = useState(false)
@@ -214,6 +228,10 @@ export default function AutoShort(): JSX.Element {
   const [textColor, setTextColor] = usePersistedState('tblao.autoshort.textColor', '#ffffff')
   const [outlineColor, setOutlineColor] = usePersistedState('tblao.autoshort.outlineColor', '#000000')
   const [outlinePx, setOutlinePx] = usePersistedState('tblao.autoshort.outlinePx', 2)
+  const [subtitleStyleScaleVersion, setSubtitleStyleScaleVersion] = usePersistedState(
+    'tblao.autoshort.subtitleStyleScaleVersion',
+    1
+  )
   const [bgEnabled, setBgEnabled] = usePersistedState('tblao.autoshort.bgEnabled', false)
   const [bgColor, setBgColor] = usePersistedState('tblao.autoshort.bgColor', '#000000')
   const [bgOpacity, setBgOpacity] = usePersistedState('tblao.autoshort.bgOpacity', 60)
@@ -267,6 +285,10 @@ export default function AutoShort(): JSX.Element {
     'tblao.autoshort.ocrBlurProfile',
     'accurate'
   )
+  const [subtitlePlacementMode, setSubtitlePlacementMode] = usePersistedState<AutoShortSubtitlePlacementMode>(
+    'tblao.autoshort.subtitlePlacementMode',
+    'manual'
+  )
   const blurMode = normalizeAutoShortBlurMode(blurModeRaw)
   const ocrBlurProfile = normalizeAutoShortOcrBlurProfile(ocrBlurProfileRaw)
 
@@ -275,14 +297,59 @@ export default function AutoShort(): JSX.Element {
     if (ocrBlurProfileRaw !== ocrBlurProfile) setOcrBlurProfileRaw(ocrBlurProfile)
   }, [blurMode, blurModeRaw, ocrBlurProfile, ocrBlurProfileRaw, setBlurModeRaw, setOcrBlurProfileRaw])
 
-  const [blurRegions, setBlurRegions] = useState<BlurRegion[]>([])
+  const [blurRegions, setBlurRegions] = useState<AutoShortBlurRegion[]>([])
   const [activeBlurId, setActiveBlurId] = useState<string | null>(null)
 
   const automaticProcessing = isAutomaticOcrProcessing({ lamMo: blurEnabled, blurMode })
+  const effectiveSubtitlePlacementMode = effectiveAutoShortSubtitlePlacementMode(
+    subtitlePlacementMode,
+    automaticProcessing
+  )
   const sttnRemoval = isSttnRemoval({ lamMo: blurEnabled, blurMode })
   const subtitleUsesOcr = subtitleMethod === 'ocr' || subtitleMethod === 'whisper-ocr'
-  const visibleManualBlurRegions = blurEnabled && blurMode === 'manual' ? blurRegions : []
+  const subtitlePixelRegion = useMemo(
+    () => subtitleRegion ? autoShortNormalizedRegionToPixels(subtitleRegion, videoW, videoH) : null,
+    [subtitleRegion, videoH, videoW]
+  )
+  const ocrPixelRegion = useMemo(
+    () => ocrRegion ? autoShortNormalizedRegionToPixels(ocrRegion, videoW, videoH) : null,
+    [ocrRegion, videoH, videoW]
+  )
+  const blurPixelRegions = useMemo<BlurRegion[]>(
+    () => blurRegions.flatMap((region) => {
+      const pixels = autoShortNormalizedRegionToPixels(region, videoW, videoH)
+      return pixels ? [{ ...pixels, id: region.id, color: region.color }] : []
+    }),
+    [blurRegions, videoH, videoW]
+  )
+  const visibleManualBlurRegions = blurEnabled && blurMode === 'manual' ? blurPixelRegions : []
   const showOcrScanRegion = subtitleUsesOcr || automaticProcessing
+
+  useLayoutEffect(() => {
+    previewPathRef.current = previewPath
+    setVideoW(0)
+    setVideoH(0)
+    setVideoDuration(0)
+    setCurrentTime(0)
+    setPreviewStageSize({ width: 0, height: 0 })
+  }, [previewPath])
+
+  useEffect(() => {
+    if (videoH <= 0 || subtitleStyleScaleVersion >= 2) return
+    setFontSize((current) => current > 0
+      ? Math.round(referencePixelsFromVideoHeight(current, videoH, SUBTITLE_STYLE_REFERENCE_HEIGHT))
+      : current)
+    setOutlinePx((current) => Math.round(
+      referencePixelsFromVideoHeight(current, videoH, SUBTITLE_STYLE_REFERENCE_HEIGHT) * 2
+    ) / 2)
+    setSubtitleStyleScaleVersion(2)
+  }, [
+    setFontSize,
+    setOutlinePx,
+    setSubtitleStyleScaleVersion,
+    subtitleStyleScaleVersion,
+    videoH
+  ])
 
 
   // TTS AI Voice
@@ -444,6 +511,15 @@ export default function AutoShort(): JSX.Element {
   const sttnPreviewToken = useRef(0)
   const [sttnPreviewProgress, setSttnPreviewProgress] = useState<AutoShortSttnPreviewProgress | null>(null)
   const [sttnPreviewPath, setSttnPreviewPath] = useState<string | null>(null)
+
+  useEffect(() => {
+    ++sttnPreviewToken.current
+    setSttnPreviewPath(null)
+    if (!sttnPreviewRunning) return
+    setSttnPreviewRunning(false)
+    setSttnPreviewProgress({ percent: 0, message: 'Đã hủy xem thử STTN vì đã đổi video.' })
+    void window.api.autoShortCancelSttnPreview().catch(() => undefined)
+  }, [previewPath])
   const [cacheAction, setCacheAction] = useState(false)
 
   const applyItemResult = useCallback((event: AutoShortEvent): void => {
@@ -454,7 +530,7 @@ export default function AutoShort(): JSX.Element {
         percent: event.itemStatus === 'done' ? 100 : Math.max(item.percent || 0, event.itemPercent),
         currentStepMessage: event.stageInfo?.waitReason ? `${event.itemMessage} (${event.stageInfo.waitReason})` : event.itemMessage,
         outputPath: event.outputPath || item.outputPath,
-        error: event.error || item.error,
+        error: event.itemStatus === 'queued' ? undefined : event.error || item.error,
         translationAssessment: event.translationAssessment || item.translationAssessment,
         translationIdentity: event.translationIdentity || item.translationIdentity
       } : item))
@@ -486,7 +562,8 @@ export default function AutoShort(): JSX.Element {
         titleError: result.titleError,
         seoMetadata: result.seoMetadata,
         translationAssessment: result.translationAssessment,
-        translationIdentity: result.translationIdentity
+        translationIdentity: result.translationIdentity,
+        recovery: result.recovery
       } : item))
       return
     }
@@ -818,16 +895,15 @@ export default function AutoShort(): JSX.Element {
 
   // Blur Box Helpers
   const addBlurRegion = (): void => {
-    const w = videoW > 0 ? videoW : 1280
-    const h = videoH > 0 ? videoH : 720
-    const portrait = h > w
+    if (videoW <= 0 || videoH <= 0) return
+    const portrait = videoH > videoW
     const color = PALETTE[blurRegions.length % PALETTE.length]
-    const newBox: BlurRegion = {
+    const newBox: AutoShortBlurRegion = {
       id: crypto.randomUUID(),
-      x0: Math.round(w * 0.05),
-      y0: Math.round(h * (portrait ? 0.78 : 0.80)),
-      x1: Math.round(w * 0.95),
-      y1: Math.round(h * (portrait ? 0.92 : 0.94)),
+      x0: 0.05,
+      y0: portrait ? 0.78 : 0.80,
+      x1: 0.95,
+      y1: portrait ? 0.92 : 0.94,
       color
     }
     setBlurRegions((prev) => [...prev, newBox])
@@ -837,16 +913,11 @@ export default function AutoShort(): JSX.Element {
   }
 
   const updateBlurRegion = (r: BlurRegion): void => {
-    const w = videoW > 0 ? videoW : 1280
-    const h = videoH > 0 ? videoH : 720
-    const clamped: BlurRegion = {
-      ...r,
-      x0: Math.max(0, Math.min(w, r.x0)),
-      y0: Math.max(0, Math.min(h, r.y0)),
-      x1: Math.max(0, Math.min(w, r.x1)),
-      y1: Math.max(0, Math.min(h, r.y1))
-    }
-    setBlurRegions((prev) => prev.map((b) => (b.id === r.id ? clamped : b)))
+    const normalized = pixelRegionToAutoShortNormalized(r, videoW, videoH)
+    if (!normalized) return
+    setBlurRegions((prev) => prev.map((b) => (
+      b.id === r.id ? { ...normalized, id: b.id, color: b.color } : b
+    )))
   }
 
   const removeBlurRegion = (id: string): void => {
@@ -855,14 +926,13 @@ export default function AutoShort(): JSX.Element {
   }
 
   const updateSubRegionClamped = (r: Region): void => {
-    const w = videoW > 0 ? videoW : 1280
-    const h = videoH > 0 ? videoH : 720
-    setSubtitleRegion({
-      x0: Math.max(0, Math.min(w, r.x0)),
-      y0: Math.max(0, Math.min(h, r.y0)),
-      x1: Math.max(0, Math.min(w, r.x1)),
-      y1: Math.max(0, Math.min(h, r.y1))
-    })
+    const normalized = pixelRegionToAutoShortNormalized(r, videoW, videoH)
+    if (normalized) setSubtitleRegion(normalized)
+  }
+
+  const updateOcrRegionClamped = (r: Region): void => {
+    const normalized = pixelRegionToAutoShortNormalized(r, videoW, videoH)
+    if (normalized) setOcrRegion(normalized)
   }
 
   // API Key handlers
@@ -954,6 +1024,17 @@ export default function AutoShort(): JSX.Element {
       return
     }
 
+    const sub = subtitleRegion && clampAutoShortNormalizedRegion(subtitleRegion)
+    const ocr = ocrRegion && clampAutoShortNormalizedRegion(ocrRegion)
+    if (!sub || !ocr) {
+      alert('Chưa đọc xong kích thước video xem trước. Vui lòng chờ video hiển thị rồi thử lại.')
+      return
+    }
+    const normalizedBlurs = blurRegions.flatMap((region) => {
+      const normalized = clampAutoShortNormalizedRegion(region)
+      return normalized ? [{ ...normalized, id: region.id, color: region.color }] : []
+    })
+
     const status = await refreshAutoShortReadiness()
     if (!status || !status.ready) {
       setDependencyError(status?.message || 'Không thể kiểm tra dependency Auto Short.')
@@ -981,33 +1062,7 @@ export default function AutoShort(): JSX.Element {
       currentStepMessage: 'Đang trong hàng đợi…'
     }) : t))
 
-    const w = videoW > 0 ? videoW : 1280
-    const h = videoH > 0 ? videoH : 720
-    const sub = subtitleRegion || defaultSubtitleRegion(w, h)
-    const ocr = ocrRegion || defaultOcrRegion(w, h)
-
-    const clampedSub = {
-      x0: Math.max(0, Math.min(w, Math.round(sub.x0))),
-      y0: Math.max(0, Math.min(h, Math.round(sub.y0))),
-      x1: Math.max(0, Math.min(w, Math.round(sub.x1))),
-      y1: Math.max(0, Math.min(h, Math.round(sub.y1)))
-    }
-
-    const clampedBlurs = blurRegions.map((b) => ({
-      ...b,
-      x0: Math.max(0, Math.min(w, Math.round(b.x0))),
-      y0: Math.max(0, Math.min(h, Math.round(b.y0))),
-      x1: Math.max(0, Math.min(w, Math.round(b.x1))),
-      y1: Math.max(0, Math.min(h, Math.round(b.y1)))
-    }))
-
     const activeClonedVoice = clonedVoices.find((cv) => `clone:${cv.id}` === ttsVoice || cv.id === ttsVoice)
-    const toNormalized = (region: Region) => ({
-      x0: Math.max(0, Math.min(1, region.x0 / w)),
-      y0: Math.max(0, Math.min(1, region.y0 / h)),
-      x1: Math.max(0, Math.min(1, region.x1 / w)),
-      y1: Math.max(0, Math.min(1, region.y1 / h))
-    })
 
     const config: AutoShortConfig = {
       portraitBlur,
@@ -1016,32 +1071,28 @@ export default function AutoShort(): JSX.Element {
       whisperModel: selectedWhisperModel,
       whisperDevice,
       whisperLanguage: whisperLanguage.trim() || 'auto',
-      ocrRegion: toNormalized({
-        x0: Math.max(0, Math.min(w, Math.round(ocr.x0))),
-        y0: Math.max(0, Math.min(h, Math.round(ocr.y0))),
-        x1: Math.max(0, Math.min(w, Math.round(ocr.x1))),
-        y1: Math.max(0, Math.min(h, Math.round(ocr.y1)))
-      }),
-      blurRegions: clampedBlurs.map((region) => ({ ...toNormalized(region), id: region.id, color: region.color })),
+      ocrRegion: ocr,
+      blurRegions: normalizedBlurs,
       lamMo: blurEnabled,
       blurMode,
       ocrBlurProfile,
-      subRegion: toNormalized(clampedSub),
+      subRegion: sub,
+      subtitlePlacementMode: effectiveSubtitlePlacementMode,
       fontId: fontId === 'auto' ? null : fontId,
       textColor,
       outlineColor,
-      outlinePx,
+      outlinePx: Math.min(8, outlinePx),
       bgEnabled,
       bgColor,
       bgOpacity,
       subtitleDisplayStyle: (subtitleMethod !== 'ocr' && translateTarget === 'none' && !ttsEnabled) ? displayStyle : 'standard',
       subtitleFontSize: fontSize > 0 ? fontSize : undefined,
-      subtitleFontScale: fontSize > 0 ? fontSize / h : undefined,
+      subtitleFontScale: fontSize > 0 ? fontSize / SUBTITLE_STYLE_REFERENCE_HEIGHT : undefined,
       highlightColor,
       subtitleHighlightPop: highlightPop,
       subtitleLayoutProfile: layoutProfile,
       subtitleAutoOptimize: autoOptimize,
-      outlineScale: outlinePx / h,
+      outlineScale: outlinePx / SUBTITLE_STYLE_REFERENCE_HEIGHT,
       translateTarget,
       translateProvider,
       translateServerUrl: ttsServerUrl,
@@ -1121,6 +1172,12 @@ export default function AutoShort(): JSX.Element {
 
   const startSttnPreview = async (): Promise<void> => {
     if (!selectedTask || !sttnRemoval || isRunning || sttnPreviewRunning) return
+    const videoPathSnapshot = selectedTask.filePath
+    const scan = ocrRegion && clampAutoShortNormalizedRegion(ocrRegion)
+    if (!scan || videoW <= 0 || videoH <= 0) {
+      alert('Chưa đọc xong kích thước video xem trước. Vui lòng chờ video hiển thị rồi thử lại.')
+      return
+    }
     const token = ++sttnPreviewToken.current
     setDependencyAction('preview')
     setSttnPreviewRunning(true)
@@ -1129,27 +1186,26 @@ export default function AutoShort(): JSX.Element {
     try {
       const status = await refreshAutoShortReadiness(true)
       if (token !== sttnPreviewToken.current) return
+      if (previewPathRef.current !== videoPathSnapshot) return
       if (!status?.ready) {
         setDependencyError(status?.message || 'Không thể kiểm tra thành phần STTN.')
         setShowDependencyModal(true)
         return
       }
-      const w = videoW > 0 ? videoW : 1280
-      const h = videoH > 0 ? videoH : 720
-      const scan = ocrRegion || defaultOcrRegion(w, h)
       const result = await window.api.autoShortSttnPreview({
-        videoPath: selectedTask.filePath,
+        videoPath: videoPathSnapshot,
         previewSeconds: 5,
         config: {
           subtitleMethod: 'ocr', whisperModel: selectedWhisperModel, whisperDevice,
           lamMo: true, blurMode: 'sttn', ocrBlurProfile: 'accurate', blurRegions: [],
-          ocrRegion: { x0: scan.x0 / w, y0: scan.y0 / h, x1: scan.x1 / w, y1: scan.y1 / h },
+          ocrRegion: scan,
           translateTarget: 'none', translateProvider: 'local', ttsEnabled: false,
           voiceOverMode: false, audioMode: 'replace', originalAudioVolume: 1,
-          outputDir: outputDir || selectedTask.filePath.replace(/[^\\/]+$/, '')
+          outputDir: outputDir || videoPathSnapshot.replace(/[^\\/]+$/, '')
         }
       })
       if (token !== sttnPreviewToken.current) return
+      if (previewPathRef.current !== videoPathSnapshot) return
       if (!result.ok) throw new Error(result.error)
       setSttnPreviewPath(result.outputPath)
       setSttnPreviewProgress({ percent: 100, message: `Xem thử hoàn tất · ${result.provider.toUpperCase()} · ${(result.elapsedMs / 1000).toFixed(1)} giây xử lý` })
@@ -1157,8 +1213,7 @@ export default function AutoShort(): JSX.Element {
     } catch (error) {
       if (token === sttnPreviewToken.current) setSttnPreviewProgress({ percent: 0, message: error instanceof Error ? error.message : 'Không thể tạo bản xem thử STTN.' })
     } finally {
-      if (token !== sttnPreviewToken.current) setSttnPreviewProgress({ percent: 0, message: 'Đã hủy xem thử STTN.' })
-      setSttnPreviewRunning(false)
+      if (token === sttnPreviewToken.current) setSttnPreviewRunning(false)
     }
   }
 
@@ -1289,14 +1344,25 @@ export default function AutoShort(): JSX.Element {
                   src={previewPath ? localMediaSource(previewPath) : undefined}
                   onLoadedMetadata={(e) => {
                     const target = e.currentTarget
-                    const w = target.videoWidth || 1280
-                    const h = target.videoHeight || 720
+                    const expectedSource = previewPath ? localMediaSource(previewPath) : null
+                    if (!expectedSource || target.getAttribute('src') !== expectedSource) return
+                    const w = target.videoWidth
+                    const h = target.videoHeight
+                    if (w <= 0 || h <= 0) return
                     setVideoW(w)
                     setVideoH(h)
                     if (Number.isFinite(target.duration)) setVideoDuration(target.duration)
-                    if (!subtitleRegion) setSubtitleRegion(defaultSubtitleRegion(w, h))
-                    if (!ocrRegion) setOcrRegion(defaultOcrRegion(w, h))
+                    setSubtitleRegion((current) => current ?? defaultSubtitleRegion(w, h))
+                    setOcrRegion((current) => current ?? defaultOcrRegion(w, h))
                     measureStage()
+                  }}
+                  onError={(e) => {
+                    const target = e.currentTarget
+                    const expectedSource = previewPath ? localMediaSource(previewPath) : null
+                    if (expectedSource && target.getAttribute('src') === expectedSource) {
+                      setVideoW(0)
+                      setVideoH(0)
+                    }
                   }}
                   onTimeUpdate={(e) => setCurrentTime(e.currentTarget.currentTime)}
                   onClick={() => void transport.togglePlayback()}
@@ -1305,6 +1371,7 @@ export default function AutoShort(): JSX.Element {
 
                 {videoH > 0 && previewStageSize.width > 0 && (
                   <RegionBox
+                    key={previewPath}
                     regions={visibleManualBlurRegions}
                     activeId={activeBlurId}
                     setActiveId={setActiveBlurId}
@@ -1313,21 +1380,12 @@ export default function AutoShort(): JSX.Element {
                     blurInteractive={tool === 'blur' && blurMode === 'manual'}
                     hienSubBox={true}
                     subInteractive={tool === 'subtitle'}
-                    subRegion={subtitleRegion || defaultSubtitleRegion(videoW, videoH)}
+                    subRegion={subtitlePixelRegion || undefined}
                     setSubRegion={updateSubRegionClamped}
                     hienOcrBox={showOcrScanRegion}
                     ocrInteractive={(tool === 'blur' && automaticProcessing) || (tool === 'subtitle' && subtitleUsesOcr)}
-                    ocrRegion={ocrRegion || defaultOcrRegion(videoW, videoH)}
-                    setOcrRegion={(region) => {
-                      const w = videoW > 0 ? videoW : 1280
-                      const h = videoH > 0 ? videoH : 720
-                      setOcrRegion({
-                        x0: Math.max(0, Math.min(w, region.x0)),
-                        y0: Math.max(0, Math.min(h, region.y0)),
-                        x1: Math.max(0, Math.min(w, region.x1)),
-                        y1: Math.max(0, Math.min(h, region.y1))
-                      })
-                    }}
+                    ocrRegion={ocrPixelRegion || undefined}
+                    setOcrRegion={updateOcrRegionClamped}
                     videoH={videoH}
                     videoW={videoW}
                     boxH={boxH}
@@ -1337,13 +1395,15 @@ export default function AutoShort(): JSX.Element {
                     previewFontFamily={previewFontFamily || undefined}
                     subtitleText="Mẫu chữ xuất ra"
                     subtitleDisplayStyle={displayStyle}
-                    subtitleFontSize={fontSize > 0 ? fontSize : undefined}
+                    subtitleFontSize={fontSize > 0
+                      ? videoPixelsFromReferenceHeight(fontSize, videoH, SUBTITLE_STYLE_REFERENCE_HEIGHT)
+                      : undefined}
                     scaleSubtitleToVideo={portraitBlur}
                     highlightColor={highlightColor}
                     highlightPop={highlightPop}
                     textColor={textColor}
                     outlineColor={outlineColor}
-                    outlinePx={outlinePx}
+                    outlinePx={videoPixelsFromReferenceHeight(outlinePx, videoH, SUBTITLE_STYLE_REFERENCE_HEIGHT)}
                     bgEnabled={bgEnabled}
                     bgColor={bgColor}
                     bgOpacity={bgOpacity}
@@ -1710,6 +1770,37 @@ export default function AutoShort(): JSX.Element {
                     </label>
                   </div>
 
+                  <div className="subtitle-layout-card">
+                    <div className="subtitle-layout-head">
+                      <div>
+                        <strong>Tự đặt vị trí theo OCR</strong>
+                        <small>
+                          Chọn vị trí riêng cho từng video trong vùng OCR bạn đã khoanh. Không xác định được thì dùng khung phụ đề hiện tại.
+                        </small>
+                      </div>
+                      <label
+                        className="editor-switch"
+                        title={!automaticProcessing ? 'Cần bật Tự động OCR hoặc Xóa phụ đề AI (STTN).' : undefined}
+                      >
+                        <input
+                          type="checkbox"
+                          checked={subtitlePlacementMode === 'ocr-dominant'}
+                          disabled={!automaticProcessing}
+                          onChange={(event) => setSubtitlePlacementMode(event.target.checked ? 'ocr-dominant' : 'manual')}
+                        />
+                        <span>{subtitlePlacementMode === 'ocr-dominant' ? 'Bật' : 'Tắt'}</span>
+                      </label>
+                    </div>
+                    {subtitlePlacementMode === 'ocr-dominant' && (
+                      <small className="muted">
+                        Khung trên bản xem trước là vị trí dự phòng. Vị trí tự động được xác định sau bước OCR.
+                      </small>
+                    )}
+                    {!automaticProcessing && (
+                      <small className="muted">Cần bật Tự động OCR hoặc Xóa phụ đề AI (STTN) trong tab Làm mờ.</small>
+                    )}
+                  </div>
+
                   {(() => {
                     const supportsWordEffects = subtitleMethod !== 'ocr' && translateTarget === 'none' && !ttsEnabled
                     const wordEffectDisabledReason = ttsEnabled
@@ -1851,12 +1942,12 @@ export default function AutoShort(): JSX.Element {
                   </div>
 
                   <label className="field editor-field">
-                    <span>Cỡ chữ · {fontSize === 0 ? 'Tự động theo khung' : `${fontSize}px`}</span>
+                    <span>Cỡ chữ · {fontSize === 0 ? 'Tự động theo khung' : `${fontSize}px tại 1080×1920`}</span>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
                       <input
                         type="range"
                         min={0}
-                        max={80}
+                        max={160}
                         step={2}
                         value={fontSize}
                         onChange={(e) => setFontSize(Number(e.target.value))}
@@ -1887,11 +1978,11 @@ export default function AutoShort(): JSX.Element {
                     </label>
                   </div>
                   <label className="field editor-field">
-                    <span>Độ dày viền · {outlinePx}px</span>
+                    <span>Độ dày viền · {outlinePx}px tại 1080×1920</span>
                     <input
                       type="range"
                       min={0}
-                      max={8}
+                      max={32}
                       step={0.5}
                       value={outlinePx}
                       onChange={(e) => setOutlinePx(Number(e.target.value))}
@@ -2041,12 +2132,12 @@ export default function AutoShort(): JSX.Element {
                       </button>
 
                       <div className="blur-list">
-                        {blurRegions.length === 0 ? (
+                        {blurPixelRegions.length === 0 ? (
                           <div className="muted small" style={{ padding: '12px 0', textAlign: 'center' }}>
                             Chưa có vùng làm mờ nào. Nhấp "+ Thêm vùng làm mờ" để tạo vùng che.
                           </div>
                         ) : (
-                          blurRegions.map((region, index) => (
+                          blurPixelRegions.map((region, index) => (
                             <button
                               key={region.id}
                               className={`blur-item ${activeBlurId === region.id ? 'active' : ''}`}
@@ -2509,6 +2600,14 @@ export default function AutoShort(): JSX.Element {
                               {task.percent > 0 && ` (${task.percent}%)`}
                             </div>
                             {task.error && <div className="queue-item-msg" style={{ color: 'var(--danger)' }}>{task.error}</div>}
+                            {task.recovery && task.status === 'error' && (
+                              <div className="queue-item-msg small" style={{ color: 'var(--danger)' }}>
+                                Phục hồi thời lượng lượt {task.recovery.attempt}/2
+                                {task.recovery.cueId ? ` · ${task.recovery.cueId}` : ''}
+                                {task.recovery.missingSeconds != null ? ` · thiếu ${task.recovery.missingSeconds.toFixed(2)} giây` : ''}
+                                {task.recovery.requiredPercent != null ? ` · cần ${task.recovery.requiredPercent.toFixed(1)}%` : ''}
+                              </div>
+                            )}
                             {task.seoMetadata
                               ? <VideoSeoResult metadata={task.seoMetadata} titlePath={task.titlePath} />
                               : task.title && <div className="queue-item-msg small" style={{ whiteSpace: 'normal', overflowWrap: 'anywhere' }}>Tiêu đề: {task.title}</div>}

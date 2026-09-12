@@ -1,5 +1,6 @@
 import type { AutoShortBlurMode, AutoShortOcrBlurProfile } from '../shared/types'
 import type { OcrProviderReport, OcrVisualTransport } from '../shared/ocrVisualTimeline'
+import type { SubtitlePlacementDecision } from '../shared/autoShortSubtitlePlacement'
 
 const REDACTED_PATH = '[đường dẫn đã ẩn]'
 
@@ -48,6 +49,22 @@ export function createOcrBlurAuditMetadata(summary: {
     ...(summary.transport ? { ocrTransport: summary.transport } : {}),
     ...(summary.implementationFingerprint ? { ocrImplementationFingerprint: summary.implementationFingerprint } : {}),
     ...(summary.ocrProvider ? { ocrProvider: summary.ocrProvider } : {})
+  }
+}
+
+export function createSubtitlePlacementAuditMetadata(
+  decision: SubtitlePlacementDecision
+): SubtitlePlacementDecision {
+  return {
+    version: 1,
+    mode: decision.mode,
+    reason: decision.reason,
+    region: decision.region ? { ...decision.region } : null,
+    candidateCount: decision.candidateCount,
+    ...(decision.coverage != null ? { coverage: Math.round(decision.coverage * 10_000) / 10_000 } : {}),
+    ...(decision.typicalLineHeight != null
+      ? { typicalLineHeight: Math.round(decision.typicalLineHeight * 10_000) / 10_000 }
+      : {})
   }
 }
 

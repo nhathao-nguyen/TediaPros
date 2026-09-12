@@ -71,6 +71,8 @@ Progress và manifest `tts-timeline.json` phân biệt `measure`, `batch-rephras
 
 Finalization đo lại cả hai phía: WAV dài quá deadline và WAV ngắn đến mức tempo đo vượt trần. Tối đa ba lượt hiệu chỉnh target theo tỷ lệ thời lượng thực tế, luôn xử lý lại WAV gốc đã trim để tránh nén lặp. Không dùng padding để che tempo quá nhanh, không cắt lời để đạt deadline. Nếu DSP vẫn không đạt ràng buộc thì báo lỗi sau số lượt hữu hạn.
 
+Thời lượng đầu vào của mỗi lượt DSP phải dùng trực tiếp số đo đã trả về từ bước trim. Planner chuyển số đo này cùng đường dẫn WAV sang audio adapter; adapter không chạy lại FFprobe trên cùng input trước khi áp tempo. Thời lượng file DSP đầu ra vẫn được đo lại để hiệu chỉnh và kiểm tra trần vật lý. Quy tắc này tránh một lần probe dư thừa làm hỏng cả item sau khi measured pass đã hoàn tất thành công.
+
 Đây chỉ sửa sai số DSP (ví dụ 1.818x dù target là 1.80x), không giải quyết trường hợp lời đầy đủ thực sự cần 2.282x. Với thời lượng hình bất biến, đủ lời và trần tempo hữu hạn, không thể cam kết mọi đầu vào đều fit.
 
 ## Override kéo dài hình có giới hạn — 2026-09-08
@@ -98,3 +100,17 @@ Lỗi video `7635582620131374579`, cue `cue-45-58680`, cho thấy dấu hỏi tr
 - Tiếp tục đo WAV thật, rephrase, structural split sau đo, tempo tối đa 1.80x và kéo dài hình tối đa 40% từng đoạn. Không bảo đảm mọi bản dịch/TTS đều vừa thời lượng.
 
 Kiểm chứng hồi quy dùng đúng 54 cue nguồn đã lưu của video trên, cặp câu hỏi nhiều cue, dấu câu Pháp/Arabic, giữ ledger, resume thưa có phủ định ở giữa, missing-ID recovery và chia cue dài. Test offline chứng minh hành vi code; chưa chạy lại dịch/TTS provider thật hoặc cập nhật app cài đặt.
+
+## Phục hồi audio Chatterbox bất thường — 2026-09-11
+
+Một lượt thật sinh câu `Oh my!` thành WAV `8.76s`. File có container hợp lệ và phần sóng có âm thanh nên kiểm tra header cùng silence trim không phát hiện được; planner sau đó hiểu nhầm đây là lời hợp lệ và báo cần kéo dài hình `52.1%`. `validateVoiceAudioCompleteness` nay chặn thời lượng vượt ngưỡng bảo thủ `max(6s, 2.5s × số từ)`. Với lần tổng hợp chính, pipeline bỏ đúng cache key đó, gọi lại TTS một lần, trim và đo lại trước khi tính tempo hay kéo dài hình. Audio thay thế vẫn bất thường thì dừng với cue ID và lỗi chất lượng rõ ràng.
+
+Server cũng có thể trả mã riêng `chatterbox_generation_failed`. Client voice clone chỉ gửi lại cùng request một lần cho đúng mã này. Lỗi xác thực, timeout, cấu hình, HTTP khác và thao tác hủy không được retry theo nhánh phục hồi này. Các giới hạn `1.80x`, khoảng nghỉ bảo vệ và kéo dài hình tối đa `40%` không thay đổi.
+
+## Thay thế chính sách kéo dài hình — 2026-09-11
+
+Theo yêu cầu người dùng, trần kéo dài cục bộ `40%` ở các phần lịch sử phía trên được thay bằng **60% mỗi đoạn nguồn**. Planner làm chậm đoạn chính tối đa `20%`; guard DSP `15ms` ở lại đoạn liên tục để không sinh nhánh replay ngắn hơn một frame. Phần còn thiếu phát lại phần cuối nằm trong chính khoảng nguồn của speech unit. Map luôn được lập từ nguồn ban đầu và không cộng dồn trên output đã retime.
+
+Video, mask OCR và instrumental dùng cùng thứ tự segment. Audio nguồn ở chế độ mix bị tắt trong segment replay để không lặp thoại; narration và phụ đề đích chỉ phát một lần trên timeline output. Blur vẫn dùng Planar RGB sau khi mask đã được retime.
+
+Khi vẫn vượt 60%, item lưu cue ID, số giây và phần trăm cần thêm, tiếp tục các item còn lại rồi tự chạy lại một lần ở cuối batch. Lượt hai bỏ cache TTS nghi vấn và đổi prompt sang `repair-source`: `source_text` là bằng chứng nghĩa chính, `current_text` chỉ dùng để phát hiện lệch nội dung. Nếu lượt hai vẫn lỗi, batch kết thúc với lỗi được giữ lại; không lặp vô hạn, cắt lời hoặc vượt trần 1.80x.

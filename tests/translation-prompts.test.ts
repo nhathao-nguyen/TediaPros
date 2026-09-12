@@ -124,6 +124,18 @@ test('rephrase is editing existing translation with source evidence', () => {
   assert.doesNotMatch(messages[0].content, /one translation per ID|đúng một.*cue/iu)
 })
 
+test('second-pass duration recovery asks for source-grounded repair instead of preserving a bad translation', () => {
+  const messages = buildRephraseMessages({ targetLocale: 'en', cues: [{
+    id: 'c1', sourceText: '能走', currentText: 'It crosses a 9-kilometer abyss.', targetDuration: 1,
+    recoveryAttempt: 2, contextBefore: ['它有腿'], contextAfter: ['速度很慢']
+  }] })
+  assert.match(messages[0].content, /task=repair-source/u)
+  assert.match(messages[0].content, /current translation may be semantically misaligned/u)
+  assert.match(messages[1].content, /^task=repair-source;/u)
+  assert.doesNotMatch(messages[0].content, /Shorten the current wording|preserving all information/u)
+  assert.match(messages[1].content, /"recovery_attempt":2/u)
+})
+
 test('getLanguageSpeakingBudget calculates words or characters appropriately across language families', () => {
   const vi = getLanguageSpeakingBudget('vi', 2.0)
   assert.equal(vi.unit, 'words')

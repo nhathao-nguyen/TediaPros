@@ -1434,7 +1434,8 @@ export async function rephraseDubbingCue(
   sourceText?: string,
   contextBefore: string[] = [],
   contextAfter: string[] = [],
-  timing?: { measuredDuration: number; maxDuration: number }
+  timing?: { measuredDuration: number; maxDuration: number },
+  recoveryAttempt: 1 | 2 = 1
 ): Promise<string[]> {
   try {
     // The shared rephrase contract explicitly says: giữ nguyên chủ thể, đối tượng, số liệu và phủ định; không thêm đại từ hoặc tác nhân không xuất hiện. This call only supplies source evidence and
@@ -1448,7 +1449,8 @@ export async function rephraseDubbingCue(
         targetDuration: cue.targetDuration,
         ...timing,
         contextBefore: cue.contextBefore,
-        contextAfter: cue.contextAfter
+        contextAfter: cue.contextAfter,
+        recoveryAttempt
       }))
     })
     const systemPrompt = messages[0].content
@@ -1520,6 +1522,7 @@ interface DubbingRephraseRequest {
   sourceText?: string
   contextBefore?: string[]
   contextAfter?: string[]
+  recoveryAttempt?: 1 | 2
 }
 
 /**
@@ -1552,7 +1555,8 @@ export async function rephraseDubbingCues(
         request.contextAfter || [],
         request.measuredDuration != null && request.maxDuration != null
           ? { measuredDuration: request.measuredDuration, maxDuration: request.maxDuration }
-          : undefined
+          : undefined,
+        request.recoveryAttempt || 1
       ))
     }
     return result
@@ -1575,7 +1579,8 @@ export async function rephraseDubbingCues(
           measuredDuration: request.measuredDuration,
           maxDuration: request.maxDuration,
           contextBefore: request.contextBefore || [],
-          contextAfter: request.contextAfter || []
+          contextAfter: request.contextAfter || [],
+          recoveryAttempt: request.recoveryAttempt
         }))
       })
       const res = await fetch(`${base}/v1/chat/completions`, {
@@ -2339,7 +2344,8 @@ export async function synthesizeVoice(
   index: number,
   total: number,
   detectedLanguage?: string | null,
-  policy?: AutoShortExecutionPolicy
+  policy?: AutoShortExecutionPolicy,
+  recoveryAttempt: 1 | 2 = 1
 ): Promise<{
   timeMap?: DubbingTimeMap
   outputDuration: number
@@ -2408,8 +2414,8 @@ export async function synthesizeVoice(
   }))
   const sourcePlan = buildPlan({ videoDuration, paceMode: config.paceMode || 'source-adaptive', cues: stableSourceCues })
   const targetById = new Map(cues.map((cue, cueIndex) => [cue.id?.trim() || `cue-${cue.sourceIndex ?? cueIndex}`, cue]))
-  const targetItems = sourcePlan.cues.map((cue, cueIndex) => {
-    const target = targetById.get(cue.id) || cues[cueIndex]
+  const targetItems = sourcePlan.cues.map((cue) => {
+    const target = targetById.get(cue.id)
     if (!target || !target.text.trim()) throw new Error(`Không tìm thấy text dịch cho cue ${cue.id}.`)
     return { id: cue.id, text: spokenTextWithoutSpeakerLabel(target.text) }
   })
@@ -2534,11 +2540,14 @@ export async function synthesizeVoice(
       logInfo(`[AutoShort:timing] stage=trim cue=${safeArtifactSegment(outputHint)} cache=miss elapsedMs=${Math.round(performance.now() - started)} audioSeconds=${duration.toFixed(3)}`)
       return { path: outputPath, duration }
     },
-    async applyTempo(inputPath, outputHint, targetDuration, signal) {
+    async applyTempo(inputPath, outputHint, targetDuration, signal, measuredInputDuration) {
       const started = performance.now()
       const outputPath = join(workDir, `${safeArtifactSegment(outputHint)}.wav`)
       const actualDuration = await resourceManager.withLease(['local-audio-dsp'], signal, async () => {
-        return speedUpVoiceClip(ffmpeg, inputPath, outputPath, await probeDuration(ffmpeg, inputPath, signal), targetDuration, signal)
+        const inputDuration = measuredInputDuration && measuredInputDuration > 0
+          ? measuredInputDuration
+          : await probeDuration(ffmpeg, inputPath, signal)
+        return speedUpVoiceClip(ffmpeg, inputPath, outputPath, inputDuration, targetDuration, signal)
       })
       logInfo(`[AutoShort:timing] stage=tempo cue=${safeArtifactSegment(outputHint)} elapsedMs=${Math.round(performance.now() - started)} targetSeconds=${targetDuration.toFixed(3)} audioSeconds=${actualDuration.toFixed(3)}`)
       return { path: outputPath, duration: actualDuration }
@@ -2547,6 +2556,7 @@ export async function synthesizeVoice(
   logInfo(`[AutoShort] Tạo và đo audio TTS thật trước; chỉ cue vượt giới hạn đo được mới có một lượt rephrase cứu lỗi, giữ trần ${AUTO_SHORT_TTS_HARD_MAX_TEMPO.toFixed(2)}x.`)
   const synthesized = await synthesizeDubbingPlan({
     allowVideoExtension: true,
+    recoveryAttempt,
     plan: translatedPlan,
     language,
     model: selectedModel.id,
@@ -2749,7 +2759,9 @@ async function processSingleVideo(
   index: number,
   total: number,
   policy: AutoShortExecutionPolicy = CONSERVATIVE_POLICY,
-  reservation?: DiskReservation
+  reservation?: DiskReservation,
+  recoveryAttempt: 1 | 2 = 1,
+  existingOutputDir?: string
 ): Promise<AutoShortItemResult> {
   const workDir = join(app.getPath('temp'), `tblao-autoshort-${job.id}-${item.id.slice(0, 8)}`)
   const checkpointDir = join(app.getPath('userData'), 'autoshort-checkpoints', safeArtifactSegment(item.id))
@@ -2757,7 +2769,7 @@ async function processSingleVideo(
   try {
     // Reserve the directory atomically before rendering so the MP4, title
     // file, and audit artifacts for one source can never mix with another.
-    itemOutputDir = await reserveVideoTitleOutputDir(config.outputDir, basename(item.filePath))
+    itemOutputDir = existingOutputDir || await reserveVideoTitleOutputDir(config.outputDir, basename(item.filePath))
   } catch (error) {
     const message = sanitizeAutoShortAuditError(error, [item.filePath, config.outputDir])
     return {
@@ -2783,6 +2795,7 @@ async function processSingleVideo(
     item,
     index,
     total,
+    recoveryAttempt,
     signal: job.controller.signal,
     emit: (event) => safeEmit(job, event),
     checkpointDir,
@@ -3015,6 +3028,7 @@ async function executeJob(job: AutoShortJob): Promise<AutoShortBatchResult> {
     // selected, admit each item through the disk ledger before starting any
     // child process; the conservative production default (1) is unchanged.
     const diskBudget = policy.maxActiveItems === 2 ? getGlobalAutoShortDiskBudget() : undefined
+    const retryOutputDirs = new Map<string, string>()
     const queueResults = await runAutoShortQueue({
       items: job.request.items,
       maxActiveItems: policy.maxActiveItems,
@@ -3028,8 +3042,15 @@ async function executeJob(job: AutoShortJob): Promise<AutoShortBatchResult> {
             return diskBudget.reserve(volume, estimate, signal)
           }
         : undefined,
-      processItem: async (item, index, totalCount, reservation) => {
-        return processSingleVideo(job, item, job.request.config, index, totalCount, policy, reservation)
+      processItem: async (item, index, totalCount, reservation, attempt = 1) => {
+        return processSingleVideo(job, item, job.request.config, index, totalCount, policy, reservation,
+          attempt, retryOutputDirs.get(item.id))
+      },
+      shouldRetry: (result) => result.status === 'error' && result.recovery?.retryable === true,
+      onRetryScheduled: (itemResult, index, item, totalCount) => {
+        if (itemResult.artifactDir) retryOutputDirs.set(item.id, dirname(itemResult.artifactDir))
+        emitProgress(job, item, 'queued', 0,
+          'Đã lưu tiến trình; sẽ tự xử lý lại sau khi hoàn tất hàng đợi.', index, totalCount)
       },
       onTerminal: (itemResult, index, item, totalCount) => {
         results[index] = itemResult

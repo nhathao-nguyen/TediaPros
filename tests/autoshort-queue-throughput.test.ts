@@ -154,3 +154,55 @@ test('AutoShort Queue Runner: single item error does not drop previous results o
   assert.equal(results[2].status, 'done')
   assert.equal(results[3].status, 'done')
 })
+
+test('AutoShort Queue Runner: retries recoverable errors once after the first pass finishes', async () => {
+  const items: AutoShortQueueItemInput[] = Array.from({ length: 3 }, (_, i) => ({
+    id: `item-${i}`,
+    filePath: `video-${i}.mp4`
+  }))
+  const starts: Array<[number, number]> = []
+  const scheduled: number[] = []
+  const terminals: number[] = []
+  const results = await runAutoShortQueue({
+    items,
+    signal: new AbortController().signal,
+    maxActiveItems: 1,
+    processItem: async (item, index, _total, _reservation, attempt) => {
+      starts.push([index, attempt])
+      if (index === 0 && attempt === 1) return {
+        itemId: item.id, filePath: item.filePath, status: 'error', error: 'duration',
+        recovery: { kind: 'dubbing-duration', retryable: true, attempt }
+      }
+      return { itemId: item.id, filePath: item.filePath, status: 'done' }
+    },
+    shouldRetry: (result) => result.recovery?.retryable === true,
+    onRetryScheduled: (_result, index) => scheduled.push(index),
+    onTerminal: (_result, index) => terminals.push(index)
+  })
+  assert.deepEqual(starts, [[0, 1], [1, 1], [2, 1], [0, 2]])
+  assert.deepEqual(scheduled, [0])
+  assert.deepEqual(terminals, [1, 2, 0])
+  assert.equal(results[0].status, 'done')
+})
+
+test('AutoShort Queue Runner: cancellation during recovery finalizes every deferred item once', async () => {
+  const controller = new AbortController()
+  const items: AutoShortQueueItemInput[] = ['a', 'b'].map((id) => ({ id, filePath: `${id}.mp4` }))
+  const terminals: string[] = []
+  const recoveryStarts: string[] = []
+  const results = await runAutoShortQueue({
+    items, signal: controller.signal, maxActiveItems: 1,
+    processItem: async (item, _index, _total, _reservation, attempt) => {
+      if (attempt === 2) { recoveryStarts.push(item.id); controller.abort() }
+      return attempt === 1
+        ? { itemId: item.id, filePath: item.filePath, status: 'error', error: 'duration',
+            recovery: { kind: 'dubbing-duration', retryable: true, attempt } }
+        : { itemId: item.id, filePath: item.filePath, status: 'cancelled', error: 'cancelled' }
+    },
+    shouldRetry: (result) => result.recovery?.retryable === true,
+    onTerminal: (result) => terminals.push(result.itemId)
+  })
+  assert.deepEqual(terminals.sort(), ['a', 'b'])
+  assert.deepEqual(recoveryStarts, ['a'])
+  assert.deepEqual(results.map((result) => result.status), ['cancelled', 'cancelled'])
+})

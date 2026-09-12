@@ -91,6 +91,29 @@ test('legacy config migrates to manual and accurate', () => {
   if (result.ok) {
     assert.equal(result.value.config.blurMode, 'manual')
     assert.equal(result.value.config.ocrBlurProfile, 'accurate')
+    assert.equal(result.value.config.subtitlePlacementMode, 'manual')
+  }
+})
+
+test('OCR subtitle placement requires automatic visual processing and both regions', () => {
+  const valid = validateAutoShortStartRequest(autoShortRequest({
+    subtitlePlacementMode: 'ocr-dominant',
+    lamMo: true,
+    blurMode: 'ocr-auto',
+    ocrRegion: { x0: 0.1, y0: 0.2, x1: 0.9, y1: 0.9 },
+    subRegion: { x0: 0.2, y0: 0.4, x1: 0.8, y1: 0.52 }
+  }))
+  assert.equal(valid.ok, true)
+
+  for (const config of [
+    { subtitlePlacementMode: 'future' as never },
+    { subtitlePlacementMode: 'ocr-dominant' as const, lamMo: false },
+    { subtitlePlacementMode: 'ocr-dominant' as const, lamMo: true, blurMode: 'manual' as const },
+    { subtitlePlacementMode: 'ocr-dominant' as const, lamMo: true, blurMode: 'ocr-auto' as const, ocrRegion: null },
+    { subtitlePlacementMode: 'ocr-dominant' as const, lamMo: true, blurMode: 'ocr-auto' as const,
+      ocrRegion: { x0: 0.1, y0: 0.2, x1: 0.9, y1: 0.9 }, subRegion: null }
+  ]) {
+    assert.equal(validateAutoShortStartRequest(autoShortRequest(config)).ok, false)
   }
 })
 

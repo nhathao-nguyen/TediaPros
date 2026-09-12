@@ -26,6 +26,7 @@ export interface RephraseCueInput {
   maxDuration?: number
   contextBefore: string[]
   contextAfter: string[]
+  recoveryAttempt?: 1 | 2
 }
 
 export interface RephraseInput {
@@ -240,22 +241,31 @@ export function buildRephraseMessages(input: RephraseInput): ModelMessage[] {
   if (input.cues.some((cue) => !cue.id.trim() || !cue.currentText.trim())) {
     throw new Error('Rephrase cues require an ID and current text.')
   }
+  const sourceRepair = input.cues.some((cue) => cue.recoveryAttempt === 2)
   const system = [
     `translation_prompt_version=${TRANSLATION_PROMPT_VERSION}`,
-    'task=rephrase',
+    sourceRepair ? 'task=repair-source' : 'task=rephrase',
     `target_locale=${target}`,
-    'Edit an existing target-language line for natural spoken delivery. This is not a fresh translation task.',
-    'Keep the current meaning, subject, names, numbers and negation. Never add an actor or fact absent from the source/current text.',
+    sourceRepair
+      ? 'The current translation may be semantically misaligned. Translate each source_text again into target_locale, using current_text only as evidence to audit and never as authoritative meaning.'
+      : 'Edit an existing target-language line for natural spoken delivery. This is not a fresh translation task.',
+    sourceRepair
+      ? 'Preserve the source meaning, subject, names, numbers and negation. Remove facts found only in current_text. Neighbor context is read-only and must not be moved into this cue.'
+      : 'Keep the current meaning, subject, names, numbers and negation. Never add an actor or fact absent from the source/current text.',
     'Every candidate must preserve the object being discussed and each action, condition, warning and causal relation. Keep an explicitly named object explicit; do not omit it or replace it with a vague pronoun just because neighboring context names it. A shorter sentence about an unspecified object is not equivalent.',
     'Return at most three distinct candidates per cue using [cue-id:1] text, [cue-id:2] text, [cue-id:3] text. Put each candidate on its own line. Labels are output delimiters only: never include a label or another alternative inside the spoken text. Return no explanations.',
     'Copy a label exactly from allowed_output_labels for that cue. Never renumber cue IDs or use a context cue as an output ID. For one candidate, use the first allowed label.',
     'Make the alternatives progressively more concise: a compact version, a shorter idiomatic version, and the shortest faithful version. Avoid three same-length synonym swaps.',
     'When measured_natural_seconds is present, it is the actual duration of current_text in this voice. Use target_word_count and max_word_count as estimates of how much wording can fit. Prefer a shorter expression for the same meaning; never mechanically cut words, drop a condition, or invent facts to meet a budget.',
-    'Compress expressions rather than information: use a precise verb for a verbose verb-and-adverb phrase, and remove optional reminders or filler before removing any substantive detail. Meaning takes priority over the estimated word budget. Before returning each candidate, compare it with source_text and current_text and discard it if any substantive detail is lost. Return fewer candidates when necessary.',
+    sourceRepair
+      ? 'Compress expressions rather than source information. Meaning takes priority over the estimated word budget. Before returning each candidate, compare it with source_text and discard it if any source-grounded detail is lost or any current-only detail remains. Return fewer candidates when necessary.'
+      : 'Compress expressions rather than information: use a precise verb for a verbose verb-and-adverb phrase, and remove optional reminders or filler before removing any substantive detail. Meaning takes priority over the estimated word budget. Before returning each candidate, compare it with source_text and current_text and discard it if any substantive detail is lost. Return fewer candidates when necessary.',
     'Compression example: "Remember to check the equipment carefully before you use it" can become "Inspect the equipment before use": precise verb, explicit object, same condition. Apply equivalent idiomatic compression in target_locale without copying example facts. When faithful wording permits, make the shortest candidate fit target_word_count, rather than leaving every candidate near or above max_word_count.',
-    'Shorten the current wording to speak naturally within target_duration_seconds, preserving all information. Prefer concise idiomatic phrasing and remove only verbal redundancy. Do not delete meaning or force a candidate that is not safe.'
+    sourceRepair
+      ? 'Translate and compress source_text to speak naturally within target_duration_seconds. Preserve every source-grounded detail, but never preserve a detail merely because it appears in current_text. Do not force an unsafe candidate.'
+      : 'Shorten the current wording to speak naturally within target_duration_seconds, preserving all information. Prefer concise idiomatic phrasing and remove only verbal redundancy. Do not delete meaning or force a candidate that is not safe.'
   ].join('\n')
-  const userLines = ['task=rephrase; target_locale=' + target, '[REPHRASE_DATA_JSONL]']
+  const userLines = [`task=${sourceRepair ? 'repair-source' : 'rephrase'}; target_locale=${target}`, '[REPHRASE_DATA_JSONL]']
   for (const cue of input.cues) {
     const measured = cue.measuredDuration && Number.isFinite(cue.measuredDuration) && cue.measuredDuration > 0 ? cue.measuredDuration : undefined
     const words = extractDurationFeatures(cue.currentText, target).words
@@ -274,7 +284,8 @@ export function buildRephraseMessages(input: RephraseInput): ModelMessage[] {
       target_word_count: targetWords,
       max_word_count: maxWords,
       context_before: cue.contextBefore,
-      context_after: cue.contextAfter
+      context_after: cue.contextAfter,
+      recovery_attempt: cue.recoveryAttempt || 1
     }))
   }
   userLines.push('[/REPHRASE_DATA_JSONL]')

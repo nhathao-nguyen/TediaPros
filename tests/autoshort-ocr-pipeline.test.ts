@@ -100,6 +100,26 @@ function sampleTimeline(): OcrVisualTimeline {
   }
 }
 
+function subtitlePlacementTimeline(): OcrVisualTimeline {
+  const base = sampleTimeline()
+  return {
+    ...base,
+    scanRegion: { x0: 0, y0: 504, x1: 1280, y1: 648 },
+    segments: [
+      {
+        id: 'placement-1', startFrame: 0, endFrameExclusive: 32, start: 0, end: 4,
+        text: 'Xin chào mọi người', confidence: 0.95,
+        boxes: [{ text: 'Xin chào mọi người', confidence: 0.95, x0: 240, y0: 570, x1: 1040, y1: 620 }]
+      },
+      {
+        id: 'placement-2', startFrame: 32, endFrameExclusive: 64, start: 4, end: 8,
+        text: 'Hôm nay chúng ta bắt đầu', confidence: 0.95,
+        boxes: [{ text: 'Hôm nay chúng ta bắt đầu', confidence: 0.95, x0: 230, y0: 570, x1: 1050, y1: 620 }]
+      }
+    ]
+  }
+}
+
 function baseConfig(overrides: Partial<AutoShortConfig> = {}): AutoShortConfig {
   return {
     subtitleMethod: 'ocr',
@@ -264,14 +284,17 @@ test('Step 9.2: RED OCR-only automatic reuse (single visual OCR call, same timel
     let burnReqReceived: unknown = null
     let burnOptionsReceived: unknown = null
 
-    const fakeTimeline = sampleTimeline()
+    const fakeTimeline = subtitlePlacementTimeline()
+    const fallbackRegion = { x0: 0.2, y0: 0.72, x1: 0.8, y1: 0.78 }
+    let scanRegionReceived: unknown = null
 
     const deps: AutoShortItemCoordinatorDeps = {
       resolveFfmpeg: async () => 'ffmpeg.exe',
       resolveFfprobe: async () => 'ffprobe.exe',
       probeMedia: async () => mockMeta,
-      runVisualOcr: async () => {
+      runVisualOcr: async (request) => {
         visualOcrCallCount++
+        scanRegionReceived = request.scanRegion
         return {
           timeline: fakeTimeline,
           sourceSrtPath: 'source.engine.srt',
@@ -308,7 +331,11 @@ test('Step 9.2: RED OCR-only automatic reuse (single visual OCR call, same timel
       jobId: 'job-1',
       request: {
         items: [{ id: 'item-1', filePath: videoFile }],
-        config: baseConfig({ outputDir: outDir })
+        config: baseConfig({
+          outputDir: outDir,
+          subtitlePlacementMode: 'ocr-dominant',
+          subRegion: fallbackRegion
+        })
       },
       item: { id: 'item-1', filePath: videoFile },
       index: 0,
@@ -325,12 +352,20 @@ test('Step 9.2: RED OCR-only automatic reuse (single visual OCR call, same timel
     assert.equal(result.status, 'done')
     assert.equal(visualOcrCallCount, 1, 'Visual OCR must be called exactly once')
     assert.equal(timelinePassedToMask, fakeTimeline, 'Same timeline must be passed to writeTimedMask')
+    assert.deepEqual(scanRegionReceived, { x0: 0, y0: 504, x1: 1280, y1: 648 }, 'Placement must keep the user-selected OCR region')
 
     // Burn options verification
     const req = burnReqReceived as Record<string, unknown>
     const opts = burnOptionsReceived as Record<string, unknown>
     assert.deepEqual(req.blurRegions, [], 'Automatic blur must send empty manual blurRegions to burn')
     assert.ok(opts.timedOcrBlurMask != null, 'burnAutoShort must receive timedOcrBlurMask')
+    assert.notDeepEqual(req.subRegion, { x0: 256, y0: 518, x1: 1024, y1: 562 }, 'Burn must not keep the manual fallback when OCR selected a dominant region')
+    assert.deepEqual(req.subRegion, { x0: 205, y0: 545, x1: 1075, y1: 645 })
+
+    const manifest = JSON.parse(await readFile(join(context.artifactDir, 'manifest.json'), 'utf8')) as Record<string, any>
+    assert.equal(manifest.subtitlePlacement?.reason, 'selected')
+    assert.equal(manifest.subtitlePlacement?.candidateCount, 1)
+    assert.equal(manifest.subtitlePlacement?.coverage, 0.8)
 
     // Checkpoint contains evidence but NO timeline or mask paths
     const checkpointFile = join(context.checkpointDir, 'checkpoint.json')

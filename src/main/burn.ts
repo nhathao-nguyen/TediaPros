@@ -11,7 +11,7 @@ import {
   type ResolvedBurnFont
 } from './fonts'
 import { createTextMeasurer } from './fontMeasure'
-import { debugRaw, logInfo } from './logger'
+import { debugRaw, errLabel, logInfo } from './logger'
 import {
   type CanonicalDisplayGeometry,
   canonicalBurnDisplayFilter,
@@ -906,6 +906,12 @@ export function taoFilterComplexAutomatic(
   return ['-filter_complex', lines.join(';'), '-map', '[out]', ...audio.mapArgs]
 }
 
+interface BurnProcessResult {
+  code: number | null
+  diagnostic?: string
+  spawnFailed?: boolean
+}
+
 /** Chay 1 lan ffmpeg, bao tien do theo `time=` tren stderr. */
 async function chay(
   ff: string,
@@ -914,15 +920,15 @@ async function chay(
   meta: Meta,
   onProgress: (p: BurnProgress) => void,
   signal?: AbortSignal
-): Promise<number | null> {
-  if (daHuy || signal?.aborted) return null
+): Promise<BurnProcessResult> {
+  if (daHuy || signal?.aborted) return { code: null }
   return new Promise((resolve) => {
     const p = spawnBurnChild(spawn(ff, args, { cwd, windowsHide: true, shell: false }))
     child = p
     let errTail = ''
     const onAbort = () => {
       terminateProcessTree(p)
-      resolve(null)
+      resolve({ code: null })
     }
     if (signal) {
       signal.addEventListener('abort', onAbort, { once: true })
@@ -961,14 +967,14 @@ async function chay(
       debugRaw('burn spawn', err)
       if (child === p) child = null
       burnChildren.delete(p)
-      resolve(-1)
+      resolve({ code: -1, diagnostic: errLabel(err), spawnFailed: true })
     })
     p.on('close', (code) => {
       if (signal) signal.removeEventListener('abort', onAbort)
       if (child === p) child = null
       burnChildren.delete(p)
       if (code !== 0 && errTail) debugRaw('burn close', errTail)
-      resolve(code)
+      resolve({ code, diagnostic: code !== 0 && errTail ? errLabel(errTail) : undefined })
     })
   })
 }
@@ -1132,6 +1138,8 @@ export async function runBurnSubtitleLower(
       { ten: 'libx264', gpu: false, args: ['-c:v', 'libx264', '-pix_fmt', 'yuv420p', '-preset', 'medium', '-crf', '20'] }
     ]
 
+    let lastFailure: BurnProcessResult | null = null
+    let lastEncoder = ''
     for (const enc of encoders) {
       if (daHuy || options.signal?.aborted) break
 
@@ -1143,17 +1151,27 @@ export async function runBurnSubtitleLower(
         ? [...inputArgs, ...filterArgs, ...enc.args, ...audioCodecArgs, output]
         : [...inputArgs, ...enc.args, ...audioCodecArgs, output]
 
-      const code = await chay(ff, args, tam, meta, onProgress, options.signal)
+      const attempt = await chay(ff, args, tam, meta, onProgress, options.signal)
       if (daHuy || options.signal?.aborted) {
         return { ok: false, error: 'Đã huỷ.' }
       }
-      if (code === 0 && (await duLon(output))) {
+      if (attempt.code === 0 && (await duLon(output))) {
         logInfo(`Dịch màn hình: xử lý video xong${enc.gpu ? ' (tăng tốc GPU)' : ''}.`)
         return { ok: true, output }
       }
+      lastFailure = attempt
+      lastEncoder = enc.ten
+      if (attempt.spawnFailed) {
+        const diagnostic = attempt.diagnostic || 'lỗi không xác định'
+        logInfo(`Dịch màn hình: không khởi chạy được FFmpeg — ${diagnostic}.`)
+        return { ok: false, error: `Không khởi chạy được FFmpeg: ${diagnostic}.` }
+      }
     }
 
-    return { ok: false, error: 'Xử lý video thất bại.' }
+    const diagnostic = lastFailure?.diagnostic || 'không tạo được tệp video hợp lệ'
+    const exitCode = lastFailure?.code == null ? '' : `, mã ${lastFailure.code}`
+    logInfo(`Dịch màn hình: FFmpeg ${lastEncoder || 'render'} thất bại${exitCode} — ${diagnostic}.`)
+    return { ok: false, error: `FFmpeg xuất video thất bại${exitCode}: ${diagnostic}.` }
   } finally {
     if (hasSrt) {
       await rm(srtTam, { force: true }).catch(() => {})
@@ -1264,10 +1282,10 @@ async function runBurnSubtitle(
 
     args.push(output)
 
-    const code = await chay(ff, args, tam, meta, onProgress)
+    const attempt = await chay(ff, args, tam, meta, onProgress)
     if (hasSrt) await rm(srtTam, { force: true })
     if (daHuy) return { ok: false, error: 'Đã huỷ.' }
-    if (code === 0 && (await duLon(output))) {
+    if (attempt.code === 0 && (await duLon(output))) {
       logInfo('Dịch màn hình: gắn phụ đề rời xong.')
       return { ok: true, output }
     }
@@ -1505,6 +1523,10 @@ export async function burnAutoShort(
   }
 
   burnInFlight = true
+  // cancelBurn() marks the current render as cancelled.  A later Auto Short
+  // item is a new render scope and must not inherit that completed scope's
+  // cancellation state.
+  daHuy = false
   const finalStem = basename(options.finalOutputPath, '.mp4')
   const partialName = `.${finalStem}.${randomUUID()}.partial.mp4`
   const partialPath = join(finalDir, partialName)

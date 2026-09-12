@@ -6,7 +6,8 @@ import { createServer } from 'node:http'
 import { tmpdir } from 'node:os'
 import { dirname, join } from 'node:path'
 import { test } from 'node:test'
-import { burnAutoShort, burnSubtitle, cancelBurn, completeBurnVideoTitle } from '../src/main/burn'
+import { burnAutoShort, burnSubtitle, cancelBurn, completeBurnVideoTitle, runBurnSubtitleLower } from '../src/main/burn'
+import { planBurnInputs } from '../src/main/burnInputPlanner'
 import type { BurnProgress, BurnReq, BurnResult, VideoSeoMetadata } from '../src/shared/types'
 
 const seo = (title: string): VideoSeoMetadata => ({
@@ -197,6 +198,45 @@ test('burn rejects title generation without SRT and locks overlapping requests b
 const embeddedFfmpeg = 'C:\\Users\\PC\\AppData\\Roaming\\tedia-pros\\bin\\ffmpeg.exe'
 const embeddedFfprobe = 'C:\\Users\\PC\\AppData\\Roaming\\tedia-pros\\bin\\ffprobe.exe'
 
+test('burn reports a useful error when FFmpeg cannot be started', {
+  skip: !existsSync(embeddedFfmpeg) || !existsSync(embeddedFfprobe),
+  timeout: 30_000
+}, async () => {
+  const root = await mkdtemp(join(tmpdir(), 'tedia-burn-spawn-error-'))
+  const source = join(root, 'source.mp4')
+  try {
+    const generated = spawnSync(embeddedFfmpeg, [
+      '-y', '-hide_banner', '-loglevel', 'error',
+      '-f', 'lavfi', '-i', 'testsrc2=s=160x90:d=0.25:r=10',
+      '-c:v', 'libx264', '-pix_fmt', 'yuv420p', source
+    ], { windowsHide: true, encoding: 'utf8' })
+    assert.equal(generated.status, 0, generated.stderr)
+
+    const missingFfmpeg = join(root, 'missing-ffmpeg.exe')
+    const result = await runBurnSubtitleLower({
+      video: source,
+      srt: null,
+      outputDir: root,
+      outputName: 'output.mp4',
+      mode: 'burn',
+      portraitBlur: true
+    }, {
+      outputPath: join(root, 'output.mp4'),
+      plan: planBurnInputs({ sourceVideo: source }),
+      ffmpegPath: missingFfmpeg,
+      ffprobePath: embeddedFfprobe,
+      cwd: root
+    }, () => {})
+
+    assert.equal(result.ok, false)
+    assert.match(result.error || '', /không khởi chạy được FFmpeg/i)
+    assert.match(result.error || '', /thiếu tệp hoặc công cụ/i)
+    assert.doesNotMatch(result.error || '', new RegExp(root.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'u'))
+  } finally {
+    await rm(root, { recursive: true, force: true })
+  }
+})
+
 test('real FFmpeg render writes the AI sidecar for Auto Short and direct burn, then remains cancellable', {
   skip: !existsSync(embeddedFfmpeg) || !existsSync(embeddedFfprobe),
   timeout: 60_000
@@ -327,6 +367,27 @@ test('real FFmpeg render writes the AI sidecar for Auto Short and direct burn, t
     assert.notEqual(stopped.output, result.output)
     assert.match(stopped.titleError!, /Đã dừng tạo tiêu đề/u)
     assert.equal(existsSync(join(dirname(stopped.output!), 'tieude.txt')), false)
+
+    const afterCancel = await burnAutoShort(
+      { ...req, mode: 'burn', videoTitle: undefined },
+      {
+        ffmpegPath: ffmpeg,
+        ffprobePath: join(runtime, 'ffprobe.exe'),
+        finalOutputPath: join(autoOutputDir, 'after-cancel.mp4'),
+        itemWorkDir: autoWorkDir,
+        expectedMedia: {
+          durationSeconds: 2,
+          frameRate: 24,
+          requireAudio: false,
+          durationToleranceFrames: 3
+        },
+        signal: new AbortController().signal
+      },
+      () => {}
+    )
+    assert.equal(afterCancel.ok, true, afterCancel.error)
+    assert.ok(afterCancel.output && existsSync(afterCancel.output))
+
     assert.equal(await readFile(result.titlePath!, 'utf8'),
       `${title}\n\nDescription:\n${metadata.description}\n\nTags:\n${metadata.tags.join(', ')}\n\nHashtags:\n${metadata.hashtags.join(' ')}\n`)
     context.diagnostic('Actual 2-second FFmpeg video + loopback AI title verified; cancellation preserved second MP4 and existing first title.')

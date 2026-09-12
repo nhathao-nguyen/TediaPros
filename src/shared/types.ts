@@ -877,6 +877,7 @@ export interface AutoShortSeparationReadiness {
 
 export type AutoShortBlurMode = 'manual' | 'ocr-auto' | 'sttn'
 export type AutoShortOcrBlurProfile = 'accurate' | 'fast'
+export type AutoShortSubtitlePlacementMode = 'manual' | 'ocr-dominant'
 
 export interface VideoAdjustments {
   /** Centred crop zoom as a percentage. */
@@ -905,6 +906,8 @@ export interface AutoShortConfig {
   ocrBlurProfile: AutoShortOcrBlurProfile
   /** Vùng phụ đề đầu ra, tọa độ chuẩn hóa 0..1. */
   subRegion?: AutoShortNormalizedRegion | null
+  /** Optional for old configs; auto placement reuses the item's visual OCR timeline. */
+  subtitlePlacementMode?: AutoShortSubtitlePlacementMode
   fontId?: string | null
   textColor?: string
   outlineColor?: string
@@ -1083,6 +1086,7 @@ export interface AutoShortTaskItem {
   translationAssessment?: TranslationAssessment
   /** Opaque translation identity used by the explicit retry action. */
   translationIdentity?: string
+  recovery?: AutoShortItemResult['recovery']
 }
 
 export type AutoShortStage =
@@ -1231,6 +1235,14 @@ export interface AutoShortItemResult {
   translationAssessment?: TranslationAssessment
   /** Opaque translation identity; never contains source text or credentials. */
   translationIdentity?: string
+  recovery?: {
+    kind: 'dubbing-duration' | 'tts-quality' | 'translation-content' | 'provider-transient'
+    retryable: boolean
+    attempt: 1 | 2
+    cueId?: string
+    missingSeconds?: number
+    requiredPercent?: number
+  }
 }
 
 export type AutoShortEvent =

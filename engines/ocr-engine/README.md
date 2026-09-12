@@ -88,6 +88,12 @@ vào `_internal/models/MODEL-LICENSE.txt`. OCR kiểm checksum model mỗi lần
 tạo, không tải model trên mạng lúc chạy. Model hỏng là lỗi, không fallback sang
 model khác. Không thay đổi LICENSE/NOTICE của TediaPros.
 
+Trên Windows, AppContainer có thể ánh xạ riêng đường dẫn file trong AppData qua
+`LocalCache` dù đường dẫn thư mục cha vẫn giữ nguyên. Resolver giữ đường dẫn
+tuyệt đối do runtime cung cấp và từ chối symlink ở thư mục/model trước khi kiểm
+SHA-256; không dùng `Path.resolve()` để so containment vì hai tên đường dẫn hợp
+lệ có thể trỏ tới cùng một file nhưng bị so thành hai cây khác nhau.
+
 ## Cài đặt và bằng chứng
 
 Chỉ thay **toàn bộ thư mục** runtime sau khi các tác vụ OCR đang chạy đã kết

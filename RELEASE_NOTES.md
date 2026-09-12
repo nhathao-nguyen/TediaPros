@@ -1,3 +1,23 @@
+## TediaPros v0.1.24
+
+### Auto Short theo vùng OCR
+
+- Thêm chế độ tự đặt phụ đề riêng cho từng video từ OCR timeline hiện có. Vùng quét vẫn do người dùng chọn; hệ thống không quét toàn khung và không gọi OCR lần hai.
+- Chỉ chọn vùng đạt đồng thời độ phủ thường xuyên và chiều cao chữ điển hình lớn, loại chữ/logo cố định; khi dữ liệu không rõ sẽ dùng khung phụ đề thủ công.
+- Chuẩn hóa vùng phụ đề, OCR và blur theo tỷ lệ khung hình để batch 1080p/4K giữ cùng bố cục tương đối.
+
+### Lồng tiếng và phục hồi render
+
+- Giữ đủ lời trong trần tempo 1,80x, làm chậm hình có giới hạn và phát lại đoạn hình thuộc đúng cue khi cần thêm thời gian.
+- Video lỗi được giữ kết quả chẩn đoán và thử lại một lần sau khi lượt đầu của hàng đợi hoàn tất; lượt phục hồi đo lại audio và bỏ cache TTS cũ.
+- Parser metadata chấp nhận một object JSON hợp lệ được Gemini bọc bằng code fence hoặc lời dẫn mà vẫn giữ validation schema hiện có.
+
+### Runtime tải theo nhu cầu
+
+- Phát hành `runtime-v5` với FFmpeg, Faster-Whisper, CUDA runtime cho Whisper, RapidOCR DirectML, Video2X, Douyin, Separator và STTN CPU portable. STTN CUDA tiếp tục dùng build cục bộ cho máy chuyên dụng vì gói CUDA vượt giới hạn kích thước asset GitHub.
+- Sửa OCR 1.2.1 nhận đúng model đã kiểm SHA-256 khi Windows AppContainer canonicalize đường dẫn qua `LocalCache`.
+- Các engine vẫn được tải riêng, kiểm SHA-256 và capability trước khi kích hoạt; model STTN và Separator tiếp tục tải từ nguồn đã ghim riêng.
+
 ## TediaPros v0.1.23
 
 ### Độ tin cậy dịch và lồng tiếng AutoShort

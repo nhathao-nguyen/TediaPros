@@ -87,6 +87,18 @@
         "path": "engines/separator-engine",
         "python": "3.12.10"
       }
+    },
+    "sttn-engine": {
+      "version": "1.1.1",
+      "entrypoint": "sttn-engine.exe",
+      "protocol": "sttn-engine/1",
+      "capabilities": ["cpu", "timed-mask", "ffv1", "preview"],
+      "source": {
+        "kind": "repository-build",
+        "path": "engines/sttn-engine",
+        "python": "3.12.10",
+        "torch": "2.7.1+cpu"
+      }
     }
   },
   "externalInputs": {

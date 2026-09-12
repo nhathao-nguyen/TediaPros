@@ -11,12 +11,17 @@ MODEL_FILES = {
 
 
 def resolve_ocr_models(directory=None):
+    # Windows AppContainer path virtualization can canonicalize a child file
+    # through LocalCache while leaving its parent directory unchanged. Keep the
+    # managed path spelling and reject symlinks explicitly instead.
     root = Path(directory or os.environ.get("TEDIAPROS_OCR_MODELS_DIR")
-                or Path(__file__).resolve().parent / "models").resolve(strict=True)
+                or Path(__file__).parent / "models").absolute()
+    if not root.is_dir() or root.is_symlink():
+        raise FileNotFoundError(f"OCR model directory does not exist: {root}")
     options = {}
     for component, (name, digest) in MODEL_FILES.items():
-        model = (root / name).resolve(strict=True)
-        if not model.is_relative_to(root) or not model.is_file():
+        model = (root / name).absolute()
+        if not model.is_relative_to(root) or model.is_symlink() or not model.is_file():
             raise ValueError(f"OCR model must be a regular file inside the model directory: {name}")
         if model.stat().st_size > 64 * 1024 * 1024:
             raise ValueError(f"OCR model exceeds the qualified size limit: {name}")

@@ -9,20 +9,37 @@ import * as subtitleModule from '../src/main/dubbing/subtitles'
 import * as synthesisModule from '../src/main/dubbing/synthesis'
 import { planDubbingTimeMap, mapDubbingTime } from '../src/main/dubbing/timeMap'
 
-test('local extension preserves unchanged segments and enforces 40 percent independently', () => {
+test('local extension preserves unchanged segments and enforces 60 percent independently', () => {
   const map = planDubbingTimeMap(6, [
-    { id: 'a', start: 0, naturalDuration: 3.4, availableDuration: 1.5 },
-    { id: 'b', start: 2, naturalDuration: 1, availableDuration: 1.5 },
-    { id: 'c', start: 4, naturalDuration: 4, availableDuration: 1.5 }
+    { id: 'a', start: 0, sourceEnd: 1.5, naturalDuration: 3.4, availableDuration: 1.5 },
+    { id: 'b', start: 2, sourceEnd: 3.5, naturalDuration: 1, availableDuration: 1.5 },
+    { id: 'c', start: 4, sourceEnd: 5.5, naturalDuration: 4, availableDuration: 1.5 }
   ], 1.8)
   assert.ok(map.segments[0].outputEnd < 2.6)
-  assert.ok(Math.abs(map.segments[1].outputEnd - map.segments[1].outputStart - 2) < 1e-9)
-  assert.ok(map.segments[2].outputEnd - map.segments[2].outputStart <= 2.8)
-  assert.equal(mapDubbingTime(map, 2), map.segments[1].outputStart)
+  const unchanged = map.segments.find((segment) => segment.ownerCueId === 'b' && segment.mode === 'primary')!
+  assert.ok(Math.abs(unchanged.outputEnd - unchanged.outputStart - 1.5) < 1e-9)
+  assert.ok(map.segments.some((segment) => segment.sourceStart === 1.5 && segment.sourceEnd === 2 && !segment.ownerCueId))
+  assert.ok(map.segments.filter((segment) => segment.ownerCueId === 'c')
+    .reduce((sum, segment) => sum + segment.outputEnd - segment.outputStart, 0) <= 3.2)
+  assert.equal(mapDubbingTime(map, 2), unchanged.outputStart)
   assert.equal(mapDubbingTime(map, 6), map.outputDuration)
   assert.throws(() => planDubbingTimeMap(2, [
-    { id: 'too-long', start: 0, naturalDuration: 5, availableDuration: 1.5 }
-  ], 1.8), /vượt giới hạn 40%/u)
+    { id: 'too-long', start: 0, sourceEnd: 1.5, naturalDuration: 5, availableDuration: 1.5 }
+  ], 1.8), /vượt giới hạn 60%/u)
+})
+
+test('visual extension slows at most 20 percent then replays source inside the owning cue interval', () => {
+  const map = planDubbingTimeMap(4, [
+    { id: 'a', start: 0, sourceEnd: 1, naturalDuration: 2.7, availableDuration: 1 },
+    { id: 'b', start: 2, sourceEnd: 3.5, naturalDuration: 1, availableDuration: 1.5 }
+  ], 1.8)
+  const owned = map.segments.filter((segment) => segment.ownerCueId === 'a')
+  assert.equal(owned.length, 2)
+  assert.equal(owned[0].mode, 'primary')
+  assert.ok(owned[0].outputEnd - owned[0].outputStart <= 1.2 + 1e-9)
+  assert.equal(owned[1].mode, 'replay')
+  assert.ok(owned[1].sourceStart >= 0 && owned[1].sourceEnd <= 1)
+  assert.equal(mapDubbingTime(map, 2), map.segments.find((segment) => segment.ownerCueId === 'b')!.outputStart)
 })
 
 test('bounded extension keeps a feasible semantic group before introducing extra split gaps', async () => {
@@ -94,6 +111,99 @@ test('audio requiring 1.8x fits without rephrase and fixed pace clamps at 1.8x',
     rephrase: async () => { throw new Error('No rephrase for audio within 1.8x') }
   })
   assert.equal(result.plan.cues[0].tempo, 1.8)
+  assert.equal(result.plan.cues[0].actualDuration, 1.5)
+})
+
+test('rejects a looping overlong TTS clip for a short interjection', () => {
+  const result = policyModule.validateVoiceAudioCompleteness('Oh my!', 8.76)
+  assert.equal(result.ok, false)
+  assert.match(result.error || '', /dài bất thường|lặp|sinh lỗi/u)
+  assert.equal(policyModule.validateVoiceAudioCompleteness('Oh my!', 1.1).ok, true)
+})
+
+test('refreshes an overlong TTS cache entry before planning video extension', async () => {
+  const requests: Array<{ cacheMode?: 'prefer' | 'bypass' }> = []
+  const result = await synthesisModule.synthesizeDubbingPlan({
+    plan: planModule.buildDubbingPlan({ videoDuration: 2.5, paceMode: 'fixed', cues: [
+      { id: 'short-interjection', start: 0, end: 1.2, text: 'source' }
+    ] }),
+    language: 'en',
+    model: 'fixture',
+    fixedTempo: 1,
+    tts: {
+      synthesize: async (request) => {
+        requests.push({ cacheMode: request.cacheMode })
+        return request.cacheMode === 'bypass'
+          ? { path: 'fresh.wav', fromCache: false }
+          : { path: 'looping-cache.wav', fromCache: true }
+      }
+    },
+    audio: {
+      trim: async (path) => ({ path, duration: path === 'looping-cache.wav' ? 8.76 : 1.1 }),
+      applyTempo: async (path, _hint, duration) => ({ path, duration })
+    }
+  })
+  assert.deepEqual(requests, [{ cacheMode: 'prefer' }, { cacheMode: 'bypass' }])
+  assert.equal(result.plan.cues[0].naturalDuration, 1.1)
+  assert.equal(result.timeMap, undefined)
+})
+
+test('second-pass duration recovery bypasses the previously measured TTS cache', async () => {
+  const cacheModes: Array<'prefer' | 'bypass' | undefined> = []
+  await synthesisModule.synthesizeDubbingPlan({
+    plan: planModule.buildDubbingPlan({ videoDuration: 3, cues: [
+      { id: 'retry', start: 0, end: 2, text: 'Original source.' }
+    ] }),
+    recoveryAttempt: 2,
+    language: 'en', model: 'fixture',
+    tts: { synthesize: async (request) => { cacheModes.push(request.cacheMode); return { path: 'fresh' } } },
+    audio: { trim: async (path) => ({ path, duration: 1 }), applyTempo: async (path, _hint, duration) => ({ path, duration }) }
+  })
+  assert.deepEqual(cacheModes, ['bypass'])
+})
+
+test('second-pass recovery can replace a semantically misaligned translation from source evidence', async () => {
+  const original = planModule.buildDubbingPlan({ videoDuration: 2, cues: [
+    { id: 'misaligned', start: 0, end: 1.8, text: '能走' }
+  ] })
+  const translated = translationModule.applyDubbingTranslations(original, [
+    { id: 'misaligned', text: 'It crosses a 9-kilometer abyss.' }
+  ])
+  const spoken: string[] = []
+  const result = await synthesisModule.synthesizeDubbingPlan({
+    plan: translated,
+    recoveryAttempt: 2,
+    language: 'en', model: 'fixture',
+    rephraseBatch: async () => new Map([['misaligned', ['It can walk.']]]),
+    tts: { synthesize: async (request) => { spoken.push(request.text); return { path: request.text } } },
+    audio: {
+      trim: async (path) => ({ path, duration: path.includes('9-kilometer') ? 5 : 0.8 }),
+      applyTempo: async (path, _hint, duration) => ({ path, duration })
+    }
+  })
+  assert.deepEqual(spoken, ['It crosses a 9-kilometer abyss.', 'It can walk.'])
+  assert.equal(result.plan.cues[0].finalSpokenText, 'It can walk.')
+})
+
+test('tempo processing receives the authoritative duration measured by trim', async () => {
+  let measuredDuration: number | undefined
+  const result = await synthesisModule.synthesizeDubbingPlan({
+    plan: planModule.buildDubbingPlan({ videoDuration: 1.62, paceMode: 'fixed', cues: [
+      { id: 'measured-once', start: 0, end: 1, text: 'Keep the complete sentence.' }
+    ] }),
+    language: 'en',
+    model: 'fixture',
+    fixedTempo: 1,
+    tts: { synthesize: async () => ({ path: 'natural.wav' }) },
+    audio: {
+      trim: async () => ({ path: 'trimmed.wav', duration: 2.7 }),
+      applyTempo: async (...args: any[]) => {
+        measuredDuration = args[4]
+        return { path: 'fitted.wav', duration: args[2] }
+      }
+    }
+  })
+  assert.equal(measuredDuration, 2.7)
   assert.equal(result.plan.cues[0].actualDuration, 1.5)
 })
 

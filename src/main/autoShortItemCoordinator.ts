@@ -48,8 +48,10 @@ import {
 import type { AutoShortExecutionPolicy } from './autoShortExecutionPolicy'
 import {
   createOcrBlurAuditMetadata,
+  createSubtitlePlacementAuditMetadata,
   sanitizeAutoShortAuditError
 } from './autoShortAudit'
+import { resolveAutoShortSubtitlePlacement } from '../shared/autoShortSubtitlePlacement'
 import type { writeTimedOcrBlurMask, TimedOcrBlurMask } from './ocrMask'
 import {
   translateStrict,
@@ -83,7 +85,7 @@ import type { ArtifactCache } from './autoShortArtifactCache'
 import { resolveTranslationSourceLanguage } from './localTranslatePolicy'
 import { composeAutoShortNarratedAudio } from './autoShortNarratedAudio'
 import { composeAutoShortBackgroundAudio } from './autoShortBackgroundAudio'
-import type { DubbingTimeMap } from './dubbing/timeMap'
+import { DubbingVideoExtensionLimitError, type DubbingTimeMap } from './dubbing/timeMap'
 import { retimeDubbingMedia } from './dubbing/retimeMedia'
 import { validateAutoShortMusicTrack } from './autoShortMusicLibrary'
 import { assessContentQuality } from './autoShortContentQuality'
@@ -167,6 +169,7 @@ export interface AutoShortItemContext {
   item: AutoShortQueueItemInput
   index: number
   total: number
+  recoveryAttempt?: 1 | 2
   signal: AbortSignal
   emit: (event: AutoShortEvent) => void
   checkpointDir: string
@@ -448,6 +451,7 @@ export function createAutoShortItemProcessor(
       translationAttemptGeneration?: number
       translationBudget?: TranslationBudgetSnapshot
       instrumentalPath?: string
+      durationRecovery?: AutoShortItemResult['recovery']
     } = {}
 
     try {
@@ -568,7 +572,6 @@ export function createAutoShortItemProcessor(
       })
 
       const ocrRegion = (config.ocrRegion ? normalizedToPixels(config.ocrRegion, geometry) : undefined) || defaultAutoShortOcrRegion(meta, geometry)
-      const subtitleRegion = normalizedToPixels(config.subRegion, geometry)
       const blurRegions = config.blurRegions.flatMap((r) => {
         try {
           const pixels = normalizedToPixels(r, geometry)
@@ -1314,7 +1317,8 @@ export function createAutoShortItemProcessor(
             index,
             total,
             detectedSourceLanguage,
-            context.policy
+            context.policy,
+            context.recoveryAttempt || 1
           )
           span.updateCounters({
             cueCount: res.count,
@@ -1327,7 +1331,7 @@ export function createAutoShortItemProcessor(
         outputDuration = synthesized.outputDuration
         dubbingTimeMap = synthesized.timeMap
         if (dubbingTimeMap) {
-          logInfo(`[AutoShort:retiming] sourceSeconds=${meta.giay.toFixed(3)} outputSeconds=${outputDuration.toFixed(3)} maxLocalExtension=40%`)
+          logInfo(`[AutoShort:retiming] sourceSeconds=${meta.giay.toFixed(3)} outputSeconds=${outputDuration.toFixed(3)} maxLocalExtension=60% maxSlowdownExtension=20%`)
           const mapPath = join(workDir, 'dubbing-time-map.json')
           await writeFile(mapPath, JSON.stringify({ ...dubbingTimeMap, originalSourceCues: sourceCues }, null, 2), 'utf8')
           artifactEntries.push({ source: mapPath, name: 'dubbing-time-map.json' })
@@ -1466,8 +1470,17 @@ export function createAutoShortItemProcessor(
         sttnAudit
       } = visualBranch
 
+      throwIfAborted(signal)
+      const subtitlePlacement = resolveAutoShortSubtitlePlacement({
+        mode: config.subtitlePlacementMode ?? 'manual',
+        timeline: visualResultForAudit?.timeline ?? null,
+        fallbackRegion: config.subRegion ?? null
+      })
+      throwIfAborted(signal)
+      const resolvedSubtitleRegion = normalizedToPixels(subtitlePlacement.region, geometry)
+
       if (dubbingTimeMap) {
-        emitProgress(context, 'rendering_video', 84, 'Đang kéo dài các đoạn thiếu thời gian (tối đa 40%)…')
+        emitProgress(context, 'rendering_video', 84, 'Đang làm chậm nhẹ và chèn hình cho các đoạn thiếu thời gian (tối đa 60%)…')
         await resourceManager.withLease(['local-cpu-heavy'], signal, async () => {
           renderVideoPath = await retimeDubbingMedia({ ffmpeg, source: renderVideoPath, workDir,
             name: 'retimed-video', map: dubbingTimeMap!, kind: 'video', hasAudio: meta.hasAudio && config.audioMode === 'mix', audioSource: item.filePath,
@@ -1479,9 +1492,16 @@ export function createAutoShortItemProcessor(
         })
       }
 
+      const placementMessage = subtitlePlacement.mode === 'ocr-dominant'
+        ? subtitlePlacement.reason === 'selected'
+          ? 'Đặt phụ đề theo vùng OCR'
+          : 'Dùng vị trí phụ đề dự phòng'
+        : null
       const renderMsg = automaticBlur
-        ? 'Đang làm mờ OCR, gắn phụ đề và xuất video…'
-        : sttnRemoval ? 'Đã xóa chữ STTN; đang gắn phụ đề và xuất video…' : 'Đang làm mờ, gắn phụ đề và xuất video…'
+        ? `Đang làm mờ OCR, gắn phụ đề và xuất video…${placementMessage ? ` ${placementMessage}.` : ''}`
+        : sttnRemoval
+          ? `Đã xóa chữ STTN; đang gắn phụ đề và xuất video…${placementMessage ? ` ${placementMessage}.` : ''}`
+          : 'Đang làm mờ, gắn phụ đề và xuất video…'
       emitProgress(context, 'rendering_video', 85, renderMsg, undefined, undefined, { stage: 'render', phase: 'running' })
       outputName = await uniqueOutputName(itemOutputDir, item.filePath)
       const finalOutputPath = join(itemOutputDir, outputName)
@@ -1504,7 +1524,7 @@ export function createAutoShortItemProcessor(
               lamMo: sttnRemoval ? false : config.lamMo,
               portraitBlur: config.portraitBlur === true,
               videoAdjustments: config.videoAdjustments,
-              subRegion: subtitleRegion,
+              subRegion: resolvedSubtitleRegion,
               fontId: config.fontId,
               textColor: config.textColor,
               outlineColor: config.outlineColor,
@@ -1603,7 +1623,8 @@ export function createAutoShortItemProcessor(
           voice,
           separation: separationAuditMetadata,
           sttn: sttnAudit,
-          ocrBlur: ocrAuditMetadata
+          ocrBlur: ocrAuditMetadata,
+          subtitlePlacement: createSubtitlePlacementAuditMetadata(subtitlePlacement)
         })
       } catch (auditError) {
         logWarn(`[AutoShort] Lưu audit artifacts thất bại: ${errLabel(auditError)}`)
@@ -1692,9 +1713,32 @@ export function createAutoShortItemProcessor(
         ? 'Đã hủy tác vụ'
         : message || 'Xử lý video thất bại'
 
+      const recovery = !isCancelled && error instanceof DubbingVideoExtensionLimitError
+        ? {
+            kind: 'dubbing-duration' as const,
+            retryable: (context.recoveryAttempt || 1) === 1,
+            attempt: context.recoveryAttempt || 1,
+            cueId: error.cueId,
+            missingSeconds: error.requiredExtensionSeconds,
+            requiredPercent: error.requiredPercent
+          }
+        : !isCancelled && /audio TTS không hợp lệ|không trả về audio TTS/iu.test(message)
+          ? {
+              kind: 'tts-quality' as const,
+              retryable: (context.recoveryAttempt || 1) === 1,
+              attempt: context.recoveryAttempt || 1
+            }
+          : undefined
+
       const structuredTranslation = error && typeof error === 'object'
         ? error as { translationAssessment?: TranslationAssessment; translationBudget?: TranslationBudgetSnapshot }
         : undefined
+      if (!isCancelled && (recovery || checkpoint.durationRecovery)) {
+        checkpoint.durationRecovery = recovery
+        await saveCheckpoint().catch((checkpointError) => {
+          logWarn(`[AutoShort] Không lưu được trạng thái phục hồi thời lượng: ${errLabel(checkpointError)}`)
+        })
+      }
       if (!isCancelled && structuredTranslation?.translationAssessment) {
         translationAssessment = structuredTranslation.translationAssessment
         checkpoint.translationAssessment = translationAssessment
@@ -1744,9 +1788,11 @@ export function createAutoShortItemProcessor(
         filePath: item.filePath,
         status: isCancelled ? 'cancelled' : 'error',
         error: userMessage,
+        artifactDir,
         translationAssessment,
         translationIdentity,
-        diagnosticsIncomplete: errSummary?.diagnosticsIncomplete
+        diagnosticsIncomplete: errSummary?.diagnosticsIncomplete,
+        recovery
       }
     } finally {
       scope.abort(caughtError)

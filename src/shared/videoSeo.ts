@@ -156,6 +156,48 @@ function unwrapJson(raw: string): string {
   return raw.trim().replace(/^```(?:json)?\s*\r?\n([\s\S]*?)\r?\n```$/iu, '$1').trim()
 }
 
+function embeddedJsonObjects(raw: string): unknown[] {
+  const parsed: unknown[] = []
+  let start = -1
+  let depth = 0
+  let inString = false
+  let escaped = false
+
+  for (let index = 0; index < raw.length; index++) {
+    const character = raw[index]
+    if (start < 0) {
+      if (character === '{') {
+        start = index
+        depth = 1
+      }
+      continue
+    }
+    if (inString) {
+      if (escaped) escaped = false
+      else if (character === '\\') escaped = true
+      else if (character === '"') inString = false
+      continue
+    }
+    if (character === '"') {
+      inString = true
+    } else if (character === '{') {
+      depth++
+    } else if (character === '}') {
+      depth--
+      if (depth === 0) {
+        try {
+          parsed.push(JSON.parse(raw.slice(start, index + 1)))
+        } catch {
+          // Keep scanning: Gemini may place a non-JSON brace example before
+          // the one metadata object requested by the caller.
+        }
+        start = -1
+      }
+    }
+  }
+  return parsed
+}
+
 function normalizeMetadata(raw: unknown): VideoSeoMetadata {
   if (!raw || typeof raw !== 'object' || Array.isArray(raw)) throw new Error('AI trả về metadata không hợp lệ.')
   const record = raw as Record<string, unknown>
@@ -207,7 +249,9 @@ export function parseVideoSeoMetadata(raw: string): VideoSeoMetadata {
   try {
     parsed = JSON.parse(unwrapJson(raw))
   } catch {
-    throw new Error('AI trả về metadata không đúng định dạng JSON.')
+    const candidates = embeddedJsonObjects(raw)
+    if (candidates.length !== 1) throw new Error('AI trả về metadata không đúng định dạng JSON.')
+    parsed = candidates[0]
   }
   return normalizeMetadata(parsed)
 }

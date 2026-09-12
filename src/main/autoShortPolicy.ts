@@ -1112,6 +1112,22 @@ export function validateVoiceAudioCompleteness(
     }
   }
 
+  // Chatterbox can occasionally return a valid WAV whose spoken content loops
+  // for several seconds. Container validation and silence trimming cannot spot
+  // that failure because the repeated waveform is real audio. Reject only a
+  // very conservative upper bound so expressive pauses remain valid while a
+  // short interjection such as "Oh my!" cannot occupy an 8+ second clip.
+  const maximumPlausibleDuration = Math.max(6, expectedTokens.length * 2.5)
+  if (audioDuration > maximumPlausibleDuration) {
+    return {
+      ok: false,
+      error: `Thời lượng voice (${audioDuration.toFixed(2)}s) dài bất thường cho câu ${expectedTokens.length} từ; có thể TTS đã lặp hoặc sinh lỗi.`,
+      coverage: 0.3,
+      wordCountExpected: expectedTokens.length,
+      wordCountDetected: detectedWords?.length || 0
+    }
+  }
+
   if (detectedWords && detectedWords.length > 0) {
     const detectedTokens = detectedWords.map((w) => tokenizeWords(w.text)).flat()
     const detectedSet = new Set(detectedTokens)

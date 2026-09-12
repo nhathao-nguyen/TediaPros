@@ -117,6 +117,7 @@ function migrateLegacyConfig(raw: Record<string, unknown>): Record<string, unkno
     whisperDevice,
     blurMode: raw.blurMode === undefined ? 'manual' : raw.blurMode,
     ocrBlurProfile: raw.ocrBlurProfile === undefined ? 'accurate' : raw.ocrBlurProfile,
+    subtitlePlacementMode: raw.subtitlePlacementMode === undefined ? 'manual' : raw.subtitlePlacementMode,
     voiceOverMode: typeof raw.voiceOverMode === 'boolean' ? raw.voiceOverMode : false,
     paceMode: raw.paceMode === 'fixed' ? 'fixed' : 'source-adaptive'
   }
@@ -148,6 +149,20 @@ function validateConfigRecord(raw: Record<string, unknown>): AutoShortConfig | s
   }
   if (raw.ocrBlurProfile !== 'accurate' && raw.ocrBlurProfile !== 'fast') {
     return 'Hồ sơ quét OCR không hợp lệ.'
+  }
+  if (raw.subtitlePlacementMode !== 'manual' && raw.subtitlePlacementMode !== 'ocr-dominant') {
+    return 'Chế độ đặt phụ đề không hợp lệ.'
+  }
+  if (raw.subtitlePlacementMode === 'ocr-dominant') {
+    if (raw.lamMo !== true || (raw.blurMode !== 'ocr-auto' && raw.blurMode !== 'sttn')) {
+      return 'Tự đặt phụ đề theo OCR cần bật Tự động OCR hoặc STTN.'
+    }
+    if (!isRecord(raw.ocrRegion) || region(raw.ocrRegion, 'Vùng OCR') !== null) {
+      return 'Tự đặt phụ đề theo OCR cần một vùng OCR hợp lệ.'
+    }
+    if (!isRecord(raw.subRegion) || region(raw.subRegion, 'Vùng phụ đề') !== null) {
+      return 'Tự đặt phụ đề theo OCR cần một vùng phụ đề dự phòng hợp lệ.'
+    }
   }
   if (raw.lamMo === true && (raw.blurMode === 'ocr-auto' || raw.blurMode === 'sttn')) {
     if (!isRecord(raw.ocrRegion) || region(raw.ocrRegion, 'Vùng OCR') !== null) {
@@ -308,6 +323,7 @@ function validateConfigRecord(raw: Record<string, unknown>): AutoShortConfig | s
     blurRegions: raw.lamMo === true && raw.blurMode === 'sttn' ? [] : raw.blurRegions as AutoShortBlurRegion[],
     ocrRegion: (raw.ocrRegion as AutoShortNormalizedRegion | null | undefined) ?? null,
     subRegion: (raw.subRegion as AutoShortNormalizedRegion | null | undefined) ?? null,
+    subtitlePlacementMode: raw.subtitlePlacementMode as AutoShortConfig['subtitlePlacementMode'],
     translateTarget: raw.translateTarget as string,
     translateProvider: raw.translateProvider as AutoShortConfig['translateProvider'],
     outputDir: raw.outputDir as string

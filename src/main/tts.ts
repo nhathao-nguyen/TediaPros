@@ -59,6 +59,11 @@ async function responseErrorMessage(res: Response, fallback: string): Promise<st
   }
 }
 
+/** Chatterbox reports this code for a failed stochastic generation attempt. */
+export function isRetryableVoiceCloneGenerationError(message: string | null | undefined): boolean {
+  return /(?:^|\b)chatterbox_generation_failed(?:\b|:)/iu.test(message?.trim() || '')
+}
+
 function audioMimeType(fileName: string): string {
   const extension = fileName.toLowerCase().split('.').pop()
   if (extension === 'mp3') return 'audio/mpeg'
@@ -387,7 +392,7 @@ export async function generateVoiceClone(
 
     logInfo(`[TTS] Requesting voice clone from ${base}/v1/audio/voice-clone with ${fileName} (model=${req.model || 'auto'})`)
 
-    const { res, arrayBuffer, errorMsg } = await getGlobalResourceManager().withLease(['server-inference'], signal, async () => {
+    const requestClone = async () => getGlobalResourceManager().withLease(['server-inference'], signal, async () => {
       const resp = await fetch(`${base}/v1/audio/voice-clone`, {
         method: 'POST',
         headers: {
@@ -399,12 +404,20 @@ export async function generateVoiceClone(
       })
 
       if (!resp.ok) {
-        return { res: resp, arrayBuffer: null, errorMsg: await responseErrorMessage(resp, `Server trả về mã lỗi ${resp.status}`) }
+        return { res: resp, arrayBuffer: null as ArrayBuffer | null, errorMsg: await responseErrorMessage(resp, `Server trả về mã lỗi ${resp.status}`) }
       }
 
       const ab = await resp.arrayBuffer()
-      return { res: resp, arrayBuffer: ab, errorMsg: null }
+      return { res: resp, arrayBuffer: ab, errorMsg: null as string | null }
     })
+
+    let cloneResponse = await requestClone()
+    if (!cloneResponse.res.ok && isRetryableVoiceCloneGenerationError(cloneResponse.errorMsg) && !signal?.aborted) {
+      logWarn('[TTS] Chatterbox generation failed; refreshing the same voice-clone request once.')
+      await new Promise((resolve) => setTimeout(resolve, 250))
+      cloneResponse = await requestClone()
+    }
+    const { res, arrayBuffer, errorMsg } = cloneResponse
 
     if (!res.ok || !arrayBuffer) {
       return { ok: false, error: errorMsg || `Server trả về mã lỗi ${res.status}` }

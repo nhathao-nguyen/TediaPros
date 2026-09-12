@@ -1,14 +1,42 @@
 import os
+import hashlib
 import subprocess
 import sys
 import tempfile
 import unittest
 from pathlib import Path
+from unittest.mock import patch
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+import ocr_models
 
 SCRIPT = Path(__file__).resolve().parents[1] / "prepare_models.py"
 
 
 class ModelPreparationTests(unittest.TestCase):
+    def test_model_resolution_survives_windows_virtualized_file_path(self):
+        """The managed file stays valid when realpath rewrites only its child path."""
+        with tempfile.TemporaryDirectory(prefix="ocr-model-path-") as folder:
+            root = Path(folder)
+            model = root / "model.onnx"
+            model.write_bytes(b"qualified-model")
+            digest = hashlib.sha256(model.read_bytes()).hexdigest()
+            original_models = ocr_models.MODEL_FILES
+            original_resolve = Path.resolve
+
+            def virtualized_resolve(path, strict=False):
+                if path.name == "model.onnx":
+                    return Path("C:/AppContainer/LocalCache/models/model.onnx")
+                return original_resolve(path, strict=strict)
+
+            try:
+                ocr_models.MODEL_FILES = {"det": ("model.onnx", digest)}
+                with patch.object(Path, "resolve", virtualized_resolve):
+                    options = ocr_models.resolve_ocr_models(str(root))
+                self.assertEqual(options["det_model_path"], str(model.absolute()))
+            finally:
+                ocr_models.MODEL_FILES = original_models
+
     def test_corrupt_archive_is_rejected_before_any_output_is_created(self):
         with tempfile.TemporaryDirectory(prefix="ocr-wheel-reject-") as folder:
             wheel = Path(folder, "corrupt.whl")

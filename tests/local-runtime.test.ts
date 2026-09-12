@@ -1176,7 +1176,8 @@ test('AutoShort requests chat completion translation so cue meaning is preserved
 test('AutoShort uses a wider independent OCR source window than the output safe area', async () => {
   const source = await readFile(join(process.cwd(), 'src', 'renderer', 'src', 'components', 'AutoShort.tsx'), 'utf8')
   assert.match(source, /function defaultOcrRegion\(width: number, height: number\)/u)
-  assert.match(source, /const ocr = ocrRegion \|\| defaultOcrRegion\(w, h\)/u)
+  assert.match(source, /setOcrRegion\(\(current\) => current \?\? defaultOcrRegion\(w, h\)\)/u)
+  assert.match(source, /const ocr = ocrRegion && clampAutoShortNormalizedRegion\(ocrRegion\)/u)
 })
 
 test('AutoShort preview remains the selected source while output is handled separately', async () => {
@@ -2441,7 +2442,7 @@ test('AutoShort renderer wiring: OCR blur mode, profile selector, and boundary i
   // Derived expressions
   assert.match(source, /const automaticProcessing = isAutomaticOcrProcessing\(\{ lamMo: blurEnabled, blurMode \}\)/u)
   assert.match(source, /const subtitleUsesOcr = subtitleMethod === 'ocr' \|\| subtitleMethod === 'whisper-ocr'/u)
-  assert.match(source, /const visibleManualBlurRegions = blurEnabled && blurMode === 'manual' \? blurRegions : \[\]/u)
+  assert.match(source, /const visibleManualBlurRegions = blurEnabled && blurMode === 'manual' \? blurPixelRegions : \[\]/u)
   assert.match(source, /const showOcrScanRegion = subtitleUsesOcr \|\| automaticProcessing/u)
 
   // RegionBox props wiring

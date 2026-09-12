@@ -98,7 +98,11 @@ sequenceDiagram
     end
 
     Coord->>Trans: Dịch thuật cues (OpenAI / Gemini / Local) với Context Cues
-    Coord->>TTS: Tổng hợp giọng đọc (Edge / Local TTS), áp dụng trần tempo (1.10 - 1.45x)
+    Coord->>TTS: Tổng hợp giọng đọc (Edge / Local TTS), áp dụng trần tempo (1.10 - 1.80x)
+
+    alt Voice vẫn dài sau phục hồi nội dung
+        Coord->>Coord: Làm chậm hình tối đa 20%, replay trong nhóm nguồn, tổng thêm tối đa 60%
+    end
 
     alt Làm mờ phụ đề cũ
         Coord->>Blur: Sinh timeline mask -> Planar RGB Blur / STTN Inpainting
@@ -106,6 +110,10 @@ sequenceDiagram
 
     Coord->>Burn: Tạo file ASS (hiệu ứng từ vựng, font an toàn) -> FFmpeg Libass burn
     Coord->>Disk: Dọn dẹp scratch artifacts & lưu audit metadata
+
+    opt Item lỗi thời lượng có thể phục hồi
+        Coord->>Coord: Lưu checkpoint, chạy tiếp batch, thử lại một lần sau lượt chính
+    end
 ```
 
 ---
@@ -129,7 +137,7 @@ sequenceDiagram
   - Vòng đời ứng dụng, quản lý cửa sổ BrowserWindow.
   - Điều phối hàng đợi tác vụ đa tiến trình với `autoShortQueueRunner.ts` và `autoShortItemCoordinator.ts`.
   - Quản lý bộ nhớ đĩa tạm (`autoShortDiskBudget.ts`).
-  - Gọi và giám sát tiến trình con (`processTree.ts`), đảm bảo khi người dùng bấm Hủy (Cancel) thì toàn bộ cây tiến trình FFmpeg/Python bị tiêu diệt sạch sẽ.
+  - Gọi và giám sát tiến trình con (`processTree.ts`), đảm bảo khi người dùng bấm Hủy (Cancel) thì toàn bộ cây tiến trình FFmpeg/Python bị tiêu diệt sạch sẽ. Mỗi scope render Auto Short mới đặt lại cờ hủy nội bộ sau khi chiếm render lock; vì vậy trạng thái hủy của job trước không làm lần render sau bỏ qua FFmpeg.
 
 ### 3.5. `engines/` (Python Sidecars)
 - **Trách nhiệm:** Thực thi các tác vụ máy học nặng (OCR, Whisper, STTN Inpainting, MDX Separation).

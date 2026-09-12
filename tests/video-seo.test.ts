@@ -67,6 +67,27 @@ test('metadata rejects malformed JSON, lists, forbidden characters and YouTube l
   assert.throws(() => parseVideoSeoMetadata(JSON.stringify({ ...valid, description: 'a'.repeat(5_001) })))
 })
 
+test('metadata extracts one valid JSON object from Gemini prose without accepting ambiguous output', () => {
+  const valid = {
+    title: 'Seven dangerous waters to avoid',
+    description: 'The video explains why these waters are unsafe for swimming.',
+    tags: ['water safety', 'dangerous currents'],
+    hashtags: ['#WaterSafety']
+  }
+  const wrapped = [
+    'Here is the requested metadata:',
+    '```json',
+    JSON.stringify({ ...valid, description: 'Avoid places described as {safe} when currents are strong.' }),
+    '```',
+    'I kept the output grounded in the supplied subtitles.'
+  ].join('\n')
+  assert.deepEqual(parseVideoSeoMetadata(wrapped), {
+    ...valid,
+    description: 'Avoid places described as {safe} when currents are strong.'
+  })
+  assert.throws(() => parseVideoSeoMetadata(`${JSON.stringify(valid)}\n${JSON.stringify(valid)}`), /JSON/u)
+})
+
 test('tag accounting follows YouTube comma and spaced-tag quote rules', () => {
   assert.equal(countYouTubeTagCharacters([]), 0)
   assert.equal(countYouTubeTagCharacters(['a b', 'c']), 7)
