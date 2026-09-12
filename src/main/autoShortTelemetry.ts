@@ -3,11 +3,36 @@ import { join } from 'node:path'
 import { randomUUID } from 'node:crypto'
 import type {
   AutoShortRequestSpan,
+  AutoShortFailureKind,
   AutoShortStage,
   AutoShortStageEventV1,
   AutoShortStagePhase,
   AutoShortStageSummaryV1
 } from '../shared/types'
+
+export function classifyFailure(input: {
+  aborted: boolean
+  timeoutTriggered: boolean
+  transportCode?: string
+  httpStatus?: number
+  providerCode?: string
+  contentFailure?: boolean
+}): AutoShortFailureKind {
+  if (input.aborted) return 'cancelled'
+  if (input.timeoutTriggered) return 'timeout'
+  if (input.contentFailure) return 'content'
+  if (input.transportCode) return 'transport'
+  if (input.httpStatus !== undefined || input.providerCode) return 'provider'
+  return 'unknown'
+}
+
+function classifyThrownFailure(error: unknown): AutoShortFailureKind {
+  if (!(error instanceof Error)) return 'unknown'
+  const timeoutTriggered = error.name === 'TimeoutError' || /timed?\s*out|timeout|deadline/iu.test(error.message)
+  const aborted = !timeoutTriggered && (error.name === 'AbortError' || /\babort(?:ed)?\b|hủy/iu.test(error.message))
+  const transportCode = /ECONNRESET|ECONNREFUSED|ENOTFOUND|EAI_AGAIN/iu.exec(error.message)?.[0]
+  return classifyFailure({ aborted, timeoutTriggered, transportCode })
+}
 
 export const MAX_DIAGNOSTICS_BYTES = 20 * 1024 * 1024 // 20 MiB
 export const RESERVED_TERMINAL_BYTES = 1 * 1024 * 1024 // 1 MiB
@@ -138,19 +163,28 @@ export function sanitizeTelemetryEvent(event: AutoShortStageEventV1): AutoShortS
   if (Array.isArray(event.requestSpans)) {
     sanitized.requestSpans = event.requestSpans.map((rs) => ({
       url: rs.url ? sanitizeEndpointAlias(rs.url) : undefined,
+      queuedAtUtc: typeof rs.queuedAtUtc === 'string' ? rs.queuedAtUtc : undefined,
+      startedAtUtc: typeof rs.startedAtUtc === 'string' ? rs.startedAtUtc : undefined,
+      firstResponseAtUtc: typeof rs.firstResponseAtUtc === 'string' ? rs.firstResponseAtUtc : undefined,
+      endedAtUtc: typeof rs.endedAtUtc === 'string' ? rs.endedAtUtc : undefined,
+      retryIndex: typeof rs.retryIndex === 'number' ? Math.max(0, Math.floor(rs.retryIndex)) : undefined,
+      retryReason: rs.retryReason ? sanitizeTelemetryText(rs.retryReason) : undefined,
+      requestId: typeof rs.requestId === 'string' ? rs.requestId.slice(0, 128) : undefined,
       batchCueCount: typeof rs.batchCueCount === 'number' ? rs.batchCueCount : undefined,
       sourceChars: typeof rs.sourceChars === 'number' ? rs.sourceChars : undefined,
       tokenBudget: typeof rs.tokenBudget === 'number' ? rs.tokenBudget : undefined,
       actualTokens: typeof rs.actualTokens === 'number' ? rs.actualTokens : undefined,
       status: typeof rs.status === 'number' ? rs.status : undefined,
       durationMs: typeof rs.durationMs === 'number' ? Math.round(rs.durationMs) : undefined,
-      error: rs.error ? sanitizeTelemetryText(rs.error) : undefined
+      error: rs.error ? sanitizeTelemetryText(rs.error) : undefined,
+      failureKind: rs.failureKind
     }))
   }
 
   if (event.error) {
     sanitized.error = sanitizeTelemetryText(event.error)
   }
+  if (event.failureKind) sanitized.failureKind = event.failureKind
 
   return sanitized
 }
@@ -358,7 +392,7 @@ export class AutoShortTelemetrySpan {
     })
   }
 
-  fail(error: unknown, counters?: Record<string, number | null>): void {
+  fail(error: unknown, counters?: Record<string, number | null>, failureKind = classifyThrownFailure(error)): void {
     if (this.terminal) return
     this.terminal = true
     if (counters) Object.assign(this.counters, counters)
@@ -385,7 +419,8 @@ export class AutoShortTelemetrySpan {
       totalMs: Math.round(elapsed),
       counters: { ...this.counters },
       requestSpans: this.requestSpans.length ? [...this.requestSpans] : undefined,
-      error: errorMsg
+      error: errorMsg,
+      failureKind
     })
   }
 
@@ -415,7 +450,8 @@ export class AutoShortTelemetrySpan {
       totalMs: Math.round(elapsed),
       counters: { ...this.counters },
       requestSpans: this.requestSpans.length ? [...this.requestSpans] : undefined,
-      error: reason
+      error: reason,
+      failureKind: 'cancelled'
     })
   }
 
@@ -489,13 +525,11 @@ export class AutoShortTelemetryCollector {
       return result
     } catch (err: unknown) {
       if (!span.isTerminal()) {
-        const isAbort =
-          err instanceof Error &&
-          (err.name === 'AbortError' || err.message.includes('abort') || err.message.includes('hủy'))
-        if (isAbort) {
+        const failureKind = classifyThrownFailure(err)
+        if (failureKind === 'cancelled') {
           span.cancel(err instanceof Error ? err.message : 'Aborted')
         } else {
-          span.fail(err)
+          span.fail(err, undefined, failureKind)
         }
       }
       throw err
@@ -550,7 +584,8 @@ export class AutoShortTelemetryCollector {
         activeMs: sanitized.activeMs || 0,
         resourceWaitMs: sanitized.queueWaitMs || 0,
         counters: sanitized.counters ? { ...sanitized.counters } : undefined,
-        error: sanitized.error
+        error: sanitized.error,
+        failureKind: sanitized.failureKind
       }
     } else {
       const existing = this.stages[sanitized.stage]!
@@ -563,6 +598,7 @@ export class AutoShortTelemetryCollector {
         existing.counters = { ...(existing.counters || {}), ...sanitized.counters }
       }
       if (sanitized.error) existing.error = sanitized.error
+      if (sanitized.failureKind) existing.failureKind = sanitized.failureKind
     }
 
     if (this.diagnosticsDir) {
@@ -634,7 +670,8 @@ export class AutoShortTelemetryCollector {
         activeMs: stageData.activeMs,
         resourceWaitMs: stageData.resourceWaitMs,
         counters: stageData.counters ? { ...stageData.counters } : undefined,
-        error: stageError ? sanitizeTelemetryText(stageError) : undefined
+        error: stageError ? sanitizeTelemetryText(stageError) : undefined,
+        failureKind: stageData.failureKind
       }
     }
 
@@ -703,7 +740,8 @@ export class AutoShortTelemetryCollector {
         activeMs: stageData.activeMs,
         resourceWaitMs: stageData.resourceWaitMs,
         counters: stageData.counters ? { ...stageData.counters } : undefined,
-        error: stageError ? sanitizeTelemetryText(stageError) : undefined
+        error: stageError ? sanitizeTelemetryText(stageError) : undefined,
+        failureKind: stageData.failureKind
       }
     }
     return {

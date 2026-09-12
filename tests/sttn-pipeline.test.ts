@@ -84,6 +84,11 @@ for (const outcome of ['success', 'removal failure', 'burn failure', 'cancel'] a
       assert.deepEqual(events, outcome === 'removal failure' || outcome === 'cancel' ? ['ocr', 'remove'] : ['ocr', 'remove', 'burn'])
       assert.equal(result.status, outcome === 'success' ? 'done' : outcome === 'cancel' ? 'cancelled' : 'error')
       if (outcome === 'success') assert.equal(result.title, 'Original title')
+      if (outcome === 'success') {
+        const summary = JSON.parse(await readFile(join(root, 'artifacts', 'diagnostics', 'summary.json'), 'utf8'))
+        assert.equal(summary.stages.metadata?.status, 'succeeded')
+        assert.equal(summary.stages.artifact_copy?.status, 'succeeded')
+      }
       assert.ok(cleanedPath)
       assert.equal(dirname(dirname(cleanedPath)), itemOutputDir)
       if (outcome === 'removal failure') assert.match(result.error!, /STTN inference failed/)

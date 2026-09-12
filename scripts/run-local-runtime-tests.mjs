@@ -79,6 +79,7 @@ const knownTests = [
   'autoshort-video-title.test',
   'autoshort-ocr-pipeline.test',
   'autoshort-telemetry.test',
+  'log-retention.test',
   'autoshort-tts-pipeline.test',
   'autoshort-tts-cache.test',
   'autoshort-disk-budget.test',

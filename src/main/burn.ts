@@ -1140,6 +1140,7 @@ export async function runBurnSubtitleLower(
 
     let lastFailure: BurnProcessResult | null = null
     let lastEncoder = ''
+    const encoderAttempts: NonNullable<BurnResult['encoderAttempts']> = []
     for (const enc of encoders) {
       if (daHuy || options.signal?.aborted) break
 
@@ -1151,27 +1152,36 @@ export async function runBurnSubtitleLower(
         ? [...inputArgs, ...filterArgs, ...enc.args, ...audioCodecArgs, output]
         : [...inputArgs, ...enc.args, ...audioCodecArgs, output]
 
+      const attemptStarted = performance.now()
       const attempt = await chay(ff, args, tam, meta, onProgress, options.signal)
+      const attemptSucceeded = attempt.code === 0 && (await duLon(output))
+      encoderAttempts.push({
+        codec: enc.ten,
+        result: attemptSucceeded ? 'succeeded' : 'failed',
+        elapsedMs: Math.round(performance.now() - attemptStarted),
+        exitCode: attempt.code,
+        diagnostic: attempt.diagnostic
+      })
       if (daHuy || options.signal?.aborted) {
-        return { ok: false, error: 'Đã huỷ.' }
+        return { ok: false, error: 'Đã huỷ.', encoderAttempts }
       }
-      if (attempt.code === 0 && (await duLon(output))) {
+      if (attemptSucceeded) {
         logInfo(`Dịch màn hình: xử lý video xong${enc.gpu ? ' (tăng tốc GPU)' : ''}.`)
-        return { ok: true, output }
+        return { ok: true, output, selectedEncoder: enc.ten, encoderAttempts }
       }
       lastFailure = attempt
       lastEncoder = enc.ten
       if (attempt.spawnFailed) {
         const diagnostic = attempt.diagnostic || 'lỗi không xác định'
         logInfo(`Dịch màn hình: không khởi chạy được FFmpeg — ${diagnostic}.`)
-        return { ok: false, error: `Không khởi chạy được FFmpeg: ${diagnostic}.` }
+        return { ok: false, error: `Không khởi chạy được FFmpeg: ${diagnostic}.`, encoderAttempts }
       }
     }
 
     const diagnostic = lastFailure?.diagnostic || 'không tạo được tệp video hợp lệ'
     const exitCode = lastFailure?.code == null ? '' : `, mã ${lastFailure.code}`
     logInfo(`Dịch màn hình: FFmpeg ${lastEncoder || 'render'} thất bại${exitCode} — ${diagnostic}.`)
-    return { ok: false, error: `FFmpeg xuất video thất bại${exitCode}: ${diagnostic}.` }
+    return { ok: false, error: `FFmpeg xuất video thất bại${exitCode}: ${diagnostic}.`, encoderAttempts }
   } finally {
     if (hasSrt) {
       await rm(srtTam, { force: true }).catch(() => {})

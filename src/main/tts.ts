@@ -7,6 +7,7 @@ import {
   DEFAULT_AI_SERVER_URL,
   type TtsCloneRequest,
   type TtsGenerateResult,
+  type AutoShortRequestSpan,
   type TtsModelInfo,
   type TtsServerHealth,
   type TtsSpeechRequest
@@ -295,30 +296,52 @@ export async function generateSpeech(
   }
 
   logInfo(`[TTS] Requesting speech from ${base}/v1/audio/speech (${text.length} chars, model=${payload.model || 'auto'}, voice=${payload.voice || 'default'})`)
+  const requestSpan: AutoShortRequestSpan = {
+    url: `${base}/v1/audio/speech`,
+    queuedAtUtc: new Date().toISOString(),
+    retryIndex: 0
+  }
+  const requestSpans = [requestSpan]
 
   try {
     const { res, arrayBuffer, errorMsg } = await getGlobalResourceManager().withLease(['server-inference'], signal, async () => {
-      const resp = await fetch(`${base}/v1/audio/speech`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Accept: 'audio/wav, audio/*',
-          ...getAuthHeaders(req.apiKey)
-        },
-        body: JSON.stringify(payload),
-        signal: requestSignal(120_000, signal)
-      })
-
-      if (!resp.ok) {
-        return { res: resp, arrayBuffer: null, errorMsg: await responseErrorMessage(resp, `Server trả về mã lỗi ${resp.status}`) }
+      const startedMs = Date.now()
+      requestSpan.startedAtUtc = new Date(startedMs).toISOString()
+      try {
+        const resp = await fetch(`${base}/v1/audio/speech`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Accept: 'audio/wav, audio/*',
+            ...getAuthHeaders(req.apiKey)
+          },
+          body: JSON.stringify(payload),
+          signal: requestSignal(120_000, signal)
+        })
+        requestSpan.firstResponseAtUtc = new Date().toISOString()
+        requestSpan.status = resp.status
+        requestSpan.requestId = resp.headers.get('x-request-id') || undefined
+        if (!resp.ok) {
+          const errorMsg = await responseErrorMessage(resp, `Server trả về mã lỗi ${resp.status}`)
+          requestSpan.error = errorMsg
+          requestSpan.failureKind = 'provider'
+          return { res: resp, arrayBuffer: null, errorMsg }
+        }
+        const ab = await resp.arrayBuffer()
+        return { res: resp, arrayBuffer: ab, errorMsg: null }
+      } catch (error) {
+        requestSpan.error = error instanceof Error ? error.message : String(error)
+        requestSpan.failureKind = signal?.aborted ? 'cancelled' : error instanceof Error && error.name === 'TimeoutError' ? 'timeout' : 'transport'
+        throw error
+      } finally {
+        const endedMs = Date.now()
+        requestSpan.endedAtUtc = new Date(endedMs).toISOString()
+        requestSpan.durationMs = Math.max(0, endedMs - startedMs)
       }
-
-      const ab = await resp.arrayBuffer()
-      return { res: resp, arrayBuffer: ab, errorMsg: null }
     })
 
     if (!res.ok || !arrayBuffer) {
-      return { ok: false, error: errorMsg || `Server trả về mã lỗi ${res.status}` }
+      return { ok: false, error: errorMsg || `Server trả về mã lỗi ${res.status}`, requestSpans }
     }
 
     const buffer = Buffer.from(arrayBuffer)
@@ -330,7 +353,7 @@ export async function generateSpeech(
     await writeFile(tempPath, buffer)
     const fileStat = await stat(tempPath).catch(() => null)
     if (!fileStat || fileStat.size <= 0) {
-      return { ok: false, error: 'Không thể lưu file âm thanh vào đĩa' }
+      return { ok: false, error: 'Không thể lưu file âm thanh vào đĩa', requestSpans }
     }
 
     return {
@@ -345,12 +368,13 @@ export async function generateSpeech(
       model: res.headers.get('x-tts-model') || req.model,
       provider: res.headers.get('x-tts-provider') || undefined,
       voice: res.headers.get('x-tts-voice') ? decodeURIComponent(res.headers.get('x-tts-voice')!) : req.voice,
-      speed: parseFloat(res.headers.get('x-tts-speed') || '1.0')
+      speed: parseFloat(res.headers.get('x-tts-speed') || '1.0'),
+      requestSpans
     }
   } catch (err: any) {
     logWarn(`[TTS] Error generating speech: ${errLabel(err)}`)
-    if (signal?.aborted) return { ok: false, error: 'Đã hủy tác vụ' }
-    return { ok: false, error: `Lỗi kết nối tts-server: ${errLabel(err)}` }
+    if (signal?.aborted) return { ok: false, error: 'Đã hủy tác vụ', requestSpans }
+    return { ok: false, error: `Lỗi kết nối tts-server: ${errLabel(err)}`, requestSpans }
   }
 }
 
@@ -367,6 +391,7 @@ export async function generateVoiceClone(
   if (!req.referenceAudioPath) {
     return { ok: false, error: 'Vui lòng chọn file âm thanh mẫu (Reference Audio)' }
   }
+  const requestSpans: AutoShortRequestSpan[] = []
 
   try {
     const audioFileBuffer = req.referenceAudioBuffer || await readFile(req.referenceAudioPath)
@@ -392,35 +417,61 @@ export async function generateVoiceClone(
 
     logInfo(`[TTS] Requesting voice clone from ${base}/v1/audio/voice-clone with ${fileName} (model=${req.model || 'auto'})`)
 
-    const requestClone = async () => getGlobalResourceManager().withLease(['server-inference'], signal, async () => {
-      const resp = await fetch(`${base}/v1/audio/voice-clone`, {
-        method: 'POST',
-        headers: {
-          Accept: 'audio/wav, audio/*',
-          ...getAuthHeaders(req.apiKey)
-        },
-        body: form,
-        signal: requestSignal(180_000, signal)
-      })
-
-      if (!resp.ok) {
-        return { res: resp, arrayBuffer: null as ArrayBuffer | null, errorMsg: await responseErrorMessage(resp, `Server trả về mã lỗi ${resp.status}`) }
+    const requestClone = async (retryIndex: number, retryReason?: string) => {
+      const span: AutoShortRequestSpan = {
+        url: `${base}/v1/audio/voice-clone`,
+        queuedAtUtc: new Date().toISOString(),
+        retryIndex,
+        retryReason
       }
+      requestSpans.push(span)
+      return getGlobalResourceManager().withLease(['server-inference'], signal, async () => {
+        const startedMs = Date.now()
+        span.startedAtUtc = new Date(startedMs).toISOString()
+        try {
+          const resp = await fetch(`${base}/v1/audio/voice-clone`, {
+            method: 'POST',
+            headers: {
+              Accept: 'audio/wav, audio/*',
+              ...getAuthHeaders(req.apiKey)
+            },
+            body: form,
+            signal: requestSignal(180_000, signal)
+          })
+          span.firstResponseAtUtc = new Date().toISOString()
+          span.status = resp.status
+          span.requestId = resp.headers.get('x-request-id') || undefined
+          if (!resp.ok) {
+            const errorMsg = await responseErrorMessage(resp, `Server trả về mã lỗi ${resp.status}`)
+            span.error = errorMsg
+            span.retryReason ||= /chatterbox_generation_failed/iu.test(errorMsg) ? 'chatterbox_generation_failed' : undefined
+            span.failureKind = 'provider'
+            return { res: resp, arrayBuffer: null as ArrayBuffer | null, errorMsg }
+          }
+          const ab = await resp.arrayBuffer()
+          return { res: resp, arrayBuffer: ab, errorMsg: null as string | null }
+        } catch (error) {
+          span.error = error instanceof Error ? error.message : String(error)
+          span.failureKind = signal?.aborted ? 'cancelled' : error instanceof Error && error.name === 'TimeoutError' ? 'timeout' : 'transport'
+          throw error
+        } finally {
+          const endedMs = Date.now()
+          span.endedAtUtc = new Date(endedMs).toISOString()
+          span.durationMs = Math.max(0, endedMs - startedMs)
+        }
+      })
+    }
 
-      const ab = await resp.arrayBuffer()
-      return { res: resp, arrayBuffer: ab, errorMsg: null as string | null }
-    })
-
-    let cloneResponse = await requestClone()
+    let cloneResponse = await requestClone(0)
     if (!cloneResponse.res.ok && isRetryableVoiceCloneGenerationError(cloneResponse.errorMsg) && !signal?.aborted) {
       logWarn('[TTS] Chatterbox generation failed; refreshing the same voice-clone request once.')
       await new Promise((resolve) => setTimeout(resolve, 250))
-      cloneResponse = await requestClone()
+      cloneResponse = await requestClone(1, 'chatterbox_generation_failed')
     }
     const { res, arrayBuffer, errorMsg } = cloneResponse
 
     if (!res.ok || !arrayBuffer) {
-      return { ok: false, error: errorMsg || `Server trả về mã lỗi ${res.status}` }
+      return { ok: false, error: errorMsg || `Server trả về mã lỗi ${res.status}`, requestSpans }
     }
 
     const buffer = Buffer.from(arrayBuffer)
@@ -432,7 +483,7 @@ export async function generateVoiceClone(
     await writeFile(tempPath, buffer)
     const fileStat = await stat(tempPath).catch(() => null)
     if (!fileStat || fileStat.size <= 0) {
-      return { ok: false, error: 'Không thể lưu file âm thanh vào đĩa' }
+      return { ok: false, error: 'Không thể lưu file âm thanh vào đĩa', requestSpans }
     }
 
     return {
@@ -447,12 +498,13 @@ export async function generateVoiceClone(
       model: res.headers.get('x-tts-model') || req.model,
       provider: res.headers.get('x-tts-provider') || undefined,
       voice: 'reference_clone',
-      speed: parseFloat(res.headers.get('x-tts-speed') || `${req.speed || 1.0}`)
+      speed: parseFloat(res.headers.get('x-tts-speed') || `${req.speed || 1.0}`),
+      requestSpans
     }
   } catch (err: any) {
     logWarn(`[TTS] Error generating voice clone: ${errLabel(err)}`)
-    if (signal?.aborted) return { ok: false, error: 'Đã hủy tác vụ' }
-    return { ok: false, error: `Lỗi clone giọng nói: ${errLabel(err)}` }
+    if (signal?.aborted) return { ok: false, error: 'Đã hủy tác vụ', requestSpans }
+    return { ok: false, error: `Lỗi clone giọng nói: ${errLabel(err)}`, requestSpans }
   }
 }
 

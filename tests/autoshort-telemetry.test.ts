@@ -6,11 +6,21 @@ import { join } from 'node:path'
 import {
   AutoShortTelemetryCollector,
   AutoShortTelemetryJobBudget,
+  classifyFailure,
   sanitizeEndpointAlias,
   sanitizeTelemetryPath,
   MAX_DIAGNOSTICS_BYTES
 } from '../src/main/autoShortTelemetry'
 import type { AutoShortStageSummaryV1 } from '../src/shared/types'
+
+test('failure classification keeps user cancellation separate from timeout and provider errors', () => {
+  assert.equal(classifyFailure({ aborted: true, timeoutTriggered: false }), 'cancelled')
+  assert.equal(classifyFailure({ aborted: false, timeoutTriggered: true }), 'timeout')
+  assert.equal(classifyFailure({ aborted: false, timeoutTriggered: false, transportCode: 'ECONNRESET' }), 'transport')
+  assert.equal(classifyFailure({ aborted: false, timeoutTriggered: false, httpStatus: 503 }), 'provider')
+  assert.equal(classifyFailure({ aborted: false, timeoutTriggered: false, providerCode: 'chatterbox_generation_failed' }), 'provider')
+  assert.equal(classifyFailure({ aborted: false, timeoutTriggered: false, contentFailure: true }), 'content')
+})
 
 test('sanitizeEndpointAlias masks LAN IPs and preserves ports', () => {
   assert.equal(sanitizeEndpointAlias('http://192.168.1.16:8000/v1'), 'internal-lan:8000')
@@ -108,6 +118,24 @@ test('withStageSpan captures failures and AbortError correctly', async () => {
   } finally {
     await rm(tempDir, { recursive: true, force: true }).catch(() => {})
   }
+})
+
+test('stage telemetry records cancellation and timeout as different failure kinds', async () => {
+  const cancelled = new AutoShortTelemetryCollector({ jobId: 'job-cancel', itemId: 'item-cancel' })
+  const abortError = new Error('User cancelled')
+  abortError.name = 'AbortError'
+  await assert.rejects(cancelled.withStageSpan('tts', {}, async () => { throw abortError }), /cancelled/iu)
+  const cancelledEvent = cancelled.getEvents().at(-1)
+  assert.equal(cancelledEvent?.phase, 'cancelled')
+  assert.equal(cancelledEvent?.failureKind, 'cancelled')
+
+  const timedOut = new AutoShortTelemetryCollector({ jobId: 'job-timeout', itemId: 'item-timeout' })
+  const timeoutError = new Error('TTS request exceeded its deadline')
+  timeoutError.name = 'TimeoutError'
+  await assert.rejects(timedOut.withStageSpan('tts', {}, async () => { throw timeoutError }), /deadline/iu)
+  const timeoutEvent = timedOut.getEvents().at(-1)
+  assert.equal(timeoutEvent?.phase, 'failed')
+  assert.equal(timeoutEvent?.failureKind, 'timeout')
 })
 
 test('R5 reproduction: withStageSpan sanitizes private paths, tokens, LAN IPs, UNC, and credentials from all outputs', async () => {

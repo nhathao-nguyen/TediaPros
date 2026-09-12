@@ -525,51 +525,50 @@ export function createAutoShortItemProcessor(
         validateSpan.updateCounters({ inputBytes: inputInfo.size })
       })
 
-      const sourceDigest = await hashFileSha256(item.filePath, signal)
-      const checkpointFingerprint = buildAutoShortCheckpointFingerprint(
-        item.filePath,
-        inputInfo,
-        config,
-        context.separation,
-        sourceDigest
-      )
+      const { sourceDigest, meta, ffmpeg, ffprobe, geometry } = await telemetry.withStageSpan('metadata', {}, async (span) => {
+        const sourceDigest = await hashFileSha256(item.filePath, signal)
+        const checkpointFingerprint = buildAutoShortCheckpointFingerprint(
+          item.filePath,
+          inputInfo,
+          config,
+          context.separation,
+          sourceDigest
+        )
 
-      if (checkpoint.version !== AUTO_SHORT_CHECKPOINT_VERSION || checkpoint.fingerprint !== checkpointFingerprint) {
-        if (checkpoint.sourceCues?.length || checkpoint.translatedCues?.length || checkpoint.instrumentalPath) {
-          logInfo('[AutoShort] Bỏ checkpoint cũ vì không khớp fingerprint input/cấu hình hiện tại.')
+        if (checkpoint.version !== AUTO_SHORT_CHECKPOINT_VERSION || checkpoint.fingerprint !== checkpointFingerprint) {
+          if (checkpoint.sourceCues?.length || checkpoint.translatedCues?.length || checkpoint.instrumentalPath) {
+            logInfo('[AutoShort] Bỏ checkpoint cũ vì không khớp fingerprint input/cấu hình hiện tại.')
+          }
+          if (await fileExists(checkpointFile)) {
+            await copyFile(checkpointFile, join(checkpointDir, 'checkpoint.previous.json')).catch(() => {})
+          }
+          await mkdir(checkpointDir, { recursive: true })
+          checkpoint = {}
+          detectedSourceLanguage = null
         }
-        // Keep the previous checkpoint for diagnostics/rollback. A changed
-        // configuration or source invalidates reuse; it must not erase the
-        // user's last durable source/output evidence.
-        if (await fileExists(checkpointFile)) {
-          await copyFile(checkpointFile, join(checkpointDir, 'checkpoint.previous.json')).catch(() => {})
+        checkpoint.version = AUTO_SHORT_CHECKPOINT_VERSION
+        checkpoint.fingerprint = checkpointFingerprint
+
+        const probeFn = deps.probeMedia || probeBurnMedia
+        const meta = await probeFn(item.filePath)
+        if (!(meta.giay > 0) || !(meta.w > 0) || !(meta.h > 0)) {
+          throw new Error('Video không có metadata hợp lệ')
         }
-        await mkdir(checkpointDir, { recursive: true })
-        checkpoint = {}
-        detectedSourceLanguage = null
-      }
-      checkpoint.version = AUTO_SHORT_CHECKPOINT_VERSION
-      checkpoint.fingerprint = checkpointFingerprint
-
-      const probeFn = deps.probeMedia || probeBurnMedia
-      const meta = await probeFn(item.filePath)
-      if (!(meta.giay > 0) || !(meta.w > 0) || !(meta.h > 0)) {
-        throw new Error('Video không có metadata hợp lệ')
-      }
-      const visualDurationSeconds = visualVideoDuration(meta)
-
-      const ffmpeg = await deps.resolveFfmpeg()
-      if (!ffmpeg) throw new Error('Thiếu FFmpeg để xuất video.')
-      const ffprobe = await deps.resolveFfprobe()
-      if (!ffprobe) throw new Error('Thiếu FFprobe để kiểm tra video.')
-
-      const geometry = meta.geometry ?? deriveCanonicalDisplayGeometry({
-        codedWidth: meta.w,
-        codedHeight: meta.h,
-        rotation: meta.rotation,
-        sampleAspectRatio: meta.sampleAspectRatio,
-        videoStart: meta.videoStart
+        const ffmpeg = await deps.resolveFfmpeg()
+        if (!ffmpeg) throw new Error('Thiếu FFmpeg để xuất video.')
+        const ffprobe = await deps.resolveFfprobe()
+        if (!ffprobe) throw new Error('Thiếu FFprobe để kiểm tra video.')
+        const geometry = meta.geometry ?? deriveCanonicalDisplayGeometry({
+          codedWidth: meta.w,
+          codedHeight: meta.h,
+          rotation: meta.rotation,
+          sampleAspectRatio: meta.sampleAspectRatio,
+          videoStart: meta.videoStart
+        })
+        span.updateCounters({ sourceBytes: inputInfo.size, durationMs: Math.round(meta.giay * 1000), width: geometry.displayWidth, height: geometry.displayHeight })
+        return { sourceDigest, meta, ffmpeg, ffprobe, geometry }
       })
+      const visualDurationSeconds = visualVideoDuration(meta)
 
       const ocrRegion = (config.ocrRegion ? normalizedToPixels(config.ocrRegion, geometry) : undefined) || defaultAutoShortOcrRegion(meta, geometry)
       const blurRegions = config.blurRegions.flatMap((r) => {
@@ -1235,8 +1234,10 @@ export function createAutoShortItemProcessor(
             logInfo('[AutoShort] Tái sử dụng instrumental stem từ checkpoint.')
             separatedInstrumentalPath = cachedInstrumental
           } else {
-            const sepResult = await resourceManager.withLease(['local-gpu-heavy', 'local-cpu-heavy'], signal, async () => {
-              return separateSourceAudio({
+            const sepResult = await telemetry.withStageSpan('separation', { requestedProvider: 'auto' }, async (span) => {
+              const result = await resourceManager.withLease(['local-gpu-heavy', 'local-cpu-heavy'], signal, async (lease) => {
+                span.recordResourceWait(lease.waitMs || 0)
+                return separateSourceAudio({
                 sourcePath: item.filePath,
                 videoDurationSeconds: meta.giay,
                 workDir: sepDir,
@@ -1257,7 +1258,13 @@ export function createAutoShortItemProcessor(
                         : `Đang tách thoại (${event.percent}%)…`
                   emitProgress(context, 'separating_audio', 45 + (event.percent / 100) * 12, text)
                 }
+                })
               })
+              if (result.kind !== 'no-audio') {
+                span.setProvider('auto', result.effectiveProvider, result.fallbackReasonCode)
+                span.updateCounters({ elapsedMs: result.elapsedMs })
+              }
+              return result
             })
             if (sepResult.kind === 'no-audio') {
               logInfo(`[AutoShort] ${sepResult.warning}`)
@@ -1325,6 +1332,7 @@ export function createAutoShortItemProcessor(
             rephraseCount: res.rephraseCount,
             clipCount: res.clips.length
           })
+          for (const requestSpan of res.requestSpans) span.addRequestSpan(requestSpan)
           return res
         })
 
@@ -1481,14 +1489,18 @@ export function createAutoShortItemProcessor(
 
       if (dubbingTimeMap) {
         emitProgress(context, 'rendering_video', 84, 'Đang làm chậm nhẹ và chèn hình cho các đoạn thiếu thời gian (tối đa 60%)…')
-        await resourceManager.withLease(['local-cpu-heavy'], signal, async () => {
-          renderVideoPath = await retimeDubbingMedia({ ffmpeg, source: renderVideoPath, workDir,
-            name: 'retimed-video', map: dubbingTimeMap!, kind: 'video', hasAudio: meta.hasAudio && config.audioMode === 'mix', audioSource: item.filePath,
-            frameRate: meta.frameRate, signal })
-          if (timedMask) timedMask = { ...timedMask,
-            path: await retimeDubbingMedia({ ffmpeg, source: timedMask.path, workDir,
-              name: 'retimed-mask', map: dubbingTimeMap!, kind: 'mask', width: timedMask.width, height: timedMask.height, signal }),
-            durationSeconds: outputDuration }
+        await telemetry.withStageSpan('retime', {}, async (span) => {
+          await resourceManager.withLease(['local-cpu-heavy'], signal, async (lease) => {
+            span.recordResourceWait(lease.waitMs || 0)
+            renderVideoPath = await retimeDubbingMedia({ ffmpeg, source: renderVideoPath, workDir,
+              name: 'retimed-video', map: dubbingTimeMap!, kind: 'video', hasAudio: meta.hasAudio && config.audioMode === 'mix', audioSource: item.filePath,
+              frameRate: meta.frameRate, signal })
+            if (timedMask) timedMask = { ...timedMask,
+              path: await retimeDubbingMedia({ ffmpeg, source: timedMask.path, workDir,
+                name: 'retimed-mask', map: dubbingTimeMap!, kind: 'mask', width: timedMask.width, height: timedMask.height, signal }),
+              durationSeconds: outputDuration }
+          })
+          span.updateCounters({ outputDurationMs: Math.round(outputDuration * 1000) })
         })
       }
 
@@ -1581,6 +1593,11 @@ export function createAutoShortItemProcessor(
         if (!res.ok || !res.output || !(await fileExists(res.output))) {
           throw new Error(res.error || 'Render video thất bại')
         }
+        span.setProvider('auto', res.selectedEncoder, res.encoderAttempts
+          ?.filter(attempt => attempt.result === 'failed')
+          .map(attempt => `${attempt.codec}: ${attempt.diagnostic || `exit ${attempt.exitCode ?? 'unknown'}`}`)
+          .join('; '))
+        span.updateCounters({ encoderAttemptCount: res.encoderAttempts?.length || 0 })
         const outStat = await stat(res.output).catch(() => null)
         if (outStat) span.updateCounters({ outputBytes: outStat.size })
         return res
@@ -1590,11 +1607,12 @@ export function createAutoShortItemProcessor(
       if (!burnResult || !burnResult.output) {
         throw new Error('Render video thất bại: không có file đầu ra.')
       }
+      const completedBurn = burnResult
       published = true
 
       try {
-        artifactEntries.push({ source: burnResult.output, name: 'output.mp4' })
-        if (burnResult.titlePath) artifactEntries.push({ source: burnResult.titlePath, name: 'tieude.txt' })
+        artifactEntries.push({ source: completedBurn.output!, name: 'output.mp4' })
+        if (completedBurn.titlePath) artifactEntries.push({ source: completedBurn.titlePath, name: 'tieude.txt' })
 
         const ocrAuditMetadata = createOcrBlurAuditMetadata({
           blurMode: config.blurMode || 'manual',
@@ -1608,23 +1626,30 @@ export function createAutoShortItemProcessor(
           ocrProvider: visualResultForAudit?.ocrProvider
         })
 
-        artifactPath = await preserveAutoShortArtifacts(artifactDir, artifactEntries, {
-          version: 1,
-          status: 'done',
-          sourceFile: basename(item.filePath),
-          outputFile: outputName,
-          titleFile: burnResult.titlePath ? 'tieude.txt' : undefined,
-          titleError: burnResult.titleError,
-          sourceLanguage: resolveTranslationSourceLanguage(config.whisperLanguage, detectedSourceLanguage),
-          targetLanguage: config.translateTarget,
-          extractedCueCount,
-          translatedCueCount,
-          generatedVoiceCount,
-          voice,
-          separation: separationAuditMetadata,
-          sttn: sttnAudit,
-          ocrBlur: ocrAuditMetadata,
-          subtitlePlacement: createSubtitlePlacementAuditMetadata(subtitlePlacement)
+        await telemetry.withStageSpan('artifact_copy', {}, async (span) => {
+          artifactPath = await preserveAutoShortArtifacts(artifactDir, artifactEntries, {
+            version: 1,
+            status: 'done',
+            sourceFile: basename(item.filePath),
+            outputFile: outputName,
+            titleFile: completedBurn.titlePath ? 'tieude.txt' : undefined,
+            titleError: completedBurn.titleError,
+            sourceLanguage: resolveTranslationSourceLanguage(config.whisperLanguage, detectedSourceLanguage),
+            targetLanguage: config.translateTarget,
+            extractedCueCount,
+            translatedCueCount,
+            generatedVoiceCount,
+            voice,
+            separation: separationAuditMetadata,
+            sttn: sttnAudit,
+            ocrBlur: ocrAuditMetadata,
+            subtitlePlacement: createSubtitlePlacementAuditMetadata(subtitlePlacement),
+            encoder: {
+              selected: completedBurn.selectedEncoder,
+              attempts: completedBurn.encoderAttempts
+            }
+          })
+          span.updateCounters({ artifactCount: artifactEntries.length })
         })
       } catch (auditError) {
         logWarn(`[AutoShort] Lưu audit artifacts thất bại: ${errLabel(auditError)}`)

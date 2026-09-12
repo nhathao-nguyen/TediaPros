@@ -118,6 +118,7 @@ import {
   AutoShortItemResult,
   AutoShortNormalizedRegion,
   AutoShortProgress,
+  AutoShortRequestSpan,
   AutoShortQueueItemInput,
   AutoShortStartRequest,
   AutoShortSttnPreviewResult,
@@ -2381,6 +2382,7 @@ export async function synthesizeVoice(
   sourceGroupInputs: AutoShortVoiceCueInput[]
   targetGroupInputs: AutoShortVoiceCueInput[]
   artifacts: AutoShortArtifactEntry[]
+  requestSpans: AutoShortRequestSpan[]
 }> {
   const ffmpeg = await resolveFfmpeg()
   if (!ffmpeg) throw new Error('Thiếu FFmpeg để chuẩn hóa voice.')
@@ -2450,6 +2452,7 @@ export async function synthesizeVoice(
   const cacheRoot = join(app.getPath('userData'), 'autoshort-tts-cache-v2')
   const ttsCache = getTtsCacheStore(cacheRoot)
   const attemptByCue = new Map<string, number>()
+  const requestSpans: AutoShortRequestSpan[] = []
   const adapter: Parameters<typeof synthesizeDubbingPlan>[0]['tts'] = {
     async synthesize(request, signal) {
       const started = performance.now()
@@ -2489,6 +2492,7 @@ export async function synthesizeVoice(
               referenceAudioBuffer: referenceBuffer || undefined
             }, producerSignal, producerTempPath)
           : await generateSpeech(requestInput, producerSignal, producerTempPath)
+        if (result.requestSpans?.length) requestSpans.push(...result.requestSpans)
         if (!result.ok || !result.savedPath) throw new Error(result.error || `TTS không trả audio cho cue ${request.cueId}.`)
         return { path: result.savedPath, voice: result.voice || effectiveVoice }
       }, { bypass: request.cacheMode === 'bypass' })
@@ -2748,7 +2752,8 @@ export async function synthesizeVoice(
     diagnostics,
     sourceGroupInputs: dubbingUnits.map((unit) => ({ id: unit.id, start: unit.sourceStart, end: unit.sourceEnd, text: unit.sourceText })),
     targetGroupInputs: dubbingUnits.map((unit) => ({ id: unit.id, start: unit.sourceStart, end: unit.sourceEnd, text: unit.finalSpokenText })),
-    artifacts
+    artifacts,
+    requestSpans
   }
 }
 

@@ -500,6 +500,14 @@ export interface BurnResult {
   titlePath?: string
   titleError?: string
   seoMetadata?: VideoSeoMetadata
+  selectedEncoder?: string
+  encoderAttempts?: Array<{
+    codec: string
+    result: 'succeeded' | 'failed'
+    elapsedMs: number
+    exitCode: number | null
+    diagnostic?: string
+  }>
 }
 
 /** Nha cung cap dich phu de bang AI. */
@@ -800,6 +808,7 @@ export interface TtsGenerateResult {
   voice?: string
   speed?: number
   error?: string
+  requestSpans?: AutoShortRequestSpan[]
 }
 
 export interface ClonedVoice {
@@ -1091,14 +1100,18 @@ export interface AutoShortTaskItem {
 
 export type AutoShortStage =
   | 'validate'
+  | 'metadata'
   | 'asr'
   | 'visual_ocr'
   | 'translate'
   | 'tts'
   | 'audio'
+  | 'separation'
   | 'sttn'
+  | 'retime'
   | 'render'
   | 'title'
+  | 'artifact_copy'
   | 'publish'
 
 export type AutoShortStagePhase =
@@ -1115,8 +1128,17 @@ export type AutoShortStagePhase =
   | 'interrupted'
   | 'progress'
 
+export type AutoShortFailureKind = 'cancelled' | 'timeout' | 'transport' | 'provider' | 'content' | 'unknown'
+
 export interface AutoShortRequestSpan {
   url?: string
+  queuedAtUtc?: string
+  startedAtUtc?: string
+  firstResponseAtUtc?: string
+  endedAtUtc?: string
+  retryIndex?: number
+  retryReason?: string
+  requestId?: string
   batchCueCount?: number
   sourceChars?: number
   tokenBudget?: number
@@ -1124,6 +1146,7 @@ export interface AutoShortRequestSpan {
   status?: number
   durationMs?: number
   error?: string
+  failureKind?: AutoShortFailureKind
   schemaFailureCategory?: string
   audioDurationSec?: number
   localDspDurationMs?: number
@@ -1156,6 +1179,7 @@ export interface AutoShortStageEventV1 {
   counters?: Record<string, number | null>
   requestSpans?: AutoShortRequestSpan[]
   error?: string
+  failureKind?: AutoShortFailureKind
 }
 
 export interface AutoShortStageSummaryV1 {
@@ -1176,6 +1200,7 @@ export interface AutoShortStageSummaryV1 {
         resourceWaitMs: number
         counters?: Record<string, number | null>
         error?: string
+        failureKind?: AutoShortFailureKind
       }
     >
   >

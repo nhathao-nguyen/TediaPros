@@ -42,6 +42,17 @@ test('voice clone refreshes only the explicit Chatterbox generation failure once
     }, undefined, outputPath)
     assert.equal(result.ok, true)
     assert.equal(requests, 2)
+    assert.deepEqual(result.requestSpans?.map(span => [span.status, span.retryIndex, span.retryReason]), [
+      [500, 0, 'chatterbox_generation_failed'],
+      [200, 1, 'chatterbox_generation_failed']
+    ])
+    assert.ok(result.requestSpans?.every(span =>
+      typeof span.queuedAtUtc === 'string' &&
+      typeof span.startedAtUtc === 'string' &&
+      typeof span.firstResponseAtUtc === 'string' &&
+      typeof span.endedAtUtc === 'string' &&
+      (span.durationMs || 0) >= 0
+    ))
     assert.deepEqual(await readFile(outputPath), wav)
   } finally {
     await new Promise<void>((resolve, reject) => server.close((error) => error ? reject(error) : resolve()))

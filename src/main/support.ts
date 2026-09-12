@@ -208,7 +208,7 @@ export async function createSupportReport(): Promise<SupportReport> {
   }
 
   if (previousCrash.length > 0) {
-    lines.push('', `[Dấu vết phiên dừng bất thường trước: ${previousCrash.length} dòng]`)
+    lines.push('', `[Dấu vết phiên trước: ${previousCrash.length} dòng]`)
     for (const line of previousCrash) lines.push(reportLine(line))
   }
 

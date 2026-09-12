@@ -472,7 +472,12 @@ test(
         amThanhFile: composed,
         amLuongGoc: 0
       }, () => {})
-      assert.deepEqual(burnResult, { ok: true, output: replaceOutput })
+      assert.equal(burnResult.ok, true)
+      assert.equal(burnResult.output, replaceOutput)
+      assert.ok(['h264_nvenc', 'h264_amf', 'h264_qsv', 'libx264'].includes(burnResult.selectedEncoder || ''))
+      assert.ok((burnResult.encoderAttempts?.length || 0) >= 1)
+      assert.equal(burnResult.encoderAttempts?.at(-1)?.codec, burnResult.selectedEncoder)
+      assert.equal(burnResult.encoderAttempts?.at(-1)?.result, 'succeeded')
 
       const outputProbe = probeMedia(replaceOutput, canonicalFfprobe)
       assert.equal(outputProbe.streams.filter((stream) => stream.codec_type === 'video').length, 1)

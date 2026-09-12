@@ -1,36 +1,52 @@
 import { app } from 'electron'
 import { appendFile, mkdir } from 'node:fs/promises'
-import { existsSync, mkdirSync, readFileSync, renameSync, rmSync } from 'node:fs'
+import { existsSync, mkdirSync, readFileSync, readdirSync, rmSync, statSync } from 'node:fs'
 import { join } from 'node:path'
+import { randomUUID } from 'node:crypto'
 import { EventEmitter } from 'node:events'
 import type { LogEntry, LogLevel } from '../shared/types'
+import {
+  archiveSessionLogSync,
+  DEFAULT_LOG_MAX_AGE_MS,
+  DEFAULT_LOG_MAX_BYTES,
+  pruneSessionLogs
+} from './logRetention'
 
 const MAX = 1000 // giu toi da 1000 dong gan nhat trong bo nho
 const buffer: LogEntry[] = []
 export const logEmitter = new EventEmitter()
 let logGeneration = 0
+const logSessionId = randomUUID()
 
 function logDir(): string {
   return join(app.getPath('userData'), 'logs')
 }
 export function logFilePath(): string {
-  return join(logDir(), 'tblao.log')
+  return join(logDir(), `tblao-session-${logSessionId}.log`)
 }
 export function previousCrashLogFilePath(): string {
   return join(logDir(), 'tblao-previous-crash.log')
 }
 
-/**
- * Neu phien truoc dung bat thuong, before-quit khong kip xoa tblao.log. Doi
- * ten no truoc dong log dau tien de bao cao ho tro van doc duoc dau vet crash.
- */
+/** Migrate legacy single-file logs and prune completed sessions by age/quota. */
 export function initializeLogSessionSync(): void {
   try {
     mkdirSync(logDir(), { recursive: true })
-    const current = logFilePath()
-    if (!existsSync(current)) return
-    rmSync(previousCrashLogFilePath(), { force: true })
-    renameSync(current, previousCrashLogFilePath())
+    const legacyCurrent = join(logDir(), 'tblao.log')
+    if (existsSync(legacyCurrent)) {
+      archiveSessionLogSync({ rootDir: logDir(), activePath: legacyCurrent, sessionId: `legacy-${Date.now()}` })
+    }
+    const legacyCrash = previousCrashLogFilePath()
+    if (existsSync(legacyCrash)) {
+      archiveSessionLogSync({ rootDir: logDir(), activePath: legacyCrash, sessionId: `legacy-crash-${Date.now()}` })
+    }
+    void pruneSessionLogs({
+      rootDir: logDir(),
+      activeFiles: [logFilePath()],
+      nowMs: Date.now(),
+      maxAgeMs: DEFAULT_LOG_MAX_AGE_MS,
+      maxBytes: DEFAULT_LOG_MAX_BYTES
+    }).catch(() => {})
   } catch {
     // Khong chan khoi dong neu antivirus dang giu file log.
   }
@@ -38,7 +54,15 @@ export function initializeLogSessionSync(): void {
 
 export function getPreviousCrashLogLines(limit = 200): string[] {
   try {
-    const lines = readFileSync(previousCrashLogFilePath(), 'utf8').split(/\r?\n/).filter(Boolean)
+    const current = logFilePath().toLowerCase()
+    const previous = readdirSync(logDir())
+      .filter(name => /^tblao-session-.*\.log$/iu.test(name))
+      .map(name => join(logDir(), name))
+      .filter(path => path.toLowerCase() !== current)
+      .map(path => ({ path, mtimeMs: statSync(path).mtimeMs }))
+      .sort((left, right) => right.mtimeMs - left.mtimeMs)[0]?.path
+    if (!previous) return []
+    const lines = readFileSync(previous, 'utf8').split(/\r?\n/).filter(Boolean)
     return lines.slice(-Math.max(1, limit))
   } catch {
     return []
@@ -175,22 +199,11 @@ export function clearLogs(): void {
   logGeneration += 1
   buffer.length = 0
   try {
-    rmSync(logFilePath(), { force: true })
-    rmSync(previousCrashLogFilePath(), { force: true })
+    for (const name of readdirSync(logDir())) {
+      if (/^tblao(?:-.*)?\.log$/iu.test(name)) rmSync(join(logDir(), name), { force: true })
+    }
   } catch {
     /* bo qua */
   }
   logEmitter.emit('cleared')
-}
-
-/** Xoa sach file log (dong bo) — goi luc app thoat de moi lan mo la nhat ky moi. */
-export function wipeLogFileSync(): void {
-  logGeneration += 1
-  buffer.length = 0
-  try {
-    rmSync(logFilePath(), { force: true })
-    rmSync(previousCrashLogFilePath(), { force: true })
-  } catch {
-    /* bo qua */
-  }
 }

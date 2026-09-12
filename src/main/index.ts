@@ -173,8 +173,7 @@ import {
   logError,
   logWarn,
   logFilePath,
-  logInfo,
-  wipeLogFileSync
+  logInfo
 } from './logger'
 import { createSupportReport, recordRendererIssue } from './support'
 
@@ -415,7 +414,6 @@ app.on('before-quit', (event) => {
   if (whisperShutdownStarted) return
   whisperShutdownStarted = true
   event.preventDefault()
-  wipeLogFileSync()
   void Promise.all([
     shutdownAutoShortRuntime(),
     shutdownWhisperRuntime()
