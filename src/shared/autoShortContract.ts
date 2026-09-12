@@ -10,6 +10,7 @@ import type {
   SubtitleLayoutProfile
 } from './types'
 import { normalizeVideoAdjustments } from './videoAdjustments'
+import { normalizeAutoShortTemporalEdit } from './autoShortTemporalEdit'
 import { isAutoShortSeparationPreset } from './autoShortSeparation'
 import { validateVideoTitleConfig } from './videoTitle'
 import { translationGuidanceError } from './translation'
@@ -348,7 +349,13 @@ export function validateAutoShortStartRequest(raw: unknown): AutoShortValidation
     if (paths.has(filePath)) return { ok: false, error: 'Video bị trùng trong hàng đợi.' }
     ids.add(id)
     paths.add(filePath)
-    items.push({ id, filePath })
+    let temporalEdit
+    try {
+      temporalEdit = normalizeAutoShortTemporalEdit(rawItem.temporalEdit)
+    } catch (error) {
+      return { ok: false, error: error instanceof Error ? error.message : `Bản cắt video thứ ${index + 1} không hợp lệ.` }
+    }
+    items.push({ id, filePath, ...(temporalEdit ? { temporalEdit } : {}) })
   }
   const config = validateConfig(raw.config)
   if (typeof config === 'string') return { ok: false, error: config }

@@ -78,6 +78,7 @@ sequenceDiagram
     autonumber
     participant Coord as Coordinator
     participant Disk as Disk Budget
+    participant Cut as Temporal Cut (FFmpeg)
     participant Sep as Separation (MDX)
     participant OCR as OCR / Timeline
     participant Whisper as Whisper ASR
@@ -87,6 +88,11 @@ sequenceDiagram
     participant Burn as Subtitle Burn (FFmpeg)
 
     Coord->>Disk: Khởi tạo Item Scope & cấp phát Disk Quota
+
+    opt Item có bản cắt ripple-delete
+        Coord->>Cut: Validate/union khoảng source -> trim hình và tiếng -> concat
+        Cut-->>Coord: Edited master + cut-plan.json; probe lại duration/geometry
+    end
 
     alt Có bật Tách thoại (Vocal Separation)
         Coord->>Sep: Tách Video -> Vocals (thoại gốc) + Instrumental (nhạc nền + SFX)
@@ -136,6 +142,7 @@ sequenceDiagram
 - **Trách nhiệm:**
   - Vòng đời ứng dụng, quản lý cửa sổ BrowserWindow.
   - Điều phối hàng đợi tác vụ đa tiến trình với `autoShortQueueRunner.ts` và `autoShortItemCoordinator.ts`.
+  - Với item có `temporalEdit`, dựng edited master lossless trong item scope trước OCR/ASR/tách thoại. Khoảng cắt là half-open theo microsecond, được hợp nhất canonical; video không có bản cắt đi nguyên đường cũ. Bản cắt tham gia checkpoint/config digest và được lưu trong batch journal để resume không dùng nhầm artifact.
   - Quản lý bộ nhớ đĩa tạm (`autoShortDiskBudget.ts`).
   - Gọi và giám sát tiến trình con (`processTree.ts`), đảm bảo khi người dùng bấm Hủy (Cancel) thì toàn bộ cây tiến trình FFmpeg/Python bị tiêu diệt sạch sẽ. Mỗi scope render Auto Short mới đặt lại cờ hủy nội bộ sau khi chiếm render lock; vì vậy trạng thái hủy của job trước không làm lần render sau bỏ qua FFmpeg.
   - Lưu nhật ký theo từng session trong `userData/logs`. Đóng ứng dụng không xóa bằng chứng; chỉ thao tác Clear của người dùng mới xóa log. `logRetention.ts` giữ file đang hoạt động và dọn session cũ theo giới hạn 7 ngày/100 MiB.

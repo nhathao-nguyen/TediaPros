@@ -1,3 +1,5 @@
+import { normalizeAutoShortTemporalEdit } from './autoShortTemporalEdit'
+
 export type BatchItemState =
   | 'pending'
   | 'running'
@@ -25,6 +27,7 @@ export interface BatchItemRecord {
   inputPath: string
   inputDigest: string
   configDigest: string
+  temporalEdit?: import('./autoShortTemporalEdit').AutoShortTemporalEdit
   ordinal: number
   attempt: number
   state: BatchItemState
@@ -122,7 +125,7 @@ export function validateBatchSnapshot(value: unknown): BatchSnapshot {
   const items = raw.items.map((value, index): BatchItemRecord => {
     const item = record(value, `Batch item ${index}`)
     exactFields(item, [
-      'itemId', 'inputPath', 'inputDigest', 'configDigest', 'ordinal', 'attempt', 'state', 'reservedOutputDir', 'artifactDir', 'outputReceipt', 'failure'
+      'itemId', 'inputPath', 'inputDigest', 'configDigest', 'temporalEdit', 'ordinal', 'attempt', 'state', 'reservedOutputDir', 'artifactDir', 'outputReceipt', 'failure'
     ], `Batch item ${index}`)
     const itemId = text(item.itemId, `Batch item ${index} ID`, 128)
     if (!SAFE_ID.test(itemId)) throw new Error(`Batch item ${index} ID không hợp lệ.`)
@@ -138,11 +141,16 @@ export function validateBatchSnapshot(value: unknown): BatchSnapshot {
       throw new Error('Output receipt chỉ hợp lệ cho succeeded hoặc needs-review.')
     }
     const failure = item.failure === undefined ? undefined : validateFailure(item.failure)
+    let temporalEdit
+    if (item.temporalEdit !== undefined) {
+      temporalEdit = normalizeAutoShortTemporalEdit(item.temporalEdit)
+    }
     return {
       itemId,
       inputPath: text(item.inputPath, `Batch item ${index} inputPath`, 32768),
       inputDigest: digest(item.inputDigest, `Batch item ${index} inputDigest`),
       configDigest: digest(item.configDigest, `Batch item ${index} configDigest`),
+      ...(temporalEdit ? { temporalEdit } : {}),
       ordinal,
       attempt: integer(item.attempt, `Batch item ${index} attempt`),
       state,

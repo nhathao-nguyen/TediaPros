@@ -110,6 +110,8 @@ const knownTests = [
   'translation-multilingual.test',
   'translation-qualification.test',
   'autoshort-ui-contract.test',
+  'autoshort-temporal-edit-contract.test',
+  'autoshort-cut-media.test',
   'autoshort-region-geometry.test',
   'autoshort-queue-throughput.test',
   'autoshort-item-scope.test',

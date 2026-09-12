@@ -139,6 +139,32 @@
   background: color-mix(in srgb, var(--primary) 10%, transparent);
 }
 
+.autoshort-cut-panel {
+  border: 1px solid var(--control-border);
+  border-radius: 10px;
+  background: var(--panel-2);
+  padding: 10px;
+  display: grid;
+  gap: 8px;
+}
+
+.autoshort-cut-summary,
+.autoshort-cut-fields,
+.autoshort-cut-ranges > div {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.autoshort-cut-summary { justify-content: space-between; }
+.autoshort-cut-summary span { color: var(--muted); font-size: 12px; }
+.autoshort-cut-fields label { display: flex; align-items: center; gap: 5px; font-size: 12px; }
+.autoshort-cut-fields input { width: 82px; }
+.autoshort-cut-ranges { display: grid; gap: 5px; }
+.autoshort-cut-range { border: 0; background: transparent; color: var(--text); cursor: pointer; padding: 2px 4px; }
+.autoshort-cut-error { color: var(--danger); font-size: 12px; }
+
 .queue-item-index {
   font-size: 12px;
   font-weight: 700;

@@ -21,6 +21,14 @@ function snapshot(): BatchSnapshot {
       inputPath: `input-${ordinal}.mp4`,
       inputDigest: 'a'.repeat(64),
       configDigest: 'b'.repeat(64),
+      ...(ordinal === 1 ? {
+        temporalEdit: {
+          schemaVersion: 1 as const,
+          revision: 2,
+          mode: 'ripple-delete' as const,
+          removedRanges: [{ id: 'bad-take', startUs: 2_000_000, endUs: 3_500_000 }]
+        }
+      } : {}),
       ordinal,
       attempt: 1,
       state,
@@ -38,6 +46,7 @@ test('restart changes running to interrupted and resumes only pending work witho
   assert.deepEqual(resumeCandidateIds(recovered), ['item-1', 'item-2'])
   assert.equal(source.items[1].state, 'running')
   assert.equal(recovered.items[0].state, 'succeeded')
+  assert.deepEqual(recovered.items[1].temporalEdit, source.items[1].temporalEdit)
 })
 
 test('journal validation rejects secret fields, duplicates, unsupported versions and false success receipts', () => {

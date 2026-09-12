@@ -96,6 +96,7 @@ import { runSttnRemoval } from './inpainting/runner'
 import { STTN_MODEL } from './inpainting/assets'
 import { buildTranslationIdentity, type TranslationArtifact } from './translation/checkpoint'
 import { TRANSLATION_PARSER_VERSION, TRANSLATION_PROMPT_VERSION } from './translation/prompts'
+import { cutAutoShortSource } from './autoShortCutMedia'
 import { assessTranslationLanguage, normalizeTranslationLocale } from './translation/language'
 import { mapTranslationsStrict } from './translation/response'
 import { createInvalidSourceAssessment } from './translation/orchestrator'
@@ -536,7 +537,8 @@ export function createAutoShortItemProcessor(
           inputInfo,
           config,
           context.separation,
-          sourceDigest
+          sourceDigest,
+          item.temporalEdit
         )
 
         if (checkpoint.version !== AUTO_SHORT_CHECKPOINT_VERSION || checkpoint.fingerprint !== checkpointFingerprint) {
@@ -572,12 +574,51 @@ export function createAutoShortItemProcessor(
         span.updateCounters({ sourceBytes: inputInfo.size, durationMs: Math.round(meta.giay * 1000), width: geometry.displayWidth, height: geometry.displayHeight })
         return { sourceDigest, meta, ffmpeg, ffprobe, geometry }
       })
-      const visualDurationSeconds = visualVideoDuration(meta)
+      let processingPath = item.filePath
+      let processingDigest = sourceDigest
+      let processingMeta = meta
+      let processingGeometry = geometry
+      if (item.temporalEdit?.removedRanges.length) {
+        emitProgress(context, 'extracting_sub', 2, 'Đang chuẩn bị video theo các đoạn đã cắt…')
+        const cut = await telemetry.withStageSpan('metadata', {}, async (span) => {
+          const result = await cutAutoShortSource({
+            ffmpeg,
+            sourcePath: item.filePath,
+            workDir,
+            edit: item.temporalEdit!,
+            sourceDurationSeconds: meta.giay,
+            hasAudio: meta.hasAudio,
+            signal
+          })
+          span.updateCounters({
+            removedRangeCount: result.plan.removedRanges.length,
+            outputDurationMs: Math.round(result.plan.editedDurationUs / 1000)
+          })
+          return result
+        })
+        processingPath = cut.path
+        processingDigest = await hashFileSha256(processingPath, signal)
+        processingMeta = await (deps.probeMedia || probeBurnMedia)(processingPath)
+        if (!(processingMeta.giay > 0) || !(processingMeta.w > 0) || !(processingMeta.h > 0)) {
+          throw new Error('Video sau cắt không có metadata hợp lệ.')
+        }
+        processingGeometry = processingMeta.geometry ?? deriveCanonicalDisplayGeometry({
+          codedWidth: processingMeta.w,
+          codedHeight: processingMeta.h,
+          rotation: processingMeta.rotation,
+          sampleAspectRatio: processingMeta.sampleAspectRatio,
+          videoStart: processingMeta.videoStart
+        })
+        const cutManifestPath = join(workDir, 'cut-plan.json')
+        await writeFile(cutManifestPath, JSON.stringify(cut.plan, null, 2), 'utf8')
+        artifactEntries.push({ source: cutManifestPath, name: 'cut-plan.json' })
+      }
+      const visualDurationSeconds = visualVideoDuration(processingMeta)
 
-      const ocrRegion = (config.ocrRegion ? normalizedToPixels(config.ocrRegion, geometry) : undefined) || defaultAutoShortOcrRegion(meta, geometry)
+      const ocrRegion = (config.ocrRegion ? normalizedToPixels(config.ocrRegion, processingGeometry) : undefined) || defaultAutoShortOcrRegion(processingMeta, processingGeometry)
       const blurRegions = config.blurRegions.flatMap((r) => {
         try {
-          const pixels = normalizedToPixels(r, geometry)
+          const pixels = normalizedToPixels(r, processingGeometry)
           return pixels ? [{ ...pixels, id: r.id, color: r.color }] : []
         } catch {
           return []
@@ -608,11 +649,11 @@ export function createAutoShortItemProcessor(
               // display-space timeline.  The revision invalidates artifacts
               // created before this compatibility rule was introduced.
               cacheRevision: 'ocr-visual-cues-v2',
-              sourceDigest,
+              sourceDigest: processingDigest,
               profile: effectiveProfile,
-              geometryFingerprint: geometry.fingerprint,
-              displayWidth: geometry.displayWidth,
-              displayHeight: geometry.displayHeight,
+              geometryFingerprint: processingGeometry.fingerprint,
+              displayWidth: processingGeometry.displayWidth,
+              displayHeight: processingGeometry.displayHeight,
               scanRegion: ocrRegion,
               sampleFps: 8
             })
@@ -625,11 +666,11 @@ export function createAutoShortItemProcessor(
                   const transportMatches = isCompatibleOcrTransport(requestedTransport, payload?.transport)
                   if (payload && transportMatches) {
                     const timeline = validateStabilizedOcrVisualTimeline(payload.timeline, {
-                      width: geometry.displayWidth,
-                      height: geometry.displayHeight,
+                      width: processingGeometry.displayWidth,
+                      height: processingGeometry.displayHeight,
                       durationSeconds: visualDurationSeconds,
                       sampleFps: 8,
-                      geometryFingerprint: geometry.fingerprint,
+                      geometryFingerprint: processingGeometry.fingerprint,
                       scanRegion: ocrRegion
                     })
                     const sidecarPath = join(ocrDir, 'visual-cues.json')
@@ -666,11 +707,11 @@ export function createAutoShortItemProcessor(
               span.recordResourceWait(lease.waitMs || 0)
               return deps.runVisualOcr(
                 {
-                  input: item.filePath,
+                  input: processingPath,
                   outputDir: ocrDir,
                   scanRegion: ocrRegion,
                   profile: effectiveProfile,
-                  geometry,
+                  geometry: processingGeometry,
                   videoDurationSeconds: visualDurationSeconds,
                   sampleFps: 8,
                   signal: ocrSignal,
@@ -721,7 +762,7 @@ export function createAutoShortItemProcessor(
       let visualBranchOutcomePromise: Promise<BranchOutcome<VisualBranchResult>> | null = null
 
       const runVisualBranch = async (branchSignal: AbortSignal): Promise<VisualBranchResult> => {
-        let branchRenderVideoPath = item.filePath
+        let branchRenderVideoPath = processingPath
         let branchTimedMask: TimedOcrBlurMask | null = null
         let branchVisualResult: Awaited<ReturnType<typeof deps.runVisualOcr>> | null = null
         let branchSttnAudit: { provider: 'cuda' | 'cpu'; elapsedMs: number } | undefined
@@ -735,11 +776,11 @@ export function createAutoShortItemProcessor(
           const cleaned = await telemetry.withStageSpan('sttn', { requestedProvider: 'cuda' }, async (span) => {
             const sttnCacheKey = buildStageKey('sttn', {
               cacheRevision: 'sttn-inpaint-v2',
-              sourceDigest,
+              sourceDigest: processingDigest,
               timeline: branchVisualResult!.timeline,
-              geometryFingerprint: geometry.fingerprint,
-              displayWidth: geometry.displayWidth,
-              displayHeight: geometry.displayHeight,
+              geometryFingerprint: processingGeometry.fingerprint,
+              displayWidth: processingGeometry.displayWidth,
+              displayHeight: processingGeometry.displayHeight,
               modelRevision: STTN_MODEL.revision,
               modelSha256: STTN_MODEL.sha256,
               protocol: 'sttn-engine/1',
@@ -759,7 +800,7 @@ export function createAutoShortItemProcessor(
             const res = await resourceManager.withLease(['local-gpu-heavy', 'local-cpu-heavy'], branchSignal, async (lease) => {
               span.recordResourceWait(lease.waitMs || 0)
               return (deps.removeSubtitles || runSttnRemoval)({
-                videoPath: item.filePath,
+                videoPath: processingPath,
                 timeline: branchVisualResult!.timeline,
                 outputPath: join(sttnWorkDir!, 'sttn-cleaned.mkv'),
                 ffmpegPath: ffmpeg,
@@ -819,7 +860,7 @@ export function createAutoShortItemProcessor(
             await mkdir(whisperDir, { recursive: true })
             const asrKey = buildStageKey('asr', {
               cacheRevision: 'faster-whisper-aligned-v1',
-              sourceDigest,
+              sourceDigest: processingDigest,
               model: config.whisperModel || 'base',
               device: needsCuda(config) ? 'cuda' : 'cpu',
               language: resolveAutoShortWhisperLanguage(config.whisperLanguage),
@@ -849,7 +890,7 @@ export function createAutoShortItemProcessor(
             const whisperResult = await resourceManager.withLease(asrResources, signal, async (lease) => {
               span.recordResourceWait(lease.waitMs || 0)
               return transcribeFn(jobId, {
-                input: item.filePath,
+                input: processingPath,
                 outputDir: whisperDir,
                 model: config.whisperModel || 'base',
                 language: resolveAutoShortWhisperLanguage(config.whisperLanguage),
@@ -888,7 +929,7 @@ export function createAutoShortItemProcessor(
           const ocrDir = join(workDir, 'ocr')
           await mkdir(ocrDir, { recursive: true })
           const ocrResult = await resourceManager.withLease(['local-gpu-heavy', 'local-cpu-heavy'], signal, async (lease) => {
-            return ocrVideo(item.filePath, ocrDir, ocrRegion.y0, ocrRegion.y1, ocrRegion.x0, ocrRegion.x1, ['.srt'], (p) => {
+            return ocrVideo(processingPath, ocrDir, ocrRegion.y0, ocrRegion.y1, ocrRegion.x0, ocrRegion.x1, ['.srt'], (p) => {
               emitProgress(context, 'extracting_sub', 5 + Math.max(0, p.percent) * 0.25, p.text || 'Đang quét chữ trong video…')
             }, signal, 8)
           })
@@ -982,7 +1023,7 @@ export function createAutoShortItemProcessor(
           detectedSourceLanguage = whisper.language
         }
 
-        const boundedExtracted = clampAlignedCueTimeline(extracted, meta.giay)
+        const boundedExtracted = clampAlignedCueTimeline(extracted, processingMeta.giay)
         if (boundedExtracted.length === 0) failInvalidSource('SRT nguồn không có câu nằm trong thời lượng video')
         await writeFile(rawSrtPath, serializeAlignedCues(boundedExtracted), 'utf8')
         sourceCues = parseSrt(await readFile(rawSrtPath, 'utf8')).cues.filter((cue) => cue.text.trim())
@@ -1027,9 +1068,9 @@ export function createAutoShortItemProcessor(
           plannerVersion: 'translation-plan-v3',
           assessmentVersion: 'translation-assessment-v2',
           options: {
-            sourceDigest,
+            sourceDigest: processingDigest,
             contextRadius: 2,
-            videoDuration: config.ttsEnabled ? meta.giay : undefined,
+            videoDuration: config.ttsEnabled ? processingMeta.giay : undefined,
             mode: translationMode,
             strict: true
           }
@@ -1177,7 +1218,7 @@ export function createAutoShortItemProcessor(
             }, async (budget) => {
               checkpoint.translationBudget = budget
               await saveCheckpoint()
-            }, reusablePartial, checkpoint.translationBudget, meta.giay)
+            }, reusablePartial, checkpoint.translationBudget, processingMeta.giay)
             providerTranslationAssessment = strictResult.assessment
             const translated = parseSrt(await readFile(targetSrtPath, 'utf8')).cues.filter((cue) => cue.text.trim())
             const restored = revalidate(mergeRecoveredTranslationItems(
@@ -1248,7 +1289,7 @@ export function createAutoShortItemProcessor(
 
       if (config.audioMode === 'separate-vocals') {
         throwIfAborted(signal)
-        if (!meta.hasAudio) {
+        if (!processingMeta.hasAudio) {
           logInfo('[AutoShort] Video nguồn không có audio; sẽ xuất TTS-only.')
           emitProgress(context, 'separating_audio', 45, 'Video nguồn không có audio; sẽ xuất TTS-only.')
         } else {
@@ -1269,8 +1310,8 @@ export function createAutoShortItemProcessor(
               const result = await resourceManager.withLease(['local-gpu-heavy', 'local-cpu-heavy'], signal, async (lease) => {
                 span.recordResourceWait(lease.waitMs || 0)
                 return separateSourceAudio({
-                sourcePath: item.filePath,
-                videoDurationSeconds: meta.giay,
+                sourcePath: processingPath,
+                videoDurationSeconds: processingMeta.giay,
                 workDir: sepDir,
                 ffmpegPath: ffmpeg,
                 ffprobePath: ffprobe,
@@ -1326,7 +1367,7 @@ export function createAutoShortItemProcessor(
       }
 
       let stitchedAudioPath: string | null = null
-      let outputDuration = meta.giay
+      let outputDuration = processingMeta.giay
       let dubbingTimeMap: DubbingTimeMap | undefined
       let renderSrtPath = targetSrtPath
       let renderDisplayStyle = config.subtitleDisplayStyle || 'standard'
@@ -1351,7 +1392,7 @@ export function createAutoShortItemProcessor(
             targetCues,
             sourceCues,
             workDir,
-            meta.giay,
+            processingMeta.giay,
             index,
             total,
             detectedSourceLanguage,
@@ -1370,7 +1411,7 @@ export function createAutoShortItemProcessor(
         outputDuration = synthesized.outputDuration
         dubbingTimeMap = synthesized.timeMap
         if (dubbingTimeMap) {
-          logInfo(`[AutoShort:retiming] sourceSeconds=${meta.giay.toFixed(3)} outputSeconds=${outputDuration.toFixed(3)} maxLocalExtension=60% maxSlowdownExtension=20%`)
+          logInfo(`[AutoShort:retiming] sourceSeconds=${processingMeta.giay.toFixed(3)} outputSeconds=${outputDuration.toFixed(3)} maxLocalExtension=60% maxSlowdownExtension=20%`)
           const mapPath = join(workDir, 'dubbing-time-map.json')
           await writeFile(mapPath, JSON.stringify({ ...dubbingTimeMap, originalSourceCues: sourceCues }, null, 2), 'utf8')
           artifactEntries.push({ source: mapPath, name: 'dubbing-time-map.json' })
@@ -1408,7 +1449,7 @@ export function createAutoShortItemProcessor(
         const timelineManifestPath = join(workDir, 'tts-timeline.json')
         await writeFile(timelineManifestPath, JSON.stringify({
           timeMap: dubbingTimeMap,
-          sourceDuration: meta.giay,
+          sourceDuration: processingMeta.giay,
           outputDuration,
           timingWarnings: syncValidation.warnings || [],
           language: synthesized.language,
@@ -1516,7 +1557,7 @@ export function createAutoShortItemProcessor(
         fallbackRegion: config.subRegion ?? null
       })
       throwIfAborted(signal)
-      const resolvedSubtitleRegion = normalizedToPixels(subtitlePlacement.region, geometry)
+      const resolvedSubtitleRegion = normalizedToPixels(subtitlePlacement.region, processingGeometry)
 
       if (dubbingTimeMap) {
         emitProgress(context, 'rendering_video', 84, 'Đang làm chậm nhẹ và chèn hình cho các đoạn thiếu thời gian (tối đa 60%)…')
@@ -1524,8 +1565,8 @@ export function createAutoShortItemProcessor(
           await resourceManager.withLease(['local-cpu-heavy'], signal, async (lease) => {
             span.recordResourceWait(lease.waitMs || 0)
             renderVideoPath = await retimeDubbingMedia({ ffmpeg, source: renderVideoPath, workDir,
-              name: 'retimed-video', map: dubbingTimeMap!, kind: 'video', hasAudio: meta.hasAudio && config.audioMode === 'mix', audioSource: item.filePath,
-              frameRate: meta.frameRate, signal })
+              name: 'retimed-video', map: dubbingTimeMap!, kind: 'video', hasAudio: processingMeta.hasAudio && config.audioMode === 'mix', audioSource: processingPath,
+              frameRate: processingMeta.frameRate, signal })
             if (timedMask) timedMask = { ...timedMask,
               path: await retimeDubbingMedia({ ffmpeg, source: timedMask.path, workDir,
                 name: 'retimed-mask', map: dubbingTimeMap!, kind: 'mask', width: timedMask.width, height: timedMask.height, signal }),
@@ -1571,12 +1612,12 @@ export function createAutoShortItemProcessor(
               fontId: config.fontId,
               textColor: config.textColor,
               outlineColor: config.outlineColor,
-              outlinePx: config.outlineScale != null ? Math.max(0.5, Math.round(config.outlineScale * meta.h * 2) / 2) : config.outlinePx,
+              outlinePx: config.outlineScale != null ? Math.max(0.5, Math.round(config.outlineScale * processingMeta.h * 2) / 2) : config.outlinePx,
               bgEnabled: config.bgEnabled,
               bgColor: config.bgColor,
               bgOpacity: config.bgOpacity,
               subtitleDisplayStyle: renderDisplayStyle,
-              subtitleFontSize: config.subtitleFontScale != null ? Math.round(config.subtitleFontScale * meta.h) : config.subtitleFontSize,
+              subtitleFontSize: config.subtitleFontScale != null ? Math.round(config.subtitleFontScale * processingMeta.h) : config.subtitleFontSize,
               subtitleFontScale: config.subtitleFontScale,
               outlineScale: config.outlineScale,
               highlightColor: config.highlightColor,
@@ -1609,8 +1650,8 @@ export function createAutoShortItemProcessor(
               itemWorkDir: workDir,
               expectedMedia: {
                 durationSeconds: outputDuration,
-                frameRate: meta.frameRate,
-                requireAudio: Boolean(outputAudioPath || (meta.hasAudio && config.audioMode === 'mix')),
+                frameRate: processingMeta.frameRate,
+                requireAudio: Boolean(outputAudioPath || (processingMeta.hasAudio && config.audioMode === 'mix')),
                 durationToleranceFrames: 3
               },
               signal

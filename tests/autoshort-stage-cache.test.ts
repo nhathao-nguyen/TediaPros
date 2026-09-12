@@ -53,4 +53,8 @@ test('AutoShort checkpoint identity includes source content digest when supplied
   const build = buildAutoShortCheckpointFingerprint as unknown as (...args: unknown[]) => string
   const common = ['C:\\input.mp4', { size: 4, mtimeMs: 100 }, config, undefined]
   assert.notEqual(build(...common, 'a'.repeat(64)), build(...common, 'b'.repeat(64)))
+  const sourceDigest = 'a'.repeat(64)
+  const editA = { schemaVersion: 1, revision: 1, mode: 'ripple-delete', removedRanges: [{ id: 'take', startUs: 1_000_000, endUs: 2_000_000 }] }
+  const editB = { ...editA, revision: 2, removedRanges: [{ id: 'take', startUs: 1_000_000, endUs: 2_500_000 }] }
+  assert.notEqual(build(...common, sourceDigest, editA), build(...common, sourceDigest, editB))
 })

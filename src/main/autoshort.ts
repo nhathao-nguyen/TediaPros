@@ -182,16 +182,20 @@ function batchConfigDigest(config: AutoShortConfig): string {
   return createHash('sha256').update(canonicalJson(config)).digest('hex')
 }
 
+function itemConfigDigest(config: AutoShortConfig, item: AutoShortQueueItemInput): string {
+  return createHash('sha256').update(canonicalJson({ config, temporalEdit: item.temporalEdit })).digest('hex')
+}
+
 async function initializeBatchJournal(job: AutoShortJob): Promise<void> {
   const now = new Date().toISOString()
-  const configDigest = batchConfigDigest(job.request.config)
   const items: BatchItemRecord[] = []
   for (const [ordinal, item] of job.request.items.entries()) {
     items.push({
       itemId: item.id,
       inputPath: item.filePath,
       inputDigest: await hashFileSha256(item.filePath, job.controller.signal),
-      configDigest,
+      configDigest: itemConfigDigest(job.request.config, item),
+      ...(item.temporalEdit ? { temporalEdit: item.temporalEdit } : {}),
       ordinal,
       attempt: 0,
       state: 'pending'
@@ -365,7 +369,8 @@ export function buildAutoShortCheckpointFingerprint(
   inputInfo: { size: number; mtimeMs: number },
   config: AutoShortConfig,
   separation?: PreparedAutoShortSeparation,
-  sourceDigest?: string
+  sourceDigest?: string,
+  temporalEdit?: AutoShortQueueItemInput['temporalEdit']
 ): string {
   return createHash('sha256').update(stableJson({
     version: AUTO_SHORT_CHECKPOINT_VERSION,
@@ -380,6 +385,7 @@ export function buildAutoShortCheckpointFingerprint(
       // the streamed digest so same-size replacements cannot reuse a job.
       sourceDigest: sourceDigest || 'missing-source-digest'
     },
+    temporalEdit,
     subtitleMethod: config.subtitleMethod,
     whisperModel: config.whisperModel,
     whisperDevice: config.whisperDevice,
@@ -2941,7 +2947,7 @@ async function processSingleVideo(
     checkpointDir,
     workDir,
     artifactDir,
-    batchConfigDigest: batchConfigDigest(config),
+    batchConfigDigest: itemConfigDigest(config, item),
     itemOutputDir,
     ttsCapabilities: job.ttsCapabilities,
     ttsCapabilitiesUrl: job.ttsCapabilitiesUrl,
@@ -3372,12 +3378,12 @@ export async function resumeAutoShortBatch(
     const candidates = snapshot.items.filter((item) => candidateIds.has(item.itemId)).sort((a, b) => a.ordinal - b.ordinal)
     const validated = validateAutoShortStartRequest({
       config: request.config,
-      items: candidates.map((item) => ({ id: item.itemId, filePath: item.inputPath }))
+      items: candidates.map((item) => ({ id: item.itemId, filePath: item.inputPath, ...(item.temporalEdit ? { temporalEdit: item.temporalEdit } : {}) }))
     })
     if (!validated.ok) return { ok: false, error: validated.error }
-    const digest = batchConfigDigest(validated.value.config)
     for (const item of candidates) {
-      if (item.configDigest !== digest) return { ok: false, error: 'Cấu hình hiện tại khác cấu hình batch đã checkpoint.' }
+      const candidate = validated.value.items.find((entry) => entry.id === item.itemId)!
+      if (item.configDigest !== itemConfigDigest(validated.value.config, candidate)) return { ok: false, error: 'Cấu hình hiện tại khác cấu hình batch đã checkpoint.' }
       if (await hashFileSha256(item.inputPath) !== item.inputDigest) return { ok: false, error: `Video nguồn đã thay đổi: ${basename(item.inputPath)}` }
     }
     return launchAutoShortJob(validated.value, onEvent, { jobId: snapshot.jobId, snapshot })

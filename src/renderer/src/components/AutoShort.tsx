@@ -59,6 +59,8 @@ import RegionBox, { type Region } from './RegionBox'
 import VideoTitleSettings from './VideoTitleSettings'
 import GeminiKeys from './GeminiKeys'
 import VideoSeoResult from './VideoSeoResult'
+import AutoShortCutPanel from './AutoShortCutPanel'
+import { MICROSECONDS_PER_SECOND } from '../../../shared/autoShortTemporalEdit'
 
 const PALETTE = [
   '#e8a13c',
@@ -211,6 +213,7 @@ export default function AutoShort(): JSX.Element {
   const [boxW, setBoxW] = useState(0)
   const [previewStageSize, setPreviewStageSize] = useState<PreviewStageSize>({ width: 0, height: 0 })
   const [isStageFullscreen, setIsStageFullscreen] = useState(false)
+  const [showCutPanel, setShowCutPanel] = useState(false)
 
   // Transport hook
   const transport = useVideoTransport(videoRef, previewPath)
@@ -535,12 +538,13 @@ export default function AutoShort(): JSX.Element {
         const byId = new Map(current.map((item) => [item.id, item]))
         return result.snapshot!.items.sort((left, right) => left.ordinal - right.ordinal).map((record) => {
           const existing = byId.get(record.itemId)
-          if (existing) return existing
+          if (existing) return { ...existing, temporalEdit: record.temporalEdit }
           const fileName = record.inputPath.split(/[\\/]/u).pop() || record.inputPath
           return {
             id: record.itemId,
             filePath: record.inputPath,
             fileName,
+            temporalEdit: record.temporalEdit,
             status: record.state === 'succeeded' ? 'done' : record.state === 'cancelled' ? 'cancelled' : record.state === 'failed' || record.state === 'needs-review' ? 'error' : 'queued',
             percent: record.state === 'succeeded' ? 100 : 0,
             outputPath: record.outputReceipt?.path,
@@ -1159,7 +1163,8 @@ export default function AutoShort(): JSX.Element {
       ? await window.api.autoShortResume({ jobId: resume.jobId, expectedRevision: resume.revision, config })
       : await window.api.autoShortStart({
         config,
-        items: runnableTasks.map((task) => ({ id: task.id, filePath: task.filePath }))
+        items: runnableTasks.map((task) => ({ id: task.id, filePath: task.filePath,
+          ...(task.temporalEdit ? { temporalEdit: task.temporalEdit } : {}) }))
       })
     if (!started.ok) {
       setIsRunning(false)
@@ -1313,6 +1318,8 @@ export default function AutoShort(): JSX.Element {
             </div>
 
             <div className="editor-preview-actions">
+              <button className={`btn sm ${showCutPanel ? 'primary' : 'ghost'}`} type="button" disabled={!selectedTask || isRunning}
+                onClick={() => setShowCutPanel((current) => !current)}>Cắt đoạn</button>
               <PortraitBlurButton enabled={portraitBlur} onChange={setPortraitBlur} disabled={isRunning} />
               <VideoAdjustmentsControl value={normalizedVideoAdjustments} onChange={setVideoAdjustments} disabled={isRunning} />
               {tasks.length > 0 && (
@@ -1362,6 +1369,22 @@ export default function AutoShort(): JSX.Element {
               )}
             </div>
           </div>
+
+          {showCutPanel && selectedTask && (
+            <AutoShortCutPanel
+              key={selectedTask.id}
+              edit={selectedTask.temporalEdit}
+              durationSeconds={videoDuration}
+              currentTimeSeconds={currentTime}
+              disabled={isRunning}
+              onSeek={transport.seekTo}
+              onChange={(temporalEdit) => setTasks((current) => current.map((task) => task.id === selectedTask.id
+                ? { ...task, temporalEdit, currentStepMessage: temporalEdit?.removedRanges.length
+                  ? `Đã chọn bỏ ${temporalEdit.removedRanges.length} đoạn`
+                  : 'Sẵn sàng' }
+                : task))}
+            />
+          )}
 
           {/* Sân khấu video + Bounding box RegionBox */}
           <div ref={stageShellRef} className="editor-stage-shell">
@@ -2637,6 +2660,9 @@ export default function AutoShort(): JSX.Element {
                               {task.currentStepMessage || 'Sẵn sàng'}
                               {task.percent > 0 && ` (${task.percent}%)`}
                             </div>
+                            {task.temporalEdit?.removedRanges.length ? (
+                              <div className="queue-item-msg small">Cắt: {task.temporalEdit.removedRanges.length} đoạn · bỏ {(task.temporalEdit.removedRanges.reduce((sum, range) => sum + range.endUs - range.startUs, 0) / MICROSECONDS_PER_SECOND).toFixed(2)} giây</div>
+                            ) : null}
                             {task.error && <div className="queue-item-msg" style={{ color: 'var(--danger)' }}>{task.error}</div>}
                             {task.recovery && task.status === 'error' && (
                               <div className="queue-item-msg small" style={{ color: 'var(--danger)' }}>
