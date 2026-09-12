@@ -113,6 +113,7 @@ const knownTests = [
   'autoshort-temporal-edit-contract.test',
   'autoshort-cut-media.test',
   'autoshort-cut-capability.test',
+  'autoshort-cut-editor.test',
   'autoshort-region-geometry.test',
   'autoshort-queue-throughput.test',
   'autoshort-item-scope.test',

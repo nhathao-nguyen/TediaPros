@@ -1,6 +1,6 @@
 # TASK-20260912-AUTOSHORT-CUT-REPAIR: Sửa toàn bộ Cắt đoạn AutoShort
 
-- **Trạng thái:** Đang làm — P00 đã kiểm chứng, A01 đang triển khai.
+- **Trạng thái:** Đang làm — P00 và A01 đã kiểm chứng, A02 đang triển khai.
 - **Người thực hiện:** Codex.
 - **Thời gian:** 2026-09-12.
 - **Nhánh/worktree:** `codex/autoshort-cut-repair` tại `.worktrees/codex-autoshort-cut-repair`.
@@ -33,6 +33,8 @@ Sửa 12 findings của review và hoàn thành R01–R18 Core theo spec/plan. G
 
 - P00 `[NEW]` `src/main/autoShortCutCapability.ts`, `tests/autoshort-cut-capability.test.ts`.
 - P00 `[MODIFY]` `src/main/autoshort.ts`, `src/shared/types.ts`, `scripts/run-local-runtime-tests.mjs`.
+- A01 `[NEW]` `src/shared/autoShortCutEditor.ts`, `tests/autoshort-cut-editor.test.ts`.
+- A01 `[MODIFY]` `AutoShortCutPanel.tsx`, `AutoShort.tsx`, `autoshort.css`, test runner.
 - Các task tiếp theo được bổ sung vào đây theo từng gate.
 
 ## 6. Kiểm Chứng
@@ -41,8 +43,10 @@ Baseline worktree: `npm.cmd install`; `npm.cmd run typecheck` PASS; 23 scoped te
 
 P00 red: `autoshort-cut-capability.test` không resolve module trước implementation. Green: 3 pass, 0 fail. `npm.cmd run typecheck` PASS Node/Web.
 
+A01 red: parser chưa tồn tại. Green: 2 pass, 0 fail; `npm.cmd run typecheck` PASS. Browser harness ở panel 696×596 xác nhận stage cao 277px khi mở cut (trước review: 24px), panel nằm dưới transport; nhập trống hiện lỗi và không tạo edit. Sửa cut khi đang có resume snapshot chuyển về draft/run mới bằng cách xóa snapshot cũ.
+
 Các cảnh báo audit dependency của `npm install` là trạng thái dependency hiện tại, không tự chạy `npm audit fix` ngoài phạm vi.
 
 ## 7. Bàn Giao
 
-Tiếp theo A01: sửa grid khiến preview 414→24px và parser đang hiểu input trống là 0. Guard chưa phải fix engine; feature execution vẫn cố ý đóng trong branch cho tới Z01.
+Tiếp theo A02: lịch sử undo/redo có giới hạn, ID ổn định và hành vi hợp nhất range. Guard chưa phải fix engine; feature execution vẫn cố ý đóng trong branch cho tới Z01.

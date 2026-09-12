@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState, type ReactElement } from 'react'
+import { parseCutSeconds } from '../../../shared/autoShortCutEditor'
 import type { AutoShortTemporalEdit } from '../../../shared/autoShortTemporalEdit'
 import { compileAutoShortCutPlan, MICROSECONDS_PER_SECOND, normalizeAutoShortTemporalEdit } from '../../../shared/autoShortTemporalEdit'
 
@@ -11,15 +12,16 @@ interface Props {
   onChange(edit: AutoShortTemporalEdit | undefined): void
 }
 
-const format = (seconds: number): string => Math.max(0, seconds).toFixed(6)
+const formatInput = (seconds: number): string => Math.max(0, seconds).toFixed(3)
+const formatDuration = (seconds: number): string => `${Math.max(0, seconds).toFixed(3)} giây`
 
 export default function AutoShortCutPanel({ edit, durationSeconds, currentTimeSeconds, disabled, onSeek, onChange }: Props): ReactElement {
-  const [start, setStart] = useState(() => format(currentTimeSeconds))
-  const [end, setEnd] = useState(() => format(currentTimeSeconds))
+  const [start, setStart] = useState(() => formatInput(currentTimeSeconds))
+  const [end, setEnd] = useState(() => formatInput(currentTimeSeconds))
   const [error, setError] = useState<string | null>(null)
   useEffect(() => {
-    setStart(format(currentTimeSeconds))
-    setEnd(format(currentTimeSeconds))
+    setStart(formatInput(currentTimeSeconds))
+    setEnd(formatInput(currentTimeSeconds))
     setError(null)
   }, [edit?.revision])
   const plan = useMemo(() => {
@@ -54,20 +56,40 @@ export default function AutoShortCutPanel({ edit, durationSeconds, currentTimeSe
     }
   }
 
+  const applyDraftRange = (): void => {
+    const parsedStart = parseCutSeconds(start)
+    const parsedEnd = parseCutSeconds(end)
+    if (!parsedStart.ok || !parsedEnd.ok) {
+      setError('Nhập thời gian bằng số giây, ví dụ 1.250.')
+      return
+    }
+    applyRange(parsedStart.seconds, parsedEnd.seconds)
+  }
+
   return (
     <div className="autoshort-cut-panel" aria-label="Cắt đoạn video">
       <div className="autoshort-cut-summary">
         <strong>Cắt đoạn</strong>
-        <span>{edit?.removedRanges.length || 0} đoạn bỏ{plan ? ` · ${format(durationSeconds)}s → ${format(plan.editedDurationUs / MICROSECONDS_PER_SECOND)}s` : ''}</span>
+        <span>{edit?.removedRanges.length || 0} đoạn bỏ{plan ? ` · Còn ${formatDuration(plan.editedDurationUs / MICROSECONDS_PER_SECOND)}` : ''}</span>
       </div>
       <div className="autoshort-cut-fields">
-        <label>Đầu (giây)<input value={start} disabled={disabled} inputMode="decimal" onChange={(event) => setStart(event.target.value)} /></label>
-        <button type="button" className="btn sm ghost" disabled={disabled} onClick={() => setStart(format(currentTimeSeconds))}>Đặt đầu</button>
-        <label>Cuối (giây)<input value={end} disabled={disabled} inputMode="decimal" onChange={(event) => setEnd(event.target.value)} /></label>
-        <button type="button" className="btn sm ghost" disabled={disabled} onClick={() => setEnd(format(currentTimeSeconds))}>Đặt cuối</button>
-        <button type="button" className="btn sm primary" disabled={disabled} onClick={() => applyRange(Number(start), Number(end))}>Bỏ đoạn</button>
-        <button type="button" className="btn sm ghost" disabled={disabled || currentTimeSeconds <= 0} onClick={() => applyRange(0, currentTimeSeconds)}>Bỏ trước</button>
-        <button type="button" className="btn sm ghost" disabled={disabled || currentTimeSeconds >= durationSeconds} onClick={() => applyRange(currentTimeSeconds, durationSeconds)}>Bỏ sau</button>
+        <div className="autoshort-cut-field">
+          <label htmlFor="autoshort-cut-start">Từ</label>
+          <input id="autoshort-cut-start" aria-label="Thời điểm bắt đầu cắt" value={start} disabled={disabled} inputMode="decimal" onChange={(event) => setStart(event.target.value)} />
+          <span>giây</span>
+          <button type="button" className="btn sm ghost" disabled={disabled} onClick={() => setStart(formatInput(currentTimeSeconds))}>Lấy vị trí</button>
+        </div>
+        <div className="autoshort-cut-field">
+          <label htmlFor="autoshort-cut-end">Đến</label>
+          <input id="autoshort-cut-end" aria-label="Thời điểm kết thúc cắt" value={end} disabled={disabled} inputMode="decimal" onChange={(event) => setEnd(event.target.value)} />
+          <span>giây</span>
+          <button type="button" className="btn sm ghost" disabled={disabled} onClick={() => setEnd(formatInput(currentTimeSeconds))}>Lấy vị trí</button>
+        </div>
+        <div className="autoshort-cut-actions">
+          <button type="button" className="btn sm primary" disabled={disabled} onClick={applyDraftRange}>Bỏ đoạn đã chọn</button>
+          <button type="button" className="btn sm ghost" disabled={disabled || currentTimeSeconds <= 0} onClick={() => applyRange(0, currentTimeSeconds)}>Bỏ từ đầu</button>
+          <button type="button" className="btn sm ghost" disabled={disabled || currentTimeSeconds >= durationSeconds} onClick={() => applyRange(currentTimeSeconds, durationSeconds)}>Bỏ đến cuối</button>
+        </div>
       </div>
       {error && <div className="autoshort-cut-error" role="alert">{error}</div>}
       {edit && edit.removedRanges.length > 0 && (
@@ -75,7 +97,7 @@ export default function AutoShortCutPanel({ edit, durationSeconds, currentTimeSe
           {edit.removedRanges.map((range) => (
             <div key={range.id}>
               <button type="button" className="autoshort-cut-range" onClick={() => onSeek(range.startUs / MICROSECONDS_PER_SECOND)}>
-                {format(range.startUs / MICROSECONDS_PER_SECOND)}s – {format(range.endUs / MICROSECONDS_PER_SECOND)}s
+                {formatInput(range.startUs / MICROSECONDS_PER_SECOND)}s – {formatInput(range.endUs / MICROSECONDS_PER_SECOND)}s
               </button>
               <button type="button" className="btn sm ghost" disabled={disabled} onClick={() => {
                 const remaining = edit.removedRanges.filter((item) => item.id !== range.id)

@@ -1304,7 +1304,7 @@ export default function AutoShort(): JSX.Element {
         {/* ========================================================================= */}
         <section
           ref={previewPanelRef}
-          className="editor-canvas-panel"
+          className={`editor-canvas-panel${showCutPanel && selectedTask ? ' has-cut-panel' : ''}`}
           onDragOver={(e) => e.preventDefault()}
           onDrop={handleDrop}
         >
@@ -1369,22 +1369,6 @@ export default function AutoShort(): JSX.Element {
               )}
             </div>
           </div>
-
-          {showCutPanel && selectedTask && (
-            <AutoShortCutPanel
-              key={selectedTask.id}
-              edit={selectedTask.temporalEdit}
-              durationSeconds={videoDuration}
-              currentTimeSeconds={currentTime}
-              disabled={isRunning}
-              onSeek={transport.seekTo}
-              onChange={(temporalEdit) => setTasks((current) => current.map((task) => task.id === selectedTask.id
-                ? { ...task, temporalEdit, currentStepMessage: temporalEdit?.removedRanges.length
-                  ? `Đã chọn bỏ ${temporalEdit.removedRanges.length} đoạn`
-                  : 'Sẵn sàng' }
-                : task))}
-            />
-          )}
 
           {/* Sân khấu video + Bounding box RegionBox */}
           <div ref={stageShellRef} className="editor-stage-shell">
@@ -1555,6 +1539,25 @@ export default function AutoShort(): JSX.Element {
               </button>
             </div>
           </div>
+
+          {showCutPanel && selectedTask && (
+            <AutoShortCutPanel
+              key={selectedTask.id}
+              edit={selectedTask.temporalEdit}
+              durationSeconds={videoDuration}
+              currentTimeSeconds={currentTime}
+              disabled={isRunning}
+              onSeek={transport.seekTo}
+              onChange={(temporalEdit) => {
+                setResumeSnapshot(null)
+                setTasks((current) => current.map((task) => task.id === selectedTask.id
+                  ? { ...task, temporalEdit, currentStepMessage: temporalEdit?.removedRanges.length
+                    ? `Đã chọn bỏ ${temporalEdit.removedRanges.length} đoạn`
+                    : 'Sẵn sàng' }
+                  : task))
+              }}
+            />
+          )}
         </section>
 
         {/* ========================================================================= */}
