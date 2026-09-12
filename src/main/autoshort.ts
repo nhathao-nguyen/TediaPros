@@ -107,6 +107,11 @@ import {
   requestHasTemporalCut
 } from './autoShortCutCapability'
 import { itemCutConfigDigest, matchesAutoShortItemConfigDigest } from './autoShortCutIdentity'
+import { semanticFrameEditDigest } from './autoShortCutIdentity'
+import { probeAutoShortFrameIndex, upgradeLegacyTemporalEdit } from './autoShortFrameIndex'
+import { compileFrameCutPlan } from '../shared/autoShortCutPlan'
+import { cutAutoShortSourceByFramePlan } from './autoShortCutMedia'
+import { validatePreparedCut } from './autoShortCutValidation'
 import {
   isSafeBatchId,
   recoverInterruptedBatch,
@@ -3537,26 +3542,72 @@ export async function runAutoShortSttnPreview(
 ): Promise<{ outputPath: string; provider: 'cuda' | 'cpu'; elapsedMs: number }> {
   if (!raw || typeof raw !== 'object' || Array.isArray(raw)) throw new Error('Yêu cầu xem thử STTN không hợp lệ.')
   const request = raw as Record<string, unknown>
-  if (Object.keys(request).some(key => !['videoPath', 'config', 'previewSeconds'].includes(key))) throw new Error('Yêu cầu xem thử chứa tham số không được phép.')
+  if (Object.keys(request).some(key => !['videoPath', 'config', 'previewSeconds', 'temporalEdit'].includes(key))) throw new Error('Yêu cầu xem thử chứa tham số không được phép.')
   const seconds = request.previewSeconds ?? 5
   if (typeof seconds !== 'number' || !Number.isFinite(seconds) || seconds <= 0 || seconds > 10) throw new Error('Xem thử STTN chỉ hỗ trợ tối đa 10 giây.')
   if (!request.config || typeof request.config !== 'object' || Array.isArray(request.config)) throw new Error('Cấu hình xem thử không hợp lệ.')
   const validated = validateAutoShortStartRequest({
     config: { ...request.config, outputDir: workDir },
-    items: [{ id: 'sttn-preview', filePath: request.videoPath }]
+    items: [{ id: 'sttn-preview', filePath: request.videoPath, ...(request.temporalEdit ? { temporalEdit: request.temporalEdit } : {}) }]
   })
   if (!validated.ok) throw new Error(validated.error)
   const { config } = validated.value
   if (!isSttnRemoval(config)) throw new Error('Hãy bật chế độ xóa chữ STTN trước khi xem thử.')
   throwIfAborted(signal)
-  const videoPath = validated.value.items[0].filePath
-  if (!(await stat(videoPath)).isFile()) throw new Error('Video xem thử không hợp lệ.')
+  const sourcePath = validated.value.items[0].filePath
+  if (!(await stat(sourcePath)).isFile()) throw new Error('Video xem thử không hợp lệ.')
   const ffmpeg = await (hooks.resolveFfmpeg || resolveFfmpeg)()
   const ffprobe = await (hooks.resolveFfprobe || resolveFfprobe)()
   if (!ffmpeg || !ffprobe) throw new Error('Cần FFmpeg/FFprobe để xem thử STTN.')
   const media = hooks.runMedia || runSttnPreviewMedia
   const resourceManager = hooks.resourceManager || getGlobalResourceManager()
   await mkdir(workDir, { recursive: true })
+  let videoPath = sourcePath
+  const temporalEdit = validated.value.items[0].temporalEdit
+  if (temporalEdit?.removedRanges.length) {
+    onProgress({ percent: 0, message: 'Đang dựng bản xem thử theo các đoạn đã cắt…' })
+    const sourceDigest = await hashFileSha256(sourcePath, signal)
+    const sourceMeta = await (hooks.probeMedia || probeBurnMedia)(sourcePath)
+    const frameIndex = await probeAutoShortFrameIndex({
+      ffprobePath: ffprobe,
+      sourcePath,
+      itemId: 'sttn-preview',
+      expectedSourceDigest: sourceDigest,
+      signal
+    })
+    const exactEdit = temporalEdit.schemaVersion === 1
+      ? upgradeLegacyTemporalEdit(temporalEdit, frameIndex)
+      : temporalEdit
+    const plan = compileFrameCutPlan({
+      edit: exactEdit,
+      index: frameIndex,
+      identity: {
+        sourceDigest,
+        editDigest: semanticFrameEditDigest(exactEdit),
+        executorRevision: 'cut-executor-v2',
+        runtimeDigest: await hashFileSha256(ffmpeg, signal),
+        mediaPolicyDigest: createHash('sha256').update('ffv1-source-pixfmt_pcm-source-format_graph-file-v1').digest('hex')
+      }
+    })
+    const cut = await cutAutoShortSourceByFramePlan({
+      ffmpeg,
+      sourcePath,
+      workDir,
+      plan,
+      hasAudio: sourceMeta.hasAudio,
+      signal
+    })
+    const validation = await validatePreparedCut({
+      ffmpegPath: ffmpeg,
+      ffprobePath: ffprobe,
+      sourcePath,
+      preparedPath: cut.path,
+      plan,
+      signal
+    })
+    if (!validation.ok) throw new Error(`${validation.code}: ${validation.details}`)
+    videoPath = cut.path
+  }
   const sourceClip = join(workDir, 'source-preview.mkv')
   const cleanedPath = join(workDir, 'cleaned-preview.mkv')
   const outputPath = join(workDir, 'preview.mp4')
@@ -3589,7 +3640,7 @@ export async function runAutoShortSttnPreview(
   await media(ffmpeg, ['-i', result.outputPath, '-map', '0:v:0', '-map', '0:a:0?', '-c:v', 'libx264', '-preset', 'fast', '-crf', '18', '-vf', 'pad=ceil(iw/2)*2:ceil(ih/2)*2', '-pix_fmt', 'yuv420p', '-fps_mode', 'passthrough', '-c:a', 'aac', '-movflags', '+faststart', outputPath], signal)
   throwIfAborted(signal)
   if (!(await stat(outputPath)).size) throw new Error('Video xem thử STTN trống.')
-  await Promise.all([sourceClip, cleanedPath, ocrDir].map(path => rm(path, { recursive: true, force: true })))
+  await Promise.all([sourceClip, cleanedPath, ocrDir, ...(videoPath === sourcePath ? [] : [videoPath])].map(path => rm(path, { recursive: true, force: true })))
   onProgress({ percent: 100, message: `Xem thử STTN hoàn tất (${result.provider.toUpperCase()}).` })
   return { ...result, outputPath }
 }

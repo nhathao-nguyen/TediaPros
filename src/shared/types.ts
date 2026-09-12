@@ -1065,6 +1065,7 @@ export interface AutoShortSttnPreviewRequest {
   videoPath: string
   config: AutoShortConfig
   previewSeconds?: number
+  temporalEdit?: import('./autoShortTemporalEdit').AutoShortTemporalEdit | import('./autoShortCutContract').AutoShortTemporalEditV2
 }
 
 export type AutoShortSttnPreviewResult =

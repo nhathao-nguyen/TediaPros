@@ -1238,6 +1238,7 @@ export default function AutoShort(): JSX.Element {
       const result = await window.api.autoShortSttnPreview({
         videoPath: videoPathSnapshot,
         previewSeconds: 5,
+        ...(selectedTask.temporalEdit ? { temporalEdit: selectedTask.temporalEdit } : {}),
         config: {
           subtitleMethod: 'ocr', whisperModel: selectedWhisperModel, whisperDevice,
           lamMo: true, blurMode: 'sttn', ocrBlurProfile: 'accurate', blurRegions: [],

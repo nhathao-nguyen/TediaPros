@@ -113,7 +113,7 @@ export default function AutoShortCutPanel({ edit, durationSeconds, currentTimeSe
       <header className="autoshort-cut-summary">
         <div>
           <strong>Cắt theo thời gian</strong>
-          <span className="autoshort-cut-hint">Vùng đỏ sẽ bị bỏ khỏi toàn bộ workflow AutoShort.</span>
+          <span className="autoshort-cut-hint">Vùng đỏ sẽ bị bỏ; mốc được căn tới frame hợp lệ khi bắt đầu xử lý.</span>
         </div>
         <div className="autoshort-cut-stats" aria-label="Tóm tắt bản cắt">
           <span><b>{edit?.removedRanges.length || 0}</b> đoạn</span>
@@ -167,7 +167,7 @@ export default function AutoShortCutPanel({ edit, durationSeconds, currentTimeSe
         <button type="button" className="btn sm ghost" disabled={disabled || future.length === 0} onClick={redo}>Làm lại</button>
         <label className="autoshort-cut-preview-toggle">
           <input type="checkbox" checked={previewCuts} disabled={disabled} onChange={(event) => setPreviewCuts(event.target.checked)} />
-          Bỏ qua vùng cắt khi xem
+          Xem nhanh, bỏ qua vùng cắt
         </label>
       </div>
 

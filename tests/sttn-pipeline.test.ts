@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict'
 import test from 'node:test'
+import { spawnSync } from 'node:child_process'
 import { mkdir, mkdtemp, readFile, readdir, rm, writeFile } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { dirname, join } from 'node:path'
@@ -195,6 +196,71 @@ test('STTN preview bounds source before OCR, uses accurate ROI, and produces pla
     assert.ok(result.outputPath.endsWith('.mp4'))
     assert.equal(await readFile(result.outputPath, 'utf8'), 'media')
   } finally { await rm(root, { recursive: true, force: true }) }
+})
+
+const previewFfmpegPath = process.env.TEDIAPROS_TEST_FFMPEG
+
+test('STTN preview prepares and validates the same exact-frame cut before OCR', { skip: previewFfmpegPath ? false : 'TEDIAPROS_TEST_FFMPEG is not set' }, async () => {
+  const root = await mkdtemp(join(tmpdir(), 'tedia-sttn-cut-preview-'))
+  try {
+    const videoPath = join(root, 'input.mkv')
+    const ffprobePath = join(dirname(previewFfmpegPath!), process.platform === 'win32' ? 'ffprobe.exe' : 'ffprobe')
+    const generated = spawnSync(previewFfmpegPath!, [
+      '-y', '-hide_banner', '-loglevel', 'error',
+      '-f', 'lavfi', '-i', 'testsrc2=size=64x64:rate=25:duration=6',
+      '-f', 'lavfi', '-i', 'sine=frequency=800:sample_rate=48000:duration=6',
+      '-map', '0:v', '-map', '1:a', '-c:v', 'ffv1', '-c:a', 'pcm_s16le', videoPath
+    ], { windowsHide: true, encoding: 'utf8' })
+    assert.equal(generated.status, 0, generated.stderr)
+    let ocrInput = ''
+    const result = await runAutoShortSttnPreview({
+      videoPath,
+      previewSeconds: 4,
+      temporalEdit: {
+        schemaVersion: 1, revision: 1, mode: 'ripple-delete',
+        removedRanges: [{ id: 'middle', startUs: 2_000_000, endUs: 4_000_000 }]
+      },
+      config: config('')
+    }, join(root, 'work'), new AbortController().signal, () => {}, {
+      resolveFfmpeg: async () => previewFfmpegPath!,
+      resolveFfprobe: async () => ffprobePath,
+      probeMedia: async (path) => ({
+        w: 64, h: 64, giay: path.includes('input.mkv') ? 6 : 4, hasAudio: true,
+        videoDurationSeconds: path.includes('input.mkv') ? 6 : 4,
+        containerDurationSeconds: path.includes('input.mkv') ? 6 : 4,
+        frameRate: 25,
+        geometry: { ...geometry, codedWidth: 64, codedHeight: 64, displayWidth: 64, displayHeight: 64 }
+      }),
+      runMedia: async (_exe, args) => {
+        const output = args.at(-1)!
+        if (output.endsWith('.mp4')) {
+          await writeFile(output, 'preview')
+          return
+        }
+        const input = args[args.indexOf('-i') + 1]
+        assert.match(input, /source-after-cut\.mkv$/u)
+        const probe = spawnSync(ffprobePath, [
+          '-v', 'error', '-count_frames', '-select_streams', 'v:0',
+          '-show_entries', 'stream=nb_read_frames', '-of', 'default=nw=1:nk=1', input
+        ], { windowsHide: true, encoding: 'utf8' })
+        assert.equal(probe.status, 0, probe.stderr)
+        assert.equal(Number(probe.stdout.trim()), 100)
+        await writeFile(output, 'bounded-cut-preview')
+      },
+      runVisualOcr: async options => {
+        ocrInput = options.input
+        return { timeline, sourceSrtPath: '', sidecarPath: '', engineVersion: '1.1.0', engineProtocol: 'ocr-local/1', visualSegmentCount: 1, boxSegmentCount: 1 }
+      },
+      removeSubtitles: async options => {
+        await writeFile(options.outputPath, 'cleaned')
+        return { outputPath: options.outputPath, provider: 'cpu', elapsedMs: 5 }
+      }
+    })
+    assert.equal(ocrInput, join(root, 'work', 'source-preview.mkv'))
+    assert.equal(await readFile(result.outputPath, 'utf8'), 'preview')
+  } finally {
+    await rm(root, { recursive: true, force: true })
+  }
 })
 
 test('STTN preview rejects untrusted executable paths and overlong ranges before launching', async () => {
