@@ -81,3 +81,63 @@ test('coordinator validates and sends only prepared cut media to ASR and render'
     await rm(root, { recursive: true, force: true })
   }
 })
+
+test('coordinator stops before render when a recognition cue crosses a cut join', { skip: ffmpegPath ? false : 'TEDIAPROS_TEST_FFMPEG is not set' }, async () => {
+  const root = await mkdtemp(join(tmpdir(), 'tedia-cut-seam-'))
+  const sourcePath = join(root, 'source.mkv')
+  const ffprobePath = join(dirname(ffmpegPath!), process.platform === 'win32' ? 'ffprobe.exe' : 'ffprobe')
+  const outputDir = join(root, 'out')
+  await mkdir(outputDir)
+  try {
+    const generated = spawnSync(ffmpegPath!, [
+      '-y', '-hide_banner', '-loglevel', 'error',
+      '-f', 'lavfi', '-i', 'testsrc2=size=64x64:rate=25:duration=6',
+      '-f', 'lavfi', '-i', 'sine=frequency=800:sample_rate=48000:duration=6',
+      '-map', '0:v', '-map', '1:a', '-c:v', 'ffv1', '-c:a', 'pcm_s16le', sourcePath
+    ], { windowsHide: true, encoding: 'utf8' })
+    assert.equal(generated.status, 0, generated.stderr)
+
+    let renderCalled = false
+    const deps: AutoShortItemCoordinatorDeps = {
+      resolveFfmpeg: async () => ffmpegPath!,
+      resolveFfprobe: async () => ffprobePath,
+      probeMedia: async (path: string): Promise<Meta> => ({
+        w: 64, h: 64, giay: path.includes('source-after-cut') ? 4 : 6, hasAudio: true,
+        videoDurationSeconds: path.includes('source-after-cut') ? 4 : 6,
+        containerDurationSeconds: path.includes('source-after-cut') ? 4 : 6,
+        frameRate: 25
+      }),
+      transcribeAudio: (async (_jobId: string, request: { outputDir: string }) => {
+        const srt = join(request.outputDir, 'source.srt')
+        await writeFile(srt, '1\n00:00:01,800 --> 00:00:02,200\nSpeech crosses the join\n', 'utf8')
+        return { ok: true, outputs: [srt], language: 'en' }
+      }) as AutoShortItemCoordinatorDeps['transcribeAudio'],
+      runVisualOcr: (async () => { throw new Error('visual OCR should not run') }) as AutoShortItemCoordinatorDeps['runVisualOcr'],
+      writeTimedMask: (async () => { throw new Error('mask should not run') }) as AutoShortItemCoordinatorDeps['writeTimedMask'],
+      burn: (async () => {
+        renderCalled = true
+        throw new Error('render should not run')
+      }) as AutoShortItemCoordinatorDeps['burn']
+    }
+    const config: AutoShortConfig = {
+      subtitleMethod: 'whisper', whisperModel: 'base', whisperDevice: 'cpu',
+      blurRegions: [], lamMo: false, blurMode: 'manual', translateTarget: 'none', translateProvider: 'local',
+      ttsEnabled: false, voiceOverMode: false, audioMode: 'replace', originalAudioVolume: 20, outputDir
+    }
+    const item = {
+      id: 'seam-item', filePath: sourcePath,
+      temporalEdit: { schemaVersion: 1 as const, revision: 1, mode: 'ripple-delete' as const, removedRanges: [{ id: 'middle', startUs: 2_000_000, endUs: 4_000_000 }] }
+    }
+    const result = await createAutoShortItemProcessor(deps)({
+      jobId: 'seam-job', request: { config, items: [item] }, item, index: 0, total: 1,
+      signal: new AbortController().signal, emit: () => {},
+      checkpointDir: join(root, 'checkpoint'), workDir: join(root, 'work'), artifactDir: join(root, 'audit'),
+      itemOutputDir: outputDir, separationProviderState: { mode: 'auto' }
+    })
+    assert.equal(result.status, 'error')
+    assert.match(result.error || '', /CUT_SEAM_REVIEW_REQUIRED/u)
+    assert.equal(renderCalled, false)
+  } finally {
+    await rm(root, { recursive: true, force: true })
+  }
+})

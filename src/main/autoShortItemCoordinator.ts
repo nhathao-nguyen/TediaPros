@@ -99,8 +99,10 @@ import { TRANSLATION_PARSER_VERSION, TRANSLATION_PROMPT_VERSION } from './transl
 import { cutAutoShortSourceByFramePlan } from './autoShortCutMedia'
 import { probeAutoShortFrameIndex, upgradeLegacyTemporalEdit } from './autoShortFrameIndex'
 import { compileFrameCutPlan, cutTimeToDecimal } from '../shared/autoShortCutPlan'
+import type { CutExecutionPlan } from '../shared/autoShortCutPlan'
 import { semanticFrameEditDigest, semanticTemporalSourceDigest } from './autoShortCutIdentity'
 import { validatePreparedCut } from './autoShortCutValidation'
+import { findCutSeamCueIssues } from '../shared/autoShortCutCues'
 import { assessTranslationLanguage, normalizeTranslationLocale } from './translation/language'
 import { mapTranslationsStrict } from './translation/response'
 import { createInvalidSourceAssessment } from './translation/orchestrator'
@@ -584,6 +586,7 @@ export function createAutoShortItemProcessor(
       let processingDigest = sourceDigest
       let processingMeta = meta
       let processingGeometry = geometry
+      let cutExecutionPlan: CutExecutionPlan | undefined
       if (item.temporalEdit?.removedRanges.length) {
         emitProgress(context, 'extracting_sub', 2, 'Đang chuẩn bị video theo các đoạn đã cắt…')
         const cut = await telemetry.withStageSpan('metadata', {}, async (span) => {
@@ -632,6 +635,7 @@ export function createAutoShortItemProcessor(
           return { ...result, temporalEdit, validation }
         })
         processingPath = cut.path
+        cutExecutionPlan = cut.plan
         processingDigest = semanticTemporalSourceDigest(sourceDigest, cut.temporalEdit)
         processingMeta = await (deps.probeMedia || probeBurnMedia)(processingPath)
         if (!(processingMeta.giay > 0) || !(processingMeta.w > 0) || !(processingMeta.h > 0)) {
@@ -1071,6 +1075,14 @@ export function createAutoShortItemProcessor(
         checkpoint.sourceCues = boundedExtracted
         checkpoint.detectedSourceLanguage = detectedSourceLanguage
         await saveCheckpoint()
+      }
+
+      if (cutExecutionPlan) {
+        const seamIssues = findCutSeamCueIssues(sourceCues, cutExecutionPlan)
+        if (seamIssues.length > 0) {
+          const first = seamIssues[0]
+          throw new Error(`CUT_SEAM_REVIEW_REQUIRED: Câu ${first.cueId} đi qua mối cắt tại ${first.editedAtSeconds.toFixed(3)} giây. Hãy điều chỉnh điểm cắt vào khoảng lặng hoặc biên câu.`)
+        }
       }
 
       // Whisper supplies the source evidence needed by translation.  Start
