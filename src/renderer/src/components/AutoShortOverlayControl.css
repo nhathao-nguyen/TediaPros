@@ -1,0 +1,26 @@
+.autoshort-overlay-panel {
+  position: fixed;
+  z-index: 40;
+  right: 24px;
+  top: 110px;
+  width: min(360px, calc(100vw - 32px));
+  max-height: calc(100vh - 140px);
+  overflow-y: auto;
+  background: var(--panel-2);
+  color: var(--text);
+  border: 1px solid var(--control-border);
+  border-radius: 10px;
+  box-shadow: 0 14px 40px rgb(0 0 0 / 35%);
+  padding: 14px;
+}
+.autoshort-overlay-heading { display: flex; justify-content: space-between; align-items: center; }
+.autoshort-overlay-panel fieldset { border: 1px solid var(--control-border); border-radius: 8px; padding: 10px; margin: 12px 0; min-width: 0; }
+.autoshort-overlay-panel legend { padding: 0 5px; }
+.autoshort-overlay-slider { display: grid; grid-template-columns: 80px minmax(0, 1fr) 40px; gap: 8px; align-items: center; margin: 9px 0; font-size: 12px; }
+.autoshort-overlay-slider input { width: 100%; min-width: 0; }
+.autoshort-overlay-text { display: grid; gap: 5px; margin-top: 10px; }
+.autoshort-overlay-text input { width: 100%; min-width: 0; }
+.autoshort-overlay-filename { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; margin-top: 6px; }
+.autoshort-overlay-preview { position: absolute; inset: 0; pointer-events: none; overflow: hidden; z-index: 5; }
+.autoshort-overlay-preview img { position: absolute; display: block; max-width: none; }
+.autoshort-overlay-preview span { position: absolute; white-space: pre; font-weight: 400; line-height: 1.4; }

@@ -4,6 +4,9 @@ import { mkdir, copyFile, readFile, writeFile, stat, rm, rename } from 'node:fs/
 import { tmpdir } from 'node:os'
 import { resolveFfmpeg } from './deps'
 import { appendPortraitFrame } from './portraitFrame'
+import { portraitFrame } from '../shared/portraitFrame'
+import type { AutoShortOverlays } from '../shared/autoShortOverlays'
+import { appendAutoShortOverlays, prepareAutoShortOverlays, type PreparedAutoShortOverlays } from './autoShortOverlays'
 import {
   escapeFfmpegFilterPath,
   readBurnFontPreview,
@@ -748,14 +751,15 @@ export function taoFilterComplex(
   audioVolume = 100,
   fontsDir: string | null = null,
   portraitBlur = false,
-  videoAdjustments = normalizeVideoAdjustments(undefined)
+  videoAdjustments = normalizeVideoAdjustments(undefined),
+  overlays?: PreparedAutoShortOverlays
 ): string[] {
   const sigma = blurSigmaForDisplayHeight(meta.h)
   const validRegions = lamMo ? regions.filter((r) => r.x1 > r.x0 && r.y1 > r.y0) : []
   const lines: string[] = []
   const canonicalFilter = canonicalDisplayVideoFilter(meta)
   const videoAdjustmentActive = hasVideoAdjustments(videoAdjustments)
-  const hasVideoFilters = validRegions.length > 0 || coAss || Boolean(canonicalFilter) || portraitBlur || videoAdjustmentActive
+  const hasVideoFilters = validRegions.length > 0 || coAss || Boolean(canonicalFilter) || portraitBlur || videoAdjustmentActive || Boolean(overlays)
   let videoInput = '0:v'
   if (canonicalFilter) {
     lines.push(`[0:v]${canonicalFilter}[display]`)
@@ -771,6 +775,8 @@ export function taoFilterComplex(
     if (adjustmentFilter) lines.push(`[${input}]${adjustmentFilter}[adjusted]`)
     if (portraitBlur) appendPortraitFrame(lines, adjustedInput, meta.w, meta.h, coAss ? assFilter : undefined)
     else lines.push(`[${adjustedInput}]${coAss ? assFilter : 'null'}[out]`)
+    const canvas = portraitBlur ? portraitFrame(meta.w, meta.h) : { width: meta.w, height: meta.h }
+    appendAutoShortOverlays(lines, canvas.width, canvas.height, overlays)
   }
 
   if (hasVideoFilters) {
@@ -853,7 +859,8 @@ export function taoFilterComplexAutomatic(
   audioVolume = 100,
   fontsDir: string | null = null,
   portraitBlur = false,
-  videoAdjustments = normalizeVideoAdjustments(undefined)
+  videoAdjustments = normalizeVideoAdjustments(undefined),
+  overlays?: PreparedAutoShortOverlays
 ): string[] {
   if (plan.maskVideoIndex == null) {
     throw new Error('Cần có mask index cho automatic filter complex.')
@@ -899,6 +906,8 @@ export function taoFilterComplexAutomatic(
     lines.push(`[${adjustedInput}]null[out]`)
   }
 
+  const canvas = portraitBlur ? portraitFrame(meta.w, meta.h) : { width: meta.w, height: meta.h }
+  appendAutoShortOverlays(lines, canvas.width, canvas.height, overlays)
   const audio = buildAudioFilter(meta, plan.narrationAudioIndex, batAmThanh, audioVolume)
   if (audio.filter) {
     lines.push(audio.filter)
@@ -993,6 +1002,7 @@ function burnOutputName(req: BurnReq): string {
 }
 
 export interface RunBurnSubtitleLowerOptions {
+  overlays?: AutoShortOverlays
   outputPath: string
   plan: BurnInputPlan
   timedMask?: TimedOcrBlurMask | null
@@ -1019,7 +1029,7 @@ export async function runBurnSubtitleLower(
   const hasTimedMask = Boolean(options.timedMask)
   const hasAudioFile = Boolean(req.batAmThanh && req.amThanhFile)
 
-  if (!hasSrt && !hasBlur && !hasTimedMask && !req.batAmThanh && !req.portraitBlur && !hasVideoAdjustments(req.videoAdjustments)) {
+  if (!hasSrt && !hasBlur && !hasTimedMask && !req.batAmThanh && !req.portraitBlur && !hasVideoAdjustments(req.videoAdjustments) && !options.overlays) {
     return { ok: false, error: 'Vui lòng chọn ít nhất 1 vùng làm mờ, tải lên tệp phụ đề hoặc bật cấu hình âm thanh.' }
   }
 
@@ -1029,6 +1039,7 @@ export async function runBurnSubtitleLower(
   const srtTam = join(tam, `sub-${randomUUID()}.srt`)
   const duongAss = join(tam, `sub-${randomUUID()}.ass`)
   const assBaseName = basename(duongAss)
+  const overlayFiles: string[] = []
 
   if (hasSrt && req.srt) {
     await copyFile(req.srt, srtTam)
@@ -1097,6 +1108,12 @@ export async function runBurnSubtitleLower(
       }
     }
 
+    const canvas = req.portraitBlur ? portraitFrame(meta.w, meta.h) : { width: meta.w, height: meta.h }
+    const overlays = await prepareAutoShortOverlays(options.overlays, {
+      workDir: tam, ...canvas, duration: meta.videoDurationSeconds ?? meta.videoDuration ?? meta.giay,
+      nextInputIndex: 1 + Number(options.plan.narrationAudioIndex != null) + Number(options.plan.maskVideoIndex != null),
+      fontId: req.fontId
+    }, overlayFiles)
     let filterArgs: string[] = []
     if (hasTimedMask) {
       filterArgs = taoFilterComplexAutomatic(
@@ -1108,7 +1125,8 @@ export async function runBurnSubtitleLower(
         req.amLuongGoc ?? 100,
         fontsDir,
         req.portraitBlur === true,
-        req.videoAdjustments
+        req.videoAdjustments,
+        overlays
       )
     } else {
       filterArgs = taoFilterComplex(
@@ -1122,7 +1140,8 @@ export async function runBurnSubtitleLower(
         req.amLuongGoc ?? 100,
         fontsDir,
         req.portraitBlur === true,
-        req.videoAdjustments
+        req.videoAdjustments,
+        overlays
       )
     }
 
@@ -1145,6 +1164,8 @@ export async function runBurnSubtitleLower(
       if (daHuy || options.signal?.aborted) break
 
       const inputArgs = ['-y', ...options.plan.inputArgs]
+      // A single decoded still frame is repeated by overlay; the source ends the stream.
+      if (overlays?.image) inputArgs.push('-i', overlays.image.path)
       const dungFilterAudio = req.batAmThanh && (meta.hasAudio || hasAudioFile)
       const audioCodecArgs = dungFilterAudio ? ['-c:a', 'aac'] : ['-c:a', 'copy']
 
@@ -1183,6 +1204,7 @@ export async function runBurnSubtitleLower(
     logInfo(`Dịch màn hình: FFmpeg ${lastEncoder || 'render'} thất bại${exitCode} — ${diagnostic}.`)
     return { ok: false, error: `FFmpeg xuất video thất bại${exitCode}: ${diagnostic}.`, encoderAttempts }
   } finally {
+    for (const path of overlayFiles) await rm(path, { force: true }).catch(() => {})
     if (hasSrt) {
       await rm(srtTam, { force: true }).catch(() => {})
       await rm(duongAss, { force: true }).catch(() => {})
@@ -1461,6 +1483,7 @@ export async function validateRenderedMedia(
 }
 
 export interface AutoShortBurnExecutionOptions {
+  overlays?: AutoShortOverlays
   timedOcrBlurMask?: TimedOcrBlurMask | null
   ffmpegPath: string
   ffprobePath: string
@@ -1590,6 +1613,7 @@ export async function burnAutoShort(
       {
         outputPath: partialPath,
         plan,
+        overlays: options.overlays,
         timedMask: options.timedOcrBlurMask,
         ffmpegPath: options.ffmpegPath,
         ffprobePath: options.ffprobePath,

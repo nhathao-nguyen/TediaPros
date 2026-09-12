@@ -127,6 +127,7 @@ sequenceDiagram
 ## 3. Ranh Giới Module & Trách Nhiệm Chi Tiết
 
 ### 3.1. `src/renderer/` (Frontend React 19)
+- **Ảnh/chữ AutoShort:** nút `Ảnh / Chữ` và preview dùng cấu hình normalized trên khung đầu ra. Coordinator chuyển `overlays` vào render; `autoShortOverlays.ts` ghép ảnh/ASS sau xử lý nguồn và khung 9:16, trong cùng lượt FFmpeg. Xem [Ảnh/chữ xuyên suốt](autoshort-overlays.md).
 - **Trách nhiệm:** Trình diễn giao diện, nhận input từ người dùng, hiển thị tiến độ và logs thời gian thực.
 - **Ranh giới:** Tuyệt đối không gọi trực tiếp API Node.js (`fs`, `child_process`, `path`). Mọi tương tác với hệ thống phải qua `window.api` (preload bridge).
 

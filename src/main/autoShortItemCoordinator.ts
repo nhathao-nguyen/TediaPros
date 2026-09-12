@@ -1644,6 +1644,7 @@ export function createAutoShortItemProcessor(
             },
             {
               timedOcrBlurMask: timedMask,
+              overlays: config.overlays,
               ffmpegPath: ffmpeg,
               ffprobePath: ffprobe,
               finalOutputPath,

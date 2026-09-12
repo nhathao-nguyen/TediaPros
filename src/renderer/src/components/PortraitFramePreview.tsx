@@ -22,7 +22,7 @@ export function PortraitBlurButton({ enabled, disabled, onChange }: {
 }
 
 /** Paint the same decoded video frame; no second player, audio or playback clock. */
-export function PortraitFramePreview({ enabled, videoRef, source, videoWidth, videoHeight, width, height, adjustments, children }: {
+export function PortraitFramePreview({ enabled, videoRef, source, videoWidth, videoHeight, width, height, adjustments, children, overlay }: {
   enabled: boolean
   videoRef: RefObject<HTMLVideoElement | null>
   source: string | null
@@ -32,6 +32,7 @@ export function PortraitFramePreview({ enabled, videoRef, source, videoWidth, vi
   height: number
   adjustments?: VideoAdjustments
   children: ReactNode
+  overlay?: ReactNode
 }) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const frame = videoWidth > 0 && videoHeight > 0 ? portraitFrame(videoWidth, videoHeight) : null
@@ -99,6 +100,7 @@ export function PortraitFramePreview({ enabled, videoRef, source, videoWidth, vi
       } : { inset: 0 }} data-video-adjustments>
         {children}
       </div>
+      {overlay}
     </div>
   )
 }

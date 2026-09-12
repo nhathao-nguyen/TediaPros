@@ -1,5 +1,8 @@
 import { app, shell, BrowserWindow, ipcMain, dialog, protocol } from 'electron'
-import { basename, extname, join } from 'node:path'
+import { readAutoShortOverlayImage } from './autoShortOverlays'
+import { assertContainedRegularFile } from './safeContainedPath'
+import type { AutoShortOverlayImageResult } from '../shared/autoShortOverlays'
+import { basename, dirname, extname, join } from 'node:path'
 
 import { resolveAppRuntimeProfile } from './appProfile'
 
@@ -14,6 +17,9 @@ import { migrateLegacyUserData } from './appIdentity'
 
 // Kieu tep cho giao thuc tblao: — thieu Content-Type thi trinh phat doan mo, de sai.
 const KIEU_MEDIA: Record<string, string> = {
+  '.png': 'image/png',
+  '.jpg': 'image/jpeg',
+  '.jpeg': 'image/jpeg',
   '.mp4': 'video/mp4',
   '.webm': 'video/webm',
   '.mkv': 'video/x-matroska',
@@ -314,6 +320,10 @@ app.whenReady().then(async () => {
       const ext = extname(p).toLowerCase()
       const kieu = KIEU_MEDIA[ext]
       if (!kieu) return new Response('Forbidden media type', { status: 403 })
+      if (kieu.startsWith('image/')) {
+        if (p.split(/[\\/]/).includes('..')) return new Response('Forbidden image path', { status: 403 })
+        await assertContainedRegularFile(p, dirname(p), 'Ảnh xem trước')
+      }
       const fileStat = await stat(p).catch(() => null)
       if (!fileStat || !fileStat.isFile()) return new Response('File Not Found', { status: 404 })
       const co = fileStat.size
@@ -563,6 +573,22 @@ function registerIpc(): void {
     if (defaultDir && defaultDir.trim()) opts.defaultPath = defaultDir.trim()
     const res = await dialog.showOpenDialog(mainWindow, opts)
     return res.canceled || !res.filePaths.length ? null : res.filePaths[0]
+  })
+
+  // Chọn ảnh/logo chèn xuyên suốt AutoShort.
+  ipcMain.handle('autoshort:chooseOverlayImage', async (): Promise<AutoShortOverlayImageResult> => {
+    try {
+      if (!mainWindow) return { ok: true, asset: null }
+      const result = await dialog.showOpenDialog(mainWindow, {
+        title: 'Chọn ảnh chèn xuyên suốt video', properties: ['openFile'],
+        filters: [{ name: 'Ảnh PNG / JPG', extensions: ['png', 'jpg', 'jpeg'] }]
+      })
+      if (result.canceled || !result.filePaths[0]) return { ok: true, asset: null }
+      const { asset } = await readAutoShortOverlayImage(result.filePaths[0])
+      return { ok: true, asset }
+    } catch (error) {
+      return { ok: false, error: `Không thể chọn ảnh chèn: ${(error as Error).message}` }
+    }
   })
 
   // Chon 1 tep am thanh

@@ -72,6 +72,7 @@ import { getGlobalAutoShortDiskBudget, type DiskReservation } from './autoShortD
 import { AutoShortTelemetryJobBudget } from './autoShortTelemetry'
 import { resolveExecutionPolicy, CONSERVATIVE_POLICY, type AutoShortExecutionPolicy } from './autoShortExecutionPolicy'
 import { validateAutoShortStartRequest } from '../shared/autoShortContract'
+import { readAutoShortOverlayImage } from './autoShortOverlays'
 import {
   deriveCanonicalDisplayGeometry,
   normalizedRegionToDisplayPixels,
@@ -3170,6 +3171,8 @@ async function executeJob(job: AutoShortJob): Promise<AutoShortBatchResult> {
   try {
     job.telemetryBudget = new AutoShortTelemetryJobBudget()
     if (!job.batchSnapshot) await initializeBatchJournal(job)
+    const overlayImage = job.request.config.overlays?.image
+    if (overlayImage) await readAutoShortOverlayImage(overlayImage.path, overlayImage.sha256)
     await preflight(job)
     const policy = resolveExecutionPolicy(job.request.config?.executionPolicy)
     // Two-item execution remains an explicit experimental opt-in. When it is

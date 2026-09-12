@@ -902,6 +902,8 @@ export interface VideoAdjustments {
 }
 
 export interface AutoShortConfig {
+  /** Optional static image/text across the final output timeline. */
+  overlays?: import('./autoShortOverlays').AutoShortOverlays
   /** Optional for old saved configurations; absent means original frame. */
   portraitBlur?: boolean
   videoAdjustments?: VideoAdjustments

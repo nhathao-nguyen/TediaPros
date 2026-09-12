@@ -10,6 +10,7 @@ import type {
   SubtitleLayoutProfile
 } from './types'
 import { normalizeVideoAdjustments } from './videoAdjustments'
+import { normalizeAutoShortOverlays } from './autoShortOverlays'
 import { normalizeAutoShortTemporalEdit } from './autoShortTemporalEdit'
 import { isAutoShortSeparationPreset } from './autoShortSeparation'
 import { validateVideoTitleConfig } from './videoTitle'
@@ -139,6 +140,8 @@ function validateConfig(raw: unknown): AutoShortConfig | string {
 }
 
 function validateConfigRecord(raw: Record<string, unknown>): AutoShortConfig | string {
+  let overlays: AutoShortConfig['overlays']
+  try { overlays = normalizeAutoShortOverlays(raw.overlays) } catch (error) { return (error as Error).message }
   if (!METHODS.has(raw.subtitleMethod as AutoShortSubtitleMethod)) return 'Phương thức tạo phụ đề không hợp lệ.'
   if (typeof raw.whisperModel !== 'string' || !MODELS.has(raw.whisperModel)) return 'Mô hình Whisper không hợp lệ.'
   if (raw.whisperDevice !== 'cpu' && raw.whisperDevice !== 'cuda') return 'Thiết bị Whisper không hợp lệ.'
@@ -318,9 +321,11 @@ function validateConfigRecord(raw: Record<string, unknown>): AutoShortConfig | s
   const outputError = absolutePath(raw.outputDir, 'Thư mục đầu ra')
   if (outputError) return outputError
 
+  const { overlays: _rawOverlays, ...baseConfig } = raw
   return {
-    ...(raw as unknown as AutoShortConfig),
+    ...(baseConfig as unknown as AutoShortConfig),
     videoAdjustments: normalizeVideoAdjustments(raw.videoAdjustments as any),
+    ...(overlays ? { overlays } : {}),
     blurRegions: raw.lamMo === true && raw.blurMode === 'sttn' ? [] : raw.blurRegions as AutoShortBlurRegion[],
     ocrRegion: (raw.ocrRegion as AutoShortNormalizedRegion | null | undefined) ?? null,
     subRegion: (raw.subRegion as AutoShortNormalizedRegion | null | undefined) ?? null,

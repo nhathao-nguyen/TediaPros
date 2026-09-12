@@ -102,6 +102,8 @@ const api = {
   chooseSrt: (defaultDir?: string | null): Promise<string | null> =>
     ipcRenderer.invoke('dialog:chooseSrt', defaultDir),
   chooseAudio: () => ipcRenderer.invoke('dialog:chooseAudio'),
+  autoShortChooseOverlayImage: (): Promise<import('../shared/autoShortOverlays').AutoShortOverlayImageResult> =>
+    ipcRenderer.invoke('autoshort:chooseOverlayImage'),
   downloadsDir: () => ipcRenderer.invoke('app:downloadsDir'),
   appVersion: () => ipcRenderer.invoke('app:version'),
 

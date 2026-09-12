@@ -60,6 +60,9 @@ import VideoTitleSettings from './VideoTitleSettings'
 import GeminiKeys from './GeminiKeys'
 import VideoSeoResult from './VideoSeoResult'
 import AutoShortCutPanel from './AutoShortCutPanel'
+import AutoShortOverlayControl from './AutoShortOverlayControl'
+import AutoShortOverlayPreview from './AutoShortOverlayPreview'
+import { normalizeAutoShortOverlays, type AutoShortOverlays } from '../../../shared/autoShortOverlays'
 import { MICROSECONDS_PER_SECOND } from '../../../shared/autoShortTemporalEdit'
 
 const PALETTE = [
@@ -191,6 +194,11 @@ export default function AutoShort(): JSX.Element {
 
   const [videoH, setVideoH] = useState(0)
   const [portraitBlur, setPortraitBlur] = usePersistedState('tblao.autoshort.portraitBlur', false)
+  const [overlaySettings, setOverlaySettings] = usePersistedState<AutoShortOverlays>('tblao.autoshort.overlays.v1', {})
+  const overlayState = useMemo(() => {
+    try { return { value: normalizeAutoShortOverlays(overlaySettings, true) || {}, error: '' } }
+    catch { return { value: {} as AutoShortOverlays, error: 'Cấu hình ảnh/chữ đã lưu không hợp lệ. Bấm bỏ toàn bộ ảnh/chữ rồi chọn lại.' } }
+  }, [overlaySettings])
   const [videoAdjustments, setVideoAdjustments] = usePersistedState<VideoAdjustments>(
     'tblao.autoshort.videoAdjustments.v1',
     { ...DEFAULT_VIDEO_ADJUSTMENTS }
@@ -1106,6 +1114,8 @@ export default function AutoShort(): JSX.Element {
     const config: AutoShortConfig = {
       portraitBlur,
       videoAdjustments: normalizedVideoAdjustments,
+      ...(overlayState.error || overlayState.value.image || overlayState.value.text
+        ? { overlays: overlayState.error ? overlaySettings : overlayState.value } : {}),
       subtitleMethod,
       whisperModel: selectedWhisperModel,
       whisperDevice,
@@ -1322,6 +1332,7 @@ export default function AutoShort(): JSX.Element {
                 onClick={() => setShowCutPanel((current) => !current)}>Cắt đoạn</button>
               <PortraitBlurButton enabled={portraitBlur} onChange={setPortraitBlur} disabled={isRunning} />
               <VideoAdjustmentsControl value={normalizedVideoAdjustments} onChange={setVideoAdjustments} disabled={isRunning} />
+              <AutoShortOverlayControl value={overlayState.value} onChange={setOverlaySettings} disabled={isRunning} configError={overlayState.error} />
               {tasks.length > 0 && (
                 <select
                   value={selectedTask?.id || ''}
@@ -1398,6 +1409,8 @@ export default function AutoShort(): JSX.Element {
                 width={previewStageSize.width}
                 height={previewStageSize.height}
                 adjustments={normalizedVideoAdjustments}
+                overlay={<AutoShortOverlayPreview value={overlayState.value} width={previewStageSize.width}
+                  height={previewStageSize.height} fontFamily={previewFontFamily} fontId={fontId} />}
               >
                 <video
                   ref={videoRef}
