@@ -4,6 +4,7 @@ import type {
   TranslationIssue,
   TranslationItem
 } from '../../shared/translation'
+import { assertExactKeys, parseAiJsonObject } from '../../shared/aiOutput'
 
 export interface ParseOutcome {
   items: TranslationItem[]
@@ -32,12 +33,13 @@ function unwrapCompleteFence(raw: string): { text: string; fenced: boolean; malf
 function normalizeItem(value: unknown): TranslationItem {
   if (!value || typeof value !== 'object' || Array.isArray(value)) return { id: '', text: '' }
   const record = value as Record<string, unknown>
+  try {
+    assertExactKeys(record, ['id', 'text'])
+  } catch {
+    return { id: '', text: '' }
+  }
   const id = typeof record.id === 'string' ? record.id.trim() : ''
-  const text = typeof record.t === 'string'
-    ? record.t.trim()
-    : typeof record.text === 'string'
-      ? record.text.trim()
-      : ''
+  const text = typeof record.text === 'string' ? record.text.trim() : ''
   return { id, text }
 }
 
@@ -51,27 +53,20 @@ function normalizeItem(value: unknown): TranslationItem {
 function normalizeResponseItemId(
   rawId: string,
   expectedIds: readonly string[],
-  contextIds: readonly string[],
-  itemIndex: number
+  contextIds: readonly string[]
 ): string {
   const id = rawId.trim()
   if (!id) return id
   const known = [...expectedIds, ...contextIds]
   if (known.includes(id)) return id
+  // A bare numeric string can be a response position rather than the stable
+  // source identity. Never reinterpret it as cue-N, even for a singleton.
+  if (/^\d+$/u.test(id)) return id
 
   const withoutCuePrefix = (value: string): string => value.replace(/^cue-/iu, '')
   const suffixMatches = known.filter((candidate) => withoutCuePrefix(candidate) === withoutCuePrefix(id))
   if (suffixMatches.length === 1) return suffixMatches[0]
 
-  // Some older local gateways number cues relative to the current batch.
-  // Prefer the response position only for the exact `cue-N` shape; this keeps
-  // arbitrary numeric-looking unknown IDs subject to normal validation.
-  const legacyIndex = /^cue-(\d+)$/iu.exec(id)
-  if (legacyIndex) {
-    const index = Number(legacyIndex[1])
-    if (Number.isSafeInteger(index) && expectedIds[index]) return expectedIds[index]
-  }
-  if (/^\d+$/u.test(id) && expectedIds[itemIndex]) return expectedIds[itemIndex]
   return id
 }
 
@@ -160,19 +155,13 @@ export function parseTranslationResponse(
   if (!unwrapped.malformed) {
     if (format === 'json-items') {
       try {
-        const parsed = JSON.parse(unwrapped.text) as unknown
-        const candidate = Array.isArray(parsed)
-          ? parsed
-          : parsed && typeof parsed === 'object' && Array.isArray((parsed as { items?: unknown }).items)
-            ? (parsed as { items: unknown[] }).items
-            : parsed && typeof parsed === 'object' && typeof (parsed as { id?: unknown }).id === 'string'
-              ? [parsed]
-            : null
-        if (!candidate) {
-          issues.push(issue('provider-protocol', 'JSON dịch phải là mảng hoặc object có trường items.'))
-        } else {
-          items.push(...candidate.map(normalizeItem))
-        }
+        const parsed = parseAiJsonObject(unwrapped.text, {
+          limits: { maxBytes: 1024 * 1024, maxDepth: 16, maxMembers: Math.max(64, (expected.length + contextIds.length) * 4 + 8), maxCandidates: 1 }
+        }).value
+        assertExactKeys(parsed, ['items'])
+        if (!Array.isArray(parsed.items) || parsed.items.length > Math.min(100, expected.length + contextIds.length + 16)) {
+          issues.push(issue('provider-protocol', 'JSON dịch phải chứa đúng mảng items trong giới hạn cue yêu cầu.'))
+        } else items.push(...parsed.items.map(normalizeItem))
       } catch {
         issues.push(issue('unparsed-content', 'Không đọc được JSON dịch theo contract đã chọn.'))
       }
@@ -194,7 +183,7 @@ export function parseTranslationResponse(
   for (let index = 0; index < items.length; index += 1) {
     items[index] = {
       ...items[index],
-      id: normalizeResponseItemId(items[index].id, expected, contextIds, index)
+      id: normalizeResponseItemId(items[index].id, expected, contextIds)
     }
   }
 

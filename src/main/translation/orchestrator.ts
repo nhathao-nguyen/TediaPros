@@ -372,16 +372,27 @@ export async function translateWithAdapter(
       // A parser can recover IDs from a response while still losing prose
       // after a line break or token cutoff. Such items are never durable.
       const validItems = untrustedContent ? [] : uniqueValidItems(parsed.items, work.requestedIds)
-      for (const item of validItems) accepted.set(item.id, item)
       const expectedComplete = validItems.length === work.requestedIds.length
       const blockingParserIssues = parsed.issues.filter((item) => item.severity === 'error' && item.code !== 'missing-id' && item.code !== 'unknown-id')
       const hardParserIssues = parsed.issues.filter((item) => item.severity === 'error')
+      const missingOnly = parsed.issues.length > 0 && parsed.issues.every((item) =>
+        item.code === 'missing-id' || (item.code === 'unknown-id' && item.severity === 'warning'))
+      const missingIdsFromResponse = work.requestedIds.filter((id) => !validItems.some((item) => item.id === id))
+      const acceptsFullResponse = expectedComplete && hardParserIssues.length === 0
+      const acceptsMissingOnlySubset = !response.truncated && blockingParserIssues.length === 0 && missingOnly &&
+        validItems.length > 0 && missingIdsFromResponse.length < work.requestedIds.length
+      // Mutation of accepted state is a commit boundary. Items recovered from
+      // a response with duplicate/unknown/protocol/truncation errors must not
+      // survive into a later split, checkpoint, or final result.
+      if (acceptsFullResponse || acceptsMissingOnlySubset) {
+        for (const item of validItems) accepted.set(item.id, item)
+      }
       const fingerprint = `${work.requestedIds.join(',')}|${parsed.issues.map((item) => item.code).join(',')}|${validItems.map((item) => item.id).join(',')}`
       const previous = failures.get(work.originalBatchId)
       const repeats = previous && previous.fingerprint === fingerprint ? previous.repeats + 1 : 1
       failures.set(work.originalBatchId, { fingerprint, repeats })
 
-      if (expectedComplete && hardParserIssues.length === 0) {
+      if (acceptsFullResponse) {
         await options.onBatch?.(work.originalBatchId, {
           items: validItems,
           assessment: assessmentForIssues(parsed.issues, true),
@@ -391,7 +402,7 @@ export async function translateWithAdapter(
       }
 
       const missingIds = work.requestedIds.filter((id) => !accepted.has(id))
-      if (validItems.length > 0 && !expectedComplete) {
+      if (acceptsMissingOnlySubset) {
         // Persist the good subset before scheduling recovery. A crash or
         // cancellation after this point can resume from these IDs without
         // asking the provider to regenerate them.
@@ -401,8 +412,7 @@ export async function translateWithAdapter(
           modelIdentity
         }, budget.snapshot())
       }
-      const missingOnly = parsed.issues.length > 0 && parsed.issues.every((item) => item.code === 'missing-id' || (item.code === 'unknown-id' && item.severity === 'warning'))
-      if (!response.truncated && blockingParserIssues.length === 0 && missingOnly && validItems.length > 0 && missingIds.length < work.requestedIds.length) {
+      if (acceptsMissingOnlySubset && missingIds.length < work.requestedIds.length) {
         const missingCues = work.batch.input.cues.filter((cue) => missingIds.includes(cue.id))
         if (missingCues.length > 0) {
           enqueueRecovery({ ...work, requestedIds: missingIds, batch: { ...work.batch, id: `${work.batch.id}/missing`, input: { ...work.batch.input, cues: missingCues, ...selectTranslationSourceContext(input, missingCues, plan.mapping) }, mapping: work.batch.mapping.filter((mapping) => missingIds.includes(mapping.unitId)) } })

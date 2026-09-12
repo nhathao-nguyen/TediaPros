@@ -16,11 +16,20 @@ const source = [{ id: 'cue-0', sourceIndex: 0, start: 0, end: 1, time: '00:00:00
 const contentReply = (content: string): Response => new Response(JSON.stringify({
   choices: [{ message: { content }, finish_reason: 'stop' }]
 }))
+const sourceIdsFromPrompt = (prompt: unknown): string[] => {
+  const section = String(prompt || '').split('[SOURCE_CUES_JSONL]')[1]?.split('[/SOURCE_CUES_JSONL]')[0] || ''
+  return section.split('\n').map((line) => line.trim()).filter((line) => line.startsWith('{')).flatMap((line) => {
+    try {
+      const id = (JSON.parse(line) as { id?: unknown }).id
+      return typeof id === 'string' ? [id] : []
+    } catch {
+      return []
+    }
+  })
+}
 const response = (provider: 'gemini' | 'openai', body: any): Response => {
   const payload = provider === 'gemini' ? body.contents?.[0]?.parts?.[0]?.text : body.messages?.[1]?.content
-  const ids = [...String(payload || '').matchAll(/^\[([^\]]+)\]/gmu)]
-    .map((match) => match[1])
-    .filter((id) => id.startsWith('cue-'))
+  const ids = sourceIdsFromPrompt(payload).filter((id) => id.startsWith('cue-'))
   const items = (ids.length > 0 ? ids : ['cue-0']).map((id) => ({ id, text: 'Hello' }))
   if (provider === 'gemini') return new Response(JSON.stringify({ candidates: [{ content: { parts: [{ text: JSON.stringify({ items }) }] }, finishReason: 'STOP' }] }))
   return new Response(JSON.stringify({ choices: [{ message: { content: JSON.stringify({ items }) }, finish_reason: 'stop' }] }))
@@ -69,13 +78,64 @@ for (const [provider, saveKey, translate] of [
   }))
 }
 
+for (const [provider, saveKey, translate] of [
+  ['gemini', saveGeminiKey, translateGemini],
+  ['openai', saveOpenAiKey, translateOpenAi]
+] as const) {
+  test(`${provider} rejects ambiguous translation candidates instead of taking the first`, async () => fixture(async (input, output) => {
+    await writeFile(input, buildSrt(source))
+    await saveKey('fixture-key')
+    globalThis.fetch = async (_url, init) => {
+      if (!init?.method) return provider === 'gemini'
+        ? new Response(JSON.stringify({ models: [{ name: 'models/gemini-2.5-flash', supportedGenerationMethods: ['generateContent'] }] }))
+        : new Response(JSON.stringify({ data: [{ id: 'gpt-4o-mini' }] }))
+      const body = JSON.parse(String(init.body))
+      const prompt = provider === 'gemini' ? body.contents?.[0]?.parts?.[0]?.text : body.messages?.[1]?.content
+      const id = sourceIdsFromPrompt(prompt)[0]
+      const content = JSON.stringify({ items: [{ id, text: 'Hello' }] })
+      return provider === 'gemini'
+        ? new Response(JSON.stringify({ candidates: [
+          { content: { parts: [{ text: content }] }, finishReason: 'STOP' },
+          { content: { parts: [{ text: content }] }, finishReason: 'STOP' }
+        ] }))
+        : new Response(JSON.stringify({ choices: [
+          { message: { content }, finish_reason: 'stop' },
+          { message: { content }, finish_reason: 'stop' }
+        ] }))
+    }
+    const result = await translate(input, output, 'en', undefined, { strict: true, mode: 'subtitle', sourceLanguage: 'vi' })
+    assert.equal(result.ok, false)
+    await assert.rejects(readFile(output, 'utf8'), { code: 'ENOENT' })
+  }))
+
+  test(`${provider} rejects filtered or refused translation content even when its JSON is valid`, async () => fixture(async (input, output) => {
+    await writeFile(input, buildSrt(source))
+    await saveKey('fixture-key')
+    globalThis.fetch = async (_url, init) => {
+      if (!init?.method) return provider === 'gemini'
+        ? new Response(JSON.stringify({ models: [{ name: 'models/gemini-2.5-flash', supportedGenerationMethods: ['generateContent'] }] }))
+        : new Response(JSON.stringify({ data: [{ id: 'gpt-4o-mini' }] }))
+      const body = JSON.parse(String(init.body))
+      const prompt = provider === 'gemini' ? body.contents?.[0]?.parts?.[0]?.text : body.messages?.[1]?.content
+      const id = sourceIdsFromPrompt(prompt)[0]
+      const content = JSON.stringify({ items: [{ id, text: 'Hello' }] })
+      return provider === 'gemini'
+        ? new Response(JSON.stringify({ candidates: [{ content: { parts: [{ text: content }] }, finishReason: 'SAFETY' }] }))
+        : new Response(JSON.stringify({ choices: [{ message: { content, refusal: 'policy' }, finish_reason: 'content_filter' }] }))
+    }
+    const result = await translate(input, output, 'en', undefined, { strict: true, mode: 'subtitle', sourceLanguage: 'vi' })
+    assert.equal(result.ok, false)
+    await assert.rejects(readFile(output, 'utf8'), { code: 'ENOENT' })
+  }))
+}
+
 test('local production adapter is provider-neutral and uses the shared bounded orchestrator', async () => {
   const adapter = createLocalTranslationAdapter('fixture-key', 'http://fixture.invalid')
   let calls = 0
   globalThis.fetch = async (_url, init) => {
     calls++
     const body = JSON.parse(String(init?.body))
-    const ids = [...String(body.messages[1].content).matchAll(/^\[(cue-\d+)\]/gmu)].map((match) => match[1])
+    const ids = sourceIdsFromPrompt(body.messages[1].content)
     return contentReply(ids.map((id) => `[${id}] Hello`).join('\n'))
   }
   const result = await translateWithAdapter({
@@ -116,7 +176,7 @@ test('AutoShort translateStrict uses canonical IDs and publishes only after full
   globalThis.fetch = async (_url, init) => {
     calls++
     const body = JSON.parse(String(init?.body))
-    const ids = [...String(body.messages[1].content).matchAll(/^\[([^\]]+)\]/gmu)].map((match) => match[1])
+    const ids = sourceIdsFromPrompt(body.messages[1].content)
     return contentReply(ids.map((id) => `[${id}] ${id.startsWith('cue-0-') ? 'Hello' : 'Goodbye'}`).join('\n'))
   }
   const config = {
@@ -161,7 +221,7 @@ test('AutoShort strict path blocks a strong cross-script echo with structured ev
   globalThis.fetch = async (_url, init) => {
     calls++
     const body = JSON.parse(String(init?.body))
-    const ids = [...String(body.messages[1].content).matchAll(/^\[([^\]]+)\]/gmu)].map((match) => match[1]).filter((id) => id.startsWith('cue-'))
+    const ids = sourceIdsFromPrompt(body.messages[1].content).filter((id) => id.startsWith('cue-'))
     return contentReply(ids.map((id) => `[${id}] ${sourceText}`).join('\n'))
   }
   const config = {

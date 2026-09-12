@@ -1,5 +1,5 @@
-import { createHash } from 'node:crypto'
-import { mkdir, open, rm } from 'node:fs/promises'
+import { createHash, randomUUID } from 'node:crypto'
+import { link, mkdir, open, rm } from 'node:fs/promises'
 import { basename, dirname, extname, join } from 'node:path'
 import {
   DEFAULT_AI_SERVER_URL,
@@ -9,12 +9,24 @@ import {
   type VideoTitleConfig
 } from '../shared/types'
 import { formatVideoSeoMetadata, parseVideoSeoMetadata, resolveVideoSeoConfig } from '../shared/videoSeo'
+import {
+  AI_OUTPUT_PARSER_VERSION,
+  AI_OUTPUT_SCHEMA_VERSION,
+  assertExactKeys,
+  classifyCompletion,
+  containsProtocolPayload,
+  openAiResponseFormat,
+  parseAiJsonObject,
+  type AiCompletionEnvelope,
+  type AiStructuredTask
+} from '../shared/aiOutput'
 import { validateVideoTitleConfig } from '../shared/videoTitle'
 import { loadLocalKey } from './localTranslate'
-import { rephraseGeminiCue } from './gemini'
-import { rephraseOpenaiCue } from './openai'
+import { completeGeminiStructured } from './gemini'
+import { completeOpenAiStructured } from './openai'
 import { getGlobalResourceManager } from './autoShortResourceManager'
 import { assertContainedParentDirectory, assertContainedRegularFile } from './safeContainedPath'
+import { readBoundedAiResponseText } from './aiResponseBody'
 
 export { validateVideoTitleConfig } from '../shared/videoTitle'
 
@@ -23,8 +35,8 @@ const SUMMARY_CHARS = 2_000
 const TITLE_CHARS = 120
 const RESPONSE_CHARS = 16_000
 const REQUEST_TIMEOUT_MS = 60_000
-const TITLE_PROMPT_VERSION = 'video-title-v2'
-const SEO_PROMPT_VERSION = 'video-seo-v2'
+const TITLE_PROMPT_VERSION = 'video-title-v3'
+const SEO_PROMPT_VERSION = 'video-seo-v3'
 
 class VideoTitleError extends Error {}
 
@@ -38,28 +50,16 @@ function checkCancelled(signal?: AbortSignal): void {
   if (signal?.aborted) throw cancelled()
 }
 
-/**
- * Resolve at the abort boundary even when a provider/fetch implementation
- * ignores AbortSignal. The surrounding resource lease can then settle and
- * release without admitting another request while this action is still
- * considered active.
- */
+/** Keep the provider action pending when an implementation ignores abort.
+ * The outer operation race settles the UI, while the resource lease remains
+ * owned until the real request settles and its local endpoint is safe to use. */
 async function fetchWithAbort(
   input: string,
   init: RequestInit,
   signal: AbortSignal
 ): Promise<Response> {
   checkCancelled(signal)
-  let onAbort: (() => void) | undefined
-  const interrupted = new Promise<Response>((_resolve, reject) => {
-    onAbort = () => reject(cancelled())
-    signal.addEventListener('abort', onAbort, { once: true })
-  })
-  try {
-    return await Promise.race([fetch(input, init), interrupted])
-  } finally {
-    if (onAbort) signal.removeEventListener('abort', onAbort)
-  }
+  return fetch(input, init)
 }
 
 /** Remove subtitle markup only; preserve source wording and nonadjacent repetition. */
@@ -137,7 +137,7 @@ function seoSystemPrompt(config: ResolvedVideoSeoConfig): string {
   ].join('\n')
 }
 
-async function localCompletion(config: VideoTitleConfig, system: string, user: string, signal: AbortSignal): Promise<string | null> {
+async function localCompletion(config: VideoTitleConfig, task: AiStructuredTask, system: string, user: string, signal: AbortSignal): Promise<AiCompletionEnvelope | null> {
   const key = await loadLocalKey()
   checkCancelled(signal)
   const base = (config.serverUrl || DEFAULT_AI_SERVER_URL).trim().replace(/\/+$/u, '')
@@ -152,42 +152,46 @@ async function localCompletion(config: VideoTitleConfig, system: string, user: s
       model: 'llm-default',
       messages: [{ role: 'system', content: system }, { role: 'user', content: user }],
       temperature: 0.3,
-      max_tokens: 2_048
+      max_tokens: 2_048,
+      response_format: openAiResponseFormat(task)
     }),
     signal
   }, signal)
   if (!response.ok) {
-    void response.body?.cancel().catch(() => {})
+    await response.body?.cancel().catch(() => {})
     throw new VideoTitleError(`AI tạo tiêu đề phản hồi lỗi HTTP ${response.status}.`)
   }
   const contentLength = Number(response.headers.get('content-length'))
   if (Number.isFinite(contentLength) && contentLength > RESPONSE_CHARS * 8) {
-    void response.body?.cancel().catch(() => {})
+    await response.body?.cancel().catch(() => {})
     throw new VideoTitleError('AI trả về nội dung tiêu đề quá dài.')
   }
   if (!response.body) throw new VideoTitleError('AI không trả về nội dung tiêu đề.')
-  const reader = response.body.getReader()
-  const decoder = new TextDecoder()
-  let body = ''
+  const body = await readBoundedAiResponseText(response, signal, RESPONSE_CHARS * 8)
+  let data: { choices?: Array<{ message?: { content?: unknown; refusal?: unknown }; finish_reason?: unknown }> }
   try {
-    while (true) {
-      checkCancelled(signal)
-      const next = await reader.read()
-      if (next.done) break
-      body += decoder.decode(next.value, { stream: true })
-      if (body.length > RESPONSE_CHARS * 4) throw new VideoTitleError('AI trả về nội dung tiêu đề quá dài.')
-    }
-    body += decoder.decode()
-  } finally {
-    void reader.cancel().catch(() => {})
-    reader.releaseLock()
+    data = JSON.parse(body) as typeof data
+  } catch {
+    throw new VideoTitleError('AI server trả về envelope không đúng JSON.')
   }
-  const data = JSON.parse(body) as { choices?: Array<{ message?: { content?: unknown } }> }
-  const content = data.choices?.[0]?.message?.content
-  return typeof content === 'string' ? content : null
+  if (!Array.isArray(data.choices) || data.choices.length !== 1) throw new VideoTitleError('AI server trả về số candidate không hợp lệ.')
+  const choice = data.choices[0]
+  const content = choice.message?.content
+  const refusal = typeof choice.message?.refusal === 'string' && choice.message.refusal.trim().length > 0
+  if (typeof content !== 'string' && !refusal) return null
+  const finishReason = typeof choice.finish_reason === 'string' ? choice.finish_reason : undefined
+  return {
+    rawText: typeof content === 'string' ? content : '',
+    provider: 'local',
+    modelIdentity: 'llm-default',
+    formatMode: 'schema-constrained',
+    completion: classifyCompletion(finishReason, refusal),
+    transport: 'complete',
+    ...(finishReason ? { finishReason } : {})
+  }
 }
 
-async function completion(config: VideoTitleConfig, system: string, user: string, signal?: AbortSignal): Promise<string> {
+async function completion(config: VideoTitleConfig, task: AiStructuredTask, system: string, user: string, signal?: AbortSignal): Promise<string> {
   checkCancelled(signal)
   const controller = new AbortController()
   let timedOut = false
@@ -206,15 +210,18 @@ async function completion(config: VideoTitleConfig, system: string, user: string
   })
   try {
     const request = config.provider === 'local'
-      ? getGlobalResourceManager().withLease(['server-inference'], controller.signal, () => localCompletion(config, system, user, controller.signal))
+      ? getGlobalResourceManager().withLease(['server-inference'], controller.signal, () => localCompletion(config, task, system, user, controller.signal))
       : config.provider === 'gemini'
-        ? getGlobalResourceManager().withLease(['external-title'], controller.signal, () => rephraseGeminiCue(system, user, controller.signal))
-        : getGlobalResourceManager().withLease(['external-title'], controller.signal, () => rephraseOpenaiCue(system, user, controller.signal))
-    const text = await Promise.race([request, interrupted])
+        ? getGlobalResourceManager().withLease(['external-title'], controller.signal, () => completeGeminiStructured(task, system, user, controller.signal))
+        : getGlobalResourceManager().withLease(['external-title'], controller.signal, () => completeOpenAiStructured(task, system, user, controller.signal))
+    const envelope = await Promise.race([request, interrupted])
     checkCancelled(signal)
-    if (!text?.trim()) throw new VideoTitleError('AI không tạo được tiêu đề. Kiểm tra kết nối và khóa AI trong cài đặt.')
-    if (text.length > RESPONSE_CHARS) throw new VideoTitleError('AI trả về nội dung tiêu đề quá dài.')
-    return text.trim()
+    if (!envelope?.rawText.trim()) throw new VideoTitleError('AI không tạo được tiêu đề. Kiểm tra kết nối và khóa AI trong cài đặt.')
+    if (envelope.transport !== 'complete') throw new VideoTitleError('Phản hồi AI chưa được truyền hoàn tất.')
+    if (envelope.completion === 'truncated') throw new VideoTitleError('Phản hồi AI bị cắt trước khi hoàn tất.')
+    if (envelope.completion === 'refused' || envelope.completion === 'filtered') throw new VideoTitleError('AI từ chối hoặc lọc nội dung; chưa tạo metadata.')
+    if (envelope.rawText.length > RESPONSE_CHARS) throw new VideoTitleError('AI trả về nội dung tiêu đề quá dài.')
+    return envelope.rawText.trim()
   } catch (error) {
     if (signal?.aborted) throw cancelled()
     if (timedOut) throw new VideoTitleError('AI tạo tiêu đề quá thời gian chờ. Vui lòng thử lại.')
@@ -228,21 +235,51 @@ async function completion(config: VideoTitleConfig, system: string, user: string
 }
 
 function responseField(raw: string, field: 'summary' | 'title'): string {
-  const content = raw.replace(/^```(?:json)?\s*\n([\s\S]*?)\n```$/iu, '$1').trim()
-  let parsed: unknown
   try {
-    parsed = JSON.parse(content)
-  } catch {
+    const parsed = parseAiJsonObject(raw, { allowFence: true, limits: { maxBytes: 64 * 1024, maxDepth: 8, maxMembers: 16, maxCandidates: 1 } }).value
+    assertExactKeys(parsed, [field])
+    const value = parsed[field]
+    if (typeof value !== 'string' || !value.trim()) throw new VideoTitleError('AI chưa xác định được tiêu đề từ nội dung phụ đề.')
+    if (containsProtocolPayload(value, [field, 'title', 'description', 'tags', 'hashtags'])) {
+      throw new VideoTitleError('AI đã trộn dữ liệu JSON vào nội dung tiêu đề.')
+    }
+    if (field === 'title') return validateTitle(value)
+    if (value.length > SUMMARY_CHARS || /[\u0000-\u0008\u000b\u000c\u000e-\u001f\u007f]/u.test(value)) {
+      throw new VideoTitleError('AI trả về bản tóm tắt không hợp lệ hoặc quá dài.')
+    }
+    return value.trim()
+  } catch (error) {
+    if (error instanceof VideoTitleError) throw error
     throw new VideoTitleError('AI trả về tiêu đề không đúng định dạng JSON.')
   }
-  if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) throw new VideoTitleError('AI trả về dữ liệu tiêu đề không hợp lệ.')
-  const value = (parsed as Record<string, unknown>)[field]
-  if (typeof value !== 'string' || !value.trim()) throw new VideoTitleError('AI chưa xác định được tiêu đề từ nội dung phụ đề.')
-  if (field === 'title') return validateTitle(value)
-  if (value.length > SUMMARY_CHARS || /[\u0000-\u0008\u000b\u000c\u000e-\u001f\u007f]/u.test(value)) {
-    throw new VideoTitleError('AI trả về bản tóm tắt không hợp lệ hoặc quá dài.')
+}
+
+async function completeFieldWithOneRepair(
+  config: VideoTitleConfig,
+  task: 'summary' | 'title',
+  system: string,
+  user: string,
+  field: 'summary' | 'title',
+  signal?: AbortSignal
+): Promise<string> {
+  const response = await completion(config, task, system, user, signal)
+  try {
+    return responseField(response, field)
+  } catch (firstError) {
+    checkCancelled(signal)
+    const repaired = await completion(
+      config,
+      task,
+      `${system}\nĐây là lượt sửa duy nhất. Phản hồi trước sai contract hoặc chứa protocol payload. Tạo lại toàn bộ object từ dữ liệu nguồn; không chép, trích hoặc vá phản hồi cũ.`,
+      user,
+      signal
+    )
+    try {
+      return responseField(repaired, field)
+    } catch {
+      throw firstError
+    }
   }
-  return value.trim()
 }
 
 function validateTitle(value: string): string {
@@ -271,6 +308,8 @@ export function buildVideoTitleInputDigest(
 ): string {
   const input = {
     promptVersion: TITLE_PROMPT_VERSION,
+    parserVersion: AI_OUTPUT_PARSER_VERSION,
+    schemaVersion: AI_OUTPUT_SCHEMA_VERSION,
     provider: config.provider,
     language: config.language,
     serverUrl: config.serverUrl || DEFAULT_AI_SERVER_URL,
@@ -296,6 +335,8 @@ export function buildVideoSeoInputDigest(
   const resolved = resolveVideoSeoConfig(config)
   const input = {
     promptVersion: SEO_PROMPT_VERSION,
+    parserVersion: AI_OUTPUT_PARSER_VERSION,
+    schemaVersion: AI_OUTPUT_SCHEMA_VERSION,
     provider: resolved.provider,
     language: resolved.language,
     serverUrl: resolved.serverUrl || DEFAULT_AI_SERVER_URL,
@@ -343,22 +384,30 @@ export async function generateVideoSeoMetadata(
     const chunks = splitText(context)
     for (let index = 0; index < chunks.length; index++) {
       checkCancelled(signal)
-      const result = await completion(resolved, systemPrompt(resolved.language, true), JSON.stringify({
+      const result = await completeFieldWithOneRepair(resolved, 'summary', systemPrompt(resolved.language, true), JSON.stringify({
         part: index + 1, parts: chunks.length, source_text: chunks[index]
-      }), signal)
-      summaries.push(responseField(result, 'summary'))
+      }), 'summary', signal)
+      summaries.push(result)
     }
     context = summaries.join('\n')
   }
-  const response = await completion(resolved, seoSystemPrompt(resolved), JSON.stringify({
+  const requestBody = JSON.stringify({
     source_text: context,
     preferences: { language: resolved.language, ...resolved.seo }
-  }), signal)
-  try {
-    return parseVideoSeoMetadata(response)
-  } catch (error) {
-    throw new VideoTitleError(error instanceof Error ? error.message : 'AI trả về metadata không hợp lệ.')
+  })
+  let lastError: unknown
+  for (let attempt = 0; attempt < 2; attempt++) {
+    const prompt = attempt === 0
+      ? seoSystemPrompt(resolved)
+      : `${seoSystemPrompt(resolved)}\nĐây là lượt sửa phản hồi (repair). Phản hồi trước sai contract. Tạo lại toàn bộ bốn trường từ source_text; không chép hoặc vá phản hồi cũ.`
+    const response = await completion(resolved, 'video-seo', prompt, requestBody, signal)
+    try {
+      return parseVideoSeoMetadata(response)
+    } catch (error) {
+      lastError = error
+    }
   }
+  throw new VideoTitleError(lastError instanceof Error ? lastError.message : 'AI trả về metadata không hợp lệ.')
 }
 
 export async function prepareVideoSeoMetadata(
@@ -390,15 +439,21 @@ export async function generateVideoTitle(cues: readonly SubtitleCue[], config: V
     const chunks = splitText(context)
     for (let index = 0; index < chunks.length; index++) {
       checkCancelled(signal)
-      const result = await completion(config, systemPrompt(config.language, true), JSON.stringify({
+      const result = await completeFieldWithOneRepair(config, 'summary', systemPrompt(config.language, true), JSON.stringify({
         part: index + 1, parts: chunks.length, source_text: chunks[index]
-      }), signal)
-      summaries.push(responseField(result, 'summary'))
+      }), 'summary', signal)
+      summaries.push(result)
     }
     context = summaries.join('\n')
   }
-  const response = await completion(config, systemPrompt(config.language, false), JSON.stringify({ source_text: context }), signal)
-  return responseField(response, 'title')
+  return completeFieldWithOneRepair(
+    config,
+    'title',
+    systemPrompt(config.language, false),
+    JSON.stringify({ source_text: context }),
+    'title',
+    signal
+  )
 }
 
 /**
@@ -450,22 +505,34 @@ export async function reserveVideoTitleOutputDir(outputDir: string, outputName: 
   }
 }
 
-export async function writeVideoTitle(outputVideoPath: string, title: string): Promise<string> {
-  const normalized = validateTitle(title)
-  const path = join(dirname(outputVideoPath), 'tieude.txt')
-  let created = false
+async function publishExclusiveFile(path: string, content: string, signal?: AbortSignal): Promise<void> {
+  checkCancelled(signal)
+  const tempPath = join(dirname(path), `.${basename(path)}.${randomUUID()}.tmp`)
   let file: Awaited<ReturnType<typeof open>> | undefined
   try {
-    file = await open(path, 'wx')
-    created = true
-    await file.writeFile(`${normalized}\n`, 'utf8')
+    file = await open(tempPath, 'wx')
+    await file.writeFile(content, 'utf8')
+    await file.sync()
     await file.close()
     file = undefined
+    // Cancellation before this boundary publishes nothing. Once link succeeds,
+    // the complete fsynced file is the committed result and must be retained.
+    checkCancelled(signal)
+    await link(tempPath, path)
+  } finally {
+    await file?.close().catch(() => {})
+    await rm(tempPath, { force: true }).catch(() => {})
+  }
+}
+
+export async function writeVideoTitle(outputVideoPath: string, title: string, signal?: AbortSignal): Promise<string> {
+  const normalized = validateTitle(title)
+  const path = join(dirname(outputVideoPath), 'tieude.txt')
+  try {
+    await publishExclusiveFile(path, `${normalized}\n`, signal)
     return path
   } catch (error) {
-    await file?.close().catch(() => {})
-    // Remove a failed partial write only when this call created the file.
-    if (created) await rm(path, { force: true }).catch(() => {})
+    if ((error as Error).name === 'AbortError') throw error
     if ((error as NodeJS.ErrnoException).code === 'EEXIST') throw new VideoTitleError('Đã có tieude.txt trong thư mục video; giữ nguyên tệp hiện có.')
     throw new VideoTitleError('Không thể lưu tieude.txt. Kiểm tra dung lượng và quyền ghi thư mục đầu ra.')
   }
@@ -474,25 +541,20 @@ export async function writeVideoTitle(outputVideoPath: string, title: string): P
 export async function writeVideoSeoMetadata(
   outputVideoPath: string,
   metadata: VideoSeoMetadata,
-  allowedRoot: string
+  allowedRoot: string,
+  signal?: AbortSignal
 ): Promise<string> {
   const content = formatVideoSeoMetadata(metadata)
   let path = ''
-  let created = false
-  let file: Awaited<ReturnType<typeof open>> | undefined
   try {
+    checkCancelled(signal)
     const video = await assertContainedRegularFile(outputVideoPath, allowedRoot, 'Video SEO')
     path = join(dirname(video), 'tieude.txt')
     await assertContainedParentDirectory(path, allowedRoot, 'File SEO')
-    file = await open(path, 'wx')
-    created = true
-    await file.writeFile(content, 'utf8')
-    await file.close()
-    file = undefined
+    await publishExclusiveFile(path, content, signal)
     return path
   } catch (error) {
-    await file?.close().catch(() => {})
-    if (created && path) await rm(path, { force: true }).catch(() => {})
+    if ((error as Error).name === 'AbortError') throw error
     if ((error as NodeJS.ErrnoException).code === 'EEXIST') throw new VideoTitleError('Đã có tieude.txt trong thư mục video; giữ nguyên tệp hiện có.')
     throw new VideoTitleError('Không thể lưu tieude.txt trong thư mục video hợp lệ. Kiểm tra đường dẫn, dung lượng và quyền ghi.')
   }

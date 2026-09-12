@@ -34,6 +34,7 @@ import { getGlobalResourceManager } from './autoShortResourceManager'
 import { buildTranslationMessages, buildTranslationBatchMessages } from './translation/prompts'
 import type { TranslationAdapter } from './translation/orchestrator'
 import { translateFileWithAdapter } from './translation/fileRunner'
+import { readBoundedAiResponseJson } from './aiResponseBody'
 
 export type { TranslationMode }
 
@@ -198,11 +199,14 @@ export function createLocalTranslationAdapter(
             if (!response.ok) {
               // HTTP status remains authoritative even when its diagnostic body
               // fails to read. Cancellation must still escape as cancellation.
-              const body = await response.text().catch((error: unknown) => {
+              // Status and headers are authoritative. Do not wait for an
+              // unbounded or stalled error body merely to obtain a diagnostic
+              // code; cancelling it also keeps the lease until cleanup ends.
+              await response.body?.cancel().catch((error: unknown) => {
                 signal.throwIfAborted()
                 if (error instanceof Error && error.name === 'AbortError') throw error
-                return ''
               })
+              const body = ''
               signal.throwIfAborted()
               const retryable = response.status === 408 || response.status === 425 || response.status === 429 || response.status >= 500
               const retryAfterMs = parseRetryAfterMs(response.headers.get('Retry-After'), (options.wallNow ?? Date.now)())
@@ -212,14 +216,23 @@ export function createLocalTranslationAdapter(
                 ...(retryable && retryAfterMs !== null ? { retryAfterMs } : {})
               })
             }
-            const data = await response.json() as {
-              choices?: Array<{ message?: { content?: string }; finish_reason?: string }>
+            const data = await readBoundedAiResponseJson<{
+              choices?: Array<{ message?: { content?: string; refusal?: unknown; tool_calls?: unknown }; finish_reason?: string }>
               translation?: string
-            }
+            }>(response, signal)
             signal.throwIfAborted()
+            if (data.choices !== undefined && (!Array.isArray(data.choices) || data.choices.length !== 1)) {
+              throw Object.assign(new Error('Local AI returned an ambiguous completion envelope.'), { providerCode: 'provider-protocol' })
+            }
+            const choice = data.choices?.[0]
+            if (choice && (choice.finish_reason === 'content_filter' ||
+                (typeof choice.message?.refusal === 'string' && choice.message.refusal.trim().length > 0) ||
+                choice.message?.tool_calls !== undefined)) {
+              throw Object.assign(new Error('Local AI filtered, refused, or returned a tool payload.'), { providerCode: 'provider-protocol' })
+            }
             return {
-              raw: data.choices?.[0]?.message?.content || data.translation || '',
-              truncated: data.choices?.[0]?.finish_reason === 'length',
+              raw: choice?.message?.content || (data.choices === undefined ? data.translation : '') || '',
+              truncated: choice?.finish_reason === 'length',
               modelIdentity: model.trim() || 'llm-default'
             }
           } finally {
@@ -820,7 +833,7 @@ export async function localTranslateSrt(
       } catch (error) {
         invalidResponseReason = error instanceof Error ? error.message : 'schema không hợp lệ'
         if (candidate.length === 0 && !truncated) {
-          invalidResponseReason = 'Không đọc được cue có ID từ phản hồi AI; cần định dạng [id] bản dịch hoặc JSON có id và t/text.'
+          invalidResponseReason = 'Không đọc được cue có ID từ phản hồi AI; cần định dạng [id] bản dịch hoặc JSON {"items":[{"id","text"}]}.'
         }
       }
 

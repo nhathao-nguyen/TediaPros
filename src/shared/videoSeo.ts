@@ -5,6 +5,7 @@ import type {
   VideoSeoOptions,
   VideoTitleConfig
 } from './types'
+import { assertExactKeys, containsProtocolPayload, parseAiJsonObject } from './aiOutput'
 
 const CONTROL = /[\u0000-\u0008\u000b\u000c\u000e-\u001f\u007f]/u
 const TITLE_CONTROL = /[\r\n\u2028\u2029\u0000-\u001f\u007f]/u
@@ -41,7 +42,8 @@ function normalizeHashtag(value: string): string {
   return `#${compact}`
 }
 
-function normalizeHashtags(raw: unknown, fallbackTags: readonly string[]): string[] {
+function normalizeHashtags(raw: unknown, fallbackTags: readonly string[], allowMissing: boolean): string[] {
+  if (!allowMissing && raw === undefined) throw new Error('AI trả về metadata thiếu hashtags.')
   if (raw !== undefined && !Array.isArray(raw)) throw new Error('Hashtags phải là danh sách chuỗi.')
   const source = raw === undefined || (Array.isArray(raw) && raw.length === 0) ? fallbackTags : raw as unknown[]
   const hashtags: string[] = []
@@ -152,70 +154,28 @@ export function resolveVideoSeoConfig(config: VideoTitleConfig, outputLanguage?:
   }
 }
 
-function unwrapJson(raw: string): string {
-  return raw.trim().replace(/^```(?:json)?\s*\r?\n([\s\S]*?)\r?\n```$/iu, '$1').trim()
-}
-
-function embeddedJsonObjects(raw: string): unknown[] {
-  const parsed: unknown[] = []
-  let start = -1
-  let depth = 0
-  let inString = false
-  let escaped = false
-
-  for (let index = 0; index < raw.length; index++) {
-    const character = raw[index]
-    if (start < 0) {
-      if (character === '{') {
-        start = index
-        depth = 1
-      }
-      continue
-    }
-    if (inString) {
-      if (escaped) escaped = false
-      else if (character === '\\') escaped = true
-      else if (character === '"') inString = false
-      continue
-    }
-    if (character === '"') {
-      inString = true
-    } else if (character === '{') {
-      depth++
-    } else if (character === '}') {
-      depth--
-      if (depth === 0) {
-        try {
-          parsed.push(JSON.parse(raw.slice(start, index + 1)))
-        } catch {
-          // Keep scanning: Gemini may place a non-JSON brace example before
-          // the one metadata object requested by the caller.
-        }
-        start = -1
-      }
-    }
-  }
-  return parsed
-}
-
-function normalizeMetadata(raw: unknown): VideoSeoMetadata {
+function normalizeMetadata(raw: unknown, allowLegacyMissingHashtags: boolean): VideoSeoMetadata {
   if (!raw || typeof raw !== 'object' || Array.isArray(raw)) throw new Error('AI trả về metadata không hợp lệ.')
   const record = raw as Record<string, unknown>
+  if (!allowLegacyMissingHashtags) assertExactKeys(record, ['title', 'description', 'tags', 'hashtags'])
   if (typeof record.title !== 'string' || typeof record.description !== 'string' || !Array.isArray(record.tags)) {
     throw new Error('AI trả về metadata không đúng cấu trúc.')
   }
   const title = normalize(record.title)
   const sourceDescription = record.description.normalize('NFC').trim()
-  if (!title || codePoints(title) > 100 || TITLE_CONTROL.test(title) || LIST_OR_QA_LINE.test(title) || /[<>]/u.test(title)) {
+  if (!title || codePoints(title) > 100 || TITLE_CONTROL.test(title) || LIST_OR_QA_LINE.test(title) || /[<>]/u.test(title) ||
+    containsProtocolPayload(title, ['title', 'description', 'tags', 'hashtags'])) {
     throw new Error('Tiêu đề metadata không hợp lệ hoặc dài quá 100 ký tự.')
   }
-  if (!sourceDescription || CONTROL.test(sourceDescription) || /[<>]/u.test(sourceDescription) || LIST_OR_QA_LINE.test(sourceDescription)) {
+  if (!sourceDescription || CONTROL.test(sourceDescription) || /[<>]/u.test(sourceDescription) || LIST_OR_QA_LINE.test(sourceDescription) ||
+    containsProtocolPayload(sourceDescription, ['title', 'description', 'tags', 'hashtags'])) {
     throw new Error('Description phải là một đoạn văn hợp lệ.')
   }
   const description = sourceDescription.replace(/\s+/gu, ' ')
   if (new TextEncoder().encode(description).length > 5_000) throw new Error('Description dài quá 5.000 byte UTF-8.')
   const tags: string[] = []
   const seen = new Set<string>()
+  if (record.tags.length > 100) throw new Error('Metadata có quá nhiều tags.')
   for (const item of record.tags) {
     if (typeof item !== 'string') throw new Error('Tags phải là danh sách chuỗi.')
     const tag = normalize(item).replace(/\s+/gu, ' ')
@@ -227,7 +187,8 @@ function normalizeMetadata(raw: unknown): VideoSeoMetadata {
     }
   }
   if (countYouTubeTagCharacters(tags) > 500) throw new Error('Tổng tags dài quá 500 ký tự.')
-  const hashtags = normalizeHashtags(record.hashtags, tags)
+  if (Array.isArray(record.hashtags) && record.hashtags.length > 100) throw new Error('Metadata có quá nhiều hashtags.')
+  const hashtags = normalizeHashtags(record.hashtags, tags, allowLegacyMissingHashtags)
   return { title, description, tags, hashtags }
 }
 
@@ -238,22 +199,19 @@ function normalizeMetadata(raw: unknown): VideoSeoMetadata {
  */
 export function normalizeVideoSeoMetadata(raw: unknown): VideoSeoMetadata | null {
   try {
-    return normalizeMetadata(raw)
+    return normalizeMetadata(raw, true)
   } catch {
     return null
   }
 }
 
 export function parseVideoSeoMetadata(raw: string): VideoSeoMetadata {
-  let parsed: unknown
-  try {
-    parsed = JSON.parse(unwrapJson(raw))
-  } catch {
-    const candidates = embeddedJsonObjects(raw)
-    if (candidates.length !== 1) throw new Error('AI trả về metadata không đúng định dạng JSON.')
-    parsed = candidates[0]
-  }
-  return normalizeMetadata(parsed)
+  const parsed = parseAiJsonObject(raw, {
+    allowFence: true,
+    allowProseObject: true,
+    limits: { maxBytes: 64 * 1024, maxDepth: 16, maxMembers: 256, maxCandidates: 1 }
+  })
+  return normalizeMetadata(parsed.value, false)
 }
 
 export function countYouTubeTagCharacters(tags: readonly string[]): number {
@@ -261,7 +219,7 @@ export function countYouTubeTagCharacters(tags: readonly string[]): number {
 }
 
 export function formatVideoSeoMetadata(value: VideoSeoMetadata): string {
-  const metadata = normalizeMetadata(value)
+  const metadata = normalizeMetadata(value, false)
   return `${metadata.title}\n\nDescription:\n${metadata.description}\n\nTags:\n${metadata.tags.join(', ')}\n\nHashtags:\n${metadata.hashtags.join(' ')}\n`
 }
 

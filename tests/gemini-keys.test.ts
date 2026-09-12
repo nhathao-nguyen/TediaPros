@@ -111,7 +111,9 @@ test('AutoShort strict Gemini translation fails over without changing cue IDs or
     if (key === 'fixture-key-a') return quota()
     const body = JSON.parse(String(init.body))
     const user = body.contents[0].parts[0].text as string
-    const ids = [...user.matchAll(/^\[(cue-[^\]]+)\]/gmu)].map(match => match[1])
+    const sourceSection = user.split('[SOURCE_CUES_JSONL]')[1]?.split('[/SOURCE_CUES_JSONL]')[0] || ''
+    const ids = sourceSection.split('\n').map(line => line.trim()).filter(line => line.startsWith('{'))
+      .map(line => (JSON.parse(line) as { id: string }).id).filter(id => id.startsWith('cue-'))
     assert.equal(ids.length, 1)
     return new Response(JSON.stringify({ candidates: [{ content: { parts: [{ text: JSON.stringify({ items: ids.map(id => ({ id, text: 'Hello' })) }) }] }, finishReason: 'STOP' }] }))
   }

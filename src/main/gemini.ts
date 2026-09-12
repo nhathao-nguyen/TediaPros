@@ -3,6 +3,7 @@ import { debugRaw, errLabel, logInfo } from './logger'
 import type { GeminiStatus, SrtBlock } from '../shared/types'
 import type { TranslationAssessment, TranslationInput, TranslationItem } from '../shared/translation'
 import type { TranslationBudgetSnapshot } from './translation/budget'
+import { classifyCompletion, structuredOutputJsonSchema, type AiCompletionEnvelope, type AiStructuredTask } from '../shared/aiOutput'
 import {
   buildSrt,
   buildDubbingTranslationPayload,
@@ -18,6 +19,7 @@ import type { TranslationAdapter } from './translation/orchestrator'
 import { translateFileWithAdapter } from './translation/fileRunner'
 import { addGeminiKeys, removeGeminiKey, listGeminiKeys, replaceGeminiKeys, loadGeminiKeys,
   parseGeminiKeys, rotationForProfile, GeminiKeyRotation, geminiRetryAfterMs, type GeminiRequestResult } from './geminiKeys'
+import { readBoundedAiResponseJson, readBoundedAiResponseText } from './aiResponseBody'
 
 export { parseSrt, buildSrt } from './translate-shared'
 
@@ -119,15 +121,25 @@ async function goi(
     return { ok: false, lui: true, status: 0, err: String(e).split(key).join('[REDACTED]') }
   }
   if (!res.ok) {
-    const t = await res.text()
+    const t = await readBoundedAiResponseText(res, signal, 64 * 1024).catch(() => '')
+    signal?.throwIfAborted()
     return { ok: false, lui: res.status === 429 || res.status >= 500, status: res.status,
       retryAfterMs: geminiRetryAfterMs(res, t), err: t.split(key).join('[REDACTED]') }
   }
-  const d = (await res.json()) as { candidates?: { content?: { parts?: { text?: string }[] }; finishReason?: string }[] }
+  const d = await readBoundedAiResponseJson<{ candidates?: { content?: { parts?: Array<{ text?: string; thought?: boolean; functionCall?: unknown; functionResponse?: unknown }> }; finishReason?: string }[] }>(res, signal)
+  if (!Array.isArray(d.candidates) || d.candidates.length !== 1) return { ok: false, lui: false, status: 200, err: 'provider-protocol: số candidate không hợp lệ' }
   const candidate = d.candidates?.[0]
-  const text = (candidate?.content?.parts ?? []).map((p) => p.text ?? '').join('')
+  const finishReason = candidate?.finishReason?.toUpperCase()
+  if (schema && finishReason && ['SAFETY', 'RECITATION', 'BLOCKLIST', 'PROHIBITED_CONTENT', 'SPII', 'OTHER', 'MALFORMED_FUNCTION_CALL', 'UNEXPECTED_TOOL_CALL'].includes(finishReason)) {
+    return { ok: false, lui: false, status: 200, err: 'provider-protocol: nội dung bị lọc hoặc từ chối' }
+  }
+  const parts = candidate?.content?.parts ?? []
+  if (schema && parts.some((part) => part.thought === true || part.functionCall !== undefined || part.functionResponse !== undefined)) {
+    return { ok: false, lui: false, status: 200, err: 'provider-protocol: candidate chứa thought hoặc tool payload' }
+  }
+  const text = parts.map((p) => p.text ?? '').join('')
   if (!text.trim()) return { ok: false, lui: false, status: 200, err: 'rỗng' }
-  return { ok: true, text, truncated: candidate?.finishReason === 'MAX_TOKENS' }
+  return { ok: true, text, truncated: finishReason === 'MAX_TOKENS', finishReason: candidate?.finishReason }
 }
 
 async function goiCoLui(
@@ -389,4 +401,38 @@ export async function rephraseGeminiCue(
   const r = await goiCoLui(undefined, models, systemPrompt, userPrompt, undefined, undefined, signal)
   if (!r.ok || !r.text) return null
   return String(r.text)
+}
+
+function geminiSchema(task: AiStructuredTask): Record<string, unknown> {
+  const convert = (value: unknown): unknown => {
+    if (Array.isArray(value)) return value.map(convert)
+    if (!value || typeof value !== 'object') return value
+    return Object.fromEntries(Object.entries(value as Record<string, unknown>).map(([key, child]) =>
+      [key, key === 'type' && typeof child === 'string' ? child.toUpperCase() : convert(child)]))
+  }
+  return convert(structuredOutputJsonSchema(task)) as Record<string, unknown>
+}
+
+export async function completeGeminiStructured(
+  task: AiStructuredTask,
+  systemPrompt: string,
+  userPrompt: string,
+  signal?: AbortSignal
+): Promise<AiCompletionEnvelope | null> {
+  signal?.throwIfAborted()
+  const key = await loadKey()
+  if (!key) return null
+  const models = await danhSach(key, signal)
+  const model = models[0] || 'gemini-2.5-flash'
+  const result = await goiCoLui(undefined, [model], systemPrompt, userPrompt, geminiSchema(task), undefined, signal)
+  if (!result.ok || !result.text) return null
+  return {
+    rawText: result.text,
+    provider: 'gemini',
+    modelIdentity: model,
+    formatMode: 'schema-constrained',
+    completion: classifyCompletion(result.finishReason),
+    transport: 'complete',
+    ...(result.finishReason ? { finishReason: result.finishReason } : {})
+  }
 }

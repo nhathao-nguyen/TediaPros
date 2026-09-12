@@ -75,6 +75,7 @@ const knownTests = [
   'autoshort-ocr-burn.test',
   'video-title.test',
   'video-seo.test',
+  'ai-output.test',
   'burn-video-title.test',
   'autoshort-title-overlap.test',
   'autoshort-video-title.test',

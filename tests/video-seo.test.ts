@@ -32,11 +32,12 @@ test('metadata becomes one title, one description paragraph, tags and hashtags',
 })
 
 test('legacy metadata without hashtags derives them from tags', () => {
-  const metadata = parseVideoSeoMetadata(JSON.stringify({
+  const metadata = normalizeVideoSeoMetadata({
     title: 'Des outils faits maison',
     description: 'Une vidéo sur des outils fabriqués avec de l’acier.',
     tags: ['outils faits maison', 'travail des métaux']
-  }))
+  })
+  assert.ok(metadata)
   const expected = ['#outilsfaitsmaison', '#travaildesmétaux']
   assert.deepEqual(metadata.hashtags, expected)
   assert.equal(formatVideoSeoMetadata(metadata).split('Hashtags:\n')[1], `${expected.join(' ')}\n`)
@@ -56,6 +57,8 @@ test('metadata rejects malformed JSON, lists, forbidden characters and YouTube l
   const valid = { title: 'x', description: 'Một đoạn.', tags: [] as string[], hashtags: [] as string[] }
   assert.throws(() => parseVideoSeoMetadata('plain text'))
   assert.throws(() => parseVideoSeoMetadata(JSON.stringify({ title: 'x' })))
+  assert.throws(() => parseVideoSeoMetadata(JSON.stringify({ ...valid, ignored: true })))
+  assert.throws(() => parseVideoSeoMetadata('{"title":"x","title":"y","description":"Một đoạn.","tags":[],"hashtags":[]}'))
   assert.throws(() => parseVideoSeoMetadata(JSON.stringify({ ...valid, title: 'x'.repeat(101) })))
   assert.throws(() => parseVideoSeoMetadata(JSON.stringify({ ...valid, description: '- ý một\n- ý hai' })))
   assert.throws(() => parseVideoSeoMetadata(JSON.stringify({ ...valid, description: '<b>Nội dung</b>' })))

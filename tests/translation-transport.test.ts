@@ -28,7 +28,7 @@ async function fixture(run: (manager: AutoShortResourceManager) => Promise<void>
   finally { globalThis.fetch = previous; setGlobalResourceManager(null) }
 }
 
-for (const status of [200, 503]) {
+for (const status of [200]) {
   test(`local adapter keeps inference lease through delayed HTTP ${status} body`, () => fixture(async (manager) => {
     let controller!: ReadableStreamDefaultController<Uint8Array>
     const body = new ReadableStream<Uint8Array>({ start(value) { controller = value } })
@@ -165,6 +165,39 @@ test('local adapter treats malformed response JSON as protocol failure without t
   })
   assert.equal(calls, 1)
   assert.equal(manager.getAllocated('server-inference'), 0)
+}))
+
+test('local adapter rejects ambiguous, refused, and filtered completion envelopes', () => fixture(async () => {
+  for (const body of [
+    { choices: [
+      { message: { content: '[cue-0] Hello' }, finish_reason: 'stop' },
+      { message: { content: '[cue-0] Different' }, finish_reason: 'stop' }
+    ] },
+    { choices: [{ message: { content: '[cue-0] Hello', refusal: 'policy' }, finish_reason: 'stop' }] },
+    { choices: [{ message: { content: '[cue-0] Hello' }, finish_reason: 'content_filter' }] }
+  ]) {
+    globalThis.fetch = async () => new Response(JSON.stringify(body))
+    await assert.rejects(adapter().requestOnce(batch, signal()), (error: unknown) => {
+      assert.equal(classifyTranslationError(error).code, 'provider-protocol')
+      return true
+    })
+  }
+}))
+
+test('local adapter bounds chunked response bytes and rejects malformed UTF-8 before JSON parsing', () => fixture(async () => {
+  const oversized = JSON.stringify({ choices: [{ message: { content: `[cue-0] ${'x'.repeat(300_000)}` }, finish_reason: 'stop' }] })
+  const malformedUtf8 = new Uint8Array([
+    ...new TextEncoder().encode('{"choices":[{"message":{"content":"[cue-0] Hell'),
+    0x80,
+    ...new TextEncoder().encode('"},"finish_reason":"stop"}]}')
+  ])
+  for (const body of [oversized, malformedUtf8]) {
+    globalThis.fetch = async () => new Response(body)
+    await assert.rejects(adapter().requestOnce(batch, signal()), (error: unknown) => {
+      assert.equal(classifyTranslationError(error).code, 'provider-protocol')
+      return true
+    })
+  }
 }))
 
 for (const status of [401, 403, 422]) {

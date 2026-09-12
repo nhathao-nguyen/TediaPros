@@ -240,7 +240,7 @@ test('only missing work is retried and total requests is finite', async () => {
       const ids = batch.input.cues.map((cue) => cue.id)
       requested.push(ids)
       const returned = requested.length === 1 ? ids.slice(0, -1) : ids
-      return { raw: JSON.stringify({ items: returned.map((id) => ({ id, t: `translated ${id}` })) }), truncated: false, modelIdentity: 'fixture@1' }
+      return { raw: JSON.stringify({ items: returned.map((id) => ({ id, text: `translated ${id}` })) }), truncated: false, modelIdentity: 'fixture@1' }
     }
   }
   const result = await translateWithAdapter(input, adapter, new AbortController().signal, {
@@ -250,6 +250,28 @@ test('only missing work is retried and total requests is finite', async () => {
   assert.deepEqual(requested[1], ['b'])
   assert.deepEqual(checkpoints[0]?.ids, ['a'])
   assert.notEqual(result.assessment.disposition, 'needs-review')
+})
+
+test('a response with an unknown ID never contributes accepted or checkpointed items', async () => {
+  const checkpoints: string[][] = []
+  let calls = 0
+  const result = await translateWithAdapter(input, {
+    capability,
+    async requestOnce() {
+      calls++
+      return {
+        raw: JSON.stringify({ items: [{ id: 'a', text: 'A' }, { id: 'injected', text: 'Evil' }] }),
+        truncated: false,
+        modelIdentity: 'fixture@1'
+      }
+    }
+  }, new AbortController().signal, {
+    onBatch: (_batchId, batch) => checkpoints.push(batch.items.map((item) => item.id))
+  })
+  assert.equal(result.assessment.disposition, 'needs-review')
+  assert.deepEqual(result.items, [])
+  assert.deepEqual(checkpoints, [])
+  assert.ok(calls > 0 && calls <= 5)
 })
 
 test('persistent malformed responses terminate with needs-review instead of looping', async () => {
@@ -310,7 +332,7 @@ test('cancellation never dispatches a sibling request', async () => {
     async requestOnce() {
       calls++
       controller.abort()
-      return { raw: JSON.stringify({ items: [{ id: 'a', t: 'A' }] }), truncated: false, modelIdentity: 'fixture@1' }
+      return { raw: JSON.stringify({ items: [{ id: 'a', text: 'A' }] }), truncated: false, modelIdentity: 'fixture@1' }
     }
   }
   const result = await translateWithAdapter(input, adapter, controller.signal)
@@ -346,7 +368,7 @@ test('transient provider failure honors bounded Retry-After before one recovery 
     async requestOnce(batch) {
       calls++
       if (calls === 1) throw Object.assign(new Error('busy'), { status: 503, retryAfterMs: 25 })
-      return { raw: JSON.stringify({ items: batch.input.cues.map((cue) => ({ id: cue.id, t: `translated ${cue.id}` })) }), truncated: false, modelIdentity: 'fixture@1' }
+      return { raw: JSON.stringify({ items: batch.input.cues.map((cue) => ({ id: cue.id, text: `translated ${cue.id}` })) }), truncated: false, modelIdentity: 'fixture@1' }
     }
   }
   const result = await translateWithAdapter(input, adapter, new AbortController().signal, {
@@ -439,7 +461,7 @@ test('resume keeps completed neighboring cues as read-only context for pending w
 })
 
 for (const [label, response] of [
-  ['truncated response', { raw: JSON.stringify({ items: [{ id: 'a', t: 'A' }, { id: 'b', t: 'B' }] }), truncated: true }],
+  ['truncated response', { raw: JSON.stringify({ items: [{ id: 'a', text: 'A' }, { id: 'b', text: 'B' }] }), truncated: true }],
   ['unparsed continuation', { raw: '[a] A\n[b] B\ncontinuation was lost', truncated: false }]
 ] as const) {
   test(`rejects ${label} even when every cue ID is present`, async () => {

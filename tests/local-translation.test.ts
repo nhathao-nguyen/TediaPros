@@ -17,7 +17,7 @@ test('fenced JSON translations keep IDs and timing without splitting or retransl
   let calls = 0
   globalThis.fetch = async () => {
     calls++
-    return contentReply('```json\n{"items":[{"id":"cue-1","t":"The second view."},{"id":"cue-0","t":"The first view."}]}\n```')
+    return contentReply('```json\n{"items":[{"id":"cue-1","text":"The second view."},{"id":"cue-0","text":"The first view."}]}\n```')
   }
   const result = await localTranslateSrt(input, output, 'en', undefined, 'fixture-key', undefined,
     { mode: 'dubbing', sourceLanguage: 'zh', sleep: async () => {} })
@@ -30,12 +30,12 @@ test('fenced JSON translations keep IDs and timing without splitting or retransl
   ])
 }))
 
-test('single-cue JSON object uses its explicit ID instead of failing at the final split', async () => fixture(async (input, output) => {
+test('single-cue canonical JSON uses its explicit ID instead of failing at the final split', async () => fixture(async (input, output) => {
   await writeFile(input, '39\n00:01:00,000 --> 00:01:01,800\n这是重庆的山城道路\n')
   let calls = 0
   globalThis.fetch = async () => {
     calls++
-    return contentReply('{"id":"cue-38","text":"A street in Chongqing."}')
+    return contentReply('{"items":[{"id":"cue-38","text":"A street in Chongqing."}]}')
   }
   const result = await localTranslateSrt(input, output, 'en', undefined, 'fixture-key', undefined,
     { mode: 'dubbing', sleep: async () => {} })
@@ -145,7 +145,13 @@ const reply = (ids: string[], finishReason = 'stop') => new Response(JSON.string
 }))
 function requestedIds(init?: RequestInit): string[] {
   const body = JSON.parse(String(init?.body))
-  const section = body.messages[1].content.split('[Nội dung cần dịch]:')[1]
+  const content = String(body.messages[1].content)
+  if (content.includes('[SOURCE_CUES_JSONL]')) {
+    const section = content.split('[SOURCE_CUES_JSONL]')[1].split('[/SOURCE_CUES_JSONL]')[0]
+    return section.split('\n').map((line) => line.trim()).filter((line) => line.startsWith('{'))
+      .map((line) => (JSON.parse(line) as { id: string }).id)
+  }
+  const section = content.split('[Nội dung cần dịch]:')[1]
     .split('[Ngữ cảnh phía sau')[0].split('[Toàn văn nhóm')[0]
   return [...section.matchAll(/^\[(cue-\d+)\]/gm)].map((match) => match[1])
 }

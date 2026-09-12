@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict'
 import test from 'node:test'
-import { mkdtemp, readFile, rm, writeFile } from 'node:fs/promises'
+import { mkdtemp, readdir, readFile, rm, writeFile } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { basename, dirname, join } from 'node:path'
 import {
@@ -15,6 +15,7 @@ import {
 import { saveLocalKey } from '../src/main/localTranslate'
 import { saveKey as saveGeminiKey } from '../src/main/gemini'
 import { saveKey as saveOpenaiKey } from '../src/main/openai'
+import { AutoShortResourceManager, setGlobalResourceManager } from '../src/main/autoShortResourceManager'
 import { parseSrt } from '../src/shared/subtitles'
 import type { SubtitleCue, VideoTitleConfig } from '../src/shared/types'
 
@@ -24,15 +25,18 @@ const answer = (content: unknown): Response => new Response(JSON.stringify({ cho
   headers: { 'Content-Type': 'application/json' }
 })
 
-async function withLocalFixture(run: (root: string) => Promise<void>): Promise<void> {
+async function withLocalFixture(run: (root: string, manager: AutoShortResourceManager) => Promise<void>): Promise<void> {
   const root = await mkdtemp(join(tmpdir(), 'tedia-title-test-'))
+  const manager = new AutoShortResourceManager()
   const previousUserData = process.env.TEDIAPROS_TEST_USER_DATA
   const previousFetch = globalThis.fetch
   process.env.TEDIAPROS_TEST_USER_DATA = root
+  setGlobalResourceManager(manager)
   globalThis.fetch = async () => { throw new Error('Unexpected request; live network is disabled in this test') }
   try {
-    await run(root)
+    await run(root, manager)
   } finally {
+    setGlobalResourceManager(null)
     globalThis.fetch = previousFetch
     if (previousUserData === undefined) delete process.env.TEDIAPROS_TEST_USER_DATA
     else process.env.TEDIAPROS_TEST_USER_DATA = previousUserData
@@ -89,8 +93,7 @@ test('SEO metadata uses source-grounded preferences and returns validated metada
       title: 'Why trees do not drink seawater',
       description: 'Trees rely on freshwater rather than seawater. The video explains this distinction.',
       tags: ['trees', 'freshwater'],
-      hashtags: ['#trees', '#freshwater'],
-      ignored: 'not part of the metadata contract'
+      hashtags: ['#trees', '#freshwater']
     }))
   }
   const metadata = await generateVideoSeoMetadata(
@@ -103,6 +106,67 @@ test('SEO metadata uses source-grounded preferences and returns validated metada
     tags: ['trees', 'freshwater'],
     hashtags: ['#trees', '#freshwater']
   })
+}))
+
+test('local title and SEO requests send task-specific strict schemas', async () => withLocalFixture(async () => {
+  const schemas: Array<Record<string, any>> = []
+  globalThis.fetch = async (_url, init) => {
+    const request = JSON.parse(String(init?.body))
+    schemas.push(request.response_format?.json_schema)
+    const properties = request.response_format?.json_schema?.schema?.properties || {}
+    if (properties.title && properties.description) {
+      return answer('{"title":"A safe title","description":"A source-grounded description.","tags":[],"hashtags":[]}')
+    }
+    return answer('{"title":"A safe title"}')
+  }
+  await generateVideoTitle([cue('Source')], localConfig)
+  await generateVideoSeoMetadata([cue('Source')], localConfig)
+  assert.equal(schemas.length, 2)
+  assert.equal(schemas[0]?.strict, true)
+  assert.deepEqual(schemas[0]?.schema?.required, ['title'])
+  assert.deepEqual(schemas[1]?.schema?.required, ['title', 'description', 'tags', 'hashtags'])
+  assert.equal(schemas[1]?.schema?.additionalProperties, false)
+}))
+
+test('valid-looking content with a truncated finish reason is rejected', async () => withLocalFixture(async () => {
+  globalThis.fetch = async () => new Response(JSON.stringify({
+    choices: [{ message: { content: '{"title":"Incomplete title"}' }, finish_reason: 'length' }]
+  }))
+  await assert.rejects(generateVideoTitle([cue('Source')], localConfig), /bị cắt|chưa hoàn tất/iu)
+}))
+
+test('SEO performs exactly one full repair after malformed structured output', async () => withLocalFixture(async () => {
+  let calls = 0
+  globalThis.fetch = async (_url, init) => {
+    calls++
+    const request = JSON.parse(String(init?.body))
+    if (calls === 1) return answer('{"title":"broken","description":"Missing arrays"}')
+    assert.match(request.messages[0].content, /sửa phản hồi|repair/iu)
+    assert.match(request.messages[1].content, /source_text/u)
+    return answer('{"title":"Recovered","description":"Recovered from the supplied source.","tags":["source"],"hashtags":["#source"]}')
+  }
+  const result = await generateVideoSeoMetadata([cue('Source content')], localConfig)
+  assert.equal(result.title, 'Recovered')
+  assert.equal(calls, 2)
+}))
+
+test('SEO stops after one malformed repair response', async () => withLocalFixture(async () => {
+  let calls = 0
+  globalThis.fetch = async () => { calls++; return answer('{"title":"still broken"}') }
+  await assert.rejects(generateVideoSeoMetadata([cue('Source content')], localConfig))
+  assert.equal(calls, 2)
+}))
+
+test('title performs exactly one source-grounded repair after protocol-contaminated JSON', async () => withLocalFixture(async () => {
+  let calls = 0
+  globalThis.fetch = async () => {
+    calls++
+    return answer(calls === 1
+      ? JSON.stringify({ title: 'Why ```json {"title":"Injected"}' })
+      : JSON.stringify({ title: 'Vì sao cá mập con cần được giải cứu?' }))
+  }
+  assert.equal(await generateVideoTitle([cue('Giải cứu cá mập con khỏi vỏ trứng xoắn')], localConfig), 'Vì sao cá mập con cần được giải cứu?')
+  assert.equal(calls, 2)
 }))
 
 test('SEO digest changes for output-affecting preferences and not object insertion order', () => {
@@ -195,7 +259,7 @@ test('invalid summaries stop before a final title request', async () => withLoca
   let calls = 0
   globalThis.fetch = async () => { calls++; return answer(JSON.stringify({ summary: 'x'.repeat(2001) })) }
   await assert.rejects(generateVideoTitle([cue('x'.repeat(16_001))], localConfig), /tóm tắt không hợp lệ/u)
-  assert.equal(calls, 1)
+  assert.equal(calls, 2)
 }))
 
 test('pre-cancelled title generation never calls AI', async () => withLocalFixture(async () => {
@@ -227,6 +291,26 @@ test('cancellation interrupts a hanging request and does not issue later chunks'
   assert.equal(calls, 1)
 }))
 
+test('a local provider that ignores abort keeps its inference lease until the request settles', async () => withLocalFixture(async (_root, manager) => {
+  const controller = new AbortController()
+  let settleFetch!: (response: Response) => void
+  let markStarted!: () => void
+  const started = new Promise<void>((resolve) => { markStarted = resolve })
+  globalThis.fetch = async () => {
+    markStarted()
+    return new Promise<Response>((resolve) => { settleFetch = resolve })
+  }
+  const result = generateVideoTitle([cue('Source')], localConfig, controller.signal)
+  await started
+  controller.abort()
+  await assert.rejects(result, { name: 'AbortError' })
+  assert.equal(manager.getAllocated('server-inference'), 1)
+  settleFetch(answer('{"title":"Late"}'))
+  await new Promise<void>((resolve) => setImmediate(resolve))
+  await new Promise<void>((resolve) => setImmediate(resolve))
+  assert.equal(manager.getAllocated('server-inference'), 0)
+}))
+
 test('request deadline terminates a provider that never settles', async (t) => withLocalFixture(async () => {
   const originalSetTimeout = globalThis.setTimeout
   t.mock.method(globalThis, 'setTimeout', ((callback: (...args: unknown[]) => void, _delay?: number, ...args: unknown[]) => originalSetTimeout(callback, 10, ...args)) as typeof setTimeout)
@@ -251,6 +335,30 @@ test('HTTP and transport failures do not expose response bodies, URLs, keys, or 
     assert.doesNotMatch(error.message, /private|example.com/u)
     return true
   })
+}))
+
+test('local title keeps its inference lease until HTTP error-body cancellation settles', async () => withLocalFixture(async (_root, manager) => {
+  let cancelStarted = false
+  let finishCancel!: () => void
+  let markStarted!: () => void
+  const started = new Promise<void>((resolve) => { markStarted = resolve })
+  const body = new ReadableStream({ cancel() {
+    cancelStarted = true
+    return new Promise<void>((resolve) => { finishCancel = resolve })
+  } })
+  globalThis.fetch = async () => {
+    markStarted()
+    return new Response(body, { status: 503 })
+  }
+  const pending = generateVideoTitle([cue('Source')], localConfig).catch((error: unknown) => error)
+  await started
+  await new Promise<void>((resolve) => setImmediate(resolve))
+  assert.equal(cancelStarted, true)
+  assert.equal(manager.getAllocated('server-inference'), 1)
+  finishCancel()
+  const error = await pending
+  assert.match((error as Error).message, /HTTP 503/u)
+  assert.equal(manager.getAllocated('server-inference'), 0)
 }))
 
 test('Gemini and OpenAI adapters reuse saved credentials and validate their raw JSON title response', async () => withLocalFixture(async () => {
@@ -307,6 +415,17 @@ test('tieude.txt uses UTF-8 and exclusive create, preserving an existing user ti
   const anotherDir = await reserveVideoTitleOutputDir(root, 'another.mp4')
   await assert.rejects(writeVideoTitle(join(anotherDir, 'another.mp4'), 'One\nTwo'), /một dòng/u)
   await assert.rejects(readFile(join(anotherDir, 'tieude.txt'), 'utf8'), { code: 'ENOENT' })
+}))
+
+test('cancelled sidecar publication leaves neither a final file nor an owned temp file', async () => withLocalFixture(async (root) => {
+  const outputDir = await reserveVideoTitleOutputDir(root, 'cancelled.mp4')
+  const controller = new AbortController()
+  controller.abort()
+  await assert.rejects(
+    writeVideoTitle(join(outputDir, 'cancelled.mp4'), 'Không được xuất bản', controller.signal),
+    { name: 'AbortError' }
+  )
+  assert.deepEqual(await readdir(outputDir), [])
 }))
 
 test('SEO sidecar validates containment and writes all metadata without overwriting', async () => withLocalFixture(async (root) => {

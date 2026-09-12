@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict'
 import test from 'node:test'
-import { mkdtemp, rm } from 'node:fs/promises'
+import { mkdtemp, rm, writeFile } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { createTranslationBudget } from '../src/main/translation/budget'
@@ -57,3 +57,40 @@ test('manual retry generation retains recovery budget and valid batches', () => 
   assert.deepEqual(retry.batches, checkpoint.batches)
   assert.deepEqual(retry.failures, {})
 })
+
+test('checkpoint reader treats corrupt, future, and invalid nested state as a cache miss', async () => fixture(async (root) => {
+  const path = join(root, 'item', 'translation.json')
+  const key = 'd'.repeat(64)
+  await writeFile(path, '{"schemaVersion":2,"key":', 'utf8').catch(async () => {
+    const { mkdir } = await import('node:fs/promises')
+    await mkdir(join(root, 'item'), { recursive: true })
+    await writeFile(path, '{"schemaVersion":2,"key":', 'utf8')
+  })
+  assert.equal(await readTranslationCheckpoint(path, root, key), null)
+
+  const plan = planTranslation(input, capability)
+  const budget = createTranslationBudget(plan.batches.length, () => 0).snapshot()
+  const valid: TranslationCheckpoint = {
+    schemaVersion: 2, key, generation: 0, plan, batches: {}, budget,
+    failures: {}, disposition: 'running'
+  }
+  await writeFile(path, JSON.stringify({ ...valid, schemaVersion: 3 }), 'utf8')
+  assert.equal(await readTranslationCheckpoint(path, root, key), null)
+
+  await writeFile(path, JSON.stringify({ ...valid, budget: { ...budget, recoveryUsed: -1 } }), 'utf8')
+  assert.equal(await readTranslationCheckpoint(path, root, key), null)
+
+  await writeFile(path, JSON.stringify({ ...valid, plan: { ...plan, batches: [{ ...plan.batches[0], maxOutputTokens: -1 }] } }), 'utf8')
+  assert.equal(await readTranslationCheckpoint(path, root, key), null)
+}))
+
+test('checkpoint writer rejects invalid nested state before publication', async () => fixture(async (root) => {
+  const plan = planTranslation(input, capability)
+  const key = 'e'.repeat(64)
+  const invalid = {
+    schemaVersion: 2, key, generation: 0, plan, batches: {},
+    budget: { ...createTranslationBudget(plan.batches.length, () => 0).snapshot(), activeElapsedMs: Number.NaN },
+    failures: {}, disposition: 'running'
+  } as TranslationCheckpoint
+  await assert.rejects(writeTranslationCheckpoint(join(root, 'item', 'translation.json'), root, invalid), /Invalid translation checkpoint/u)
+}))

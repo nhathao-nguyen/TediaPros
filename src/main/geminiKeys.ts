@@ -80,6 +80,7 @@ export interface GeminiRequestResult {
   status?: number
   err?: string
   truncated?: boolean
+  finishReason?: string
   retryAfterMs?: number
   allKeysExhausted?: boolean
 }

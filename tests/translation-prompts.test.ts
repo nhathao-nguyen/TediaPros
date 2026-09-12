@@ -26,15 +26,17 @@ test('one target and one output grammar per request', () => {
   assert.match(messages[0].content, /task=translate/u)
   assert.doesNotMatch(messages.map((message) => message.content).join('\n'), /target_language=auto/u)
   assert.throws(() => buildTranslationMessages({ ...input, targetLocale: 'auto' }, 'json-items'))
-  assert.equal(TRANSLATION_PROMPT_VERSION, 'translation-v10')
-  assert.equal(TRANSLATION_PARSER_VERSION, 'translation-parser-v3')
+  assert.equal(TRANSLATION_PROMPT_VERSION, 'translation-v11')
+  assert.equal(TRANSLATION_PARSER_VERSION, 'translation-parser-v4')
 })
 test('subtitle prompts carry source as data and omit dubbing duration pressure', () => {
   const messages = buildTranslationMessages(input, 'id-lines')
   assert.match(messages[1].content, /不要摸这只狗/u)
   assert.match(messages[0].content, /format=id-lines/u)
   assert.doesNotMatch(messages.map((message) => message.content).join('\n'), /13 grapheme|13 ký tự/iu)
-  assert.match(messages[1].content, /\[c1\]/u)
+  const sourceRow = messages[1].content.split('[SOURCE_CUES_JSONL]')[1].split('[/SOURCE_CUES_JSONL]')[0].trim()
+  assert.deepEqual(JSON.parse(sourceRow), { id: 'c1', text: '不要摸这只狗。' })
+  assert.doesNotMatch(sourceRow, /source_index|"start"|"end"|group_id/u)
 })
 
 test('job synopsis and glossary are identical escaped data in translation and repair prompts', () => {
@@ -79,8 +81,8 @@ test('repair receives source group and neighboring context while only missing ID
   const user = messages[1].content
   assert.match(user, /expected_ids=it\n/u)
   const requested = user.split('[SOURCE_CUES_JSONL]')[1].split('[/SOURCE_CUES_JSONL]')[0]
-  assert.match(requested, /\[it\]/u)
-  assert.doesNotMatch(requested, /\[valve\]|\[prior\]|\[next\]/u)
+  assert.deepEqual(JSON.parse(requested.trim()), { id: 'it', text: '它不能关闭。' })
+  assert.doesNotMatch(requested, /"id":"(?:valve|prior|next)"/u)
   assert.match(user, /source_group_context/u)
   assert.match(user, /这是安全阀/u)
   assert.match(user, /检查设备/u)

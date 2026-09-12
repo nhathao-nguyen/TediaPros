@@ -9,8 +9,8 @@ import { DUBBING_FIXED_MAX_TEMPO } from '../dubbing/policy'
 import { fitTranslationSourceContext, selectTranslationSourceContext } from './context'
 import { withSourceSpeechGroups } from './sourceGroups'
 
-export const TRANSLATION_PROMPT_VERSION = 'translation-v10'
-export const TRANSLATION_PARSER_VERSION = 'translation-parser-v3'
+export const TRANSLATION_PROMPT_VERSION = 'translation-v11'
+export const TRANSLATION_PARSER_VERSION = 'translation-parser-v4'
 
 export interface ModelMessage {
   role: 'system' | 'user'
@@ -99,20 +99,17 @@ function cueData(input: TranslationInput, ids: readonly string[] = input.cues.ma
     .map((cue) => {
       const duration = cue.speakingDuration ?? Math.max(0, cue.end - cue.start)
       const budget = input.mode === 'dubbing' ? getLanguageSpeakingBudget(input.targetLocale, duration) : null
-      return `[${cue.id}] ${JSON.stringify({
+      return JSON.stringify({
         id: cue.id,
-        source_index: cue.sourceIndex,
-        start: cue.start,
-        end: cue.end,
-        group_id: cue.groupId,
         ...(input.mode === 'dubbing' ? {
+          group_id: cue.groupId,
           speaking_duration_seconds: duration,
           target_natural_seconds: Number((duration * 1.1).toFixed(3)),
           hard_max_natural_seconds: Number((duration * DUBBING_FIXED_MAX_TEMPO).toFixed(3)),
           ...(budget ? (budget.unit === 'words' ? { suggested_max_words: budget.budget } : { suggested_max_chars: budget.budget }) : {})
         } : {}),
         text: cue.text
-      })}`
+      })
     })
 }
 

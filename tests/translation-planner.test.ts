@@ -125,12 +125,12 @@ test('planner splits a semantic group when the exact serialized prompt would exc
   }
   const plan = planTranslation(input, {
     ...capability,
-    contextTokens: 1_400,
+    contextTokens: 1_650,
     outputTokens: 64,
     // Model a tokenizer where the shared message envelope costs 900 tokens
     // and each source cue adds 250. This makes each cue fit while the intact
     // semantic pair does not, independent of the literal fixture text size.
-    countTokens: (text) => 900 + (text.match(/source_index/gu) || []).length * 250
+    countTokens: (text) => 900 + (text.match(/\\?"id\\?":/gu) || []).length * 250
   })
   assert.equal(plan.unsupported, false)
   assert.equal(plan.batches.length, 2)
@@ -167,7 +167,7 @@ test('split parts use neighboring source offsets as context and still restore on
   }
   const plan = planTranslation(input, {
     ...capability, outputTokens: 64, contextTokens: 1_000,
-    countTokens: (text) => 100 + (text.match(/source_index/gu) || []).length * 500
+    countTokens: (text) => 100 + (text.match(/\\?"id\\?":/gu) || []).length * 200
   })
   assert.ok(plan.batches.length >= 3)
   const middle = plan.batches[1]

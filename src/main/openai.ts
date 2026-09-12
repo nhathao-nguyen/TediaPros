@@ -5,6 +5,7 @@ import { debugRaw, errLabel, logInfo } from './logger'
 import type { DichKeyStatus, SrtBlock } from '../shared/types'
 import type { TranslationAssessment, TranslationInput, TranslationItem } from '../shared/translation'
 import type { TranslationBudgetSnapshot } from './translation/budget'
+import { classifyCompletion, openAiResponseFormat, type AiCompletionEnvelope, type AiStructuredTask } from '../shared/aiOutput'
 import {
   buildSrt,
   buildDubbingTranslationPayload,
@@ -18,6 +19,7 @@ import { buildTranslationMessages, buildTranslationBatchMessages } from './trans
 import { parseTranslationResponse } from './translation/response'
 import type { TranslationAdapter } from './translation/orchestrator'
 import { translateFileWithAdapter } from './translation/fileRunner'
+import { readBoundedAiResponseJson, readBoundedAiResponseText } from './aiResponseBody'
 
 const BASE = 'https://api.openai.com/v1'
 
@@ -97,6 +99,7 @@ interface GenKQ {
   status?: number
   err?: string
   truncated?: boolean
+  finishReason?: string
 }
 
 const HAN_KIEM = 20_000
@@ -191,16 +194,25 @@ async function goi(
     return { ok: false, lui: true, status: 0, err: String(e) }
   }
   if (!res.ok) {
-    const t = await res.text()
+    const t = await readBoundedAiResponseText(res, signal, 64 * 1024).catch(() => '')
+    signal?.throwIfAborted()
     return { ok: false, lui: res.status === 429 || res.status >= 500, status: res.status, err: t }
   }
-  const d = (await res.json()) as {
-    choices?: { message?: { content?: string | null }; finish_reason?: string }[]
+  const d = await readBoundedAiResponseJson<{
+    choices?: Array<{ message?: { content?: string | null; refusal?: unknown; tool_calls?: unknown }; finish_reason?: string }>
+  }>(res, signal)
+  if (dungSchema && (!Array.isArray(d.choices) || d.choices.length !== 1)) {
+    return { ok: false, lui: false, status: 200, err: 'provider-protocol: số candidate không hợp lệ' }
   }
   const choice = d.choices?.[0]
+  if (dungSchema && (choice?.finish_reason === 'content_filter' ||
+      (typeof choice?.message?.refusal === 'string' && choice.message.refusal.trim().length > 0) ||
+      choice?.message?.tool_calls !== undefined)) {
+    return { ok: false, lui: false, status: 200, err: 'provider-protocol: nội dung bị lọc, từ chối hoặc chứa tool payload' }
+  }
   const text = choice?.message?.content ?? ''
   if (!text.trim()) return { ok: false, lui: false, status: 200, err: 'rỗng' }
-  return { ok: true, text, truncated: choice?.finish_reason === 'length' }
+  return { ok: true, text, truncated: choice?.finish_reason === 'length', finishReason: choice?.finish_reason }
 }
 
 async function goiCoLui(
@@ -383,4 +395,53 @@ export async function rephraseOpenaiCue(
   const r = await goiCoLui(key, models, systemPrompt, userPrompt, false, undefined, signal)
   if (!r.ok || !r.text) return null
   return String(r.text)
+}
+
+export async function completeOpenAiStructured(
+  task: AiStructuredTask,
+  systemPrompt: string,
+  userPrompt: string,
+  signal?: AbortSignal
+): Promise<AiCompletionEnvelope | null> {
+  signal?.throwIfAborted()
+  const key = await loadKey()
+  if (!key) return null
+  const models = await danhSach(key)
+  const model = models[0] || 'gpt-4o-mini'
+  const messages: { role: string; content: string }[] = []
+  if (systemPrompt) messages.push({ role: 'system', content: systemPrompt })
+  messages.push({ role: 'user', content: userPrompt })
+  let response: Response
+  try {
+    response = await fetch(`${BASE}/chat/completions`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${key}` },
+      body: JSON.stringify({ model, messages, temperature: 0.2, response_format: openAiResponseFormat(task) }),
+      signal: signal ? AbortSignal.any([signal, AbortSignal.timeout(HAN_DICH)]) : AbortSignal.timeout(HAN_DICH)
+    })
+  } catch {
+    signal?.throwIfAborted()
+    return null
+  }
+  if (!response.ok) {
+    await response.body?.cancel().catch(() => {})
+    return null
+  }
+  const payload = await readBoundedAiResponseJson<{
+    choices?: Array<{ message?: { content?: string | null; refusal?: string | null; tool_calls?: unknown }; finish_reason?: string }>
+  }>(response, signal)
+  if (!Array.isArray(payload.choices) || payload.choices.length !== 1) return null
+  const choice = payload.choices[0]
+  if (choice.message?.tool_calls !== undefined) return null
+  const rawText = choice.message?.content || ''
+  if (!rawText.trim() && !choice.message?.refusal) return null
+  return {
+    rawText,
+    provider: 'openai',
+    modelIdentity: model,
+    formatMode: 'schema-constrained',
+    completion: classifyCompletion(choice.finish_reason, Boolean(choice.message?.refusal)),
+    transport: 'complete',
+    ...(choice.finish_reason ? { finishReason: choice.finish_reason } : {})
+  }
 }

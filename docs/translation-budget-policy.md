@@ -9,6 +9,8 @@ Theo yêu cầu người dùng, `TRANSLATION_BUDGET_LIMITS_ENABLED = false` tron
 - Hạn mức token của provider và giới hạn batch theo khả năng model vẫn cần thiết để tránh đầu ra bị cắt. Thay đổi này không bỏ giới hạn do server/API áp dụng.
 - Khi bỏ override tạm thời, bật lại hằng số trên. Bounded mode tiếp tục có test riêng; checkpoint đã vượt quota sẽ cần xử lý rõ ràng khi bật lại, không tự xóa lịch sử sử dụng.
 
+Prompt dịch hiện dùng `translation-v11` và parser contract `translation-parser-v4`. Wire payload bỏ timing/source-index lặp nhưng giữ ID, source-group và speaking-duration cần thiết. Mọi request/recovery vẫn được charge trước dispatch; tắt quota không cho phép response có unknown/duplicate ID đi vào accepted/checkpoint state. Checkpoint schema v2 được parse theo giới hạn 2 MiB và validate sâu trước resume hoặc publication.
+
 Các item đã ở `needs-review` vẫn cần người dùng chọn thử lại. Bản build mới chỉ có hiệu lực khi ứng dụng được khởi động lại; tiến trình đang chạy giữ mã đã nạp.
 
 ## Tự phục hồi cảnh báo chất lượng

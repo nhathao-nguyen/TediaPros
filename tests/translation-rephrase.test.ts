@@ -357,7 +357,8 @@ test('AutoShort sends video-aware timing to the local translator and preserves s
     globalThis.fetch = async (_url, init) => {
       const body = JSON.parse(String(init?.body))
       const prompt = body.messages[1].content as string
-      const data = prompt.split('\n').filter((line) => /^\[.*?\] \{/u.test(line)).map((line) => JSON.parse(line.slice(line.indexOf('{'))))
+      const section = prompt.split('[SOURCE_CUES_JSONL]')[1]?.split('[/SOURCE_CUES_JSONL]')[0] || ''
+      const data = section.split('\n').map((line) => line.trim()).filter((line) => line.startsWith('{')).map((line) => JSON.parse(line))
       assert.equal(data.length, 2)
       assert.ok(Math.abs(data[0].speaking_duration_seconds - 1.42) < 0.001)
       // Last cue: 5.00 - 0.12 - 3.41, not another inter-cue 0.50s reserve.

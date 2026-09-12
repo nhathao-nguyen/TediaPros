@@ -26,7 +26,7 @@ test('maps by identity even when provider changes order', () => {
 
 test('valid JSON keeps escaped newlines and reports duplicate/unknown ids', () => {
   const result = parseTranslationResponse(
-    JSON.stringify({ items: [{ id: 'a', t: 'first\nsecond' }, { id: 'a', t: 'duplicate' }, { id: 'x', t: 'unknown' }] }),
+    JSON.stringify({ items: [{ id: 'a', text: 'first\nsecond' }, { id: 'a', text: 'duplicate' }, { id: 'x', text: 'unknown' }] }),
     'json-items',
     ['a', 'b'],
     false
@@ -74,4 +74,21 @@ test('normalizes a gateway ID that dropped the cue prefix', () => {
     { id: 'cue-32-49700', text: 'A shark fact' },
     { id: 'cue-33-51400', text: 'Another fact' }
   ])
+})
+
+test('strict JSON rejects duplicate properties, legacy aliases and positional numeric IDs', () => {
+  for (const raw of [
+    '{"items":[{"id":"a","text":"first","text":"second"}]}',
+    '{"items":[{"id":"a","t":"legacy"}]}',
+    '{"items":[{"id":"0","text":"must not map by position"}]}'
+  ]) {
+    const result = parseTranslationResponse(raw, 'json-items', ['cue-a'], false)
+    assert.equal(result.complete, false)
+  }
+  assert.equal(parseTranslationResponse(
+    '{"items":[{"id":"0","text":"must not map to cue-0"}]}',
+    'json-items',
+    ['cue-0'],
+    false
+  ).complete, false)
 })
