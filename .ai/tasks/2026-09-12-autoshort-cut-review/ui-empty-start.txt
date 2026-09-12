@@ -1,0 +1,91 @@
+Browser tab: 1, Title: "AutoShort cut review harness", URL: "http://127.0.0.1:56761/".
+0 AXWebArea AutoShort cut review harness, URL: 127.0.0.1:56761/
+	1 container root
+		2 text Audit harness · commit 0d7fa21 · component/CSS thật, shell cố định để đo layout · không phải app Electron đang chạy
+		3 container
+			4 text Chiều rộng panel 
+			5 pop up button (collapsed, settable) Chiều rộng panel , Value: 696 px, Secondary Actions: Expand
+				6 menu
+					7 (selected) 696 px
+					8 1040 px
+					9 440 px
+		10 container
+			11 text BẢN XEM TRƯỚC 0:00 / 0:35
+			12 button Cắt đoạn
+			13 button 9:16 · Nền mờ
+			14 button Chỉnh hình ảnh
+			15 pop up button (collapsed, settable) Description: Video mẫu, Value: 1. Video tổng hợp.mp4, Secondary Actions: Expand
+				16 menu
+					17 (selected) 1. Video tổng hợp.mp4
+			18 button + Thêm video
+			19 button Xóa
+			25 container Cắt đoạn video
+				26 text Cắt đoạn
+				27 text 1  đoạn bỏ  · 35.000000s → 32.000000s
+				28 container
+					29 text Đầu (giây)
+					30 text field (settable) Đầu (giây), Value: 0.000000
+				31 button Đặt đầu
+				32 container
+					33 text Cuối (giây)
+					34 text field (settable) Cuối (giây), Value: 0.000000
+				35 button Đặt cuối
+				36 button Bỏ đoạn
+				37 button (disabled) Bỏ trước
+				38 button Bỏ sau
+				39 button 0.000000s – 3.000000s
+					40 text 0.000000
+					41 text s – 
+					42 text 3.000000
+					43 text s
+				44 button Khôi phục
+				45 button Khôi phục toàn bộ
+			20 text Vùng video — đo kích thước layout Play · 0:00 ────────────────── 0:35
+		21 container Số đo layout
+			22 text {
+  ".editor-canvas-panel": {
+    "width": 696,
+    "height": 596,
+    "y": 86,
+    "scrollHeight": 594
+  },
+  ".editor-stage-head": {
+    "width": 694,
+    "height": 132,
+    "y": 87,
+    "scrollHeight": 131
+  },
+  ".autoshort-cut-panel": {
+    "width": 694,
+    "height": 390,
+    "y": 219,
+    "scrollHeight": 388
+  },
+  ".editor-stage-shell": {
+    "width": 694,
+    "height": 24,
+    "y": 609,
+    "scrollHeight": 32
+  },
+  ".editor-transport": {
+    "width": 694,
+    "height": 48,
+    "y": 633,
+    "scrollHeight": 48
+  }
+}
+		23 container Bản cắt đã áp dụng
+			24 text {
+  "schemaVersion": 1,
+  "revision": 1,
+  "mode": "ripple-delete",
+  "removedRanges": [
+    {
+      "id": "dab743e5-9090-4c61-96a6-3597ad6cfb1c",
+      "startUs": 0,
+      "endUs": 3000000
+    }
+  ]
+}
+
+The focused UI element is 36 button Bỏ đoạn

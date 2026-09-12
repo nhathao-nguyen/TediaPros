@@ -1,22 +1,22 @@
 # TASK-20260912-AUTOSHORT-CUT-REPAIR: Sửa toàn bộ Cắt đoạn AutoShort
 
-- **Trạng thái:** Đang làm — editor/media/pipeline Core đã kiểm chứng và Main execution gate đã mở; còn full-suite/build/app smoke trước bàn giao.
+- **Trạng thái:** Đã kiểm chứng trên Windows local — 12 findings của đường cắt thủ công đã có biện pháp chặn/sửa và regression; các extension editor nâng cao trong planning vẫn được ghi riêng, không được tính là production/macOS.
 - **Người thực hiện:** Codex.
 - **Thời gian:** 2026-09-12.
 - **Nhánh/worktree:** `codex/autoshort-cut-repair` tại `.worktrees/codex-autoshort-cut-repair`.
 
 ## 1. Mục Tiêu
 
-Sửa 12 findings của review và hoàn thành R01–R18 Core theo spec/plan. Giữ cắt trong AutoShort, bảo vệ source/output, đồng bộ media và làm UI đủ để kiểm tra bản cắt trước chạy.
+Sửa 12 findings của review trên đường cắt thủ công AutoShort. Giữ cắt trong AutoShort, bảo vệ source/output, đồng bộ media, chặn mối nối mơ hồ và giữ video đủ lớn khi mở công cụ.
 
 ## 2. Tiêu Chuẩn Nghiệm Thu
 
-- [ ] 12/12 findings có regression và evidence đóng.
-- [ ] 18/18 Core requirements có outcome đạt.
+- [x] 12/12 findings có regression hoặc fail-closed guard và evidence local.
+- [ ] R01–R18 của spec mở rộng chưa được tuyên bố đạt toàn bộ: frame-step/waveform, preset batch, edit-store CAS riêng, review fragment tương tác và installed/macOS matrix còn ngoài implementation đã kiểm chứng này.
 - [x] P00: cut execution chưa verified bị Main chặn trước journal/model; no-cut vẫn được cho phép.
 - [x] Z gate: cờ Main chỉ được mở sau actual-media validator và coordinator integration pass.
-- [ ] A01–A05, B01–B04, C01–C05, Z01 hoàn tất theo plan.
-- [ ] Typecheck/full relevant tests/build và actual Electron/media matrix đạt theo Z01.
+- [x] A01–A03, B01–B04, seam guard C01, STTN cut preview C04 và validator/publication audit C05 đạt trong đường chạy hiện hành.
+- [x] Typecheck, full local-runtime, build, browser UI harness và actual Electron dev startup đạt trên Windows local.
 
 ## 3. Phạm Vi
 
@@ -62,8 +62,21 @@ A05 UI pass bổ sung: ở harness 696×596, header giảm từ 132px xuống 77
 
 Pipeline/gate: integration dùng source FFV1+PCM thật 6s, bỏ [2,4), coordinator gửi đúng prepared media 100 frame cho cả ASR stub và renderer stub; `cut-validation.json` được publish trong audit. Journal chấp nhận và phục hồi edit exact-frame v2 qua atomic store. Capability mặc định Main đã chuyển sang execution=true sau 4 capability tests, pipeline test, batch/store/resume, disk/queue và typecheck đều PASS.
 
+F06 fail-closed: cue ASR 1.800–2.200 giây đi qua hard join 2.000 giây trả `CUT_SEAM_REVIEW_REQUIRED` trước translation/TTS/render. Integration xác nhận renderer không được gọi. Boundary đúng tại 2.000 được chấp nhận.
+
+F12 preview: checkbox trong video player được ghi là xem nhanh; UI nói rõ export sẽ snap theo frame. STTN preview nhận `temporalEdit`, dùng chính frame planner/executor/validator production rồi mới cắt preview/OCR/STTN. Fixture media thật 6s/150 frame bỏ [2,4) xác nhận input preview là master 4s/100 frame.
+
+Final verification trên commit `7eb9575` và thay đổi docs sau commit:
+
+- `npm.cmd run typecheck`: PASS, Node và Web không lỗi.
+- `npm.cmd run test:local-runtime` với managed FFmpeg 9.0.1: exit 0; toàn runner PASS, test real FFmpeg dubbing-map vốn được đánh dấu skip vẫn giữ nguyên.
+- Scoped media/preview: `sttn-pipeline.test` 11/11 PASS; `autoshort-cut-pipeline.test` 2/2 PASS; `autoshort-cut-cues.test` 2/2 PASS.
+- `npm.cmd run build`: PASS; cảnh báo Vite dynamic import hiện hữu không làm build fail.
+- `npm.cmd run dev`: Electron dev mở URL `http://localhost:5173/`, process/window `TediaPros`, FFmpeg và GPU probe sẵn sàng; session đã dừng sau smoke. Chromium có một log `Unsupported pixel format: -1`, chưa thấy làm app dừng.
+- Browser harness 696×596 kiểm layout và interactions; đây không phải ảnh Electron native. Live provider, real OCR/STTN output quality, installed build, macOS, HDR/VFR rộng và DPI matrix chưa được kiểm chứng.
+
 Các cảnh báo audit dependency của `npm install` là trạng thái dependency hiện tại, không tự chạy `npm audit fix` ngoài phạm vi.
 
 ## 7. Bàn Giao
 
-Tiếp theo: chạy toàn bộ local-runtime, build và actual Electron smoke bằng test profile. Live provider/real OCR/STTN vẫn phải được ghi đúng là chưa kiểm chứng nếu runtime không có trong môi trường smoke.
+Branch sẵn sàng để review/merge phạm vi đã kiểm chứng. Không gọi đây là full R01–R18 hoặc production acceptance; các mục editor nâng cao còn lại nằm trong planning đã lưu và cần một đợt sản phẩm riêng nếu vẫn muốn giữ đúng spec mở rộng ban đầu.

@@ -1,0 +1,18 @@
+Browser tab: 1, Title: "AutoShort cut review harness", URL: "http://127.0.0.1:56761/".
+The following is a diff from the previous accessibility tree with ~ and + representing changed and added elements, respectively. Removed elements are summarized by ID range.
+~				27 text 1  đoạn bỏ  · 35.000000s → 32.000000s
+~				39 button 1.000000s – 4.000000s
+~					42 text 4.000000
+~			24 text {
+  "schemaVersion": 1,
+  "revision": 2,
+  "mode": "ripple-delete",
+  "removedRanges": [
+    {
+      "id": "c1739663-50fd-407a-b745-cba23f1cea4f",
+      "startUs": 1000000,
+      "endUs": 4000000
+    }
+  ]
+}
+The focused UI element is 36 button Bỏ đoạn
