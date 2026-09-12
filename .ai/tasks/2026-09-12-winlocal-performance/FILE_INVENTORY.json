@@ -1,0 +1,494 @@
+[
+  {
+    "source": "F:\\US\\MyLau\\2025-04-06_大海退潮，来海边吃点新鲜的海鲜_赶海_7490083913512045863\\.autoshort-audit-1c4d67f9-60f2-4f26-8e2f-320e268c651c-efa42158-5fdd-4356-94fd-3515fc6b26ac\\diagnostics\\summary.json",
+    "snapshot": "evidence\\1c4d67f9-60f2-4f26-8e2f-320e268c651c\\efa42158-5fdd-4356-94fd-3515fc6b26ac\\summary.json",
+    "bytes": 1036,
+    "sha256": "a84c2a8ec4fa047ae014e09c886403a133ad4c2518c53e4ebff6a56ee566f445"
+  },
+  {
+    "source": "F:\\US\\MyLau\\2025-04-06_大海退潮，来海边吃点新鲜的海鲜_赶海_7490083913512045863\\.autoshort-audit-1c4d67f9-60f2-4f26-8e2f-320e268c651c-efa42158-5fdd-4356-94fd-3515fc6b26ac\\diagnostics\\events.jsonl",
+    "snapshot": "evidence\\1c4d67f9-60f2-4f26-8e2f-320e268c651c\\efa42158-5fdd-4356-94fd-3515fc6b26ac\\events.jsonl",
+    "bytes": 5149,
+    "sha256": "62c953bd53ceb781005453065e4afd329ccca6e4168747352de793793862db70"
+  },
+  {
+    "source": "F:\\US\\MyLau\\2025-04-06_大海退潮，来海边吃点新鲜的海鲜_赶海_7490083913512045863 (2)\\.autoshort-audit-7e8f5878-beaf-45a4-855d-4bd54ec2b321-efa42158-5fdd-4356-94fd-3515fc6b26ac\\diagnostics\\summary.json",
+    "snapshot": "evidence\\7e8f5878-beaf-45a4-855d-4bd54ec2b321\\efa42158-5fdd-4356-94fd-3515fc6b26ac\\summary.json",
+    "bytes": 1605,
+    "sha256": "7a6900a8548bd938770697b48e87b731045c2bbb4fa510f8a4fbb772a637553d"
+  },
+  {
+    "source": "F:\\US\\MyLau\\2025-04-06_大海退潮，来海边吃点新鲜的海鲜_赶海_7490083913512045863 (2)\\.autoshort-audit-7e8f5878-beaf-45a4-855d-4bd54ec2b321-efa42158-5fdd-4356-94fd-3515fc6b26ac\\diagnostics\\events.jsonl",
+    "snapshot": "evidence\\7e8f5878-beaf-45a4-855d-4bd54ec2b321\\efa42158-5fdd-4356-94fd-3515fc6b26ac\\events.jsonl",
+    "bytes": 6579,
+    "sha256": "61b63e24ca668c2cc00d98ef7ff2c9e80769650b176e474a656e33d6636f6176"
+  },
+  {
+    "source": "F:\\US\\MyLau\\2025-04-06_大海退潮，来海边吃点新鲜的海鲜_赶海_7490083913512045863 (3)\\.autoshort-audit-ef37f1f8-9606-4870-9b05-a9b6693aaf87-efa42158-5fdd-4356-94fd-3515fc6b26ac\\diagnostics\\summary.json",
+    "snapshot": "evidence\\ef37f1f8-9606-4870-9b05-a9b6693aaf87\\efa42158-5fdd-4356-94fd-3515fc6b26ac\\summary.json",
+    "bytes": 1478,
+    "sha256": "c6128f0eff8313daab27a2b371042a0500dfef00f8eb72dad753cc3853fb1854"
+  },
+  {
+    "source": "F:\\US\\MyLau\\2025-04-06_大海退潮，来海边吃点新鲜的海鲜_赶海_7490083913512045863 (3)\\.autoshort-audit-ef37f1f8-9606-4870-9b05-a9b6693aaf87-efa42158-5fdd-4356-94fd-3515fc6b26ac\\diagnostics\\events.jsonl",
+    "snapshot": "evidence\\ef37f1f8-9606-4870-9b05-a9b6693aaf87\\efa42158-5fdd-4356-94fd-3515fc6b26ac\\events.jsonl",
+    "bytes": 6575,
+    "sha256": "8745a81f7f00edfc11d2427558f4b8f4eb809edae0b89a9d25c7d04428b25d48"
+  },
+  {
+    "source": "F:\\US\\MyLau\\2025-04-08_大海退潮啦，海鲜就要现抓现吃_赶海_7490882160954461476\\.autoshort-audit-7e8f5878-beaf-45a4-855d-4bd54ec2b321-18d7d4af-e860-4014-8395-775fe9eb7aac\\diagnostics\\summary.json",
+    "snapshot": "evidence\\7e8f5878-beaf-45a4-855d-4bd54ec2b321\\18d7d4af-e860-4014-8395-775fe9eb7aac\\summary.json",
+    "bytes": 1667,
+    "sha256": "dbabc7fa83ae445582777f2167365e42b03493c004cc9e98f28355d4e99ca83f"
+  },
+  {
+    "source": "F:\\US\\MyLau\\2025-04-08_大海退潮啦，海鲜就要现抓现吃_赶海_7490882160954461476\\.autoshort-audit-7e8f5878-beaf-45a4-855d-4bd54ec2b321-18d7d4af-e860-4014-8395-775fe9eb7aac\\diagnostics\\events.jsonl",
+    "snapshot": "evidence\\7e8f5878-beaf-45a4-855d-4bd54ec2b321\\18d7d4af-e860-4014-8395-775fe9eb7aac\\events.jsonl",
+    "bytes": 7898,
+    "sha256": "6b84a7e8e9959eff997417364b02a22eccdada3c72d198ed5db28593eecab44f"
+  },
+  {
+    "source": "F:\\US\\MyLau\\2025-04-08_大海退潮啦，海鲜就要现抓现吃_赶海_7490882160954461476 (2)\\.autoshort-audit-ef37f1f8-9606-4870-9b05-a9b6693aaf87-18d7d4af-e860-4014-8395-775fe9eb7aac\\diagnostics\\summary.json",
+    "snapshot": "evidence\\ef37f1f8-9606-4870-9b05-a9b6693aaf87\\18d7d4af-e860-4014-8395-775fe9eb7aac\\summary.json",
+    "bytes": 1428,
+    "sha256": "c180e7d61e0ede4e10e2e048f647cddd0a3c06ee40ad7ad2a599303afd1a6b4a"
+  },
+  {
+    "source": "F:\\US\\MyLau\\2025-04-08_大海退潮啦，海鲜就要现抓现吃_赶海_7490882160954461476 (2)\\.autoshort-audit-ef37f1f8-9606-4870-9b05-a9b6693aaf87-18d7d4af-e860-4014-8395-775fe9eb7aac\\diagnostics\\events.jsonl",
+    "snapshot": "evidence\\ef37f1f8-9606-4870-9b05-a9b6693aaf87\\18d7d4af-e860-4014-8395-775fe9eb7aac\\events.jsonl",
+    "bytes": 6564,
+    "sha256": "11ccea80d6e582cfcab71467a90e7c1324ee021ebe81e7b14d0d430a70c595e7"
+  },
+  {
+    "source": "F:\\US\\MyLau\\2025-04-16_赶海抓海鲜，现煮现吃_赶海_7493809730649885992\\.autoshort-audit-7e8f5878-beaf-45a4-855d-4bd54ec2b321-8abdbd55-78c1-45a1-a159-0e043ea68bd9\\diagnostics\\summary.json",
+    "snapshot": "evidence\\7e8f5878-beaf-45a4-855d-4bd54ec2b321\\8abdbd55-78c1-45a1-a159-0e043ea68bd9\\summary.json",
+    "bytes": 1855,
+    "sha256": "0356e3a5843f2a1b39f4454ab5a9ca067a15ff5206a9708b231be340c80f81d3"
+  },
+  {
+    "source": "F:\\US\\MyLau\\2025-04-16_赶海抓海鲜，现煮现吃_赶海_7493809730649885992\\.autoshort-audit-7e8f5878-beaf-45a4-855d-4bd54ec2b321-8abdbd55-78c1-45a1-a159-0e043ea68bd9\\diagnostics\\events.jsonl",
+    "snapshot": "evidence\\7e8f5878-beaf-45a4-855d-4bd54ec2b321\\8abdbd55-78c1-45a1-a159-0e043ea68bd9\\events.jsonl",
+    "bytes": 11482,
+    "sha256": "94f815f45c6ba3fd32ce30ecfaf0912f7fb697dc889a771d50e0b6973097398a"
+  },
+  {
+    "source": "F:\\US\\MyLau\\2025-04-16_赶海抓海鲜，现煮现吃_赶海_7493809730649885992 (2)\\.autoshort-audit-ef37f1f8-9606-4870-9b05-a9b6693aaf87-8abdbd55-78c1-45a1-a159-0e043ea68bd9\\diagnostics\\summary.json",
+    "snapshot": "evidence\\ef37f1f8-9606-4870-9b05-a9b6693aaf87\\8abdbd55-78c1-45a1-a159-0e043ea68bd9\\summary.json",
+    "bytes": 1887,
+    "sha256": "b0fa2b68f1c560b8c838adc80bed05db5974560dd8605e8c21e0448540cee2a2"
+  },
+  {
+    "source": "F:\\US\\MyLau\\2025-04-16_赶海抓海鲜，现煮现吃_赶海_7493809730649885992 (2)\\.autoshort-audit-ef37f1f8-9606-4870-9b05-a9b6693aaf87-8abdbd55-78c1-45a1-a159-0e043ea68bd9\\diagnostics\\events.jsonl",
+    "snapshot": "evidence\\ef37f1f8-9606-4870-9b05-a9b6693aaf87\\8abdbd55-78c1-45a1-a159-0e043ea68bd9\\events.jsonl",
+    "bytes": 11465,
+    "sha256": "ec7a3d011f89c596253b9984829317c29646d2d7b22f841a6175eaecadcb5942"
+  },
+  {
+    "source": "F:\\US\\MyLau\\2025-04-18_真正的海底捞自助，就要现抓现吃_赶海_7494584044865260852\\.autoshort-audit-7e8f5878-beaf-45a4-855d-4bd54ec2b321-cae55599-694b-4665-9740-102d23696d41\\diagnostics\\summary.json",
+    "snapshot": "evidence\\7e8f5878-beaf-45a4-855d-4bd54ec2b321\\cae55599-694b-4665-9740-102d23696d41\\summary.json",
+    "bytes": 1035,
+    "sha256": "1f09b469d46dbcdc470d7b285cd396c0075abb2de6059655daf3556a8594d017"
+  },
+  {
+    "source": "F:\\US\\MyLau\\2025-04-18_真正的海底捞自助，就要现抓现吃_赶海_7494584044865260852\\.autoshort-audit-7e8f5878-beaf-45a4-855d-4bd54ec2b321-cae55599-694b-4665-9740-102d23696d41\\diagnostics\\events.jsonl",
+    "snapshot": "evidence\\7e8f5878-beaf-45a4-855d-4bd54ec2b321\\cae55599-694b-4665-9740-102d23696d41\\events.jsonl",
+    "bytes": 5148,
+    "sha256": "00f20f75e4061b5ebf7726bbccd699bb7495544e02bc30ae7bbbc284bcd51630"
+  },
+  {
+    "source": "F:\\US\\MyLau\\2025-04-18_真正的海底捞自助，就要现抓现吃_赶海_7494584044865260852 (2)\\.autoshort-audit-ef37f1f8-9606-4870-9b05-a9b6693aaf87-cae55599-694b-4665-9740-102d23696d41\\diagnostics\\summary.json",
+    "snapshot": "evidence\\ef37f1f8-9606-4870-9b05-a9b6693aaf87\\cae55599-694b-4665-9740-102d23696d41\\summary.json",
+    "bytes": 1701,
+    "sha256": "cab4db7de5714f301dbbf047b0eea346aa0a54008966b88ddf60b74313fe6c71"
+  },
+  {
+    "source": "F:\\US\\MyLau\\2025-04-18_真正的海底捞自助，就要现抓现吃_赶海_7494584044865260852 (2)\\.autoshort-audit-ef37f1f8-9606-4870-9b05-a9b6693aaf87-cae55599-694b-4665-9740-102d23696d41\\diagnostics\\events.jsonl",
+    "snapshot": "evidence\\ef37f1f8-9606-4870-9b05-a9b6693aaf87\\cae55599-694b-4665-9740-102d23696d41\\events.jsonl",
+    "bytes": 10142,
+    "sha256": "da70166159777f77dc6e368b6c4947e3bb1bd8bf5647b1111048b5a3a02ce873"
+  },
+  {
+    "source": "F:\\US\\MyLau\\2025-04-22_大海退潮，来海边觅食啦_赶海_7496063295829396736\\.autoshort-audit-ef37f1f8-9606-4870-9b05-a9b6693aaf87-69a3d8e7-3e44-4f5e-9170-a4f5ccd7389b\\diagnostics\\summary.json",
+    "snapshot": "evidence\\ef37f1f8-9606-4870-9b05-a9b6693aaf87\\69a3d8e7-3e44-4f5e-9170-a4f5ccd7389b\\summary.json",
+    "bytes": 1853,
+    "sha256": "87e6857a8b48afa24400afbb886d64812cbe21e6a4aefea91311edac39363511"
+  },
+  {
+    "source": "F:\\US\\MyLau\\2025-04-22_大海退潮，来海边觅食啦_赶海_7496063295829396736\\.autoshort-audit-ef37f1f8-9606-4870-9b05-a9b6693aaf87-69a3d8e7-3e44-4f5e-9170-a4f5ccd7389b\\diagnostics\\events.jsonl",
+    "snapshot": "evidence\\ef37f1f8-9606-4870-9b05-a9b6693aaf87\\69a3d8e7-3e44-4f5e-9170-a4f5ccd7389b\\events.jsonl",
+    "bytes": 11474,
+    "sha256": "3f63fdc537400f3d8a0652591260100f82019418d2fb41f233deee0eb914372b"
+  },
+  {
+    "source": "F:\\US\\MyLau\\2025-04-25_下班赶海觅食时间到，海鲜就要吃新鲜的_赶海_7497198185862008116\\.autoshort-audit-ef37f1f8-9606-4870-9b05-a9b6693aaf87-8dbb3a28-1a98-47a8-a81b-dae4eb43ba1d\\diagnostics\\summary.json",
+    "snapshot": "evidence\\ef37f1f8-9606-4870-9b05-a9b6693aaf87\\8dbb3a28-1a98-47a8-a81b-dae4eb43ba1d\\summary.json",
+    "bytes": 1518,
+    "sha256": "635a5f3d273d669aa6a1521b1107df59f972d0ac62a13337bdaa3557830e7077"
+  },
+  {
+    "source": "F:\\US\\MyLau\\2025-04-25_下班赶海觅食时间到，海鲜就要吃新鲜的_赶海_7497198185862008116\\.autoshort-audit-ef37f1f8-9606-4870-9b05-a9b6693aaf87-8dbb3a28-1a98-47a8-a81b-dae4eb43ba1d\\diagnostics\\events.jsonl",
+    "snapshot": "evidence\\ef37f1f8-9606-4870-9b05-a9b6693aaf87\\8dbb3a28-1a98-47a8-a81b-dae4eb43ba1d\\events.jsonl",
+    "bytes": 7869,
+    "sha256": "c84183e9b763f0110d3529055ab8048b26dac1b70cb8ecdff1f886fa534fcb13"
+  },
+  {
+    "source": "F:\\US\\MyLau\\2025-04-30_又到了赶海觅食的好时间_赶海_7499004312666099004\\.autoshort-audit-ef37f1f8-9606-4870-9b05-a9b6693aaf87-dac23b6a-2c8e-4588-8c41-52cecb6b9ad6\\diagnostics\\summary.json",
+    "snapshot": "evidence\\ef37f1f8-9606-4870-9b05-a9b6693aaf87\\dac23b6a-2c8e-4588-8c41-52cecb6b9ad6\\summary.json",
+    "bytes": 1761,
+    "sha256": "a83adf04972e89539410e7ec5eef152c50fe475eb4679b1cdefd01f910a857c0"
+  },
+  {
+    "source": "F:\\US\\MyLau\\2025-04-30_又到了赶海觅食的好时间_赶海_7499004312666099004\\.autoshort-audit-ef37f1f8-9606-4870-9b05-a9b6693aaf87-dac23b6a-2c8e-4588-8c41-52cecb6b9ad6\\diagnostics\\events.jsonl",
+    "snapshot": "evidence\\ef37f1f8-9606-4870-9b05-a9b6693aaf87\\dac23b6a-2c8e-4588-8c41-52cecb6b9ad6\\events.jsonl",
+    "bytes": 7919,
+    "sha256": "04717bee8f089e5dbe0a022e4c5fd947131f71c917521094c21abeba34bdaef7"
+  },
+  {
+    "source": "F:\\US\\MyLau\\2025-05-07_免费海鲜自助就要现抓现吃_赶海_7501226986955164985\\.autoshort-audit-ef37f1f8-9606-4870-9b05-a9b6693aaf87-49ed72e3-0e44-4f79-8b5f-c2d99c93b828\\diagnostics\\summary.json",
+    "snapshot": "evidence\\ef37f1f8-9606-4870-9b05-a9b6693aaf87\\49ed72e3-0e44-4f79-8b5f-c2d99c93b828\\summary.json",
+    "bytes": 1855,
+    "sha256": "579f143ec0101850e13dec54f28131547c532290fa11cd189b83d4800057e494"
+  },
+  {
+    "source": "F:\\US\\MyLau\\2025-05-07_免费海鲜自助就要现抓现吃_赶海_7501226986955164985\\.autoshort-audit-ef37f1f8-9606-4870-9b05-a9b6693aaf87-49ed72e3-0e44-4f79-8b5f-c2d99c93b828\\diagnostics\\events.jsonl",
+    "snapshot": "evidence\\ef37f1f8-9606-4870-9b05-a9b6693aaf87\\49ed72e3-0e44-4f79-8b5f-c2d99c93b828\\events.jsonl",
+    "bytes": 11482,
+    "sha256": "f8776afb3e822a2411fb0e04a6015d684d078601c8ef66ad3c5fa0ac9e082c32"
+  },
+  {
+    "source": "F:\\US\\MyLau\\2025-05-10_下班后自助海鲜面，就要到海里现抓现吃_赶海_7502790065120562444\\.autoshort-audit-ef37f1f8-9606-4870-9b05-a9b6693aaf87-78716583-e60b-44e3-bc8d-f4a74ba4550f\\diagnostics\\summary.json",
+    "snapshot": "evidence\\ef37f1f8-9606-4870-9b05-a9b6693aaf87\\78716583-e60b-44e3-bc8d-f4a74ba4550f\\summary.json",
+    "bytes": 1856,
+    "sha256": "392a50830217ed61570dd3b9639a979b55aa8a838fccbe763788a4235c28456f"
+  },
+  {
+    "source": "F:\\US\\MyLau\\2025-05-10_下班后自助海鲜面，就要到海里现抓现吃_赶海_7502790065120562444\\.autoshort-audit-ef37f1f8-9606-4870-9b05-a9b6693aaf87-78716583-e60b-44e3-bc8d-f4a74ba4550f\\diagnostics\\events.jsonl",
+    "snapshot": "evidence\\ef37f1f8-9606-4870-9b05-a9b6693aaf87\\78716583-e60b-44e3-bc8d-f4a74ba4550f\\events.jsonl",
+    "bytes": 11485,
+    "sha256": "101b7d4485b3d5be4e2e91b38f8dbc458e57a72488b04a0c5e5368870200db7f"
+  },
+  {
+    "source": "F:\\US\\MyLau\\2025-05-17_赶海觅食的好机会，海鲜就要现抓现吃_7504953195438755130\\.autoshort-audit-ef37f1f8-9606-4870-9b05-a9b6693aaf87-7baca1f0-76b6-4823-9b82-2bf15cf90dde\\diagnostics\\summary.json",
+    "snapshot": "evidence\\ef37f1f8-9606-4870-9b05-a9b6693aaf87\\7baca1f0-76b6-4823-9b82-2bf15cf90dde\\summary.json",
+    "bytes": 1856,
+    "sha256": "a67525ba7b05ed34e1a8f0702fcdcf38c46082f61477d94ad396b3ce8b01096d"
+  },
+  {
+    "source": "F:\\US\\MyLau\\2025-05-17_赶海觅食的好机会，海鲜就要现抓现吃_7504953195438755130\\.autoshort-audit-ef37f1f8-9606-4870-9b05-a9b6693aaf87-7baca1f0-76b6-4823-9b82-2bf15cf90dde\\diagnostics\\events.jsonl",
+    "snapshot": "evidence\\ef37f1f8-9606-4870-9b05-a9b6693aaf87\\7baca1f0-76b6-4823-9b82-2bf15cf90dde\\events.jsonl",
+    "bytes": 11489,
+    "sha256": "8acb3cd3962d61d23a90d62bbed87f334f722ae9f191c9484469f91897fdde9b"
+  },
+  {
+    "source": "F:\\US\\MyLau\\2025-05-24_带锅赶海现抓现吃，海鲜就要吃新鲜的_瓜子二手车_7507926671690403130\\.autoshort-audit-ef37f1f8-9606-4870-9b05-a9b6693aaf87-565c0225-2f98-4fd7-8965-d5362c50ad08\\diagnostics\\summary.json",
+    "snapshot": "evidence\\ef37f1f8-9606-4870-9b05-a9b6693aaf87\\565c0225-2f98-4fd7-8965-d5362c50ad08\\summary.json",
+    "bytes": 1522,
+    "sha256": "a89f83af24c1c0132cb5abfafe9693b61d3f73c47d34d057f0cb063ba7924657"
+  },
+  {
+    "source": "F:\\US\\MyLau\\2025-05-24_带锅赶海现抓现吃，海鲜就要吃新鲜的_瓜子二手车_7507926671690403130\\.autoshort-audit-ef37f1f8-9606-4870-9b05-a9b6693aaf87-565c0225-2f98-4fd7-8965-d5362c50ad08\\diagnostics\\events.jsonl",
+    "snapshot": "evidence\\ef37f1f8-9606-4870-9b05-a9b6693aaf87\\565c0225-2f98-4fd7-8965-d5362c50ad08\\events.jsonl",
+    "bytes": 7872,
+    "sha256": "b1d8d8d89295d75f01e165dd8835cfc799689a0b9ae1e64a7e7a99f9123e978c"
+  },
+  {
+    "source": "F:\\US\\MyLau\\2025-06-06_免费海鲜自助就得到海里吃_赶海_7512458190290849061\\.autoshort-audit-ef37f1f8-9606-4870-9b05-a9b6693aaf87-76b267bd-dc79-489b-9be0-f711368f204d\\diagnostics\\summary.json",
+    "snapshot": "evidence\\ef37f1f8-9606-4870-9b05-a9b6693aaf87\\76b267bd-dc79-489b-9be0-f711368f204d\\summary.json",
+    "bytes": 1853,
+    "sha256": "32efa1ec2800d49c723d8e53bdcc02b7931792b96ba07c4ac5c48dcda0fe91aa"
+  },
+  {
+    "source": "F:\\US\\MyLau\\2025-06-06_免费海鲜自助就得到海里吃_赶海_7512458190290849061\\.autoshort-audit-ef37f1f8-9606-4870-9b05-a9b6693aaf87-76b267bd-dc79-489b-9be0-f711368f204d\\diagnostics\\events.jsonl",
+    "snapshot": "evidence\\ef37f1f8-9606-4870-9b05-a9b6693aaf87\\76b267bd-dc79-489b-9be0-f711368f204d\\events.jsonl",
+    "bytes": 11479,
+    "sha256": "5890317a0912d1ac25034eb0f16d6e4c31844ef632329aee47cd02aa8197037b"
+  },
+  {
+    "source": "F:\\US\\MyLau\\2025-06-07_免费海鲜自助时间到，下海现抓现吃_赶海_7512640165548313915\\.autoshort-audit-ef37f1f8-9606-4870-9b05-a9b6693aaf87-a29cf6cf-9392-41e2-b35e-7b42fc6fde87\\diagnostics\\summary.json",
+    "snapshot": "evidence\\ef37f1f8-9606-4870-9b05-a9b6693aaf87\\a29cf6cf-9392-41e2-b35e-7b42fc6fde87\\summary.json",
+    "bytes": 1516,
+    "sha256": "b4fdb5f596da8ddeee640da3281109ba2f8df6538fbbeed035020cf80a385d45"
+  },
+  {
+    "source": "F:\\US\\MyLau\\2025-06-07_免费海鲜自助时间到，下海现抓现吃_赶海_7512640165548313915\\.autoshort-audit-ef37f1f8-9606-4870-9b05-a9b6693aaf87-a29cf6cf-9392-41e2-b35e-7b42fc6fde87\\diagnostics\\events.jsonl",
+    "snapshot": "evidence\\ef37f1f8-9606-4870-9b05-a9b6693aaf87\\a29cf6cf-9392-41e2-b35e-7b42fc6fde87\\events.jsonl",
+    "bytes": 7870,
+    "sha256": "b6dd8250e1392a24eb74c9f61d62938bf3fe19bdbf5def91b6be3ce135f179dc"
+  },
+  {
+    "source": "F:\\US\\MyLau\\2025-06-24_下班后海边觅食，吃免费自助海鲜面_鲸裕清酒_7519434505276378428\\.autoshort-audit-ef37f1f8-9606-4870-9b05-a9b6693aaf87-b41267d5-3674-469c-8497-d75e4b6f44db\\diagnostics\\summary.json",
+    "snapshot": "evidence\\ef37f1f8-9606-4870-9b05-a9b6693aaf87\\b41267d5-3674-469c-8497-d75e4b6f44db\\summary.json",
+    "bytes": 1855,
+    "sha256": "1b5adf4777e3f99cab55bdfc6efec61a5b872dd1fc4ea0a58b453b6a37702bb9"
+  },
+  {
+    "source": "F:\\US\\MyLau\\2025-06-24_下班后海边觅食，吃免费自助海鲜面_鲸裕清酒_7519434505276378428\\.autoshort-audit-ef37f1f8-9606-4870-9b05-a9b6693aaf87-b41267d5-3674-469c-8497-d75e4b6f44db\\diagnostics\\events.jsonl",
+    "snapshot": "evidence\\ef37f1f8-9606-4870-9b05-a9b6693aaf87\\b41267d5-3674-469c-8497-d75e4b6f44db\\events.jsonl",
+    "bytes": 11482,
+    "sha256": "cc5123d2d9d5dfe8a64485a8d7b2554e1ac3ad64b893cdde84e38616722dd8a3"
+  },
+  {
+    "source": "F:\\US\\MyLau\\2025-07-13_小渔村的海鲜自助面，海里现煮现吃_鲸裕清酒_7526498337571278089\\.autoshort-audit-ef37f1f8-9606-4870-9b05-a9b6693aaf87-deb1c5d8-70c2-4576-8cd4-aae30f0f41c7\\diagnostics\\summary.json",
+    "snapshot": "evidence\\ef37f1f8-9606-4870-9b05-a9b6693aaf87\\deb1c5d8-70c2-4576-8cd4-aae30f0f41c7\\summary.json",
+    "bytes": 1521,
+    "sha256": "28516ba731c7ea312e0a2e6e8894f3cc3c0010b61062e801bdca40471ef2ebb3"
+  },
+  {
+    "source": "F:\\US\\MyLau\\2025-07-13_小渔村的海鲜自助面，海里现煮现吃_鲸裕清酒_7526498337571278089\\.autoshort-audit-ef37f1f8-9606-4870-9b05-a9b6693aaf87-deb1c5d8-70c2-4576-8cd4-aae30f0f41c7\\diagnostics\\events.jsonl",
+    "snapshot": "evidence\\ef37f1f8-9606-4870-9b05-a9b6693aaf87\\deb1c5d8-70c2-4576-8cd4-aae30f0f41c7\\events.jsonl",
+    "bytes": 7876,
+    "sha256": "c87fe1ef12a2589f89c66f53cbeb25f23c409aff8881fbd29de60f38651cfbe8"
+  },
+  {
+    "source": "F:\\US\\MyLau\\2025-07-19_大海退潮，海边觅食自助餐啦_赶海_7528605004752506127\\.autoshort-audit-ef37f1f8-9606-4870-9b05-a9b6693aaf87-f169db1f-8c87-41c7-b74e-60ec8539c37d\\diagnostics\\summary.json",
+    "snapshot": "evidence\\ef37f1f8-9606-4870-9b05-a9b6693aaf87\\f169db1f-8c87-41c7-b74e-60ec8539c37d\\summary.json",
+    "bytes": 1856,
+    "sha256": "dc8970f92b793a4ed3731627ed139541fa12cb532aab4461d837c98381836653"
+  },
+  {
+    "source": "F:\\US\\MyLau\\2025-07-19_大海退潮，海边觅食自助餐啦_赶海_7528605004752506127\\.autoshort-audit-ef37f1f8-9606-4870-9b05-a9b6693aaf87-f169db1f-8c87-41c7-b74e-60ec8539c37d\\diagnostics\\events.jsonl",
+    "snapshot": "evidence\\ef37f1f8-9606-4870-9b05-a9b6693aaf87\\f169db1f-8c87-41c7-b74e-60ec8539c37d\\events.jsonl",
+    "bytes": 11483,
+    "sha256": "fb1258066851414442fb1b9e341d938a0a84f5dd3604e761dca63a900fa5f10f"
+  },
+  {
+    "source": "F:\\US\\MyLau\\2025-07-24_海边退大潮，来吃海鲜自助餐啦_7530490729127300378\\.autoshort-audit-ef37f1f8-9606-4870-9b05-a9b6693aaf87-d88884ac-9780-44ed-8e5e-d6aa6cc68aa8\\diagnostics\\summary.json",
+    "snapshot": "evidence\\ef37f1f8-9606-4870-9b05-a9b6693aaf87\\d88884ac-9780-44ed-8e5e-d6aa6cc68aa8\\summary.json",
+    "bytes": 1516,
+    "sha256": "809d911070213c6e4c2239edc7f46fffdf425eee2e267e95b8a8b6f24a73dec2"
+  },
+  {
+    "source": "F:\\US\\MyLau\\2025-07-24_海边退大潮，来吃海鲜自助餐啦_7530490729127300378\\.autoshort-audit-ef37f1f8-9606-4870-9b05-a9b6693aaf87-d88884ac-9780-44ed-8e5e-d6aa6cc68aa8\\diagnostics\\events.jsonl",
+    "snapshot": "evidence\\ef37f1f8-9606-4870-9b05-a9b6693aaf87\\d88884ac-9780-44ed-8e5e-d6aa6cc68aa8\\events.jsonl",
+    "bytes": 7870,
+    "sha256": "095a1581969b39f03a931823494c7f0245f5f8ffe0bf54d31667955738bcfabb"
+  },
+  {
+    "source": "F:\\US\\MyLau\\2025-07-28_小渔村的海鲜自助，海里现煮现吃_赶海_7532054637169413434\\.autoshort-audit-ef37f1f8-9606-4870-9b05-a9b6693aaf87-0275d4d3-a227-4e52-969c-8c86604ac88c\\diagnostics\\summary.json",
+    "snapshot": "evidence\\ef37f1f8-9606-4870-9b05-a9b6693aaf87\\0275d4d3-a227-4e52-969c-8c86604ac88c\\summary.json",
+    "bytes": 1856,
+    "sha256": "d5df6471f77bcf9e6c89c702d234712c1c3bd437ff493002eb6813a85ce9f883"
+  },
+  {
+    "source": "F:\\US\\MyLau\\2025-07-28_小渔村的海鲜自助，海里现煮现吃_赶海_7532054637169413434\\.autoshort-audit-ef37f1f8-9606-4870-9b05-a9b6693aaf87-0275d4d3-a227-4e52-969c-8c86604ac88c\\diagnostics\\events.jsonl",
+    "snapshot": "evidence\\ef37f1f8-9606-4870-9b05-a9b6693aaf87\\0275d4d3-a227-4e52-969c-8c86604ac88c\\events.jsonl",
+    "bytes": 11487,
+    "sha256": "a3256a46ecc51b05971b1f750cfc110f4ef49c623f71c8290490dfa55b5745ef"
+  },
+  {
+    "source": "F:\\US\\MyLau\\2025-07-30_下班后的自助海鲜面，就要到海里现抓现吃_天火手电筒_天火苍龙手电筒_户外_赶海_7532329316735421756\\.autoshort-audit-ef37f1f8-9606-4870-9b05-a9b6693aaf87-1c31ff9d-7f2b-4364-93c5-99035c3fc3f2\\diagnostics\\summary.json",
+    "snapshot": "evidence\\ef37f1f8-9606-4870-9b05-a9b6693aaf87\\1c31ff9d-7f2b-4364-93c5-99035c3fc3f2\\summary.json",
+    "bytes": 1521,
+    "sha256": "30adf2a17515d03bfe3d968b7b987adca604edf9aa3e2643a8d9560267583352"
+  },
+  {
+    "source": "F:\\US\\MyLau\\2025-07-30_下班后的自助海鲜面，就要到海里现抓现吃_天火手电筒_天火苍龙手电筒_户外_赶海_7532329316735421756\\.autoshort-audit-ef37f1f8-9606-4870-9b05-a9b6693aaf87-1c31ff9d-7f2b-4364-93c5-99035c3fc3f2\\diagnostics\\events.jsonl",
+    "snapshot": "evidence\\ef37f1f8-9606-4870-9b05-a9b6693aaf87\\1c31ff9d-7f2b-4364-93c5-99035c3fc3f2\\events.jsonl",
+    "bytes": 7876,
+    "sha256": "1399aeabd2481a20abb3f829549374a7ec9e80865d411aeb6e09ee7ab33a9b56"
+  },
+  {
+    "source": "F:\\US\\MyLau\\2025-08-12_下班后的自助海鲜面，海里现抓现吃_小方侠_傲雷手电_7537565174984756539\\.autoshort-audit-ef37f1f8-9606-4870-9b05-a9b6693aaf87-97923d3f-e148-4f32-aeb3-7c2b278eb9bd\\diagnostics\\summary.json",
+    "snapshot": "evidence\\ef37f1f8-9606-4870-9b05-a9b6693aaf87\\97923d3f-e148-4f32-aeb3-7c2b278eb9bd\\summary.json",
+    "bytes": 1521,
+    "sha256": "57120866600c4aeefcfd0afa33ac30b434dd962ade5646ab44b3f2efb1b5591d"
+  },
+  {
+    "source": "F:\\US\\MyLau\\2025-08-12_下班后的自助海鲜面，海里现抓现吃_小方侠_傲雷手电_7537565174984756539\\.autoshort-audit-ef37f1f8-9606-4870-9b05-a9b6693aaf87-97923d3f-e148-4f32-aeb3-7c2b278eb9bd\\diagnostics\\events.jsonl",
+    "snapshot": "evidence\\ef37f1f8-9606-4870-9b05-a9b6693aaf87\\97923d3f-e148-4f32-aeb3-7c2b278eb9bd\\events.jsonl",
+    "bytes": 7874,
+    "sha256": "1c1493abe62e4b329126d88df0eacef33e492b4b733836177f498f71e8afed86"
+  },
+  {
+    "source": "F:\\US\\MyLau\\2025-08-19_海鲜自助火锅，就要现抓现吃_赶海_爆辣辣条吃霸王丝_7540139611772144956\\.autoshort-audit-ef37f1f8-9606-4870-9b05-a9b6693aaf87-6cebfbbd-a77d-4cea-aa30-3dd854bc2907\\diagnostics\\summary.json",
+    "snapshot": "evidence\\ef37f1f8-9606-4870-9b05-a9b6693aaf87\\6cebfbbd-a77d-4cea-aa30-3dd854bc2907\\summary.json",
+    "bytes": 1488,
+    "sha256": "1ea91d39cc6ff9a83af42653d13ed42d8fc79df1d17f3cab1e30f665d584fb52"
+  },
+  {
+    "source": "F:\\US\\MyLau\\2025-08-19_海鲜自助火锅，就要现抓现吃_赶海_爆辣辣条吃霸王丝_7540139611772144956\\.autoshort-audit-ef37f1f8-9606-4870-9b05-a9b6693aaf87-6cebfbbd-a77d-4cea-aa30-3dd854bc2907\\diagnostics\\events.jsonl",
+    "snapshot": "evidence\\ef37f1f8-9606-4870-9b05-a9b6693aaf87\\6cebfbbd-a77d-4cea-aa30-3dd854bc2907\\events.jsonl",
+    "bytes": 7846,
+    "sha256": "d630ced0bf3431b297b6b63d7fdb9b5a075b6924d530ccfd7852a5a7786a61da"
+  },
+  {
+    "source": "F:\\US\\MyLau\\2025-08-22_下班后的自助海鲜面，就要现抓现吃_天火头灯_天火天龙头灯_7540914347288612130\\.autoshort-audit-ef37f1f8-9606-4870-9b05-a9b6693aaf87-b445e16b-ff7e-4695-a651-5721d8a4bf65\\diagnostics\\summary.json",
+    "snapshot": "evidence\\ef37f1f8-9606-4870-9b05-a9b6693aaf87\\b445e16b-ff7e-4695-a651-5721d8a4bf65\\summary.json",
+    "bytes": 1619,
+    "sha256": "5e318439edf5dc4784305966028da8339a528c3499475257efeb40754ba48086"
+  },
+  {
+    "source": "F:\\US\\MyLau\\2025-08-22_下班后的自助海鲜面，就要现抓现吃_天火头灯_天火天龙头灯_7540914347288612130\\.autoshort-audit-ef37f1f8-9606-4870-9b05-a9b6693aaf87-b445e16b-ff7e-4695-a651-5721d8a4bf65\\diagnostics\\events.jsonl",
+    "snapshot": "evidence\\ef37f1f8-9606-4870-9b05-a9b6693aaf87\\b445e16b-ff7e-4695-a651-5721d8a4bf65\\events.jsonl",
+    "bytes": 7935,
+    "sha256": "f1421b67d3b2fe5ba9eb3fab3cadfc0cf054605690f49fc483a5a9eca42cce69"
+  },
+  {
+    "source": "F:\\US\\MyLau\\2025-08-29_这才是海鲜自助餐，想吃啥就海里捞_远明_远明老酒_远明酱酒_7543837740054908219\\.autoshort-audit-ef37f1f8-9606-4870-9b05-a9b6693aaf87-0dc9fe9f-f750-460c-99a2-58c89927141f\\diagnostics\\summary.json",
+    "snapshot": "evidence\\ef37f1f8-9606-4870-9b05-a9b6693aaf87\\0dc9fe9f-f750-460c-99a2-58c89927141f\\summary.json",
+    "bytes": 1859,
+    "sha256": "b4a43ecbc1c5d8fc59c2eb382a49c913eefc2d7d0ea8a44e02d0735c0ed6f05e"
+  },
+  {
+    "source": "F:\\US\\MyLau\\2025-08-29_这才是海鲜自助餐，想吃啥就海里捞_远明_远明老酒_远明酱酒_7543837740054908219\\.autoshort-audit-ef37f1f8-9606-4870-9b05-a9b6693aaf87-0dc9fe9f-f750-460c-99a2-58c89927141f\\diagnostics\\events.jsonl",
+    "snapshot": "evidence\\ef37f1f8-9606-4870-9b05-a9b6693aaf87\\0dc9fe9f-f750-460c-99a2-58c89927141f\\events.jsonl",
+    "bytes": 11491,
+    "sha256": "03d45ff7aec1bd452728948b64feaf194136a0de5e40da27ce64422e95e2e80c"
+  },
+  {
+    "source": "F:\\US\\MyLau\\2025-08-30_小渔村的海鲜自助，现抓现吃才新鲜_赶海_7544306146287848755\\.autoshort-audit-ef37f1f8-9606-4870-9b05-a9b6693aaf87-df439065-a0d7-4422-a4e8-b9823b91a17e\\diagnostics\\summary.json",
+    "snapshot": "evidence\\ef37f1f8-9606-4870-9b05-a9b6693aaf87\\df439065-a0d7-4422-a4e8-b9823b91a17e\\summary.json",
+    "bytes": 1757,
+    "sha256": "a702c1a92bcda51ce6268a1c8fccf4cf4e314304c1ec3502388d64131502dcec"
+  },
+  {
+    "source": "F:\\US\\MyLau\\2025-08-30_小渔村的海鲜自助，现抓现吃才新鲜_赶海_7544306146287848755\\.autoshort-audit-ef37f1f8-9606-4870-9b05-a9b6693aaf87-df439065-a0d7-4422-a4e8-b9823b91a17e\\diagnostics\\events.jsonl",
+    "snapshot": "evidence\\ef37f1f8-9606-4870-9b05-a9b6693aaf87\\df439065-a0d7-4422-a4e8-b9823b91a17e\\events.jsonl",
+    "bytes": 7915,
+    "sha256": "108981347904a13959146f3c89bd705c962c4712865ca647ac4a85cf27a59edb"
+  },
+  {
+    "source": "F:\\US\\MyLau\\2025-09-01_吃免费海鲜自助啦，海里现抓现吃_瓜子二手车_赶海_7544631018629598523\\.autoshort-audit-ef37f1f8-9606-4870-9b05-a9b6693aaf87-dc1194a3-8a8e-4f30-86bc-9e20b4add850\\diagnostics\\summary.json",
+    "snapshot": "evidence\\ef37f1f8-9606-4870-9b05-a9b6693aaf87\\dc1194a3-8a8e-4f30-86bc-9e20b4add850\\summary.json",
+    "bytes": 1519,
+    "sha256": "02838b375bbc0a30ef9491de0e96f6de28e93d3e6a2d2216f17aa3be4cfa9be2"
+  },
+  {
+    "source": "F:\\US\\MyLau\\2025-09-01_吃免费海鲜自助啦，海里现抓现吃_瓜子二手车_赶海_7544631018629598523\\.autoshort-audit-ef37f1f8-9606-4870-9b05-a9b6693aaf87-dc1194a3-8a8e-4f30-86bc-9e20b4add850\\diagnostics\\events.jsonl",
+    "snapshot": "evidence\\ef37f1f8-9606-4870-9b05-a9b6693aaf87\\dc1194a3-8a8e-4f30-86bc-9e20b4add850\\events.jsonl",
+    "bytes": 7872,
+    "sha256": "861ea5e537482c99051adef4791d328096d16b25bbf5ae2f0a5ad2a02a153398"
+  },
+  {
+    "source": "F:\\US\\MyLau\\2025-09-02_大海退潮，海鲜自助现抓现吃_VTT16头筋膜枪_7545083599700528444\\.autoshort-audit-ef37f1f8-9606-4870-9b05-a9b6693aaf87-198f04c7-b616-4850-9bb9-5231dc102cb4\\diagnostics\\summary.json",
+    "snapshot": "evidence\\ef37f1f8-9606-4870-9b05-a9b6693aaf87\\198f04c7-b616-4850-9bb9-5231dc102cb4\\summary.json",
+    "bytes": 1525,
+    "sha256": "78ada822980e00d4cd0cd0972702a92af560c6d68946f51bfc4b2317cb608d8c"
+  },
+  {
+    "source": "F:\\US\\MyLau\\2025-09-02_大海退潮，海鲜自助现抓现吃_VTT16头筋膜枪_7545083599700528444\\.autoshort-audit-ef37f1f8-9606-4870-9b05-a9b6693aaf87-198f04c7-b616-4850-9bb9-5231dc102cb4\\diagnostics\\events.jsonl",
+    "snapshot": "evidence\\ef37f1f8-9606-4870-9b05-a9b6693aaf87\\198f04c7-b616-4850-9bb9-5231dc102cb4\\events.jsonl",
+    "bytes": 7876,
+    "sha256": "8b5d2334a0988f04835b69cd9beb680a144fe462e73867a448ab56e87b97e637"
+  },
+  {
+    "source": "F:\\US\\MyLau\\2025-09-07_赶海觅食，海鲜自助餐现抓现吃_赶海_抖音美好丰收节_中国农民丰收节_抖音新农人_美好丰收看江苏_7547218667608624384\\.autoshort-audit-ef37f1f8-9606-4870-9b05-a9b6693aaf87-b2fbdfe0-bf8d-480b-9507-77bf31bf4421\\diagnostics\\summary.json",
+    "snapshot": "evidence\\ef37f1f8-9606-4870-9b05-a9b6693aaf87\\b2fbdfe0-bf8d-480b-9507-77bf31bf4421\\summary.json",
+    "bytes": 1516,
+    "sha256": "f4eb0b678a0a586b48941ee64ef904c05ee37797f470f148b345913cb8627fc4"
+  },
+  {
+    "source": "F:\\US\\MyLau\\2025-09-07_赶海觅食，海鲜自助餐现抓现吃_赶海_抖音美好丰收节_中国农民丰收节_抖音新农人_美好丰收看江苏_7547218667608624384\\.autoshort-audit-ef37f1f8-9606-4870-9b05-a9b6693aaf87-b2fbdfe0-bf8d-480b-9507-77bf31bf4421\\diagnostics\\events.jsonl",
+    "snapshot": "evidence\\ef37f1f8-9606-4870-9b05-a9b6693aaf87\\b2fbdfe0-bf8d-480b-9507-77bf31bf4421\\events.jsonl",
+    "bytes": 7867,
+    "sha256": "d37de5752f64c9886cda8983d9d0bb0123fe14d77e33b32741df14a7fce5e6e5"
+  },
+  {
+    "source": "F:\\US\\MyLau\\2025-09-14_自助海鲜面，海里现抓现吃_赶海_7549814524275084583\\.autoshort-audit-ef37f1f8-9606-4870-9b05-a9b6693aaf87-b808846c-d433-418f-a36e-b1c81614a977\\diagnostics\\summary.json",
+    "snapshot": "evidence\\ef37f1f8-9606-4870-9b05-a9b6693aaf87\\b808846c-d433-418f-a36e-b1c81614a977\\summary.json",
+    "bytes": 1855,
+    "sha256": "699c89e70ccf3834ee9d91e301bac42d422927fb78ce8ccd145650d844ec9480"
+  },
+  {
+    "source": "F:\\US\\MyLau\\2025-09-14_自助海鲜面，海里现抓现吃_赶海_7549814524275084583\\.autoshort-audit-ef37f1f8-9606-4870-9b05-a9b6693aaf87-b808846c-d433-418f-a36e-b1c81614a977\\diagnostics\\events.jsonl",
+    "snapshot": "evidence\\ef37f1f8-9606-4870-9b05-a9b6693aaf87\\b808846c-d433-418f-a36e-b1c81614a977\\events.jsonl",
+    "bytes": 11482,
+    "sha256": "a1b414d40af6fd303c0686a9e886ff626ddedd5552e7520fbe5ed8f42ac65f75"
+  },
+  {
+    "source": "F:\\US\\MyLau\\2025-09-20_大海退潮，又来吃免费的海鲜自助啦_百度ai_百度ai相机_7550933114068913465\\.autoshort-audit-ef37f1f8-9606-4870-9b05-a9b6693aaf87-6bde091a-fa96-43e0-b1cd-1aee710f0fc0\\diagnostics\\summary.json",
+    "snapshot": "evidence\\ef37f1f8-9606-4870-9b05-a9b6693aaf87\\6bde091a-fa96-43e0-b1cd-1aee710f0fc0\\summary.json",
+    "bytes": 1620,
+    "sha256": "ba74df1ea77ebb7cc9471215cfaf0fffb4eca15873c907a551cfcabbcd6d7aa2"
+  },
+  {
+    "source": "F:\\US\\MyLau\\2025-09-20_大海退潮，又来吃免费的海鲜自助啦_百度ai_百度ai相机_7550933114068913465\\.autoshort-audit-ef37f1f8-9606-4870-9b05-a9b6693aaf87-6bde091a-fa96-43e0-b1cd-1aee710f0fc0\\diagnostics\\events.jsonl",
+    "snapshot": "evidence\\ef37f1f8-9606-4870-9b05-a9b6693aaf87\\6bde091a-fa96-43e0-b1cd-1aee710f0fc0\\events.jsonl",
+    "bytes": 7935,
+    "sha256": "f8ce47914f8919bbffb09359cef9487819150fa4c0843ec2a054ef3d59ed0ca5"
+  },
+  {
+    "source": "F:\\US\\MyLau\\2025-09-24_自助海鲜面，现抓现煮_家大业大酒_上涨酒_家大业大喝啥有啥_赶海_7553542914803125564\\.autoshort-audit-ef37f1f8-9606-4870-9b05-a9b6693aaf87-163ab933-63f4-417f-be71-7af10849fbb2\\diagnostics\\summary.json",
+    "snapshot": "evidence\\ef37f1f8-9606-4870-9b05-a9b6693aaf87\\163ab933-63f4-417f-be71-7af10849fbb2\\summary.json",
+    "bytes": 1520,
+    "sha256": "7f94c66a273ce2bc3e54d687185b20f75fbb5bd93ccd6c2b110af49c55f81543"
+  },
+  {
+    "source": "F:\\US\\MyLau\\2025-09-24_自助海鲜面，现抓现煮_家大业大酒_上涨酒_家大业大喝啥有啥_赶海_7553542914803125564\\.autoshort-audit-ef37f1f8-9606-4870-9b05-a9b6693aaf87-163ab933-63f4-417f-be71-7af10849fbb2\\diagnostics\\events.jsonl",
+    "snapshot": "evidence\\ef37f1f8-9606-4870-9b05-a9b6693aaf87\\163ab933-63f4-417f-be71-7af10849fbb2\\events.jsonl",
+    "bytes": 7873,
+    "sha256": "97d3a688c7be885c8e81ea861344ab7e1db8f770ea8e951e7104d465df62ac10"
+  },
+  {
+    "source": "F:\\US\\MyLau\\2025-09-26_免费海鲜大餐随便吃，想吃啥就下海抓_赶海_7554275540762414345\\.autoshort-audit-ef37f1f8-9606-4870-9b05-a9b6693aaf87-a30fce02-b504-485a-9206-d9c7fd680ad6\\diagnostics\\summary.json",
+    "snapshot": "evidence\\ef37f1f8-9606-4870-9b05-a9b6693aaf87\\a30fce02-b504-485a-9206-d9c7fd680ad6\\summary.json",
+    "bytes": 1856,
+    "sha256": "c7d078b58a60c1d7f3cf241288befa17d2705f4cff510740ccba02504d381df8"
+  },
+  {
+    "source": "F:\\US\\MyLau\\2025-09-26_免费海鲜大餐随便吃，想吃啥就下海抓_赶海_7554275540762414345\\.autoshort-audit-ef37f1f8-9606-4870-9b05-a9b6693aaf87-a30fce02-b504-485a-9206-d9c7fd680ad6\\diagnostics\\events.jsonl",
+    "snapshot": "evidence\\ef37f1f8-9606-4870-9b05-a9b6693aaf87\\a30fce02-b504-485a-9206-d9c7fd680ad6\\events.jsonl",
+    "bytes": 11487,
+    "sha256": "e90146c23541401b1fa0ba3214662eb121f5cb2123d717dba5f7b7de22c2679f"
+  },
+  {
+    "source": "F:\\US\\MyLau\\2025-10-01_自助海底捞，现抓现吃_赶海_青年创作者扶持计划_7556199918319275305\\.autoshort-audit-ef37f1f8-9606-4870-9b05-a9b6693aaf87-5724037b-eeab-41b8-a699-fd9f55543774\\diagnostics\\summary.json",
+    "snapshot": "evidence\\ef37f1f8-9606-4870-9b05-a9b6693aaf87\\5724037b-eeab-41b8-a699-fd9f55543774\\summary.json",
+    "bytes": 1518,
+    "sha256": "87a204ac59301d892b82fdf6880f2bd4f82453c87c19a73e00f30dec6a80801f"
+  },
+  {
+    "source": "F:\\US\\MyLau\\2025-10-01_自助海底捞，现抓现吃_赶海_青年创作者扶持计划_7556199918319275305\\.autoshort-audit-ef37f1f8-9606-4870-9b05-a9b6693aaf87-5724037b-eeab-41b8-a699-fd9f55543774\\diagnostics\\events.jsonl",
+    "snapshot": "evidence\\ef37f1f8-9606-4870-9b05-a9b6693aaf87\\5724037b-eeab-41b8-a699-fd9f55543774\\events.jsonl",
+    "bytes": 7866,
+    "sha256": "197c12ed083aea037e78e580d9fafa3ef83e0973d230b854a35a9c406deab86d"
+  },
+  {
+    "source": "F:\\US\\MyLau\\2025-10-05_潜水觅食，现抓现吃_青年创作者扶持计划_赶海_7557671736314055999\\.autoshort-audit-ef37f1f8-9606-4870-9b05-a9b6693aaf87-c9563ba7-4b76-4282-b6d5-76a1fb36487a\\diagnostics\\summary.json",
+    "snapshot": "evidence\\ef37f1f8-9606-4870-9b05-a9b6693aaf87\\c9563ba7-4b76-4282-b6d5-76a1fb36487a\\summary.json",
+    "bytes": 1850,
+    "sha256": "5ed3d97581b60133334465bbad83f867c1e05c754f2084c02f6235c201dca6cb"
+  },
+  {
+    "source": "F:\\US\\MyLau\\2025-10-05_潜水觅食，现抓现吃_青年创作者扶持计划_赶海_7557671736314055999\\.autoshort-audit-ef37f1f8-9606-4870-9b05-a9b6693aaf87-c9563ba7-4b76-4282-b6d5-76a1fb36487a\\diagnostics\\events.jsonl",
+    "snapshot": "evidence\\ef37f1f8-9606-4870-9b05-a9b6693aaf87\\c9563ba7-4b76-4282-b6d5-76a1fb36487a\\events.jsonl",
+    "bytes": 11477,
+    "sha256": "00d9145c82f1ab3df5d850cf142c2ca835d3434fc4ac2264c11faef445021197"
+  },
+  {
+    "source": "F:\\US\\MyLau\\2025-10-06_潜水觅食，海鲜现抓现吃_青年创作者扶持计划_赶海_7558044446756048169\\.autoshort-audit-ef37f1f8-9606-4870-9b05-a9b6693aaf87-7bada534-2641-480b-b490-61c6ffd30ca8\\diagnostics\\summary.json",
+    "snapshot": "evidence\\ef37f1f8-9606-4870-9b05-a9b6693aaf87\\7bada534-2641-480b-b490-61c6ffd30ca8\\summary.json",
+    "bytes": 1847,
+    "sha256": "65e355b1961a3a48faa8176a16bffb785178aa12dc0b50a30296fab8112a6634"
+  },
+  {
+    "source": "F:\\US\\MyLau\\2025-10-06_潜水觅食，海鲜现抓现吃_青年创作者扶持计划_赶海_7558044446756048169\\.autoshort-audit-ef37f1f8-9606-4870-9b05-a9b6693aaf87-7bada534-2641-480b-b490-61c6ffd30ca8\\diagnostics\\events.jsonl",
+    "snapshot": "evidence\\ef37f1f8-9606-4870-9b05-a9b6693aaf87\\7bada534-2641-480b-b490-61c6ffd30ca8\\events.jsonl",
+    "bytes": 11475,
+    "sha256": "5a500b7040b682bfae035d9fe8e5aab38ce45a8082926197944ceb483610620a"
+  },
+  {
+    "source": "F:\\US\\MyLau\\2025-10-11_潜水觅食，海鲜自助随便吃_赶海_青年创作者扶持计划_7559775225307516195\\.autoshort-audit-ef37f1f8-9606-4870-9b05-a9b6693aaf87-58a8ec54-524b-4778-863f-ea3cb7a38c42\\diagnostics\\summary.json",
+    "snapshot": "evidence\\ef37f1f8-9606-4870-9b05-a9b6693aaf87\\58a8ec54-524b-4778-863f-ea3cb7a38c42\\summary.json",
+    "bytes": 1512,
+    "sha256": "2d58a28b3ff01ced922b4852c7f18997300ab24bd8f99f1a2620d91dc5a983ef"
+  },
+  {
+    "source": "F:\\US\\MyLau\\2025-10-11_潜水觅食，海鲜自助随便吃_赶海_青年创作者扶持计划_7559775225307516195\\.autoshort-audit-ef37f1f8-9606-4870-9b05-a9b6693aaf87-58a8ec54-524b-4778-863f-ea3cb7a38c42\\diagnostics\\events.jsonl",
+    "snapshot": "evidence\\ef37f1f8-9606-4870-9b05-a9b6693aaf87\\58a8ec54-524b-4778-863f-ea3cb7a38c42\\events.jsonl",
+    "bytes": 7863,
+    "sha256": "2a66cfccc5082b6a4769fc89c22a13d2df21a4dfbcb2163a4ac2564fe4d88f14"
+  },
+  {
+    "source": "F:\\US\\MyLau\\2025-10-14_小渔村的自助海鲜面，想吃啥海鲜就下海抓_沱牌特级T68_放手碰杯越碰越好@沱牌官方旗舰店_7560623626157739322\\.autoshort-audit-ef37f1f8-9606-4870-9b05-a9b6693aaf87-51071675-7778-476d-9fc0-2503e5f0ba8e\\diagnostics\\summary.json",
+    "snapshot": "evidence\\ef37f1f8-9606-4870-9b05-a9b6693aaf87\\51071675-7778-476d-9fc0-2503e5f0ba8e\\summary.json",
+    "bytes": 1438,
+    "sha256": "b69f7ffd23c037ec1f9c2ecbc73dba07a63eaa267cffe93d65d7250cd37efb44"
+  },
+  {
+    "source": "F:\\US\\MyLau\\2025-10-14_小渔村的自助海鲜面，想吃啥海鲜就下海抓_沱牌特级T68_放手碰杯越碰越好@沱牌官方旗舰店_7560623626157739322\\.autoshort-audit-ef37f1f8-9606-4870-9b05-a9b6693aaf87-51071675-7778-476d-9fc0-2503e5f0ba8e\\diagnostics\\events.jsonl",
+    "snapshot": "evidence\\ef37f1f8-9606-4870-9b05-a9b6693aaf87\\51071675-7778-476d-9fc0-2503e5f0ba8e\\events.jsonl",
+    "bytes": 7800,
+    "sha256": "7674c9366db5740709ff884530661347139315a8079d7a0ad425b4152ab3add4"
+  }
+]

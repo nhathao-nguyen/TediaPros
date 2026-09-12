@@ -1,0 +1,12 @@
+[
+  {
+    "path": "C:\\Users\\PC\\AppData\\Roaming\\tedia-pros\\bin\\ffmpeg.exe",
+    "sha256": "FDA27432CB2A68540D55D31B06EA00A0687EBE0E30D1DCAB2E3752BB65CC127C",
+    "version": "ffmpeg version 2026-05-18-git-b4d11dffbf-full_build-www.gyan.dev Copyright (c) 2000-2026 the FFmpeg developers"
+  },
+  {
+    "path": "C:\\Users\\PC\\AppData\\Roaming\\tedia-pros\\bin\\ffmpeg\\ffmpeg.exe",
+    "sha256": "42074C0D62B0187487A3C7A9246D0DBF962BB8B75DF8DD964D15C50FA55AD692",
+    "version": "ffmpeg version n9.0.1-11-ge47273f4d9-20260829 Copyright (c) 2000-2026 the FFmpeg developers"
+  }
+]

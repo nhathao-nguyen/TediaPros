@@ -1,0 +1,22 @@
+7a25b020c06a88c710f65382418bc0d3905a4ab5
+src/main/autoshort.ts
+src/main/tts.ts
+src/renderer/src/components/AutoShort.tsx
+src/renderer/src/components/Voice.tsx
+src/shared/autoShortContract.ts
+
+Auto-merging package-lock.json
+Auto-merging package.json
+Auto-merging src/main/autoshort.ts
+CONFLICT (content): Merge conflict in src/main/autoshort.ts
+Auto-merging src/main/index.ts
+Auto-merging src/main/tts.ts
+CONFLICT (content): Merge conflict in src/main/tts.ts
+Auto-merging src/preload/index.ts
+Auto-merging src/renderer/src/components/AutoShort.tsx
+CONFLICT (content): Merge conflict in src/renderer/src/components/AutoShort.tsx
+Auto-merging src/renderer/src/components/Voice.tsx
+CONFLICT (content): Merge conflict in src/renderer/src/components/Voice.tsx
+Auto-merging src/shared/autoShortContract.ts
+CONFLICT (content): Merge conflict in src/shared/autoShortContract.ts
+Auto-merging src/shared/types.ts

@@ -1,0 +1,52 @@
+{
+  "schemaVersion": 1,
+  "jobId": "7e8f5878-beaf-45a4-855d-4bd54ec2b321",
+  "itemId": "efa42158-5fdd-4356-94fd-3515fc6b26ac",
+  "attemptId": "eacdee82-13bc-4a93-bc31-cb294898a21e",
+  "startedAtUtc": "2026-09-11T15:35:47.748Z",
+  "completedAtUtc": "2026-09-11T15:55:12.993Z",
+  "status": "failed",
+  "totalWallMs": 1165246,
+  "stages": {
+    "validate": {
+      "status": "succeeded",
+      "activeMs": 1,
+      "resourceWaitMs": 0,
+      "counters": {
+        "inputBytes": 127562583
+      }
+    },
+    "visual_ocr": {
+      "status": "succeeded",
+      "activeMs": 550644,
+      "resourceWaitMs": 0,
+      "counters": {
+        "visualSegments": 815,
+        "boxSegments": 852
+      }
+    },
+    "translate": {
+      "status": "succeeded",
+      "activeMs": 67189,
+      "resourceWaitMs": 0,
+      "counters": {
+        "cueCount": 79
+      }
+    },
+    "sttn": {
+      "status": "failed",
+      "activeMs": 0,
+      "resourceWaitMs": 0,
+      "counters": {},
+      "error": "DubbingVideoExtensionLimitError: Cue cue-43-127140 vẫn không vừa ở 1.80x: cần kéo dài đoạn hình 114.8%, vượt giới hạn 60%; không cắt lời."
+    },
+    "tts": {
+      "status": "failed",
+      "activeMs": 593915,
+      "resourceWaitMs": 0,
+      "counters": {},
+      "error": "Cue cue-43-127140 vẫn không vừa ở 1.80x: cần kéo dài đoạn hình 114.8%, vượt giới hạn 60%; không cắt lời."
+    }
+  },
+  "error": "DubbingVideoExtensionLimitError: Cue cue-43-127140 vẫn không vừa ở 1.80x: cần kéo dài đoạn hình 114.8%, vượt giới hạn 60%; không cắt lời."
+}

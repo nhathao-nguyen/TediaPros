@@ -1,0 +1,60 @@
+{
+  "schemaVersion": 1,
+  "jobId": "ef37f1f8-9606-4870-9b05-a9b6693aaf87",
+  "itemId": "6cebfbbd-a77d-4cea-aa30-3dd854bc2907",
+  "attemptId": "0ce206a3-9709-402b-af7e-05954548201f",
+  "startedAtUtc": "2026-09-11T20:44:52.254Z",
+  "completedAtUtc": "2026-09-11T20:54:32.709Z",
+  "status": "failed",
+  "totalWallMs": 580455,
+  "stages": {
+    "validate": {
+      "status": "succeeded",
+      "activeMs": 0,
+      "resourceWaitMs": 0,
+      "counters": {
+        "inputBytes": 113489013
+      }
+    },
+    "asr": {
+      "status": "succeeded",
+      "activeMs": 24585,
+      "resourceWaitMs": 0,
+      "counters": {
+        "cueCount": 84
+      }
+    },
+    "visual_ocr": {
+      "status": "succeeded",
+      "activeMs": 366014,
+      "resourceWaitMs": 0,
+      "counters": {
+        "visualSegments": 1118,
+        "boxSegments": 6740
+      }
+    },
+    "translate": {
+      "status": "succeeded",
+      "activeMs": 153453,
+      "resourceWaitMs": 0,
+      "counters": {
+        "cueCount": 84
+      }
+    },
+    "sttn": {
+      "status": "failed",
+      "activeMs": 0,
+      "resourceWaitMs": 0,
+      "counters": {},
+      "error": "Error: chatterbox_generation_failed: Chatterbox generation failed"
+    },
+    "tts": {
+      "status": "failed",
+      "activeMs": 163169,
+      "resourceWaitMs": 0,
+      "counters": {},
+      "error": "chatterbox_generation_failed: Chatterbox generation failed"
+    }
+  },
+  "error": "Error: chatterbox_generation_failed: Chatterbox generation failed"
+}

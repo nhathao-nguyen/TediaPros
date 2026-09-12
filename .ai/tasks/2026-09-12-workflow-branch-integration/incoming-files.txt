@@ -1,0 +1,11 @@
+M	package-lock.json
+M	package.json
+M	src/main/autoshort.ts
+A	src/main/edgeTts.ts
+M	src/main/index.ts
+M	src/main/tts.ts
+M	src/preload/index.ts
+M	src/renderer/src/components/AutoShort.tsx
+M	src/renderer/src/components/Voice.tsx
+M	src/shared/autoShortContract.ts
+M	src/shared/types.ts

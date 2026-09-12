@@ -1,0 +1,60 @@
+{
+  "schemaVersion": 1,
+  "jobId": "ef37f1f8-9606-4870-9b05-a9b6693aaf87",
+  "itemId": "dac23b6a-2c8e-4588-8c41-52cecb6b9ad6",
+  "attemptId": "4ba8d126-a746-4fcd-a10e-862a6ebe11dd",
+  "startedAtUtc": "2026-09-11T17:46:53.788Z",
+  "completedAtUtc": "2026-09-11T18:03:02.660Z",
+  "status": "failed",
+  "totalWallMs": 968872,
+  "stages": {
+    "validate": {
+      "status": "succeeded",
+      "activeMs": 0,
+      "resourceWaitMs": 0,
+      "counters": {
+        "inputBytes": 123879305
+      }
+    },
+    "asr": {
+      "status": "succeeded",
+      "activeMs": 16241,
+      "resourceWaitMs": 0,
+      "counters": {
+        "cueCount": 102
+      }
+    },
+    "visual_ocr": {
+      "status": "succeeded",
+      "activeMs": 328391,
+      "resourceWaitMs": 0,
+      "counters": {
+        "visualSegments": 1034,
+        "boxSegments": 2186
+      }
+    },
+    "translate": {
+      "status": "succeeded",
+      "activeMs": 109796,
+      "resourceWaitMs": 0,
+      "counters": {
+        "cueCount": 102
+      }
+    },
+    "sttn": {
+      "status": "failed",
+      "activeMs": 0,
+      "resourceWaitMs": 0,
+      "counters": {},
+      "error": "DubbingVideoExtensionLimitError: Cue cue-57-129940 vẫn không vừa ở 1.80x: cần kéo dài đoạn hình 110.8%, vượt giới hạn 60%; không cắt lời."
+    },
+    "tts": {
+      "status": "failed",
+      "activeMs": 596054,
+      "resourceWaitMs": 0,
+      "counters": {},
+      "error": "Cue cue-57-129940 vẫn không vừa ở 1.80x: cần kéo dài đoạn hình 110.8%, vượt giới hạn 60%; không cắt lời."
+    }
+  },
+  "error": "DubbingVideoExtensionLimitError: Cue cue-57-129940 vẫn không vừa ở 1.80x: cần kéo dài đoạn hình 110.8%, vượt giới hạn 60%; không cắt lời."
+}

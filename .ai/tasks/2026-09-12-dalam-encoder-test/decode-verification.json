@@ -1,0 +1,32 @@
+[
+  {
+    "label": "1-compatible-h264_nvenc-plain",
+    "decodeExit": 0,
+    "diagnostic": ""
+  },
+  {
+    "label": "1-compatible-h264_nvenc-filtered",
+    "decodeExit": 0,
+    "diagnostic": ""
+  },
+  {
+    "label": "1-active-libx264-filtered",
+    "decodeExit": 0,
+    "diagnostic": ""
+  },
+  {
+    "label": "2-compatible-h264_nvenc-plain",
+    "decodeExit": 0,
+    "diagnostic": ""
+  },
+  {
+    "label": "2-compatible-h264_nvenc-filtered",
+    "decodeExit": 0,
+    "diagnostic": ""
+  },
+  {
+    "label": "2-active-libx264-filtered",
+    "decodeExit": 0,
+    "diagnostic": ""
+  }
+]

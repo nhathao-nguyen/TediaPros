@@ -1,0 +1,11 @@
+{
+  "status": "PASS",
+  "documents": 6,
+  "checkedLinks": 20,
+  "tasks": 16,
+  "expectedTasks": 16,
+  "findingsMapped": 12,
+  "coreRequirementsMapped": 18,
+  "implementationCheckboxesChecked": 0,
+  "failures": []
+}

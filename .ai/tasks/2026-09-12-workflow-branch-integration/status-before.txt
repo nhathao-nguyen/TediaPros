@@ -1,0 +1,48 @@
+ M docs/architecture.md
+ M docs/domain.md
+ M docs/translation-budget-policy.md
+ M scripts/run-local-runtime-tests.mjs
+ M src/main/gemini.ts
+ M src/main/geminiKeys.ts
+ M src/main/localTranslate.ts
+ M src/main/openai.ts
+ M src/main/translation/checkpoint.ts
+ M src/main/translation/orchestrator.ts
+ M src/main/translation/prompts.ts
+ M src/main/translation/response.ts
+ M src/main/videoTitle.ts
+ M src/shared/videoSeo.ts
+ M tests/gemini-keys.test.ts
+ M tests/local-translation.test.ts
+ M tests/translation-identity.test.ts
+ M tests/translation-orchestrator.test.ts
+ M tests/translation-planner.test.ts
+ M tests/translation-prompts.test.ts
+ M tests/translation-provider-contract.test.ts
+ M tests/translation-rephrase.test.ts
+ M tests/translation-response.test.ts
+ M tests/translation-resume.test.ts
+ M tests/translation-transport.test.ts
+ M tests/video-seo.test.ts
+ M tests/video-title.test.ts
+?? .ai/tasks/2026-09-12-ai-output-reliability-review/
+?? .ai/tasks/2026-09-12-ai-output-reliability/
+?? .ai/tasks/2026-09-12-autoshort-cut-repair-planning/
+?? .ai/tasks/2026-09-12-autoshort-overlays/
+?? .ai/tasks/2026-09-12-dalam-encoder-test/
+?? .ai/tasks/2026-09-12-winlocal-performance/
+?? .ai/tasks/TASK-20260912-ai-output-reliability-planning.md
+?? .ai/tasks/TASK-20260912-ai-output-reliability-review.md
+?? .ai/tasks/TASK-20260912-autoshort-batch-plan.md
+?? .ai/tasks/TASK-20260912-autoshort-temporal-cut-review.md
+?? .ai/tasks/TASK-20260912-dalam-encoder-test.md
+?? .ai/tasks/TASK-20260912-winlocal-performance-audit.md
+?? docs/adr/009-bounded-structured-ai-output.md
+?? docs/superpowers/plans/2026-09-12-ai-output-reliability.md
+?? docs/superpowers/plans/2026-09-12-autoshort-batch-reliability.md
+?? docs/superpowers/specs/2026-09-12-ai-output-reliability-adversarial-cases.md
+?? docs/superpowers/specs/2026-09-12-ai-output-reliability-design.md
+?? docs/superpowers/specs/2026-09-12-autoshort-batch-reliability-design.md
+?? src/main/aiResponseBody.ts
+?? src/shared/aiOutput.ts
+?? tests/ai-output.test.ts

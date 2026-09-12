@@ -1,0 +1,43 @@
+{
+  "schemaVersion": 1,
+  "jobId": "1c4d67f9-60f2-4f26-8e2f-320e268c651c",
+  "itemId": "efa42158-5fdd-4356-94fd-3515fc6b26ac",
+  "attemptId": "0d2b8eab-fee5-42af-885b-d264d5849119",
+  "startedAtUtc": "2026-09-11T15:33:53.030Z",
+  "completedAtUtc": "2026-09-11T15:34:15.799Z",
+  "status": "cancelled",
+  "totalWallMs": 22768,
+  "stages": {
+    "validate": {
+      "status": "succeeded",
+      "activeMs": 1,
+      "resourceWaitMs": 0,
+      "counters": {
+        "inputBytes": 127562583
+      }
+    },
+    "asr": {
+      "status": "succeeded",
+      "activeMs": 16452,
+      "resourceWaitMs": 0,
+      "counters": {
+        "cueCount": 79
+      }
+    },
+    "visual_ocr": {
+      "status": "cancelled",
+      "activeMs": 0,
+      "resourceWaitMs": 0,
+      "counters": {},
+      "error": "Error: Đã hủy tác vụ"
+    },
+    "translate": {
+      "status": "cancelled",
+      "activeMs": 5782,
+      "resourceWaitMs": 0,
+      "counters": {},
+      "error": "Đã hủy tác vụ"
+    }
+  },
+  "error": "Error: Đã hủy tác vụ"
+}

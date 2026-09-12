@@ -1,0 +1,87 @@
+{
+  "schemaVersion": 1,
+  "jobId": "7e8f5878-beaf-45a4-855d-4bd54ec2b321",
+  "itemId": "8abdbd55-78c1-45a1-a159-0e043ea68bd9",
+  "attemptId": "b806da2c-7b6d-4f19-8422-08c676338c20",
+  "startedAtUtc": "2026-09-11T16:08:40.351Z",
+  "completedAtUtc": "2026-09-11T16:26:33.556Z",
+  "status": "succeeded",
+  "totalWallMs": 1073205,
+  "stages": {
+    "validate": {
+      "status": "succeeded",
+      "activeMs": 0,
+      "resourceWaitMs": 0,
+      "counters": {
+        "inputBytes": 91121166
+      }
+    },
+    "asr": {
+      "status": "succeeded",
+      "activeMs": 16799,
+      "resourceWaitMs": 0,
+      "counters": {
+        "cueCount": 56
+      }
+    },
+    "visual_ocr": {
+      "status": "succeeded",
+      "activeMs": 283879,
+      "resourceWaitMs": 0,
+      "counters": {
+        "visualSegments": 604,
+        "boxSegments": 632
+      }
+    },
+    "translate": {
+      "status": "succeeded",
+      "activeMs": 100061,
+      "resourceWaitMs": 0,
+      "counters": {
+        "cueCount": 56
+      }
+    },
+    "sttn": {
+      "status": "succeeded",
+      "activeMs": 510337,
+      "resourceWaitMs": 13139,
+      "counters": {
+        "elapsedMs": 507427
+      }
+    },
+    "tts": {
+      "status": "succeeded",
+      "activeMs": 454986,
+      "resourceWaitMs": 0,
+      "counters": {
+        "cueCount": 32,
+        "rephraseCount": 1,
+        "clipCount": 32
+      }
+    },
+    "audio": {
+      "status": "succeeded",
+      "activeMs": 1003,
+      "resourceWaitMs": 0,
+      "counters": {
+        "clipCount": 32
+      }
+    },
+    "render": {
+      "status": "succeeded",
+      "activeMs": 247825,
+      "resourceWaitMs": 0,
+      "counters": {
+        "outputBytes": 262587577
+      }
+    },
+    "publish": {
+      "status": "succeeded",
+      "activeMs": 0,
+      "resourceWaitMs": 0,
+      "counters": {
+        "isPublished": 1
+      }
+    }
+  }
+}

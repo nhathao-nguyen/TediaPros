@@ -1,0 +1,54 @@
+{
+  "schemaVersion": 1,
+  "jobId": "ef37f1f8-9606-4870-9b05-a9b6693aaf87",
+  "itemId": "18d7d4af-e860-4014-8395-775fe9eb7aac",
+  "attemptId": "610ad6a8-3d9a-47d8-a7bf-d9ab17530b93",
+  "startedAtUtc": "2026-09-11T16:45:32.423Z",
+  "completedAtUtc": "2026-09-11T16:52:58.888Z",
+  "status": "failed",
+  "totalWallMs": 446465,
+  "stages": {
+    "validate": {
+      "status": "succeeded",
+      "activeMs": 0,
+      "resourceWaitMs": 0,
+      "counters": {
+        "inputBytes": 63744593
+      }
+    },
+    "visual_ocr": {
+      "status": "succeeded",
+      "activeMs": 26,
+      "resourceWaitMs": 0,
+      "counters": {
+        "cacheHit": 1,
+        "visualSegments": 543,
+        "boxSegments": 591
+      }
+    },
+    "translate": {
+      "status": "succeeded",
+      "activeMs": 18,
+      "resourceWaitMs": 0,
+      "counters": {
+        "cueCount": 56
+      }
+    },
+    "sttn": {
+      "status": "succeeded",
+      "activeMs": 374953,
+      "resourceWaitMs": 0,
+      "counters": {
+        "elapsedMs": 372164
+      }
+    },
+    "tts": {
+      "status": "failed",
+      "activeMs": 59804,
+      "resourceWaitMs": 0,
+      "counters": {},
+      "error": "Cue cue-0-0 có tempo đo được 1.808x vượt trần 1.80x; không chấp nhận audio bị tăng tốc quá mức."
+    }
+  },
+  "error": "Error: Cue cue-0-0 có tempo đo được 1.808x vượt trần 1.80x; không chấp nhận audio bị tăng tốc quá mức."
+}

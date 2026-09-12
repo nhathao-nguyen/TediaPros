@@ -1,0 +1,278 @@
+{
+  "result": "PASS: reproduced defect (not fixed)",
+  "results": [
+    {
+      "itemId": "5724037b-eeab-41b8-a699-fd9f55543774",
+      "cacheFile": "C:\\Users\\PC\\AppData\\Roaming\\tedia-pros\\autoshort-artifact-cache-v1\\visual-ocr\\037fc90c036b3424c5571b8bbbdf7d78b3526839d5c2bcdd4cb7c1309f48e1bc\\artifact.bin",
+      "profile": "accurate",
+      "transport": "stream-roi",
+      "ocrProvider": {
+        "det": "DmlExecutionProvider",
+        "cls": "DmlExecutionProvider",
+        "rec": "DmlExecutionProvider"
+      },
+      "installed": {
+        "rawValidated": true,
+        "syntheticCount": 2,
+        "rejected": "Raw segment từ engine không được chứa prefix gap-: gap-1224-accurate-1223-accurate-1225."
+      },
+      "source": {
+        "rawValidated": true,
+        "syntheticCount": 2,
+        "rejected": "Raw segment từ engine không được chứa prefix gap-: gap-1224-accurate-1223-accurate-1225."
+      }
+    },
+    {
+      "itemId": "d88884ac-9780-44ed-8e5e-d6aa6cc68aa8",
+      "cacheFile": "C:\\Users\\PC\\AppData\\Roaming\\tedia-pros\\autoshort-artifact-cache-v1\\visual-ocr\\1a70c3ce423c1e559d28c1e4e1d894ec246157d021c9e2f88fd04c9bdd84239b\\artifact.bin",
+      "profile": "accurate",
+      "transport": "stream-roi",
+      "ocrProvider": {
+        "det": "DmlExecutionProvider",
+        "cls": "DmlExecutionProvider",
+        "rec": "DmlExecutionProvider"
+      },
+      "installed": {
+        "rawValidated": true,
+        "syntheticCount": 3,
+        "rejected": "Raw segment từ engine không được chứa prefix gap-: gap-695-accurate-694-accurate-696."
+      },
+      "source": {
+        "rawValidated": true,
+        "syntheticCount": 3,
+        "rejected": "Raw segment từ engine không được chứa prefix gap-: gap-695-accurate-694-accurate-696."
+      }
+    },
+    {
+      "itemId": "8dbb3a28-1a98-47a8-a81b-dae4eb43ba1d",
+      "cacheFile": "C:\\Users\\PC\\AppData\\Roaming\\tedia-pros\\autoshort-artifact-cache-v1\\visual-ocr\\200417a3605a2cbc46cc0d29d23f18f0d65c99e1d34ec7da09e3090be7981f44\\artifact.bin",
+      "profile": "accurate",
+      "transport": "stream-roi",
+      "ocrProvider": {
+        "det": "DmlExecutionProvider",
+        "cls": "DmlExecutionProvider",
+        "rec": "DmlExecutionProvider"
+      },
+      "installed": {
+        "rawValidated": true,
+        "syntheticCount": 2,
+        "rejected": "Raw segment từ engine không được chứa prefix gap-: gap-525-accurate-524-accurate-526."
+      },
+      "source": {
+        "rawValidated": true,
+        "syntheticCount": 2,
+        "rejected": "Raw segment từ engine không được chứa prefix gap-: gap-525-accurate-524-accurate-526."
+      }
+    },
+    {
+      "itemId": "deb1c5d8-70c2-4576-8cd4-aae30f0f41c7",
+      "cacheFile": "C:\\Users\\PC\\AppData\\Roaming\\tedia-pros\\autoshort-artifact-cache-v1\\visual-ocr\\3b7ce0d21d5e3f6aaa1c5d21a55d35fe3ebfa34b919a58f413d19b89caf464c9\\artifact.bin",
+      "profile": "accurate",
+      "transport": "stream-roi",
+      "ocrProvider": {
+        "det": "DmlExecutionProvider",
+        "cls": "DmlExecutionProvider",
+        "rec": "DmlExecutionProvider"
+      },
+      "installed": {
+        "rawValidated": true,
+        "syntheticCount": 3,
+        "rejected": "Raw segment từ engine không được chứa prefix gap-: gap-298-accurate-297-accurate-299."
+      },
+      "source": {
+        "rawValidated": true,
+        "syntheticCount": 3,
+        "rejected": "Raw segment từ engine không được chứa prefix gap-: gap-298-accurate-297-accurate-299."
+      }
+    },
+    {
+      "itemId": "dc1194a3-8a8e-4f30-86bc-9e20b4add850",
+      "cacheFile": "C:\\Users\\PC\\AppData\\Roaming\\tedia-pros\\autoshort-artifact-cache-v1\\visual-ocr\\41d4f5baec5ddaef94fb84e5af544abc0d229e8c8bfb9ae08b3aec3d1301eaab\\artifact.bin",
+      "profile": "accurate",
+      "transport": "stream-roi",
+      "ocrProvider": {
+        "det": "DmlExecutionProvider",
+        "cls": "DmlExecutionProvider",
+        "rec": "DmlExecutionProvider"
+      },
+      "installed": {
+        "rawValidated": true,
+        "syntheticCount": 1,
+        "rejected": "Raw segment từ engine không được chứa prefix gap-: gap-656-accurate-655-accurate-657."
+      },
+      "source": {
+        "rawValidated": true,
+        "syntheticCount": 1,
+        "rejected": "Raw segment từ engine không được chứa prefix gap-: gap-656-accurate-655-accurate-657."
+      }
+    },
+    {
+      "itemId": "198f04c7-b616-4850-9bb9-5231dc102cb4",
+      "cacheFile": "C:\\Users\\PC\\AppData\\Roaming\\tedia-pros\\autoshort-artifact-cache-v1\\visual-ocr\\4b0f7907e4505f80123d24d8de519a97c9287619d359f78c7840514ac9a60e63\\artifact.bin",
+      "profile": "accurate",
+      "transport": "stream-roi",
+      "ocrProvider": {
+        "det": "DmlExecutionProvider",
+        "cls": "DmlExecutionProvider",
+        "rec": "DmlExecutionProvider"
+      },
+      "installed": {
+        "rawValidated": true,
+        "syntheticCount": 1,
+        "rejected": "Raw segment từ engine không được chứa prefix gap-: gap-1577-accurate-1576-accurate-1578."
+      },
+      "source": {
+        "rawValidated": true,
+        "syntheticCount": 1,
+        "rejected": "Raw segment từ engine không được chứa prefix gap-: gap-1577-accurate-1576-accurate-1578."
+      }
+    },
+    {
+      "itemId": "1c31ff9d-7f2b-4364-93c5-99035c3fc3f2",
+      "cacheFile": "C:\\Users\\PC\\AppData\\Roaming\\tedia-pros\\autoshort-artifact-cache-v1\\visual-ocr\\6285382e4a1c736a2ca2b675bf8028b0dbbead36741f4a44d238285804c6ab2b\\artifact.bin",
+      "profile": "accurate",
+      "transport": "stream-roi",
+      "ocrProvider": {
+        "det": "DmlExecutionProvider",
+        "cls": "DmlExecutionProvider",
+        "rec": "DmlExecutionProvider"
+      },
+      "installed": {
+        "rawValidated": true,
+        "syntheticCount": 1,
+        "rejected": "Raw segment từ engine không được chứa prefix gap-: gap-193-accurate-192-accurate-194."
+      },
+      "source": {
+        "rawValidated": true,
+        "syntheticCount": 1,
+        "rejected": "Raw segment từ engine không được chứa prefix gap-: gap-193-accurate-192-accurate-194."
+      }
+    },
+    {
+      "itemId": "a29cf6cf-9392-41e2-b35e-7b42fc6fde87",
+      "cacheFile": "C:\\Users\\PC\\AppData\\Roaming\\tedia-pros\\autoshort-artifact-cache-v1\\visual-ocr\\79d406628bb448ec0197c65a67a42a90db82b4fcd767a22ec9d5f3bc01dffc22\\artifact.bin",
+      "profile": "accurate",
+      "transport": "stream-roi",
+      "ocrProvider": {
+        "det": "DmlExecutionProvider",
+        "cls": "DmlExecutionProvider",
+        "rec": "DmlExecutionProvider"
+      },
+      "installed": {
+        "rawValidated": true,
+        "syntheticCount": 2,
+        "rejected": "Raw segment từ engine không được chứa prefix gap-: gap-143-accurate-142-accurate-144."
+      },
+      "source": {
+        "rawValidated": true,
+        "syntheticCount": 2,
+        "rejected": "Raw segment từ engine không được chứa prefix gap-: gap-143-accurate-142-accurate-144."
+      }
+    },
+    {
+      "itemId": "565c0225-2f98-4fd7-8965-d5362c50ad08",
+      "cacheFile": "C:\\Users\\PC\\AppData\\Roaming\\tedia-pros\\autoshort-artifact-cache-v1\\visual-ocr\\85d3c696e571b14d6d8915d1486af26bc80cac5233565584a826f1a6074439ea\\artifact.bin",
+      "profile": "accurate",
+      "transport": "stream-roi",
+      "ocrProvider": {
+        "det": "DmlExecutionProvider",
+        "cls": "DmlExecutionProvider",
+        "rec": "DmlExecutionProvider"
+      },
+      "installed": {
+        "rawValidated": true,
+        "syntheticCount": 1,
+        "rejected": "Raw segment từ engine không được chứa prefix gap-: gap-1059-accurate-1058-accurate-1060."
+      },
+      "source": {
+        "rawValidated": true,
+        "syntheticCount": 1,
+        "rejected": "Raw segment từ engine không được chứa prefix gap-: gap-1059-accurate-1058-accurate-1060."
+      }
+    },
+    {
+      "itemId": "97923d3f-e148-4f32-aeb3-7c2b278eb9bd",
+      "cacheFile": "C:\\Users\\PC\\AppData\\Roaming\\tedia-pros\\autoshort-artifact-cache-v1\\visual-ocr\\9f1e7596eb3a5a27895560625db1e23e7c7b2e3a9b9ec85062b9f0005295e735\\artifact.bin",
+      "profile": "accurate",
+      "transport": "stream-roi",
+      "ocrProvider": {
+        "det": "DmlExecutionProvider",
+        "cls": "DmlExecutionProvider",
+        "rec": "DmlExecutionProvider"
+      },
+      "installed": {
+        "rawValidated": true,
+        "syntheticCount": 1,
+        "rejected": "Raw segment từ engine không được chứa prefix gap-: gap-551-accurate-550-accurate-552."
+      },
+      "source": {
+        "rawValidated": true,
+        "syntheticCount": 1,
+        "rejected": "Raw segment từ engine không được chứa prefix gap-: gap-551-accurate-550-accurate-552."
+      }
+    },
+    {
+      "itemId": "58a8ec54-524b-4778-863f-ea3cb7a38c42",
+      "cacheFile": "C:\\Users\\PC\\AppData\\Roaming\\tedia-pros\\autoshort-artifact-cache-v1\\visual-ocr\\a5778b4a8c72e6b113755944005b65c5adc2e294715bd11c32a7aa5b0a6abf88\\artifact.bin",
+      "profile": "accurate",
+      "transport": "stream-roi",
+      "ocrProvider": {
+        "det": "DmlExecutionProvider",
+        "cls": "DmlExecutionProvider",
+        "rec": "DmlExecutionProvider"
+      },
+      "installed": {
+        "rawValidated": true,
+        "syntheticCount": 2,
+        "rejected": "Raw segment từ engine không được chứa prefix gap-: gap-385-accurate-384-accurate-386."
+      },
+      "source": {
+        "rawValidated": true,
+        "syntheticCount": 2,
+        "rejected": "Raw segment từ engine không được chứa prefix gap-: gap-385-accurate-384-accurate-386."
+      }
+    },
+    {
+      "itemId": "163ab933-63f4-417f-be71-7af10849fbb2",
+      "cacheFile": "C:\\Users\\PC\\AppData\\Roaming\\tedia-pros\\autoshort-artifact-cache-v1\\visual-ocr\\d6713ea0dd4ff473c84ebd5efe627aab684f8e01f06d2b5a1ac7a91fe84dc64a\\artifact.bin",
+      "profile": "accurate",
+      "transport": "stream-roi",
+      "ocrProvider": {
+        "det": "DmlExecutionProvider",
+        "cls": "DmlExecutionProvider",
+        "rec": "DmlExecutionProvider"
+      },
+      "installed": {
+        "rawValidated": true,
+        "syntheticCount": 2,
+        "rejected": "Raw segment từ engine không được chứa prefix gap-: gap-913-accurate-912-accurate-914."
+      },
+      "source": {
+        "rawValidated": true,
+        "syntheticCount": 2,
+        "rejected": "Raw segment từ engine không được chứa prefix gap-: gap-913-accurate-912-accurate-914."
+      }
+    },
+    {
+      "itemId": "b2fbdfe0-bf8d-480b-9507-77bf31bf4421",
+      "cacheFile": "C:\\Users\\PC\\AppData\\Roaming\\tedia-pros\\autoshort-artifact-cache-v1\\visual-ocr\\f122e7d78f42c9635c066e24b93cfb4fd97a919e0e8b5cd0e03c79b5ad1437de\\artifact.bin",
+      "profile": "accurate",
+      "transport": "stream-roi",
+      "ocrProvider": {
+        "det": "DmlExecutionProvider",
+        "cls": "DmlExecutionProvider",
+        "rec": "DmlExecutionProvider"
+      },
+      "installed": {
+        "rawValidated": true,
+        "syntheticCount": 1,
+        "rejected": "Raw segment từ engine không được chứa prefix gap-: gap-766-accurate-765-accurate-767."
+      },
+      "source": {
+        "rawValidated": true,
+        "syntheticCount": 1,
+        "rejected": "Raw segment từ engine không được chứa prefix gap-: gap-766-accurate-765-accurate-767."
+      }
+    }
+  ]
+}

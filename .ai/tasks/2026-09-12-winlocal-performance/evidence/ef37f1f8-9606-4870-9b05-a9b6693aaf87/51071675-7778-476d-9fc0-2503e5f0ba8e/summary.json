@@ -1,0 +1,60 @@
+{
+  "schemaVersion": 1,
+  "jobId": "ef37f1f8-9606-4870-9b05-a9b6693aaf87",
+  "itemId": "51071675-7778-476d-9fc0-2503e5f0ba8e",
+  "attemptId": "59ab59c7-42b5-423a-94fd-499afcd80adf",
+  "startedAtUtc": "2026-09-12T00:24:16.687Z",
+  "completedAtUtc": "2026-09-12T00:31:06.035Z",
+  "status": "cancelled",
+  "totalWallMs": 409348,
+  "stages": {
+    "validate": {
+      "status": "succeeded",
+      "activeMs": 0,
+      "resourceWaitMs": 0,
+      "counters": {
+        "inputBytes": 99136697
+      }
+    },
+    "asr": {
+      "status": "succeeded",
+      "activeMs": 20217,
+      "resourceWaitMs": 0,
+      "counters": {
+        "cueCount": 68
+      }
+    },
+    "visual_ocr": {
+      "status": "succeeded",
+      "activeMs": 295897,
+      "resourceWaitMs": 0,
+      "counters": {
+        "visualSegments": 764,
+        "boxSegments": 960
+      }
+    },
+    "translate": {
+      "status": "succeeded",
+      "activeMs": 74607,
+      "resourceWaitMs": 0,
+      "counters": {
+        "cueCount": 68
+      }
+    },
+    "sttn": {
+      "status": "cancelled",
+      "activeMs": 0,
+      "resourceWaitMs": 0,
+      "counters": {},
+      "error": "quá thời gian chờ — máy chủ không phản hồi"
+    },
+    "tts": {
+      "status": "cancelled",
+      "activeMs": 68679,
+      "resourceWaitMs": 0,
+      "counters": {},
+      "error": "Đã hủy tác vụ"
+    }
+  },
+  "error": "quá thời gian chờ — máy chủ không phản hồi"
+}

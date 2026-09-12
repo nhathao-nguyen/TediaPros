@@ -1,0 +1,91 @@
+< cd7d865 docs: record local branch integration
+< f8f4c93 merge: integrate AutoShort cut repair
+< 094adbd feat(autoshort): add persistent image and text overlays
+< 2c04e1f docs(autoshort): normalize review evidence
+< 841ab2a docs(autoshort): record cut repair evidence
+< 7eb9575 fix(autoshort): preview STTN from prepared cuts
+< 29afc97 fix(autoshort): block ambiguous cut seams
+< 955e69f feat(autoshort): enable validated temporal cut runs
+< 9a26b25 feat(autoshort): add compact cut timeline interactions
+< 2bd9345 fix(autoshort): validate and bound prepared cuts
+< 4276db9 fix(autoshort): execute exact frame cut plans
+< 199f178 fix(autoshort): preserve legacy no-cut resume identities
+< 14af1eb fix(autoshort): separate cut history from execution ranges
+< c0625f0 fix(autoshort): repair cut editor validation and layout
+< eb7cf74 fix(autoshort): gate unverified temporal cut execution
+< 0d7fa21 feat(autoshort): add temporal segment cutting
+< 2d4a882 docs: record AutoShort batch reliability verification
+< c282d97 chore(release): bump Windows build to 0.1.26
+< f87e195 feat(autoshort): cache validated STTN outputs
+< c7f49dd fix(autoshort): reconcile published batch outputs
+< 8654bc0 feat(autoshort): persist and resume batch queues
+< 512034e feat(autoshort): retain logs and trace slow stages
+< 6b42e36 fix(autoshort): accept verified stabilized OCR gaps
+< 7e2b93e docs: record v0.1.25 release verification
+< 3dce56f fix: normalize Windows release title path test
+< cedab93 fix: refresh pinned FFmpeg runtime source
+< bcd10ac feat: release Auto Short OCR placement and runtime v5
+< 006aca0 docs: refresh retained evidence checksums
+< f070db4 docs: record local branch integration
+< fdf4163 merge: integrate AutoShort improvements
+< 753c812 feat(autoshort): integrate editing and translation improvements
+< fd0123a docs: record verified OCR GPU local merge
+< 791e8d6 feat(ocr): enable DirectML GPU runtime and align dubbing fixtures
+< b02c4a5 fix: isolate dev and packaged app profiles
+< c1bdb68 docs: record local runtime build handoff
+< f20ddc6 feat(autoshort): integrate OCR and measured dubbing fixes
+< 863f55c fix(dubbing): batch measured overflow recovery
+< 481ae06 docs: plan decoupled dubbing implementation
+< 3a8f176 docs: specify decoupled dubbing pipeline
+< 6c6565b fix(dubbing): split measured-overflow speech groups
+< 52c05bc fix(dubbing): allocate measured speech slots before recovery
+< 0901ef7 feat(autoshort): harden translation and dubbing timing
+< 7d86614 feat(translation): implement bounded multilingual reliability plan
+< 3d49b84 feat: optimize autoshort pipeline with guarded reuse
+< 10f67c3 chore: ignore local worktrees
+< 6291184 fix(ci): pin DirectML separator build dependency
+< 5e016a9 feat(autoshort): harden OCR, translation, and queue processing
+< f782e00 fix(blur): increase sigma 3x and padding to fully obscure text
+< 61de5b7 test(autoshort): verify OCR timed blur with deterministic media
+< 0f24538 release(runtime): define OCR blur runtime v5
+< 1af9014 feat(autoshort-ui): add automatic OCR blur
+< d85a688 feat(autoshort): integrate OCR timed blur
+< 77e94d4 feat(autoshort): gate OCR blur readiness
+< 357b247 feat(burn): render validated timed masks
+< 28782e5 feat(autoshort): generate timed OCR masks
+< e409f98 feat(ocr): validate visual sidecars locally
+< 83270f4 feat(ocr-engine): emit visual cue sidecars
+< c0b20a9 feat(ocr): add canonical visual timeline
+< f2661e5 refactor(video): centralize display geometry
+< 36c81cb feat(autoshort): add OCR blur contract
+< 63bd8e1 docs: expand OCR timed blur implementation plan
+< f7ce00d docs(autoshort): plan OCR timed text blur
+< 7c2821f docs(autoshort): design OCR-timed text blur
+< 2775161 fix(separator): support UVR-MDX-Net 4-channel ONNX input and stage local runtime dependencies
+< bef840e release(separator): verify Windows client distribution
+< 6f2c1f2 feat(ui): add Auto Short separation presets
+< e436a8e feat(autoshort): render TTS over separated source bed
+< 9a84963 feat(autoshort): expose separator dependency readiness
+< 78b02cf refactor(autoshort): support finite narrated audio beds
+< cd3de1b feat(separator): add validated DirectML CPU pipeline
+< 4051ef3 feat(separator): add verified model distribution
+< 776d6e4 feat(runtime): package separator engine in runtime-v4
+< 1e07ade feat(separator): add MDX ONNX engine protocol
+< 23ac930 feat(autoshort): define vocal separation contract
+< 44f8a5c research(separator): qualify redistributable MDX models
+< 7f84e69 fix: update autoShortBackgroundAudio, burn and local-runtime test
+< 18022cc docs(autoshort): plan client vocal separation
+< dda9491 docs(autoshort): design client vocal separation
+> 1d61ef7 feat(tts): integrate Microsoft Edge-TTS voice provider with batch dubbing and multilingual support
+< 645a9ea Merge remote-tracking branch 'origin/fix/workflow-capcut-youtube' into codex/autoshort-background-music
+< 54b4aba fix(client): fix chatterbox denoise ui
+< 8bb057a Merge branch 'main' of https://github.com/nhathao-nguyen/TediaPros into codex/autoshort-background-music
+< 6070f4c Merge branch 'main' of https://github.com/nhathao-nguyen/TediaPros into codex/autoshort-background-music
+< 8807fe9 fix(autoshort): close background music review gaps
+< 2677331 fix(autoshort): ignore stale music scan errors
+< ac6a51f fix(autoshort): guard background music controls and rescans
+< 879aa30 feat(autoshort): add background music assignment controls
+< 95e93b8 feat(autoshort): mix background music with narration
+< 1c6bfca fix(autoshort): reject relative music paths
+< 27179d2 feat(autoshort): add background music folder catalog
+< 35c4834 feat(autoshort): define background music contract

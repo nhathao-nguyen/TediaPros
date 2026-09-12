@@ -1,0 +1,552 @@
+{
+  "scope": "Last intact persisted task array in LevelDB WAL; UI statuses may be stale after exit",
+  "queueCount": 90,
+  "matchedStarted": 36,
+  "unstarted": 54,
+  "statuses": {
+    "queued": 89,
+    "removing_subtitles": 1
+  },
+  "items": [
+    {
+      "id": "efa42158-5fdd-4356-94fd-3515fc6b26ac",
+      "filePath": "F:\\Son\\doyuin\\LauHaiSan\\danglam\\2025-04-06_大海退潮，来海边吃点新鲜的海鲜_赶海_7490083913512045863.mp4",
+      "status": "queued",
+      "startedInLastJob": true
+    },
+    {
+      "id": "18d7d4af-e860-4014-8395-775fe9eb7aac",
+      "filePath": "F:\\Son\\doyuin\\LauHaiSan\\danglam\\2025-04-08_大海退潮啦，海鲜就要现抓现吃_赶海_7490882160954461476.mp4",
+      "status": "queued",
+      "startedInLastJob": true
+    },
+    {
+      "id": "8abdbd55-78c1-45a1-a159-0e043ea68bd9",
+      "filePath": "F:\\Son\\doyuin\\LauHaiSan\\danglam\\2025-04-16_赶海抓海鲜，现煮现吃_赶海_7493809730649885992.mp4",
+      "status": "queued",
+      "startedInLastJob": true
+    },
+    {
+      "id": "cae55599-694b-4665-9740-102d23696d41",
+      "filePath": "F:\\Son\\doyuin\\LauHaiSan\\danglam\\2025-04-18_真正的海底捞自助，就要现抓现吃_赶海_7494584044865260852.mp4",
+      "status": "queued",
+      "startedInLastJob": true
+    },
+    {
+      "id": "69a3d8e7-3e44-4f5e-9170-a4f5ccd7389b",
+      "filePath": "F:\\Son\\doyuin\\LauHaiSan\\danglam\\2025-04-22_大海退潮，来海边觅食啦_赶海_7496063295829396736.mp4",
+      "status": "queued",
+      "startedInLastJob": true
+    },
+    {
+      "id": "8dbb3a28-1a98-47a8-a81b-dae4eb43ba1d",
+      "filePath": "F:\\Son\\doyuin\\LauHaiSan\\danglam\\2025-04-25_下班赶海觅食时间到，海鲜就要吃新鲜的_赶海_7497198185862008116.mp4",
+      "status": "queued",
+      "startedInLastJob": true
+    },
+    {
+      "id": "dac23b6a-2c8e-4588-8c41-52cecb6b9ad6",
+      "filePath": "F:\\Son\\doyuin\\LauHaiSan\\danglam\\2025-04-30_又到了赶海觅食的好时间_赶海_7499004312666099004.mp4",
+      "status": "queued",
+      "startedInLastJob": true
+    },
+    {
+      "id": "49ed72e3-0e44-4f79-8b5f-c2d99c93b828",
+      "filePath": "F:\\Son\\doyuin\\LauHaiSan\\danglam\\2025-05-07_免费海鲜自助就要现抓现吃_赶海_7501226986955164985.mp4",
+      "status": "queued",
+      "startedInLastJob": true
+    },
+    {
+      "id": "78716583-e60b-44e3-bc8d-f4a74ba4550f",
+      "filePath": "F:\\Son\\doyuin\\LauHaiSan\\danglam\\2025-05-10_下班后自助海鲜面，就要到海里现抓现吃_赶海_7502790065120562444.mp4",
+      "status": "queued",
+      "startedInLastJob": true
+    },
+    {
+      "id": "7baca1f0-76b6-4823-9b82-2bf15cf90dde",
+      "filePath": "F:\\Son\\doyuin\\LauHaiSan\\danglam\\2025-05-17_赶海觅食的好机会，海鲜就要现抓现吃_7504953195438755130.mp4",
+      "status": "queued",
+      "startedInLastJob": true
+    },
+    {
+      "id": "565c0225-2f98-4fd7-8965-d5362c50ad08",
+      "filePath": "F:\\Son\\doyuin\\LauHaiSan\\danglam\\2025-05-24_带锅赶海现抓现吃，海鲜就要吃新鲜的_瓜子二手车_7507926671690403130.mp4",
+      "status": "queued",
+      "startedInLastJob": true
+    },
+    {
+      "id": "76b267bd-dc79-489b-9be0-f711368f204d",
+      "filePath": "F:\\Son\\doyuin\\LauHaiSan\\danglam\\2025-06-06_免费海鲜自助就得到海里吃_赶海_7512458190290849061.mp4",
+      "status": "queued",
+      "startedInLastJob": true
+    },
+    {
+      "id": "a29cf6cf-9392-41e2-b35e-7b42fc6fde87",
+      "filePath": "F:\\Son\\doyuin\\LauHaiSan\\danglam\\2025-06-07_免费海鲜自助时间到，下海现抓现吃_赶海_7512640165548313915.mp4",
+      "status": "queued",
+      "startedInLastJob": true
+    },
+    {
+      "id": "b41267d5-3674-469c-8497-d75e4b6f44db",
+      "filePath": "F:\\Son\\doyuin\\LauHaiSan\\danglam\\2025-06-24_下班后海边觅食，吃免费自助海鲜面_鲸裕清酒_7519434505276378428.mp4",
+      "status": "queued",
+      "startedInLastJob": true
+    },
+    {
+      "id": "deb1c5d8-70c2-4576-8cd4-aae30f0f41c7",
+      "filePath": "F:\\Son\\doyuin\\LauHaiSan\\danglam\\2025-07-13_小渔村的海鲜自助面，海里现煮现吃_鲸裕清酒_7526498337571278089.mp4",
+      "status": "queued",
+      "startedInLastJob": true
+    },
+    {
+      "id": "f169db1f-8c87-41c7-b74e-60ec8539c37d",
+      "filePath": "F:\\Son\\doyuin\\LauHaiSan\\danglam\\2025-07-19_大海退潮，海边觅食自助餐啦_赶海_7528605004752506127.mp4",
+      "status": "queued",
+      "startedInLastJob": true
+    },
+    {
+      "id": "d88884ac-9780-44ed-8e5e-d6aa6cc68aa8",
+      "filePath": "F:\\Son\\doyuin\\LauHaiSan\\danglam\\2025-07-24_海边退大潮，来吃海鲜自助餐啦_7530490729127300378.mp4",
+      "status": "queued",
+      "startedInLastJob": true
+    },
+    {
+      "id": "0275d4d3-a227-4e52-969c-8c86604ac88c",
+      "filePath": "F:\\Son\\doyuin\\LauHaiSan\\danglam\\2025-07-28_小渔村的海鲜自助，海里现煮现吃_赶海_7532054637169413434.mp4",
+      "status": "queued",
+      "startedInLastJob": true
+    },
+    {
+      "id": "1c31ff9d-7f2b-4364-93c5-99035c3fc3f2",
+      "filePath": "F:\\Son\\doyuin\\LauHaiSan\\danglam\\2025-07-30_下班后的自助海鲜面，就要到海里现抓现吃_天火手电筒_天火苍龙手电筒_户外_赶海_7532329316735421756.mp4",
+      "status": "queued",
+      "startedInLastJob": true
+    },
+    {
+      "id": "97923d3f-e148-4f32-aeb3-7c2b278eb9bd",
+      "filePath": "F:\\Son\\doyuin\\LauHaiSan\\danglam\\2025-08-12_下班后的自助海鲜面，海里现抓现吃_小方侠_傲雷手电_7537565174984756539.mp4",
+      "status": "queued",
+      "startedInLastJob": true
+    },
+    {
+      "id": "6cebfbbd-a77d-4cea-aa30-3dd854bc2907",
+      "filePath": "F:\\Son\\doyuin\\LauHaiSan\\danglam\\2025-08-19_海鲜自助火锅，就要现抓现吃_赶海_爆辣辣条吃霸王丝_7540139611772144956.mp4",
+      "status": "queued",
+      "startedInLastJob": true
+    },
+    {
+      "id": "b445e16b-ff7e-4695-a651-5721d8a4bf65",
+      "filePath": "F:\\Son\\doyuin\\LauHaiSan\\danglam\\2025-08-22_下班后的自助海鲜面，就要现抓现吃_天火头灯_天火天龙头灯_7540914347288612130.mp4",
+      "status": "queued",
+      "startedInLastJob": true
+    },
+    {
+      "id": "0dc9fe9f-f750-460c-99a2-58c89927141f",
+      "filePath": "F:\\Son\\doyuin\\LauHaiSan\\danglam\\2025-08-29_这才是海鲜自助餐，想吃啥就海里捞_远明_远明老酒_远明酱酒_7543837740054908219.mp4",
+      "status": "queued",
+      "startedInLastJob": true
+    },
+    {
+      "id": "df439065-a0d7-4422-a4e8-b9823b91a17e",
+      "filePath": "F:\\Son\\doyuin\\LauHaiSan\\danglam\\2025-08-30_小渔村的海鲜自助，现抓现吃才新鲜_赶海_7544306146287848755.mp4",
+      "status": "queued",
+      "startedInLastJob": true
+    },
+    {
+      "id": "dc1194a3-8a8e-4f30-86bc-9e20b4add850",
+      "filePath": "F:\\Son\\doyuin\\LauHaiSan\\danglam\\2025-09-01_吃免费海鲜自助啦，海里现抓现吃_瓜子二手车_赶海_7544631018629598523.mp4",
+      "status": "queued",
+      "startedInLastJob": true
+    },
+    {
+      "id": "198f04c7-b616-4850-9bb9-5231dc102cb4",
+      "filePath": "F:\\Son\\doyuin\\LauHaiSan\\danglam\\2025-09-02_大海退潮，海鲜自助现抓现吃_VTT16头筋膜枪_7545083599700528444.mp4",
+      "status": "queued",
+      "startedInLastJob": true
+    },
+    {
+      "id": "b2fbdfe0-bf8d-480b-9507-77bf31bf4421",
+      "filePath": "F:\\Son\\doyuin\\LauHaiSan\\danglam\\2025-09-07_赶海觅食，海鲜自助餐现抓现吃_赶海_抖音美好丰收节_中国农民丰收节_抖音新农人_美好丰收看江苏_7547218667608624384.mp4",
+      "status": "queued",
+      "startedInLastJob": true
+    },
+    {
+      "id": "b808846c-d433-418f-a36e-b1c81614a977",
+      "filePath": "F:\\Son\\doyuin\\LauHaiSan\\danglam\\2025-09-14_自助海鲜面，海里现抓现吃_赶海_7549814524275084583.mp4",
+      "status": "queued",
+      "startedInLastJob": true
+    },
+    {
+      "id": "6bde091a-fa96-43e0-b1cd-1aee710f0fc0",
+      "filePath": "F:\\Son\\doyuin\\LauHaiSan\\danglam\\2025-09-20_大海退潮，又来吃免费的海鲜自助啦_百度ai_百度ai相机_7550933114068913465.mp4",
+      "status": "queued",
+      "startedInLastJob": true
+    },
+    {
+      "id": "163ab933-63f4-417f-be71-7af10849fbb2",
+      "filePath": "F:\\Son\\doyuin\\LauHaiSan\\danglam\\2025-09-24_自助海鲜面，现抓现煮_家大业大酒_上涨酒_家大业大喝啥有啥_赶海_7553542914803125564.mp4",
+      "status": "queued",
+      "startedInLastJob": true
+    },
+    {
+      "id": "a30fce02-b504-485a-9206-d9c7fd680ad6",
+      "filePath": "F:\\Son\\doyuin\\LauHaiSan\\danglam\\2025-09-26_免费海鲜大餐随便吃，想吃啥就下海抓_赶海_7554275540762414345.mp4",
+      "status": "queued",
+      "startedInLastJob": true
+    },
+    {
+      "id": "5724037b-eeab-41b8-a699-fd9f55543774",
+      "filePath": "F:\\Son\\doyuin\\LauHaiSan\\danglam\\2025-10-01_自助海底捞，现抓现吃_赶海_青年创作者扶持计划_7556199918319275305.mp4",
+      "status": "queued",
+      "startedInLastJob": true
+    },
+    {
+      "id": "c9563ba7-4b76-4282-b6d5-76a1fb36487a",
+      "filePath": "F:\\Son\\doyuin\\LauHaiSan\\danglam\\2025-10-05_潜水觅食，现抓现吃_青年创作者扶持计划_赶海_7557671736314055999.mp4",
+      "status": "queued",
+      "startedInLastJob": true
+    },
+    {
+      "id": "7bada534-2641-480b-b490-61c6ffd30ca8",
+      "filePath": "F:\\Son\\doyuin\\LauHaiSan\\danglam\\2025-10-06_潜水觅食，海鲜现抓现吃_青年创作者扶持计划_赶海_7558044446756048169.mp4",
+      "status": "queued",
+      "startedInLastJob": true
+    },
+    {
+      "id": "58a8ec54-524b-4778-863f-ea3cb7a38c42",
+      "filePath": "F:\\Son\\doyuin\\LauHaiSan\\danglam\\2025-10-11_潜水觅食，海鲜自助随便吃_赶海_青年创作者扶持计划_7559775225307516195.mp4",
+      "status": "queued",
+      "startedInLastJob": true
+    },
+    {
+      "id": "51071675-7778-476d-9fc0-2503e5f0ba8e",
+      "filePath": "F:\\Son\\doyuin\\LauHaiSan\\danglam\\2025-10-14_小渔村的自助海鲜面，想吃啥海鲜就下海抓_沱牌特级T68_放手碰杯越碰越好@沱牌官方旗舰店_7560623626157739322.mp4",
+      "status": "removing_subtitles",
+      "startedInLastJob": true
+    },
+    {
+      "id": "500b5d6d-bcda-42f7-96ef-a1721a836499",
+      "filePath": "F:\\Son\\doyuin\\LauHaiSan\\danglam\\2025-10-15_潜水觅食，海鲜自助现抓现吃_赶海_7561272948557548857.mp4",
+      "status": "queued",
+      "startedInLastJob": false
+    },
+    {
+      "id": "6c292294-dc68-4dff-a6fc-c532151395c3",
+      "filePath": "F:\\Son\\doyuin\\LauHaiSan\\danglam\\2025-10-16_赶海觅食，自助海鲜面现抓现煮_7561324987383500092.mp4",
+      "status": "queued",
+      "startedInLastJob": false
+    },
+    {
+      "id": "324edbe6-fae2-4e74-9d7a-a42518f7cd6c",
+      "filePath": "F:\\Son\\doyuin\\LauHaiSan\\danglam\\2025-10-19_海底捞自助火锅，现抓现煮_青年创作者扶持计划_7562773862430149923.mp4",
+      "status": "queued",
+      "startedInLastJob": false
+    },
+    {
+      "id": "0798b128-7370-40ad-849e-715b059b5e5d",
+      "filePath": "F:\\Son\\doyuin\\LauHaiSan\\danglam\\2025-10-21_潜水觅食，海鲜自助现抓现吃_天猫双11才是真优惠_天猫双11国补低至5折_赶海_7563250179617819962.mp4",
+      "status": "queued",
+      "startedInLastJob": false
+    },
+    {
+      "id": "c2380d01-6f8f-47ef-833f-143a8351217e",
+      "filePath": "F:\\Son\\doyuin\\LauHaiSan\\danglam\\2025-10-22_潜水觅食，现抓现吃_赶海_青年创作者扶持计划_7563979642978258230.mp4",
+      "status": "queued",
+      "startedInLastJob": false
+    },
+    {
+      "id": "840da374-061f-43e0-a4d6-c4243decc961",
+      "filePath": "F:\\Son\\doyuin\\LauHaiSan\\danglam\\2025-10-26_潜水自助餐，现抓现吃_赶海_青年创作者扶持计划_7565476333833227556.mp4",
+      "status": "queued",
+      "startedInLastJob": false
+    },
+    {
+      "id": "8f395ad1-9ea8-4242-9f0a-0479d9067fe7",
+      "filePath": "F:\\Son\\doyuin\\LauHaiSan\\danglam\\2025-10-30_赶海觅食，海鲜自助餐现抓现煮_天猫双11降温服饰低至5折_天猫双11才是真优惠_7566940740816964901.mp4",
+      "status": "queued",
+      "startedInLastJob": false
+    },
+    {
+      "id": "7224f8b6-492d-4320-bbea-ec7e16bd598b",
+      "filePath": "F:\\Son\\doyuin\\LauHaiSan\\danglam\\2025-11-07_海底捞火锅，现抓现煮_赶海_7569774245003448165.mp4",
+      "status": "queued",
+      "startedInLastJob": false
+    },
+    {
+      "id": "cf38ad5d-311b-443c-b77e-83b5a25ef5a6",
+      "filePath": "F:\\Son\\doyuin\\LauHaiSan\\danglam\\2025-11-12_深海觅食，海鲜现抓现吃_赶海_7571674742860696838.mp4",
+      "status": "queued",
+      "startedInLastJob": false
+    },
+    {
+      "id": "29062320-3764-4a83-864f-2256d87f223b",
+      "filePath": "F:\\Son\\doyuin\\LauHaiSan\\danglam\\2025-11-14_小渔村的自助海鲜面，现抓现煮_赶海_7572494080085708084.mp4",
+      "status": "queued",
+      "startedInLastJob": false
+    },
+    {
+      "id": "0702e9f1-f60c-4034-9ad9-20f080ebfc7b",
+      "filePath": "F:\\Son\\doyuin\\LauHaiSan\\danglam\\2025-11-19_潜水觅食，现抓现煮_赶海_青年创业者扶持计划_7574324741767466282.mp4",
+      "status": "queued",
+      "startedInLastJob": false
+    },
+    {
+      "id": "0499bfba-9a97-49e5-a882-0124de398160",
+      "filePath": "F:\\Son\\doyuin\\LauHaiSan\\danglam\\2025-11-22_小渔村的海底捞火锅，现抓先吃_赶海_7575495400656866602.mp4",
+      "status": "queued",
+      "startedInLastJob": false
+    },
+    {
+      "id": "e95cca38-eabb-4501-97e0-9b22e7652d94",
+      "filePath": "F:\\Son\\doyuin\\LauHaiSan\\danglam\\2025-11-26_海底捞自助火锅，就得到海里吃_神奇的闲鱼_闲鱼省钱神券_7576852495276777403.mp4",
+      "status": "queued",
+      "startedInLastJob": false
+    },
+    {
+      "id": "2a632eb9-d496-431c-9a1b-c299542dde37",
+      "filePath": "F:\\Son\\doyuin\\LauHaiSan\\danglam\\2025-11-28_小渔村的海鲜自助餐，海里现抓现吃_赶海_7577690531161967915.mp4",
+      "status": "queued",
+      "startedInLastJob": false
+    },
+    {
+      "id": "b452a734-062d-4a48-a0cb-319ed4284b83",
+      "filePath": "F:\\Son\\doyuin\\LauHaiSan\\danglam\\2025-12-06_海王觅食，自助海鲜面_赶海_7580689846054833444.mp4",
+      "status": "queued",
+      "startedInLastJob": false
+    },
+    {
+      "id": "5fefbeb8-6476-42d4-97eb-57a3d43ffda9",
+      "filePath": "F:\\Son\\doyuin\\LauHaiSan\\danglam\\2025-12-10_赶海觅食，海鲜自助餐_赶海_7582122334082551099.mp4",
+      "status": "queued",
+      "startedInLastJob": false
+    },
+    {
+      "id": "7dffc8bd-5ee6-4fde-9677-5d1b59e90260",
+      "filePath": "F:\\Son\\doyuin\\LauHaiSan\\danglam\\2025-12-11_海鲜自助餐，现抓现煮_神奇的闲鱼_闲鱼省钱神券_7582473563530906929.mp4",
+      "status": "queued",
+      "startedInLastJob": false
+    },
+    {
+      "id": "b12a36ac-5d36-4591-a71c-e9a845e4cac2",
+      "filePath": "F:\\Son\\doyuin\\LauHaiSan\\danglam\\2025-12-16_赶海觅食，海底捞自助火锅_赶海_神奇的闲鱼_闲鱼省钱神券_7584333068975082811.mp4",
+      "status": "queued",
+      "startedInLastJob": false
+    },
+    {
+      "id": "d42742f2-5017-4a27-8049-a0c544aaabb4",
+      "filePath": "F:\\Son\\doyuin\\LauHaiSan\\danglam\\2025-12-17_海鲜自助面，就要海里现抓现煮_赶海_7584743310128925988.mp4",
+      "status": "queued",
+      "startedInLastJob": false
+    },
+    {
+      "id": "dbd72a61-44f8-4932-86ee-faeb43152cb3",
+      "filePath": "F:\\Son\\doyuin\\LauHaiSan\\danglam\\2025-12-19_赶海觅食，小渔村的海底捞自助餐_神奇的闲鱼_闲鱼省钱神券_7585432164872457529.mp4",
+      "status": "queued",
+      "startedInLastJob": false
+    },
+    {
+      "id": "5cd1a88e-2e93-4d88-bc9c-21a8a674592a",
+      "filePath": "F:\\Son\\doyuin\\LauHaiSan\\danglam\\2025-12-20_海鲜自助餐，现抓现吃_神奇的闲鱼_闲鱼省钱神券_7585808029523676465.mp4",
+      "status": "queued",
+      "startedInLastJob": false
+    },
+    {
+      "id": "fe0ad52d-5dea-4af8-a548-e53914269f72",
+      "filePath": "F:\\Son\\doyuin\\LauHaiSan\\danglam\\2025-12-26_赶海觅食，海鲜自助餐_赶海_7587777778364435721.mp4",
+      "status": "queued",
+      "startedInLastJob": false
+    },
+    {
+      "id": "f1e35b1e-6c1e-448f-bb66-2b91d3c2676c",
+      "filePath": "F:\\Son\\doyuin\\LauHaiSan\\danglam\\2025-12-31_免费自助海鲜火锅，现抓现吃_赶海_7589639946416180518.mp4",
+      "status": "queued",
+      "startedInLastJob": false
+    },
+    {
+      "id": "1994f16f-0b78-4373-a02c-bf94481615c1",
+      "filePath": "F:\\Son\\doyuin\\LauHaiSan\\danglam\\2026-01-02_海鲜自助餐，现抓现煮_神奇的闲鱼_闲鱼省钱神券_7590680604087327921.mp4",
+      "status": "queued",
+      "startedInLastJob": false
+    },
+    {
+      "id": "1f607445-530d-4a0a-a820-02a2f7d1121f",
+      "filePath": "F:\\Son\\doyuin\\LauHaiSan\\danglam\\2026-01-07_小渔村的海底捞，现抓现煮_赶海_7592557319989267750.mp4",
+      "status": "queued",
+      "startedInLastJob": false
+    },
+    {
+      "id": "488556ec-60b4-448e-a049-a8e5a69c526a",
+      "filePath": "F:\\Son\\doyuin\\LauHaiSan\\danglam\\2026-01-10_海鲜自助餐，现抓现吃_赶海_7593665298876648750.mp4",
+      "status": "queued",
+      "startedInLastJob": false
+    },
+    {
+      "id": "26d440c3-0a0d-47a7-b566-cdb85cb43884",
+      "filePath": "F:\\Son\\doyuin\\LauHaiSan\\danglam\\2026-01-28_小渔村的海鲜面，现抓现吃_赶海_7600012273071050022.mp4",
+      "status": "queued",
+      "startedInLastJob": false
+    },
+    {
+      "id": "c57df1fa-6153-4f4a-8db6-50613c41daf5",
+      "filePath": "F:\\Son\\doyuin\\LauHaiSan\\danglam\\2026-01-30_海鲜自助餐，现抓现煮_赶海_7601002796321754402.mp4",
+      "status": "queued",
+      "startedInLastJob": false
+    },
+    {
+      "id": "a1e95848-c5ef-4e81-a2a1-4e7355b2a37e",
+      "filePath": "F:\\Son\\doyuin\\LauHaiSan\\danglam\\2026-02-01_赶海觅食，现抓现吃_赶海_7600738596668050698.mp4",
+      "status": "queued",
+      "startedInLastJob": false
+    },
+    {
+      "id": "0b6d1ac9-b417-4bc6-bc29-8f4f0445bd6c",
+      "filePath": "F:\\Son\\doyuin\\LauHaiSan\\danglam\\2026-02-04_新鲜的海鲜，就要到海里吃_赶海_7601131270172708122.mp4",
+      "status": "queued",
+      "startedInLastJob": false
+    },
+    {
+      "id": "e1090000-099d-4861-b7cb-5bcdb3a604ae",
+      "filePath": "F:\\Son\\doyuin\\LauHaiSan\\danglam\\2026-02-07_海底捞火锅，现抓现吃_赶海_7604011839592090906.mp4",
+      "status": "queued",
+      "startedInLastJob": false
+    },
+    {
+      "id": "f39ade1d-0cfe-4700-9580-e2c76fae1aa2",
+      "filePath": "F:\\Son\\doyuin\\LauHaiSan\\danglam\\2026-02-11_海鲜自助餐，现抓现吃_赶海_7605549604297362698.mp4",
+      "status": "queued",
+      "startedInLastJob": false
+    },
+    {
+      "id": "5793033a-e084-45de-ad61-10cc2d340aeb",
+      "filePath": "F:\\Son\\doyuin\\LauHaiSan\\danglam\\2026-02-15_小渔村的海底捞火锅，现抓现煮_赶海_7606991898082921771.mp4",
+      "status": "queued",
+      "startedInLastJob": false
+    },
+    {
+      "id": "d6e426f4-eb63-4ff6-b2c7-633da8ad98a8",
+      "filePath": "F:\\Son\\doyuin\\LauHaiSan\\danglam\\2026-02-18_来海边吃个真正的海底捞自助火锅了，现抓现煮_赶海_7608033220545858867.mp4",
+      "status": "queued",
+      "startedInLastJob": false
+    },
+    {
+      "id": "5f46b9f0-f9ea-498a-932a-efe059335ac7",
+      "filePath": "F:\\Son\\doyuin\\LauHaiSan\\danglam\\2026-02-20_小渔村的自主海鲜面，就要到海里吃_赶海_7608773486512753970.mp4",
+      "status": "queued",
+      "startedInLastJob": false
+    },
+    {
+      "id": "8471bbb2-03a1-459c-ba86-03d8361c8667",
+      "filePath": "F:\\Son\\doyuin\\LauHaiSan\\danglam\\2026-02-23_小渔村的自助海鲜面，现抓现煮_赶海_7609949905041231156.mp4",
+      "status": "queued",
+      "startedInLastJob": false
+    },
+    {
+      "id": "1e0a4eef-e5b8-45bd-81af-2ef1fb51ac16",
+      "filePath": "F:\\Son\\doyuin\\LauHaiSan\\danglam\\2026-03-06_海鲜自助餐，现抓现吃_赶海_7614079346021584155.mp4",
+      "status": "queued",
+      "startedInLastJob": false
+    },
+    {
+      "id": "514070c5-83b0-4b93-8d29-7073d932e031",
+      "filePath": "F:\\Son\\doyuin\\LauHaiSan\\danglam\\2026-03-08_赶海觅食，现抓现煮_赶海_7614793129593408778.mp4",
+      "status": "queued",
+      "startedInLastJob": false
+    },
+    {
+      "id": "fc05a18c-c043-4267-bfc1-0416ddc19e5c",
+      "filePath": "F:\\Son\\doyuin\\LauHaiSan\\danglam\\2026-03-10_海鲜泡面，现抓现吃_闲鱼_赶海_7615467344945320305.mp4",
+      "status": "queued",
+      "startedInLastJob": false
+    },
+    {
+      "id": "a5187b5c-dfcf-4c1a-8851-88e645e57cc5",
+      "filePath": "F:\\Son\\doyuin\\LauHaiSan\\danglam\\2026-03-12_赶海觅食，现抓现吃_赶海_7616309418879208742.mp4",
+      "status": "queued",
+      "startedInLastJob": false
+    },
+    {
+      "id": "2609ec28-1a72-49ff-8561-47ab33939c19",
+      "filePath": "F:\\Son\\doyuin\\LauHaiSan\\danglam\\2026-03-15_海底捞自助餐，现抓现吃_赶海_7617325461412039988.mp4",
+      "status": "queued",
+      "startedInLastJob": false
+    },
+    {
+      "id": "3b71d12a-8f74-4903-8edb-67d4afdcbe84",
+      "filePath": "F:\\Son\\doyuin\\LauHaiSan\\danglam\\2026-03-18_海底捞火锅，现抓现煮_赶海_7618534635747757362.mp4",
+      "status": "queued",
+      "startedInLastJob": false
+    },
+    {
+      "id": "d5449b71-4f54-475a-99b0-401e35d04e41",
+      "filePath": "F:\\Son\\doyuin\\LauHaiSan\\danglam\\2026-03-20_带狗赶海，吃海鲜自助_赶海_7618847056463007022.mp4",
+      "status": "queued",
+      "startedInLastJob": false
+    },
+    {
+      "id": "03b11f7f-825c-4fe5-a02f-3c95063269ef",
+      "filePath": "F:\\Son\\doyuin\\LauHaiSan\\danglam\\2026-03-26_小渔村的海底捞火锅，就要现抓现吃_赶海_7621472271080721674.mp4",
+      "status": "queued",
+      "startedInLastJob": false
+    },
+    {
+      "id": "d5bace10-a41d-41c4-9485-d8d5c8edb1e3",
+      "filePath": "F:\\Son\\doyuin\\LauHaiSan\\danglam\\2026-03-27_海鲜自助，现抓现吃_赶海_7621875993300944817.mp4",
+      "status": "queued",
+      "startedInLastJob": false
+    },
+    {
+      "id": "8c975194-639f-424c-9cbd-7fbecfdf688e",
+      "filePath": "F:\\Son\\doyuin\\LauHaiSan\\danglam\\2026-04-04_海边觅食，现抓现吃_赶海_7624715201136381199.mp4",
+      "status": "queued",
+      "startedInLastJob": false
+    },
+    {
+      "id": "a08b18f8-284c-4d2d-8f15-2ec435a18b32",
+      "filePath": "F:\\Son\\doyuin\\LauHaiSan\\danglam\\2026-04-12_荒野觅食，海底捞火锅_赶海_7627694864775384330.mp4",
+      "status": "queued",
+      "startedInLastJob": false
+    },
+    {
+      "id": "b2fe1e1c-e3a8-42e4-9600-b70e33cb0460",
+      "filePath": "F:\\Son\\doyuin\\LauHaiSan\\danglam\\2026-04-17_赶海觅食，吃海鲜自助_赶海_7629182764230692147.mp4",
+      "status": "queued",
+      "startedInLastJob": false
+    },
+    {
+      "id": "97a1a56a-6d5e-4244-82f9-b5977d24ff79",
+      "filePath": "F:\\Son\\doyuin\\LauHaiSan\\danglam\\2026-04-18_海鲜自助餐，现抓现吃_赶海_7629190069290650889.mp4",
+      "status": "queued",
+      "startedInLastJob": false
+    },
+    {
+      "id": "2419e834-eb2f-4b64-8b3a-dfc3eab0259e",
+      "filePath": "F:\\Son\\doyuin\\LauHaiSan\\danglam\\2026-04-24_海鲜火锅面，现抓现吃_赶海_7631927674306432282.mp4",
+      "status": "queued",
+      "startedInLastJob": false
+    },
+    {
+      "id": "13a4e33a-7782-43b6-a76c-6f621197d967",
+      "filePath": "F:\\Son\\doyuin\\LauHaiSan\\danglam\\2026-04-25_赶海觅食，现抓现吃_赶海_7632312504818863410.mp4",
+      "status": "queued",
+      "startedInLastJob": false
+    },
+    {
+      "id": "216493b5-2705-407e-ab31-1d998fc3f3b3",
+      "filePath": "F:\\Son\\doyuin\\LauHaiSan\\danglam\\2026-04-28_海鲜火锅面，现抓现吃_赶海_7633704032565822385.mp4",
+      "status": "queued",
+      "startedInLastJob": false
+    },
+    {
+      "id": "675acbe9-5cb0-49e7-9f83-776d26bde374",
+      "filePath": "F:\\Son\\doyuin\\LauHaiSan\\danglam\\2026-04-30_自助海鲜面，现抓现吃_赶海_7633775072183995699.mp4",
+      "status": "queued",
+      "startedInLastJob": false
+    },
+    {
+      "id": "657cde0c-bd05-406c-a35e-71112a8fb1f7",
+      "filePath": "F:\\Son\\doyuin\\LauHaiSan\\danglam\\2026-09-08_小渔村的海底捞，现抓现煮_赶海_7682704290750984825.mp4",
+      "status": "queued",
+      "startedInLastJob": false
+    }
+  ]
+}

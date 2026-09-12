@@ -1,0 +1,61 @@
+{
+  "schemaVersion": 1,
+  "jobId": "ef37f1f8-9606-4870-9b05-a9b6693aaf87",
+  "itemId": "b445e16b-ff7e-4695-a651-5721d8a4bf65",
+  "attemptId": "46ca5da0-6b0e-4aa3-8ace-60b1fedd1707",
+  "startedAtUtc": "2026-09-11T20:54:33.373Z",
+  "completedAtUtc": "2026-09-11T21:25:17.319Z",
+  "status": "failed",
+  "totalWallMs": 1843946,
+  "stages": {
+    "validate": {
+      "status": "succeeded",
+      "activeMs": 0,
+      "resourceWaitMs": 0,
+      "counters": {
+        "inputBytes": 83632932
+      }
+    },
+    "asr": {
+      "status": "succeeded",
+      "activeMs": 19767,
+      "resourceWaitMs": 0,
+      "counters": {
+        "cueCount": 131
+      }
+    },
+    "visual_ocr": {
+      "status": "succeeded",
+      "activeMs": 371489,
+      "resourceWaitMs": 0,
+      "counters": {
+        "visualSegments": 1328,
+        "boxSegments": 1577
+      }
+    },
+    "translate": {
+      "status": "succeeded",
+      "activeMs": 531227,
+      "resourceWaitMs": 0,
+      "counters": {
+        "cueCount": 131
+      }
+    },
+    "sttn": {
+      "status": "succeeded",
+      "activeMs": 795498,
+      "resourceWaitMs": 0,
+      "counters": {
+        "elapsedMs": 792578
+      }
+    },
+    "tts": {
+      "status": "failed",
+      "activeMs": 627554,
+      "resourceWaitMs": 0,
+      "counters": {},
+      "error": "Cue cue-29-63140 vẫn không vừa ở 1.80x: cần kéo dài đoạn hình 153.1%, vượt giới hạn 60%; không cắt lời."
+    }
+  },
+  "error": "DubbingVideoExtensionLimitError: Cue cue-29-63140 vẫn không vừa ở 1.80x: cần kéo dài đoạn hình 153.1%, vượt giới hạn 60%; không cắt lời."
+}

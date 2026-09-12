@@ -3,3 +3,4 @@
 *.bat text eol=crlf
 *.cmd text eol=crlf
 *.ps1 text eol=crlf
+.ai/tasks/2026-09-12-workflow-branch-integration/incoming.patch whitespace=-trailing-space

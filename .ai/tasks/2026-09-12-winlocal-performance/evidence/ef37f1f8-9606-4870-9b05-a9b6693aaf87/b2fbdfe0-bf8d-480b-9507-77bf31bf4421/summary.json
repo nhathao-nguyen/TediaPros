@@ -1,0 +1,60 @@
+{
+  "schemaVersion": 1,
+  "jobId": "ef37f1f8-9606-4870-9b05-a9b6693aaf87",
+  "itemId": "b2fbdfe0-bf8d-480b-9507-77bf31bf4421",
+  "attemptId": "30945eba-a283-42c9-a3b7-888cdd7e8eed",
+  "startedAtUtc": "2026-09-11T22:11:40.406Z",
+  "completedAtUtc": "2026-09-11T22:16:11.170Z",
+  "status": "failed",
+  "totalWallMs": 270765,
+  "stages": {
+    "validate": {
+      "status": "succeeded",
+      "activeMs": 0,
+      "resourceWaitMs": 0,
+      "counters": {
+        "inputBytes": 75402316
+      }
+    },
+    "asr": {
+      "status": "succeeded",
+      "activeMs": 17026,
+      "resourceWaitMs": 0,
+      "counters": {
+        "cueCount": 72
+      }
+    },
+    "visual_ocr": {
+      "status": "succeeded",
+      "activeMs": 234275,
+      "resourceWaitMs": 0,
+      "counters": {
+        "visualSegments": 797,
+        "boxSegments": 807
+      }
+    },
+    "translate": {
+      "status": "succeeded",
+      "activeMs": 65352,
+      "resourceWaitMs": 0,
+      "counters": {
+        "cueCount": 72
+      }
+    },
+    "sttn": {
+      "status": "failed",
+      "activeMs": 58,
+      "resourceWaitMs": 12950,
+      "counters": {},
+      "error": "Raw segment từ engine không được chứa prefix gap-: gap-766-accurate-765-accurate-767."
+    },
+    "tts": {
+      "status": "cancelled",
+      "activeMs": 168,
+      "resourceWaitMs": 0,
+      "counters": {},
+      "error": "Đã hủy tác vụ"
+    }
+  },
+  "error": "Error: Raw segment từ engine không được chứa prefix gap-: gap-766-accurate-765-accurate-767."
+}

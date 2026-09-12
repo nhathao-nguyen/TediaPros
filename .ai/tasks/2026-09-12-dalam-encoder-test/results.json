@@ -1,0 +1,475 @@
+{
+  "startedAt": "2026-09-12T10:02:13.127Z",
+  "durationSeconds": 10,
+  "logicalCpus": 12,
+  "scope": "First 10 seconds of both supplied sources. Controlled synthetic OCR mask and test ASS subtitle; current observed zoom/color settings. Not a full AutoShort rerun. Other application render may compete for resources.",
+  "binaries": {
+    "active": "C:\\Users\\PC\\AppData\\Roaming\\tedia-pros\\bin\\ffmpeg\\ffmpeg.exe",
+    "compatible": "C:\\Users\\PC\\AppData\\Roaming\\tedia-pros\\bin\\ffmpeg.exe"
+  },
+  "results": [
+    {
+      "label": "1-active-h264_nvenc-plain",
+      "source": "2025-04-08_大海退潮啦，海鲜就要现抓现吃_赶海_7490882160954461476.mp4",
+      "binary": "active",
+      "encoder": "h264_nvenc",
+      "filtered": false,
+      "code": 4294967256,
+      "wallSeconds": 0.169,
+      "speedX": null,
+      "args": [
+        "-hide_banner",
+        "-nostdin",
+        "-n",
+        "-benchmark",
+        "-i",
+        "F:\\Son\\doyuin\\LauHaiSan\\dalam\\2025-04-08_大海退潮啦，海鲜就要现抓现吃_赶海_7490882160954461476.mp4",
+        "-map",
+        "0:v:0",
+        "-map",
+        "0:a?",
+        "-t",
+        "10",
+        "-c:v",
+        "h264_nvenc",
+        "-pix_fmt",
+        "yuv420p",
+        "-preset",
+        "p4",
+        "-cq",
+        "23",
+        "-c:a",
+        "copy",
+        "F:\\Son\\tool\\TediaPros\\.ai\\tasks\\2026-09-12-dalam-encoder-test\\1-active-h264_nvenc-plain.mp4"
+      ],
+      "error": "  Stream #0:0 -> #0:0 (h264 (native) -> h264 (h264_nvenc))\r\n[h264_nvenc @ 0000016daeff6040] Driver does not support the required nvenc API version. Required: 13.1 Found: 13.0\r\n[h264_nvenc @ 0000016daeff6040] The minimum required Nvidia driver for nvenc is 610.00 or newer\r\n[vost#0:0/h264_nvenc @ 0000016daeee7d40] [enc:h264_nvenc @ 0000016dacbd9180] Error while opening encoder - maybe incorrect parameters such as bit_rate, rate, width or height.\r\n[vf#0:0 @ 0000016daea5a880] Error sending frames to consumers: Function not implemented\r\n[vf#0:0 @ 0000016daea5a880] Task finished with error code: -40 (Function not implemented)\r\n[vost#0:0/h264_nvenc @ 0000016daeee7d40] [enc:h264_nvenc @ 0000016dacbd9180] Could not open encoder before EOF\r\n[vost#0:0/h264_nvenc @ 0000016daeee7d40] Task finished with error code: -22 (Invalid argument)\r\n[vost#0:0/h264_nvenc @ 0000016daeee7d40] Terminating thread with return code -22 (Invalid argument)\r\n[out#0/mp4 @ 0000016dacb10880] Nothing was written into output file, because at least one of its streams received no packets.\r"
+    },
+    {
+      "label": "1-compatible-h264_nvenc-plain",
+      "source": "2025-04-08_大海退潮啦，海鲜就要现抓现吃_赶海_7490882160954461476.mp4",
+      "binary": "compatible",
+      "encoder": "h264_nvenc",
+      "filtered": false,
+      "code": 0,
+      "wallSeconds": 1.111,
+      "speedX": 8.999,
+      "args": [
+        "-hide_banner",
+        "-nostdin",
+        "-n",
+        "-benchmark",
+        "-i",
+        "F:\\Son\\doyuin\\LauHaiSan\\dalam\\2025-04-08_大海退潮啦，海鲜就要现抓现吃_赶海_7490882160954461476.mp4",
+        "-map",
+        "0:v:0",
+        "-map",
+        "0:a?",
+        "-t",
+        "10",
+        "-c:v",
+        "h264_nvenc",
+        "-pix_fmt",
+        "yuv420p",
+        "-preset",
+        "p4",
+        "-cq",
+        "23",
+        "-c:a",
+        "copy",
+        "F:\\Son\\tool\\TediaPros\\.ai\\tasks\\2026-09-12-dalam-encoder-test\\1-compatible-h264_nvenc-plain.mp4"
+      ],
+      "processCpuSeconds": 2.86,
+      "averageMachineCpuPercent": 21.4,
+      "probeExit": 0,
+      "probe": {
+        "programs": [],
+        "stream_groups": [],
+        "streams": [
+          {
+            "codec_name": "h264",
+            "width": 1080,
+            "height": 1920,
+            "pix_fmt": "yuv420p",
+            "tags": {
+              "encoder": "Lavc62.33.100 h264_nvenc"
+            }
+          },
+          {
+            "codec_name": "aac",
+            "tags": {}
+          }
+        ],
+        "format": {
+          "duration": "10.009002",
+          "size": "16588179"
+        }
+      }
+    },
+    {
+      "label": "1-compatible-h264_nvenc-filtered",
+      "source": "2025-04-08_大海退潮啦，海鲜就要现抓现吃_赶海_7490882160954461476.mp4",
+      "binary": "compatible",
+      "encoder": "h264_nvenc",
+      "filtered": true,
+      "code": 0,
+      "wallSeconds": 6.714,
+      "speedX": 1.489,
+      "args": [
+        "-hide_banner",
+        "-nostdin",
+        "-n",
+        "-benchmark",
+        "-i",
+        "F:\\Son\\doyuin\\LauHaiSan\\dalam\\2025-04-08_大海退潮啦，海鲜就要现抓现吃_赶海_7490882160954461476.mp4",
+        "-f",
+        "lavfi",
+        "-i",
+        "color=c=black:s=1080x1920:r=30:d=10,drawbox=x=80:y=1400:w=920:h=180:color=white:t=fill",
+        "-filter_complex",
+        "[0:v]null,format=gbrp[display];[display]split=2[base][blur_source];[blur_source]gblur=sigma=64:steps=6[blurred];[1:v]format=gray,settb=AVTB,setpts=PTS-STARTPTS[mask];[base][blurred][mask]maskedmerge,trim=duration=10[masked];[masked]crop=982:1744:49:88,scale=1080:1920:flags=lanczos,setsar=1,eq=brightness=0.11:saturation=1.6:contrast=1,ass=test.ass,scale=1080:1920:flags=lanczos,setsar=1[out]",
+        "-map",
+        "[out]",
+        "-map",
+        "0:a?",
+        "-t",
+        "10",
+        "-c:v",
+        "h264_nvenc",
+        "-pix_fmt",
+        "yuv420p",
+        "-preset",
+        "p4",
+        "-cq",
+        "23",
+        "-c:a",
+        "copy",
+        "F:\\Son\\tool\\TediaPros\\.ai\\tasks\\2026-09-12-dalam-encoder-test\\1-compatible-h264_nvenc-filtered.mp4"
+      ],
+      "processCpuSeconds": 32.594,
+      "averageMachineCpuPercent": 40.5,
+      "probeExit": 0,
+      "probe": {
+        "programs": [],
+        "stream_groups": [],
+        "streams": [
+          {
+            "codec_name": "h264",
+            "width": 1080,
+            "height": 1920,
+            "pix_fmt": "yuv420p",
+            "tags": {
+              "encoder": "Lavc62.33.100 h264_nvenc"
+            }
+          },
+          {
+            "codec_name": "aac",
+            "tags": {}
+          }
+        ],
+        "format": {
+          "duration": "10.009002",
+          "size": "16978883"
+        }
+      }
+    },
+    {
+      "label": "1-active-libx264-filtered",
+      "source": "2025-04-08_大海退潮啦，海鲜就要现抓现吃_赶海_7490882160954461476.mp4",
+      "binary": "active",
+      "encoder": "libx264",
+      "filtered": true,
+      "code": 0,
+      "wallSeconds": 12.51,
+      "speedX": 0.799,
+      "args": [
+        "-hide_banner",
+        "-nostdin",
+        "-n",
+        "-benchmark",
+        "-i",
+        "F:\\Son\\doyuin\\LauHaiSan\\dalam\\2025-04-08_大海退潮啦，海鲜就要现抓现吃_赶海_7490882160954461476.mp4",
+        "-f",
+        "lavfi",
+        "-i",
+        "color=c=black:s=1080x1920:r=30:d=10,drawbox=x=80:y=1400:w=920:h=180:color=white:t=fill",
+        "-filter_complex",
+        "[0:v]null,format=gbrp[display];[display]split=2[base][blur_source];[blur_source]gblur=sigma=64:steps=6[blurred];[1:v]format=gray,settb=AVTB,setpts=PTS-STARTPTS[mask];[base][blurred][mask]maskedmerge,trim=duration=10[masked];[masked]crop=982:1744:49:88,scale=1080:1920:flags=lanczos,setsar=1,eq=brightness=0.11:saturation=1.6:contrast=1,ass=test.ass,scale=1080:1920:flags=lanczos,setsar=1[out]",
+        "-map",
+        "[out]",
+        "-map",
+        "0:a?",
+        "-t",
+        "10",
+        "-c:v",
+        "libx264",
+        "-pix_fmt",
+        "yuv420p",
+        "-preset",
+        "medium",
+        "-crf",
+        "20",
+        "-c:a",
+        "copy",
+        "F:\\Son\\tool\\TediaPros\\.ai\\tasks\\2026-09-12-dalam-encoder-test\\1-active-libx264-filtered.mp4"
+      ],
+      "processCpuSeconds": 103.15700000000001,
+      "averageMachineCpuPercent": 68.7,
+      "probeExit": 0,
+      "probe": {
+        "programs": [],
+        "stream_groups": [],
+        "streams": [
+          {
+            "codec_name": "h264",
+            "width": 1080,
+            "height": 1920,
+            "pix_fmt": "yuv420p",
+            "tags": {
+              "encoder": "Lavc63.1.101 libx264"
+            }
+          },
+          {
+            "codec_name": "aac",
+            "tags": {}
+          }
+        ],
+        "format": {
+          "duration": "10.009229",
+          "size": "15666978"
+        }
+      }
+    },
+    {
+      "label": "2-active-h264_nvenc-plain",
+      "source": "2025-04-18_真正的海底捞自助，就要现抓现吃_赶海_7494584044865260852.mp4",
+      "binary": "active",
+      "encoder": "h264_nvenc",
+      "filtered": false,
+      "code": 4294967256,
+      "wallSeconds": 0.156,
+      "speedX": null,
+      "args": [
+        "-hide_banner",
+        "-nostdin",
+        "-n",
+        "-benchmark",
+        "-i",
+        "F:\\Son\\doyuin\\LauHaiSan\\dalam\\2025-04-18_真正的海底捞自助，就要现抓现吃_赶海_7494584044865260852.mp4",
+        "-map",
+        "0:v:0",
+        "-map",
+        "0:a?",
+        "-t",
+        "10",
+        "-c:v",
+        "h264_nvenc",
+        "-pix_fmt",
+        "yuv420p",
+        "-preset",
+        "p4",
+        "-cq",
+        "23",
+        "-c:a",
+        "copy",
+        "F:\\Son\\tool\\TediaPros\\.ai\\tasks\\2026-09-12-dalam-encoder-test\\2-active-h264_nvenc-plain.mp4"
+      ],
+      "error": "  Stream #0:0 -> #0:0 (h264 (native) -> h264 (h264_nvenc))\r\n[h264_nvenc @ 000001af3377e900] Driver does not support the required nvenc API version. Required: 13.1 Found: 13.0\r\n[h264_nvenc @ 000001af3377e900] The minimum required Nvidia driver for nvenc is 610.00 or newer\r\n[vost#0:0/h264_nvenc @ 000001af33979d00] [enc:h264_nvenc @ 000001af317a5b80] Error while opening encoder - maybe incorrect parameters such as bit_rate, rate, width or height.\r\n[vf#0:0 @ 000001af337c5880] Error sending frames to consumers: Function not implemented\r\n[vf#0:0 @ 000001af337c5880] Task finished with error code: -40 (Function not implemented)\r\n[vost#0:0/h264_nvenc @ 000001af33979d00] [enc:h264_nvenc @ 000001af317a5b80] Could not open encoder before EOF\r\n[vost#0:0/h264_nvenc @ 000001af33979d00] Task finished with error code: -22 (Invalid argument)\r\n[vost#0:0/h264_nvenc @ 000001af33979d00] Terminating thread with return code -22 (Invalid argument)\r\n[out#0/mp4 @ 000001af3174f340] Nothing was written into output file, because at least one of its streams received no packets.\r"
+    },
+    {
+      "label": "2-compatible-h264_nvenc-plain",
+      "source": "2025-04-18_真正的海底捞自助，就要现抓现吃_赶海_7494584044865260852.mp4",
+      "binary": "compatible",
+      "encoder": "h264_nvenc",
+      "filtered": false,
+      "code": 0,
+      "wallSeconds": 1.18,
+      "speedX": 8.472,
+      "args": [
+        "-hide_banner",
+        "-nostdin",
+        "-n",
+        "-benchmark",
+        "-i",
+        "F:\\Son\\doyuin\\LauHaiSan\\dalam\\2025-04-18_真正的海底捞自助，就要现抓现吃_赶海_7494584044865260852.mp4",
+        "-map",
+        "0:v:0",
+        "-map",
+        "0:a?",
+        "-t",
+        "10",
+        "-c:v",
+        "h264_nvenc",
+        "-pix_fmt",
+        "yuv420p",
+        "-preset",
+        "p4",
+        "-cq",
+        "23",
+        "-c:a",
+        "copy",
+        "F:\\Son\\tool\\TediaPros\\.ai\\tasks\\2026-09-12-dalam-encoder-test\\2-compatible-h264_nvenc-plain.mp4"
+      ],
+      "processCpuSeconds": 3.735,
+      "averageMachineCpuPercent": 26.4,
+      "probeExit": 0,
+      "probe": {
+        "programs": [],
+        "stream_groups": [],
+        "streams": [
+          {
+            "codec_name": "h264",
+            "width": 1080,
+            "height": 1920,
+            "pix_fmt": "yuv420p",
+            "tags": {
+              "encoder": "Lavc62.33.100 h264_nvenc"
+            }
+          },
+          {
+            "codec_name": "aac",
+            "tags": {}
+          }
+        ],
+        "format": {
+          "duration": "10.009002",
+          "size": "18850201"
+        }
+      }
+    },
+    {
+      "label": "2-compatible-h264_nvenc-filtered",
+      "source": "2025-04-18_真正的海底捞自助，就要现抓现吃_赶海_7494584044865260852.mp4",
+      "binary": "compatible",
+      "encoder": "h264_nvenc",
+      "filtered": true,
+      "code": 0,
+      "wallSeconds": 7.28,
+      "speedX": 1.374,
+      "args": [
+        "-hide_banner",
+        "-nostdin",
+        "-n",
+        "-benchmark",
+        "-i",
+        "F:\\Son\\doyuin\\LauHaiSan\\dalam\\2025-04-18_真正的海底捞自助，就要现抓现吃_赶海_7494584044865260852.mp4",
+        "-f",
+        "lavfi",
+        "-i",
+        "color=c=black:s=1080x1920:r=30:d=10,drawbox=x=80:y=1400:w=920:h=180:color=white:t=fill",
+        "-filter_complex",
+        "[0:v]null,format=gbrp[display];[display]split=2[base][blur_source];[blur_source]gblur=sigma=64:steps=6[blurred];[1:v]format=gray,settb=AVTB,setpts=PTS-STARTPTS[mask];[base][blurred][mask]maskedmerge,trim=duration=10[masked];[masked]crop=982:1744:49:88,scale=1080:1920:flags=lanczos,setsar=1,eq=brightness=0.11:saturation=1.6:contrast=1,ass=test.ass,scale=1080:1920:flags=lanczos,setsar=1[out]",
+        "-map",
+        "[out]",
+        "-map",
+        "0:a?",
+        "-t",
+        "10",
+        "-c:v",
+        "h264_nvenc",
+        "-pix_fmt",
+        "yuv420p",
+        "-preset",
+        "p4",
+        "-cq",
+        "23",
+        "-c:a",
+        "copy",
+        "F:\\Son\\tool\\TediaPros\\.ai\\tasks\\2026-09-12-dalam-encoder-test\\2-compatible-h264_nvenc-filtered.mp4"
+      ],
+      "processCpuSeconds": 36.672000000000004,
+      "averageMachineCpuPercent": 42,
+      "probeExit": 0,
+      "probe": {
+        "programs": [],
+        "stream_groups": [],
+        "streams": [
+          {
+            "codec_name": "h264",
+            "width": 1080,
+            "height": 1920,
+            "pix_fmt": "yuv420p",
+            "tags": {
+              "encoder": "Lavc62.33.100 h264_nvenc"
+            }
+          },
+          {
+            "codec_name": "aac",
+            "tags": {}
+          }
+        ],
+        "format": {
+          "duration": "10.009002",
+          "size": "19288550"
+        }
+      }
+    },
+    {
+      "label": "2-active-libx264-filtered",
+      "source": "2025-04-18_真正的海底捞自助，就要现抓现吃_赶海_7494584044865260852.mp4",
+      "binary": "active",
+      "encoder": "libx264",
+      "filtered": true,
+      "code": 0,
+      "wallSeconds": 14.129,
+      "speedX": 0.708,
+      "args": [
+        "-hide_banner",
+        "-nostdin",
+        "-n",
+        "-benchmark",
+        "-i",
+        "F:\\Son\\doyuin\\LauHaiSan\\dalam\\2025-04-18_真正的海底捞自助，就要现抓现吃_赶海_7494584044865260852.mp4",
+        "-f",
+        "lavfi",
+        "-i",
+        "color=c=black:s=1080x1920:r=30:d=10,drawbox=x=80:y=1400:w=920:h=180:color=white:t=fill",
+        "-filter_complex",
+        "[0:v]null,format=gbrp[display];[display]split=2[base][blur_source];[blur_source]gblur=sigma=64:steps=6[blurred];[1:v]format=gray,settb=AVTB,setpts=PTS-STARTPTS[mask];[base][blurred][mask]maskedmerge,trim=duration=10[masked];[masked]crop=982:1744:49:88,scale=1080:1920:flags=lanczos,setsar=1,eq=brightness=0.11:saturation=1.6:contrast=1,ass=test.ass,scale=1080:1920:flags=lanczos,setsar=1[out]",
+        "-map",
+        "[out]",
+        "-map",
+        "0:a?",
+        "-t",
+        "10",
+        "-c:v",
+        "libx264",
+        "-pix_fmt",
+        "yuv420p",
+        "-preset",
+        "medium",
+        "-crf",
+        "20",
+        "-c:a",
+        "copy",
+        "F:\\Son\\tool\\TediaPros\\.ai\\tasks\\2026-09-12-dalam-encoder-test\\2-active-libx264-filtered.mp4"
+      ],
+      "processCpuSeconds": 115.062,
+      "averageMachineCpuPercent": 67.9,
+      "probeExit": 0,
+      "probe": {
+        "programs": [],
+        "stream_groups": [],
+        "streams": [
+          {
+            "codec_name": "h264",
+            "width": 1080,
+            "height": 1920,
+            "pix_fmt": "yuv420p",
+            "tags": {
+              "encoder": "Lavc63.1.101 libx264"
+            }
+          },
+          {
+            "codec_name": "aac",
+            "tags": {}
+          }
+        ],
+        "format": {
+          "duration": "10.009229",
+          "size": "20419500"
+        }
+      }
+    }
+  ],
+  "finishedAt": "2026-09-12T10:02:56.837Z"
+}
