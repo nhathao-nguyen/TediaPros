@@ -844,7 +844,7 @@ export interface AutoShortQueueItemInput {
   id: string
   filePath: string
   /** Optional per-video, non-destructive ripple-delete edit. */
-  temporalEdit?: import('./autoShortTemporalEdit').AutoShortTemporalEdit
+  temporalEdit?: import('./autoShortTemporalEdit').AutoShortTemporalEdit | import('./autoShortCutContract').AutoShortTemporalEditV2
 }
 
 export interface AutoShortBlurRegion extends AutoShortNormalizedRegion {
@@ -1015,6 +1015,11 @@ export interface AutoShortReadiness {
   separation?: AutoShortSeparationReadiness
   /** Per-stage evidence; unknown remains visible and is never upgraded to supported. */
   stageCapabilities?: TranslationStageCapability[]
+  temporalCut?: {
+    editing: boolean
+    execution: boolean
+    reason?: 'CUT_CORE_NOT_VERIFIED'
+  }
   message?: string
 }
 
@@ -1062,6 +1067,7 @@ export interface AutoShortSttnPreviewRequest {
   videoPath: string
   config: AutoShortConfig
   previewSeconds?: number
+  temporalEdit?: import('./autoShortTemporalEdit').AutoShortTemporalEdit | import('./autoShortCutContract').AutoShortTemporalEditV2
 }
 
 export type AutoShortSttnPreviewResult =
@@ -1092,7 +1098,7 @@ export interface AutoShortTaskItem {
   filePath: string
   fileName: string
   duration?: number
-  temporalEdit?: import('./autoShortTemporalEdit').AutoShortTemporalEdit
+  temporalEdit?: import('./autoShortTemporalEdit').AutoShortTemporalEdit | import('./autoShortCutContract').AutoShortTemporalEditV2
   status: AutoShortItemStatus
   percent: number
   currentStepMessage?: string

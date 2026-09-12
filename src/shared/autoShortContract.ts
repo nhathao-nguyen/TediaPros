@@ -12,6 +12,7 @@ import type {
 import { normalizeVideoAdjustments } from './videoAdjustments'
 import { normalizeAutoShortOverlays } from './autoShortOverlays'
 import { normalizeAutoShortTemporalEdit } from './autoShortTemporalEdit'
+import { validateAutoShortTemporalEditV2 } from './autoShortCutContract'
 import { isAutoShortSeparationPreset } from './autoShortSeparation'
 import { validateVideoTitleConfig } from './videoTitle'
 import { translationGuidanceError } from './translation'
@@ -354,9 +355,12 @@ export function validateAutoShortStartRequest(raw: unknown): AutoShortValidation
     if (paths.has(filePath)) return { ok: false, error: 'Video bị trùng trong hàng đợi.' }
     ids.add(id)
     paths.add(filePath)
-    let temporalEdit
+    let temporalEdit: AutoShortQueueItemInput['temporalEdit']
     try {
-      temporalEdit = normalizeAutoShortTemporalEdit(rawItem.temporalEdit)
+      temporalEdit = isRecord(rawItem.temporalEdit) && rawItem.temporalEdit.schemaVersion === 2
+        ? validateAutoShortTemporalEditV2(rawItem.temporalEdit)
+        : normalizeAutoShortTemporalEdit(rawItem.temporalEdit)
+      if (temporalEdit?.schemaVersion === 2 && temporalEdit.removedRanges.length === 0) temporalEdit = undefined
     } catch (error) {
       return { ok: false, error: error instanceof Error ? error.message : `Bản cắt video thứ ${index + 1} không hợp lệ.` }
     }

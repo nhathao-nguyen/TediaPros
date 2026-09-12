@@ -68,7 +68,8 @@ import type { TranslationAssessment, TranslationInput, TranslationItem } from '.
 import type { TranslationBudgetSnapshot } from './translation/budget'
 import { runAutoShortQueue } from './autoShortQueueRunner'
 import { AutoShortResourceManager, getGlobalResourceManager } from './autoShortResourceManager'
-import { getGlobalAutoShortDiskBudget, type DiskReservation } from './autoShortDiskBudget'
+import { getGlobalAutoShortDiskBudget, reserveAutoShortVolumes, type DiskReservation } from './autoShortDiskBudget'
+import { cutVolumeReservations } from './autoShortCutPreparation'
 import { AutoShortTelemetryJobBudget } from './autoShortTelemetry'
 import { resolveExecutionPolicy, CONSERVATIVE_POLICY, type AutoShortExecutionPolicy } from './autoShortExecutionPolicy'
 import { validateAutoShortStartRequest } from '../shared/autoShortContract'
@@ -100,6 +101,18 @@ import { reserveVideoTitleOutputDir } from './videoTitle'
 import { createAutoShortArtifactCache, type ArtifactCache } from './autoShortArtifactCache'
 import { assertContainedParentDirectory, assertContainedRegularFile } from './safeContainedPath'
 import { createAutoShortBatchStore, type AutoShortBatchStore } from './autoShortBatchStore'
+import {
+  AutoShortCutCapabilityError,
+  assertCutRunCapability,
+  autoShortTemporalCutCapability,
+  requestHasTemporalCut
+} from './autoShortCutCapability'
+import { itemCutConfigDigest, matchesAutoShortItemConfigDigest } from './autoShortCutIdentity'
+import { semanticFrameEditDigest } from './autoShortCutIdentity'
+import { probeAutoShortFrameIndex, upgradeLegacyTemporalEdit } from './autoShortFrameIndex'
+import { compileFrameCutPlan } from '../shared/autoShortCutPlan'
+import { cutAutoShortSourceByFramePlan } from './autoShortCutMedia'
+import { validatePreparedCut } from './autoShortCutValidation'
 import {
   isSafeBatchId,
   recoverInterruptedBatch,
@@ -184,7 +197,7 @@ function batchConfigDigest(config: AutoShortConfig): string {
 }
 
 function itemConfigDigest(config: AutoShortConfig, item: AutoShortQueueItemInput): string {
-  return createHash('sha256').update(canonicalJson({ config, temporalEdit: item.temporalEdit })).digest('hex')
+  return itemCutConfigDigest(config, item.temporalEdit)
 }
 
 async function initializeBatchJournal(job: AutoShortJob): Promise<void> {
@@ -365,15 +378,16 @@ export function buildAutoShortTrimPcmCacheKey(input: {
   })
 }
 
-export function buildAutoShortCheckpointFingerprint(
+function autoShortCheckpointFingerprintPayload(
   filePath: string,
   inputInfo: { size: number; mtimeMs: number },
   config: AutoShortConfig,
   separation?: PreparedAutoShortSeparation,
   sourceDigest?: string,
-  temporalEdit?: AutoShortQueueItemInput['temporalEdit']
-): string {
-  return createHash('sha256').update(stableJson({
+  temporalEdit?: AutoShortQueueItemInput['temporalEdit'],
+  includeTemporalEdit = true
+): Record<string, unknown> {
+  const payload: Record<string, unknown> = {
     version: AUTO_SHORT_CHECKPOINT_VERSION,
     // Translation prompt/parser revisions belong to the translation identity
     // below. Keeping them out of this outer job fingerprint lets a prompt
@@ -386,7 +400,6 @@ export function buildAutoShortCheckpointFingerprint(
       // the streamed digest so same-size replacements cannot reuse a job.
       sourceDigest: sourceDigest || 'missing-source-digest'
     },
-    temporalEdit,
     subtitleMethod: config.subtitleMethod,
     whisperModel: config.whisperModel,
     whisperDevice: config.whisperDevice,
@@ -417,7 +430,38 @@ export function buildAutoShortCheckpointFingerprint(
       batch: 1,
       audio: { codec: 'pcm_s16le', sampleRate: 44100, channels: 2 }
     } : null
-  })).digest('hex')
+  }
+  if (includeTemporalEdit) payload.temporalEdit = temporalEdit
+  return payload
+}
+
+export function buildAutoShortCheckpointFingerprint(
+  filePath: string,
+  inputInfo: { size: number; mtimeMs: number },
+  config: AutoShortConfig,
+  separation?: PreparedAutoShortSeparation,
+  sourceDigest?: string,
+  temporalEdit?: AutoShortQueueItemInput['temporalEdit']
+): string {
+  return createHash('sha256').update(stableJson(autoShortCheckpointFingerprintPayload(
+    filePath, inputInfo, config, separation, sourceDigest, temporalEdit, true
+  ))).digest('hex')
+}
+
+export function buildAutoShortCheckpointFingerprintCandidates(
+  filePath: string,
+  inputInfo: { size: number; mtimeMs: number },
+  config: AutoShortConfig,
+  separation?: PreparedAutoShortSeparation,
+  sourceDigest?: string,
+  temporalEdit?: AutoShortQueueItemInput['temporalEdit']
+): readonly string[] {
+  const current = buildAutoShortCheckpointFingerprint(filePath, inputInfo, config, separation, sourceDigest, temporalEdit)
+  if (temporalEdit !== undefined) return [current]
+  const legacy = createHash('sha256').update(stableJson(autoShortCheckpointFingerprintPayload(
+    filePath, inputInfo, config, separation, sourceDigest, undefined, false
+  ))).digest('hex')
+  return current === legacy ? [current] : [current, legacy]
 }
 
 function spawnAutoShortChild(command: string, args: string[], options?: Parameters<typeof spawn>[2]): ChildProcess {
@@ -803,6 +847,7 @@ export async function getAutoShortReadiness(
     model,
     separation: separationReadiness,
     stageCapabilities,
+    temporalCut: autoShortTemporalCutCapability(),
     message
   }
 }
@@ -3093,6 +3138,15 @@ export function estimateAutoShortFutureBytes(inputBytes: number): number {
   )
 }
 
+export function estimateAutoShortCutFutureBytes(inputBytes: number): { scratch: number; output: number; cache: number } {
+  const normalized = Number.isFinite(inputBytes) && inputBytes > 0 ? inputBytes : 0
+  return {
+    scratch: Math.max(AUTOSHORT_MIN_FUTURE_BYTES, Math.ceil(normalized * 8 + AUTOSHORT_FIXED_FUTURE_BYTES)),
+    output: Math.max(AUTOSHORT_FIXED_FUTURE_BYTES, Math.ceil(normalized * 2)),
+    cache: Math.max(64 * 1024 * 1024, Math.ceil(normalized))
+  }
+}
+
 export function autoShortVolumeForPath(filePath: string): string {
   const drive = filePath.match(/^([A-Za-z]):(?:[\\/]|$)/)?.[1]
   if (drive) return `${drive.toUpperCase()}:\\`
@@ -3170,29 +3224,35 @@ async function executeJob(job: AutoShortJob): Promise<AutoShortBatchResult> {
   const results: AutoShortItemResult[] = new Array(total)
   try {
     job.telemetryBudget = new AutoShortTelemetryJobBudget()
+    assertCutRunCapability(requestHasTemporalCut(job.request.items))
     if (!job.batchSnapshot) await initializeBatchJournal(job)
     const overlayImage = job.request.config.overlays?.image
     if (overlayImage) await readAutoShortOverlayImage(overlayImage.path, overlayImage.sha256)
     await preflight(job)
     const policy = resolveExecutionPolicy(job.request.config?.executionPolicy)
-    // Two-item execution remains an explicit experimental opt-in. When it is
-    // selected, admit each item through the disk ledger before starting any
-    // child process; the conservative production default (1) is unchanged.
-    const diskBudget = policy.maxActiveItems === 2 ? getGlobalAutoShortDiskBudget() : undefined
+    // Every item is admitted through the shared per-volume ledger before any
+    // child process. Two-item execution therefore cannot hide scratch usage on
+    // one drive behind free space reported by a different output drive.
+    const diskBudget = getGlobalAutoShortDiskBudget()
     const retryOutputDirs = new Map<string, string>()
     const queueResults = await runAutoShortQueue({
       items: job.request.items,
       maxActiveItems: policy.maxActiveItems,
       signal: job.controller.signal,
-      admitItem: diskBudget
-        ? async (item, _index, _totalCount, signal) => {
-            const inputInfo = await stat(item.filePath).catch(() => null)
-            const estimate = estimateAutoShortFutureBytes(inputInfo?.size || 0)
-            const volume = autoShortVolumeForPath(job.request.config.outputDir)
-            logInfo(`[AutoShort] disk-admission volume=${volume} estimateBytes=${estimate} item=${safeArtifactSegment(item.id)}`)
-            return diskBudget.reserve(volume, estimate, signal)
-          }
-        : undefined,
+      admitItem: async (item, _index, _totalCount, signal) => {
+        const inputInfo = await stat(item.filePath).catch(() => null)
+        const inputBytes = inputInfo?.size || 0
+        const volumes = item.temporalEdit?.removedRanges.length
+          ? cutVolumeReservations({
+              scratchVolume: autoShortVolumeForPath(app.getPath('temp')),
+              outputVolume: autoShortVolumeForPath(job.request.config.outputDir),
+              cacheVolume: autoShortVolumeForPath(app.getPath('userData')),
+              bytesByVolume: estimateAutoShortCutFutureBytes(inputBytes)
+            })
+          : [{ volume: autoShortVolumeForPath(job.request.config.outputDir), bytes: estimateAutoShortFutureBytes(inputBytes) }]
+        logInfo(`[AutoShort] disk-admission reservations=${volumes.map((entry) => `${entry.volume}:${entry.bytes}`).join(',')} item=${safeArtifactSegment(item.id)}`)
+        return reserveAutoShortVolumes(diskBudget, volumes, signal)
+      },
       processItem: async (item, index, totalCount, reservation, attempt = 1) => {
         const journalItem = job.batchSnapshot?.items.find((entry) => entry.itemId === item.id)
         const itemOutputDir = retryOutputDirs.get(item.id) || journalItem?.reservedOutputDir ||
@@ -3292,6 +3352,11 @@ function launchAutoShortJob(
 export function startAutoShortJob(raw: unknown, onEvent: (event: AutoShortEvent) => void): { ok: true; jobId: string } | { ok: false; error: string } {
   const validation = validateAutoShortStartRequest(raw)
   if (!validation.ok) return { ok: false, error: validation.error }
+  try {
+    assertCutRunCapability(requestHasTemporalCut(validation.value.items))
+  } catch (error) {
+    return { ok: false, error: errLabel(error) }
+  }
   return launchAutoShortJob(validation.value, onEvent)
 }
 
@@ -3379,6 +3444,7 @@ export async function resumeAutoShortBatch(
     const candidateIds = new Set(resumeCandidateIds(snapshot))
     if (candidateIds.size === 0) return { ok: false, error: 'Batch không còn video pending/interrupted để tiếp tục.' }
     const candidates = snapshot.items.filter((item) => candidateIds.has(item.itemId)).sort((a, b) => a.ordinal - b.ordinal)
+    assertCutRunCapability(candidates.some((item) => Boolean(item.temporalEdit?.removedRanges.length)))
     const validated = validateAutoShortStartRequest({
       config: request.config,
       items: candidates.map((item) => ({ id: item.itemId, filePath: item.inputPath, ...(item.temporalEdit ? { temporalEdit: item.temporalEdit } : {}) }))
@@ -3386,7 +3452,7 @@ export async function resumeAutoShortBatch(
     if (!validated.ok) return { ok: false, error: validated.error }
     for (const item of candidates) {
       const candidate = validated.value.items.find((entry) => entry.id === item.itemId)!
-      if (item.configDigest !== itemConfigDigest(validated.value.config, candidate)) return { ok: false, error: 'Cấu hình hiện tại khác cấu hình batch đã checkpoint.' }
+      if (!matchesAutoShortItemConfigDigest(item.configDigest, validated.value.config, candidate.temporalEdit)) return { ok: false, error: 'Cấu hình hiện tại khác cấu hình batch đã checkpoint.' }
       if (await hashFileSha256(item.inputPath) !== item.inputDigest) return { ok: false, error: `Video nguồn đã thay đổi: ${basename(item.inputPath)}` }
     }
     return launchAutoShortJob(validated.value, onEvent, { jobId: snapshot.jobId, snapshot })
@@ -3479,26 +3545,72 @@ export async function runAutoShortSttnPreview(
 ): Promise<{ outputPath: string; provider: 'cuda' | 'cpu'; elapsedMs: number }> {
   if (!raw || typeof raw !== 'object' || Array.isArray(raw)) throw new Error('Yêu cầu xem thử STTN không hợp lệ.')
   const request = raw as Record<string, unknown>
-  if (Object.keys(request).some(key => !['videoPath', 'config', 'previewSeconds'].includes(key))) throw new Error('Yêu cầu xem thử chứa tham số không được phép.')
+  if (Object.keys(request).some(key => !['videoPath', 'config', 'previewSeconds', 'temporalEdit'].includes(key))) throw new Error('Yêu cầu xem thử chứa tham số không được phép.')
   const seconds = request.previewSeconds ?? 5
   if (typeof seconds !== 'number' || !Number.isFinite(seconds) || seconds <= 0 || seconds > 10) throw new Error('Xem thử STTN chỉ hỗ trợ tối đa 10 giây.')
   if (!request.config || typeof request.config !== 'object' || Array.isArray(request.config)) throw new Error('Cấu hình xem thử không hợp lệ.')
   const validated = validateAutoShortStartRequest({
     config: { ...request.config, outputDir: workDir },
-    items: [{ id: 'sttn-preview', filePath: request.videoPath }]
+    items: [{ id: 'sttn-preview', filePath: request.videoPath, ...(request.temporalEdit ? { temporalEdit: request.temporalEdit } : {}) }]
   })
   if (!validated.ok) throw new Error(validated.error)
   const { config } = validated.value
   if (!isSttnRemoval(config)) throw new Error('Hãy bật chế độ xóa chữ STTN trước khi xem thử.')
   throwIfAborted(signal)
-  const videoPath = validated.value.items[0].filePath
-  if (!(await stat(videoPath)).isFile()) throw new Error('Video xem thử không hợp lệ.')
+  const sourcePath = validated.value.items[0].filePath
+  if (!(await stat(sourcePath)).isFile()) throw new Error('Video xem thử không hợp lệ.')
   const ffmpeg = await (hooks.resolveFfmpeg || resolveFfmpeg)()
   const ffprobe = await (hooks.resolveFfprobe || resolveFfprobe)()
   if (!ffmpeg || !ffprobe) throw new Error('Cần FFmpeg/FFprobe để xem thử STTN.')
   const media = hooks.runMedia || runSttnPreviewMedia
   const resourceManager = hooks.resourceManager || getGlobalResourceManager()
   await mkdir(workDir, { recursive: true })
+  let videoPath = sourcePath
+  const temporalEdit = validated.value.items[0].temporalEdit
+  if (temporalEdit?.removedRanges.length) {
+    onProgress({ percent: 0, message: 'Đang dựng bản xem thử theo các đoạn đã cắt…' })
+    const sourceDigest = await hashFileSha256(sourcePath, signal)
+    const sourceMeta = await (hooks.probeMedia || probeBurnMedia)(sourcePath)
+    const frameIndex = await probeAutoShortFrameIndex({
+      ffprobePath: ffprobe,
+      sourcePath,
+      itemId: 'sttn-preview',
+      expectedSourceDigest: sourceDigest,
+      signal
+    })
+    const exactEdit = temporalEdit.schemaVersion === 1
+      ? upgradeLegacyTemporalEdit(temporalEdit, frameIndex)
+      : temporalEdit
+    const plan = compileFrameCutPlan({
+      edit: exactEdit,
+      index: frameIndex,
+      identity: {
+        sourceDigest,
+        editDigest: semanticFrameEditDigest(exactEdit),
+        executorRevision: 'cut-executor-v2',
+        runtimeDigest: await hashFileSha256(ffmpeg, signal),
+        mediaPolicyDigest: createHash('sha256').update('ffv1-source-pixfmt_pcm-source-format_graph-file-v1').digest('hex')
+      }
+    })
+    const cut = await cutAutoShortSourceByFramePlan({
+      ffmpeg,
+      sourcePath,
+      workDir,
+      plan,
+      hasAudio: sourceMeta.hasAudio,
+      signal
+    })
+    const validation = await validatePreparedCut({
+      ffmpegPath: ffmpeg,
+      ffprobePath: ffprobe,
+      sourcePath,
+      preparedPath: cut.path,
+      plan,
+      signal
+    })
+    if (!validation.ok) throw new Error(`${validation.code}: ${validation.details}`)
+    videoPath = cut.path
+  }
   const sourceClip = join(workDir, 'source-preview.mkv')
   const cleanedPath = join(workDir, 'cleaned-preview.mkv')
   const outputPath = join(workDir, 'preview.mp4')
@@ -3531,7 +3643,7 @@ export async function runAutoShortSttnPreview(
   await media(ffmpeg, ['-i', result.outputPath, '-map', '0:v:0', '-map', '0:a:0?', '-c:v', 'libx264', '-preset', 'fast', '-crf', '18', '-vf', 'pad=ceil(iw/2)*2:ceil(ih/2)*2', '-pix_fmt', 'yuv420p', '-fps_mode', 'passthrough', '-c:a', 'aac', '-movflags', '+faststart', outputPath], signal)
   throwIfAborted(signal)
   if (!(await stat(outputPath)).size) throw new Error('Video xem thử STTN trống.')
-  await Promise.all([sourceClip, cleanedPath, ocrDir].map(path => rm(path, { recursive: true, force: true })))
+  await Promise.all([sourceClip, cleanedPath, ocrDir, ...(videoPath === sourcePath ? [] : [videoPath])].map(path => rm(path, { recursive: true, force: true })))
   onProgress({ percent: 100, message: `Xem thử STTN hoàn tất (${result.provider.toUpperCase()}).` })
   return { ...result, outputPath }
 }

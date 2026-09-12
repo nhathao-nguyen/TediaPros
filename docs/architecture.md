@@ -90,8 +90,10 @@ sequenceDiagram
     Coord->>Disk: Khởi tạo Item Scope & cấp phát Disk Quota
 
     opt Item có bản cắt ripple-delete
-        Coord->>Cut: Validate/union khoảng source -> trim hình và tiếng -> concat
-        Cut-->>Coord: Edited master + cut-plan.json; probe lại duration/geometry
+        Coord->>Cut: Probe frame PTS -> snap boundary -> compile lịch frame/sample
+        Cut->>Disk: Reserve scratch/output/cache theo volume; encode từng chunk <=64 đoạn giữ
+        Cut-->>Coord: Edited master + cut plan + validation manifest
+        Coord->>Coord: Full-decode và đối chiếu frame/sample/source hash trước AI
     end
 
     alt Có bật Tách thoại (Vocal Separation)
@@ -143,7 +145,8 @@ sequenceDiagram
 - **Trách nhiệm:**
   - Vòng đời ứng dụng, quản lý cửa sổ BrowserWindow.
   - Điều phối hàng đợi tác vụ đa tiến trình với `autoShortQueueRunner.ts` và `autoShortItemCoordinator.ts`.
-  - Với item có `temporalEdit`, dựng edited master lossless trong item scope trước OCR/ASR/tách thoại. Khoảng cắt là half-open theo microsecond, được hợp nhất canonical; video không có bản cắt đi nguyên đường cũ. Bản cắt tham gia checkpoint/config digest và được lưu trong batch journal để resume không dùng nhầm artifact.
+  - Với item có `temporalEdit`, Main probe PTS/time base thật, snap mốc thời gian sang frame boundary và compile một lịch frame/sample chung trước OCR/ASR/tách thoại. Executor dùng graph file và chunk tối đa 64 đoạn giữ, giữ pixel depth và PCM format được hỗ trợ, sau đó full-decode để đối chiếu frame count, sample count và source SHA-256. Chỉ media đã qua validator mới đi xuống pipeline. Không dùng nhãn “lossless” cho toàn bộ format/HDR khi chưa có matrix tương ứng.
+  - Bản cắt dùng semantic identity tách khỏi checksum container, tham gia checkpoint/config digest và được lưu trong batch journal. Job no-cut cũ chỉ được resume bằng hai công thức identity legacy đã biết; thay đổi edit trên UI bỏ snapshot resume và tạo run mới. Cue nhận dạng đi qua hard join trả `CUT_SEAM_REVIEW_REQUIRED` trước dịch/TTS/render. Preview STTN của item đã cắt dùng cùng planner/executor/validator với lượt chạy thật.
   - Quản lý bộ nhớ đĩa tạm (`autoShortDiskBudget.ts`).
   - Gọi và giám sát tiến trình con (`processTree.ts`), đảm bảo khi người dùng bấm Hủy (Cancel) thì toàn bộ cây tiến trình FFmpeg/Python bị tiêu diệt sạch sẽ. Mỗi scope render Auto Short mới đặt lại cờ hủy nội bộ sau khi chiếm render lock; vì vậy trạng thái hủy của job trước không làm lần render sau bỏ qua FFmpeg.
   - Lưu nhật ký theo từng session trong `userData/logs`. Đóng ứng dụng không xóa bằng chứng; chỉ thao tác Clear của người dùng mới xóa log. `logRetention.ts` giữ file đang hoạt động và dọn session cũ theo giới hạn 7 ngày/100 MiB.

@@ -1,6 +1,6 @@
 import { basename, dirname, join } from 'node:path'
 import { copyFile, mkdir, mkdtemp, readFile, rename, rm, stat, writeFile } from 'node:fs/promises'
-import { randomUUID } from 'node:crypto'
+import { createHash, randomUUID } from 'node:crypto'
 import type {
   AlignedCue,
   AutoShortConfig,
@@ -58,7 +58,7 @@ import {
   synthesizeVoice,
   stitchAudioTimeline,
   preserveAutoShortArtifacts,
-  buildAutoShortCheckpointFingerprint,
+  buildAutoShortCheckpointFingerprintCandidates,
   serializeAlignedCues,
   alignedFromSrt,
   readWhisperAlignedCues,
@@ -96,7 +96,13 @@ import { runSttnRemoval } from './inpainting/runner'
 import { STTN_MODEL } from './inpainting/assets'
 import { buildTranslationIdentity, type TranslationArtifact } from './translation/checkpoint'
 import { TRANSLATION_PARSER_VERSION, TRANSLATION_PROMPT_VERSION } from './translation/prompts'
-import { cutAutoShortSource } from './autoShortCutMedia'
+import { cutAutoShortSourceByFramePlan } from './autoShortCutMedia'
+import { probeAutoShortFrameIndex, upgradeLegacyTemporalEdit } from './autoShortFrameIndex'
+import { compileFrameCutPlan, cutTimeToDecimal } from '../shared/autoShortCutPlan'
+import type { CutExecutionPlan } from '../shared/autoShortCutPlan'
+import { semanticFrameEditDigest, semanticTemporalSourceDigest } from './autoShortCutIdentity'
+import { validatePreparedCut } from './autoShortCutValidation'
+import { findCutSeamCueIssues } from '../shared/autoShortCutCues'
 import { assessTranslationLanguage, normalizeTranslationLocale } from './translation/language'
 import { mapTranslationsStrict } from './translation/response'
 import { createInvalidSourceAssessment } from './translation/orchestrator'
@@ -532,7 +538,7 @@ export function createAutoShortItemProcessor(
 
       const { sourceDigest, meta, ffmpeg, ffprobe, geometry } = await telemetry.withStageSpan('metadata', {}, async (span) => {
         const sourceDigest = await hashFileSha256(item.filePath, signal)
-        const checkpointFingerprint = buildAutoShortCheckpointFingerprint(
+        const checkpointFingerprints = buildAutoShortCheckpointFingerprintCandidates(
           item.filePath,
           inputInfo,
           config,
@@ -541,7 +547,9 @@ export function createAutoShortItemProcessor(
           item.temporalEdit
         )
 
-        if (checkpoint.version !== AUTO_SHORT_CHECKPOINT_VERSION || checkpoint.fingerprint !== checkpointFingerprint) {
+        const checkpointFingerprint = checkpointFingerprints[0]
+
+        if (checkpoint.version !== AUTO_SHORT_CHECKPOINT_VERSION || !checkpointFingerprints.includes(checkpoint.fingerprint || '')) {
           if (checkpoint.sourceCues?.length || checkpoint.translatedCues?.length || checkpoint.instrumentalPath) {
             logInfo('[AutoShort] Bỏ checkpoint cũ vì không khớp fingerprint input/cấu hình hiện tại.')
           }
@@ -578,26 +586,57 @@ export function createAutoShortItemProcessor(
       let processingDigest = sourceDigest
       let processingMeta = meta
       let processingGeometry = geometry
+      let cutExecutionPlan: CutExecutionPlan | undefined
       if (item.temporalEdit?.removedRanges.length) {
         emitProgress(context, 'extracting_sub', 2, 'Đang chuẩn bị video theo các đoạn đã cắt…')
         const cut = await telemetry.withStageSpan('metadata', {}, async (span) => {
-          const result = await cutAutoShortSource({
+          const frameIndex = await probeAutoShortFrameIndex({
+            ffprobePath: ffprobe,
+            sourcePath: item.filePath,
+            itemId: item.id,
+            expectedSourceDigest: sourceDigest,
+            signal
+          })
+          const temporalEdit = item.temporalEdit!.schemaVersion === 1
+            ? upgradeLegacyTemporalEdit(item.temporalEdit!, frameIndex)
+            : item.temporalEdit!
+          const plan = compileFrameCutPlan({
+            edit: temporalEdit,
+            index: frameIndex,
+            identity: {
+              sourceDigest,
+              editDigest: semanticFrameEditDigest(temporalEdit),
+              executorRevision: 'cut-executor-v2',
+              runtimeDigest: await hashFileSha256(ffmpeg, signal),
+              mediaPolicyDigest: createHash('sha256').update('ffv1-source-pixfmt_pcm-source-format_graph-file-v1').digest('hex')
+            }
+          })
+          const result = await cutAutoShortSourceByFramePlan({
             ffmpeg,
             sourcePath: item.filePath,
             workDir,
-            edit: item.temporalEdit!,
-            sourceDurationSeconds: meta.giay,
+            plan,
             hasAudio: meta.hasAudio,
             signal
           })
-          span.updateCounters({
-            removedRangeCount: result.plan.removedRanges.length,
-            outputDurationMs: Math.round(result.plan.editedDurationUs / 1000)
+          const validation = await validatePreparedCut({
+            ffmpegPath: ffmpeg,
+            ffprobePath: ffprobe,
+            sourcePath: item.filePath,
+            preparedPath: result.path,
+            plan: result.plan,
+            signal
           })
-          return result
+          if (!validation.ok) throw new Error(`${validation.code}: ${validation.details}`)
+          span.updateCounters({
+            removedRangeCount: temporalEdit.removedRanges.length,
+            outputDurationMs: Math.round(Number(cutTimeToDecimal(result.plan.editedDuration)) * 1000)
+          })
+          return { ...result, temporalEdit, validation }
         })
         processingPath = cut.path
-        processingDigest = await hashFileSha256(processingPath, signal)
+        cutExecutionPlan = cut.plan
+        processingDigest = semanticTemporalSourceDigest(sourceDigest, cut.temporalEdit)
         processingMeta = await (deps.probeMedia || probeBurnMedia)(processingPath)
         if (!(processingMeta.giay > 0) || !(processingMeta.w > 0) || !(processingMeta.h > 0)) {
           throw new Error('Video sau cắt không có metadata hợp lệ.')
@@ -612,6 +651,9 @@ export function createAutoShortItemProcessor(
         const cutManifestPath = join(workDir, 'cut-plan.json')
         await writeFile(cutManifestPath, JSON.stringify(cut.plan, null, 2), 'utf8')
         artifactEntries.push({ source: cutManifestPath, name: 'cut-plan.json' })
+        const validationManifestPath = join(workDir, 'cut-validation.json')
+        await writeFile(validationManifestPath, JSON.stringify(cut.validation.manifest, null, 2), 'utf8')
+        artifactEntries.push({ source: validationManifestPath, name: 'cut-validation.json' })
       }
       const visualDurationSeconds = visualVideoDuration(processingMeta)
 
@@ -1033,6 +1075,14 @@ export function createAutoShortItemProcessor(
         checkpoint.sourceCues = boundedExtracted
         checkpoint.detectedSourceLanguage = detectedSourceLanguage
         await saveCheckpoint()
+      }
+
+      if (cutExecutionPlan) {
+        const seamIssues = findCutSeamCueIssues(sourceCues, cutExecutionPlan)
+        if (seamIssues.length > 0) {
+          const first = seamIssues[0]
+          throw new Error(`CUT_SEAM_REVIEW_REQUIRED: Câu ${first.cueId} đi qua mối cắt tại ${first.editedAtSeconds.toFixed(3)} giây. Hãy điều chỉnh điểm cắt vào khoảng lặng hoặc biên câu.`)
+        }
       }
 
       // Whisper supplies the source evidence needed by translation.  Start

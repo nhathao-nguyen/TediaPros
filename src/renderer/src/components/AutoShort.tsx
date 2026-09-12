@@ -1248,6 +1248,7 @@ export default function AutoShort(): JSX.Element {
       const result = await window.api.autoShortSttnPreview({
         videoPath: videoPathSnapshot,
         previewSeconds: 5,
+        ...(selectedTask.temporalEdit ? { temporalEdit: selectedTask.temporalEdit } : {}),
         config: {
           subtitleMethod: 'ocr', whisperModel: selectedWhisperModel, whisperDevice,
           lamMo: true, blurMode: 'sttn', ocrBlurProfile: 'accurate', blurRegions: [],
@@ -1314,7 +1315,7 @@ export default function AutoShort(): JSX.Element {
         {/* ========================================================================= */}
         <section
           ref={previewPanelRef}
-          className="editor-canvas-panel"
+          className={`editor-canvas-panel${showCutPanel && selectedTask ? ' has-cut-panel' : ''}`}
           onDragOver={(e) => e.preventDefault()}
           onDrop={handleDrop}
         >
@@ -1380,22 +1381,6 @@ export default function AutoShort(): JSX.Element {
               )}
             </div>
           </div>
-
-          {showCutPanel && selectedTask && (
-            <AutoShortCutPanel
-              key={selectedTask.id}
-              edit={selectedTask.temporalEdit}
-              durationSeconds={videoDuration}
-              currentTimeSeconds={currentTime}
-              disabled={isRunning}
-              onSeek={transport.seekTo}
-              onChange={(temporalEdit) => setTasks((current) => current.map((task) => task.id === selectedTask.id
-                ? { ...task, temporalEdit, currentStepMessage: temporalEdit?.removedRanges.length
-                  ? `Đã chọn bỏ ${temporalEdit.removedRanges.length} đoạn`
-                  : 'Sẵn sàng' }
-                : task))}
-            />
-          )}
 
           {/* Sân khấu video + Bounding box RegionBox */}
           <div ref={stageShellRef} className="editor-stage-shell">
@@ -1568,6 +1553,25 @@ export default function AutoShort(): JSX.Element {
               </button>
             </div>
           </div>
+
+          {showCutPanel && selectedTask && (
+            <AutoShortCutPanel
+              key={selectedTask.id}
+              edit={selectedTask.temporalEdit?.schemaVersion === 1 ? selectedTask.temporalEdit : undefined}
+              durationSeconds={videoDuration}
+              currentTimeSeconds={currentTime}
+              disabled={isRunning}
+              onSeek={transport.seekTo}
+              onChange={(temporalEdit) => {
+                setResumeSnapshot(null)
+                setTasks((current) => current.map((task) => task.id === selectedTask.id
+                  ? { ...task, temporalEdit, currentStepMessage: temporalEdit?.removedRanges.length
+                    ? `Đã chọn bỏ ${temporalEdit.removedRanges.length} đoạn`
+                    : 'Sẵn sàng' }
+                  : task))
+              }}
+            />
+          )}
         </section>
 
         {/* ========================================================================= */}
@@ -2674,7 +2678,9 @@ export default function AutoShort(): JSX.Element {
                               {task.percent > 0 && ` (${task.percent}%)`}
                             </div>
                             {task.temporalEdit?.removedRanges.length ? (
-                              <div className="queue-item-msg small">Cắt: {task.temporalEdit.removedRanges.length} đoạn · bỏ {(task.temporalEdit.removedRanges.reduce((sum, range) => sum + range.endUs - range.startUs, 0) / MICROSECONDS_PER_SECOND).toFixed(2)} giây</div>
+                              <div className="queue-item-msg small">Cắt: {task.temporalEdit.removedRanges.length} đoạn{task.temporalEdit.schemaVersion === 1
+                                ? ` · bỏ ${(task.temporalEdit.removedRanges.reduce((sum, range) => sum + range.endUs - range.startUs, 0) / MICROSECONDS_PER_SECOND).toFixed(2)} giây`
+                                : ' · theo ranh giới frame'}</div>
                             ) : null}
                             {task.error && <div className="queue-item-msg" style={{ color: 'var(--danger)' }}>{task.error}</div>}
                             {task.recovery && task.status === 'error' && (

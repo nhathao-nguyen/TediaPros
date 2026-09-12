@@ -55,3 +55,26 @@ test('batch store rejects unsafe job ids and a junction that escapes its root', 
     await rm(outside, { recursive: true, force: true })
   }
 })
+
+test('batch journal preserves a validated exact-frame edit for restart', async () => {
+  const root = await mkdtemp(join(tmpdir(), 'tedia-batch-v2-cut-'))
+  try {
+    const boundary = (presentationIndex: number, eof = false) => ({ presentationIndex, ptsTicks: String(presentationIndex), timeBase: { num: 1, den: 25 }, eof })
+    const value: BatchSnapshot = {
+      ...snapshot(0),
+      items: [{
+        ...snapshot(0).items[0],
+        temporalEdit: {
+          schemaVersion: 2, editId: 'edit-1', revision: 1, mode: 'ripple-delete', policyVersion: 'cut-v2',
+          itemId: 'item-1', sourceDigest: 'a'.repeat(64), frameIndexRevision: 'index-v1',
+          removedRanges: [{ id: 'remove-1', start: boundary(25), end: boundary(50) }], reviewResolutions: []
+        }
+      }]
+    }
+    const store = createAutoShortBatchStore(root)
+    await store.save(value, null)
+    assert.deepEqual(await store.load('batch-1'), value)
+  } finally {
+    await rm(root, { recursive: true, force: true })
+  }
+})
