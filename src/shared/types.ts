@@ -1044,6 +1044,16 @@ export type AutoShortStartResult =
   | { ok: true; jobId: string }
   | { ok: false; error: string }
 
+export interface AutoShortResumeRequest {
+  jobId: string
+  expectedRevision: number
+  config: AutoShortConfig
+}
+
+export type AutoShortBatchStatusResult =
+  | { ok: true; snapshot: import('./autoShortBatchJournal').BatchSnapshot | null }
+  | { ok: false; error: string }
+
 export interface AutoShortSttnPreviewRequest {
   videoPath: string
   config: AutoShortConfig

@@ -408,6 +408,10 @@ const api = {
   },
   autoShortStart: (request: AutoShortStartRequest): Promise<AutoShortStartResult> =>
     ipcRenderer.invoke('autoshort:start', request),
+  autoShortGetBatch: (jobId?: string): Promise<import('../shared/types').AutoShortBatchStatusResult> =>
+    ipcRenderer.invoke('autoshort:getBatch', jobId),
+  autoShortResume: (request: import('../shared/types').AutoShortResumeRequest): Promise<AutoShortStartResult> =>
+    ipcRenderer.invoke('autoshort:resume', request),
   autoShortCancel: (jobId: string): Promise<{ ok: boolean; error?: string }> =>
     ipcRenderer.invoke('autoshort:cancel', jobId),
   autoShortRetryTranslation: (request: { itemId: string; expectedIdentity: string }): Promise<{ ok: boolean; generation?: number; error?: string }> =>

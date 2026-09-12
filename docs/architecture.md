@@ -140,6 +140,7 @@ sequenceDiagram
   - Gọi và giám sát tiến trình con (`processTree.ts`), đảm bảo khi người dùng bấm Hủy (Cancel) thì toàn bộ cây tiến trình FFmpeg/Python bị tiêu diệt sạch sẽ. Mỗi scope render Auto Short mới đặt lại cờ hủy nội bộ sau khi chiếm render lock; vì vậy trạng thái hủy của job trước không làm lần render sau bỏ qua FFmpeg.
   - Lưu nhật ký theo từng session trong `userData/logs`. Đóng ứng dụng không xóa bằng chứng; chỉ thao tác Clear của người dùng mới xóa log. `logRetention.ts` giữ file đang hoạt động và dọn session cũ theo giới hạn 7 ngày/100 MiB.
   - Telemetry AutoShort tách thời gian `metadata`, `visual_ocr`, `asr`, `translate`, `tts`, `separation`, `audio`, `sttn`, `retime`, `render`, `artifact_copy` và `publish`. Request TTS ghi mốc queue/start/first-response/end, HTTP status, request ID và retry reason; render ghi từng encoder attempt và codec được chọn.
+  - Main Process là nguồn sự thật của hàng đợi AutoShort. Mỗi batch có snapshot checksum trong `userData/autoshort-batches-v1`; ghi `pending` trước preflight, `running` trước engine và trạng thái cuối kèm biên nhận SHA-256 trước event UI. Khi khởi động lại, `running` đổi thành `interrupted`; ứng dụng chỉ tiếp tục sau thao tác người dùng và chỉ với video `pending/interrupted` có input/config digest còn khớp.
 
 ### 3.5. `engines/` (Python Sidecars)
 - **Trách nhiệm:** Thực thi các tác vụ máy học nặng (OCR, Whisper, STTN Inpainting, MDX Separation).

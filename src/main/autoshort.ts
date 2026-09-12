@@ -31,7 +31,7 @@ import { applyDubbingTranslations, dubbingSpeakingDurations } from './dubbing/tr
 import { buildTtsCacheKey, getTtsCacheStore } from './dubbing/cache'
 import { synthesizeDubbingPlan } from './dubbing/synthesis'
 import type { DubbingTimeMap } from './dubbing/timeMap'
-import { buildStageKey, hashFileSha256 } from './autoShortStageKeys'
+import { buildStageKey, canonicalJson, hashFileSha256 } from './autoShortStageKeys'
 import { DUBBING_MAX_EARLY_START_SECONDS, DUBBING_PLAN_VERSION, buildDubbingPlan as buildPlan, groupDubbingPlanForSpeech, validateDubbingPlan, type DubbingPlan } from './dubbing/plan'
 import { huongDan, stripOuterQuotes } from './translate-shared'
 import { resolveTranslationSourceLanguage } from './localTranslatePolicy'
@@ -98,9 +98,19 @@ import type { InstalledSeparatorModel } from './separation/modelStore'
 import { reserveVideoTitleOutputDir } from './videoTitle'
 import { createAutoShortArtifactCache, type ArtifactCache } from './autoShortArtifactCache'
 import { assertContainedParentDirectory } from './safeContainedPath'
+import { createAutoShortBatchStore, type AutoShortBatchStore } from './autoShortBatchStore'
+import {
+  isSafeBatchId,
+  recoverInterruptedBatch,
+  resumeCandidateIds,
+  type BatchItemRecord,
+  type BatchItemState,
+  type BatchSnapshot
+} from '../shared/autoShortBatchJournal'
 import { buildRephraseMessages } from './translation/prompts'
 import { resolveTranslationReadiness } from './translation/language'
 import type {
+  AutoShortBatchStatusResult,
   AutoShortDependencyConfig,
   AutoShortSeparationPreset,
   AutoShortSeparationReadiness,
@@ -121,6 +131,7 @@ import {
   AutoShortRequestSpan,
   AutoShortQueueItemInput,
   AutoShortStartRequest,
+  AutoShortResumeRequest,
   AutoShortSttnPreviewResult,
   AutoShortSttnPreviewProgress,
   AlignedCue,
@@ -147,6 +158,10 @@ interface AutoShortJob {
   emit: (event: AutoShortEvent) => void
   done: Promise<AutoShortBatchResult>
   cancelled: boolean
+  shutdownRequested?: boolean
+  batchStore: AutoShortBatchStore
+  batchSnapshot?: BatchSnapshot
+  batchWrite: Promise<void>
   ttsCapabilities?: Awaited<ReturnType<typeof getTtsModels>>
   ttsCapabilitiesUrl?: string
   separation?: PreparedAutoShortSeparation
@@ -158,6 +173,118 @@ interface AutoShortJob {
 
 let activeJob: AutoShortJob | null = null
 let sharedArtifactCache: ArtifactCache | null = null
+
+function getAutoShortBatchStore(): AutoShortBatchStore {
+  return createAutoShortBatchStore(join(app.getPath('userData'), 'autoshort-batches-v1'))
+}
+
+function batchConfigDigest(config: AutoShortConfig): string {
+  return createHash('sha256').update(canonicalJson(config)).digest('hex')
+}
+
+async function initializeBatchJournal(job: AutoShortJob): Promise<void> {
+  const now = new Date().toISOString()
+  const configDigest = batchConfigDigest(job.request.config)
+  const items: BatchItemRecord[] = []
+  for (const [ordinal, item] of job.request.items.entries()) {
+    items.push({
+      itemId: item.id,
+      inputPath: item.filePath,
+      inputDigest: await hashFileSha256(item.filePath, job.controller.signal),
+      configDigest,
+      ordinal,
+      attempt: 0,
+      state: 'pending'
+    })
+  }
+  const snapshot: BatchSnapshot = {
+    schemaVersion: 1,
+    jobId: job.id,
+    revision: 0,
+    createdAtUtc: now,
+    updatedAtUtc: now,
+    items
+  }
+  await job.batchStore.save(snapshot, null)
+  job.batchSnapshot = snapshot
+}
+
+async function updateBatchItem(
+  job: AutoShortJob,
+  itemId: string,
+  update: (item: BatchItemRecord) => BatchItemRecord
+): Promise<void> {
+  const operation = job.batchWrite.then(async () => {
+    const current = job.batchSnapshot
+    if (!current) throw new Error('Batch journal chưa được khởi tạo.')
+    const index = current.items.findIndex((item) => item.itemId === itemId)
+    if (index < 0) throw new Error('Batch journal không có item cần cập nhật.')
+    const items = current.items.map((item, itemIndex) => itemIndex === index ? update({ ...item }) : item)
+    const next: BatchSnapshot = {
+      ...current,
+      revision: current.revision + 1,
+      updatedAtUtc: new Date().toISOString(),
+      items
+    }
+    await job.batchStore.save(next, current.revision)
+    job.batchSnapshot = next
+  })
+  job.batchWrite = operation.catch(() => undefined)
+  await operation
+}
+
+async function markBatchRunning(job: AutoShortJob, itemId: string, attempt: 1 | 2): Promise<void> {
+  await updateBatchItem(job, itemId, (item) => ({
+    ...item,
+    attempt,
+    state: 'running',
+    outputReceipt: undefined,
+    failure: undefined
+  }))
+}
+
+async function checkpointTerminalResult(job: AutoShortJob, result: AutoShortItemResult): Promise<AutoShortItemResult> {
+  let finalResult = result
+  let state: BatchItemState
+  let outputReceipt: BatchItemRecord['outputReceipt']
+  let failure: BatchItemRecord['failure']
+  if (result.status === 'done' && result.outputPath) {
+    try {
+      const [info, sha256, meta] = await Promise.all([
+        stat(result.outputPath),
+        hashFileSha256(result.outputPath),
+        probeBurnMedia(result.outputPath)
+      ])
+      const durationSeconds = meta.videoDurationSeconds ?? meta.videoDuration ?? meta.giay
+      if (!info.isFile() || info.size <= 0 || !Number.isFinite(durationSeconds) || durationSeconds <= 0) {
+        throw new Error('Biên nhận video đầu ra không hợp lệ.')
+      }
+      state = result.translationAssessment?.disposition === 'needs-review' ? 'needs-review' : 'succeeded'
+      outputReceipt = { path: result.outputPath, sha256, bytes: info.size, durationSeconds }
+    } catch (error) {
+      state = 'needs-review'
+      failure = { code: 'output_receipt_invalid', message: errLabel(error), recoverable: true }
+      finalResult = { ...result, status: 'error', error: `Video đã render nhưng chưa xác minh được đầu ra: ${errLabel(error)}` }
+    }
+  } else if (result.status === 'cancelled') {
+    state = job.shutdownRequested ? 'interrupted' : 'cancelled'
+    failure = {
+      code: job.shutdownRequested ? 'process_interrupted' : 'user_cancelled',
+      message: result.error || (job.shutdownRequested ? 'Ứng dụng đã dừng.' : 'Người dùng đã hủy.'),
+      recoverable: Boolean(job.shutdownRequested)
+    }
+  } else {
+    state = result.translationAssessment?.disposition === 'needs-review' ? 'needs-review' : 'failed'
+    failure = { code: result.recovery?.kind || 'processing_failed', message: result.error || 'Xử lý thất bại.', recoverable: result.recovery?.retryable === true }
+  }
+  await updateBatchItem(job, result.itemId, (item) => ({
+    ...item,
+    state,
+    ...(outputReceipt ? { outputReceipt } : { outputReceipt: undefined }),
+    ...(failure ? { failure } : { failure: undefined })
+  }))
+  return finalResult
+}
 
 interface TranslationRetryEntry {
   itemId: string
@@ -3027,6 +3154,7 @@ async function executeJob(job: AutoShortJob): Promise<AutoShortBatchResult> {
   const results: AutoShortItemResult[] = new Array(total)
   try {
     job.telemetryBudget = new AutoShortTelemetryJobBudget()
+    if (!job.batchSnapshot) await initializeBatchJournal(job)
     await preflight(job)
     const policy = resolveExecutionPolicy(job.request.config?.executionPolicy)
     // Two-item execution remains an explicit experimental opt-in. When it is
@@ -3048,6 +3176,7 @@ async function executeJob(job: AutoShortJob): Promise<AutoShortBatchResult> {
           }
         : undefined,
       processItem: async (item, index, totalCount, reservation, attempt = 1) => {
+        await markBatchRunning(job, item.id, attempt)
         return processSingleVideo(job, item, job.request.config, index, totalCount, policy, reservation,
           attempt, retryOutputDirs.get(item.id))
       },
@@ -3057,14 +3186,15 @@ async function executeJob(job: AutoShortJob): Promise<AutoShortBatchResult> {
         emitProgress(job, item, 'queued', 0,
           'Đã lưu tiến trình; sẽ tự xử lý lại sau khi hoàn tất hàng đợi.', index, totalCount)
       },
-      onTerminal: (itemResult, index, item, totalCount) => {
-        results[index] = itemResult
-        emitTerminal(job, item, index, totalCount, itemResult)
+      onTerminal: async (itemResult, index, item, totalCount) => {
+        const durableResult = await checkpointTerminalResult(job, itemResult)
+        results[index] = durableResult
+        emitTerminal(job, item, index, totalCount, durableResult)
       },
       sanitizeError: (item, error) => sanitizeAutoShortAuditError(error, [item.filePath, job.request.config.outputDir])
     })
     for (let i = 0; i < total; i++) {
-      if (queueResults[i]) {
+      if (queueResults[i] && !results[i]) {
         results[i] = queueResults[i]
       }
     }
@@ -3080,8 +3210,16 @@ async function executeJob(job: AutoShortJob): Promise<AutoShortBatchResult> {
           status: job.controller.signal.aborted ? 'cancelled' : 'error',
           error: message
         }
-        results[index] = result
-        emitTerminal(job, item, index, total, result)
+        let durableResult = result
+        if (job.batchSnapshot) {
+          durableResult = await checkpointTerminalResult(job, result).catch((journalError) => ({
+            ...result,
+            status: 'error' as const,
+            error: `${message}; không lưu được batch journal: ${errLabel(journalError)}`
+          }))
+        }
+        results[index] = durableResult
+        emitTerminal(job, item, index, total, durableResult)
       }
     }
   }
@@ -3102,25 +3240,109 @@ async function executeJob(job: AutoShortJob): Promise<AutoShortBatchResult> {
   return result
 }
 
-export function startAutoShortJob(raw: unknown, onEvent: (event: AutoShortEvent) => void): { ok: true; jobId: string } | { ok: false; error: string } {
-  const validation = validateAutoShortStartRequest(raw)
-  if (!validation.ok) return { ok: false, error: validation.error }
+function launchAutoShortJob(
+  request: AutoShortStartRequest,
+  onEvent: (event: AutoShortEvent) => void,
+  options?: { jobId?: string; snapshot?: BatchSnapshot }
+): { ok: true; jobId: string } | { ok: false; error: string } {
   if (activeJob) return { ok: false, error: 'Đang có một Auto Short job khác chạy.' }
   const job: AutoShortJob = {
-    id: randomUUID(),
-    request: validation.value,
+    id: options?.jobId || randomUUID(),
+    request,
     controller: new AbortController(),
     emit: onEvent,
     cancelled: false,
+    batchStore: getAutoShortBatchStore(),
+    batchSnapshot: options?.snapshot,
+    batchWrite: Promise.resolve(),
     separationProviderState: { mode: 'auto' },
     artifactCache: getAutoShortArtifactCache(),
-    done: Promise.resolve({ ok: false, completedCount: 0, totalCount: validation.value.items.length })
+    done: Promise.resolve({ ok: false, completedCount: 0, totalCount: request.items.length })
   }
   job.done = executeJob(job).finally(() => {
     if (activeJob?.id === job.id) activeJob = null
   })
   activeJob = job
   return { ok: true, jobId: job.id }
+}
+
+export function startAutoShortJob(raw: unknown, onEvent: (event: AutoShortEvent) => void): { ok: true; jobId: string } | { ok: false; error: string } {
+  const validation = validateAutoShortStartRequest(raw)
+  if (!validation.ok) return { ok: false, error: validation.error }
+  return launchAutoShortJob(validation.value, onEvent)
+}
+
+async function loadRecoveredBatch(jobId?: string): Promise<BatchSnapshot | null> {
+  const store = getAutoShortBatchStore()
+  const loaded = jobId ? await store.load(jobId) : await store.loadLatest()
+  if (!loaded || activeJob?.id === loaded.jobId) return activeJob?.batchSnapshot || loaded
+  const recovered = recoverInterruptedBatch(loaded)
+  const changed = recovered.items.some((item, index) => item.state !== loaded.items[index]?.state)
+  let snapshot = loaded
+  if (changed) {
+    snapshot = { ...recovered, revision: loaded.revision + 1, updatedAtUtc: new Date().toISOString() }
+    await store.save(snapshot, loaded.revision)
+  }
+  for (const item of snapshot.items.filter((entry) => entry.state === 'succeeded' && entry.outputReceipt)) {
+    try {
+      const info = await stat(item.outputReceipt!.path)
+      if (!info.isFile() || info.size !== item.outputReceipt!.bytes || await hashFileSha256(item.outputReceipt!.path) !== item.outputReceipt!.sha256) {
+        throw new Error('Kích thước hoặc checksum đầu ra đã thay đổi.')
+      }
+    } catch (error) {
+      const current = snapshot
+      const items = current.items.map((entry) => entry.itemId === item.itemId ? {
+        ...entry,
+        state: 'needs-review' as const,
+        failure: { code: 'output_receipt_mismatch', message: errLabel(error), recoverable: false }
+      } : entry)
+      snapshot = { ...current, revision: current.revision + 1, updatedAtUtc: new Date().toISOString(), items }
+      await store.save(snapshot, current.revision)
+    }
+  }
+  return snapshot
+}
+
+export async function getAutoShortBatch(jobId?: string): Promise<AutoShortBatchStatusResult> {
+  try {
+    if (jobId !== undefined && !isSafeBatchId(jobId)) return { ok: false, error: 'Batch job ID không hợp lệ.' }
+    return { ok: true, snapshot: await loadRecoveredBatch(jobId) }
+  } catch (error) {
+    return { ok: false, error: errLabel(error) }
+  }
+}
+
+export async function resumeAutoShortBatch(
+  raw: unknown,
+  onEvent: (event: AutoShortEvent) => void
+): Promise<{ ok: true; jobId: string } | { ok: false; error: string }> {
+  if (activeJob) return { ok: false, error: 'Đang có một Auto Short job khác chạy.' }
+  if (!raw || typeof raw !== 'object' || Array.isArray(raw)) return { ok: false, error: 'Yêu cầu resume không hợp lệ.' }
+  const request = raw as Partial<AutoShortResumeRequest>
+  if (typeof request.jobId !== 'string' || !isSafeBatchId(request.jobId) || !Number.isSafeInteger(request.expectedRevision)) {
+    return { ok: false, error: 'Job ID hoặc revision resume không hợp lệ.' }
+  }
+  try {
+    const snapshot = await loadRecoveredBatch(request.jobId)
+    if (!snapshot) return { ok: false, error: 'Không tìm thấy batch để tiếp tục.' }
+    if (snapshot.revision !== request.expectedRevision) return { ok: false, error: 'Batch revision đã thay đổi; hãy tải lại trạng thái.' }
+    const candidateIds = new Set(resumeCandidateIds(snapshot))
+    if (candidateIds.size === 0) return { ok: false, error: 'Batch không còn video pending/interrupted để tiếp tục.' }
+    const candidates = snapshot.items.filter((item) => candidateIds.has(item.itemId)).sort((a, b) => a.ordinal - b.ordinal)
+    const validated = validateAutoShortStartRequest({
+      config: request.config,
+      items: candidates.map((item) => ({ id: item.itemId, filePath: item.inputPath }))
+    })
+    if (!validated.ok) return { ok: false, error: validated.error }
+    const digest = batchConfigDigest(validated.value.config)
+    for (const item of candidates) {
+      if (item.configDigest !== digest) return { ok: false, error: 'Cấu hình hiện tại khác cấu hình batch đã checkpoint.' }
+      if (await hashFileSha256(item.inputPath) !== item.inputDigest) return { ok: false, error: `Video nguồn đã thay đổi: ${basename(item.inputPath)}` }
+    }
+    return launchAutoShortJob(validated.value, onEvent, { jobId: snapshot.jobId, snapshot })
+  } catch (error) {
+    return { ok: false, error: errLabel(error) }
+  }
 }
 
 /** Clear reusable stage artifacts without touching published videos or active work. */
@@ -3149,7 +3371,7 @@ export async function shutdownAutoShortRuntime(): Promise<void> {
   await Promise.all([...sttnPreviews.keys()].map((ownerId) => disposeAutoShortSttnPreview(ownerId)))
   const job = activeJob
   if (job) {
-    job.cancelled = true
+    job.shutdownRequested = true
     job.controller.abort()
   }
   cancelBurn()

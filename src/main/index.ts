@@ -134,6 +134,7 @@ import {
 } from './tts'
 import {
   cancelAutoShort,
+  getAutoShortBatch,
   clearAutoShortArtifactCache,
   startAutoShortSttnPreview,
   cancelAutoShortSttnPreview,
@@ -141,6 +142,7 @@ import {
   getAutoShortReadiness,
   installAutoShortDependencies,
   shutdownAutoShortRuntime,
+  resumeAutoShortBatch,
   startAutoShortJob,
   retryAutoShortTranslation,
   selectAutoShortVideoFiles
@@ -1148,6 +1150,23 @@ function registerIpc(): void {
         event.sender.send('autoshort:event', payload)
       } catch (error) {
         logWarn(`Auto Short không gửi được event: ${errLabel(error)}`)
+      }
+    })
+  })
+  ipcMain.handle('autoshort:getBatch', async (event, jobId: unknown) => {
+    const rejected = rejectUntrustedAutoShortIpc(event)
+    if (rejected) return rejected
+    if (jobId !== undefined && typeof jobId !== 'string') return { ok: false, error: 'Batch job ID không hợp lệ.' }
+    return getAutoShortBatch(jobId)
+  })
+  ipcMain.handle('autoshort:resume', async (event, raw: unknown) => {
+    const rejected = rejectUntrustedAutoShortIpc(event)
+    if (rejected) return rejected
+    return resumeAutoShortBatch(raw, (payload) => {
+      try {
+        event.sender.send('autoshort:event', payload)
+      } catch (error) {
+        logWarn(`Auto Short không gửi được event resume: ${errLabel(error)}`)
       }
     })
   })

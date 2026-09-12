@@ -6,9 +6,9 @@ export interface RunAutoShortQueueInput {
   signal: AbortSignal
   maxActiveItems: 1 | 2
   processItem(item: AutoShortQueueItemInput, index: number, totalCount: number, reservation?: DiskReservation, attempt?: 1 | 2): Promise<AutoShortItemResult>
-  onTerminal(result: AutoShortItemResult, index: number, item: AutoShortQueueItemInput, totalCount: number): void
+  onTerminal(result: AutoShortItemResult, index: number, item: AutoShortQueueItemInput, totalCount: number): void | Promise<void>
   shouldRetry?: (result: AutoShortItemResult, item: AutoShortQueueItemInput) => boolean
-  onRetryScheduled?: (result: AutoShortItemResult, index: number, item: AutoShortQueueItemInput, totalCount: number) => void
+  onRetryScheduled?: (result: AutoShortItemResult, index: number, item: AutoShortQueueItemInput, totalCount: number) => void | Promise<void>
   sanitizeError?: (item: AutoShortQueueItemInput, error: unknown) => string
   /** Optional admission gate used by experimental multi-item execution. */
   admitItem?: (item: AutoShortQueueItemInput, index: number, totalCount: number, signal: AbortSignal) => Promise<DiskReservation>
@@ -19,10 +19,10 @@ export async function runAutoShortQueue(input: RunAutoShortQueueInput): Promise<
   const total = items.length
   const results: AutoShortItemResult[] = new Array(total)
   const terminalIndices = new Set<number>()
-  const finalize = (result: AutoShortItemResult, index: number, item: AutoShortQueueItemInput): void => {
+  const finalize = async (result: AutoShortItemResult, index: number, item: AutoShortQueueItemInput): Promise<void> => {
     if (terminalIndices.has(index)) return
     terminalIndices.add(index)
-    onTerminal(result, index, item, total)
+    await onTerminal(result, index, item, total)
   }
   if (total === 0) return results
 
@@ -46,8 +46,8 @@ export async function runAutoShortQueue(input: RunAutoShortQueueInput): Promise<
           : undefined
         const result = await processItem(item, currentIndex, total, reservation, 1)
         results[currentIndex] = result
-        if (shouldRetry?.(result, item) && !signal.aborted) onRetryScheduled?.(result, currentIndex, item, total)
-        else finalize(result, currentIndex, item)
+        if (shouldRetry?.(result, item) && !signal.aborted) await onRetryScheduled?.(result, currentIndex, item, total)
+        else await finalize(result, currentIndex, item)
       } catch (error) {
         const message = sanitizeError
           ? sanitizeError(item, error)
@@ -59,7 +59,7 @@ export async function runAutoShortQueue(input: RunAutoShortQueueInput): Promise<
           error: message || 'Lỗi không xác định khi xử lý video.'
         }
         results[currentIndex] = result
-        finalize(result, currentIndex, item)
+        await finalize(result, currentIndex, item)
       } finally {
         reservation?.release()
       }
@@ -91,7 +91,7 @@ export async function runAutoShortQueue(input: RunAutoShortQueueInput): Promise<
       } finally {
         reservation?.release()
       }
-      finalize(results[index], index, item)
+      await finalize(results[index], index, item)
     }
   }
 
@@ -107,7 +107,7 @@ export async function runAutoShortQueue(input: RunAutoShortQueueInput): Promise<
           error: 'Đã hủy tác vụ'
         }
         results[i] = result
-        finalize(result, i, item)
+        await finalize(result, i, item)
       }
     }
   }

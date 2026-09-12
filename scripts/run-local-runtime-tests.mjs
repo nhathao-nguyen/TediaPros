@@ -80,6 +80,8 @@ const knownTests = [
   'autoshort-ocr-pipeline.test',
   'autoshort-telemetry.test',
   'log-retention.test',
+  'autoshort-batch-store.test',
+  'autoshort-batch-resume.test',
   'autoshort-tts-pipeline.test',
   'autoshort-tts-cache.test',
   'autoshort-disk-budget.test',

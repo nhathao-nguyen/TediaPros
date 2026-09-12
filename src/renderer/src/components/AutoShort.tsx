@@ -47,6 +47,7 @@ import { DEFAULT_VIDEO_ADJUSTMENTS, normalizeVideoAdjustments, videoAdjustmentPr
 import { useVideoTransport } from '../hooks/useVideoTransport'
 import { runLatestAutoShortMusicFolderRequest } from '../lib/latestAutoShortMusicFolderRequest'
 import { createAutoShortProgressCoalescer } from '../lib/autoshortProgressCoalescer'
+import { resumeCandidateIds, type BatchSnapshot } from '../../../shared/autoShortBatchJournal'
 import {
   autoShortNormalizedRegionToPixels,
   clampAutoShortNormalizedRegion,
@@ -496,6 +497,7 @@ export default function AutoShort(): JSX.Element {
   const [retryPendingIdList, setRetryPendingIdList] = usePersistedState<string[]>('tblao.autoshort.retryPendingIds', [])
   const retryPendingIds = useMemo(() => new Set(retryPendingIdList), [retryPendingIdList])
   const [activeJobId, setActiveJobId] = useState<string | null>(null)
+  const [resumeSnapshot, setResumeSnapshot] = useState<BatchSnapshot | null>(null)
   const [overallProgress, setOverallProgress] = useState<{ current: number; total: number; message: string }>({
     current: 0,
     total: 0,
@@ -521,6 +523,36 @@ export default function AutoShort(): JSX.Element {
     void window.api.autoShortCancelSttnPreview().catch(() => undefined)
   }, [previewPath])
   const [cacheAction, setCacheAction] = useState(false)
+
+  useEffect(() => {
+    let disposed = false
+    void window.api.autoShortGetBatch().then((result) => {
+      if (disposed || !result.ok || !result.snapshot) return
+      const candidateIds = new Set(resumeCandidateIds(result.snapshot))
+      if (candidateIds.size === 0) return
+      setResumeSnapshot(result.snapshot)
+      setTasks((current) => {
+        const byId = new Map(current.map((item) => [item.id, item]))
+        return result.snapshot!.items.sort((left, right) => left.ordinal - right.ordinal).map((record) => {
+          const existing = byId.get(record.itemId)
+          if (existing) return existing
+          const fileName = record.inputPath.split(/[\\/]/u).pop() || record.inputPath
+          return {
+            id: record.itemId,
+            filePath: record.inputPath,
+            fileName,
+            status: record.state === 'succeeded' ? 'done' : record.state === 'cancelled' ? 'cancelled' : record.state === 'failed' || record.state === 'needs-review' ? 'error' : 'queued',
+            percent: record.state === 'succeeded' ? 100 : 0,
+            outputPath: record.outputReceipt?.path,
+            error: record.failure?.message,
+            currentStepMessage: candidateIds.has(record.itemId) ? 'Có thể tiếp tục từ checkpoint.' : undefined
+          }
+        })
+      })
+      setOverallProgress((current) => ({ ...current, message: `Đã tìm thấy batch dở dang: còn ${candidateIds.size} video.` }))
+    }).catch(() => undefined)
+    return () => { disposed = true }
+  }, [])
 
   const applyItemResult = useCallback((event: AutoShortEvent): void => {
     if (event.type === 'item-progress') {
@@ -639,7 +671,7 @@ export default function AutoShort(): JSX.Element {
   useEffect(() => {
     const coalescer = createAutoShortProgressCoalescer((event) => applyItemResult(event), 10)
     const unsub = window.api.onAutoShortEvent((event: AutoShortEvent) => {
-      if (activeJobId && event.jobId !== activeJobId) return
+      if (!activeJobId || event.jobId !== activeJobId) return
       coalescer.push(event)
     })
     return () => {
@@ -983,10 +1015,13 @@ export default function AutoShort(): JSX.Element {
   }
 
   // Khởi động chạy hàng loạt Auto Short
-  const startBatch = async (): Promise<void> => {
+  const startBatch = async (resume?: BatchSnapshot): Promise<void> => {
     if (tasks.length === 0 || isRunning || sttnPreviewRunning) return
-    const retryOnly = retryPendingIds.size > 0
-    const runnableTasks = retryOnly
+    const resumeIds = resume ? new Set(resumeCandidateIds(resume)) : null
+    const retryOnly = !resumeIds && retryPendingIds.size > 0
+    const runnableTasks = resumeIds
+      ? tasks.filter((task) => resumeIds.has(task.id))
+      : retryOnly
       ? tasks.filter((task) => retryPendingIds.has(task.id))
       : tasks
     if (runnableTasks.length === 0) {
@@ -1120,16 +1155,19 @@ export default function AutoShort(): JSX.Element {
       outputDir
     }
 
-    const started = await window.api.autoShortStart({
-      config,
-      items: runnableTasks.map((task) => ({ id: task.id, filePath: task.filePath }))
-    })
+    const started = resume
+      ? await window.api.autoShortResume({ jobId: resume.jobId, expectedRevision: resume.revision, config })
+      : await window.api.autoShortStart({
+        config,
+        items: runnableTasks.map((task) => ({ id: task.id, filePath: task.filePath }))
+      })
     if (!started.ok) {
       setIsRunning(false)
       setOverallProgress((prev) => ({ ...prev, message: started.error }))
       return
     }
     setRetryPendingIdList([])
+    setResumeSnapshot(null)
     setActiveJobId(started.jobId)
   }
 
@@ -2774,6 +2812,21 @@ export default function AutoShort(): JSX.Element {
           <button className="btn danger" onClick={() => void cancelBatch()} type="button">
             ⛔ Dừng xử lý
           </button>
+        ) : resumeSnapshot && resumeCandidateIds(resumeSnapshot).length > 0 ? (
+          <div style={{ display: 'flex', gap: 8 }}>
+            <button className="btn ghost" type="button" onClick={() => setResumeSnapshot(null)}>
+              Bỏ checkpoint
+            </button>
+            <button
+              className="btn primary"
+              onClick={() => void startBatch(resumeSnapshot)}
+              disabled={sttnPreviewRunning || dependencyInstalling}
+              style={{ fontWeight: 700, padding: '10px 22px' }}
+              type="button"
+            >
+              ▶ Tiếp tục {resumeCandidateIds(resumeSnapshot).length} video
+            </button>
+          </div>
         ) : (
           <button
             className="btn primary"
