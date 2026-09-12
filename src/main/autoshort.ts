@@ -100,6 +100,11 @@ import { createAutoShortArtifactCache, type ArtifactCache } from './autoShortArt
 import { assertContainedParentDirectory, assertContainedRegularFile } from './safeContainedPath'
 import { createAutoShortBatchStore, type AutoShortBatchStore } from './autoShortBatchStore'
 import {
+  assertCutRunCapability,
+  autoShortTemporalCutCapability,
+  requestHasTemporalCut
+} from './autoShortCutCapability'
+import {
   isSafeBatchId,
   recoverInterruptedBatch,
   resumeCandidateIds,
@@ -802,6 +807,7 @@ export async function getAutoShortReadiness(
     model,
     separation: separationReadiness,
     stageCapabilities,
+    temporalCut: autoShortTemporalCutCapability(),
     message
   }
 }
@@ -3169,6 +3175,7 @@ async function executeJob(job: AutoShortJob): Promise<AutoShortBatchResult> {
   const results: AutoShortItemResult[] = new Array(total)
   try {
     job.telemetryBudget = new AutoShortTelemetryJobBudget()
+    assertCutRunCapability(requestHasTemporalCut(job.request.items))
     if (!job.batchSnapshot) await initializeBatchJournal(job)
     await preflight(job)
     const policy = resolveExecutionPolicy(job.request.config?.executionPolicy)
@@ -3289,6 +3296,11 @@ function launchAutoShortJob(
 export function startAutoShortJob(raw: unknown, onEvent: (event: AutoShortEvent) => void): { ok: true; jobId: string } | { ok: false; error: string } {
   const validation = validateAutoShortStartRequest(raw)
   if (!validation.ok) return { ok: false, error: validation.error }
+  try {
+    assertCutRunCapability(requestHasTemporalCut(validation.value.items))
+  } catch (error) {
+    return { ok: false, error: errLabel(error) }
+  }
   return launchAutoShortJob(validation.value, onEvent)
 }
 
@@ -3376,6 +3388,7 @@ export async function resumeAutoShortBatch(
     const candidateIds = new Set(resumeCandidateIds(snapshot))
     if (candidateIds.size === 0) return { ok: false, error: 'Batch không còn video pending/interrupted để tiếp tục.' }
     const candidates = snapshot.items.filter((item) => candidateIds.has(item.itemId)).sort((a, b) => a.ordinal - b.ordinal)
+    assertCutRunCapability(candidates.some((item) => Boolean(item.temporalEdit?.removedRanges.length)))
     const validated = validateAutoShortStartRequest({
       config: request.config,
       items: candidates.map((item) => ({ id: item.itemId, filePath: item.inputPath, ...(item.temporalEdit ? { temporalEdit: item.temporalEdit } : {}) }))

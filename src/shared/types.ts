@@ -1013,6 +1013,11 @@ export interface AutoShortReadiness {
   separation?: AutoShortSeparationReadiness
   /** Per-stage evidence; unknown remains visible and is never upgraded to supported. */
   stageCapabilities?: TranslationStageCapability[]
+  temporalCut?: {
+    editing: boolean
+    execution: boolean
+    reason?: 'CUT_CORE_NOT_VERIFIED'
+  }
   message?: string
 }
 
