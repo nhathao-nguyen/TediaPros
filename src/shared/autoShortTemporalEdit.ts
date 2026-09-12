@@ -90,17 +90,17 @@ export function compileAutoShortCutPlan(edit: AutoShortTemporalEdit | undefined,
   const keepSegments: AutoShortKeepSegment[] = []
   let sourceCursor = 0
   let editedCursor = 0
-  for (const [index, range] of removedRanges.entries()) {
+  for (const range of removedRanges) {
     if (range.startUs > sourceCursor) {
       const length = range.startUs - sourceCursor
-      keepSegments.push({ id: `keep-${index}`, sourceStartUs: sourceCursor, sourceEndUs: range.startUs,
+      keepSegments.push({ id: `keep-${sourceCursor}-${range.startUs}`, sourceStartUs: sourceCursor, sourceEndUs: range.startUs,
         editedStartUs: editedCursor, editedEndUs: editedCursor + length })
       editedCursor += length
     }
     sourceCursor = range.endUs
   }
   if (sourceCursor < duration) {
-    keepSegments.push({ id: `keep-${keepSegments.length}`, sourceStartUs: sourceCursor, sourceEndUs: duration,
+    keepSegments.push({ id: `keep-${sourceCursor}-${duration}`, sourceStartUs: sourceCursor, sourceEndUs: duration,
       editedStartUs: editedCursor, editedEndUs: editedCursor + duration - sourceCursor })
     editedCursor += duration - sourceCursor
   }

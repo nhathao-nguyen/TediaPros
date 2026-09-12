@@ -844,7 +844,7 @@ export interface AutoShortQueueItemInput {
   id: string
   filePath: string
   /** Optional per-video, non-destructive ripple-delete edit. */
-  temporalEdit?: import('./autoShortTemporalEdit').AutoShortTemporalEdit
+  temporalEdit?: import('./autoShortTemporalEdit').AutoShortTemporalEdit | import('./autoShortCutContract').AutoShortTemporalEditV2
 }
 
 export interface AutoShortBlurRegion extends AutoShortNormalizedRegion {
@@ -1095,7 +1095,7 @@ export interface AutoShortTaskItem {
   filePath: string
   fileName: string
   duration?: number
-  temporalEdit?: import('./autoShortTemporalEdit').AutoShortTemporalEdit
+  temporalEdit?: import('./autoShortTemporalEdit').AutoShortTemporalEdit | import('./autoShortCutContract').AutoShortTemporalEditV2
   status: AutoShortItemStatus
   percent: number
   currentStepMessage?: string

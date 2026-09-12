@@ -579,13 +579,17 @@ export function createAutoShortItemProcessor(
       let processingMeta = meta
       let processingGeometry = geometry
       if (item.temporalEdit?.removedRanges.length) {
+        if (item.temporalEdit.schemaVersion !== 1) {
+          throw new Error('Bản cắt theo frame chưa được nối với executor hiện tại.')
+        }
+        const temporalEdit = item.temporalEdit
         emitProgress(context, 'extracting_sub', 2, 'Đang chuẩn bị video theo các đoạn đã cắt…')
         const cut = await telemetry.withStageSpan('metadata', {}, async (span) => {
           const result = await cutAutoShortSource({
             ffmpeg,
             sourcePath: item.filePath,
             workDir,
-            edit: item.temporalEdit!,
+            edit: temporalEdit,
             sourceDurationSeconds: meta.giay,
             hasAudio: meta.hasAudio,
             signal

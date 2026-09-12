@@ -1,6 +1,6 @@
 # TASK-20260912-AUTOSHORT-CUT-REPAIR: Sửa toàn bộ Cắt đoạn AutoShort
 
-- **Trạng thái:** Đang làm — P00 và A01 đã kiểm chứng, A02 đang triển khai.
+- **Trạng thái:** Đang làm — P00–A02 đã kiểm chứng, A03 đang triển khai.
 - **Người thực hiện:** Codex.
 - **Thời gian:** 2026-09-12.
 - **Nhánh/worktree:** `codex/autoshort-cut-repair` tại `.worktrees/codex-autoshort-cut-repair`.
@@ -35,6 +35,8 @@ Sửa 12 findings của review và hoàn thành R01–R18 Core theo spec/plan. G
 - P00 `[MODIFY]` `src/main/autoshort.ts`, `src/shared/types.ts`, `scripts/run-local-runtime-tests.mjs`.
 - A01 `[NEW]` `src/shared/autoShortCutEditor.ts`, `tests/autoshort-cut-editor.test.ts`.
 - A01 `[MODIFY]` `AutoShortCutPanel.tsx`, `AutoShort.tsx`, `autoshort.css`, test runner.
+- A02 `[NEW]` `src/shared/autoShortCutContract.ts`, `tests/autoshort-cut-v2-contract.test.ts`.
+- A02 `[MODIFY]` editor helpers, v1 keep IDs, queue union/validation và executor narrowing.
 - Các task tiếp theo được bổ sung vào đây theo từng gate.
 
 ## 6. Kiểm Chứng
@@ -45,8 +47,10 @@ P00 red: `autoshort-cut-capability.test` không resolve module trước implemen
 
 A01 red: parser chưa tồn tại. Green: 2 pass, 0 fail; `npm.cmd run typecheck` PASS. Browser harness ở panel 696×596 xác nhận stage cao 277px khi mở cut (trước review: 24px), panel nằm dưới transport; nhập trống hiện lỗi và không tạo edit. Sửa cut khi đang có resume snapshot chuyển về draft/run mới bằng cách xóa snapshot cũ.
 
+A02 red: v2 contract chưa tồn tại. Green: 11 editor/v2/v1 contract tests PASS; mở rộng cùng capability/batch suites thành 19 tests PASS. `npm.cmd run typecheck` PASS. Schema v2 kiểm strict/2 MiB/1.000 raw ranges/ID trùng; history cap 200 và giữ raw operations; v1 keep segment IDs ổn định theo boundaries.
+
 Các cảnh báo audit dependency của `npm install` là trạng thái dependency hiện tại, không tự chạy `npm audit fix` ngoài phạm vi.
 
 ## 7. Bàn Giao
 
-Tiếp theo A02: lịch sử undo/redo có giới hạn, ID ổn định và hành vi hợp nhất range. Guard chưa phải fix engine; feature execution vẫn cố ý đóng trong branch cho tới Z01.
+Tiếp theo A03: tương thích digest resume cho batch no-cut legacy. Guard chưa phải fix engine; feature execution vẫn cố ý đóng trong branch cho tới Z01.
