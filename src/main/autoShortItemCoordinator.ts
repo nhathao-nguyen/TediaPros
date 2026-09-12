@@ -81,7 +81,7 @@ import {
 } from './autoShortResourceManager'
 import { resolveAutoShortWhisperLanguage } from './autoShortPolicy'
 import { buildStageKey, hashFileSha256 } from './autoShortStageKeys'
-import type { ArtifactCache } from './autoShortArtifactCache'
+import type { ArtifactCache, ArtifactLease } from './autoShortArtifactCache'
 import { resolveTranslationSourceLanguage } from './localTranslatePolicy'
 import { composeAutoShortNarratedAudio } from './autoShortNarratedAudio'
 import { composeAutoShortBackgroundAudio } from './autoShortBackgroundAudio'
@@ -93,6 +93,7 @@ import { separateSourceAudio } from './separation/pipeline'
 import { errLabel, logInfo, logWarn, logError } from './logger'
 import type { getTtsModels } from './tts'
 import { runSttnRemoval } from './inpainting/runner'
+import { STTN_MODEL } from './inpainting/assets'
 import { buildTranslationIdentity, type TranslationArtifact } from './translation/checkpoint'
 import { TRANSLATION_PARSER_VERSION, TRANSLATION_PROMPT_VERSION } from './translation/prompts'
 import { assessTranslationLanguage, normalizeTranslationLocale } from './translation/language'
@@ -423,6 +424,7 @@ export function createAutoShortItemProcessor(
     const { config } = request
     const itemOutputDir = context.itemOutputDir || config.outputDir
     let sttnWorkDir: string | undefined
+    let sttnCacheLease: ArtifactLease | null = null
 
     await mkdir(workDir, { recursive: true })
     await mkdir(checkpointDir, { recursive: true })
@@ -730,8 +732,30 @@ export function createAutoShortItemProcessor(
 
         if (sttnRemoval && branchVisualResult) {
           emitProgress(context, 'removing_subtitles', 82, 'Đang xóa chữ bằng STTN…', undefined, undefined, { stage: 'sttn', phase: 'running' })
-          sttnWorkDir = await mkdtemp(join(itemOutputDir, '.sttn-'))
           const cleaned = await telemetry.withStageSpan('sttn', { requestedProvider: 'cuda' }, async (span) => {
+            const sttnCacheKey = buildStageKey('sttn', {
+              cacheRevision: 'sttn-inpaint-v2',
+              sourceDigest,
+              timeline: branchVisualResult!.timeline,
+              geometryFingerprint: geometry.fingerprint,
+              displayWidth: geometry.displayWidth,
+              displayHeight: geometry.displayHeight,
+              modelRevision: STTN_MODEL.revision,
+              modelSha256: STTN_MODEL.sha256,
+              protocol: 'sttn-engine/1',
+              provider: 'auto',
+              maxFrames: 12
+            })
+            if (artifactCache) {
+              const cached = await artifactCache.get('sttn', sttnCacheKey, branchSignal).catch(() => null)
+              if (cached) {
+                sttnCacheLease = cached
+                span.setProvider('cache', 'cache')
+                span.updateCounters({ cacheHit: 1 })
+                return { outputPath: cached.path, provider: null, elapsedMs: 0, cacheHit: true }
+              }
+            }
+            sttnWorkDir = await mkdtemp(join(itemOutputDir, '.sttn-'))
             const res = await resourceManager.withLease(['local-gpu-heavy', 'local-cpu-heavy'], branchSignal, async (lease) => {
               span.recordResourceWait(lease.waitMs || 0)
               return (deps.removeSubtitles || runSttnRemoval)({
@@ -746,11 +770,16 @@ export function createAutoShortItemProcessor(
             })
             span.setProvider('cuda', res.provider)
             span.updateCounters({ elapsedMs: res.elapsedMs })
-            return res
+            if (artifactCache) {
+              await artifactCache.put('sttn', sttnCacheKey, res.outputPath, branchSignal).catch((error) => {
+                logWarn(`[AutoShort] Không lưu cache STTN: ${errLabel(error)}`)
+              })
+            }
+            return { ...res, cacheHit: false }
           })
           throwIfAborted(branchSignal)
           branchRenderVideoPath = cleaned.outputPath
-          branchSttnAudit = { provider: cleaned.provider, elapsedMs: cleaned.elapsedMs }
+          if (cleaned.provider) branchSttnAudit = { provider: cleaned.provider, elapsedMs: cleaned.elapsedMs }
         }
 
         if (automaticBlur && branchVisualResult) {
@@ -1826,6 +1855,7 @@ export function createAutoShortItemProcessor(
     } finally {
       scope.abort(caughtError)
       await scope.drain()
+      ;(sttnCacheLease as ArtifactLease | null)?.release()
       if (sttnWorkDir) await rm(sttnWorkDir, { recursive: true, force: true }).catch(() => {})
       if (!published || !burnResult?.output) {
         await rm(workDir, { recursive: true, force: true }).catch(() => {})

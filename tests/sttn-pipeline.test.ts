@@ -5,6 +5,7 @@ import { tmpdir } from 'node:os'
 import { dirname, join } from 'node:path'
 import { createAutoShortItemProcessor, type AutoShortItemCoordinatorDeps } from '../src/main/autoShortItemCoordinator'
 import { getAutoShortReadiness, installAutoShortDependencies, runAutoShortSttnPreview } from '../src/main/autoshort'
+import { AutoShortArtifactCache } from '../src/main/autoShortArtifactCache'
 import type { AutoShortConfig, OcrVisualTimeline } from '../src/shared/types'
 
 const geometry = { codedWidth: 1280, codedHeight: 720, rotation: 0 as const, sampleAspectRatio: { numerator: 1, denominator: 1 }, videoStart: 0, displayWidth: 1280, displayHeight: 720, fingerprint: 'f'.repeat(64) }
@@ -99,6 +100,49 @@ for (const outcome of ['success', 'removal failure', 'burn failure', 'cancel'] a
     } finally { await rm(root, { recursive: true, force: true }) }
   })
 }
+
+test('STTN cache reuses a validated clean video and releases its lease after render', async () => {
+  const root = await mkdtemp(join(tmpdir(), 'tedia-sttn-cache-'))
+  try {
+    const video = join(root, 'input.mp4')
+    await writeFile(video, 'same-source')
+    const cache = new AutoShortArtifactCache({ rootDir: join(root, 'cache'), quotaBytes: 1024 * 1024 })
+    let removals = 0
+    const deps: AutoShortItemCoordinatorDeps = {
+      resolveFfmpeg: async () => 'ffmpeg.exe', resolveFfprobe: async () => 'ffprobe.exe',
+      probeMedia: async () => ({ w: 1280, h: 720, giay: 10, hasAudio: true, frameRate: 25, geometry }),
+      runVisualOcr: async () => ({ timeline, sourceSrtPath: '', sidecarPath: '', engineVersion: '1.1.0', engineProtocol: 'ocr-local/1', visualSegmentCount: 1, boxSegmentCount: 1 }),
+      removeSubtitles: async (options) => {
+        removals++
+        await writeFile(options.outputPath, 'cached-clean-video')
+        return { outputPath: options.outputPath, provider: 'cpu', elapsedMs: 12 }
+      },
+      writeTimedMask: async () => { throw new Error('unexpected mask') },
+      burn: async (request, options) => {
+        assert.equal(await readFile(request.video, 'utf8'), 'cached-clean-video')
+        await writeFile(options.finalOutputPath, `rendered-${removals}`)
+        return { ok: true, output: options.finalOutputPath }
+      }
+    }
+    const run = async (suffix: string) => {
+      const itemOutputDir = join(root, `output-${suffix}`)
+      await mkdir(itemOutputDir, { recursive: true })
+      return createAutoShortItemProcessor(deps)({
+        jobId: `job-${suffix}`, request: { config: config(root), items: [{ id: 'one', filePath: video }] },
+        item: { id: 'one', filePath: video }, index: 0, total: 1, signal: new AbortController().signal,
+        emit: () => {}, checkpointDir: join(root, `checkpoint-${suffix}`), workDir: join(root, `work-${suffix}`),
+        artifactDir: join(root, `artifacts-${suffix}`), itemOutputDir, separationProviderState: { mode: 'auto' }, artifactCache: cache
+      })
+    }
+    assert.equal((await run('first')).status, 'done')
+    assert.equal((await run('second')).status, 'done')
+    assert.equal(removals, 1)
+    await writeFile(video, 'changed-source')
+    assert.equal((await run('changed-source')).status, 'done')
+    assert.equal(removals, 2, 'source digest change must invalidate STTN cache')
+    assert.ok((await cache.prune(new AbortController().signal)).removedBytes >= 0, 'released cache lease remains prunable')
+  } finally { await rm(root, { recursive: true, force: true }) }
+})
 
 test('STTN readiness needs visual OCR but does not probe Gaussian maskedmerge', async () => {
   let sttnProbes = 0

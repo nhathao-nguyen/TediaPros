@@ -162,3 +162,7 @@ sequenceDiagram
 3. **Phục Hồi Lỗi & Fallback:**
    - Khi tách thoại DirectML gặp lỗi OOM hoặc không có GPU tương thích: Tự động chuyển fallback sang CPU mà không làm sập tiến trình chính.
    - Khi dịch thuật API gặp rate-limit: Cơ chế retry với exponential backoff.
+
+4. **Cache artifact AutoShort:**
+   - STTN chỉ tái sử dụng video đã làm sạch khi source SHA-256, toàn bộ OCR timeline canonical, display geometry, model revision/SHA-256, protocol và run options cùng khớp.
+   - Cache giữ lease từ lúc đọc đến khi render không còn dùng file; prune/clear không xóa artifact đang được đọc. Entry lỗi, bị sửa byte hoặc job bị hủy trước khi publish được xem là cache miss.
