@@ -175,6 +175,8 @@ export interface AutoShortItemContext {
   checkpointDir: string
   workDir: string
   artifactDir: string
+  /** Opaque digest of the effective non-secret AutoShort configuration. */
+  batchConfigDigest?: string
   /** Reserved per-video directory under the selected output root. */
   itemOutputDir?: string
   ttsCapabilities?: Awaited<ReturnType<typeof getTtsModels>>
@@ -1631,6 +1633,8 @@ export function createAutoShortItemProcessor(
             version: 1,
             status: 'done',
             sourceFile: basename(item.filePath),
+            sourceDigest,
+            configDigest: context.batchConfigDigest,
             outputFile: outputName,
             titleFile: completedBurn.titlePath ? 'tieude.txt' : undefined,
             titleError: completedBurn.titleError,

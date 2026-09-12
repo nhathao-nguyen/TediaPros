@@ -6,6 +6,7 @@
 - Ghi trạng thái trước/sau engine; thành công chỉ có hiệu lực sau khi kiểm tra file, duration và SHA-256.
 - Khôi phục `running` thành `interrupted`; UI hiển thị nút tiếp tục, không tự chạy AI khi mở lại.
 - Resume chỉ nhận `pending/interrupted`, kiểm tra config digest và source digest; không chạy lại `succeeded`, `failed` hoặc `needs-review`.
+- Thư mục output được reserve rồi checkpoint trước khi engine chạy. Nếu app dừng sau publish nhưng trước terminal journal, Main chỉ promote `interrupted` sang `succeeded` khi completion manifest, source/config digest và output media đều khớp; nếu thiếu bằng chứng, output cũ được giữ nguyên và không bị ghi đè.
 
 ## An toàn
 

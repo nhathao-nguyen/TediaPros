@@ -97,7 +97,7 @@ import { composeAutoShortNarratedAudio } from './autoShortNarratedAudio'
 import type { InstalledSeparatorModel } from './separation/modelStore'
 import { reserveVideoTitleOutputDir } from './videoTitle'
 import { createAutoShortArtifactCache, type ArtifactCache } from './autoShortArtifactCache'
-import { assertContainedParentDirectory } from './safeContainedPath'
+import { assertContainedParentDirectory, assertContainedRegularFile } from './safeContainedPath'
 import { createAutoShortBatchStore, type AutoShortBatchStore } from './autoShortBatchStore'
 import {
   isSafeBatchId,
@@ -233,11 +233,19 @@ async function updateBatchItem(
   await operation
 }
 
-async function markBatchRunning(job: AutoShortJob, itemId: string, attempt: 1 | 2): Promise<void> {
+async function markBatchRunning(
+  job: AutoShortJob,
+  itemId: string,
+  attempt: 1 | 2,
+  reservedOutputDir: string,
+  artifactDir: string
+): Promise<void> {
   await updateBatchItem(job, itemId, (item) => ({
     ...item,
     attempt,
     state: 'running',
+    reservedOutputDir,
+    artifactDir,
     outputReceipt: undefined,
     failure: undefined
   }))
@@ -2933,6 +2941,7 @@ async function processSingleVideo(
     checkpointDir,
     workDir,
     artifactDir,
+    batchConfigDigest: batchConfigDigest(config),
     itemOutputDir,
     ttsCapabilities: job.ttsCapabilities,
     ttsCapabilitiesUrl: job.ttsCapabilitiesUrl,
@@ -3176,9 +3185,14 @@ async function executeJob(job: AutoShortJob): Promise<AutoShortBatchResult> {
           }
         : undefined,
       processItem: async (item, index, totalCount, reservation, attempt = 1) => {
-        await markBatchRunning(job, item.id, attempt)
+        const journalItem = job.batchSnapshot?.items.find((entry) => entry.itemId === item.id)
+        const itemOutputDir = retryOutputDirs.get(item.id) || journalItem?.reservedOutputDir ||
+          await reserveVideoTitleOutputDir(job.request.config.outputDir, basename(item.filePath))
+        retryOutputDirs.set(item.id, itemOutputDir)
+        const artifactDir = join(itemOutputDir, `.autoshort-audit-${job.id}-${safeArtifactSegment(item.id)}`)
+        await markBatchRunning(job, item.id, attempt, itemOutputDir, artifactDir)
         return processSingleVideo(job, item, job.request.config, index, totalCount, policy, reservation,
-          attempt, retryOutputDirs.get(item.id))
+          attempt, itemOutputDir)
       },
       shouldRetry: (result) => result.status === 'error' && result.recovery?.retryable === true,
       onRetryScheduled: (itemResult, index, item, totalCount) => {
@@ -3282,6 +3296,33 @@ async function loadRecoveredBatch(jobId?: string): Promise<BatchSnapshot | null>
   if (changed) {
     snapshot = { ...recovered, revision: loaded.revision + 1, updatedAtUtc: new Date().toISOString() }
     await store.save(snapshot, loaded.revision)
+  }
+  for (const item of snapshot.items.filter((entry) => entry.state === 'interrupted' && entry.artifactDir && entry.reservedOutputDir)) {
+    try {
+      const manifestPath = join(item.artifactDir!, 'manifest.json')
+      await assertContainedRegularFile(manifestPath, item.reservedOutputDir!, 'AutoShort completion manifest')
+      const manifest = JSON.parse(await readFile(manifestPath, 'utf8')) as Record<string, unknown>
+      if (manifest.status !== 'done' || manifest.sourceDigest !== item.inputDigest || manifest.configDigest !== item.configDigest ||
+        typeof manifest.outputFile !== 'string' || !Array.isArray(manifest.files) || !manifest.files.includes('output.mp4')) {
+        throw new Error('Completion manifest không khớp source/config digest.')
+      }
+      const outputPath = join(item.reservedOutputDir!, manifest.outputFile)
+      await assertContainedRegularFile(outputPath, item.reservedOutputDir!, 'AutoShort completed output')
+      const [info, sha256, meta] = await Promise.all([stat(outputPath), hashFileSha256(outputPath), probeBurnMedia(outputPath)])
+      const durationSeconds = meta.videoDurationSeconds ?? meta.videoDuration ?? meta.giay
+      if (!info.isFile() || info.size <= 0 || !(durationSeconds > 0)) throw new Error('Output từ completion manifest không hợp lệ.')
+      const current = snapshot
+      const items = current.items.map((entry) => entry.itemId === item.itemId ? {
+        ...entry,
+        state: 'succeeded' as const,
+        outputReceipt: { path: outputPath, sha256, bytes: info.size, durationSeconds },
+        failure: undefined
+      } : entry)
+      snapshot = { ...current, revision: current.revision + 1, updatedAtUtc: new Date().toISOString(), items }
+      await store.save(snapshot, current.revision)
+    } catch (error) {
+      logWarn(`[AutoShort] Không reconcile completion cho ${safeArtifactSegment(item.itemId)}: ${errLabel(error)}`)
+    }
   }
   for (const item of snapshot.items.filter((entry) => entry.state === 'succeeded' && entry.outputReceipt)) {
     try {

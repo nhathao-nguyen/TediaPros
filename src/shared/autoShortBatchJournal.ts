@@ -28,6 +28,8 @@ export interface BatchItemRecord {
   ordinal: number
   attempt: number
   state: BatchItemState
+  reservedOutputDir?: string
+  artifactDir?: string
   outputReceipt?: BatchOutputReceipt
   failure?: BatchFailure
 }
@@ -120,7 +122,7 @@ export function validateBatchSnapshot(value: unknown): BatchSnapshot {
   const items = raw.items.map((value, index): BatchItemRecord => {
     const item = record(value, `Batch item ${index}`)
     exactFields(item, [
-      'itemId', 'inputPath', 'inputDigest', 'configDigest', 'ordinal', 'attempt', 'state', 'outputReceipt', 'failure'
+      'itemId', 'inputPath', 'inputDigest', 'configDigest', 'ordinal', 'attempt', 'state', 'reservedOutputDir', 'artifactDir', 'outputReceipt', 'failure'
     ], `Batch item ${index}`)
     const itemId = text(item.itemId, `Batch item ${index} ID`, 128)
     if (!SAFE_ID.test(itemId)) throw new Error(`Batch item ${index} ID không hợp lệ.`)
@@ -144,6 +146,8 @@ export function validateBatchSnapshot(value: unknown): BatchSnapshot {
       ordinal,
       attempt: integer(item.attempt, `Batch item ${index} attempt`),
       state,
+      ...(item.reservedOutputDir === undefined ? {} : { reservedOutputDir: text(item.reservedOutputDir, `Batch item ${index} reservedOutputDir`, 32768) }),
+      ...(item.artifactDir === undefined ? {} : { artifactDir: text(item.artifactDir, `Batch item ${index} artifactDir`, 32768) }),
       ...(outputReceipt ? { outputReceipt } : {}),
       ...(failure ? { failure } : {})
     }
