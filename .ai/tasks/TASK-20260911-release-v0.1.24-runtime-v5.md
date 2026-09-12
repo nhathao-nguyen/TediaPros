@@ -1,6 +1,6 @@
 # TASK-20260911: Phát hành TediaPros v0.1.25 và runtime-v5
 
-- **Trạng thái:** Đang phát hành
+- **Trạng thái:** Hoàn thành
 - **Người thực hiện:** Codex
 - **Thời gian:** 2026-09-11
 
@@ -21,7 +21,7 @@ Tích hợp và phát hành các thay đổi Auto Short hiện tại dưới phi
 - [x] Installer Windows local qua package/release verification.
 - [x] Commit được fast-forward vào `main` và push.
 - [x] GitHub release `runtime-v5` được publish và đủ 8 asset đã verify.
-- [ ] GitHub release `v0.1.25` được publish với installer, blockmap và `latest.yml`.
+- [x] GitHub release `v0.1.25` được publish với installer, blockmap và `latest.yml`.
 
 ---
 
@@ -71,10 +71,12 @@ git diff --check
 - OCR: 47 PASS, 10 environment-dependent skip.
 - STTN: 26 test, 9 PASS và 17 dependency/media-dependent skip trên system Python; CI cài pinned build environment trước khi đóng gói.
 - Separator: 13/13 PASS.
-- Windows package verification của bản `0.1.24`: PASS; installer có SHA-256 `951d512165c446f8f7e54248add4a1f177638094480a366273f08a7ae3d71aef`. Bản `0.1.25` sẽ chạy lại pipeline ứng dụng sau sửa kiểm chứng đường dẫn CI.
+- Windows package verification của bản `0.1.24`: PASS; installer có SHA-256 `951d512165c446f8f7e54248add4a1f177638094480a366273f08a7ae3d71aef`.
+- GitHub Actions runtime-v5: SUCCESS, [run 34662267060](https://github.com/nhathao-nguyen/TediaPros/actions/runs/34662267060). [Release runtime-v5](https://github.com/nhathao-nguyen/TediaPros/releases/tag/runtime-v5) trỏ tới `cedab939fd4db6f86946436877c76f383903dc59`, có 10 asset: manifest, provenance và 8 ZIP engine.
+- GitHub Actions app v0.1.25: SUCCESS, [run 34663516441](https://github.com/nhathao-nguyen/TediaPros/actions/runs/34663516441). [Release v0.1.25](https://github.com/nhathao-nguyen/TediaPros/releases/tag/v0.1.25) có `TediaPros-0.1.25-setup.exe` (90.457.824 byte), `.blockmap` và `latest.yml`.
 
 ---
 
 ## 7. Bước Tiếp Theo / Ghi Chú Bàn Giao (Handoff Notes)
 
-`v0.1.24` đã được push nhưng workflow dừng trước packaging vì test dùng chuỗi đường dẫn alias 8.3 (`C:\\Users\\RUNNER~1`) khác canonical long path (`C:\\Users\\runneradmin`) cho cùng `tieude.txt`; không có GitHub Release asset được publish. Test đã canonicalize bằng `realpath`; phát hành tiếp dưới `v0.1.25` để giữ tag cũ bất biến. Cập nhật checklist và URL release sau khi workflow mới kết thúc. Không gọi release thành công chỉ dựa trên việc push tag; phải xác nhận conclusion và danh sách asset từ GitHub API.
+`v0.1.24` đã được push nhưng workflow dừng trước packaging vì test dùng chuỗi đường dẫn alias 8.3 (`C:\\Users\\RUNNER~1`) khác canonical long path (`C:\\Users\\runneradmin`) cho cùng `tieude.txt`; không có GitHub Release asset được publish. Test đã canonicalize bằng `realpath`; đã phát hành thành công dưới `v0.1.25` để giữ tag cũ bất biến. Cả runtime và ứng dụng đã được xác nhận bằng conclusion cùng danh sách asset từ GitHub API.
