@@ -105,6 +105,7 @@ import {
   autoShortTemporalCutCapability,
   requestHasTemporalCut
 } from './autoShortCutCapability'
+import { itemCutConfigDigest, matchesAutoShortItemConfigDigest } from './autoShortCutIdentity'
 import {
   isSafeBatchId,
   recoverInterruptedBatch,
@@ -189,7 +190,7 @@ function batchConfigDigest(config: AutoShortConfig): string {
 }
 
 function itemConfigDigest(config: AutoShortConfig, item: AutoShortQueueItemInput): string {
-  return createHash('sha256').update(canonicalJson({ config, temporalEdit: item.temporalEdit })).digest('hex')
+  return itemCutConfigDigest(config, item.temporalEdit)
 }
 
 async function initializeBatchJournal(job: AutoShortJob): Promise<void> {
@@ -373,15 +374,16 @@ export function buildAutoShortTrimPcmCacheKey(input: {
   })
 }
 
-export function buildAutoShortCheckpointFingerprint(
+function autoShortCheckpointFingerprintPayload(
   filePath: string,
   inputInfo: { size: number; mtimeMs: number },
   config: AutoShortConfig,
   separation?: PreparedAutoShortSeparation,
   sourceDigest?: string,
-  temporalEdit?: AutoShortQueueItemInput['temporalEdit']
-): string {
-  return createHash('sha256').update(stableJson({
+  temporalEdit?: AutoShortQueueItemInput['temporalEdit'],
+  includeTemporalEdit = true
+): Record<string, unknown> {
+  const payload: Record<string, unknown> = {
     version: AUTO_SHORT_CHECKPOINT_VERSION,
     // Translation prompt/parser revisions belong to the translation identity
     // below. Keeping them out of this outer job fingerprint lets a prompt
@@ -394,7 +396,6 @@ export function buildAutoShortCheckpointFingerprint(
       // the streamed digest so same-size replacements cannot reuse a job.
       sourceDigest: sourceDigest || 'missing-source-digest'
     },
-    temporalEdit,
     subtitleMethod: config.subtitleMethod,
     whisperModel: config.whisperModel,
     whisperDevice: config.whisperDevice,
@@ -425,7 +426,38 @@ export function buildAutoShortCheckpointFingerprint(
       batch: 1,
       audio: { codec: 'pcm_s16le', sampleRate: 44100, channels: 2 }
     } : null
-  })).digest('hex')
+  }
+  if (includeTemporalEdit) payload.temporalEdit = temporalEdit
+  return payload
+}
+
+export function buildAutoShortCheckpointFingerprint(
+  filePath: string,
+  inputInfo: { size: number; mtimeMs: number },
+  config: AutoShortConfig,
+  separation?: PreparedAutoShortSeparation,
+  sourceDigest?: string,
+  temporalEdit?: AutoShortQueueItemInput['temporalEdit']
+): string {
+  return createHash('sha256').update(stableJson(autoShortCheckpointFingerprintPayload(
+    filePath, inputInfo, config, separation, sourceDigest, temporalEdit, true
+  ))).digest('hex')
+}
+
+export function buildAutoShortCheckpointFingerprintCandidates(
+  filePath: string,
+  inputInfo: { size: number; mtimeMs: number },
+  config: AutoShortConfig,
+  separation?: PreparedAutoShortSeparation,
+  sourceDigest?: string,
+  temporalEdit?: AutoShortQueueItemInput['temporalEdit']
+): readonly string[] {
+  const current = buildAutoShortCheckpointFingerprint(filePath, inputInfo, config, separation, sourceDigest, temporalEdit)
+  if (temporalEdit !== undefined) return [current]
+  const legacy = createHash('sha256').update(stableJson(autoShortCheckpointFingerprintPayload(
+    filePath, inputInfo, config, separation, sourceDigest, undefined, false
+  ))).digest('hex')
+  return current === legacy ? [current] : [current, legacy]
 }
 
 function spawnAutoShortChild(command: string, args: string[], options?: Parameters<typeof spawn>[2]): ChildProcess {
@@ -3400,7 +3432,7 @@ export async function resumeAutoShortBatch(
     if (!validated.ok) return { ok: false, error: validated.error }
     for (const item of candidates) {
       const candidate = validated.value.items.find((entry) => entry.id === item.itemId)!
-      if (item.configDigest !== itemConfigDigest(validated.value.config, candidate)) return { ok: false, error: 'Cấu hình hiện tại khác cấu hình batch đã checkpoint.' }
+      if (!matchesAutoShortItemConfigDigest(item.configDigest, validated.value.config, candidate.temporalEdit)) return { ok: false, error: 'Cấu hình hiện tại khác cấu hình batch đã checkpoint.' }
       if (await hashFileSha256(item.inputPath) !== item.inputDigest) return { ok: false, error: `Video nguồn đã thay đổi: ${basename(item.inputPath)}` }
     }
     return launchAutoShortJob(validated.value, onEvent, { jobId: snapshot.jobId, snapshot })

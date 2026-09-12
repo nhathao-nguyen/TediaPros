@@ -115,6 +115,7 @@ const knownTests = [
   'autoshort-cut-capability.test',
   'autoshort-cut-editor.test',
   'autoshort-cut-v2-contract.test',
+  'autoshort-cut-legacy-resume.test',
   'autoshort-region-geometry.test',
   'autoshort-queue-throughput.test',
   'autoshort-item-scope.test',

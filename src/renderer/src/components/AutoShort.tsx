@@ -1543,7 +1543,7 @@ export default function AutoShort(): JSX.Element {
           {showCutPanel && selectedTask && (
             <AutoShortCutPanel
               key={selectedTask.id}
-              edit={selectedTask.temporalEdit}
+              edit={selectedTask.temporalEdit?.schemaVersion === 1 ? selectedTask.temporalEdit : undefined}
               durationSeconds={videoDuration}
               currentTimeSeconds={currentTime}
               disabled={isRunning}
@@ -2664,7 +2664,9 @@ export default function AutoShort(): JSX.Element {
                               {task.percent > 0 && ` (${task.percent}%)`}
                             </div>
                             {task.temporalEdit?.removedRanges.length ? (
-                              <div className="queue-item-msg small">Cắt: {task.temporalEdit.removedRanges.length} đoạn · bỏ {(task.temporalEdit.removedRanges.reduce((sum, range) => sum + range.endUs - range.startUs, 0) / MICROSECONDS_PER_SECOND).toFixed(2)} giây</div>
+                              <div className="queue-item-msg small">Cắt: {task.temporalEdit.removedRanges.length} đoạn{task.temporalEdit.schemaVersion === 1
+                                ? ` · bỏ ${(task.temporalEdit.removedRanges.reduce((sum, range) => sum + range.endUs - range.startUs, 0) / MICROSECONDS_PER_SECOND).toFixed(2)} giây`
+                                : ' · theo ranh giới frame'}</div>
                             ) : null}
                             {task.error && <div className="queue-item-msg" style={{ color: 'var(--danger)' }}>{task.error}</div>}
                             {task.recovery && task.status === 'error' && (

@@ -1,6 +1,6 @@
 # TASK-20260912-AUTOSHORT-CUT-REPAIR: Sửa toàn bộ Cắt đoạn AutoShort
 
-- **Trạng thái:** Đang làm — P00–A02 đã kiểm chứng, A03 đang triển khai.
+- **Trạng thái:** Đang làm — P00–A03 đã kiểm chứng; chuyển sang engine B01–B04 trước A04/A05.
 - **Người thực hiện:** Codex.
 - **Thời gian:** 2026-09-12.
 - **Nhánh/worktree:** `codex/autoshort-cut-repair` tại `.worktrees/codex-autoshort-cut-repair`.
@@ -37,6 +37,8 @@ Sửa 12 findings của review và hoàn thành R01–R18 Core theo spec/plan. G
 - A01 `[MODIFY]` `AutoShortCutPanel.tsx`, `AutoShort.tsx`, `autoshort.css`, test runner.
 - A02 `[NEW]` `src/shared/autoShortCutContract.ts`, `tests/autoshort-cut-v2-contract.test.ts`.
 - A02 `[MODIFY]` editor helpers, v1 keep IDs, queue union/validation và executor narrowing.
+- A03 `[NEW]` `src/main/autoShortCutIdentity.ts`, `tests/autoshort-cut-legacy-resume.test.ts`.
+- A03 `[MODIFY]` resume item digest và checkpoint fingerprint lookup no-cut.
 - Các task tiếp theo được bổ sung vào đây theo từng gate.
 
 ## 6. Kiểm Chứng
@@ -49,8 +51,10 @@ A01 red: parser chưa tồn tại. Green: 2 pass, 0 fail; `npm.cmd run typecheck
 
 A02 red: v2 contract chưa tồn tại. Green: 11 editor/v2/v1 contract tests PASS; mở rộng cùng capability/batch suites thành 19 tests PASS. `npm.cmd run typecheck` PASS. Schema v2 kiểm strict/2 MiB/1.000 raw ranges/ID trùng; history cap 200 và giữ raw operations; v1 keep segment IDs ổn định theo boundaries.
 
+A03 red: compatibility module chưa tồn tại. Green: 11 legacy-resume/batch/stage/store tests PASS; `npm.cmd run typecheck` PASS. Resume no-cut chỉ chấp nhận hai digest đã biết; cut job vẫn chỉ nhận exact digest. Checkpoint no-cut thử đúng current + legacy fingerprint; cut checkpoint không được nới.
+
 Các cảnh báo audit dependency của `npm install` là trạng thái dependency hiện tại, không tự chạy `npm audit fix` ngoài phạm vi.
 
 ## 7. Bàn Giao
 
-Tiếp theo A03: tương thích digest resume cho batch no-cut legacy. Guard chưa phải fix engine; feature execution vẫn cố ý đóng trong branch cho tới Z01.
+Tiếp theo B01–B04: frame index, exact-frame plan, media executor và semantic preparation identity. A04/A05 phụ thuộc các contract engine này. Guard chưa phải fix engine; feature execution vẫn cố ý đóng trong branch cho tới Z01.

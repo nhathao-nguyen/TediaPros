@@ -58,7 +58,7 @@ import {
   synthesizeVoice,
   stitchAudioTimeline,
   preserveAutoShortArtifacts,
-  buildAutoShortCheckpointFingerprint,
+  buildAutoShortCheckpointFingerprintCandidates,
   serializeAlignedCues,
   alignedFromSrt,
   readWhisperAlignedCues,
@@ -532,7 +532,7 @@ export function createAutoShortItemProcessor(
 
       const { sourceDigest, meta, ffmpeg, ffprobe, geometry } = await telemetry.withStageSpan('metadata', {}, async (span) => {
         const sourceDigest = await hashFileSha256(item.filePath, signal)
-        const checkpointFingerprint = buildAutoShortCheckpointFingerprint(
+        const checkpointFingerprints = buildAutoShortCheckpointFingerprintCandidates(
           item.filePath,
           inputInfo,
           config,
@@ -541,7 +541,9 @@ export function createAutoShortItemProcessor(
           item.temporalEdit
         )
 
-        if (checkpoint.version !== AUTO_SHORT_CHECKPOINT_VERSION || checkpoint.fingerprint !== checkpointFingerprint) {
+        const checkpointFingerprint = checkpointFingerprints[0]
+
+        if (checkpoint.version !== AUTO_SHORT_CHECKPOINT_VERSION || !checkpointFingerprints.includes(checkpoint.fingerprint || '')) {
           if (checkpoint.sourceCues?.length || checkpoint.translatedCues?.length || checkpoint.instrumentalPath) {
             logInfo('[AutoShort] Bỏ checkpoint cũ vì không khớp fingerprint input/cấu hình hiện tại.')
           }
