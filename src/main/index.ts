@@ -136,7 +136,8 @@ import {
   generateSpeech,
   generateVoiceClone,
   saveTtsAudio,
-  selectReferenceAudioFile
+  selectReferenceAudioFile,
+  fetchEdgeVoices
 } from './tts'
 import {
   cancelAutoShort,
@@ -1022,6 +1023,7 @@ function registerIpc(): void {
   ipcMain.handle('tts:generateClone', async (_e, req: TtsCloneRequest) => generateVoiceClone(req))
   ipcMain.handle('tts:saveAudio', async (_e, audioBase64: string, defaultName?: string) => saveTtsAudio(audioBase64, defaultName))
   ipcMain.handle('tts:selectRefAudio', async () => selectReferenceAudioFile())
+  ipcMain.handle('tts:getEdgeVoices', async () => fetchEdgeVoices())
 
   // Auto Short
   const sttnPreviewOwners = new Set<number>()

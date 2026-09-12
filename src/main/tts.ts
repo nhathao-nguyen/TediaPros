@@ -13,6 +13,23 @@ import {
   type TtsSpeechRequest
 } from '../shared/types'
 import { getGlobalResourceManager } from './autoShortResourceManager'
+import {
+  generateEdgeTTS,
+  generateEdgeTTSBatch,
+  getEdgeTtsModelInfo,
+  DEFAULT_EDGE_VOICES,
+  fetchEdgeVoices,
+  type EdgeVoiceDefinition
+} from './edgeTts'
+
+export {
+  generateEdgeTTS,
+  generateEdgeTTSBatch,
+  getEdgeTtsModelInfo,
+  DEFAULT_EDGE_VOICES,
+  fetchEdgeVoices,
+  type EdgeVoiceDefinition
+}
 
 function normalizeUrl(url?: string): string {
   const target = (url || DEFAULT_AI_SERVER_URL).trim()
@@ -273,6 +290,10 @@ export async function generateSpeech(
   signal?: AbortSignal,
   savePath?: string
 ): Promise<TtsGenerateResult> {
+  if (req.provider === 'edge-tts') {
+    return generateEdgeTTS(req, signal, savePath)
+  }
+
   const base = normalizeUrl(req.serverUrl)
   const text = (req.text || '').trim()
   if (!text) {
