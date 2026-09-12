@@ -9,7 +9,7 @@ import { createHash } from 'node:crypto'
 import { getSttnReadiness, installSttnModel, verifySttnModelFile } from '../src/main/inpainting/assets'
 import { runSttnCommand, runSttnRemoval } from '../src/main/inpainting/runner'
 import { deriveCanonicalDisplayGeometry } from '../src/main/canonicalDisplayGeometry'
-import type { OcrVisualTimeline } from '../src/shared/ocrVisualTimeline'
+import { stabilizeSingleSampleGaps, type OcrVisualTimeline } from '../src/shared/ocrVisualTimeline'
 import { validateRuntimeDistributionManifest } from '../src/main/runtimeManifest'
 
 class FakeChild extends EventEmitter {
@@ -162,4 +162,61 @@ test('removal contains request/output, preserves source and cleans worker files 
     assert.deepEqual((await readdir(root)).sort(), ['result.mkv', 'source.mkv'])
     await assert.rejects(runSttnRemoval({ ...input, outputPath: join(root, 'geometry.mkv'), timeline: { ...timeline, video: { ...timeline.video, width: 101 } } }, hooks), /width/)
   } finally { await rm(root, { recursive: true, force: true }) }
+})
+
+test('removal accepts the canonical synthetic gap emitted by OCR stabilization', async () => {
+  const root = await mkdtemp(join(tmpdir(), 'sttn-stabilized-gap-'))
+  const source = join(root, 'source.mkv')
+  const output = join(root, 'result.mkv')
+  await writeFile(source, 'source untouched')
+  const geometry = deriveCanonicalDisplayGeometry({ codedWidth: 100, codedHeight: 100, sampleAspectRatio: '1:1', rotation: 0, videoStart: 0 })
+  const rawTimeline: OcrVisualTimeline = {
+    schemaVersion: 1,
+    protocol: 'ocr-visual-cues/1',
+    profile: 'accurate',
+    video: { width: 100, height: 100, durationSeconds: 1, sampleFps: 8, frameCount: 8, geometryFingerprint: geometry.fingerprint },
+    scanRegion: { x0: 0, y0: 0, x1: 100, y1: 100 },
+    segments: [
+      {
+        id: 'accurate-1', startFrame: 1, endFrameExclusive: 2,
+        start: 0.125, end: 0.25, text: 'hello', confidence: 0.9,
+        boxes: [{ text: 'hello', confidence: 0.9, x0: 10, y0: 10, x1: 40, y1: 30 }]
+      },
+      {
+        id: 'accurate-3', startFrame: 3, endFrameExclusive: 4,
+        start: 0.375, end: 0.5, text: 'Hello ', confidence: 0.85,
+        boxes: [{ text: 'Hello ', confidence: 0.85, x0: 12, y0: 10, x1: 42, y1: 30 }]
+      }
+    ]
+  }
+  const timeline = stabilizeSingleSampleGaps(rawTimeline)
+  assert.equal(timeline.segments[1].id, 'gap-2-accurate-1-accurate-3')
+
+  const hooks = {
+    resolveEngine: async () => 'engine',
+    resolveModel: async () => 'model',
+    command: async (request: Parameters<typeof runSttnCommand>[0]): Promise<Record<string, unknown>> => {
+      if (request.expectedEvent === 'media') {
+        return { streams: [{ codec_type: 'video', width: 100, height: 100, duration: '1' }], format: { duration: '1' } }
+      }
+      const job = JSON.parse(await readFile(request.args[2], 'utf8'))
+      await writeFile(job.outputPath, 'cleaned media')
+      return { type: 'done', outputPath: job.outputPath, provider: 'cuda', elapsedMs: 123 }
+    }
+  }
+
+  try {
+    const result = await runSttnRemoval({
+      videoPath: source,
+      outputPath: output,
+      timeline,
+      ffmpegPath: 'ffmpeg',
+      ffprobePath: 'ffprobe',
+      signal: new AbortController().signal
+    }, hooks)
+    assert.equal(result.outputPath, output)
+    assert.equal(await readFile(output, 'utf8'), 'cleaned media')
+  } finally {
+    await rm(root, { recursive: true, force: true })
+  }
 })

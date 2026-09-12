@@ -1,7 +1,10 @@
 import assert from 'node:assert/strict'
 import test from 'node:test'
+import { readdir, readFile } from 'node:fs/promises'
+import { join } from 'node:path'
 import {
   validateOcrVisualTimeline,
+  validateStabilizedOcrVisualTimeline,
   stabilizeSingleSampleGaps,
   projectOcrTimelineToSubtitleCues,
   planOcrMaskFrames,
@@ -220,6 +223,53 @@ test('stabilizeSingleSampleGaps fills 1 missing sample with matching text and Io
     x1: 42,
     y1: 30
   })
+})
+
+test('stabilized timeline crosses the STTN boundary only when every synthetic gap is reproducible', () => {
+  const raw: OcrVisualTimeline = {
+    ...validTimeline(),
+    segments: [
+      {
+        id: 'accurate-1', startFrame: 1, endFrameExclusive: 2,
+        start: 0.125, end: 0.25, text: 'hello', confidence: 0.9,
+        boxes: [{ text: 'hello', confidence: 0.9, x0: 10, y0: 10, x1: 40, y1: 30 }]
+      },
+      {
+        id: 'accurate-3', startFrame: 3, endFrameExclusive: 4,
+        start: 0.375, end: 0.5, text: 'Hello ', confidence: 0.85,
+        boxes: [{ text: 'Hello ', confidence: 0.85, x0: 12, y0: 10, x1: 42, y1: 30 }]
+      }
+    ]
+  }
+  const stabilized = stabilizeSingleSampleGaps(validateOcrVisualTimeline(raw, EXPECTED))
+  assert.throws(() => validateOcrVisualTimeline(stabilized, EXPECTED), /gap-/iu)
+  assert.deepEqual(validateStabilizedOcrVisualTimeline(stabilized, EXPECTED), stabilized)
+
+  const forgedBox = structuredClone(stabilized)
+  forgedBox.segments[1].boxes[0].x1 += 1
+  assert.throws(() => validateStabilizedOcrVisualTimeline(forgedBox, EXPECTED), /tái tạo|synthetic|gap-/iu)
+
+  const forgedId = structuredClone(stabilized)
+  forgedId.segments[1].id = 'gap-2-accurate-1-accurate-4'
+  assert.throws(() => validateStabilizedOcrVisualTimeline(forgedId, EXPECTED), /tái tạo|synthetic|gap-/iu)
+})
+
+test('all 13 minimized production gap fixtures cross the stabilized boundary', async () => {
+  const fixtureRoot = join(process.cwd(), 'tests', 'fixtures', 'ocr-stabilized-gap')
+  const fixtureFiles = (await readdir(fixtureRoot)).filter(name => /^case-\d+\.json$/u.test(name)).sort()
+  assert.equal(fixtureFiles.length, 13)
+  for (const fixtureFile of fixtureFiles) {
+    const fixture = JSON.parse(await readFile(join(fixtureRoot, fixtureFile), 'utf8')) as {
+      expected: ExpectedOcrTimelineGeometry
+      timeline: OcrVisualTimeline
+    }
+    assert.throws(() => validateOcrVisualTimeline(fixture.timeline, fixture.expected), /gap-/iu)
+    assert.deepEqual(
+      validateStabilizedOcrVisualTimeline(fixture.timeline, fixture.expected),
+      fixture.timeline,
+      fixtureFile
+    )
+  }
 })
 
 test('stabilizeSingleSampleGaps does not fill 2 missing samples or low IoU', () => {

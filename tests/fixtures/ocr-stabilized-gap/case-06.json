@@ -1,0 +1,102 @@
+{
+  "sourceArtifactSha256": "177c5ae3849f496a47fcadddd7cfbf82f615be6599de02413690b8d9cd75faa6",
+  "expected": {
+    "width": 1080,
+    "height": 1920,
+    "durationSeconds": 245.466667,
+    "sampleFps": 8,
+    "frameCount": 1964,
+    "geometryFingerprint": "024544d6e5ce667b7b2a953ac6e3ebb2c90e2d55c1911ac970d6025e44082b6c",
+    "scanRegion": {
+      "x0": 0,
+      "y0": 0,
+      "x1": 1080,
+      "y1": 1920
+    }
+  },
+  "timeline": {
+    "schemaVersion": 1,
+    "protocol": "ocr-visual-cues/1",
+    "video": {
+      "width": 1080,
+      "height": 1920,
+      "durationSeconds": 245.466667,
+      "sampleFps": 8,
+      "frameCount": 1964,
+      "geometryFingerprint": "024544d6e5ce667b7b2a953ac6e3ebb2c90e2d55c1911ac970d6025e44082b6c"
+    },
+    "profile": "accurate",
+    "transport": "stream-roi",
+    "implementationFingerprint": "99020e272c77c9b90f46e587eb3b6d5891ebfa24e3d954cff6f66bb1cae34808",
+    "ocrProvider": {
+      "det": "DmlExecutionProvider",
+      "cls": "DmlExecutionProvider",
+      "rec": "DmlExecutionProvider"
+    },
+    "scanRegion": {
+      "x0": 0,
+      "y0": 0,
+      "x1": 1080,
+      "y1": 1920
+    },
+    "segments": [
+      {
+        "id": "accurate-1576",
+        "startFrame": 1576,
+        "endFrameExclusive": 1577,
+        "start": 197,
+        "end": 197.125,
+        "text": "C",
+        "confidence": 0.7034239768981934,
+        "boxes": [
+          {
+            "text": "C",
+            "confidence": 0.7034239768981934,
+            "x0": 325,
+            "y0": 1556,
+            "x1": 493,
+            "y1": 1768
+          }
+        ]
+      },
+      {
+        "id": "gap-1577-accurate-1576-accurate-1578",
+        "startFrame": 1577,
+        "endFrameExclusive": 1578,
+        "start": 197.125,
+        "end": 197.25,
+        "text": "C",
+        "confidence": 0.6045197248458862,
+        "boxes": [
+          {
+            "text": "C",
+            "confidence": 0.6045197248458862,
+            "x0": 264,
+            "y0": 1551,
+            "x1": 493,
+            "y1": 1773
+          }
+        ]
+      },
+      {
+        "id": "accurate-1578",
+        "startFrame": 1578,
+        "endFrameExclusive": 1579,
+        "start": 197.25,
+        "end": 197.375,
+        "text": "C",
+        "confidence": 0.6045197248458862,
+        "boxes": [
+          {
+            "text": "C",
+            "confidence": 0.6045197248458862,
+            "x0": 264,
+            "y0": 1551,
+            "x1": 454,
+            "y1": 1773
+          }
+        ]
+      }
+    ]
+  }
+}

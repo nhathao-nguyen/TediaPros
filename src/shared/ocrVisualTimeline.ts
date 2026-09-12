@@ -127,9 +127,10 @@ function mergeOverlappingBoxes(boxes: PixelRegion[]): PixelRegion[] {
   return current
 }
 
-export function validateOcrVisualTimeline(
+function validateOcrVisualTimelineShape(
   raw: unknown,
-  expected: ExpectedOcrTimelineGeometry
+  expected: ExpectedOcrTimelineGeometry,
+  allowSyntheticGaps: boolean
 ): OcrVisualTimeline {
   if (!raw || typeof raw !== 'object') {
     throw new Error('Timeline OCR không hợp lệ: không phải object.')
@@ -222,10 +223,11 @@ export function validateOcrVisualTimeline(
     if (!id || seenIds.has(id)) {
       throw new Error(`Segment ID bị trùng hoặc rỗng: ${id}.`)
     }
-    if (id.startsWith('gap-')) {
+    if (id.startsWith('gap-') && !allowSyntheticGaps) {
       throw new Error(`Raw segment từ engine không được chứa prefix gap-: ${id}.`)
     }
-    if (!/^(accurate-\d+|fast-\d+-\d+)$/.test(id)) {
+    if (!/^(accurate-\d+|fast-\d+-\d+)$/.test(id) &&
+        !(allowSyntheticGaps && /^gap-\d+-(?:accurate-\d+|fast-\d+-\d+)-(?:accurate-\d+|fast-\d+-\d+)$/.test(id))) {
       throw new Error(`Segment ID không đúng định dạng: ${id}.`)
     }
     seenIds.add(id)
@@ -363,6 +365,34 @@ export function validateOcrVisualTimeline(
     scanRegion: { ...expected.scanRegion },
     segments: validatedSegments
   }
+}
+
+export function validateOcrVisualTimeline(
+  raw: unknown,
+  expected: ExpectedOcrTimelineGeometry
+): OcrVisualTimeline {
+  return validateOcrVisualTimelineShape(raw, expected, false)
+}
+
+/**
+ * Validate a client-derived visual timeline after one-sample gap stabilization.
+ * Synthetic segments are accepted only when the canonical stabilizer can
+ * reproduce the complete normalized timeline from its raw OCR segments.
+ */
+export function validateStabilizedOcrVisualTimeline(
+  raw: unknown,
+  expected: ExpectedOcrTimelineGeometry
+): OcrVisualTimeline {
+  const normalized = validateOcrVisualTimelineShape(raw, expected, true)
+  const rawTimeline: OcrVisualTimeline = {
+    ...normalized,
+    segments: normalized.segments.filter(segment => !segment.id.startsWith('gap-'))
+  }
+  const reproduced = stabilizeSingleSampleGaps(validateOcrVisualTimeline(rawTimeline, expected))
+  if (JSON.stringify(normalized) !== JSON.stringify(reproduced)) {
+    throw new Error('Timeline OCR đã ổn định chứa synthetic gap không thể tái tạo từ dữ liệu OCR thô.')
+  }
+  return reproduced
 }
 
 export function stabilizeSingleSampleGaps(timeline: OcrVisualTimeline): OcrVisualTimeline {

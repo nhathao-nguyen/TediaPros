@@ -1,0 +1,102 @@
+{
+  "sourceArtifactSha256": "4d1fa71c0f22d36426cae3aba1dd8c09b04688f445d2dba4825a4ede847d3c53",
+  "expected": {
+    "width": 1080,
+    "height": 1920,
+    "durationSeconds": 202.6,
+    "sampleFps": 8,
+    "frameCount": 1621,
+    "geometryFingerprint": "024544d6e5ce667b7b2a953ac6e3ebb2c90e2d55c1911ac970d6025e44082b6c",
+    "scanRegion": {
+      "x0": 0,
+      "y0": 0,
+      "x1": 1080,
+      "y1": 1920
+    }
+  },
+  "timeline": {
+    "schemaVersion": 1,
+    "protocol": "ocr-visual-cues/1",
+    "video": {
+      "width": 1080,
+      "height": 1920,
+      "durationSeconds": 202.6,
+      "sampleFps": 8,
+      "frameCount": 1621,
+      "geometryFingerprint": "024544d6e5ce667b7b2a953ac6e3ebb2c90e2d55c1911ac970d6025e44082b6c"
+    },
+    "profile": "accurate",
+    "transport": "stream-roi",
+    "implementationFingerprint": "99020e272c77c9b90f46e587eb3b6d5891ebfa24e3d954cff6f66bb1cae34808",
+    "ocrProvider": {
+      "det": "DmlExecutionProvider",
+      "cls": "DmlExecutionProvider",
+      "rec": "DmlExecutionProvider"
+    },
+    "scanRegion": {
+      "x0": 0,
+      "y0": 0,
+      "x1": 1080,
+      "y1": 1920
+    },
+    "segments": [
+      {
+        "id": "accurate-297",
+        "startFrame": 297,
+        "endFrameExclusive": 298,
+        "start": 37.125,
+        "end": 37.25,
+        "text": "鲸",
+        "confidence": 0.9508607983589172,
+        "boxes": [
+          {
+            "text": "鲸",
+            "confidence": 0.9508607983589172,
+            "x0": 411,
+            "y0": 904,
+            "x1": 479,
+            "y1": 978
+          }
+        ]
+      },
+      {
+        "id": "gap-298-accurate-297-accurate-299",
+        "startFrame": 298,
+        "endFrameExclusive": 299,
+        "start": 37.25,
+        "end": 37.375,
+        "text": "鲸",
+        "confidence": 0.9508607983589172,
+        "boxes": [
+          {
+            "text": "鲸",
+            "confidence": 0.9508607983589172,
+            "x0": 411,
+            "y0": 904,
+            "x1": 479,
+            "y1": 978
+          }
+        ]
+      },
+      {
+        "id": "accurate-299",
+        "startFrame": 299,
+        "endFrameExclusive": 300,
+        "start": 37.375,
+        "end": 37.5,
+        "text": "鲸",
+        "confidence": 0.9989253878593445,
+        "boxes": [
+          {
+            "text": "鲸",
+            "confidence": 0.9989253878593445,
+            "x0": 417,
+            "y0": 921,
+            "x1": 478,
+            "y1": 978
+          }
+        ]
+      }
+    ]
+  }
+}

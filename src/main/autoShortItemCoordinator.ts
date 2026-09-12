@@ -26,7 +26,7 @@ import {
 } from '../shared/autoShortOcrBlur'
 import {
   projectOcrTimelineToSubtitleCues,
-  validateOcrVisualTimeline,
+  validateStabilizedOcrVisualTimeline,
   type OcrVisualTimeline,
   type OcrVisualTransport
 } from '../shared/ocrVisualTimeline'
@@ -621,7 +621,7 @@ export function createAutoShortItemProcessor(
                   const payload = parseCachedVisualArtifact(JSON.parse(await readFile(cached.path, 'utf8')))
                   const transportMatches = isCompatibleOcrTransport(requestedTransport, payload?.transport)
                   if (payload && transportMatches) {
-                    const timeline = validateOcrVisualTimeline(payload.timeline, {
+                    const timeline = validateStabilizedOcrVisualTimeline(payload.timeline, {
                       width: geometry.displayWidth,
                       height: geometry.displayHeight,
                       durationSeconds: visualDurationSeconds,

@@ -1,0 +1,102 @@
+{
+  "sourceArtifactSha256": "dcff7eeb0cc7e19634924f03d685dc81b7da83930d74648199a1823371a0ad83",
+  "expected": {
+    "width": 1080,
+    "height": 1920,
+    "durationSeconds": 192.9,
+    "sampleFps": 8,
+    "frameCount": 1543,
+    "geometryFingerprint": "024544d6e5ce667b7b2a953ac6e3ebb2c90e2d55c1911ac970d6025e44082b6c",
+    "scanRegion": {
+      "x0": 0,
+      "y0": 0,
+      "x1": 1080,
+      "y1": 1920
+    }
+  },
+  "timeline": {
+    "schemaVersion": 1,
+    "protocol": "ocr-visual-cues/1",
+    "video": {
+      "width": 1080,
+      "height": 1920,
+      "durationSeconds": 192.9,
+      "sampleFps": 8,
+      "frameCount": 1543,
+      "geometryFingerprint": "024544d6e5ce667b7b2a953ac6e3ebb2c90e2d55c1911ac970d6025e44082b6c"
+    },
+    "profile": "accurate",
+    "transport": "stream-roi",
+    "implementationFingerprint": "99020e272c77c9b90f46e587eb3b6d5891ebfa24e3d954cff6f66bb1cae34808",
+    "ocrProvider": {
+      "det": "DmlExecutionProvider",
+      "cls": "DmlExecutionProvider",
+      "rec": "DmlExecutionProvider"
+    },
+    "scanRegion": {
+      "x0": 0,
+      "y0": 0,
+      "x1": 1080,
+      "y1": 1920
+    },
+    "segments": [
+      {
+        "id": "accurate-1058",
+        "startFrame": 1058,
+        "endFrameExclusive": 1059,
+        "start": 132.25,
+        "end": 132.375,
+        "text": "小",
+        "confidence": 0.6567768454551697,
+        "boxes": [
+          {
+            "text": "小",
+            "confidence": 0.6567768454551697,
+            "x0": 502,
+            "y0": 1698,
+            "x1": 649,
+            "y1": 1858
+          }
+        ]
+      },
+      {
+        "id": "gap-1059-accurate-1058-accurate-1060",
+        "startFrame": 1059,
+        "endFrameExclusive": 1060,
+        "start": 132.375,
+        "end": 132.5,
+        "text": "小",
+        "confidence": 0.6567768454551697,
+        "boxes": [
+          {
+            "text": "小",
+            "confidence": 0.6567768454551697,
+            "x0": 502,
+            "y0": 1698,
+            "x1": 667,
+            "y1": 1871
+          }
+        ]
+      },
+      {
+        "id": "accurate-1060",
+        "startFrame": 1060,
+        "endFrameExclusive": 1061,
+        "start": 132.5,
+        "end": 132.625,
+        "text": "小",
+        "confidence": 0.8324221968650818,
+        "boxes": [
+          {
+            "text": "小",
+            "confidence": 0.8324221968650818,
+            "x0": 504,
+            "y0": 1712,
+            "x1": 667,
+            "y1": 1871
+          }
+        ]
+      }
+    ]
+  }
+}

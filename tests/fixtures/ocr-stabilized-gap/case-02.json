@@ -1,0 +1,102 @@
+{
+  "sourceArtifactSha256": "810caea1d144fed5e54dffaf8a523189d4bb9e659ac22d38385f6846a5a588fa",
+  "expected": {
+    "width": 1080,
+    "height": 1920,
+    "durationSeconds": 169.666667,
+    "sampleFps": 8,
+    "frameCount": 1357,
+    "geometryFingerprint": "024544d6e5ce667b7b2a953ac6e3ebb2c90e2d55c1911ac970d6025e44082b6c",
+    "scanRegion": {
+      "x0": 0,
+      "y0": 0,
+      "x1": 1080,
+      "y1": 1920
+    }
+  },
+  "timeline": {
+    "schemaVersion": 1,
+    "protocol": "ocr-visual-cues/1",
+    "video": {
+      "width": 1080,
+      "height": 1920,
+      "durationSeconds": 169.666667,
+      "sampleFps": 8,
+      "frameCount": 1357,
+      "geometryFingerprint": "024544d6e5ce667b7b2a953ac6e3ebb2c90e2d55c1911ac970d6025e44082b6c"
+    },
+    "profile": "accurate",
+    "transport": "stream-roi",
+    "implementationFingerprint": "99020e272c77c9b90f46e587eb3b6d5891ebfa24e3d954cff6f66bb1cae34808",
+    "ocrProvider": {
+      "det": "DmlExecutionProvider",
+      "cls": "DmlExecutionProvider",
+      "rec": "DmlExecutionProvider"
+    },
+    "scanRegion": {
+      "x0": 0,
+      "y0": 0,
+      "x1": 1080,
+      "y1": 1920
+    },
+    "segments": [
+      {
+        "id": "accurate-694",
+        "startFrame": 694,
+        "endFrameExclusive": 695,
+        "start": 86.75,
+        "end": 86.875,
+        "text": "鲸浴",
+        "confidence": 0.620557427406311,
+        "boxes": [
+          {
+            "text": "鲸浴",
+            "confidence": 0.620557427406311,
+            "x0": 102,
+            "y0": 1223,
+            "x1": 153,
+            "y1": 1301
+          }
+        ]
+      },
+      {
+        "id": "gap-695-accurate-694-accurate-696",
+        "startFrame": 695,
+        "endFrameExclusive": 696,
+        "start": 86.875,
+        "end": 87,
+        "text": "鲸浴",
+        "confidence": 0.5059651434421539,
+        "boxes": [
+          {
+            "text": "鲸浴",
+            "confidence": 0.5059651434421539,
+            "x0": 98,
+            "y0": 1204,
+            "x1": 153,
+            "y1": 1301
+          }
+        ]
+      },
+      {
+        "id": "accurate-696",
+        "startFrame": 696,
+        "endFrameExclusive": 697,
+        "start": 87,
+        "end": 87.125,
+        "text": "鲸浴",
+        "confidence": 0.5059651434421539,
+        "boxes": [
+          {
+            "text": "鲸浴",
+            "confidence": 0.5059651434421539,
+            "x0": 98,
+            "y0": 1204,
+            "x1": 149,
+            "y1": 1286
+          }
+        ]
+      }
+    ]
+  }
+}

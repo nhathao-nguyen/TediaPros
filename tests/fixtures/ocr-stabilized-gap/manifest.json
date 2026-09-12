@@ -1,0 +1,70 @@
+{
+  "schemaVersion": 1,
+  "cases": [
+    {
+      "itemId": "5724037b-eeab-41b8-a699-fd9f55543774",
+      "file": "case-01.json",
+      "gapId": "gap-1224-accurate-1223-accurate-1225"
+    },
+    {
+      "itemId": "d88884ac-9780-44ed-8e5e-d6aa6cc68aa8",
+      "file": "case-02.json",
+      "gapId": "gap-695-accurate-694-accurate-696"
+    },
+    {
+      "itemId": "8dbb3a28-1a98-47a8-a81b-dae4eb43ba1d",
+      "file": "case-03.json",
+      "gapId": "gap-525-accurate-524-accurate-526"
+    },
+    {
+      "itemId": "deb1c5d8-70c2-4576-8cd4-aae30f0f41c7",
+      "file": "case-04.json",
+      "gapId": "gap-298-accurate-297-accurate-299"
+    },
+    {
+      "itemId": "dc1194a3-8a8e-4f30-86bc-9e20b4add850",
+      "file": "case-05.json",
+      "gapId": "gap-656-accurate-655-accurate-657"
+    },
+    {
+      "itemId": "198f04c7-b616-4850-9bb9-5231dc102cb4",
+      "file": "case-06.json",
+      "gapId": "gap-1577-accurate-1576-accurate-1578"
+    },
+    {
+      "itemId": "1c31ff9d-7f2b-4364-93c5-99035c3fc3f2",
+      "file": "case-07.json",
+      "gapId": "gap-193-accurate-192-accurate-194"
+    },
+    {
+      "itemId": "a29cf6cf-9392-41e2-b35e-7b42fc6fde87",
+      "file": "case-08.json",
+      "gapId": "gap-143-accurate-142-accurate-144"
+    },
+    {
+      "itemId": "565c0225-2f98-4fd7-8965-d5362c50ad08",
+      "file": "case-09.json",
+      "gapId": "gap-1059-accurate-1058-accurate-1060"
+    },
+    {
+      "itemId": "97923d3f-e148-4f32-aeb3-7c2b278eb9bd",
+      "file": "case-10.json",
+      "gapId": "gap-551-accurate-550-accurate-552"
+    },
+    {
+      "itemId": "58a8ec54-524b-4778-863f-ea3cb7a38c42",
+      "file": "case-11.json",
+      "gapId": "gap-385-accurate-384-accurate-386"
+    },
+    {
+      "itemId": "163ab933-63f4-417f-be71-7af10849fbb2",
+      "file": "case-12.json",
+      "gapId": "gap-913-accurate-912-accurate-914"
+    },
+    {
+      "itemId": "b2fbdfe0-bf8d-480b-9507-77bf31bf4421",
+      "file": "case-13.json",
+      "gapId": "gap-766-accurate-765-accurate-767"
+    }
+  ]
+}

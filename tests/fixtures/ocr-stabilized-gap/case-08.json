@@ -1,0 +1,102 @@
+{
+  "sourceArtifactSha256": "1865a7159bb9a331dbf4e33a0b63360bf89efd123176e9eaa06ed5c2b6cf64e7",
+  "expected": {
+    "width": 1080,
+    "height": 1920,
+    "durationSeconds": 138.566667,
+    "sampleFps": 8,
+    "frameCount": 1109,
+    "geometryFingerprint": "024544d6e5ce667b7b2a953ac6e3ebb2c90e2d55c1911ac970d6025e44082b6c",
+    "scanRegion": {
+      "x0": 0,
+      "y0": 0,
+      "x1": 1080,
+      "y1": 1920
+    }
+  },
+  "timeline": {
+    "schemaVersion": 1,
+    "protocol": "ocr-visual-cues/1",
+    "video": {
+      "width": 1080,
+      "height": 1920,
+      "durationSeconds": 138.566667,
+      "sampleFps": 8,
+      "frameCount": 1109,
+      "geometryFingerprint": "024544d6e5ce667b7b2a953ac6e3ebb2c90e2d55c1911ac970d6025e44082b6c"
+    },
+    "profile": "accurate",
+    "transport": "stream-roi",
+    "implementationFingerprint": "99020e272c77c9b90f46e587eb3b6d5891ebfa24e3d954cff6f66bb1cae34808",
+    "ocrProvider": {
+      "det": "DmlExecutionProvider",
+      "cls": "DmlExecutionProvider",
+      "rec": "DmlExecutionProvider"
+    },
+    "scanRegion": {
+      "x0": 0,
+      "y0": 0,
+      "x1": 1080,
+      "y1": 1920
+    },
+    "segments": [
+      {
+        "id": "accurate-142",
+        "startFrame": 142,
+        "endFrameExclusive": 143,
+        "start": 17.75,
+        "end": 17.875,
+        "text": "福",
+        "confidence": 0.7506226897239685,
+        "boxes": [
+          {
+            "text": "福",
+            "confidence": 0.7506226897239685,
+            "x0": 0,
+            "y0": 1162,
+            "x1": 707,
+            "y1": 1919
+          }
+        ]
+      },
+      {
+        "id": "gap-143-accurate-142-accurate-144",
+        "startFrame": 143,
+        "endFrameExclusive": 144,
+        "start": 17.875,
+        "end": 18,
+        "text": "福",
+        "confidence": 0.668870747089386,
+        "boxes": [
+          {
+            "text": "福",
+            "confidence": 0.668870747089386,
+            "x0": 0,
+            "y0": 1154,
+            "x1": 709,
+            "y1": 1919
+          }
+        ]
+      },
+      {
+        "id": "accurate-144",
+        "startFrame": 144,
+        "endFrameExclusive": 145,
+        "start": 18,
+        "end": 18.125,
+        "text": "福",
+        "confidence": 0.668870747089386,
+        "boxes": [
+          {
+            "text": "福",
+            "confidence": 0.668870747089386,
+            "x0": 0,
+            "y0": 1154,
+            "x1": 709,
+            "y1": 1919
+          }
+        ]
+      }
+    ]
+  }
+}

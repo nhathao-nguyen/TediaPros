@@ -34,6 +34,10 @@ Trong xử lý video hiện đại, có hai hướng tiếp cận chính:
 3. **Cung cấp STTN Inpainting như một tùy chọn cao cấp (High-Quality Option):**
    - Hỗ trợ tính năng xem trước vài giây ([AutoShortSttnPreviewRequest](file:///f:/Son/tool/TediaPros/src/shared/types.ts)) để người dùng thẩm định chất lượng trước khi quyết định chạy toàn bộ video.
    - Khi chạy STTN, áp dụng cơ chế chia nhỏ frame và giải phóng VRAM định kỳ.
+4. **Phân biệt hợp đồng OCR thô và timeline đã ổn định:**
+   - Dữ liệu trực tiếp từ OCR engine phải đi qua `validateOcrVisualTimeline`; engine không được tự chèn segment có prefix `gap-`.
+   - Timeline nội bộ sau `stabilizeSingleSampleGaps`, kể cả timeline đọc lại từ cache, phải đi qua `validateStabilizedOcrVisualTimeline` trước khi giao cho STTN.
+   - Validator timeline đã ổn định loại các gap tổng hợp, kiểm tra lại phần OCR thô, chạy lại stabilizer chuẩn và chỉ nhận kết quả khi toàn bộ timeline tái tạo khớp. Vì vậy gap bị thêm, thiếu hoặc sửa ID, frame, text, confidence hay box đều bị từ chối.
 
 ---
 
@@ -45,3 +49,4 @@ Trong xử lý video hiện đại, có hai hướng tiếp cận chính:
 
 ### Tiêu cực / Đánh đổi:
 - Cần duy trì hai pipeline xử lý hình ảnh song song (`src/main/ocrMask.ts` và `src/main/inpainting/*`).
+- Hai ranh giới OCR cần validator riêng và fixture hồi quy để tránh dùng nhầm hợp đồng raw cho artifact nội bộ đã ổn định.

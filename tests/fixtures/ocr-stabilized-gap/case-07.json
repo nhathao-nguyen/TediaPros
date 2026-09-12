@@ -1,0 +1,102 @@
+{
+  "sourceArtifactSha256": "8711cbeb516ada05ac2dd6482ce8ee7490cc70c748d220bc83a399bad3553b71",
+  "expected": {
+    "width": 1080,
+    "height": 1920,
+    "durationSeconds": 232.433333,
+    "sampleFps": 8,
+    "frameCount": 1859,
+    "geometryFingerprint": "024544d6e5ce667b7b2a953ac6e3ebb2c90e2d55c1911ac970d6025e44082b6c",
+    "scanRegion": {
+      "x0": 0,
+      "y0": 0,
+      "x1": 1080,
+      "y1": 1920
+    }
+  },
+  "timeline": {
+    "schemaVersion": 1,
+    "protocol": "ocr-visual-cues/1",
+    "video": {
+      "width": 1080,
+      "height": 1920,
+      "durationSeconds": 232.433333,
+      "sampleFps": 8,
+      "frameCount": 1859,
+      "geometryFingerprint": "024544d6e5ce667b7b2a953ac6e3ebb2c90e2d55c1911ac970d6025e44082b6c"
+    },
+    "profile": "accurate",
+    "transport": "stream-roi",
+    "implementationFingerprint": "99020e272c77c9b90f46e587eb3b6d5891ebfa24e3d954cff6f66bb1cae34808",
+    "ocrProvider": {
+      "det": "DmlExecutionProvider",
+      "cls": "DmlExecutionProvider",
+      "rec": "DmlExecutionProvider"
+    },
+    "scanRegion": {
+      "x0": 0,
+      "y0": 0,
+      "x1": 1080,
+      "y1": 1920
+    },
+    "segments": [
+      {
+        "id": "accurate-192",
+        "startFrame": 192,
+        "endFrameExclusive": 193,
+        "start": 24,
+        "end": 24.125,
+        "text": "一般这种卧沙的螃蟹",
+        "confidence": 0.8975410925017463,
+        "boxes": [
+          {
+            "text": "一般这种卧沙的螃蟹",
+            "confidence": 0.8975410925017463,
+            "x0": 315,
+            "y0": 1470,
+            "x1": 767,
+            "y1": 1525
+          }
+        ]
+      },
+      {
+        "id": "gap-193-accurate-192-accurate-194",
+        "startFrame": 193,
+        "endFrameExclusive": 194,
+        "start": 24.125,
+        "end": 24.25,
+        "text": "一般这种卧沙的螃蟹",
+        "confidence": 0.8975410925017463,
+        "boxes": [
+          {
+            "text": "一般这种卧沙的螃蟹",
+            "confidence": 0.8975410925017463,
+            "x0": 315,
+            "y0": 1470,
+            "x1": 767,
+            "y1": 1525
+          }
+        ]
+      },
+      {
+        "id": "accurate-194",
+        "startFrame": 194,
+        "endFrameExclusive": 195,
+        "start": 24.25,
+        "end": 24.375,
+        "text": "一般这种卧沙的螃蟹",
+        "confidence": 0.9257957273059421,
+        "boxes": [
+          {
+            "text": "一般这种卧沙的螃蟹",
+            "confidence": 0.9257957273059421,
+            "x0": 315,
+            "y0": 1470,
+            "x1": 766,
+            "y1": 1525
+          }
+        ]
+      }
+    ]
+  }
+}

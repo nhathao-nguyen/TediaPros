@@ -6,7 +6,7 @@ import { trackChildProcess, terminateProcessTree } from '../processTree'
 import { resolveSttnEngine } from '../runtimeResolver'
 import { assertContainedRegularFile } from '../safeContainedPath'
 import { parseCanonicalMediaMetadata } from '../canonicalDisplayGeometry'
-import { validateOcrVisualTimeline, type OcrVisualTimeline } from '../../shared/ocrVisualTimeline'
+import { validateStabilizedOcrVisualTimeline, type OcrVisualTimeline } from '../../shared/ocrVisualTimeline'
 
 const MAX_LINE = 64 * 1024
 const MAX_DIAGNOSTICS = 16 * 1024
@@ -143,7 +143,7 @@ export async function runSttnRemoval(input: {
   const command = hooks.command || runSttnCommand
   const metadata = parseCanonicalMediaMetadata(await command({ executablePath: input.ffprobePath, args: ['-v', 'error', '-show_streams', '-show_format', '-of', 'json', input.videoPath], expectedEvent: 'media', signal: input.signal, timeoutMs: 30_000 }))
   if (!metadata.geometry || !metadata.videoDurationSeconds) throw new Error('Không đọc được geometry video STTN.')
-  const timeline = validateOcrVisualTimeline(input.timeline, { width: metadata.geometry.displayWidth, height: metadata.geometry.displayHeight, durationSeconds: metadata.videoDurationSeconds, sampleFps: 8, geometryFingerprint: metadata.geometry.fingerprint, scanRegion: input.timeline.scanRegion })
+  const timeline = validateStabilizedOcrVisualTimeline(input.timeline, { width: metadata.geometry.displayWidth, height: metadata.geometry.displayHeight, durationSeconds: metadata.videoDurationSeconds, sampleFps: 8, geometryFingerprint: metadata.geometry.fingerprint, scanRegion: input.timeline.scanRegion })
   const outputPath = resolve(input.outputPath)
   await mkdir(dirname(outputPath), { recursive: true })
   const workDir = await mkdtemp(join(dirname(outputPath), '.sttn-'))
