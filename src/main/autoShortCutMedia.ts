@@ -1,7 +1,9 @@
-import { stat } from 'node:fs/promises'
+import { rename, rm, stat, writeFile } from 'node:fs/promises'
 import { dirname, join } from 'node:path'
 import type { AutoShortTemporalEdit, AutoShortCutPlan } from '../shared/autoShortTemporalEdit'
 import { compileAutoShortCutPlan, MICROSECONDS_PER_SECOND } from '../shared/autoShortTemporalEdit'
+import type { CutExecutionPlan } from '../shared/autoShortCutPlan'
+import { boundaryTime, cutTimeToDecimal, subtractCutTime } from '../shared/autoShortCutPlan'
 import { assertContainedParentDirectory, assertContainedRegularFile } from './safeContainedPath'
 import { runAutoShortNarratedFfmpegProcess } from './autoShortNarratedAudio'
 
@@ -24,13 +26,85 @@ export function buildAutoShortCutFilter(plan: AutoShortCutPlan, hasAudio: boolea
     videoOutputs.push(`[${video}]`)
     if (hasAudio) {
       const audio = `ca${index}`
-      lines.push(`[0:a]atrim=start=${start}:end=${end},asetpts=PTS-STARTPTS[${audio}]`)
+      const duration = seconds(part.sourceEndUs - part.sourceStartUs)
+      lines.push(`[0:a]atrim=start=${start}:end=${end},asetpts=PTS-${start}/TB,aresample=async=1:first_pts=0,apad,atrim=duration=${duration}[${audio}]`)
       audioOutputs.push(`[${audio}]`)
     }
   }
   lines.push(`${videoOutputs.join('')}concat=n=${videoOutputs.length}:v=1:a=0[vout]`)
   if (hasAudio) lines.push(`${audioOutputs.join('')}concat=n=${audioOutputs.length}:v=0:a=1[aout]`)
   return lines.join(';')
+}
+
+export function buildAutoShortCutMediaArgs(input: {
+  sourcePath: string
+  outputPath: string
+  filterPath: string
+  hasAudio: boolean
+  audioCodec?: 'pcm_u8' | 'pcm_s16le' | 'pcm_s24le' | 'pcm_s32le' | 'pcm_f32le' | 'pcm_f64le'
+}): string[] {
+  const args = ['-y', '-hide_banner', '-nostats', '-loglevel', 'error', '-i', input.sourcePath,
+    '-/filter_complex', input.filterPath, '-map', '[vout]', '-c:v', 'ffv1', '-level', '3']
+  if (input.hasAudio) args.push('-map', '[aout]', '-c:a', input.audioCodec || 'pcm_s16le')
+  else args.push('-an')
+  args.push(input.outputPath)
+  return args
+}
+
+export function buildFrameCutFilter(plan: CutExecutionPlan, hasAudio: boolean): string {
+  const lines: string[] = []
+  const videoOutputs: string[] = []
+  const audioOutputs: string[] = []
+  for (const [index, part] of plan.keepSegments.entries()) {
+    const video = `cv${index}`
+    lines.push(`[0:v]trim=start_pts=${part.sourceStart.ptsTicks}:end_pts=${part.sourceEnd.ptsTicks},setpts=PTS-(${part.sourceStart.ptsTicks})[${video}]`)
+    videoOutputs.push(`[${video}]`)
+    if (hasAudio) {
+      const audio = `ca${index}`
+      const sourceStart = cutTimeToDecimal(boundaryTime(part.sourceStart))
+      const sourceEnd = cutTimeToDecimal(boundaryTime(part.sourceEnd))
+      const duration = cutTimeToDecimal(subtractCutTime(part.editedEnd, part.editedStart))
+      lines.push(`[0:a]atrim=start=${sourceStart}:end=${sourceEnd},asetpts=PTS-(${sourceStart})/TB,aresample=async=1:first_pts=0,apad,atrim=duration=${duration}[${audio}]`)
+      audioOutputs.push(`[${audio}]`)
+    }
+  }
+  lines.push(`${videoOutputs.join('')}concat=n=${videoOutputs.length}:v=1:a=0[vout]`)
+  if (hasAudio) lines.push(`${audioOutputs.join('')}concat=n=${audioOutputs.length}:v=0:a=1[aout]`)
+  return lines.join(';')
+}
+
+export async function cutAutoShortSourceByFramePlan(input: {
+  ffmpeg: string
+  sourcePath: string
+  workDir: string
+  plan: CutExecutionPlan
+  hasAudio: boolean
+  signal: AbortSignal
+}): Promise<{ path: string; plan: CutExecutionPlan }> {
+  await assertContainedRegularFile(input.sourcePath, dirname(input.sourcePath), 'Video nguồn cắt đoạn')
+  if (input.plan.keepSegments.length === 0) throw new Error('CUT_INVALID_RANGE')
+  const output = join(input.workDir, 'source-after-cut.mkv')
+  const incompleteOutput = join(input.workDir, 'source-after-cut.incomplete.mkv')
+  const filterPath = join(input.workDir, 'source-after-cut.ffgraph')
+  await assertContainedParentDirectory(output, input.workDir, 'Video sau cắt')
+  await assertContainedParentDirectory(incompleteOutput, input.workDir, 'Video sau cắt chưa hoàn tất')
+  await assertContainedParentDirectory(filterPath, input.workDir, 'Filter graph cắt đoạn')
+  await writeFile(filterPath, buildFrameCutFilter(input.plan, input.hasAudio), 'utf8')
+  try {
+    await runAutoShortNarratedFfmpegProcess({
+      command: input.ffmpeg,
+      args: buildAutoShortCutMediaArgs({ sourcePath: input.sourcePath, outputPath: incompleteOutput, filterPath, hasAudio: input.hasAudio }),
+      sensitivePaths: [input.sourcePath, input.workDir, output, incompleteOutput, filterPath],
+      signal: input.signal
+    })
+    const info = await stat(incompleteOutput)
+    if (!info.isFile() || info.size <= 0) throw new Error('FFmpeg không tạo được video sau cắt.')
+    await rename(incompleteOutput, output)
+  } finally {
+    await rm(filterPath, { force: true }).catch(() => {})
+    await rm(incompleteOutput, { force: true }).catch(() => {})
+  }
+  return { path: output, plan: input.plan }
 }
 
 export async function cutAutoShortSource(input: {
@@ -46,15 +120,26 @@ export async function cutAutoShortSource(input: {
   const plan = compileAutoShortCutPlan(input.edit, Math.round(input.sourceDurationSeconds * MICROSECONDS_PER_SECOND))
   if (plan.removedRanges.length === 0) return { path: input.sourcePath, plan }
   const output = join(input.workDir, 'source-after-cut.mkv')
+  const incompleteOutput = join(input.workDir, 'source-after-cut.incomplete.mkv')
+  const filterPath = join(input.workDir, 'source-after-cut.ffgraph')
   await assertContainedParentDirectory(output, input.workDir, 'Video sau cắt')
-  const args = ['-y', '-hide_banner', '-nostats', '-loglevel', 'error', '-i', input.sourcePath,
-    '-filter_complex', buildAutoShortCutFilter(plan, input.hasAudio), '-map', '[vout]',
-    '-c:v', 'ffv1', '-level', '3', '-pix_fmt', 'yuv444p']
-  if (input.hasAudio) args.push('-map', '[aout]', '-c:a', 'pcm_s16le')
-  else args.push('-an')
-  args.push(output)
-  await runAutoShortNarratedFfmpegProcess({ command: input.ffmpeg, args,
-    sensitivePaths: [input.sourcePath, input.workDir, output], signal: input.signal })
+  await assertContainedParentDirectory(incompleteOutput, input.workDir, 'Video sau cắt chưa hoàn tất')
+  await assertContainedParentDirectory(filterPath, input.workDir, 'Filter graph cắt đoạn')
+  await writeFile(filterPath, buildAutoShortCutFilter(plan, input.hasAudio), 'utf8')
+  try {
+    await runAutoShortNarratedFfmpegProcess({
+      command: input.ffmpeg,
+      args: buildAutoShortCutMediaArgs({ sourcePath: input.sourcePath, outputPath: incompleteOutput, filterPath, hasAudio: input.hasAudio }),
+      sensitivePaths: [input.sourcePath, input.workDir, output, incompleteOutput, filterPath],
+      signal: input.signal
+    })
+    const incompleteInfo = await stat(incompleteOutput)
+    if (!incompleteInfo.isFile() || incompleteInfo.size <= 0) throw new Error('FFmpeg không tạo được video sau cắt.')
+    await rename(incompleteOutput, output)
+  } finally {
+    await rm(filterPath, { force: true }).catch(() => {})
+    await rm(incompleteOutput, { force: true }).catch(() => {})
+  }
   const info = await stat(output)
   if (!info.isFile() || info.size <= 0) throw new Error('FFmpeg không tạo được video sau cắt.')
   return { path: output, plan }

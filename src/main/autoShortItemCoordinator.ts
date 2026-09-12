@@ -1,6 +1,6 @@
 import { basename, dirname, join } from 'node:path'
 import { copyFile, mkdir, mkdtemp, readFile, rename, rm, stat, writeFile } from 'node:fs/promises'
-import { randomUUID } from 'node:crypto'
+import { createHash, randomUUID } from 'node:crypto'
 import type {
   AlignedCue,
   AutoShortConfig,
@@ -96,7 +96,10 @@ import { runSttnRemoval } from './inpainting/runner'
 import { STTN_MODEL } from './inpainting/assets'
 import { buildTranslationIdentity, type TranslationArtifact } from './translation/checkpoint'
 import { TRANSLATION_PARSER_VERSION, TRANSLATION_PROMPT_VERSION } from './translation/prompts'
-import { cutAutoShortSource } from './autoShortCutMedia'
+import { cutAutoShortSourceByFramePlan } from './autoShortCutMedia'
+import { probeAutoShortFrameIndex, upgradeLegacyTemporalEdit } from './autoShortFrameIndex'
+import { compileFrameCutPlan, cutTimeToDecimal } from '../shared/autoShortCutPlan'
+import { semanticFrameEditDigest, semanticTemporalSourceDigest } from './autoShortCutIdentity'
 import { assessTranslationLanguage, normalizeTranslationLocale } from './translation/language'
 import { mapTranslationsStrict } from './translation/response'
 import { createInvalidSourceAssessment } from './translation/orchestrator'
@@ -581,29 +584,45 @@ export function createAutoShortItemProcessor(
       let processingMeta = meta
       let processingGeometry = geometry
       if (item.temporalEdit?.removedRanges.length) {
-        if (item.temporalEdit.schemaVersion !== 1) {
-          throw new Error('Bản cắt theo frame chưa được nối với executor hiện tại.')
-        }
-        const temporalEdit = item.temporalEdit
         emitProgress(context, 'extracting_sub', 2, 'Đang chuẩn bị video theo các đoạn đã cắt…')
         const cut = await telemetry.withStageSpan('metadata', {}, async (span) => {
-          const result = await cutAutoShortSource({
+          const frameIndex = await probeAutoShortFrameIndex({
+            ffprobePath: ffprobe,
+            sourcePath: item.filePath,
+            itemId: item.id,
+            expectedSourceDigest: sourceDigest,
+            signal
+          })
+          const temporalEdit = item.temporalEdit!.schemaVersion === 1
+            ? upgradeLegacyTemporalEdit(item.temporalEdit!, frameIndex)
+            : item.temporalEdit!
+          const plan = compileFrameCutPlan({
+            edit: temporalEdit,
+            index: frameIndex,
+            identity: {
+              sourceDigest,
+              editDigest: semanticFrameEditDigest(temporalEdit),
+              executorRevision: 'cut-executor-v2',
+              runtimeDigest: await hashFileSha256(ffmpeg, signal),
+              mediaPolicyDigest: createHash('sha256').update('ffv1-source-pixfmt_pcm-source-format_graph-file-v1').digest('hex')
+            }
+          })
+          const result = await cutAutoShortSourceByFramePlan({
             ffmpeg,
             sourcePath: item.filePath,
             workDir,
-            edit: temporalEdit,
-            sourceDurationSeconds: meta.giay,
+            plan,
             hasAudio: meta.hasAudio,
             signal
           })
           span.updateCounters({
-            removedRangeCount: result.plan.removedRanges.length,
-            outputDurationMs: Math.round(result.plan.editedDurationUs / 1000)
+            removedRangeCount: temporalEdit.removedRanges.length,
+            outputDurationMs: Math.round(Number(cutTimeToDecimal(result.plan.editedDuration)) * 1000)
           })
-          return result
+          return { ...result, temporalEdit }
         })
         processingPath = cut.path
-        processingDigest = await hashFileSha256(processingPath, signal)
+        processingDigest = semanticTemporalSourceDigest(sourceDigest, cut.temporalEdit)
         processingMeta = await (deps.probeMedia || probeBurnMedia)(processingPath)
         if (!(processingMeta.giay > 0) || !(processingMeta.w > 0) || !(processingMeta.h > 0)) {
           throw new Error('Video sau cắt không có metadata hợp lệ.')

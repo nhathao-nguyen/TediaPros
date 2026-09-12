@@ -1,6 +1,6 @@
 # TASK-20260912-AUTOSHORT-CUT-REPAIR: Sửa toàn bộ Cắt đoạn AutoShort
 
-- **Trạng thái:** Đang làm — P00–A03 đã kiểm chứng; chuyển sang engine B01–B04 trước A04/A05.
+- **Trạng thái:** Đang làm — P00–A03 và lõi B01–B04 đã kiểm chứng; tiếp tục nối validation/resource vào coordinator trước A04/A05.
 - **Người thực hiện:** Codex.
 - **Thời gian:** 2026-09-12.
 - **Nhánh/worktree:** `codex/autoshort-cut-repair` tại `.worktrees/codex-autoshort-cut-repair`.
@@ -39,6 +39,8 @@ Sửa 12 findings của review và hoàn thành R01–R18 Core theo spec/plan. G
 - A02 `[MODIFY]` editor helpers, v1 keep IDs, queue union/validation và executor narrowing.
 - A03 `[NEW]` `src/main/autoShortCutIdentity.ts`, `tests/autoshort-cut-legacy-resume.test.ts`.
 - A03 `[MODIFY]` resume item digest và checkpoint fingerprint lookup no-cut.
+- B01–B04 `[NEW]` `src/main/autoShortFrameIndex.ts`, `src/shared/autoShortCutPlan.ts`, `src/main/autoShortCutPreparation.ts` và bốn test frame/plan/resource/cache.
+- B01–B04 `[MODIFY]` frame-aware cut executor, coordinator, cut contract, semantic identity và test runner.
 - Các task tiếp theo được bổ sung vào đây theo từng gate.
 
 ## 6. Kiểm Chứng
@@ -53,8 +55,10 @@ A02 red: v2 contract chưa tồn tại. Green: 11 editor/v2/v1 contract tests PA
 
 A03 red: compatibility module chưa tồn tại. Green: 11 legacy-resume/batch/stage/store tests PASS; `npm.cmd run typecheck` PASS. Resume no-cut chỉ chấp nhận hai digest đã biết; cut job vẫn chỉ nhận exact digest. Checkpoint no-cut thử đúng current + legacy fingerprint; cut checkpoint không được nới.
 
+B01–B04 red: thiếu frame-index/compiler/cache helpers; managed FFmpeg 9 bác option `filter_complex_script`; executor frame-plan chưa tồn tại. Green: 19 tests PASS gồm rational boundary/compiler, chunk/reservation, semantic identity và một phép cắt FFmpeg thật. Fixture 64×64 25fps/6s, `yuv420p10le`, PCM 48kHz có audio epoch +0,5s; xóa frame [50,100) tạo đúng 100 frame, đúng 4 giây/192.000 sample và giữ khoảng im lặng 0,5s đầu. `npm.cmd run typecheck` và `git diff --check` PASS. Graph đi qua file bằng syntax `-/filter_complex`, output `.incomplete` chỉ rename sau process thành công; bit depth video nguồn được giữ qua FFV1.
+
 Các cảnh báo audit dependency của `npm install` là trạng thái dependency hiện tại, không tự chạy `npm audit fix` ngoài phạm vi.
 
 ## 7. Bàn Giao
 
-Tiếp theo B01–B04: frame index, exact-frame plan, media executor và semantic preparation identity. A04/A05 phụ thuộc các contract engine này. Guard chưa phải fix engine; feature execution vẫn cố ý đóng trong branch cho tới Z01.
+Tiếp theo: validator độc lập và budget/lease thật cho prepared media, sau đó A04/A05 và pipeline/publication C. Guard chưa được mở; synthetic media đã chứng minh lịch frame/sample nhưng chưa chứng minh Electron/UI và pipeline AI hoàn chỉnh.

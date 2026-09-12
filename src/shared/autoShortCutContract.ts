@@ -85,6 +85,19 @@ export interface CutExecutionIdentity {
   mediaPolicyDigest: string
 }
 
+export interface CutFrameIndex {
+  identity: CutIdentity
+  frameCount: number
+  videoEpoch: CutTime
+  sourceDuration: CutTime
+  audio?: {
+    sampleRate: number
+    channels: number
+    startRelativeToVideo: CutTime
+  }
+  validatedBoundaries: readonly FrameBoundary[]
+}
+
 const SAFE_ID = /^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$/u
 const SHA_256 = /^[a-f0-9]{64}$/u
 const INTEGER_TICKS = /^-?\d+$/u
