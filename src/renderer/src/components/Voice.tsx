@@ -178,6 +178,10 @@ export default function Voice(): JSX.Element {
     }
   }, [edgeVoices, selectedEdgeVoice, selectedLanguage, setSelectedEdgeVoice, ttsProvider])
   const selectableEdgeVoices = compatibleEdgeVoices(edgeVoices, selectedLanguage)
+  const edgeLanguageOptions = Array.from(new Set(edgeVoices.map((voice) => voice.language))).map((code) => {
+    const found = SUPPORTED_LANGUAGES.find((language) => language.code === code)
+    return found || { code, name: code.toUpperCase(), flag: '🌐' }
+  })
   const [text, setText] = usePersistedState(
     'tblao.tts.text',
     'Chào bạn! Chúc bạn một ngày làm việc thật nhiều năng lượng và hiệu quả.'
@@ -734,6 +738,22 @@ export default function Voice(): JSX.Element {
                 </span>
                 <span className="voice-pill">⚡ Trực tuyến · Không cần AI Server / GPU</span>
                 {edgeCatalogError && <span className="muted small">{edgeCatalogError}</span>}
+              </div>
+
+              <div className="voice-form-section">
+                <label className="voice-label">Ngôn ngữ Edge-TTS:</label>
+                <select
+                  className="voice-select"
+                  value={selectedLanguage}
+                  disabled={edgeLanguageOptions.length === 0}
+                  onChange={(event) => setSelectedLanguage(event.target.value)}
+                >
+                  {edgeLanguageOptions.map((language) => (
+                    <option key={language.code} value={language.code}>
+                      {language.flag} {language.name}
+                    </option>
+                  ))}
+                </select>
               </div>
 
               <div className="voice-form-section">

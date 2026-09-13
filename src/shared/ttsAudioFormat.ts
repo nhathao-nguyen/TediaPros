@@ -14,8 +14,14 @@ export function normalizeTtsAudioOutputPath(path: string, mime?: string): string
   const { extension } = ttsAudioFormat(mime)
   const separator = Math.max(path.lastIndexOf('/'), path.lastIndexOf('\\'))
   const dot = path.lastIndexOf('.')
+  if (dot > separator && path.slice(dot + 1).toLowerCase() === extension) return path
   const stem = dot > separator ? path.slice(0, dot) : path
   return `${stem}.${extension}`
+}
+
+export function planTtsAudioSave(selectedPath: string, mime?: string): { path: string; exclusive: boolean } {
+  const path = normalizeTtsAudioOutputPath(selectedPath, mime)
+  return { path, exclusive: path !== selectedPath }
 }
 
 export function assertTtsAudioHeader(bytes: Uint8Array, mime?: string): void {

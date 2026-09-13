@@ -53,7 +53,7 @@ import { createOpenAiTranslationAdapter, loadKey as loadOpenAiKey } from './open
 import { createLocalTranslationAdapter, loadLocalKey, checkLocalTranslateKey } from './localTranslate'
 import { generateSpeech, generateVoiceClone, getTtsModels, checkTtsServerHealth, getEdgeTtsModelInfo, fetchEdgeVoices } from './tts'
 import { probeEdgeTtsSynthesis } from './edgeTts'
-import { resolveEdgeVoice } from '../shared/edgeTtsContract'
+import { resolveEdgeVoice, resolveEdgeVoiceForPreflight } from '../shared/edgeTtsContract'
 import { EDGE_TTS_ENDPOINT_ID } from './edgeTtsIdentity'
 import { cancelBurn, probeBurnMedia, burnAutoShort } from './burn'
 import { writeTimedOcrBlurMask } from './ocrMask'
@@ -3218,12 +3218,15 @@ async function preflight(job: AutoShortJob): Promise<void> {
   }
   if (config.ttsEnabled) {
     if (config.ttsProvider === 'edge-tts') {
-      const catalog = await preflightStep('kiểm tra Edge-TTS', () => fetchEdgeVoices({ forceRefresh: true }))
+      const catalog = await preflightStep('kiểm tra Edge-TTS', () => fetchEdgeVoices({
+        forceRefresh: true,
+        signal: job.controller.signal
+      }))
       if (!catalog.ok || catalog.source !== 'live') {
         throw new Error(catalog.error || 'Không xác nhận được kết nối Microsoft Edge-TTS')
       }
       const ttsLanguage = resolveAutoShortTtsLanguage(config)
-      const resolvedVoice = resolveEdgeVoice(catalog.voices, ttsLanguage, config.ttsVoice)
+      const resolvedVoice = resolveEdgeVoiceForPreflight(catalog.voices, ttsLanguage, config.ttsVoice)
       await preflightStep('xác nhận kênh tổng hợp Edge-TTS', () => probeEdgeTtsSynthesis(resolvedVoice.id, job.controller.signal))
       const edgeModel = getEdgeTtsModelInfo(catalog.voices, resolvedVoice.id)
       job.ttsCapabilities = { ok: true, models: [edgeModel] }

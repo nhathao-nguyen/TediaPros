@@ -2,9 +2,10 @@ import assert from 'node:assert/strict'
 import { mkdtemp, readFile, readdir, rm, stat, writeFile } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
+import { Readable } from 'node:stream'
 import test from 'node:test'
 import { collectEdgeAudio, createMsEdgeTtsTransport, escapeEdgeTtsText, msEdgeTtsTransport, withEdgeDeadline, type EdgeAudioSession, type EdgeTtsTransport } from '../src/main/edgeTtsTransport'
-import { generateEdgeTTS, probeEdgeTtsSynthesis } from '../src/main/edgeTts'
+import { fetchEdgeVoices, generateEdgeTTS, probeEdgeTtsSynthesis } from '../src/main/edgeTts'
 
 function session(chunks: readonly Uint8Array[], delayMs = 0): EdgeAudioSession & { disposed: number } {
   const value = {
@@ -141,6 +142,28 @@ test('the real Edge transport closes a WebSocket initialized after open was abor
   assert.equal(closesAfterSocketOpened, 1)
 })
 
+test('the Edge transport quiesces late WebSocket frames before destroying request streams', async () => {
+  const socket = { onmessage: (() => undefined) as (() => void) | null }
+  const audioStream = new Readable({ read() {} })
+  const originalDestroy = audioStream.destroy.bind(audioStream)
+  audioStream.destroy = ((error?: Error) => {
+    assert.equal(socket.onmessage, null)
+    return originalDestroy(error)
+  }) as typeof audioStream.destroy
+  const transport = createMsEdgeTtsTransport(() => ({
+    _ws: socket,
+    async setMetadata(): Promise<void> {},
+    toStream: () => ({ audioStream }),
+    close(): void {}
+  }))
+
+  const active = await transport.open(
+    { text: 'Xin chào', voice: 'vi-VN-HoaiMyNeural' },
+    new AbortController().signal
+  )
+  active.dispose()
+})
+
 test('Edge generation enforces its Main-owned deadline while opening', async () => {
   const transport: EdgeTtsTransport = {
     open: async (_input, signal) => new Promise((_resolve, reject) => {
@@ -189,6 +212,60 @@ test('Edge catalog timeout aborts the underlying fetch request', async () => {
       /hết thời gian chờ/u
     )
     assert.equal(fetchWasAborted, true)
+  } finally {
+    globalThis.fetch = originalFetch
+  }
+})
+
+test('AutoShort cancellation aborts its sole in-flight Edge catalog request', async () => {
+  const originalFetch = globalThis.fetch
+  const controller = new AbortController()
+  let fetchWasAborted = false
+  globalThis.fetch = ((_url: string | URL | Request, init?: RequestInit) => new Promise<Response>((_resolve, reject) => {
+    init?.signal?.addEventListener('abort', () => {
+      fetchWasAborted = true
+      reject(new Error('catalog fetch aborted'))
+    }, { once: true })
+  })) as typeof fetch
+  try {
+    const pending = fetchEdgeVoices({ forceRefresh: true, signal: controller.signal })
+    await new Promise<void>((resolve) => setImmediate(resolve))
+    controller.abort()
+    await assert.rejects(pending, /hủy|abort/u)
+    assert.equal(fetchWasAborted, true)
+  } finally {
+    globalThis.fetch = originalFetch
+  }
+})
+
+test('cancelling one Edge catalog waiter preserves the shared request for another caller', async () => {
+  const originalFetch = globalThis.fetch
+  const controller = new AbortController()
+  let fetchWasAborted = false
+  let resolveFetch: ((response: Response) => void) | undefined
+  globalThis.fetch = ((_url: string | URL | Request, init?: RequestInit) => new Promise<Response>((resolve, reject) => {
+    resolveFetch = resolve
+    init?.signal?.addEventListener('abort', () => {
+      fetchWasAborted = true
+      reject(new Error('catalog fetch aborted'))
+    }, { once: true })
+  })) as typeof fetch
+  try {
+    const cancelledWaiter = fetchEdgeVoices({ forceRefresh: true, signal: controller.signal })
+    const survivingWaiter = fetchEdgeVoices({ forceRefresh: true })
+    await new Promise<void>((resolve) => setImmediate(resolve))
+    controller.abort()
+    await assert.rejects(cancelledWaiter, /hủy|abort/u)
+    assert.equal(fetchWasAborted, false)
+    resolveFetch!(new Response(JSON.stringify([{
+      ShortName: 'vi-VN-HoaiMyNeural',
+      FriendlyName: 'Microsoft HoaiMy Online (Natural)',
+      Gender: 'Female',
+      Locale: 'vi-VN'
+    }]), { status: 200, headers: { 'Content-Type': 'application/json' } }))
+    const catalog = await survivingWaiter
+    assert.equal(catalog.source, 'live')
+    assert.equal(catalog.voices[0]?.id, 'vi-VN-HoaiMyNeural')
   } finally {
     globalThis.fetch = originalFetch
   }

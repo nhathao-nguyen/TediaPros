@@ -1,6 +1,9 @@
 import assert from 'node:assert/strict'
+import { readFile } from 'node:fs/promises'
+import { join } from 'node:path'
 import test from 'node:test'
 import {
+  resolveEdgeVoiceForPreflight,
   resolveEdgeVoice,
   resolveTtsProvider,
   validateEdgeProsody
@@ -27,6 +30,17 @@ test('legacy provider stays Local and a language resolves only to a compatible E
 test('an exact Edge locale wins over a base-language default from another locale', () => {
   assert.equal(resolveEdgeVoice(voices, 'en-GB').id, 'en-GB-SoniaNeural')
   assert.equal(resolveEdgeVoice(voices, 'en').id, 'en-US-JennyNeural')
+})
+
+test('AutoShort preflight accepts the explicit Edge voice while source language is still auto', () => {
+  assert.equal(resolveEdgeVoiceForPreflight(voices, 'auto', 'es-ES-ElviraNeural').id, 'es-ES-ElviraNeural')
+  assert.throws(() => resolveEdgeVoiceForPreflight(voices, 'auto'))
+})
+
+test('Voice exposes an Edge language selector before filtering its voice catalog', async () => {
+  const source = await readFile(join(process.cwd(), 'src', 'renderer', 'src', 'components', 'Voice.tsx'), 'utf8')
+  assert.match(source, /Ngôn ngữ Edge-TTS/u)
+  assert.match(source, /edgeLanguageOptions\.map/u)
 })
 
 test('AutoShort keeps provider synthesis at 1x and Voice rejects unsafe prosody', () => {

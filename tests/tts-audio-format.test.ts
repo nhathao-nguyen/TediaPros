@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict'
 import test from 'node:test'
-import { assertTtsAudioHeader, normalizeTtsAudioOutputPath, ttsAudioFormat } from '../src/shared/ttsAudioFormat'
+import { assertTtsAudioHeader, normalizeTtsAudioOutputPath, planTtsAudioSave, ttsAudioFormat } from '../src/shared/ttsAudioFormat'
 
 test('the generated MIME owns the saved extension', () => {
   assert.deepEqual(ttsAudioFormat('audio/mpeg'), { mime: 'audio/mpeg', extension: 'mp3' })
@@ -11,6 +11,24 @@ test('the generated MIME owns the saved extension', () => {
 test('the selected save path is normalized to the generated MIME extension', () => {
   assert.equal(normalizeTtsAudioOutputPath('C:\\out\\voice.wav', 'audio/mpeg'), 'C:\\out\\voice.mp3')
   assert.equal(normalizeTtsAudioOutputPath('C:\\out\\voice', 'audio/wav'), 'C:\\out\\voice.wav')
+})
+
+test('a normalized alternate save path must not overwrite an unconfirmed file', () => {
+  assert.deepEqual(planTtsAudioSave('C:\\out\\voice.wav', 'audio/mpeg'), {
+    path: 'C:\\out\\voice.mp3',
+    exclusive: true
+  })
+  assert.deepEqual(planTtsAudioSave('C:\\out\\voice.mp3', 'audio/mpeg'), {
+    path: 'C:\\out\\voice.mp3',
+    exclusive: false
+  })
+})
+
+test('a matching extension keeps the exact path spelling confirmed by the save dialog', () => {
+  assert.deepEqual(planTtsAudioSave('C:\\out\\voice.MP3', 'audio/mpeg'), {
+    path: 'C:\\out\\voice.MP3',
+    exclusive: false
+  })
 })
 
 test('saving rejects bytes that do not match the declared audio format', () => {

@@ -48,6 +48,20 @@ export function resolveEdgeVoice(
   return preferred.find((voice) => voice.isDefault) || preferred[0]
 }
 
+export function resolveEdgeVoiceForPreflight(
+  voices: readonly EdgeVoiceDefinition[],
+  language: string,
+  requestedVoice?: string
+): EdgeVoiceDefinition {
+  if (language.trim().toLowerCase() !== 'auto') return resolveEdgeVoice(voices, language, requestedVoice)
+  if (!requestedVoice || !EDGE_VOICE_ID_PATTERN.test(requestedVoice)) {
+    throw new Error('Hãy chọn một giọng Edge-TTS khi ngôn ngữ nguồn được tự động nhận diện')
+  }
+  const selected = voices.find((voice) => voice.id === requestedVoice)
+  if (!selected) throw new Error(`Giọng Edge-TTS ${requestedVoice} không tồn tại trong catalog trực tuyến`)
+  return selected
+}
+
 export function validateEdgeProsody(
   input: { speed?: number; pitch?: string },
   context: 'voice' | 'autoshort'

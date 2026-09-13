@@ -112,6 +112,11 @@ export interface EdgeClient {
   close(): void
 }
 
+function quiesceEdgeClient(client: EdgeClient): void {
+  const socket = (client as EdgeClient & { _ws?: { onmessage: unknown } })._ws
+  if (socket) socket.onmessage = null
+}
+
 export function createMsEdgeTtsTransport(createClient: () => EdgeClient = () => new MsEdgeTTS()): EdgeTtsTransport {
   return {
     async open(input, signal) {
@@ -119,9 +124,10 @@ export function createMsEdgeTtsTransport(createClient: () => EdgeClient = () => 
       let audioStream: Readable | undefined
       let metadataStream: Readable | null | undefined
       const dispose = (): void => {
+        quiesceEdgeClient(client)
+        client.close()
         audioStream?.destroy()
         metadataStream?.destroy()
-        client.close()
       }
       try {
         await raceAbort(

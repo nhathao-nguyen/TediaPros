@@ -21,7 +21,7 @@ import {
   fetchEdgeVoices,
   type EdgeVoiceDefinition
 } from './edgeTts'
-import { assertTtsAudioHeader, normalizeTtsAudioOutputPath, ttsAudioFormat } from '../shared/ttsAudioFormat'
+import { assertTtsAudioHeader, planTtsAudioSave, ttsAudioFormat } from '../shared/ttsAudioFormat'
 import { resolveTtsProvider } from '../shared/edgeTtsContract'
 
 export {
@@ -565,9 +565,9 @@ export async function saveTtsAudio(
       return { ok: false }
     }
 
-    const outputPath = normalizeTtsAudioOutputPath(result.filePath, format.mime)
-    await writeFile(outputPath, buffer)
-    return { ok: true, path: outputPath }
+    const output = planTtsAudioSave(result.filePath, format.mime)
+    await writeFile(output.path, buffer, output.exclusive ? { flag: 'wx' } : undefined)
+    return { ok: true, path: output.path }
   } catch (err: any) {
     return { ok: false, error: `Không thể lưu file: ${errLabel(err)}` }
   }

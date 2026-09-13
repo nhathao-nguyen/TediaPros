@@ -243,11 +243,13 @@ export class TtsCacheStore {
 
     let entry: InFlightTtsCacheEntry | undefined
     try {
-      if (!options.bypass && await isCompleteCacheFile(targetPath)) {
-        return { path: targetPath, fromCache: true }
+      entry = this.inFlight.get(key)
+      if (!entry && !options.bypass) {
+        const cacheComplete = await isCompleteCacheFile(targetPath)
+        entry = this.inFlight.get(key)
+        if (!entry && cacheComplete) return { path: targetPath, fromCache: true }
       }
 
-      entry = this.inFlight.get(key)
       if (!entry) {
         const controller = new AbortController()
         const temporaryPath = join(this.rootDir, `.${safeCacheSegment(key)}.${randomUUID()}.producer.tmp`)

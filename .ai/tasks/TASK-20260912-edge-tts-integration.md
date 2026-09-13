@@ -15,6 +15,7 @@ Hoàn thiện Edge-TTS vừa merge từ branch `fix/workflow-capcut-youtube`, gi
 - [x] Voice catalog IPC phân biệt live/fallback; MIME kết quả quyết định preview/history/save.
 - [x] AutoShort preflight xác nhận catalog và synthesis WebSocket live; cache key gồm provider version/voice; MP3 được full-decode thành PCM WAV trước cache; synthesis provider ở 1x.
 - [x] Typecheck, build, full local-runtime, live adapter smoke và đóng gói Windows pass.
+- [x] Review hardening: đóng race cache rollback, chặn ghi đè đường dẫn đổi đuôi, hỗ trợ preflight `auto`, mở chọn ngôn ngữ Edge ở Voice và hủy catalog/WebSocket an toàn.
 
 ## 3. Phạm Vi Triển Khai
 
@@ -27,6 +28,7 @@ Hoàn thiện Edge-TTS vừa merge từ branch `fix/workflow-capcut-youtube`, gi
 - Catalog fallback chỉ là dữ liệu UI; preflight batch cần catalog live và synthesis WebSocket probe.
 - `msedge-tts` được ghim `2.0.7`; cache namespace gắn version adapter.
 - Voice giữ MP3 sau full decode/probe; AutoShort normalize PCM WAV trước khi cache publish.
+- Catalog single-flight theo dõi từng waiter: hủy caller cuối mới abort HTTP; WebSocket ngừng nhận frame trước khi stream state bị hủy.
 
 ## 5. Danh Sách Tệp Thay Đổi
 
@@ -42,7 +44,7 @@ Hoàn thiện Edge-TTS vừa merge từ branch `fix/workflow-capcut-youtube`, gi
 - `npm.cmd run typecheck`: PASS, 0 lỗi.
 - `npm.cmd run build`: PASS.
 - `npm.cmd run test:local-runtime`: PASS sau khi chuẩn bị font, exit 0.
-- Edge suites mới và regression liên quan kiểm tra locale, open/stream/decode/publish cancellation, catalog timeout abort, synthesis readiness, MIME/header, PCM cache/resume, dynamic capability và origin gate IPC.
+- Edge suites mới và regression liên quan kiểm tra locale, preflight `auto`, open/stream/decode/publish cancellation, catalog timeout/shared-waiter abort, WebSocket quiesce, MIME/header, chống ghi đè save, PCM cache rollback/resume, dynamic capability và origin gate IPC.
 - Live Windows adapter smoke: catalog live 322 voice; `vi`, `en`, `es`, `ja` đều tổng hợp qua WebSocket, full-decode bằng managed FFmpeg và trả duration dương từ managed FFprobe. Xem `2026-09-12-edge-tts-integration/live-smoke.json`.
 - Review cancellation gate: không còn finding Critical/Important; probe cache 100 lần trả 100 lỗi hủy và giữ lại 0 file cache.
 - Windows package gate: NSIS `TediaPros-0.1.26-setup.exe` được tạo; packaged font verification và prohibited-runtime scan đều PASS.

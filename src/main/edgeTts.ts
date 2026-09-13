@@ -311,17 +311,24 @@ export const DEFAULT_EDGE_VOICES: readonly EdgeVoiceDefinition[] = [
 ]
 
 let cachedDynamicCatalog: EdgeVoiceCatalogResult | null = null
-let catalogRequest: Promise<EdgeVoiceCatalogResult> | null = null
+interface EdgeVoiceCatalogRequest {
+  promise: Promise<EdgeVoiceCatalogResult>
+  controller: AbortController
+  waiters: number
+  settled: boolean
+}
+
+let catalogRequest: EdgeVoiceCatalogRequest | null = null
 
 /**
  * Lấy danh sách giọng đọc Edge-TTS đầy đủ.
  * Tự động đồng bộ hơn 300+ giọng đọc trực tuyến từ Microsoft Edge API khi có mạng.
  * Fallback an toàn về DEFAULT_EDGE_VOICES khi offline.
  */
-async function loadEdgeVoices(): Promise<EdgeVoiceCatalogResult> {
+async function loadEdgeVoices(signal?: AbortSignal): Promise<EdgeVoiceCatalogResult> {
   const checkedAtUtc = new Date().toISOString()
   try {
-    const rawVoices = await withEdgeDeadline((signal) => msEdgeTtsTransport.getVoices(signal))
+    const rawVoices = await withEdgeDeadline((deadlineSignal) => msEdgeTtsTransport.getVoices(deadlineSignal), signal)
     if (Array.isArray(rawVoices) && rawVoices.length > 0) {
       const mapped: EdgeVoiceDefinition[] = rawVoices.flatMap((raw) => {
         if (!raw || typeof raw !== 'object') return []
@@ -364,17 +371,62 @@ async function loadEdgeVoices(): Promise<EdgeVoiceCatalogResult> {
   }
 }
 
-export async function fetchEdgeVoices(options: { forceRefresh?: boolean } = {}): Promise<EdgeVoiceCatalogResult> {
+function waitForEdgeVoiceCatalog(
+  request: EdgeVoiceCatalogRequest,
+  signal?: AbortSignal
+): Promise<EdgeVoiceCatalogResult> {
+  request.waiters += 1
+  return new Promise((resolve, reject) => {
+    let released = false
+    const release = (): void => {
+      if (released) return
+      released = true
+      signal?.removeEventListener('abort', onAbort)
+      request.waiters -= 1
+      if (request.waiters === 0 && !request.settled) request.controller.abort()
+    }
+    const onAbort = (): void => {
+      release()
+      reject(new Error('Đã hủy tác vụ Edge-TTS'))
+    }
+
+    if (signal?.aborted) return onAbort()
+    signal?.addEventListener('abort', onAbort, { once: true })
+    request.promise.then(
+      (catalog) => {
+        if (released) return
+        release()
+        resolve(catalog)
+      },
+      (error) => {
+        if (released) return
+        release()
+        reject(error)
+      }
+    )
+  })
+}
+
+export async function fetchEdgeVoices(options: { forceRefresh?: boolean; signal?: AbortSignal } = {}): Promise<EdgeVoiceCatalogResult> {
+  if (options.signal?.aborted) throw new Error('Đã hủy tác vụ Edge-TTS')
   if (!options.forceRefresh && cachedDynamicCatalog) {
     return cachedDynamicCatalog
   }
-  if (catalogRequest) return catalogRequest
-  catalogRequest = loadEdgeVoices()
-  try {
-    return await catalogRequest
-  } finally {
-    catalogRequest = null
+  if (!catalogRequest) {
+    const controller = new AbortController()
+    const request: EdgeVoiceCatalogRequest = {
+      promise: loadEdgeVoices(controller.signal),
+      controller,
+      waiters: 0,
+      settled: false
+    }
+    catalogRequest = request
+    void request.promise.finally(() => {
+      request.settled = true
+      if (catalogRequest === request) catalogRequest = null
+    })
   }
+  return waitForEdgeVoiceCatalog(catalogRequest, options.signal)
 }
 
 /**
