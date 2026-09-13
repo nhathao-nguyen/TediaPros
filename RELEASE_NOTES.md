@@ -1,3 +1,22 @@
+## TediaPros v0.1.26
+
+### Auto Short và xử lý video
+
+- Lưu và khôi phục hàng đợi batch, cache kết quả STTN đã xác thực, giữ log chẩn đoán và thử lại có giới hạn khi một video lỗi.
+- Thêm cắt đoạn theo biên khung hình đã kiểm chứng, preview STTN từ đúng video sau cắt và chặn cue nhận diện băng qua mối nối không rõ ràng.
+- Thêm ảnh và chữ phủ cho đầu ra Auto Short, đồng thời giữ nguyên lịch sử thao tác và danh tính resume của workflow cũ không cắt.
+
+### Microsoft Edge-TTS
+
+- Bổ sung Edge-TTS trực tuyến cho tab Voice và AutoShort, có danh mục giọng đa ngôn ngữ, preflight tổng hợp thật và Local TTS vẫn là mặc định tương thích.
+- Xác thực đầy đủ audio trước khi publish; AutoShort chuẩn hóa về PCM WAV trước cache và tiếp tục dùng dubbing planner trong trần tempo `1,80x`.
+- Hủy tác vụ đóng request catalog, WebSocket và stream an toàn; cache single-flight không lộ file đang có thể rollback, và lưu audio không ghi đè đường dẫn đổi phần mở rộng khi chưa được xác nhận.
+
+### Độ tin cậy AI và metadata
+
+- Siết kiểm tra JSON/ID cho dịch, tiêu đề, mô tả và SEO; lỗi metadata không loại bỏ video đã render thành công.
+- Giữ nội dung AI bám theo phụ đề nguồn, tách riêng hashtag và bảo toàn định dạng đầu ra cũ.
+
 ## TediaPros v0.1.25
 
 ### Phát hành Windows

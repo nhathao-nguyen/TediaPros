@@ -53,7 +53,7 @@ Hoàn thiện Edge-TTS vừa merge từ branch `fix/workflow-capcut-youtube`, gi
 
 - Chưa chạy live smoke và packaged installer trên macOS ARM64.
 - Chưa chạy nghiệm thu tương tác Voice UI hoặc ma trận AutoShort live bằng video thật; các hành vi đó không được suy ra từ typecheck/unit test.
-- `npm.cmd run release:verify` dừng ở metadata có sẵn vì `RELEASE_NOTES.md` chưa bắt đầu bằng `TediaPros v0.1.26`; không sửa release notes trong task tính năng này.
+- `npm.cmd run release:verify`: PASS sau khi bổ sung release notes `v0.1.26`, sửa gate metadata đã chặn workflow `main` trước bước typecheck.
 - `npm install` báo 14 vulnerability từ dependency tree hiện có; task không chạy auto-fix vì có thể tạo breaking changes ngoài phạm vi.
 
 ## 7. Bàn Giao
