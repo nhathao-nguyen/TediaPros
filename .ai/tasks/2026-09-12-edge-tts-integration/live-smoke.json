@@ -1,0 +1,50 @@
+{
+  "checkedAtUtc": "2026-09-13T01:30:02.946Z",
+  "platform": "win32-x64",
+  "catalogSource": "live",
+  "catalogCheckedAtUtc": "2026-09-13T01:29:38.017Z",
+  "catalogVoiceCount": 322,
+  "synthesisWebSocketProbe": "pass",
+  "samples": [
+    {
+      "language": "vi-VN",
+      "voice": "vi-VN-HoaiMyNeural",
+      "bytes": 42624,
+      "durationMs": 3552,
+      "generationMs": 5489,
+      "wallMs": 5491,
+      "sha256": "c28c26d583358f72664da8440d57041b49db28934895e66f51d4616885d3d8a8",
+      "fullDecode": true
+    },
+    {
+      "language": "en-US",
+      "voice": "en-US-JennyNeural",
+      "bytes": 46944,
+      "durationMs": 3912,
+      "generationMs": 4831,
+      "wallMs": 4833,
+      "sha256": "b0ddbae669093825bc668b6f8436a84c4a3e72c69ec70ee9940fc74887942f24",
+      "fullDecode": true
+    },
+    {
+      "language": "es-ES",
+      "voice": "es-ES-ElviraNeural",
+      "bytes": 45792,
+      "durationMs": 3816,
+      "generationMs": 834,
+      "wallMs": 835,
+      "sha256": "226793d97a0bb305453308be7ee8d3e2df3e45bfde76464182efdcb81cce2d75",
+      "fullDecode": true
+    },
+    {
+      "language": "ja-JP",
+      "voice": "ja-JP-NanamiNeural",
+      "bytes": 60192,
+      "durationMs": 5016,
+      "generationMs": 12914,
+      "wallMs": 12915,
+      "sha256": "28c1e73978f6165f870cf944e1d993c3e869773e7571cfe2b39257be4848a1b2",
+      "fullDecode": true
+    }
+  ]
+}

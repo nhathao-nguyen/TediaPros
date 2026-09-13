@@ -1,10 +1,23 @@
 import { app } from 'electron'
-import { mkdir, writeFile, stat } from 'node:fs/promises'
+import { mkdir, readFile, writeFile, stat, rename, rm } from 'node:fs/promises'
 import { dirname, join } from 'node:path'
 import { randomUUID } from 'node:crypto'
-import { MsEdgeTTS, OUTPUT_FORMAT } from 'msedge-tts'
-import { logInfo, logWarn, errLabel } from './logger'
+import { spawn } from 'node:child_process'
+import { logInfo, logWarn, errLabel, debugRaw } from './logger'
+import { EDGE_VOICE_ID_PATTERN, resolveEdgeVoice, validateEdgeProsody } from '../shared/edgeTtsContract'
+import { assertTtsAudioHeader } from '../shared/ttsAudioFormat'
+import {
+  collectEdgeAudio,
+  msEdgeTtsTransport,
+  withEdgeDeadline,
+  type EdgeTtsTransport
+} from './edgeTtsTransport'
+import { EDGE_TTS_ENDPOINT_ID } from './edgeTtsIdentity'
+import { resolveFfmpeg } from './deps'
+import { terminateProcessTree, trackChildProcess } from './processTree'
 import type {
+  EdgeVoiceCatalogResult,
+  AutoShortRequestSpan,
   EdgeVoiceDefinition,
   TtsGenerateResult,
   TtsModelInfo,
@@ -297,25 +310,25 @@ export const DEFAULT_EDGE_VOICES: readonly EdgeVoiceDefinition[] = [
   }
 ]
 
-let cachedDynamicVoices: EdgeVoiceDefinition[] | null = null
+let cachedDynamicCatalog: EdgeVoiceCatalogResult | null = null
+let catalogRequest: Promise<EdgeVoiceCatalogResult> | null = null
 
 /**
  * Lấy danh sách giọng đọc Edge-TTS đầy đủ.
  * Tự động đồng bộ hơn 300+ giọng đọc trực tuyến từ Microsoft Edge API khi có mạng.
  * Fallback an toàn về DEFAULT_EDGE_VOICES khi offline.
  */
-export async function fetchEdgeVoices(): Promise<EdgeVoiceDefinition[]> {
-  if (cachedDynamicVoices && cachedDynamicVoices.length > 0) {
-    return cachedDynamicVoices
-  }
-
+async function loadEdgeVoices(): Promise<EdgeVoiceCatalogResult> {
+  const checkedAtUtc = new Date().toISOString()
   try {
-    const tts = new MsEdgeTTS()
-    const rawVoices = await tts.getVoices()
+    const rawVoices = await withEdgeDeadline((signal) => msEdgeTtsTransport.getVoices(signal))
     if (Array.isArray(rawVoices) && rawVoices.length > 0) {
-      const mapped: EdgeVoiceDefinition[] = rawVoices.map((v: any) => {
-        const lang = (v.Locale || '').split('-')[0].toLowerCase()
-        const friendly = v.FriendlyName || v.ShortName || ''
+      const mapped: EdgeVoiceDefinition[] = rawVoices.flatMap((raw) => {
+        if (!raw || typeof raw !== 'object') return []
+        const v = raw as Record<string, unknown>
+        if (typeof v.ShortName !== 'string' || !EDGE_VOICE_ID_PATTERN.test(v.ShortName) || typeof v.Locale !== 'string' || !/^[A-Za-z]{2,8}(?:-[A-Za-z0-9]{2,8}){1,2}$/u.test(v.Locale)) return []
+        const lang = v.Locale.split('-')[0].toLowerCase()
+        const friendly = typeof v.FriendlyName === 'string' ? v.FriendlyName : v.ShortName
         const cleanName = friendly
           .replace(/^Microsoft\s+/i, '')
           .replace(/\s+Online\s+\(Natural\)/i, '')
@@ -323,24 +336,45 @@ export async function fetchEdgeVoices(): Promise<EdgeVoiceDefinition[]> {
         return {
           id: v.ShortName,
           name: `${cleanName} (${v.Locale})`,
-          gender: v.Gender?.toLowerCase() === 'female' ? 'female' : 'male',
+          gender: typeof v.Gender === 'string' && v.Gender.toLowerCase() === 'female' ? 'female' : 'male',
           language: lang,
-          locale: v.Locale || '',
+          locale: v.Locale,
           isDefault: false
         }
       })
 
-      const defaultIds = new Set(DEFAULT_EDGE_VOICES.map((d) => d.id))
-      const additional = mapped.filter((m) => !defaultIds.has(m.id))
-      cachedDynamicVoices = [...DEFAULT_EDGE_VOICES, ...additional]
-      logInfo(`[EdgeTTS] Đã tải thành công ${cachedDynamicVoices.length} giọng đọc từ Microsoft Edge API`)
-      return cachedDynamicVoices
+      const unique = new Map(mapped.map((voice) => [voice.id, voice]))
+      const voices = [...unique.values()]
+      cachedDynamicCatalog = { ok: true, voices, source: 'live', checkedAtUtc }
+      logInfo(`[EdgeTTS] Đã tải thành công ${voices.length} giọng đọc từ Microsoft Edge API`)
+      return cachedDynamicCatalog
     }
   } catch (err) {
-    logWarn(`[EdgeTTS] Không tải được danh sách động, sử dụng ${DEFAULT_EDGE_VOICES.length} giọng mặc định: ${errLabel(err)}`)
+    const error = errLabel(err)
+    logWarn(`[EdgeTTS] Không tải được danh sách động, sử dụng ${DEFAULT_EDGE_VOICES.length} giọng mặc định: ${error}`)
+    return { ok: false, voices: [...DEFAULT_EDGE_VOICES], source: 'fallback', checkedAtUtc, error }
   }
 
-  return [...DEFAULT_EDGE_VOICES]
+  return {
+    ok: false,
+    voices: [...DEFAULT_EDGE_VOICES],
+    source: 'fallback',
+    checkedAtUtc,
+    error: 'Microsoft Edge-TTS trả về catalog rỗng'
+  }
+}
+
+export async function fetchEdgeVoices(options: { forceRefresh?: boolean } = {}): Promise<EdgeVoiceCatalogResult> {
+  if (!options.forceRefresh && cachedDynamicCatalog) {
+    return cachedDynamicCatalog
+  }
+  if (catalogRequest) return catalogRequest
+  catalogRequest = loadEdgeVoices()
+  try {
+    return await catalogRequest
+  } finally {
+    catalogRequest = null
+  }
 }
 
 /**
@@ -356,27 +390,27 @@ export function getDefaultEdgeVoiceForLanguage(lang?: string): string {
 /**
  * Xuất danh sách giọng Edge-TTS định dạng TtsModelInfo tương thích với UI hiện tại.
  */
-export function getEdgeTtsModelInfo(): TtsModelInfo {
+export function getEdgeTtsModelInfo(
+  voices: readonly EdgeVoiceDefinition[] = DEFAULT_EDGE_VOICES,
+  defaultVoice = voices.find((voice) => voice.isDefault)?.id || voices[0]?.id || 'vi-VN-HoaiMyNeural'
+): TtsModelInfo {
   return {
     id: 'edge-tts',
-    name: 'Microsoft Edge-TTS (Trực tuyến · Miễn phí)',
+    name: 'Microsoft Edge-TTS (Trực tuyến)',
     provider: 'edge-tts',
     logical_model: 'edge-tts',
     available: true,
-    languages: Array.from(new Set(DEFAULT_EDGE_VOICES.map((v) => v.language))),
-    default_voice: 'vi-VN-HoaiMyNeural',
-    voices: DEFAULT_EDGE_VOICES.map((v) => v.id),
+    languages: Array.from(new Set(voices.map((voice) => voice.language))),
+    default_voice: defaultVoice,
+    voices: voices.map((voice) => voice.id),
     supports_named_voice: true,
     supports_voice_clone: false,
-    supported_options: ['rate', 'pitch', 'volume']
+    supported_options: ['pitch']
   }
 }
 
 export interface EdgeTtsOptions {
-  rate?: string | number
   pitch?: string
-  volume?: string | number
-  timeoutMs?: number
 }
 
 export interface EdgeTtsRequest {
@@ -390,39 +424,88 @@ export interface EdgeTtsRequest {
 /**
  * Chuyển đổi tốc độ số (0.5 - 2.0) sang chuỗi phần trăm SSML Prosody rate của Edge-TTS.
  */
-function formatEdgeRate(speed?: number, explicitRate?: string | number): string | undefined {
-  if (explicitRate != null) {
-    if (typeof explicitRate === 'number') {
-      const pct = Math.round((explicitRate - 1) * 100)
-      return pct >= 0 ? `+${pct}%` : `${pct}%`
-    }
-    return String(explicitRate).trim() || undefined
-  }
+function formatEdgeRate(speed?: number): string | undefined {
   if (typeof speed === 'number' && Number.isFinite(speed)) {
-    const clamped = Math.min(2.0, Math.max(0.5, speed))
-    const pct = Math.round((clamped - 1.0) * 100)
+    const pct = Math.round((speed - 1.0) * 100)
     return pct >= 0 ? `+${pct}%` : `${pct}%`
   }
   return undefined
 }
 
+type EdgeMediaResult = { stdout: string; stderr: string }
+
+export interface EdgeTtsRuntimeHooks {
+  transport?: EdgeTtsTransport
+  voices?: readonly EdgeVoiceDefinition[]
+  resolveFfmpeg?: () => Promise<string | null>
+  runMedia?: (command: string, args: string[], signal: AbortSignal) => Promise<EdgeMediaResult>
+  deadlineMs?: number
+  afterPublish?: () => void | Promise<void>
+  afterFinalStat?: () => void | Promise<void>
+}
+
+function throwIfEdgeAborted(signal: AbortSignal): void {
+  if (signal.aborted) throw new Error('Đã hủy tác vụ Edge-TTS')
+}
+
+async function runEdgeMedia(command: string, args: string[], signal: AbortSignal): Promise<EdgeMediaResult> {
+  throwIfEdgeAborted(signal)
+  return new Promise((resolve, reject) => {
+    const child = trackChildProcess(spawn(command, args, { windowsHide: true, shell: false }))
+    let stdout = ''
+    let stderr = ''
+    let abortFailure: Error | null = null
+    const abort = (): void => {
+      abortFailure = new Error('Đã hủy tác vụ Edge-TTS')
+      terminateProcessTree(child)
+    }
+    if (signal.aborted) abort()
+    else signal.addEventListener('abort', abort, { once: true })
+    child.stdout?.on('data', (chunk: Buffer) => { stdout += chunk.toString() })
+    child.stderr?.on('data', (chunk: Buffer) => { stderr += chunk.toString() })
+    child.on('error', (error) => {
+      signal.removeEventListener('abort', abort)
+      reject(abortFailure || error)
+    })
+    child.on('close', (code) => {
+      signal.removeEventListener('abort', abort)
+      if (abortFailure) reject(abortFailure)
+      else if (code !== 0) reject(new Error(stderr.trim() || `Tiến trình media Edge-TTS thoát với mã ${code}`))
+      else resolve({ stdout, stderr })
+    })
+  })
+}
+
+function parseProbedDurationMs(output: string): number {
+  const seconds = Number(/duration=([\d.]+)/u.exec(output)?.[1])
+  if (!Number.isFinite(seconds) || seconds <= 0) throw new Error('Không đọc được thời lượng audio Edge-TTS đã giải mã')
+  return Math.round(seconds * 1000)
+}
+
+export async function probeEdgeTtsSynthesis(
+  voice: string,
+  signal?: AbortSignal,
+  hooks: EdgeTtsRuntimeHooks = {}
+): Promise<void> {
+  const transport = hooks.transport || msEdgeTtsTransport
+  await withEdgeDeadline(async (deadlineSignal) => {
+    const active = await transport.open({ text: 'TediaPros', voice }, deadlineSignal)
+    const audio = await collectEdgeAudio(active, deadlineSignal, 2 * 1024 * 1024)
+    assertTtsAudioHeader(audio, 'audio/mpeg')
+  }, signal, hooks.deadlineMs)
+}
+
 /**
  * Định dạng cao độ (pitch) sang chuỗi SSML hợp lệ.
  */
-function formatEdgePitch(pitch?: string): string | undefined {
-  if (!pitch || !pitch.trim()) return undefined
-  const p = pitch.trim()
-  if (/^[+-]?\d+(?:Hz|st|%)$/i.test(p)) return p
-  return undefined
-}
-
 /**
  * Sinh giọng đọc bằng Microsoft Edge-TTS cho một câu thoại đơn lẻ.
  */
 export async function generateEdgeTTS(
   req: EdgeTtsRequest | TtsSpeechRequest,
   signal?: AbortSignal,
-  outputPath?: string
+  outputPath?: string,
+  hooks: EdgeTtsRuntimeHooks = {}
 ): Promise<TtsGenerateResult> {
   const text = (req.text || '').trim()
   if (!text) {
@@ -432,204 +515,147 @@ export async function generateEdgeTTS(
   if (signal?.aborted) {
     return { ok: false, error: 'Đã hủy tác vụ' }
   }
+  if (Array.from(text).length > 20_000) {
+    return { ok: false, error: 'Văn bản Edge-TTS vượt quá 20.000 ký tự Unicode' }
+  }
+  if ('model' in req && req.model && req.model !== 'edge-tts') {
+    return { ok: false, error: 'Microsoft Edge-TTS yêu cầu model edge-tts', provider: 'edge-tts' }
+  }
 
-  const voice = req.voice?.trim() || getDefaultEdgeVoiceForLanguage(req.language)
-  const speed = typeof req.speed === 'number' ? req.speed : 1.0
-  const opts = (req.options || {}) as EdgeTtsOptions
-  const timeoutMs = opts.timeoutMs || 30_000
+  const requestedVoice = req.voice?.trim()
+  const language = req.language || requestedVoice?.split('-').slice(0, 2).join('-') || 'vi'
+  const catalog = hooks.voices || cachedDynamicCatalog?.voices || [...DEFAULT_EDGE_VOICES]
+  let voice: string
+  let speed: number
+  let pitchStr: string | undefined
+  try {
+    voice = resolveEdgeVoice(catalog, language, requestedVoice).id
+    const options = (req.options || {}) as Record<string, unknown>
+    const unexpected = Object.keys(options).filter((key) => key !== 'pitch' && options[key] !== undefined)
+    if (unexpected.length > 0) throw new Error(`Tùy chọn Edge-TTS không được hỗ trợ: ${unexpected.join(', ')}`)
+    const prosody = validateEdgeProsody(
+      { speed: req.speed, pitch: typeof options.pitch === 'string' ? options.pitch : undefined },
+      'voice'
+    )
+    speed = prosody.speed
+    pitchStr = prosody.pitch
+  } catch (error) {
+    return {
+      ok: false,
+      error: error instanceof Error ? error.message : String(error),
+      provider: 'edge-tts'
+    }
+  }
 
-  const rateStr = formatEdgeRate(speed, opts.rate)
-  const pitchStr = formatEdgePitch(opts.pitch)
+  const rateStr = formatEdgeRate(speed)
 
   logInfo(`[EdgeTTS] Đang tạo giọng nói (${text.length} ký tự, voice=${voice}, rate=${rateStr || 'default'}, pitch=${pitchStr || 'default'})`)
 
   const startTime = Date.now()
-
-  return new Promise<TtsGenerateResult>((resolve) => {
-    let finished = false
-    const chunks: Buffer[] = []
-    let timeoutTimer: NodeJS.Timeout | null = null
-
-    const cleanup = (): void => {
-      if (timeoutTimer) {
-        clearTimeout(timeoutTimer)
-        timeoutTimer = null
-      }
-      if (signal) {
-        signal.removeEventListener('abort', onAbort)
-      }
-    }
-
-    const finishWithError = (errMessage: string): void => {
-      if (finished) return
-      finished = true
-      cleanup()
-      logWarn(`[EdgeTTS] Lỗi: ${errMessage}`)
-      resolve({ ok: false, error: errMessage, provider: 'edge-tts', voice, speed })
-    }
-
-    const onAbort = (): void => {
-      finishWithError('Đã hủy tác vụ tạo giọng nói')
-    }
-
-    if (signal) {
-      signal.addEventListener('abort', onAbort, { once: true })
-    }
-
-    timeoutTimer = setTimeout(() => {
-      finishWithError(`Hết thời gian chờ (${Math.round(timeoutMs / 1000)}s). Vui lòng kiểm tra lại kết nối mạng Internet.`)
-    }, timeoutMs)
-
-    ;(async () => {
-      try {
-        const tts = new MsEdgeTTS()
-        await tts.setMetadata(voice, OUTPUT_FORMAT.AUDIO_24KHZ_96KBITRATE_MONO_MP3)
-
-        const prosody: Record<string, any> = {}
-        if (rateStr) prosody.rate = rateStr
-        if (pitchStr) prosody.pitch = pitchStr
-
-        const { audioStream } = tts.toStream(text, Object.keys(prosody).length > 0 ? prosody : undefined)
-
-        audioStream.on('data', (data: Buffer | Uint8Array) => {
-          if (Buffer.isBuffer(data)) {
-            chunks.push(data)
-          } else {
-            chunks.push(Buffer.from(data))
-          }
-        })
-
-        audioStream.on('error', (err: any) => {
-          finishWithError(`Lỗi luồng âm thanh Microsoft Edge-TTS: ${errLabel(err)}`)
-        })
-
-        audioStream.on('close', async () => {
-          if (finished) return
-          try {
-            const buffer = Buffer.concat(chunks)
-            if (buffer.length === 0) {
-              finishWithError('Microsoft Edge-TTS không trả về dữ liệu âm thanh')
-              return
-            }
-
-            const finalPath = outputPath || join(
-              app.getPath('temp'),
-              'tblao-tts-preview',
-              `edge-${Date.now()}-${randomUUID().slice(0, 8)}.mp3`
-            )
-
-            await mkdir(dirname(finalPath), { recursive: true })
-            await writeFile(finalPath, buffer)
-
-            const fileStat = await stat(finalPath).catch(() => null)
-            if (!fileStat || fileStat.size <= 0) {
-              finishWithError('Không thể lưu file âm thanh vào đĩa')
-              return
-            }
-
-            // Với định dạng audio-24khz-96kbitrate-mono-mp3: bitrate = 96000 bps = 12000 B/s
-            const estimatedDurationMs = Math.round((buffer.length / 12_000) * 1000)
-            const generationMs = Date.now() - startTime
-            const audioBase64 = outputPath ? undefined : buffer.toString('base64')
-
-            finished = true
-            cleanup()
-
-            logInfo(`[EdgeTTS] Hoàn tất tạo giọng (${buffer.length} bytes, ~${(estimatedDurationMs / 1000).toFixed(2)}s) trong ${generationMs}ms`)
-
-            resolve({
-              ok: true,
-              audioBase64,
-              audioMimeType: 'audio/mpeg',
-              savedPath: finalPath,
-              characters: text.length,
-              durationMs: estimatedDurationMs,
-              generationMs,
-              model: 'edge-tts',
-              provider: 'edge-tts',
-              voice,
-              speed
-            })
-          } catch (writeErr) {
-            finishWithError(`Lỗi ghi file âm thanh: ${errLabel(writeErr)}`)
-          }
-        })
-      } catch (err: any) {
-        finishWithError(`Không thể kết nối đến Microsoft Edge-TTS (vui lòng kiểm tra Internet): ${errLabel(err)}`)
-      }
-    })()
-  })
-}
-
-export interface EdgeTtsBatchItem {
-  id: string
-  text: string
-  voice?: string
-  speed?: number
-  outputPath?: string
-  options?: EdgeTtsOptions
-}
-
-export interface EdgeTtsBatchResult {
-  id: string
-  result: TtsGenerateResult
-}
-
-export interface EdgeTtsBatchOptions {
-  /** Số luồng xử lý đồng thời tối đa (mặc định 4) */
-  concurrency?: number
-  signal?: AbortSignal
-  onProgress?: (completed: number, total: number, item: EdgeTtsBatchItem) => void
-}
-
-/**
- * Xử lý tạo giọng nói hàng loạt với giới hạn số luồng đồng thời (Concurrency Control).
- * Giúp tạo giọng cho hàng chục câu thoại chỉ trong vài giây mà không bị nghẽn mạng.
- */
-export async function generateEdgeTTSBatch(
-  items: readonly EdgeTtsBatchItem[],
-  options?: EdgeTtsBatchOptions
-): Promise<EdgeTtsBatchResult[]> {
-  if (items.length === 0) return []
-
-  const concurrency = Math.max(1, Math.min(8, options?.concurrency ?? 4))
-  const signal = options?.signal
-  const results: EdgeTtsBatchResult[] = new Array(items.length)
-  let nextIndex = 0
-  let completed = 0
-
-  const worker = async (): Promise<void> => {
-    while (nextIndex < items.length) {
-      if (signal?.aborted) throw new Error('Đã hủy tác vụ')
-      const currentIndex = nextIndex++
-      const item = items[currentIndex]
-
-      const res = await generateEdgeTTS(
-        {
-          text: item.text,
-          voice: item.voice,
-          speed: item.speed,
-          options: item.options
-        },
-        signal,
-        item.outputPath
-      )
-
-      results[currentIndex] = {
-        id: item.id,
-        result: res
-      }
-
-      completed++
-      if (options?.onProgress) {
-        options.onProgress(completed, items.length, item)
-      }
-    }
+  const requestSpan: AutoShortRequestSpan = {
+    url: EDGE_TTS_ENDPOINT_ID,
+    queuedAtUtc: new Date(startTime).toISOString(),
+    retryIndex: 0,
+    sourceChars: Array.from(text).length
   }
 
-  const workerCount = Math.min(concurrency, items.length)
-  const workers = Array.from({ length: workerCount }, () => worker())
-  await Promise.all(workers)
+  const finalPath = outputPath || join(
+    app.getPath('temp'),
+    'tblao-tts-preview',
+    `edge-${Date.now()}-${randomUUID().slice(0, 8)}.mp3`
+  )
+  const sourcePartialPath = `${finalPath}.${randomUUID()}.source.partial`
+  const outputPartialPath = `${finalPath}.${randomUUID()}.output.partial`
+  let publishedFinal = false
+  try {
+    const completed = await withEdgeDeadline(async (deadlineSignal) => {
+      requestSpan.startedAtUtc = new Date().toISOString()
+      const transport = hooks.transport || msEdgeTtsTransport
+      const session = await transport.open({ text, voice, rate: rateStr, pitch: pitchStr }, deadlineSignal)
+      const buffer = await collectEdgeAudio(session, deadlineSignal, undefined, () => {
+        requestSpan.firstResponseAtUtc ||= new Date().toISOString()
+      })
+      assertTtsAudioHeader(buffer, 'audio/mpeg')
+      throwIfEdgeAborted(deadlineSignal)
+      if (await stat(finalPath).then(() => true).catch(() => false)) {
+        throw new Error('File đầu ra Edge-TTS đã tồn tại')
+      }
+      const ffmpeg = await (hooks.resolveFfmpeg || resolveFfmpeg)()
+      if (!ffmpeg) throw new Error('Thiếu FFmpeg để xác thực audio Edge-TTS')
+      const runMedia = hooks.runMedia || runEdgeMedia
+      const ffprobe = join(dirname(ffmpeg), process.platform === 'win32' ? 'ffprobe.exe' : 'ffprobe')
+      await mkdir(dirname(finalPath), { recursive: true })
+      await writeFile(sourcePartialPath, buffer)
+      throwIfEdgeAborted(deadlineSignal)
 
-  return results
+      let validatedPath = sourcePartialPath
+      let audioMimeType = 'audio/mpeg'
+      if (outputPath) {
+        await runMedia(ffmpeg, [
+          '-v', 'error', '-y', '-i', sourcePartialPath, '-vn',
+          '-c:a', 'pcm_s16le', '-ar', '24000', '-ac', '1', '-f', 'wav', outputPartialPath
+        ], deadlineSignal)
+        throwIfEdgeAborted(deadlineSignal)
+        const wavHeader = await readFile(outputPartialPath)
+        assertTtsAudioHeader(wavHeader, 'audio/wav')
+        validatedPath = outputPartialPath
+        audioMimeType = 'audio/wav'
+      } else {
+        await runMedia(ffmpeg, ['-v', 'error', '-i', sourcePartialPath, '-f', 'null', '-'], deadlineSignal)
+        throwIfEdgeAborted(deadlineSignal)
+      }
+
+      const probe = await runMedia(ffprobe, [
+        '-v', 'error', '-show_entries', 'format=duration', '-of', 'default=nw=1', validatedPath
+      ], deadlineSignal)
+      const durationMs = parseProbedDurationMs(probe.stdout)
+      throwIfEdgeAborted(deadlineSignal)
+      await rename(validatedPath, finalPath)
+      publishedFinal = true
+      await hooks.afterPublish?.()
+      throwIfEdgeAborted(deadlineSignal)
+      if (outputPath) {
+        await rm(sourcePartialPath, { force: true })
+        throwIfEdgeAborted(deadlineSignal)
+      }
+      const fileStat = await stat(finalPath)
+      await hooks.afterFinalStat?.()
+      throwIfEdgeAborted(deadlineSignal)
+      if (!fileStat.isFile() || fileStat.size <= 0) throw new Error('Không thể xác thực file âm thanh Edge-TTS trên đĩa')
+      return { buffer, durationMs, audioMimeType }
+    }, signal, hooks.deadlineMs)
+    const generationMs = Date.now() - startTime
+    requestSpan.endedAtUtc = new Date().toISOString()
+    requestSpan.durationMs = generationMs
+    requestSpan.audioDurationSec = completed.durationMs / 1000
+    logInfo(`[EdgeTTS] Hoàn tất tạo giọng (${completed.buffer.length} bytes, ${(completed.durationMs / 1000).toFixed(2)}s) trong ${generationMs}ms`)
+    return {
+      ok: true,
+      audioBase64: outputPath ? undefined : completed.buffer.toString('base64'),
+      audioMimeType: completed.audioMimeType,
+      savedPath: finalPath,
+      characters: Array.from(text).length,
+      durationMs: completed.durationMs,
+      generationMs,
+      model: 'edge-tts',
+      provider: 'edge-tts',
+      voice,
+      speed,
+      requestSpans: [requestSpan]
+    }
+  } catch (error) {
+    await Promise.all([
+      rm(sourcePartialPath, { force: true }).catch(() => undefined),
+      rm(outputPartialPath, { force: true }).catch(() => undefined),
+      publishedFinal ? rm(finalPath, { force: true }).catch(() => undefined) : Promise.resolve()
+    ])
+    debugRaw('Edge-TTS generation failed', error)
+    const message = signal?.aborted ? 'Đã hủy tác vụ' : errLabel(error)
+    requestSpan.endedAtUtc = new Date().toISOString()
+    requestSpan.durationMs = Date.now() - startTime
+    requestSpan.error = message
+    requestSpan.failureKind = signal?.aborted ? 'cancelled' : /thời gian chờ/u.test(message) ? 'timeout' : 'transport'
+    logWarn(`[EdgeTTS] Lỗi: ${message}`)
+    return { ok: false, error: message, provider: 'edge-tts', voice, speed, requestSpans: [requestSpan] }
+  }
 }

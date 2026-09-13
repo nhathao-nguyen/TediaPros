@@ -51,7 +51,10 @@ import { detectGpu } from './gpu'
 import { createGeminiTranslationAdapter, loadKey as loadGeminiKey } from './gemini'
 import { createOpenAiTranslationAdapter, loadKey as loadOpenAiKey } from './openai'
 import { createLocalTranslationAdapter, loadLocalKey, checkLocalTranslateKey } from './localTranslate'
-import { generateSpeech, generateVoiceClone, getTtsModels, checkTtsServerHealth, getEdgeTtsModelInfo } from './tts'
+import { generateSpeech, generateVoiceClone, getTtsModels, checkTtsServerHealth, getEdgeTtsModelInfo, fetchEdgeVoices } from './tts'
+import { probeEdgeTtsSynthesis } from './edgeTts'
+import { resolveEdgeVoice } from '../shared/edgeTtsContract'
+import { EDGE_TTS_ENDPOINT_ID } from './edgeTtsIdentity'
 import { cancelBurn, probeBurnMedia, burnAutoShort } from './burn'
 import { writeTimedOcrBlurMask } from './ocrMask'
 import { createAutoShortItemProcessor } from './autoShortItemCoordinator'
@@ -1846,7 +1849,7 @@ async function buildAutoShortTtsCacheKey(input: {
   return createHash('sha256').update(stableJson({
     version: 1,
     provider: input.provider || 'local-tts',
-    serverUrl: input.serverUrl || '',
+    serverUrl: input.provider === 'edge-tts' ? EDGE_TTS_ENDPOINT_ID : input.serverUrl || '',
     text: input.text,
     language: input.language,
     model: input.model,
@@ -1924,9 +1927,11 @@ async function legacySynthesizeVoice(
   const language = resolveAutoShortTtsLanguage(config, detectedLanguage)
   if (language === 'auto' || !language) throw new Error('Không xác định được ngôn ngữ TTS; hãy chọn ngôn ngữ nguồn hoặc đích.')
   const isEdgeTts = config.ttsProvider === 'edge-tts'
-  const capabilityUrl = isEdgeTts ? 'edge-tts' : (config.ttsServerUrl || '')
+  const capabilityUrl = isEdgeTts ? EDGE_TTS_ENDPOINT_ID : (config.ttsServerUrl || '')
   const models = isEdgeTts
-    ? { ok: true, models: [getEdgeTtsModelInfo()] }
+    ? (job.ttsCapabilities && job.ttsCapabilitiesUrl === capabilityUrl
+        ? job.ttsCapabilities
+        : { ok: true, models: [getEdgeTtsModelInfo()] })
     : (job.ttsCapabilities && job.ttsCapabilitiesUrl === capabilityUrl
         ? job.ttsCapabilities
         : await getTtsModels(config.ttsServerUrl, localKey))
@@ -1965,7 +1970,7 @@ async function legacySynthesizeVoice(
     end: cue.end
   }))
   const paceMode = config.paceMode || 'source-adaptive'
-  const synthesisSpeed = paceMode === 'source-adaptive' ? 1 : (config.ttsSpeed || 1)
+  const synthesisSpeed = isEdgeTts ? 1 : paceMode === 'source-adaptive' ? 1 : (config.ttsSpeed || 1)
   const cueWindows = deriveAutoShortCueWindows(cues, videoDuration)
   const predictor = createDurationPredictor()
   const predictedDurations = ttsGroups.map((group, cueIndex) => {
@@ -2586,9 +2591,11 @@ export async function synthesizeVoice(
   if (!language || language === 'auto') throw new Error('Không xác định được ngôn ngữ TTS; hãy chọn ngôn ngữ nguồn hoặc đích.')
   const localKey = await loadLocalKey()
   const isEdgeTts = config.ttsProvider === 'edge-tts'
-  const capabilityUrl = isEdgeTts ? 'edge-tts' : (config.ttsServerUrl || '')
+  const capabilityUrl = isEdgeTts ? EDGE_TTS_ENDPOINT_ID : (config.ttsServerUrl || '')
   const models = isEdgeTts
-    ? { ok: true, models: [getEdgeTtsModelInfo()] }
+    ? (job.ttsCapabilities && job.ttsCapabilitiesUrl === capabilityUrl
+        ? job.ttsCapabilities
+        : { ok: true, models: [getEdgeTtsModelInfo()] })
     : (job.ttsCapabilities && job.ttsCapabilitiesUrl === capabilityUrl
         ? job.ttsCapabilities
         : await getTtsModels(config.ttsServerUrl, localKey))
@@ -2637,7 +2644,7 @@ export async function synthesizeVoice(
       ? (selectedModel as { model_revision: string }).model_revision
       : null
   const profileKey = durationProfileKey({
-    endpoint: isEdgeTts ? 'edge-tts' : config.ttsServerUrl,
+    endpoint: isEdgeTts ? EDGE_TTS_ENDPOINT_ID : config.ttsServerUrl,
     model: selectedModel.id,
     voice: effectiveVoice,
     language,
@@ -2660,7 +2667,7 @@ export async function synthesizeVoice(
       const safeId = safeArtifactSegment(request.cueId)
       const outputPath = join(workDir, `cue-${safeId}-${attempt}.wav`)
       const cacheKey = buildTtsCacheKey({
-        endpoint: isEdgeTts ? 'edge-tts' : config.ttsServerUrl,
+        endpoint: isEdgeTts ? EDGE_TTS_ENDPOINT_ID : config.ttsServerUrl,
         finalSpokenText: request.text,
         language: request.language,
         model: request.model,
@@ -3211,9 +3218,16 @@ async function preflight(job: AutoShortJob): Promise<void> {
   }
   if (config.ttsEnabled) {
     if (config.ttsProvider === 'edge-tts') {
-      const edgeModel = getEdgeTtsModelInfo()
+      const catalog = await preflightStep('kiểm tra Edge-TTS', () => fetchEdgeVoices({ forceRefresh: true }))
+      if (!catalog.ok || catalog.source !== 'live') {
+        throw new Error(catalog.error || 'Không xác nhận được kết nối Microsoft Edge-TTS')
+      }
+      const ttsLanguage = resolveAutoShortTtsLanguage(config)
+      const resolvedVoice = resolveEdgeVoice(catalog.voices, ttsLanguage, config.ttsVoice)
+      await preflightStep('xác nhận kênh tổng hợp Edge-TTS', () => probeEdgeTtsSynthesis(resolvedVoice.id, job.controller.signal))
+      const edgeModel = getEdgeTtsModelInfo(catalog.voices, resolvedVoice.id)
       job.ttsCapabilities = { ok: true, models: [edgeModel] }
-      job.ttsCapabilitiesUrl = 'edge-tts'
+      job.ttsCapabilitiesUrl = EDGE_TTS_ENDPOINT_ID
     } else {
       const key = await loadLocalKey()
       const health = await preflightStep<TtsServerHealth>('kiểm tra TTS', () => checkTtsServerHealth(config.ttsServerUrl, key))

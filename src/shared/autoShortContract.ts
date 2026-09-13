@@ -16,6 +16,7 @@ import { validateAutoShortTemporalEditV2 } from './autoShortCutContract'
 import { isAutoShortSeparationPreset } from './autoShortSeparation'
 import { validateVideoTitleConfig } from './videoTitle'
 import { translationGuidanceError } from './translation'
+import { EDGE_VOICE_ID_PATTERN } from './edgeTtsContract'
 
 export type AutoShortValidation =
   | { ok: true; value: AutoShortStartRequest }
@@ -291,6 +292,14 @@ function validateConfigRecord(raw: Record<string, unknown>): AutoShortConfig | s
   }
   if (!PACE_MODES.has(raw.paceMode as string)) return 'Chế độ nhịp đọc không hợp lệ.'
   if (raw.ttsOptions != null && !isRecord(raw.ttsOptions)) return 'Tùy chọn TTS không hợp lệ.'
+  if (raw.ttsProvider === 'edge-tts') {
+    if (raw.ttsModel !== 'edge-tts') return 'Edge-TTS yêu cầu model edge-tts.'
+    if (typeof raw.ttsVoice !== 'string' || !EDGE_VOICE_ID_PATTERN.test(raw.ttsVoice)) {
+      return 'Voice Edge-TTS không hợp lệ.'
+    }
+    if (raw.ttsRefAudioPath != null || raw.ttsRefTranscript != null) return 'Edge-TTS không hỗ trợ voice clone.'
+    if (raw.ttsOptions != null && Object.keys(raw.ttsOptions).length > 0) return 'AutoShort Edge-TTS không nhận tùy chọn provider.'
+  }
   if (raw.audioMode !== 'replace' && raw.audioMode !== 'mix' && raw.audioMode !== 'separate-vocals') {
     return 'Chế độ âm thanh không hợp lệ.'
   }

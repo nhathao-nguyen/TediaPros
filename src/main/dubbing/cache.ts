@@ -129,19 +129,13 @@ function fsErrorCode(error: unknown): string | undefined {
   return typeof code === 'string' ? code : undefined
 }
 
-/** Commit a validated cache file without ever exposing a partial destination. */
-async function commitCacheAtomically(commitPath: string, targetPath: string): Promise<void> {
-  try {
-    // POSIX and newer Windows runtimes replace an existing file atomically.
-    await rename(commitPath, targetPath)
-    return
-  } catch (error) {
-    // Older Windows implementations reject rename when the destination
-    // exists. Move the complete old entry aside, then move the complete new
-    // entry into place; restore the old entry if the second move fails.
-    if (!['EEXIST', 'EPERM', 'ENOTEMPTY', 'EBUSY'].includes(fsErrorCode(error) || '')) throw error
-  }
+interface CacheCommitTransaction {
+  rollback(): Promise<void>
+  finalize(): void
+}
 
+/** Commit a validated cache file while retaining the previous entry until cancellation can no longer win. */
+async function commitCacheAtomically(commitPath: string, targetPath: string): Promise<CacheCommitTransaction> {
   const backupPath = `${targetPath}.${randomUUID()}.previous.tmp`
   let movedExisting = false
   try {
@@ -151,38 +145,65 @@ async function commitCacheAtomically(commitPath: string, targetPath: string): Pr
     } catch (error) {
       if (fsErrorCode(error) !== 'ENOENT') throw error
     }
-    try {
-      await rename(commitPath, targetPath)
-    } catch (error) {
-      if (movedExisting) await rename(backupPath, targetPath).catch(() => {})
-      throw error
+    await rename(commitPath, targetPath)
+  } catch (error) {
+    if (movedExisting) await rename(backupPath, targetPath).catch(() => {})
+    throw error
+  }
+
+  let closed = false
+  return {
+    async rollback(): Promise<void> {
+      if (closed) return
+      closed = true
+      await rm(targetPath, { force: true }).catch(() => {})
+      if (movedExisting) await rename(backupPath, targetPath)
+    },
+    finalize(): void {
+      if (closed) return
+      closed = true
+      if (movedExisting) void rm(backupPath, { force: true }).catch(() => {})
     }
-  } finally {
-    if (movedExisting) await rm(backupPath, { force: true }).catch(() => {})
   }
 }
 
-function waitForAbort<T>(promise: Promise<T>, signal?: AbortSignal): Promise<T> {
+function cacheAbortError(): Error {
+  const error = new Error('Đã hủy tác vụ')
+  error.name = 'AbortError'
+  return error
+}
+
+function waitForAbort<T>(
+  promise: Promise<T>,
+  signal?: AbortSignal,
+  releaseOnAbort?: () => void | Promise<void>
+): Promise<T> {
   if (!signal) return promise
   if (signal.aborted) {
-    const error = new Error('Đã hủy tác vụ')
-    error.name = 'AbortError'
-    return Promise.reject(error)
+    return Promise.resolve(releaseOnAbort?.()).then(
+      () => Promise.reject(cacheAbortError()),
+      () => Promise.reject(cacheAbortError())
+    )
   }
   return new Promise<T>((resolve, reject) => {
+    let aborted = false
     const onAbort = (): void => {
+      aborted = true
       signal.removeEventListener('abort', onAbort)
-      const error = new Error('Đã hủy tác vụ')
-      error.name = 'AbortError'
-      reject(error)
+      Promise.resolve(releaseOnAbort?.()).then(
+        () => reject(cacheAbortError()),
+        () => reject(cacheAbortError())
+      )
     }
     signal.addEventListener('abort', onAbort, { once: true })
     promise.then(
       (value) => {
+        if (aborted) return
         signal.removeEventListener('abort', onAbort)
         resolve(value)
       },
       (error) => {
+        if (aborted) return
         signal.removeEventListener('abort', onAbort)
         reject(error)
       }
@@ -190,12 +211,20 @@ function waitForAbort<T>(promise: Promise<T>, signal?: AbortSignal): Promise<T> 
   })
 }
 
+function throwIfCacheAborted(signal: AbortSignal): void {
+  if (!signal.aborted) return
+  const error = new Error('Đã hủy tác vụ')
+  error.name = 'AbortError'
+  throw error
+}
+
 /** Filesystem-backed TTS cache with atomic commits and per-key single-flight. */
 export class TtsCacheStore {
   private readonly rootDir: string
   private readonly inFlight = new Map<string, InFlightTtsCacheEntry>()
+  private readonly pendingWaiters = new Map<string, number>()
 
-  constructor(rootDir: string) {
+  constructor(rootDir: string, private readonly hooks: { afterCommit?: () => void | Promise<void> } = {}) {
     this.rootDir = rootDir
   }
 
@@ -210,56 +239,92 @@ export class TtsCacheStore {
     options: { bypass?: boolean } = {}
   ): Promise<TtsCacheValue> {
     const targetPath = this.cachePath(key)
-    if (!options.bypass && await isCompleteCacheFile(targetPath)) {
-      return { path: targetPath, fromCache: true }
-    }
+    this.pendingWaiters.set(key, (this.pendingWaiters.get(key) || 0) + 1)
 
-    let entry = this.inFlight.get(key)
-    if (!entry) {
-      const controller = new AbortController()
-      const temporaryPath = join(this.rootDir, `.${safeCacheSegment(key)}.${randomUUID()}.producer.tmp`)
-      const created: InFlightTtsCacheEntry = {
-        promise: Promise.resolve({ path: targetPath, fromCache: false }),
-        controller,
-        waiters: 0,
-        settled: false
-      }
-      created.promise = (async (): Promise<TtsCacheValue> => {
-        try {
-          await mkdir(this.rootDir, { recursive: true })
-          const produced = await producer(controller.signal, temporaryPath)
-          if (!produced?.path || !(await isCompleteCacheFile(produced.path))) {
-            throw new Error('TTS producer không tạo ra file audio hoàn chỉnh.')
-          }
-          const commitPath = join(this.rootDir, `.${safeCacheSegment(key)}.${randomUUID()}.commit.tmp`)
-          try {
-            await copyFile(produced.path, commitPath)
-            if (!(await isCompleteCacheFile(commitPath))) {
-              throw new Error('TTS cache tạm không hợp lệ.')
-            }
-            await commitCacheAtomically(commitPath, targetPath)
-          } finally {
-            await rm(commitPath, { force: true }).catch(() => {})
-          }
-          return { path: targetPath, fromCache: false, voice: produced.voice }
-        } finally {
-          await rm(temporaryPath, { force: true }).catch(() => {})
-        }
-      })()
-      created.promise.finally(() => {
-        created.settled = true
-        if (this.inFlight.get(key) === created) this.inFlight.delete(key)
-      }).catch(() => {})
-      this.inFlight.set(key, created)
-      entry = created
-    }
-
-    entry.waiters++
+    let entry: InFlightTtsCacheEntry | undefined
     try {
-      return await waitForAbort(entry.promise, waiterSignal)
+      if (!options.bypass && await isCompleteCacheFile(targetPath)) {
+        return { path: targetPath, fromCache: true }
+      }
+
+      entry = this.inFlight.get(key)
+      if (!entry) {
+        const controller = new AbortController()
+        const temporaryPath = join(this.rootDir, `.${safeCacheSegment(key)}.${randomUUID()}.producer.tmp`)
+        const created: InFlightTtsCacheEntry = {
+          promise: Promise.resolve({ path: targetPath, fromCache: false }),
+          controller,
+          waiters: 0,
+          settled: false
+        }
+        created.promise = (async (): Promise<TtsCacheValue> => {
+          let transaction: CacheCommitTransaction | undefined
+          let voice: string | undefined
+          try {
+            try {
+              await mkdir(this.rootDir, { recursive: true })
+              const produced = await producer(controller.signal, temporaryPath)
+              voice = produced.voice
+              throwIfCacheAborted(controller.signal)
+              if (!produced?.path || !(await isCompleteCacheFile(produced.path))) {
+                throw new Error('TTS producer không tạo ra file audio hoàn chỉnh.')
+              }
+              const commitPath = join(this.rootDir, `.${safeCacheSegment(key)}.${randomUUID()}.commit.tmp`)
+              try {
+                await copyFile(produced.path, commitPath)
+                throwIfCacheAborted(controller.signal)
+                if (!(await isCompleteCacheFile(commitPath))) {
+                  throw new Error('TTS cache tạm không hợp lệ.')
+                }
+                throwIfCacheAborted(controller.signal)
+                transaction = await commitCacheAtomically(commitPath, targetPath)
+                await this.hooks.afterCommit?.()
+                throwIfCacheAborted(controller.signal)
+              } finally {
+                await rm(commitPath, { force: true }).catch(() => {})
+              }
+            } finally {
+              await rm(temporaryPath, { force: true }).catch(() => {})
+            }
+            throwIfCacheAborted(controller.signal)
+            transaction?.finalize()
+            return { path: targetPath, fromCache: false, voice }
+          } catch (error) {
+            await transaction?.rollback()
+            throw error
+          }
+        })()
+        created.promise.finally(() => {
+          created.settled = true
+          if (this.inFlight.get(key) === created) this.inFlight.delete(key)
+        }).catch(() => {})
+        this.inFlight.set(key, created)
+        entry = created
+      }
+
+      entry.waiters++
     } finally {
-      entry.waiters--
-      if (entry.waiters === 0 && !entry.settled) entry.controller.abort()
+      const pending = (this.pendingWaiters.get(key) || 1) - 1
+      if (pending > 0) this.pendingWaiters.set(key, pending)
+      else this.pendingWaiters.delete(key)
+      const current = this.inFlight.get(key)
+      if (pending === 0 && current?.waiters === 0 && !current.settled) current.controller.abort()
+    }
+
+    let waiterReleased = false
+    const releaseWaiter = (): Promise<void> | undefined => {
+      if (waiterReleased) return undefined
+      waiterReleased = true
+      entry!.waiters--
+      if (entry!.waiters !== 0 || entry!.settled || (this.pendingWaiters.get(key) || 0) !== 0) return undefined
+      entry!.controller.abort()
+      return entry!.promise.then(() => undefined, () => undefined)
+    }
+
+    try {
+      return await waitForAbort(entry!.promise, waiterSignal, releaseWaiter)
+    } finally {
+      await releaseWaiter()
     }
   }
 }

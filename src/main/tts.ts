@@ -2,6 +2,7 @@ import { app, dialog } from 'electron'
 import { mkdir, readFile, writeFile, stat } from 'node:fs/promises'
 import { basename, dirname, join } from 'node:path'
 import { createHash, randomUUID } from 'node:crypto'
+import { extname } from 'node:path'
 import { logInfo, logWarn, errLabel } from './logger'
 import {
   DEFAULT_AI_SERVER_URL,
@@ -15,16 +16,16 @@ import {
 import { getGlobalResourceManager } from './autoShortResourceManager'
 import {
   generateEdgeTTS,
-  generateEdgeTTSBatch,
   getEdgeTtsModelInfo,
   DEFAULT_EDGE_VOICES,
   fetchEdgeVoices,
   type EdgeVoiceDefinition
 } from './edgeTts'
+import { assertTtsAudioHeader, normalizeTtsAudioOutputPath, ttsAudioFormat } from '../shared/ttsAudioFormat'
+import { resolveTtsProvider } from '../shared/edgeTtsContract'
 
 export {
   generateEdgeTTS,
-  generateEdgeTTSBatch,
   getEdgeTtsModelInfo,
   DEFAULT_EDGE_VOICES,
   fetchEdgeVoices,
@@ -290,7 +291,13 @@ export async function generateSpeech(
   signal?: AbortSignal,
   savePath?: string
 ): Promise<TtsGenerateResult> {
-  if (req.provider === 'edge-tts') {
+  let provider
+  try {
+    provider = resolveTtsProvider(req.provider)
+  } catch (error) {
+    return { ok: false, error: error instanceof Error ? error.message : String(error) }
+  }
+  if (provider === 'edge-tts') {
     return generateEdgeTTS(req, signal, savePath)
   }
 
@@ -531,18 +538,25 @@ export async function generateVoiceClone(
 
 export async function saveTtsAudio(
   audioBase64: string,
-  defaultName = 'voice-output.wav'
+  defaultName = 'voice-output.wav',
+  audioMimeType?: string
 ): Promise<{ ok: boolean; path?: string; error?: string }> {
   if (!audioBase64) {
     return { ok: false, error: 'Dữ liệu âm thanh rỗng' }
   }
 
   try {
+    const format = ttsAudioFormat(audioMimeType)
+    const normalizedName = extname(defaultName).toLowerCase() === `.${format.extension}`
+      ? defaultName
+      : `${defaultName.replace(/\.[^.]+$/u, '')}.${format.extension}`
+    const buffer = Buffer.from(audioBase64, 'base64')
+    assertTtsAudioHeader(buffer, format.mime)
     const result = await dialog.showSaveDialog({
       title: 'Lưu file âm thanh TTS',
-      defaultPath: defaultName,
+      defaultPath: normalizedName,
       filters: [
-        { name: 'WAV Audio (*.wav)', extensions: ['wav'] },
+        { name: `${format.extension.toUpperCase()} Audio (*.${format.extension})`, extensions: [format.extension] },
         { name: 'All Files (*.*)', extensions: ['*'] }
       ]
     })
@@ -551,9 +565,9 @@ export async function saveTtsAudio(
       return { ok: false }
     }
 
-    const buffer = Buffer.from(audioBase64, 'base64')
-    await writeFile(result.filePath, buffer)
-    return { ok: true, path: result.filePath }
+    const outputPath = normalizeTtsAudioOutputPath(result.filePath, format.mime)
+    await writeFile(outputPath, buffer)
+    return { ok: true, path: outputPath }
   } catch (err: any) {
     return { ok: false, error: `Không thể lưu file: ${errLabel(err)}` }
   }

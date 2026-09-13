@@ -92,6 +92,38 @@ test('legacy config migrates to manual and accurate', () => {
     assert.equal(result.value.config.blurMode, 'manual')
     assert.equal(result.value.config.ocrBlurProfile, 'accurate')
     assert.equal(result.value.config.subtitlePlacementMode, 'manual')
+    assert.equal(result.value.config.ttsProvider, undefined)
+  }
+})
+
+test('AutoShort Edge-TTS accepts only explicit Edge identity without clone or provider options', () => {
+  const valid = validateAutoShortStartRequest(autoShortRequest({
+    ttsEnabled: true,
+    ttsProvider: 'edge-tts',
+    ttsModel: 'edge-tts',
+    ttsVoice: 'es-ES-ElviraNeural',
+    ttsLanguage: 'es',
+    ttsSpeed: 1.8,
+    paceMode: 'source-adaptive'
+  }))
+  assert.equal(valid.ok, true)
+
+  for (const invalid of [
+    { ttsModel: 'tts-local' },
+    { ttsVoice: 'clone:old-local-id' },
+    { ttsRefAudioPath: 'C:\\media\\voice.wav' },
+    { ttsOptions: { timeoutMs: 1 } }
+  ]) {
+    const result = validateAutoShortStartRequest(autoShortRequest({
+      ttsEnabled: true,
+      ttsProvider: 'edge-tts',
+      ttsModel: 'edge-tts',
+      ttsVoice: 'es-ES-ElviraNeural',
+      ttsLanguage: 'es',
+      paceMode: 'source-adaptive',
+      ...invalid
+    } as Partial<AutoShortConfig>))
+    assert.equal(result.ok, false)
   }
 })
 

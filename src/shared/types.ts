@@ -752,6 +752,14 @@ export interface EdgeVoiceDefinition {
   isDefault?: boolean
 }
 
+export interface EdgeVoiceCatalogResult {
+  ok: boolean
+  voices: EdgeVoiceDefinition[]
+  source: 'live' | 'fallback'
+  checkedAtUtc: string
+  error?: string
+}
+
 export interface TtsServerHealth {
   ok: boolean
   status?: string

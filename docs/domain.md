@@ -18,6 +18,7 @@ Tất cả các ngưỡng âm thanh đều được hiệu chuẩn vật lý, đ
 - **Speech Offset Sensitivity (`-50 dB`):** Ngưỡng xác định kết thúc phát âm.
 - **Offset Continuous Duration (`0.10s` / 100ms):** Đảm bảo âm đuôi của từ không bị cắt cụt đột ngột.
 - **Protected Gap (`AUTO_SHORT_TTS_MIN_GAP_SECONDS = 0.50s`):** Khoảng lặng tự nhiên tối thiểu giữa câu kết thúc và câu tiếp theo. Giữ cho giọng đọc không bị dồn dập, thở dốc.
+- **TTS Provider:** Config cũ hoặc thiếu provider được hiểu là `local-tts`. `edge-tts` phải có model/voice explicit, không nhận clone hoặc provider options trong AutoShort, tổng hợp ở `1.0x`; tempo để khớp timeline do DSP planner áp dụng sau đó trong trần `1.80x`.
 
 ### 1.3. Chính Sách Điều Chỉnh Nhịp Độ (Dubbing Tempo Policy)
 Khi dịch sang ngôn ngữ mới (vd: Tiếng Trung $\rightarrow$ Tiếng Việt), số lượng âm tiết thường dài hơn 15–35%:

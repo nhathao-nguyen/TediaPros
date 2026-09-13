@@ -90,6 +90,58 @@ test('TTS cache cancelled waiter does not cancel a producer still serving anothe
   }
 })
 
+test('TTS cache rolls back a new commit when the last waiter cancels during publication', async () => {
+  const root = await mkdtemp(join(tmpdir(), 'tedia-tts-cache-last-cancel-'))
+  const controller = new AbortController()
+  try {
+    const store = new TtsCacheStore(root, { afterCommit: () => controller.abort() })
+    const pending = store.getOrCreate('cancelled-commit', controller.signal, async (_signal, tempPath) => {
+      await writeFile(tempPath, validWavBytes(0x31))
+      return { path: tempPath }
+    })
+    await assert.rejects(pending, /hủy|abort/i)
+    assert.equal(await stat(store.cachePath('cancelled-commit')).then(() => true).catch(() => false), false)
+  } finally {
+    await rm(root, { recursive: true, force: true })
+  }
+})
+
+test('TTS cache keeps rollback available while post-commit cleanup is still running', async () => {
+  const root = await mkdtemp(join(tmpdir(), 'tedia-tts-cache-late-cancel-'))
+  const controller = new AbortController()
+  try {
+    const store = new TtsCacheStore(root, {
+      afterCommit: () => { setImmediate(() => controller.abort()) }
+    })
+    const pending = store.getOrCreate('late-cancelled-commit', controller.signal, async (_signal, tempPath) => {
+      await writeFile(tempPath, validWavBytes(0x39))
+      return { path: tempPath }
+    })
+    await assert.rejects(pending, /hủy|abort/i)
+    assert.equal(await stat(store.cachePath('late-cancelled-commit')).then(() => true).catch(() => false), false)
+  } finally {
+    await rm(root, { recursive: true, force: true })
+  }
+})
+
+test('TTS cache restores a previous entry when a bypass commit is cancelled', async () => {
+  const root = await mkdtemp(join(tmpdir(), 'tedia-tts-cache-bypass-rollback-'))
+  const controller = new AbortController()
+  try {
+    const cachePath = join(root, 'rollback-key.wav')
+    await writeFile(cachePath, validWavBytes(0x41))
+    const store = new TtsCacheStore(root, { afterCommit: () => controller.abort() })
+    const pending = store.getOrCreate('rollback-key', controller.signal, async (_signal, tempPath) => {
+      await writeFile(tempPath, validWavBytes(0x42))
+      return { path: tempPath }
+    }, { bypass: true })
+    await assert.rejects(pending, /hủy|abort/i)
+    assert.deepEqual(await readFile(cachePath), validWavBytes(0x41))
+  } finally {
+    await rm(root, { recursive: true, force: true })
+  }
+})
+
 test('TTS cache key changes when reference content or model revision changes', () => {
   const base = {
     endpoint: 'http://127.0.0.1:8000',

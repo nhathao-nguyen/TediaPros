@@ -130,6 +130,7 @@ sequenceDiagram
 
 ### 3.1. `src/renderer/` (Frontend React 19)
 - **Ảnh/chữ AutoShort:** nút `Ảnh / Chữ` và preview dùng cấu hình normalized trên khung đầu ra. Coordinator chuyển `overlays` vào render; `autoShortOverlays.ts` ghép ảnh/ASS sau xử lý nguồn và khung 9:16, trong cùng lượt FFmpeg. Xem [Ảnh/chữ xuyên suốt](autoshort-overlays.md).
+- **Provider giọng đọc:** Local AI Server là mặc định tương thích. Edge-TTS đi qua typed contract, origin-gated IPC và transport có deadline/abort. AutoShort chỉ chạy sau catalog live + synthesis probe; audio phải full-decode thành PCM WAV trước khi vào cache v2, rồi tiếp tục qua dubbing planner và batch journal. Xem [Microsoft Edge-TTS](edge-tts.md).
 - **Trách nhiệm:** Trình diễn giao diện, nhận input từ người dùng, hiển thị tiến độ và logs thời gian thực.
 - **Ranh giới:** Tuyệt đối không gọi trực tiếp API Node.js (`fs`, `child_process`, `path`). Mọi tương tác với hệ thống phải qua `window.api` (preload bridge).
 

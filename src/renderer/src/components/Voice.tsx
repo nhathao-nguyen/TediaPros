@@ -11,6 +11,8 @@ import {
   type TtsServerHealth,
   type TtsSpeechRequest
 } from '../../../shared/types'
+import { compatibleEdgeVoices, resolveEdgeVoice } from '../../../shared/edgeTtsContract'
+import { ttsAudioFormat } from '../../../shared/ttsAudioFormat'
 import { localMediaSource } from '../lib/localMedia'
 import { usePersistedState } from '../lib/persist'
 
@@ -89,6 +91,7 @@ interface HistoryItem {
   durationMs: number
   generationMs: number
   audioBase64: string
+  audioMimeType?: string
   savedPath?: string
   createdAt: string
 }
@@ -130,28 +133,51 @@ export default function Voice(): JSX.Element {
   const [selectedEdgeVoice, setSelectedEdgeVoice] = usePersistedState('tblao.voice.edgeVoice', 'vi-VN-HoaiMyNeural')
   const [edgePitch, setEdgePitch] = usePersistedState('tblao.voice.edgePitch', '+0Hz')
   const [edgeVoices, setEdgeVoices] = useState<EdgeVoiceDefinition[]>([])
-
-  useEffect(() => {
-    let active = true
-    window.api
-      .ttsGetEdgeVoices()
-      .then((voices) => {
-        if (active && Array.isArray(voices) && voices.length > 0) {
-          setEdgeVoices(voices)
-        }
-      })
-      .catch(() => {
-        /* ignore */
-      })
-    return () => {
-      active = false
-    }
-  }, [])
+  const [edgeCatalogState, setEdgeCatalogState] = useState<'idle' | 'checking' | 'live' | 'fallback'>('idle')
+  const [edgeCatalogError, setEdgeCatalogError] = useState<string | null>(null)
   const [mode, setMode] = useState<'speech' | 'clone'>('speech')
   const [selectedModel, setSelectedModel] = usePersistedState('tblao.tts.model', 'tts-vietnamese')
   const [selectedLanguage, setSelectedLanguage] = usePersistedState('tblao.tts.lang', 'vi')
   const [selectedVoice, setSelectedVoice] = usePersistedState('tblao.tts.voice', 'Adam')
   const [speed, setSpeed] = usePersistedState('tblao.tts.speed', 1.0)
+
+  useEffect(() => {
+    if (ttsProvider !== 'edge-tts') return
+    let active = true
+    setEdgeCatalogState('checking')
+    setEdgeCatalogError(null)
+    window.api
+      .ttsGetEdgeVoices()
+      .then((catalog) => {
+        if (active && catalog.voices.length > 0) {
+          setEdgeVoices(catalog.voices)
+          setEdgeCatalogState(catalog.source)
+          setEdgeCatalogError(catalog.error || null)
+        }
+      })
+      .catch((reason: unknown) => {
+        if (active) {
+          setEdgeCatalogState('fallback')
+          setEdgeCatalogError(reason instanceof Error ? reason.message : String(reason))
+        }
+      })
+    return () => {
+      active = false
+    }
+  }, [ttsProvider])
+  useEffect(() => {
+    if (ttsProvider !== 'edge-tts' || edgeVoices.length === 0) return
+    try {
+      resolveEdgeVoice(edgeVoices, selectedLanguage, selectedEdgeVoice)
+    } catch {
+      try {
+        setSelectedEdgeVoice(resolveEdgeVoice(edgeVoices, selectedLanguage).id)
+      } catch {
+        // Generation reports the unsupported language without silently changing provider.
+      }
+    }
+  }, [edgeVoices, selectedEdgeVoice, selectedLanguage, setSelectedEdgeVoice, ttsProvider])
+  const selectableEdgeVoices = compatibleEdgeVoices(edgeVoices, selectedLanguage)
   const [text, setText] = usePersistedState(
     'tblao.tts.text',
     'Chào bạn! Chúc bạn một ngày làm việc thật nhiều năng lượng và hiệu quả.'
@@ -359,6 +385,7 @@ export default function Voice(): JSX.Element {
             durationMs: res.durationMs || 0,
             generationMs: res.generationMs || 0,
             audioBase64: res.audioBase64!,
+            audioMimeType: res.audioMimeType,
             savedPath: res.savedPath,
             createdAt: new Date().toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' })
           },
@@ -497,6 +524,7 @@ export default function Voice(): JSX.Element {
         durationMs: res.durationMs || 0,
         generationMs: res.generationMs || 0,
         audioBase64: res.audioBase64,
+        audioMimeType: res.audioMimeType,
         savedPath: res.savedPath,
         createdAt: new Date().toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit', second: '2-digit' })
       }
@@ -519,14 +547,15 @@ export default function Voice(): JSX.Element {
   }
 
   // Save current audio to disk
-  const handleSaveAudio = async (base64Data?: string): Promise<void> => {
+  const handleSaveAudio = async (base64Data?: string, mimeType?: string): Promise<void> => {
     const data = base64Data || lastResult?.audioBase64
     if (!data) return
     setSavingAudio(true)
     setSaveSuccessMsg(null)
-    const isMp3 = lastResult?.audioMimeType?.includes('mpeg') || ttsProvider === 'edge-tts'
-    const fileName = `voice-${Date.now()}.${isMp3 ? 'mp3' : 'wav'}`
-    const res = await window.api.ttsSaveAudio(data, fileName)
+    const resultMime = mimeType || lastResult?.audioMimeType
+    const format = ttsAudioFormat(resultMime)
+    const fileName = `voice-${Date.now()}.${format.extension}`
+    const res = await window.api.ttsSaveAudio(data, fileName, format.mime)
     setSavingAudio(false)
     if (res.ok && res.path) {
       setSaveSuccessMsg(`Đã lưu file thành công tại: ${res.path}`)
@@ -540,10 +569,10 @@ export default function Voice(): JSX.Element {
     setText(sample.text)
     setSelectedLanguage(sample.lang)
     if (ttsProvider === 'edge-tts') {
-      if (sample.lang === 'vi') {
-        setSelectedEdgeVoice('vi-VN-HoaiMyNeural')
-      } else if (sample.lang === 'en') {
-        setSelectedEdgeVoice('en-US-JennyNeural')
+      try {
+        setSelectedEdgeVoice(resolveEdgeVoice(edgeVoices, sample.lang).id)
+      } catch {
+        setError(`Edge-TTS chưa có giọng phù hợp cho ${sample.lang}`)
       }
     } else {
       const matchingModel = ttsModels.find((m) => m.id === sample.model)
@@ -565,7 +594,7 @@ export default function Voice(): JSX.Element {
             <strong>Động cơ giọng đọc (TTS Engine)</strong>
             <div className="muted small" style={{ marginTop: 2 }}>
               {ttsProvider === 'edge-tts'
-                ? 'Microsoft Edge-TTS trực tuyến: Tự nhiên, miễn phí, không yêu cầu bật tts-server hay GPU'
+                ? 'Microsoft Edge-TTS trực tuyến: giọng tự nhiên, không yêu cầu bật tts-server hay GPU'
                 : 'Local AI Server: Chạy tts-server nội bộ trên máy (Chatterbox, Vieneu, Voice Clone)'}
             </div>
           </div>
@@ -700,8 +729,11 @@ export default function Voice(): JSX.Element {
           {ttsProvider === 'edge-tts' ? (
             <>
               <div className="voice-status-line" style={{ marginBottom: 14 }}>
-                <span className="voice-badge is-online">🟢 Edge-TTS (Trực tuyến)</span>
-                <span className="voice-pill">⚡ Miễn phí · Không cần AI Server / GPU</span>
+                <span className={`voice-badge is-${edgeCatalogState === 'live' ? 'online' : edgeCatalogState === 'checking' ? 'checking' : 'offline'}`}>
+                  {edgeCatalogState === 'live' ? '🟢 Edge-TTS catalog trực tuyến' : edgeCatalogState === 'checking' ? '⏳ Đang kiểm tra Edge-TTS…' : '🟠 Edge-TTS catalog dự phòng'}
+                </span>
+                <span className="voice-pill">⚡ Trực tuyến · Không cần AI Server / GPU</span>
+                {edgeCatalogError && <span className="muted small">{edgeCatalogError}</span>}
               </div>
 
               <div className="voice-form-section">
@@ -712,153 +744,20 @@ export default function Voice(): JSX.Element {
                   onChange={(e) => {
                     const voiceId = e.target.value
                     setSelectedEdgeVoice(voiceId)
-                    const voiceObj = edgeVoices.find((v) => v.id === voiceId)
-                    if (voiceObj?.language) {
-                      setSelectedLanguage(voiceObj.language)
-                    }
+                    const voiceObj = edgeVoices.find((voice) => voice.id === voiceId)
+                    if (voiceObj?.language) setSelectedLanguage(voiceObj.language)
                   }}
                 >
-                  <optgroup label="Tiếng Việt (Khuyên dùng)">
-                    <option value="vi-VN-HoaiMyNeural">🇻🇳 Hoài My (Nữ · Chuẩn miền Bắc)</option>
-                    <option value="vi-VN-NamMinhNeural">🇻🇳 Nam Minh (Nam · Chuẩn miền Bắc)</option>
-                  </optgroup>
-                  <optgroup label="Tiếng Anh - Mỹ (English US)">
-                    <option value="en-US-JennyNeural">🇺🇸 Jenny (US · Nữ · Tự nhiên)</option>
-                    <option value="en-US-GuyNeural">🇺🇸 Guy (US · Nam · Truyền cảm)</option>
-                    <option value="en-US-AriaNeural">🇺🇸 Aria (US · Nữ · Sôi nổi)</option>
-                  </optgroup>
-                  <optgroup label="Tiếng Anh - Anh (English UK)">
-                    <option value="en-GB-SoniaNeural">🇬🇧 Sonia (UK · Nữ · London)</option>
-                    <option value="en-GB-RyanNeural">🇬🇧 Ryan (UK · Nam · Trầm ấm)</option>
-                  </optgroup>
-                  <optgroup label="Tiếng Anh - Úc (English Australia)">
-                    <option value="en-AU-NatashaNeural">🇦🇺 Natasha (Úc · Nữ · Tự nhiên)</option>
-                    <option value="en-AU-WilliamMultilingualNeural">🇦🇺 William (Úc · Nam · Đa ngữ)</option>
-                  </optgroup>
-                  <optgroup label="Đức, Ý, Tây Ban Nha">
-                    <option value="de-DE-KatjaNeural">🇩🇪 Katja (Đức · Nữ)</option>
-                    <option value="de-DE-ConradNeural">🇩🇪 Conrad (Đức · Nam)</option>
-                    <option value="it-IT-ElsaNeural">🇮🇹 Elsa (Ý · Nữ)</option>
-                    <option value="it-IT-DiegoNeural">🇮🇹 Diego (Ý · Nam)</option>
-                    <option value="es-ES-ElviraNeural">🇪🇸 Elvira (Tây Ban Nha · Nữ)</option>
-                    <option value="es-ES-AlvaroNeural">🇪🇸 Alvaro (Tây Ban Nha · Nam)</option>
-                  </optgroup>
-                  <optgroup label="Bồ Đào Nha & Brazil">
-                    <option value="pt-BR-FranciscaNeural">🇧🇷 Francisca (Brazil · Nữ)</option>
-                    <option value="pt-BR-AntonioNeural">🇧🇷 Antonio (Brazil · Nam)</option>
-                    <option value="pt-PT-RaquelNeural">🇵🇹 Raquel (Bồ Đào Nha · Nữ)</option>
-                    <option value="pt-PT-DuarteNeural">🇵🇹 Duarte (Bồ Đào Nha · Nam)</option>
-                  </optgroup>
-                  <optgroup label="Đông Á: Hàn, Nhật, Trung">
-                    <option value="ko-KR-SunHiNeural">🇰🇷 SunHi (Hàn · Nữ)</option>
-                    <option value="ko-KR-InJoonNeural">🇰🇷 InJoon (Hàn · Nam)</option>
-                    <option value="ja-JP-NanamiNeural">🇯🇵 Nanami (Nhật · Nữ)</option>
-                    <option value="ja-JP-KeitaNeural">🇯🇵 Keita (Nhật · Nam)</option>
-                    <option value="zh-CN-XiaoxiaoNeural">🇨🇳 Xiaoxiao (Trung · Nữ)</option>
-                    <option value="zh-CN-YunxiNeural">🇨🇳 Yunxi (Trung · Nam)</option>
-                  </optgroup>
-                  <optgroup label="Đông Nam Á: Thái, Indo, Philippines">
-                    <option value="th-TH-PremwadeeNeural">🇹🇭 Premwadee (Thái · Nữ)</option>
-                    <option value="th-TH-NiwatNeural">🇹🇭 Niwat (Thái · Nam)</option>
-                    <option value="id-ID-GadisNeural">🇮🇩 Gadis (Indo · Nữ)</option>
-                    <option value="id-ID-ArdiNeural">🇮🇩 Ardi (Indo · Nam)</option>
-                    <option value="fil-PH-BlessicaNeural">🇵🇭 Blessica (Philippines · Nữ)</option>
-                    <option value="fil-PH-AngeloNeural">🇵🇭 Angelo (Philippines · Nam)</option>
-                  </optgroup>
-                  <optgroup label="Pháp & Nga">
-                    <option value="fr-FR-DeniseNeural">🇫🇷 Denise (Pháp · Nữ)</option>
-                    <option value="fr-FR-HenriNeural">🇫🇷 Henri (Pháp · Nam)</option>
-                    <option value="ru-RU-SvetlanaNeural">🇷🇺 Svetlana (Nga · Nữ)</option>
-                    <option value="ru-RU-DmitryNeural">🇷🇺 Dmitry (Nga · Nam)</option>
-                  </optgroup>
-                  {edgeVoices.filter(
-                    (v) =>
-                      ![
-                        'vi-VN-HoaiMyNeural',
-                        'vi-VN-NamMinhNeural',
-                        'en-US-JennyNeural',
-                        'en-US-GuyNeural',
-                        'en-US-AriaNeural',
-                        'en-GB-SoniaNeural',
-                        'en-GB-RyanNeural',
-                        'en-AU-NatashaNeural',
-                        'en-AU-WilliamMultilingualNeural',
-                        'de-DE-KatjaNeural',
-                        'de-DE-ConradNeural',
-                        'it-IT-ElsaNeural',
-                        'it-IT-DiegoNeural',
-                        'es-ES-ElviraNeural',
-                        'es-ES-AlvaroNeural',
-                        'pt-BR-FranciscaNeural',
-                        'pt-BR-AntonioNeural',
-                        'pt-PT-RaquelNeural',
-                        'pt-PT-DuarteNeural',
-                        'ko-KR-SunHiNeural',
-                        'ko-KR-InJoonNeural',
-                        'ja-JP-NanamiNeural',
-                        'ja-JP-KeitaNeural',
-                        'zh-CN-XiaoxiaoNeural',
-                        'zh-CN-YunxiNeural',
-                        'th-TH-PremwadeeNeural',
-                        'th-TH-NiwatNeural',
-                        'id-ID-GadisNeural',
-                        'id-ID-ArdiNeural',
-                        'fil-PH-BlessicaNeural',
-                        'fil-PH-AngeloNeural',
-                        'fr-FR-DeniseNeural',
-                        'fr-FR-HenriNeural',
-                        'ru-RU-SvetlanaNeural',
-                        'ru-RU-DmitryNeural'
-                      ].includes(v.id)
-                  ).length > 0 && (
-                    <optgroup label="Các giọng quốc tế khác (hơn 300+ giọng)">
-                      {edgeVoices
-                        .filter(
-                          (v) =>
-                            ![
-                              'vi-VN-HoaiMyNeural',
-                              'vi-VN-NamMinhNeural',
-                              'en-US-JennyNeural',
-                              'en-US-GuyNeural',
-                              'en-US-AriaNeural',
-                              'en-GB-SoniaNeural',
-                              'en-GB-RyanNeural',
-                              'en-AU-NatashaNeural',
-                              'en-AU-WilliamMultilingualNeural',
-                              'de-DE-KatjaNeural',
-                              'de-DE-ConradNeural',
-                              'it-IT-ElsaNeural',
-                              'it-IT-DiegoNeural',
-                              'es-ES-ElviraNeural',
-                              'es-ES-AlvaroNeural',
-                              'pt-BR-FranciscaNeural',
-                              'pt-BR-AntonioNeural',
-                              'pt-PT-RaquelNeural',
-                              'pt-PT-DuarteNeural',
-                              'ko-KR-SunHiNeural',
-                              'ko-KR-InJoonNeural',
-                              'ja-JP-NanamiNeural',
-                              'ja-JP-KeitaNeural',
-                              'zh-CN-XiaoxiaoNeural',
-                              'zh-CN-YunxiNeural',
-                              'th-TH-PremwadeeNeural',
-                              'th-TH-NiwatNeural',
-                              'id-ID-GadisNeural',
-                              'id-ID-ArdiNeural',
-                              'fil-PH-BlessicaNeural',
-                              'fil-PH-AngeloNeural',
-                              'fr-FR-DeniseNeural',
-                              'fr-FR-HenriNeural',
-                              'ru-RU-SvetlanaNeural',
-                              'ru-RU-DmitryNeural'
-                            ].includes(v.id)
-                        )
-                        .map((v) => (
-                          <option key={v.id} value={v.id}>
-                            {v.name} ({v.locale})
-                          </option>
-                        ))}
-                    </optgroup>
+                  {selectableEdgeVoices.length > 0 ? (
+                    selectableEdgeVoices.map((voice) => (
+                      <option key={voice.id} value={voice.id}>
+                        {voice.name} · {voice.locale}
+                      </option>
+                    ))
+                  ) : (
+                    <option value={selectedEdgeVoice} disabled>
+                      {edgeCatalogState === 'checking' ? 'Đang tải catalog giọng…' : 'Không có giọng phù hợp với ngôn ngữ đã chọn'}
+                    </option>
                   )}
                 </select>
               </div>
@@ -1250,7 +1149,7 @@ export default function Voice(): JSX.Element {
                     onClick={() => handleSaveAudio()}
                     disabled={savingAudio}
                   >
-                    {savingAudio ? 'Đang lưu…' : `💾 Lưu file âm thanh (${ttsProvider === 'edge-tts' ? '.mp3' : '.wav'})`}
+                    {savingAudio ? 'Đang lưu…' : `💾 Lưu file âm thanh (.${ttsAudioFormat(lastResult?.audioMimeType).extension})`}
                   </button>
                 </div>
               </div>
@@ -1290,7 +1189,7 @@ export default function Voice(): JSX.Element {
                         onClick={() => {
                           const playUrl = h.savedPath
                             ? localMediaSource(h.savedPath)
-                            : `data:audio/wav;base64,${h.audioBase64}`
+                            : `data:${h.audioMimeType || 'audio/wav'};base64,${h.audioBase64}`
                           setCurrentAudioUrl(playUrl)
                           setTimeout(() => {
                             if (audioRef.current) {
@@ -1305,7 +1204,7 @@ export default function Voice(): JSX.Element {
                       <button
                         type="button"
                         className="btn small"
-                        onClick={() => handleSaveAudio(h.audioBase64)}
+                        onClick={() => handleSaveAudio(h.audioBase64, h.audioMimeType)}
                       >
                         💾 Lưu
                       </button>

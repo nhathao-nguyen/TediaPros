@@ -92,6 +92,7 @@ import { assessContentQuality } from './autoShortContentQuality'
 import { separateSourceAudio } from './separation/pipeline'
 import { errLabel, logInfo, logWarn, logError } from './logger'
 import type { getTtsModels } from './tts'
+import { EDGE_TTS_ENDPOINT_ID } from './edgeTtsIdentity'
 import { runSttnRemoval } from './inpainting/runner'
 import { STTN_MODEL } from './inpainting/assets'
 import { buildTranslationIdentity, type TranslationArtifact } from './translation/checkpoint'
@@ -1434,7 +1435,8 @@ export function createAutoShortItemProcessor(
           ttsCapabilitiesUrl: context.ttsCapabilitiesUrl,
           resourceManager
         }
-        const synthesized = await telemetry.withStageSpan('tts', { endpointAlias: sanitizeEndpointAlias(config.ttsServerUrl), model: config.ttsModel }, async (span) => {
+        const ttsEndpoint = config.ttsProvider === 'edge-tts' ? EDGE_TTS_ENDPOINT_ID : config.ttsServerUrl
+        const synthesized = await telemetry.withStageSpan('tts', { endpointAlias: sanitizeEndpointAlias(ttsEndpoint), model: config.ttsModel }, async (span) => {
           const res = await synthesizeVoice(
             jobAdapter,
             item,
