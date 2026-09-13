@@ -1,0 +1,62 @@
+{
+  "checkedAtUtc": "2026-09-13T02:58:30.792Z",
+  "provider": "edge-tts",
+  "adapter": "msedge-tts@2.0.7",
+  "voice": "vi-VN-HoaiMyNeural",
+  "total": 8,
+  "passed": 8,
+  "failed": 0,
+  "minMs": 1185,
+  "medianMs": 1304,
+  "maxMs": 3263,
+  "results": [
+    {
+      "label": "sequential-1",
+      "ok": true,
+      "elapsedMs": 3263,
+      "bytes": 47808
+    },
+    {
+      "label": "sequential-2",
+      "ok": true,
+      "elapsedMs": 2740,
+      "bytes": 48672
+    },
+    {
+      "label": "sequential-3",
+      "ok": true,
+      "elapsedMs": 1848,
+      "bytes": 48384
+    },
+    {
+      "label": "sequential-4",
+      "ok": true,
+      "elapsedMs": 1291,
+      "bytes": 47808
+    },
+    {
+      "label": "sequential-5",
+      "ok": true,
+      "elapsedMs": 1252,
+      "bytes": 47808
+    },
+    {
+      "label": "sequential-6",
+      "ok": true,
+      "elapsedMs": 1304,
+      "bytes": 48096
+    },
+    {
+      "label": "concurrent-1",
+      "ok": true,
+      "elapsedMs": 1651,
+      "bytes": 48384
+    },
+    {
+      "label": "concurrent-2",
+      "ok": true,
+      "elapsedMs": 1185,
+      "bytes": 47232
+    }
+  ]
+}
