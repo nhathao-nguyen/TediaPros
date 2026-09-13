@@ -40,7 +40,14 @@ test('AutoShort filesystem/process IPC and app navigation use the origin gate', 
     'gemini:replaceKeys',
     'gemini:removeKey',
     'whisper:installModel',
-    'whisper:stopWorker'
+    'whisper:stopWorker',
+    'tts:checkHealth',
+    'tts:getModels',
+    'tts:generateSpeech',
+    'tts:generateClone',
+    'tts:saveAudio',
+    'tts:selectRefAudio',
+    'tts:getEdgeVoices'
   ]) {
     assert.match(
       source,

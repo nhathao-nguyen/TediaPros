@@ -66,6 +66,7 @@ import AutoShortOverlayControl from './AutoShortOverlayControl'
 import AutoShortOverlayPreview from './AutoShortOverlayPreview'
 import { normalizeAutoShortOverlays, type AutoShortOverlays } from '../../../shared/autoShortOverlays'
 import { MICROSECONDS_PER_SECOND } from '../../../shared/autoShortTemporalEdit'
+import { compatibleEdgeVoices, resolveEdgeVoice } from '../../../shared/edgeTtsContract'
 
 const PALETTE = [
   '#e8a13c',
@@ -368,10 +369,11 @@ export default function AutoShort(): JSX.Element {
 
   // TTS AI Voice
   const [ttsEnabled, setTtsEnabled] = usePersistedState('tblao.autoshort.ttsEnabled', true)
-  const [ttsProvider, setTtsProvider] = usePersistedState<TtsProvider>('tblao.autoshort.ttsProvider', 'edge-tts')
+  const [ttsProvider, setTtsProvider] = usePersistedState<TtsProvider>('tblao.autoshort.ttsProvider', 'local-tts')
   const [ttsServerUrl, setTtsServerUrl] = usePersistedState('tblao.ai.serverUrl', DEFAULT_AI_SERVER_URL)
   const [ttsModel, setTtsModel] = usePersistedState('tblao.autoshort.ttsModel', '')
   const [ttsVoice, setTtsVoice] = usePersistedState('tblao.autoshort.ttsVoice', '')
+  const [edgeVoice, setEdgeVoice] = usePersistedState('tblao.autoshort.edgeVoice', 'vi-VN-HoaiMyNeural')
   const [ttsSpeed, setTtsSpeed] = usePersistedState('tblao.autoshort.ttsSpeed', 1.0)
   const [paceMode, setPaceMode] = usePersistedState<'source-adaptive' | 'fixed'>('tblao.autoshort.paceMode', 'source-adaptive')
   const [clonedVoices] = usePersistedState<ClonedVoice[]>('tblao.tts.clonedVoices', [])
@@ -392,21 +394,52 @@ export default function AutoShort(): JSX.Element {
   const backgroundMusicScanTokenRef = useRef(0)
   const backgroundMusicScanFolderRef = useRef('')
   const [edgeVoices, setEdgeVoices] = useState<EdgeVoiceDefinition[]>([])
+  const [edgeCatalogSource, setEdgeCatalogSource] = useState<'checking' | 'live' | 'fallback'>('checking')
+  const [edgeCatalogError, setEdgeCatalogError] = useState<string | null>(null)
 
   useEffect(() => {
+    if (ttsProvider !== 'edge-tts') return
     let isCancelled = false
+    setEdgeCatalogSource('checking')
+    setEdgeCatalogError(null)
     window.api
       .ttsGetEdgeVoices()
-      .then((voices) => {
-        if (!isCancelled && Array.isArray(voices) && voices.length > 0) {
-          setEdgeVoices(voices)
+      .then((catalog) => {
+        if (!isCancelled && catalog.voices.length > 0) {
+          setEdgeVoices(catalog.voices)
+          setEdgeCatalogSource(catalog.source)
+          setEdgeCatalogError(catalog.error || null)
         }
       })
-      .catch(() => {})
+      .catch((reason: unknown) => {
+        if (!isCancelled) {
+          setEdgeCatalogSource('fallback')
+          setEdgeCatalogError(reason instanceof Error ? reason.message : String(reason))
+        }
+      })
     return () => {
       isCancelled = true
     }
-  }, [])
+  }, [ttsProvider])
+
+  useEffect(() => {
+    if (ttsProvider !== 'edge-tts' || edgeVoices.length === 0) return
+    const language = translateTarget !== 'none' ? translateTarget : whisperLanguage.trim()
+    if (!language || language === 'auto') return
+    try {
+      resolveEdgeVoice(edgeVoices, language, edgeVoice)
+    } catch {
+      try {
+        setEdgeVoice(resolveEdgeVoice(edgeVoices, language).id)
+      } catch {
+        // Preflight surfaces unsupported languages before starting the batch.
+      }
+    }
+  }, [edgeVoice, edgeVoices, setEdgeVoice, translateTarget, ttsProvider, whisperLanguage])
+  const edgeLanguage = translateTarget !== 'none' ? translateTarget : whisperLanguage.trim()
+  const selectableEdgeVoices = edgeLanguage && edgeLanguage !== 'auto'
+    ? compatibleEdgeVoices(edgeVoices, edgeLanguage)
+    : edgeVoices
 
   const selectedModelInfo = ttsModels.find((m) => m.id === ttsModel) || ttsModels[0]
   const modelVoices = selectedModelInfo?.voices || []
@@ -1172,11 +1205,11 @@ export default function AutoShort(): JSX.Element {
         seo: titleSeoOptions
       } : undefined,
       ttsEnabled,
-      ttsProvider,
+      ...(ttsProvider === 'edge-tts' ? { ttsProvider } : {}),
       ttsServerUrl: ttsProvider === 'local-tts' ? ttsServerUrl : undefined,
       ttsModel: ttsProvider === 'edge-tts' ? 'edge-tts' : ttsModel,
       ttsVoice: ttsProvider === 'edge-tts'
-        ? (ttsVoice || (translateTarget === 'en' ? 'en-US-JennyNeural' : 'vi-VN-HoaiMyNeural'))
+        ? edgeVoice
         : (activeClonedVoice ? activeClonedVoice.name : ttsVoice),
       ttsRefAudioPath: ttsProvider === 'local-tts' && activeClonedVoice ? activeClonedVoice.referenceAudioPath : undefined,
       ttsRefTranscript: ttsProvider === 'local-tts' && activeClonedVoice ? activeClonedVoice.referenceTranscript : undefined,
@@ -2299,7 +2332,7 @@ export default function AutoShort(): JSX.Element {
                           checked={ttsProvider === 'edge-tts'}
                           onChange={() => setTtsProvider('edge-tts')}
                         />
-                        <span>Microsoft Edge-TTS (Trực tuyến · Miễn phí)</span>
+                        <span>Microsoft Edge-TTS (Trực tuyến)</span>
                       </label>
                       <label className={`radio-pill ${ttsProvider === 'local-tts' ? 'active' : ''}`}>
                         <input
@@ -2317,159 +2350,29 @@ export default function AutoShort(): JSX.Element {
                   {ttsProvider === 'edge-tts' ? (
                     <>
                       <div className="server-status-pill" style={{ margin: '6px 0' }}>
-                        <span className="status-dot online" />
+                        <span className={`status-dot ${edgeCatalogSource === 'live' ? 'online' : ''}`} />
                         <span className="small">
-                          Động cơ: <strong>Microsoft Edge Read Aloud API</strong> (Trực tuyến · Miễn phí · Không cần bật AI Server)
+                          Động cơ: <strong>Microsoft Edge Read Aloud API</strong> ({edgeCatalogSource === 'live' ? 'Catalog trực tuyến' : edgeCatalogSource === 'checking' ? 'Đang kiểm tra kết nối…' : 'Catalog dự phòng, chưa xác nhận kết nối'})
                         </span>
+                        {edgeCatalogError && <span className="muted small">{edgeCatalogError}</span>}
                       </div>
 
                       <label className="field editor-field">
                         <span>Giọng đọc Edge-TTS</span>
                         <select
-                          value={ttsVoice || (translateTarget === 'en' ? 'en-US-JennyNeural' : 'vi-VN-HoaiMyNeural')}
-                          onChange={(e) => setTtsVoice(e.target.value)}
+                          value={edgeVoice}
+                          onChange={(e) => setEdgeVoice(e.target.value)}
                         >
-                          <optgroup label="Tiếng Việt (Khuyên dùng)">
-                            <option value="vi-VN-HoaiMyNeural">🇻🇳 Hoài My (Nữ · Miền Bắc - Mặc định)</option>
-                            <option value="vi-VN-NamMinhNeural">🇻🇳 Nam Minh (Nam · Miền Bắc)</option>
-                          </optgroup>
-                          <optgroup label="Tiếng Anh - Mỹ (English US)">
-                            <option value="en-US-JennyNeural">🇺🇸 Jenny (US · Nữ · Tự nhiên - Mặc định)</option>
-                            <option value="en-US-GuyNeural">🇺🇸 Guy (US · Nam · Truyền cảm)</option>
-                            <option value="en-US-AriaNeural">🇺🇸 Aria (US · Nữ · Tươi vui)</option>
-                          </optgroup>
-                          <optgroup label="Tiếng Anh - Anh (English UK)">
-                            <option value="en-GB-SoniaNeural">🇬🇧 Sonia (UK · Nữ · Chuẩn London)</option>
-                            <option value="en-GB-RyanNeural">🇬🇧 Ryan (UK · Nam · Trầm ấm)</option>
-                          </optgroup>
-                          <optgroup label="Tiếng Anh - Úc (English Australia)">
-                            <option value="en-AU-NatashaNeural">🇦🇺 Natasha (Úc · Nữ · Tự nhiên)</option>
-                            <option value="en-AU-WilliamMultilingualNeural">🇦🇺 William (Úc · Nam · Đa ngữ)</option>
-                          </optgroup>
-                          <optgroup label="Đức, Ý, Tây Ban Nha">
-                            <option value="de-DE-KatjaNeural">🇩🇪 Katja (Đức · Nữ)</option>
-                            <option value="de-DE-ConradNeural">🇩🇪 Conrad (Đức · Nam)</option>
-                            <option value="it-IT-ElsaNeural">🇮🇹 Elsa (Ý · Nữ)</option>
-                            <option value="it-IT-DiegoNeural">🇮🇹 Diego (Ý · Nam)</option>
-                            <option value="es-ES-ElviraNeural">🇪🇸 Elvira (Tây Ban Nha · Nữ)</option>
-                            <option value="es-ES-AlvaroNeural">🇪🇸 Alvaro (Tây Ban Nha · Nam)</option>
-                          </optgroup>
-                          <optgroup label="Bồ Đào Nha & Brazil">
-                            <option value="pt-BR-FranciscaNeural">🇧🇷 Francisca (Brazil · Nữ)</option>
-                            <option value="pt-BR-AntonioNeural">🇧🇷 Antonio (Brazil · Nam)</option>
-                            <option value="pt-PT-RaquelNeural">🇵🇹 Raquel (Bồ Đào Nha · Nữ)</option>
-                            <option value="pt-PT-DuarteNeural">🇵🇹 Duarte (Bồ Đào Nha · Nam)</option>
-                          </optgroup>
-                          <optgroup label="Đông Á: Hàn, Nhật, Trung">
-                            <option value="ko-KR-SunHiNeural">🇰🇷 SunHi (Hàn · Nữ)</option>
-                            <option value="ko-KR-InJoonNeural">🇰🇷 InJoon (Hàn · Nam)</option>
-                            <option value="ja-JP-NanamiNeural">🇯🇵 Nanami (Nhật · Nữ)</option>
-                            <option value="ja-JP-KeitaNeural">🇯🇵 Keita (Nhật · Nam)</option>
-                            <option value="zh-CN-XiaoxiaoNeural">🇨🇳 Xiaoxiao (Trung · Nữ)</option>
-                            <option value="zh-CN-YunxiNeural">🇨🇳 Yunxi (Trung · Nam)</option>
-                          </optgroup>
-                          <optgroup label="Đông Nam Á: Thái, Indo, Philippines">
-                            <option value="th-TH-PremwadeeNeural">🇹🇭 Premwadee (Thái · Nữ)</option>
-                            <option value="th-TH-NiwatNeural">🇹🇭 Niwat (Thái · Nam)</option>
-                            <option value="id-ID-GadisNeural">🇮🇩 Gadis (Indo · Nữ)</option>
-                            <option value="id-ID-ArdiNeural">🇮🇩 Ardi (Indo · Nam)</option>
-                            <option value="fil-PH-BlessicaNeural">🇵🇭 Blessica (Philippines · Nữ)</option>
-                            <option value="fil-PH-AngeloNeural">🇵🇭 Angelo (Philippines · Nam)</option>
-                          </optgroup>
-                          <optgroup label="Pháp & Nga">
-                            <option value="fr-FR-DeniseNeural">🇫🇷 Denise (Pháp · Nữ)</option>
-                            <option value="fr-FR-HenriNeural">🇫🇷 Henri (Pháp · Nam)</option>
-                            <option value="ru-RU-SvetlanaNeural">🇷🇺 Svetlana (Nga · Nữ)</option>
-                            <option value="ru-RU-DmitryNeural">🇷🇺 Dmitry (Nga · Nam)</option>
-                          </optgroup>
-                          {edgeVoices.filter(
-                            (v) =>
-                              ![
-                                'vi-VN-HoaiMyNeural',
-                                'vi-VN-NamMinhNeural',
-                                'en-US-JennyNeural',
-                                'en-US-GuyNeural',
-                                'en-US-AriaNeural',
-                                'en-GB-SoniaNeural',
-                                'en-GB-RyanNeural',
-                                'en-AU-NatashaNeural',
-                                'en-AU-WilliamMultilingualNeural',
-                                'de-DE-KatjaNeural',
-                                'de-DE-ConradNeural',
-                                'it-IT-ElsaNeural',
-                                'it-IT-DiegoNeural',
-                                'es-ES-ElviraNeural',
-                                'es-ES-AlvaroNeural',
-                                'pt-BR-FranciscaNeural',
-                                'pt-BR-AntonioNeural',
-                                'pt-PT-RaquelNeural',
-                                'pt-PT-DuarteNeural',
-                                'ko-KR-SunHiNeural',
-                                'ko-KR-InJoonNeural',
-                                'ja-JP-NanamiNeural',
-                                'ja-JP-KeitaNeural',
-                                'zh-CN-XiaoxiaoNeural',
-                                'zh-CN-YunxiNeural',
-                                'th-TH-PremwadeeNeural',
-                                'th-TH-NiwatNeural',
-                                'id-ID-GadisNeural',
-                                'id-ID-ArdiNeural',
-                                'fil-PH-BlessicaNeural',
-                                'fil-PH-AngeloNeural',
-                                'fr-FR-DeniseNeural',
-                                'fr-FR-HenriNeural',
-                                'ru-RU-SvetlanaNeural',
-                                'ru-RU-DmitryNeural'
-                              ].includes(v.id)
-                          ).length > 0 && (
-                            <optgroup label="Các giọng quốc tế khác (300+ giọng)">
-                              {edgeVoices
-                                .filter(
-                                  (v) =>
-                                    ![
-                                      'vi-VN-HoaiMyNeural',
-                                      'vi-VN-NamMinhNeural',
-                                      'en-US-JennyNeural',
-                                      'en-US-GuyNeural',
-                                      'en-US-AriaNeural',
-                                      'en-GB-SoniaNeural',
-                                      'en-GB-RyanNeural',
-                                      'en-AU-NatashaNeural',
-                                      'en-AU-WilliamMultilingualNeural',
-                                      'de-DE-KatjaNeural',
-                                      'de-DE-ConradNeural',
-                                      'it-IT-ElsaNeural',
-                                      'it-IT-DiegoNeural',
-                                      'es-ES-ElviraNeural',
-                                      'es-ES-AlvaroNeural',
-                                      'pt-BR-FranciscaNeural',
-                                      'pt-BR-AntonioNeural',
-                                      'pt-PT-RaquelNeural',
-                                      'pt-PT-DuarteNeural',
-                                      'ko-KR-SunHiNeural',
-                                      'ko-KR-InJoonNeural',
-                                      'ja-JP-NanamiNeural',
-                                      'ja-JP-KeitaNeural',
-                                      'zh-CN-XiaoxiaoNeural',
-                                      'zh-CN-YunxiNeural',
-                                      'th-TH-PremwadeeNeural',
-                                      'th-TH-NiwatNeural',
-                                      'id-ID-GadisNeural',
-                                      'id-ID-ArdiNeural',
-                                      'fil-PH-BlessicaNeural',
-                                      'fil-PH-AngeloNeural',
-                                      'fr-FR-DeniseNeural',
-                                      'fr-FR-HenriNeural',
-                                      'ru-RU-SvetlanaNeural',
-                                      'ru-RU-DmitryNeural'
-                                    ].includes(v.id)
-                                )
-                                .map((v) => (
-                                  <option key={v.id} value={v.id}>
-                                    {v.name} ({v.locale})
-                                  </option>
-                                ))}
-                            </optgroup>
+                          {selectableEdgeVoices.length > 0 ? (
+                            selectableEdgeVoices.map((voice) => (
+                              <option key={voice.id} value={voice.id}>
+                                {voice.name} · {voice.locale}
+                              </option>
+                            ))
+                          ) : (
+                            <option value={edgeVoice} disabled>
+                              {edgeCatalogSource === 'checking' ? 'Đang tải catalog giọng…' : 'Không có giọng phù hợp với ngôn ngữ đã chọn'}
+                            </option>
                           )}
                         </select>
                       </label>

@@ -47,6 +47,10 @@ const electronMockPlugin = {
 }
 
 const knownTests = [
+  'edge-tts-contract.test',
+  'edge-tts-adapter.test',
+  'autoshort-edge-tts.test',
+  'tts-audio-format.test',
   'app-profile.test',
   'sttn-runtime.test',
   'sttn-contract.test',

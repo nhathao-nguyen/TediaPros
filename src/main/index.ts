@@ -1017,13 +1017,34 @@ function registerIpc(): void {
   })
 
   // TTS Voice
-  ipcMain.handle('tts:checkHealth', async (_e, serverUrl?: string, apiKey?: string) => checkTtsServerHealth(serverUrl, apiKey || await loadLocalKey()))
-  ipcMain.handle('tts:getModels', async (_e, serverUrl?: string, apiKey?: string) => getTtsModels(serverUrl, apiKey || await loadLocalKey()))
-  ipcMain.handle('tts:generateSpeech', async (_e, req: TtsSpeechRequest) => generateSpeech(req))
-  ipcMain.handle('tts:generateClone', async (_e, req: TtsCloneRequest) => generateVoiceClone(req))
-  ipcMain.handle('tts:saveAudio', async (_e, audioBase64: string, defaultName?: string) => saveTtsAudio(audioBase64, defaultName))
-  ipcMain.handle('tts:selectRefAudio', async () => selectReferenceAudioFile())
-  ipcMain.handle('tts:getEdgeVoices', async () => fetchEdgeVoices())
+  ipcMain.handle('tts:checkHealth', async (event, serverUrl?: string, apiKey?: string) => {
+    const rejected = rejectUntrustedAutoShortIpc(event)
+    return rejected || checkTtsServerHealth(serverUrl, apiKey || await loadLocalKey())
+  })
+  ipcMain.handle('tts:getModels', async (event, serverUrl?: string, apiKey?: string) => {
+    const rejected = rejectUntrustedAutoShortIpc(event)
+    return rejected || getTtsModels(serverUrl, apiKey || await loadLocalKey())
+  })
+  ipcMain.handle('tts:generateSpeech', async (event, req: TtsSpeechRequest) => {
+    const rejected = rejectUntrustedAutoShortIpc(event)
+    return rejected || generateSpeech(req)
+  })
+  ipcMain.handle('tts:generateClone', async (event, req: TtsCloneRequest) => {
+    const rejected = rejectUntrustedAutoShortIpc(event)
+    return rejected || generateVoiceClone(req)
+  })
+  ipcMain.handle('tts:saveAudio', async (event, audioBase64: string, defaultName?: string, audioMimeType?: string) => {
+    const rejected = rejectUntrustedAutoShortIpc(event)
+    return rejected || saveTtsAudio(audioBase64, defaultName, audioMimeType)
+  })
+  ipcMain.handle('tts:selectRefAudio', async (event) => {
+    const rejected = rejectUntrustedAutoShortIpc(event)
+    return rejected || selectReferenceAudioFile()
+  })
+  ipcMain.handle('tts:getEdgeVoices', async (event) => {
+    const rejected = rejectUntrustedAutoShortIpc(event)
+    return rejected || fetchEdgeVoices()
+  })
 
   // Auto Short
   const sttnPreviewOwners = new Set<number>()

@@ -4,6 +4,8 @@
 
 **Goal:** Bổ sung Edge-TTS cho Voice và AutoShort từ incoming commit `1d61ef744384208382de3903b73b2953d45553ab`, bảo toàn pipeline và dữ liệu Local hiện tại.
 
+**Trạng thái thực thi 2026-09-13:** T0-T4 đã triển khai. T5 đã pass typecheck, full local-runtime, build, live adapter smoke bốn ngôn ngữ và Windows NSIS/package verification. Nghiệm thu tương tác Voice UI, ma trận AutoShort live bằng video thật và macOS ARM64 vẫn chưa chạy; xem `.ai/tasks/TASK-20260912-edge-tts-integration.md`.
+
 **Architecture:** Port provider qua typed contract và TTS adapter; tiếp tục dùng dubbing planner, cache v2, batch journal và coordinator hiện tại. Tách transport/cancellation khỏi audio conversion và catalog; không thay nguyên file bằng phiên bản branch.
 
 **Tech Stack:** Electron 34, React 19, TypeScript, Node test runner, msedge-tts (candidate exact version 2.0.7), FFmpeg/FFprobe hiện có.

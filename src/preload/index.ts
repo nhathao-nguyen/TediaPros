@@ -48,7 +48,7 @@ import {
   SubtitleFilePreview,
   SubtitleLayoutRequest,
   SubtitleRenderPlan,
-  EdgeVoiceDefinition,
+  EdgeVoiceCatalogResult,
   TtsCloneRequest,
   TtsGenerateResult,
   TtsModelInfo,
@@ -377,12 +377,13 @@ const api = {
     ipcRenderer.invoke('tts:generateClone', req),
   ttsSaveAudio: (
     audioBase64: string,
-    defaultName?: string
+    defaultName?: string,
+    audioMimeType?: string
   ): Promise<{ ok: boolean; path?: string; error?: string }> =>
-    ipcRenderer.invoke('tts:saveAudio', audioBase64, defaultName),
+    ipcRenderer.invoke('tts:saveAudio', audioBase64, defaultName, audioMimeType),
   ttsSelectRefAudio: (): Promise<{ ok: boolean; path?: string }> =>
     ipcRenderer.invoke('tts:selectRefAudio'),
-  ttsGetEdgeVoices: (): Promise<EdgeVoiceDefinition[]> =>
+  ttsGetEdgeVoices: (): Promise<EdgeVoiceCatalogResult> =>
     ipcRenderer.invoke('tts:getEdgeVoices'),
 
   // ---- Auto Short ----
