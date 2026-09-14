@@ -48,6 +48,7 @@ Giảm nghẽn TTS trong AutoShort bằng scheduler dùng chung và preparation 
 - `[NEW]` `src/main/edgeTtsRecovery.ts`, `src/main/edgeTtsScheduler.ts`, `src/main/dubbing/preparationQueue.ts`
 - `[MODIFY]` `src/main/edgeTts.ts`, `src/main/edgeTtsTransport.ts`, `src/main/dubbing/synthesis.ts`, `src/main/autoshort.ts`
 - `[MODIFY]` `src/main/autoShortExecutionPolicy.ts`, `src/main/autoShortCutIdentity.ts`, `src/main/autoShortTelemetry.ts`
+- `[MODIFY]` `src/main/ipcSecurity.ts`, `src/main/index.ts`: cho đúng renderer entry `file://` của preview/unpackaged đi qua IPC gate; packaged cũng chỉ nhận đúng entry thay vì mọi file URL.
 - `[MODIFY]` `src/shared/types.ts`, `src/shared/autoShortContract.ts`, `src/renderer/src/components/AutoShort.tsx`
 - `[NEW]` `tests/edge-tts-scheduler.test.ts`, `tests/dubbing-preparation-queue.test.ts`, `docs/adr/010-bounded-edge-tts-scheduling.md`
 
@@ -61,6 +62,8 @@ Giảm nghẽn TTS trong AutoShort bằng scheduler dùng chung và preparation 
 npm.cmd run typecheck
 npm.cmd run test:local-runtime -- edge-tts-scheduler.test dubbing-preparation-queue.test edge-tts-adapter.test autoshort-ocr-runtime.test autoshort-tts-pipeline.test
 npm.cmd run test:local-runtime -- autoshort-cut-legacy-resume.test autoshort-ocr-contract.test autoshort-ui-contract.test
+npm.cmd run test:local-runtime -- ipc-origin-validation.test autoshort-ui-contract.test
+npm.cmd run build
 ```
 
 ### Kết quả hiện tại
@@ -70,6 +73,8 @@ npm.cmd run test:local-runtime -- autoshort-cut-legacy-resume.test autoshort-ocr
 - Preparation queue: 4 PASS, gồm corpus 500 unit, cap 2 và lookahead 4.
 - Edge adapter: 20 PASS; OCR runtime: 15 PASS; legacy TTS pipeline: 6 PASS.
 - Contract/resume/UI: các test đã chạy PASS.
+- IPC origin regression: 4 PASS; đúng preview file entry được nhận, sibling/arbitrary file URL và child frame bị chặn.
+- Preview restart: cửa sổ `TediaPros` PID `20128`, `Responding=True`; log mới không còn lỗi IPC origin ở `whisper:modelStatus` hoặc `autoshort:getReadiness`.
 
 ### Những phần chưa kiểm tra / Rủi ro còn lại
 

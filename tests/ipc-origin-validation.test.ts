@@ -5,19 +5,31 @@ import test from 'node:test'
 import { isTrustedIpcSender, isTrustedRendererUrl } from '../src/main/ipcSecurity'
 
 test('IPC origin accepts only the configured dev renderer origin', () => {
-  const options = { packaged: false, devOrigin: 'http://localhost:5173/' }
+  const options = {
+    packaged: false,
+    devOrigin: 'http://localhost:5173/',
+    fileEntryUrl: 'file:///F:/Son/tool/TediaPros/out/renderer/index.html'
+  }
   assert.equal(isTrustedRendererUrl('http://localhost:5173/index.html', options), true)
   assert.equal(isTrustedRendererUrl('http://localhost:5174/index.html', options), false)
+  assert.equal(isTrustedRendererUrl('file:///F:/Son/tool/TediaPros/out/renderer/index.html', options), true)
+  assert.equal(isTrustedRendererUrl('file:///F:/Son/tool/TediaPros/out/renderer/index.html#autoshort', options), true)
+  assert.equal(isTrustedRendererUrl('file:///F:/Son/tool/TediaPros/out/renderer/settings.html', options), false)
   assert.equal(isTrustedRendererUrl('file:///tmp/index.html', options), false)
   assert.equal(isTrustedRendererUrl('http://localhost:5173.evil.example/', options), false)
 })
 
-test('packaged IPC accepts file renderer and rejects a child/untrusted origin', () => {
-  const options = { packaged: true, devOrigin: undefined }
+test('packaged IPC accepts only the configured file renderer and rejects a child/untrusted origin', () => {
+  const options = {
+    packaged: true,
+    devOrigin: undefined,
+    fileEntryUrl: 'file:///C:/Program%20Files/TediaPros/index.html'
+  }
   assert.equal(isTrustedRendererUrl('file:///C:/Program%20Files/TediaPros/index.html', options), true)
+  assert.equal(isTrustedRendererUrl('file:///C:/Program%20Files/TediaPros/other.html', options), false)
   assert.equal(isTrustedRendererUrl('http://localhost:5173/', options), false)
-  assert.equal(isTrustedIpcSender({ senderFrame: { url: 'file:///C:/app/index.html' } }, options), true)
-  assert.equal(isTrustedIpcSender({ senderFrame: { url: 'file:///C:/app/index.html', parent: {} } }, options), false)
+  assert.equal(isTrustedIpcSender({ senderFrame: { url: 'file:///C:/Program%20Files/TediaPros/index.html' } }, options), true)
+  assert.equal(isTrustedIpcSender({ senderFrame: { url: 'file:///C:/Program%20Files/TediaPros/index.html', parent: {} } }, options), false)
   assert.equal(isTrustedIpcSender({ senderFrame: { url: 'https://evil.example/' } }, options), false)
 })
 

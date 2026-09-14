@@ -6,6 +6,13 @@
 - `npm.cmd run test:local-runtime`: PASS toàn bộ runner; các case có điều kiện thiếu `TEDIAPROS_TEST_FFMPEG` được runner ghi SKIP như trước.
 - `npm.cmd run build`: PASS production Main, preload và renderer.
 - Regression mới: scheduler/recovery 6 PASS; preparation queue 4 PASS, gồm 500 unique unit, cap 2 và lookahead 4; Edge adapter 20 PASS.
+- `ipc-origin-validation.test` 4 PASS và `autoshort-ui-contract.test` 4 PASS sau khi bổ sung exact file-entry gate cho `electron-vite preview`.
+
+## Preview startup gate
+
+`npm.cmd run start` nạp đúng entry `file:///F:/Son/tool/TediaPros/out/renderer/index.html` theo nhánh `loadFile(rendererEntryPath)`. Cửa sổ mới có tiêu đề `TediaPros`, PID `20128`, `Responding=True`. Log phiên `tediapros-preview-20260914-085319` có startup, dependency/GPU checks bình thường và không còn lỗi `Nguồn IPC Auto Short không được phép.` từng xảy ra ở `whisper:modelStatus` và `autoshort:getReadiness`.
+
+Origin gate chỉ cho đúng file entry nội bộ (query/hash được phép); sibling/arbitrary file URL và child frame vẫn bị từ chối. Cùng điều kiện exact-entry cũng áp dụng cho packaged build.
 
 ## Live full-adapter gates
 

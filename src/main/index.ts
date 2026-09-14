@@ -3,6 +3,7 @@ import { readAutoShortOverlayImage } from './autoShortOverlays'
 import { assertContainedRegularFile } from './safeContainedPath'
 import type { AutoShortOverlayImageResult } from '../shared/autoShortOverlays'
 import { basename, dirname, extname, join } from 'node:path'
+import { pathToFileURL } from 'node:url'
 
 import { resolveAppRuntimeProfile } from './appProfile'
 
@@ -214,10 +215,14 @@ import { isSafeExternalUrl } from '../shared/urlSafety'
 import { isTrustedIpcSender, isTrustedRendererUrl } from './ipcSecurity'
 export { isSafeExternalUrl }
 
+const rendererEntryPath = join(__dirname, '../renderer/index.html')
+const rendererEntryUrl = pathToFileURL(rendererEntryPath).href
+
 function rejectUntrustedAutoShortIpc(event: { senderFrame?: { url?: string | null } | null; sender?: { getURL?: () => string } }): { ok: false; error: string } | null {
   if (isTrustedIpcSender(event, {
     packaged: app.isPackaged,
-    devOrigin: process.env['ELECTRON_RENDERER_URL']
+    devOrigin: process.env['ELECTRON_RENDERER_URL'],
+    fileEntryUrl: rendererEntryUrl
   })) return null
   return { ok: false, error: 'Nguồn IPC Auto Short không được phép.' }
 }
@@ -225,7 +230,8 @@ function rejectUntrustedAutoShortIpc(event: { senderFrame?: { url?: string | nul
 function isTrustedAppNavigation(rawUrl: string): boolean {
   return isTrustedRendererUrl(rawUrl, {
     packaged: app.isPackaged,
-    devOrigin: process.env['ELECTRON_RENDERER_URL']
+    devOrigin: process.env['ELECTRON_RENDERER_URL'],
+    fileEntryUrl: rendererEntryUrl
   })
 }
 
@@ -279,7 +285,7 @@ function createWindow(): void {
   if (process.env['ELECTRON_RENDERER_URL']) {
     mainWindow.loadURL(process.env['ELECTRON_RENDERER_URL'])
   } else {
-    mainWindow.loadFile(join(__dirname, '../renderer/index.html'))
+    mainWindow.loadFile(rendererEntryPath)
   }
 }
 
