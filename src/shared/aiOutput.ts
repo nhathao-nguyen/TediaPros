@@ -53,8 +53,8 @@ const TASK_PROPERTIES: Record<AiStructuredTask, Record<string, unknown>> = {
   'video-seo': {
     title: { type: 'string' },
     description: { type: 'string' },
-    tags: { type: 'array', items: { type: 'string' }, maxItems: 100 },
-    hashtags: { type: 'array', items: { type: 'string' }, maxItems: 100 }
+    tags: { type: 'array', items: { type: 'string' }, maxItems: 8 },
+    hashtags: { type: 'array', items: { type: 'string' }, maxItems: 3 }
   }
 }
 

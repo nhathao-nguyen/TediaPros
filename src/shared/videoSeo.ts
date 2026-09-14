@@ -45,7 +45,7 @@ function normalizeHashtag(value: string): string {
 function normalizeHashtags(raw: unknown, fallbackTags: readonly string[], allowMissing: boolean): string[] {
   if (!allowMissing && raw === undefined) throw new Error('AI trả về metadata thiếu hashtags.')
   if (raw !== undefined && !Array.isArray(raw)) throw new Error('Hashtags phải là danh sách chuỗi.')
-  const source = raw === undefined || (Array.isArray(raw) && raw.length === 0) ? fallbackTags : raw as unknown[]
+  const source = raw === undefined ? fallbackTags : raw as unknown[]
   const hashtags: string[] = []
   const seen = new Set<string>()
   for (const item of source) {
@@ -221,6 +221,11 @@ export function countYouTubeTagCharacters(tags: readonly string[]): number {
 export function formatVideoSeoMetadata(value: VideoSeoMetadata): string {
   const metadata = normalizeMetadata(value, false)
   return `${metadata.title}\n\nDescription:\n${metadata.description}\n\nTags:\n${metadata.tags.join(', ')}\n\nHashtags:\n${metadata.hashtags.join(' ')}\n`
+}
+
+export function formatVideoSeoCaption(value: VideoSeoMetadata): string {
+  const metadata = normalizeMetadata(value, false)
+  return [metadata.description, metadata.hashtags.join(' ')].filter(Boolean).join('\n\n')
 }
 
 interface VideoSeoPresetV1 {

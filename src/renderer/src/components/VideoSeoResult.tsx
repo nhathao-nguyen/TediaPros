@@ -1,7 +1,7 @@
 import type { JSX } from 'react'
 import { useState } from 'react'
 import type { VideoSeoMetadata } from '../../../shared/types'
-import { formatVideoSeoMetadata, normalizeVideoSeoMetadata } from '../../../shared/videoSeo'
+import { formatVideoSeoCaption, formatVideoSeoMetadata, normalizeVideoSeoMetadata } from '../../../shared/videoSeo'
 
 export default function VideoSeoResult({ metadata, titlePath }: { metadata: VideoSeoMetadata; titlePath?: string }): JSX.Element {
   const [copyStatus, setCopyStatus] = useState('')
@@ -25,6 +25,7 @@ export default function VideoSeoResult({ metadata, titlePath }: { metadata: Vide
     <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
       <button type="button" className="btn ghost sm" onClick={() => void copy(title)}>Copy tiêu đề</button>
       <button type="button" className="btn ghost sm" onClick={() => void copy(description)}>Copy description</button>
+      <button type="button" className="btn ghost sm" onClick={() => void copy(formatVideoSeoCaption(normalized))}>Sao chép caption</button>
       <button type="button" className="btn ghost sm" onClick={() => void copy(tags.join(', '))}>Copy tags</button>
       <button type="button" className="btn ghost sm" onClick={() => void copy(hashtags.join(' '))}>Copy hashtags</button>
       <button type="button" className="btn ghost sm" onClick={() => void copy(formatVideoSeoMetadata(normalized))}>Copy toàn bộ</button>

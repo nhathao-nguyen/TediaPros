@@ -106,15 +106,18 @@ Khi dịch sang ngôn ngữ mới (vd: Tiếng Trung $\rightarrow$ Tiếng Việ
 
 ---
 
-## 6. Metadata YouTube từ SRT
+## 6. Metadata video ngắn từ SRT
 
 - **Nguồn:** Chỉ dùng các cue SRT nằm trong thời lượng video đầu ra đã được probe. SRT, tên kênh và brand voice là dữ liệu, không phải chỉ dẫn có quyền thay đổi schema hoặc chính sách an toàn.
-- **Kết quả:** `VideoSeoMetadata` gồm đúng một `title`, một `description`, `tags` và `hashtags`. Hashtag luôn tách khỏi title/description. State persisted cũ thiếu hashtags được migrate từ tags ở normalizer riêng; phản hồi AI mới thiếu trường này không được chấp nhận. `title` vẫn được giữ riêng trong kết quả IPC để tương thích với UI cũ.
+- **Mục đích:** Một bộ metadata trung tính dùng chung cho YouTube Shorts, TikTok và Reels. YouTube dùng `title`, `description`, `tags`, `hashtags`; TikTok/Reels dùng `description` nối với `hashtags` làm caption. TediaPros không tự đăng nội dung.
+- **Kết quả:** `VideoSeoMetadata` gồm đúng một `title`, một `description`, `tags` và `hashtags`. Hashtag luôn tách khỏi title/description. State persisted cũ thiếu hashtags được migrate từ tags ở normalizer riêng; phản hồi AI mới thiếu trường này không được chấp nhận và mảng hashtags rỗng có chủ ý được giữ rỗng. `title` vẫn được giữ riêng trong kết quả IPC để tương thích với UI cũ.
 - **Tệp xuất:** Mỗi video có tối đa một `tieude.txt` UTF-8 đặt cạnh video. Dòng đầu là title; sau đó là khối `Description:` một paragraph, `Tags:` một dòng phân cách bằng dấu phẩy và `Hashtags:` một dòng các hashtag cách nhau bằng khoảng trắng. Không tạo `description.txt`, `tags.txt` hoặc metadata JSON riêng.
-- **Mặc định biên tập:** Description mức `short`, hướng tới 2–3 câu trong một paragraph. Đây là lựa chọn sản phẩm, không phải cam kết xếp hạng. Không cắt chuỗi làm mất số, phủ định, điều kiện hoặc ý cuối.
-- **Giới hạn:** Title tối đa 100 ký tự Unicode; description tối đa 5.000 byte UTF-8; title/description không chứa `<` hoặc `>`; tổng tags tối đa 500 ký tự theo cách tính dấu phẩy và dấu nháy quy ước của YouTube.
+- **Mặc định biên tập:** Description mức `short`, 1–2 câu trong một paragraph, hướng tới 80–220 và tối đa 300 ký tự Unicode. `medium` tối đa 500; `long` tối đa 800. Đây là lựa chọn sản phẩm, không phải cam kết xếp hạng. Không cắt chuỗi làm mất số, phủ định, điều kiện hoặc ý cuối.
+- **Chính sách short:** Prompt đọc toàn bộ context mà pipeline cung cấp, chọn góc viết theo loại nội dung, không bắt mọi video thành câu hỏi, không tự thêm CTA hoặc các hashtag phủ rộng như `#viral`/`#fyp`. Phản hồi mới có tối đa 8 tags và 3 hashtags; không có số lượng tối thiểu để tránh bịa dữ liệu khi nguồn yếu.
+- **Giới hạn nền:** Title tối đa 100 ký tự Unicode; description tối đa 5.000 byte UTF-8; title/description không chứa `<` hoặc `>`; tổng tags tối đa 500 ký tự theo cách tính dấu phẩy và dấu nháy quy ước của YouTube. Validator short áp giới hạn chặt hơn sau parser; persisted metadata cũ chỉ qua normalizer tương thích.
 - **Thị trường và locale:** Country định hướng thị trường, không đổi bối cảnh nội dung. Locale tường minh thắng; `auto` theo ngôn ngữ phụ đề đầu ra khi pipeline biết ngôn ngữ đó.
 - **Bộ nhớ thị trường:** Preset local chỉ chứa provider/server/locale và tùy chọn SEO đã whitelist. Khóa API không nằm trong preset.
 - **Publication gate:** Metadata có thể chuẩn bị song song với render, nhưng chỉ ghi sau khi video hợp lệ và digest của cue/config khớp. Publisher ghi temp cùng thư mục, `fsync`, rồi hard-link no-replace vào `tieude.txt`; không fallback sang ghi thẳng. Lỗi hoặc hủy metadata không xóa video đã xuất và không ghi đè sidecar có sẵn.
 - **Ranh giới phản hồi AI:** Request gửi schema theo task và response vẫn phải qua parser/validator trong code. Chấp nhận JSON trần, code fence hoàn chỉnh hoặc đúng một object JSON nằm trong lời dẫn tương thích. Duplicate key, nhiều object, outer JSON chưa đóng, extra/missing field, response bị cắt/lọc/từ chối hoặc protocol payload trong title/description đều bị chặn. Title, summary và SEO chỉ được tái tạo toàn object thêm một lần từ source; không vá trường giữa hai attempt.
+- **Ranh giới gateway:** Provider, model, context và timeout tiếp tục do adapter/gateway hiện có quản lý. Thay đổi prompt short không pin model, không sửa transport và không coi schema request là bằng chứng gateway đã thực thi constrained decoding.
 - **Ranh giới bằng chứng:** Không sinh điểm ranking, authority hoặc citation probability. TediaPros không khẳng định metadata tạo ra sẽ tăng hạng hoặc được hệ thống AI trích dẫn.
