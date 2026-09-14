@@ -923,9 +923,9 @@ function registerIpc(): void {
         ? saveLocalKey(key)
         : geminiSaveKey(key)
   })
-  ipcMain.handle('translate:checkKey', async (_e, provider: DichProvider, key: string, serverUrl?: string, targetLanguage?: string, sourceLanguage?: string) => {
+  ipcMain.handle('translate:checkKey', async (_e, provider: DichProvider, key: string, serverUrl?: string, targetLanguage?: string, sourceLanguage?: string, options?: { verifyModel?: boolean; force?: boolean }) => {
     if (!isProvider(provider)) return { ok: false, message: 'Nhà cung cấp không hợp lệ.' }
-    if (provider === 'gemini-gateway') return checkGeminiGateway(serverUrl)
+    if (provider === 'gemini-gateway') return checkGeminiGateway(serverUrl, options)
     return provider === 'openai'
       ? openaiCheckKey(key)
       : provider === 'local'

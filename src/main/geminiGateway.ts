@@ -1,7 +1,7 @@
 import { createHash, randomUUID } from 'node:crypto'
 import { mkdir, rename, writeFile } from 'node:fs/promises'
 import { dirname } from 'node:path'
-import type { DichKeyStatus } from '../shared/types'
+import type { DichKeyStatus, GatewayVerificationStatus } from '../shared/types'
 import { DEFAULT_GEMINI_GATEWAY_URL, GEMINI_GATEWAY_MODEL } from '../shared/types'
 import type { TranslationAssessment } from '../shared/translation'
 import type { PlannedTranslationBatch } from './translation/planner'
@@ -26,7 +26,7 @@ import {
 
 export { GEMINI_GATEWAY_PROMPT_VERSION } from './geminiGatewayPrompts'
 
-const MAX_AUDIT_BYTES = 4 * 1024 * 1024
+const MAX_AUDIT_BYTES = 16 * 1024 * 1024
 
 const TRANSLATION_RESPONSE_FORMAT = {
   type: 'json_schema',
@@ -56,9 +56,13 @@ interface GatewayCompletion {
   responseId?: string
   finishReason: string
   requestBody: Record<string, unknown>
+  logicalRequestId?: string
   observedModelId?: string
   observedModel?: string
   routeFingerprint?: string
+  completionState?: string
+  completionEvidence?: string
+  normalizationOps?: string[]
 }
 
 function canonicalizeCompactTranslation(raw: string, expectedCount: number): string {
@@ -86,6 +90,18 @@ interface GatewayAuditRecord {
   endedAtUtc: string
   expectedIds: string[]
   outcome: 'complete' | 'failed'
+  logicalRequestId?: string
+  inputHash?: string
+  inputBytes?: number
+  requestedModel?: string
+  observedModelId?: string
+  observedModel?: string
+  routeFingerprint?: string
+  completionState?: string
+  completionEvidence?: string
+  normalizationOps?: string[]
+  upstreamAttempts?: number
+  upstreamRetryReasons?: string[]
   request?: Record<string, unknown>
   response?: {
     id?: string
@@ -97,6 +113,22 @@ interface GatewayAuditRecord {
     upstreamRetryReasons: string[]
   }
   error?: string
+}
+
+function sanitizeGatewayError(raw: unknown): string {
+  const text = raw instanceof Error ? raw.message : String(raw)
+  return text
+    .replace(/https?:\/\/[^\s?]+(?:\?[^\s]+)?/gi, (url) => {
+      try {
+        const u = new URL(url)
+        return `${u.protocol}//${u.host}${u.pathname}`
+      } catch {
+        return '[redacted-url]'
+      }
+    })
+    .replace(/((?:key|token|cookie|psid|secret)=)[^\s&]+/gi, '$1[redacted]')
+    .replace(/([A-Fa-f0-9]{32,64})/g, (m) => (m.length > 32 ? `${m.slice(0, 8)}...` : m))
+    .slice(0, 500)
 }
 
 export interface GeminiGatewayTranslationOptions {
@@ -207,6 +239,9 @@ async function requestGateway(
         route_fingerprint?: unknown
         model_verification?: unknown
         completion_state?: unknown
+        completion_evidence?: unknown
+        normalization?: unknown
+        logical_request_id?: unknown
         upstream_attempts?: unknown
         upstream_retry_reasons?: unknown
         error_code?: unknown
@@ -252,9 +287,15 @@ async function requestGateway(
       responseId: typeof data.id === 'string' ? data.id : undefined,
       finishReason,
       requestBody,
+      logicalRequestId: typeof meta.logical_request_id === 'string' ? meta.logical_request_id : undefined,
       observedModelId: typeof meta.observed_model_id === 'string' ? meta.observed_model_id : undefined,
       observedModel: typeof meta.observed_model === 'string' ? meta.observed_model : undefined,
       routeFingerprint: typeof meta.route_fingerprint === 'string' ? meta.route_fingerprint : undefined,
+      completionState: typeof meta.completion_state === 'string' ? meta.completion_state : undefined,
+      completionEvidence: typeof meta.completion_evidence === 'string' ? meta.completion_evidence : undefined,
+      normalizationOps: Array.isArray(meta.normalization)
+        ? meta.normalization.filter((item): item is string => typeof item === 'string')
+        : [],
       upstreamRetryReasons: Array.isArray(meta.upstream_retry_reasons)
         ? meta.upstream_retry_reasons.filter((item): item is string => typeof item === 'string').slice(0, 8)
         : [],
@@ -278,23 +319,35 @@ async function requestGateway(
 }
 
 function boundedAuditDocument(records: readonly GatewayAuditRecord[]): string {
+  const counts: Record<string, number> = {}
+  const pruned = records.map((record) => {
+    counts[record.stage] = (counts[record.stage] || 0) + 1
+    if (counts[record.stage] > 3 && record.response) {
+      return {
+        ...record,
+        response: { ...record.response, raw: '[omitted: max 3 raw per stage exceeded]' }
+      }
+    }
+    return record
+  })
+
   const document = {
     schemaVersion: 1,
     promptVersion: GEMINI_GATEWAY_PROMPT_VERSION,
     model: GEMINI_GATEWAY_MODEL,
-    records
+    records: pruned
   }
   const full = JSON.stringify(document, null, 2)
   if (Buffer.byteLength(full, 'utf8') <= MAX_AUDIT_BYTES) return full
   return JSON.stringify({
     ...document,
-    records: records.map((record) => ({
+    records: pruned.map((record) => ({
       ...record,
       request: record.request ? {
         omittedBecauseAuditExceededBytes: true,
         sha256: createHash('sha256').update(JSON.stringify(record.request)).digest('hex')
       } : undefined,
-      response: record.response ? { ...record.response, raw: '[omitted: audit exceeded 4 MiB]' } : undefined
+      response: record.response ? { ...record.response, raw: '[omitted: audit exceeded 16 MiB]' } : undefined
     }))
   }, null, 2)
 }
@@ -349,6 +402,9 @@ export function createGeminiGatewayTranslationAdapter(serverUrl?: string, option
     signal: AbortSignal
   ): Promise<GatewayCompletion> => {
     const startedAtUtc = new Date().toISOString()
+    const inputContent = messages.map((m) => m.content).join('\n')
+    const inputHash = createHash('sha256').update(inputContent).digest('hex')
+    const inputBytes = Buffer.byteLength(inputContent, 'utf8')
     try {
       const completion = await requestGateway(baseUrl, messages, signal, batch.maxOutputTokens)
       auditRecords.push({
@@ -357,6 +413,18 @@ export function createGeminiGatewayTranslationAdapter(serverUrl?: string, option
         endedAtUtc: new Date().toISOString(),
         expectedIds: batch.input.cues.map((cue) => cue.id),
         outcome: 'complete',
+        logicalRequestId: completion.logicalRequestId,
+        inputHash,
+        inputBytes,
+        requestedModel: GEMINI_GATEWAY_MODEL,
+        observedModelId: completion.observedModelId,
+        observedModel: completion.observedModel,
+        routeFingerprint: completion.routeFingerprint,
+        completionState: completion.completionState,
+        completionEvidence: completion.completionEvidence,
+        normalizationOps: completion.normalizationOps,
+        upstreamAttempts: completion.upstreamAttempts,
+        upstreamRetryReasons: completion.upstreamRetryReasons,
         request: completion.requestBody,
         response: {
           id: completion.responseId,
@@ -377,7 +445,10 @@ export function createGeminiGatewayTranslationAdapter(serverUrl?: string, option
         endedAtUtc: new Date().toISOString(),
         expectedIds: batch.input.cues.map((cue) => cue.id),
         outcome: 'failed',
-        error: error instanceof Error ? error.message.slice(0, 500) : String(error).slice(0, 500)
+        inputHash,
+        inputBytes,
+        requestedModel: GEMINI_GATEWAY_MODEL,
+        error: sanitizeGatewayError(error)
       })
       await writeGatewayAudit(options.auditPath, auditRecords).catch(() => {})
       throw error
@@ -477,7 +548,10 @@ export function createGeminiGatewayTranslationAdapter(serverUrl?: string, option
   }
 }
 
-export async function checkGeminiGateway(serverUrl?: string): Promise<DichKeyStatus> {
+export async function checkGeminiGateway(
+  serverUrl?: string,
+  options?: { verifyModel?: boolean; force?: boolean }
+): Promise<DichKeyStatus> {
   try {
     const baseUrl = normalizeBaseUrl(serverUrl)
     const response = await fetch(`${baseUrl}/gateway/capabilities`, { signal: AbortSignal.timeout(15_000) })
@@ -489,6 +563,16 @@ export async function checkGeminiGateway(serverUrl?: string): Promise<DichKeySta
       schema_mode?: unknown
       model_selection?: unknown
       gateway_contract_version?: unknown
+      gateway_verification?: {
+        state?: string
+        requested_model?: string
+        observed_model_id?: string
+        observed_model?: string
+        verified_at_utc?: string
+        expires_at_utc?: string
+        verification_generation_requests?: number
+        error_message?: string
+      }
     }>(response, undefined, 256 * 1024)
     if (data.provider_ready === false && data.provider_error === 'authentication_required') {
       return {
@@ -506,7 +590,96 @@ export async function checkGeminiGateway(serverUrl?: string): Promise<DichKeySta
     if (data.model_selection !== 'exact' && data.model_selection !== 'observed-id-required') {
       return { ok: false, message: 'Gateway chưa bật chọn model chính xác hoặc observed-id-required.' }
     }
-    return { ok: true, message: `Đã kết nối Gemini Gateway · Gemini 3.1 Pro (${GEMINI_GATEWAY_MODEL}).` }
+
+    let verificationStatus: GatewayVerificationStatus | undefined
+    if (data.gateway_verification && typeof data.gateway_verification.state === 'string') {
+      verificationStatus = {
+        state: data.gateway_verification.state as GatewayVerificationStatus['state'],
+        requestedModel: String(data.gateway_verification.requested_model || GEMINI_GATEWAY_MODEL),
+        observedModelId: data.gateway_verification.observed_model_id ? String(data.gateway_verification.observed_model_id) : undefined,
+        observedModel: data.gateway_verification.observed_model ? String(data.gateway_verification.observed_model) : undefined,
+        verifiedAtUtc: data.gateway_verification.verified_at_utc ? String(data.gateway_verification.verified_at_utc) : undefined,
+        expiresAtUtc: data.gateway_verification.expires_at_utc ? String(data.gateway_verification.expires_at_utc) : undefined,
+        verificationGenerationRequests: Number(data.gateway_verification.verification_generation_requests || 0),
+        errorMessage: data.gateway_verification.error_message ? String(data.gateway_verification.error_message) : undefined
+      }
+    }
+
+    if (options?.verifyModel) {
+      const verifyRes = await fetch(`${baseUrl}/gateway/verify-model`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ model: GEMINI_GATEWAY_MODEL, force: Boolean(options.force) }),
+        signal: AbortSignal.timeout(300_000)
+      })
+      if (!verifyRes.ok) {
+        return {
+          ok: false,
+          message: `Không thể xác minh model: Gateway báo lỗi HTTP ${verifyRes.status}.`
+        }
+      }
+      const verifyData = await readBoundedAiResponseJson<{
+        state?: string
+        requested_model?: string
+        observed_model_id?: string
+        observed_model?: string
+        verified_at_utc?: string
+        expires_at_utc?: string
+        verification_generation_requests?: number
+        error_message?: string
+      }>(verifyRes, undefined, 64 * 1024)
+
+      verificationStatus = {
+        state: (verifyData.state || 'unverified') as GatewayVerificationStatus['state'],
+        requestedModel: String(verifyData.requested_model || GEMINI_GATEWAY_MODEL),
+        observedModelId: verifyData.observed_model_id ? String(verifyData.observed_model_id) : undefined,
+        observedModel: verifyData.observed_model ? String(verifyData.observed_model) : undefined,
+        verifiedAtUtc: verifyData.verified_at_utc ? String(verifyData.verified_at_utc) : undefined,
+        expiresAtUtc: verifyData.expires_at_utc ? String(verifyData.expires_at_utc) : undefined,
+        verificationGenerationRequests: Number(verifyData.verification_generation_requests || 0),
+        errorMessage: verifyData.error_message ? String(verifyData.error_message) : undefined
+      }
+
+      if (verificationStatus.state === 'verified') {
+        return {
+          ok: true,
+          message: `Đã xác minh Gemini 3.1 Pro (${verificationStatus.observedModel || '3.1 Pro'}${verificationStatus.observedModelId ? ` · ${verificationStatus.observedModelId}` : ''}).`,
+          gatewayVerification: verificationStatus
+        }
+      }
+      if (verificationStatus.state === 'mismatch') {
+        return {
+          ok: false,
+          message: `Gateway trả sai model: yêu cầu Gemini 3.1 Pro nhưng quan sát thấy ${verificationStatus.observedModel || 'khác'} (${verificationStatus.observedModelId || 'unknown'}).`,
+          gatewayVerification: verificationStatus
+        }
+      }
+      if (verificationStatus.state === 'authentication-required') {
+        return {
+          ok: false,
+          message: 'Cookie Gemini đã hết hạn hoặc không hợp lệ. Hãy cập nhật cookie và khởi động lại gateway.',
+          gatewayVerification: verificationStatus
+        }
+      }
+      if (verificationStatus.state === 'unavailable') {
+        return {
+          ok: false,
+          message: `Model Gemini 3.1 Pro (${GEMINI_GATEWAY_MODEL}) không khả dụng cho tài khoản này.`,
+          gatewayVerification: verificationStatus
+        }
+      }
+      return {
+        ok: false,
+        message: `Chưa thể xác minh model: ${verificationStatus.errorMessage || 'không rõ lý do'}.`,
+        gatewayVerification: verificationStatus
+      }
+    }
+
+    return {
+      ok: true,
+      message: `Đã kết nối Gemini Gateway · Gemini 3.1 Pro (${GEMINI_GATEWAY_MODEL}).`,
+      gatewayVerification: verificationStatus
+    }
   } catch (error) {
     return { ok: false, message: `Không thể kết nối Gemini Gateway: ${error instanceof Error ? error.message : String(error)}` }
   }

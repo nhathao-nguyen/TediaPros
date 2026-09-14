@@ -270,9 +270,10 @@ const api = {
     key: string,
     serverUrl?: string,
     targetLanguage?: string,
-    sourceLanguage?: string
+    sourceLanguage?: string,
+    options?: { verifyModel?: boolean; force?: boolean }
   ): Promise<GeminiStatus> =>
-    ipcRenderer.invoke('translate:checkKey', provider, key, serverUrl, targetLanguage, sourceLanguage),
+    ipcRenderer.invoke('translate:checkKey', provider, key, serverUrl, targetLanguage, sourceLanguage, options),
   translateSrt: (
     srtPath: string,
     outPath: string,

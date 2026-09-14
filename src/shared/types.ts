@@ -542,9 +542,21 @@ export interface VideoTitleConfig {
 
 export type ResolvedVideoSeoConfig = Omit<VideoTitleConfig, 'seo'> & { seo: VideoSeoOptions }
 
+export interface GatewayVerificationStatus {
+  state: 'verified' | 'unverified' | 'mismatch' | 'unavailable' | 'authentication-required' | 'error'
+  requestedModel: string
+  observedModelId?: string
+  observedModel?: string
+  verifiedAtUtc?: string
+  expiresAtUtc?: string
+  verificationGenerationRequests: number
+  errorMessage?: string
+}
+
 export interface GeminiStatus {
   ok: boolean
   message: string
+  gatewayVerification?: GatewayVerificationStatus
 }
 
 export interface GeminiKeyInfo {

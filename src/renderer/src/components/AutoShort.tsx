@@ -25,6 +25,7 @@ import {
   type BurnFontEntry,
   type ClonedVoice,
   type DichProvider,
+  type DichKeyStatus,
   type SubtitleDisplayStyle,
   type SubtitleLayoutProfile,
   type TtsModelInfo,
@@ -292,7 +293,7 @@ export default function AutoShort(): JSX.Element {
   const [apiKeyInput, setApiKeyInput] = useState('')
   const [hasStoredKey, setHasStoredKey] = useState(false)
   const [keyTesting, setKeyTesting] = useState(false)
-  const [keyFeedback, setKeyFeedback] = useState<{ ok: boolean; message: string } | null>(null)
+  const [keyFeedback, setKeyFeedback] = useState<DichKeyStatus | null>(null)
   const [showKeyText, setShowKeyText] = useState(false)
 
   // Blur Regions
@@ -1038,22 +1039,33 @@ export default function AutoShort(): JSX.Element {
   }
 
   // API Key handlers
-  const handleSaveAndTestKey = async (): Promise<void> => {
+  const handleSaveAndTestKey = async (verifyModel = false): Promise<void> => {
     setKeyTesting(true)
     setKeyFeedback(null)
     try {
       if (apiKeyInput.trim()) {
         await window.api.translateSaveKey(translateProvider, apiKeyInput.trim())
       }
-      const res = await window.api.translateCheckKey(
-        translateProvider,
-        apiKeyInput.trim(),
-        translateProvider === 'local'
-          ? ttsServerUrl
-          : translateProvider === 'gemini-gateway' ? geminiGatewayUrl : undefined,
-        translateTarget,
-        whisperLanguage
-      )
+      const res = verifyModel
+        ? await window.api.translateCheckKey(
+            translateProvider,
+            apiKeyInput.trim(),
+            translateProvider === 'local'
+              ? ttsServerUrl
+              : translateProvider === 'gemini-gateway' ? geminiGatewayUrl : undefined,
+            translateTarget,
+            whisperLanguage,
+            { verifyModel: true }
+          )
+        : await window.api.translateCheckKey(
+            translateProvider,
+            apiKeyInput.trim(),
+            translateProvider === 'local'
+              ? ttsServerUrl
+              : translateProvider === 'gemini-gateway' ? geminiGatewayUrl : undefined,
+            translateTarget,
+            whisperLanguage
+          )
       setKeyFeedback(res)
       if (res.ok) {
         setHasStoredKey(true)
@@ -1835,12 +1847,17 @@ export default function AutoShort(): JSX.Element {
                             <span className="autoshort-key-badge saved">2 lượt / video</span>
                           </div>
                           <button type="button" className="btn primary" disabled={keyTesting || isRunning}
-                            onClick={() => void handleSaveAndTestKey()}>
+                            onClick={() => void handleSaveAndTestKey(true)}>
                             {keyTesting ? 'Đang kiểm tra…' : 'Kiểm tra gateway và model'}
                           </button>
                           {keyFeedback && (
                             <div className={`autoshort-key-feedback ${keyFeedback.ok ? 'success' : 'error'}`}>
-                              {keyFeedback.ok ? '✓ ' : '✕ '}{keyFeedback.message}
+                              <div>{keyFeedback.ok ? '✓ ' : '✕ '}{keyFeedback.message}</div>
+                              {keyFeedback.gatewayVerification?.verifiedAtUtc && (
+                                <div style={{ fontSize: '11px', marginTop: '4px', opacity: 0.85 }}>
+                                  Đã xác minh: {new Date(keyFeedback.gatewayVerification.verifiedAtUtc).toLocaleTimeString()} ({keyFeedback.gatewayVerification.observedModel || 'Gemini 3.1 Pro'})
+                                </div>
+                              )}
                             </div>
                           )}
                         </> : <>

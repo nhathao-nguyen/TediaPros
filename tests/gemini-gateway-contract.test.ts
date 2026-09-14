@@ -352,3 +352,126 @@ test('Gemini Gateway structured JSON vectors parity with Go gateway normalizer',
   }
 })
 
+test('checkGeminiGateway passes through cached verification from capabilities', async () => {
+  const oldFetch = globalThis.fetch
+  try {
+    globalThis.fetch = async (url) => {
+      if (String(url).endsWith('/gateway/capabilities')) {
+        return new Response(JSON.stringify({
+          gateway_contract_version: 2,
+          provider_ready: true,
+          models: ['gemini-advanced'],
+          model_selection: 'observed-id-required',
+          gateway_verification: {
+            state: 'verified',
+            requested_model: 'gemini-advanced',
+            observed_model_id: 'e6fa609c3fa255c0',
+            observed_model: '3.1 Pro',
+            verified_at_utc: '2026-09-14T13:00:00Z',
+            expires_at_utc: '2026-09-14T13:15:00Z',
+            verification_generation_requests: 0
+          }
+        }))
+      }
+      throw new Error(`Unexpected URL: ${url}`)
+    }
+    const status = await checkGeminiGateway('http://127.0.0.1:4982')
+    assert.equal(status.ok, true)
+    assert.equal(status.gatewayVerification?.state, 'verified')
+    assert.equal(status.gatewayVerification?.observedModelId, 'e6fa609c3fa255c0')
+    assert.equal(status.gatewayVerification?.observedModel, '3.1 Pro')
+  } finally {
+    globalThis.fetch = oldFetch
+  }
+})
+
+test('checkGeminiGateway with verifyModel calls POST /gateway/verify-model and handles verified and mismatch states', async () => {
+  const oldFetch = globalThis.fetch
+  let verifyBody: any
+  try {
+    // 1. Success (verified)
+    globalThis.fetch = async (url, init) => {
+      if (String(url).endsWith('/gateway/capabilities')) {
+        return new Response(JSON.stringify({
+          gateway_contract_version: 2,
+          provider_ready: true,
+          models: ['gemini-advanced'],
+          model_selection: 'observed-id-required'
+        }))
+      }
+      if (String(url).endsWith('/gateway/verify-model')) {
+        verifyBody = JSON.parse(String(init?.body || '{}'))
+        return new Response(JSON.stringify({
+          state: 'verified',
+          requested_model: 'gemini-advanced',
+          observed_model_id: 'e6fa609c3fa255c0',
+          observed_model: '3.1 Pro',
+          verified_at_utc: '2026-09-14T13:00:00Z',
+          expires_at_utc: '2026-09-14T13:15:00Z',
+          verification_generation_requests: 1
+        }))
+      }
+      throw new Error(`Unexpected URL: ${url}`)
+    }
+    const statusVerified = await checkGeminiGateway('http://127.0.0.1:4982', { verifyModel: true, force: true })
+    assert.equal(statusVerified.ok, true)
+    assert.match(statusVerified.message, /Đã xác minh Gemini 3.1 Pro/)
+    assert.equal(statusVerified.gatewayVerification?.state, 'verified')
+    assert.equal(verifyBody.model, 'gemini-advanced')
+    assert.equal(verifyBody.force, true)
+
+    // 2. Mismatch
+    globalThis.fetch = async (url) => {
+      if (String(url).endsWith('/gateway/capabilities')) {
+        return new Response(JSON.stringify({
+          gateway_contract_version: 2,
+          provider_ready: true,
+          models: ['gemini-advanced'],
+          model_selection: 'observed-id-required'
+        }))
+      }
+      if (String(url).endsWith('/gateway/verify-model')) {
+        return new Response(JSON.stringify({
+          state: 'mismatch',
+          requested_model: 'gemini-advanced',
+          observed_model_id: 'flash-model-id',
+          observed_model: '3.8 Flash',
+          verification_generation_requests: 1,
+          error_message: 'observed model mismatch'
+        }))
+      }
+      throw new Error(`Unexpected URL: ${url}`)
+    }
+    const statusMismatch = await checkGeminiGateway('http://127.0.0.1:4982', { verifyModel: true })
+    assert.equal(statusMismatch.ok, false)
+    assert.match(statusMismatch.message, /Gateway trả sai model/)
+    assert.equal(statusMismatch.gatewayVerification?.state, 'mismatch')
+  } finally {
+    globalThis.fetch = oldFetch
+  }
+})
+
+test('audit log redacts sensitive query parameters, tokens, and cookies', async () => {
+  const auditDir = await mkdtemp(join(tmpdir(), 'tedia-gemini-audit-redact-'))
+  const auditPath = join(auditDir, 'translation-audit.json')
+  const adapter = createGeminiGatewayTranslationAdapter('http://127.0.0.1:4982/openai/v1', { auditPath })
+  const source = input(1)
+  const plan = planTranslation(source, adapter.capability)
+
+  const oldFetch = globalThis.fetch
+  try {
+    globalThis.fetch = async () => {
+      throw new Error('Connection failed to https://gemini.google.com/rpc?token=SECRET_TOKEN_12345&psid=SECURE1PSID_SECRET with Cookie: __Secure-1PSID=SECRET_COOKIE')
+    }
+    await adapter.requestOnce(plan.batches[0], new AbortController().signal).catch(() => {})
+
+    const auditContent = await readFile(auditPath, 'utf8')
+    assert.doesNotMatch(auditContent, /SECRET_TOKEN_12345/)
+    assert.doesNotMatch(auditContent, /SECURE1PSID_SECRET/)
+    assert.doesNotMatch(auditContent, /SECRET_COOKIE/)
+    assert.match(auditContent, /\[redacted/i)
+  } finally {
+    globalThis.fetch = oldFetch
+    await rm(auditDir, { recursive: true, force: true }).catch(() => {})
+  }
+})
