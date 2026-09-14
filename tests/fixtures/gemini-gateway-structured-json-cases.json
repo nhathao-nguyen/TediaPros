@@ -1,0 +1,116 @@
+[
+  {
+    "name": "clean_object",
+    "input": "{\"translations\":{\"cue-1\":\"Hello.\"}}",
+    "expectedValid": true,
+    "expectedOperations": [],
+    "expectedText": "{\"translations\":{\"cue-1\":\"Hello.\"}}"
+  },
+  {
+    "name": "with_bom",
+    "input": "\uFEFF{\"translations\":{\"cue-1\":\"Hello.\"}}",
+    "expectedValid": true,
+    "expectedOperations": ["strip-bom"],
+    "expectedText": "{\"translations\":{\"cue-1\":\"Hello.\"}}"
+  },
+  {
+    "name": "with_outer_whitespace",
+    "input": "  \n  {\"translations\":{\"cue-1\":\"Hello.\"}}  \t\r\n",
+    "expectedValid": true,
+    "expectedOperations": [],
+    "expectedText": "{\"translations\":{\"cue-1\":\"Hello.\"}}"
+  },
+  {
+    "name": "with_json_fence",
+    "input": "```json\n{\"translations\":{\"cue-1\":\"Hello.\"}}\n```",
+    "expectedValid": true,
+    "expectedOperations": ["unwrap-json-fence"],
+    "expectedText": "{\"translations\":{\"cue-1\":\"Hello.\"}}"
+  },
+  {
+    "name": "with_empty_fence",
+    "input": "```\n{\"translations\":{\"cue-1\":\"Hello.\"}}\n```",
+    "expectedValid": true,
+    "expectedOperations": ["unwrap-json-fence"],
+    "expectedText": "{\"translations\":{\"cue-1\":\"Hello.\"}}"
+  },
+  {
+    "name": "with_bom_and_fence",
+    "input": "\uFEFF```json\n{\"translations\":{\"cue-1\":\"Hello.\"}}\n```",
+    "expectedValid": true,
+    "expectedOperations": ["strip-bom", "unwrap-json-fence"],
+    "expectedText": "{\"translations\":{\"cue-1\":\"Hello.\"}}"
+  },
+  {
+    "name": "duplicate_literal_key",
+    "input": "{\"translations\":{\"cue-1\":\"A\",\"cue-1\":\"B\"}}",
+    "expectedValid": false,
+    "expectedErrorCode": "duplicate-key"
+  },
+  {
+    "name": "duplicate_escaped_key",
+    "input": "{\"translations\":{\"cue-1\":\"A\",\"\\u0063ue-1\":\"B\"}}",
+    "expectedValid": false,
+    "expectedErrorCode": "duplicate-key"
+  },
+  {
+    "name": "prose_before_fence",
+    "input": "Here is the JSON output:\n```json\n{\"translations\":{\"cue-1\":\"Hello.\"}}\n```",
+    "expectedValid": false,
+    "expectedErrorCode": "ambiguous-json"
+  },
+  {
+    "name": "prose_after_fence",
+    "input": "```json\n{\"translations\":{\"cue-1\":\"Hello.\"}}\n```\nHope that helps!",
+    "expectedValid": false,
+    "expectedErrorCode": "ambiguous-json"
+  },
+  {
+    "name": "multiple_fences",
+    "input": "```json\n{\"a\":1}\n```\n```json\n{\"b\":2}\n```",
+    "expectedValid": false,
+    "expectedErrorCode": "ambiguous-json"
+  },
+  {
+    "name": "unclosed_fence",
+    "input": "```json\n{\"translations\":{\"cue-1\":\"Hello.\"}}",
+    "expectedValid": false,
+    "expectedErrorCode": "ambiguous-json"
+  },
+  {
+    "name": "array_root",
+    "input": "[{\"translations\":{\"cue-1\":\"Hello.\"}}]",
+    "expectedValid": false,
+    "expectedErrorCode": "invalid-json"
+  },
+  {
+    "name": "string_root",
+    "input": "\"just a string\"",
+    "expectedValid": false,
+    "expectedErrorCode": "invalid-json"
+  },
+  {
+    "name": "truncated_string",
+    "input": "{\"translations\":{\"cue-1\":\"unfinished",
+    "expectedValid": false,
+    "expectedErrorCode": "invalid-json"
+  },
+  {
+    "name": "trailing_comma",
+    "input": "{\"translations\":{\"cue-1\":\"Hello.\"},}",
+    "expectedValid": false,
+    "expectedErrorCode": "invalid-json"
+  },
+  {
+    "name": "single_quote",
+    "input": "{'translations':{'cue-1':'Hello.'}}",
+    "expectedValid": false,
+    "expectedErrorCode": "invalid-json"
+  },
+  {
+    "name": "multiple_objects",
+    "input": "{\"a\":1}{\"b\":2}",
+    "expectedValid": false,
+    "expectedErrorCode": "ambiguous-json"
+  }
+]

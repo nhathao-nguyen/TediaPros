@@ -4,6 +4,7 @@ import { mkdtemp, readFile, rm } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { createGeminiGatewayTranslationAdapter, checkGeminiGateway, rephraseGeminiGateway } from '../src/main/geminiGateway'
+import { parseAiJsonObject } from '../src/shared/aiOutput'
 import { planTranslation } from '../src/main/translation/planner'
 import { translateWithAdapter } from '../src/main/translation/orchestrator'
 import type { TranslationInput } from '../src/shared/translation'
@@ -216,3 +217,29 @@ test('Gemini Gateway rephrase keeps the existing labelled-candidate grammar', as
     globalThis.fetch = oldFetch
   }
 })
+
+test('Gemini Gateway structured JSON vectors parity with Go gateway normalizer', async () => {
+  const casesPath = join(process.cwd(), 'tests', 'fixtures', 'gemini-gateway-structured-json-cases.json')
+  const cases: Array<{
+    name: string
+    input: string
+    expectedValid: boolean
+    expectedOperations?: string[]
+    expectedText?: string
+    expectedErrorCode?: string
+  }> = JSON.parse(await readFile(casesPath, 'utf8'))
+
+  for (const tc of cases) {
+    if (tc.expectedValid) {
+      const parsed = parseAiJsonObject(tc.input, { allowFence: true, allowProseObject: false })
+      assert.ok(parsed.value, `Case ${tc.name} should yield valid parsed object`)
+    } else {
+      assert.throws(
+        () => parseAiJsonObject(tc.input, { allowFence: true, allowProseObject: false }),
+        (err: any) => Boolean(err),
+        `Case ${tc.name} must be rejected`
+      )
+    }
+  }
+})
+
