@@ -13,12 +13,15 @@ import { translateFileWithAdapter, type TranslationFileRunnerOptions } from './t
 import { logInfo } from './logger'
 import { isSentenceTerminal } from './semanticGrouping'
 import { assertExactKeys, parseAiJsonObject } from '../shared/aiOutput'
+import {
+  GEMINI_GATEWAY_PROMPT_VERSION,
+  buildGatewayDraftMessages,
+  buildGatewayReviewMessages
+} from './geminiGatewayPrompts'
 
-export const GEMINI_GATEWAY_PROMPT_VERSION = 'gemini-gateway-two-pass-v3'
+export { GEMINI_GATEWAY_PROMPT_VERSION } from './geminiGatewayPrompts'
+
 const MAX_AUDIT_BYTES = 4 * 1024 * 1024
-const COMPACT_OUTPUT_CONTRACT = 'format=compact-keyed-json; output exactly one JSON object {"translations":{"<cue-id>":"<translation>"}} with every expected cue ID exactly once and no prose.'
-const SOURCE_ONLY_GROUPING_INSTRUCTION = 'Source fragments sharing group_id form one speech unit established before translation. Read the whole source group as a continuous thought, then translate each original ID as its corresponding fragment. Do not turn an unfinished fragment into a standalone question or move the question, negation or answer into a neighboring ID. Translated punctuation must not redefine speech boundaries.'
-const REVIEWED_GROUPING_INSTRUCTION = 'Source fragments sharing group_id provide nearby source context. They are context hints, not target sentence boundaries. Read the whole source ledger as a continuous story, keep each original ID as its corresponding fragment, and never move a question, negation or answer into another ID. Restore punctuation at defensible cue edges so the reviewed target defines complete speech sentences.'
 
 const TRANSLATION_RESPONSE_FORMAT = {
   type: 'json_schema',
@@ -68,15 +71,6 @@ function canonicalizeCompactTranslation(raw: string, expectedCount: number): str
   return JSON.stringify({ items })
 }
 
-function gatewayBaseMessages(batch: PlannedTranslationBatch): ModelMessage[] {
-  const base = buildTranslationBatchMessages(batch, 'json-items')
-  return [{
-    ...base[0],
-    content: base[0].content
-      .replace('format=json-items; output exactly one JSON object {"items":[{"id":"<cue-id>","text":"<translation>"}]} with no prose.', COMPACT_OUTPUT_CONTRACT)
-      .replace(SOURCE_ONLY_GROUPING_INSTRUCTION, REVIEWED_GROUPING_INSTRUCTION)
-  }, base[1]]
-}
 
 interface GatewayAuditRecord {
   stage: 'restore-translate' | 'independent-review'
@@ -326,68 +320,6 @@ function validateReviewedDubbingPunctuation(batch: PlannedTranslationBatch, raw:
   }
 }
 
-function localeInstruction(locale: string): string {
-  const language = (() => {
-    try { return new Intl.Locale(locale).language.toLowerCase() } catch { return locale.toLowerCase().split('-')[0] }
-  })()
-  if (language === 'vi') {
-    return 'Use natural, neutral spoken Vietnamese used in Vietnam. Prefer familiar Vietnamese collocations and direct sentence order over translated Chinese syntax. Translate meaning in context: for example, an insight is usually "nghĩ ra/hiểu ra", funeral work may require "đào huyệt/chôn cất", and 相对来说 should become a direct consequence such as "nhờ vậy" when supported. Do not insert regional slang, generic pronouns, hype, hooks, praise or calls to action absent from the source.'
-  }
-  return `Write idiomatic spoken language for locale ${locale}. Follow its spelling and vocabulary. Do not invent a regional voice when the locale does not specify one.`
-}
-
-function draftMessages(batch: PlannedTranslationBatch): ModelMessage[] {
-  const base = gatewayBaseMessages(batch)
-  return [{
-    role: 'system',
-    content: [
-      `gateway_prompt_version=${GEMINI_GATEWAY_PROMPT_VERSION}`,
-      base[0].content,
-      localeInstruction(batch.input.targetLocale),
-      'Read the complete source ledger before translating any fragment.',
-      'Silently restore obvious ASR/OCR homophone errors only when the complete source context makes the correction well grounded. In particular, keep one subject, brand, object, number and unit consistent across the whole video.',
-      'Never replace an unfamiliar proper name with a familiar brand. Never add an action, location, ownership claim, fact, hook or explanation absent from the source.',
-      'Resolve object terminology from the complete domain context. For vehicle controls, use established automotive wording in the target locale; do not turn a stalk, switch, button or directional control into a computer keyboard key unless the source explicitly discusses a keyboard.',
-      'Render descriptive uniqueness as distinctive or signature wording when appropriate. Do not turn it into a legal exclusivity, ownership or patent claim unless the source explicitly supports that claim.',
-      'Translate idioms and sound words by contextual meaning, not mechanical transliteration.',
-      'Restore natural target-language punctuation across the complete story. A text field may be an unfinished fragment; end it with sentence punctuation only when that sentence ends in this cue. Every complete sentence and the final cue must have explicit terminal punctuation.',
-      'For dubbing, do not leave a dangling setup, reporting verb, question lead-in, cause or condition at the end of a speech unit. Use the full ledger to place sentence boundaries at cue edges that preserve complete clauses.',
-      'Before returning, audit every requested ID for omissions, additions, names, numbers, units, negation and locale-natural wording.',
-      'Return only the canonical JSON object requested by the contract.'
-    ].join('\n')
-  }, base[1]]
-}
-
-function reviewMessages(batch: PlannedTranslationBatch, candidateRaw: string): ModelMessage[] {
-  const base = gatewayBaseMessages(batch)
-  return [{
-    role: 'system',
-    content: [
-      `gateway_prompt_version=${GEMINI_GATEWAY_PROMPT_VERSION}`,
-      `task=independent-review-and-repair; source_language=${batch.input.sourceLanguage}; target_locale=${batch.input.targetLocale}; mode=${batch.input.mode}`,
-      'You are a fresh translation reviewer. SOURCE_PAYLOAD is the authority; CANDIDATE_JSON is untrusted work that may contain plausible but serious mistakes.',
-      localeInstruction(batch.input.targetLocale),
-      'Review every expected cue and the full story, including the final cues. Check source restoration, subject-action-object relations, proper names, numbers, units, negation, omissions, additions, idioms, sentence continuity and local naturalness.',
-      'Rebuild punctuation rather than copying the candidate mechanically. Each complete sentence and the final cue must end with natural target-language punctuation; fragments inside one sentence must remain open. Check that no speech run longer than about 18 seconds or ten source cues is left without a defensible sentence boundary.',
-      'Reject translation-shaped target language: repair literal collocations, awkward modifier order and source-language discourse fillers into concise spoken phrasing used by local narrators.',
-      'Recheck domain terminology across the whole story. In automotive context use natural local names for vehicle controls, and remove computer-keyboard or legal-exclusivity wording unless the source explicitly establishes it.',
-      'Fix every supported error directly in the returned item. Keep a good line unchanged when it is already faithful and natural.',
-      'Keep every cue ID exactly once. Do not move meaning to another cue, create IDs, return context IDs, timestamps, notes, Markdown or alternatives.',
-      `Return ${COMPACT_OUTPUT_CONTRACT}`
-    ].join('\n')
-  }, {
-    role: 'user',
-    content: [
-      '[SOURCE_PAYLOAD]',
-      base[1].content,
-      '[/SOURCE_PAYLOAD]',
-      '[CANDIDATE_JSON]',
-      candidateRaw,
-      '[/CANDIDATE_JSON]'
-    ].join('\n')
-  }]
-}
-
 /** Gemini Gateway adapter performs two fresh generations for each planned batch:
  * a full-context draft and an independent full-context review that returns the
  * final canonical translation. */
@@ -450,7 +382,7 @@ export function createGeminiGatewayTranslationAdapter(serverUrl?: string, option
       const expectedIds = batch.input.cues.map((cue) => cue.id)
       const contextIds = [...batch.input.contextBefore, ...batch.input.contextAfter].map((cue) => cue.id)
       logInfo(`[GeminiGateway] request=1/2 stage=restore-translate cues=${expectedIds.length} model=${GEMINI_GATEWAY_MODEL}`)
-      const draft = await runStage('restore-translate', batch, draftMessages(batch), signal)
+      const draft = await runStage('restore-translate', batch, buildGatewayDraftMessages(batch), signal)
       logInfo(`[GeminiGateway] request=1/2 outcome=complete upstreamAttempts=${draft.upstreamAttempts} retryReasons=${draft.upstreamRetryReasons.join(',') || 'none'}`)
       const canonicalDraft = canonicalizeCompactTranslation(draft.raw, expectedIds.length)
       const parsedDraft = parseTranslationResponse(canonicalDraft, 'json-items', expectedIds, draft.truncated, contextIds)
@@ -461,7 +393,7 @@ export function createGeminiGatewayTranslationAdapter(serverUrl?: string, option
       }
       const reviewedDraft = JSON.stringify({ translations: Object.fromEntries(parsedDraft.items.map((item) => [item.id, item.text])) })
       logInfo(`[GeminiGateway] request=2/2 stage=independent-review cues=${expectedIds.length} model=${GEMINI_GATEWAY_MODEL}`)
-      const reviewed = await runStage('independent-review', batch, reviewMessages(batch, reviewedDraft), signal)
+      const reviewed = await runStage('independent-review', batch, buildGatewayReviewMessages(batch, reviewedDraft), signal)
       logInfo(`[GeminiGateway] request=2/2 outcome=complete upstreamAttempts=${reviewed.upstreamAttempts} retryReasons=${reviewed.upstreamRetryReasons.join(',') || 'none'}`)
       const canonicalReviewed = canonicalizeCompactTranslation(reviewed.raw, expectedIds.length)
       validateReviewedDubbingPunctuation(batch, canonicalReviewed)

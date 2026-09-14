@@ -371,7 +371,7 @@ function translationModelIdentity(config: AutoShortConfig): { modelIdentity: str
   }
   if (config.translateProvider === 'gemini-gateway') {
     return {
-      modelIdentity: 'gemini-gateway:gemini-advanced:two-pass-v3',
+      modelIdentity: 'gemini-gateway:gemini-advanced:two-pass-v4',
       revisionKnown: false,
       profileId: sanitizeEndpointAlias(config.translateServerUrl) || 'gemini-gateway-default'
     }

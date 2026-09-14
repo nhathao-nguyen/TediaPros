@@ -102,7 +102,7 @@ test('Gemini Gateway keeps a 44-cue short in one batch and performs exactly draf
     assert.match(requests[1].body.messages[1].content, /Wooting/u)
     assert.match(requests[1].body.messages[1].content, /沃尔沃/u)
     const audit = JSON.parse(await readFile(auditPath, 'utf8'))
-    assert.equal(audit.promptVersion, 'gemini-gateway-two-pass-v3')
+    assert.equal(audit.promptVersion, 'gemini-gateway-two-pass-v4')
     assert.deepEqual(audit.records.map((record: any) => record.stage), ['restore-translate', 'independent-review'])
     assert.equal(audit.records[1].response.sha256.length, 64)
     assert.deepEqual(audit.records[1].response.upstreamRetryReasons, ['invalid-json-object'])
