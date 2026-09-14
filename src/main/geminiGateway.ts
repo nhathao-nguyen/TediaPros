@@ -10,7 +10,7 @@ import { buildTranslationBatchMessages, buildRephraseMessages, type ModelMessage
 import { parseTranslationResponse } from './translation/response'
 import { readBoundedAiResponseJson, readBoundedAiResponseText } from './aiResponseBody'
 import { translateFileWithAdapter, type TranslationFileRunnerOptions } from './translation/fileRunner'
-import { logInfo } from './logger'
+import { logInfo, logWarn } from './logger'
 import { isSentenceTerminal } from './semanticGrouping'
 import { assertExactKeys, parseAiJsonObject } from '../shared/aiOutput'
 import {
@@ -18,6 +18,11 @@ import {
   buildGatewayDraftMessages,
   buildGatewayReviewMessages
 } from './geminiGatewayPrompts'
+import {
+  calculateGatewaySourceDigest,
+  readGatewayDraft,
+  writeGatewayDraft
+} from './geminiGatewayDraftCheckpoint'
 
 export { GEMINI_GATEWAY_PROMPT_VERSION } from './geminiGatewayPrompts'
 
@@ -51,6 +56,9 @@ interface GatewayCompletion {
   responseId?: string
   finishReason: string
   requestBody: Record<string, unknown>
+  observedModelId?: string
+  observedModel?: string
+  routeFingerprint?: string
 }
 
 function canonicalizeCompactTranslation(raw: string, expectedCount: number): string {
@@ -94,6 +102,8 @@ interface GatewayAuditRecord {
 export interface GeminiGatewayTranslationOptions {
   /** Fixed path inside the current AutoShort item scope. Never sent upstream. */
   auditPath?: string
+  /** Directory inside current AutoShort item scope where draft is saved/resumed. Defaults to dirname(auditPath) if provided. */
+  draftDir?: string
 }
 
 function normalizeBaseUrl(value?: string): string {
@@ -193,6 +203,8 @@ async function requestGateway(
         requested_model?: unknown
         resolved_model?: unknown
         observed_model_id?: unknown
+        observed_model?: unknown
+        route_fingerprint?: unknown
         model_verification?: unknown
         completion_state?: unknown
         upstream_attempts?: unknown
@@ -240,6 +252,9 @@ async function requestGateway(
       responseId: typeof data.id === 'string' ? data.id : undefined,
       finishReason,
       requestBody,
+      observedModelId: typeof meta.observed_model_id === 'string' ? meta.observed_model_id : undefined,
+      observedModel: typeof meta.observed_model === 'string' ? meta.observed_model : undefined,
+      routeFingerprint: typeof meta.route_fingerprint === 'string' ? meta.route_fingerprint : undefined,
       upstreamRetryReasons: Array.isArray(meta.upstream_retry_reasons)
         ? meta.upstream_retry_reasons.filter((item): item is string => typeof item === 'string').slice(0, 8)
         : [],
@@ -326,6 +341,7 @@ function validateReviewedDubbingPunctuation(batch: PlannedTranslationBatch, raw:
 export function createGeminiGatewayTranslationAdapter(serverUrl?: string, options: GeminiGatewayTranslationOptions = {}): TranslationAdapter {
   const baseUrl = normalizeBaseUrl(serverUrl)
   const auditRecords: GatewayAuditRecord[] = []
+  const draftDir = options.draftDir || (options.auditPath ? dirname(options.auditPath) : undefined)
   const runStage = async (
     stage: GatewayAuditRecord['stage'],
     batch: PlannedTranslationBatch,
@@ -381,17 +397,72 @@ export function createGeminiGatewayTranslationAdapter(serverUrl?: string, option
     async requestOnce(batch, signal) {
       const expectedIds = batch.input.cues.map((cue) => cue.id)
       const contextIds = [...batch.input.contextBefore, ...batch.input.contextAfter].map((cue) => cue.id)
-      logInfo(`[GeminiGateway] request=1/2 stage=restore-translate cues=${expectedIds.length} model=${GEMINI_GATEWAY_MODEL}`)
-      const draft = await runStage('restore-translate', batch, buildGatewayDraftMessages(batch), signal)
-      logInfo(`[GeminiGateway] request=1/2 outcome=complete upstreamAttempts=${draft.upstreamAttempts} retryReasons=${draft.upstreamRetryReasons.join(',') || 'none'}`)
-      const canonicalDraft = canonicalizeCompactTranslation(draft.raw, expectedIds.length)
-      const parsedDraft = parseTranslationResponse(canonicalDraft, 'json-items', expectedIds, draft.truncated, contextIds)
-      if (!parsedDraft.complete) {
-        throw Object.assign(new Error(`Lượt khôi phục và dịch không đúng contract: ${parsedDraft.issues[0]?.message || 'response không hoàn chỉnh'}`), {
-          providerCode: 'provider-protocol'
-        })
+      const sourceDigest = calculateGatewaySourceDigest(batch.input)
+      const draftIdentity = `gemini-gateway:${GEMINI_GATEWAY_MODEL}:${GEMINI_GATEWAY_PROMPT_VERSION}:${batch.input.targetLocale}:${expectedIds.length}`
+
+      let canonicalDraft: string | undefined
+      let draftTruncated = false
+
+      if (draftDir) {
+        const existing = await readGatewayDraft(draftDir, draftIdentity, sourceDigest)
+        if (existing) {
+          logInfo(`[GeminiGateway] request=1/2 stage=restore-translate status=resumed-from-draft sha256=${existing.rawSha256.slice(0, 8)} cues=${expectedIds.length}`)
+          auditRecords.push({
+            stage: 'restore-translate',
+            startedAtUtc: new Date().toISOString(),
+            endedAtUtc: new Date().toISOString(),
+            expectedIds,
+            outcome: 'complete',
+            response: {
+              id: 'resumed-from-draft',
+              raw: existing.raw,
+              sha256: existing.rawSha256,
+              finishReason: 'stop',
+              truncated: false,
+              upstreamAttempts: 0,
+              upstreamRetryReasons: []
+            }
+          })
+          await writeGatewayAudit(options.auditPath, auditRecords).catch(() => {})
+          canonicalDraft = canonicalizeCompactTranslation(existing.raw, expectedIds.length)
+        }
       }
-      const reviewedDraft = JSON.stringify({ translations: Object.fromEntries(parsedDraft.items.map((item) => [item.id, item.text])) })
+
+      if (!canonicalDraft) {
+        logInfo(`[GeminiGateway] request=1/2 stage=restore-translate cues=${expectedIds.length} model=${GEMINI_GATEWAY_MODEL}`)
+        const draft = await runStage('restore-translate', batch, buildGatewayDraftMessages(batch), signal)
+        logInfo(`[GeminiGateway] request=1/2 outcome=complete upstreamAttempts=${draft.upstreamAttempts} retryReasons=${draft.upstreamRetryReasons.join(',') || 'none'}`)
+        canonicalDraft = canonicalizeCompactTranslation(draft.raw, expectedIds.length)
+        draftTruncated = draft.truncated
+        const parsedDraft = parseTranslationResponse(canonicalDraft, 'json-items', expectedIds, draft.truncated, contextIds)
+        if (!parsedDraft.complete) {
+          throw Object.assign(new Error(`Lượt khôi phục và dịch không đúng contract: ${parsedDraft.issues[0]?.message || 'response không hoàn chỉnh'}`), {
+            providerCode: 'provider-protocol'
+          })
+        }
+
+        if (draftDir) {
+          await writeGatewayDraft(draftDir, {
+            schemaVersion: 1,
+            state: 'draft-validated',
+            identity: draftIdentity,
+            raw: draft.raw,
+            rawSha256: createHash('sha256').update(draft.raw).digest('hex'),
+            observedModelId: draft.observedModelId || 'e6fa609c3fa255c0',
+            observedModel: draft.observedModel || '3.1 Pro',
+            routeFingerprint: draft.routeFingerprint || 'route-fingerprint',
+            sourceDigest,
+            expectedIds,
+            targetLocale: batch.input.targetLocale,
+            savedAtUtc: new Date().toISOString()
+          }).catch((err) => {
+            logWarn(`[GeminiGateway] Không ghi được draft checkpoint: ${err instanceof Error ? err.message : String(err)}`)
+          })
+        }
+      }
+
+      const parsedDraftForReview = parseTranslationResponse(canonicalDraft, 'json-items', expectedIds, draftTruncated, contextIds)
+      const reviewedDraft = JSON.stringify({ translations: Object.fromEntries(parsedDraftForReview.items.map((item) => [item.id, item.text])) })
       logInfo(`[GeminiGateway] request=2/2 stage=independent-review cues=${expectedIds.length} model=${GEMINI_GATEWAY_MODEL}`)
       const reviewed = await runStage('independent-review', batch, buildGatewayReviewMessages(batch, reviewedDraft), signal)
       logInfo(`[GeminiGateway] request=2/2 outcome=complete upstreamAttempts=${reviewed.upstreamAttempts} retryReasons=${reviewed.upstreamRetryReasons.join(',') || 'none'}`)
