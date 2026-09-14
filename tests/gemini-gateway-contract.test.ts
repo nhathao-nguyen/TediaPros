@@ -3,7 +3,7 @@ import test from 'node:test'
 import { mkdtemp, readFile, rm } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
-import { createGeminiGatewayTranslationAdapter, checkGeminiGateway, rephraseGeminiGateway } from '../src/main/geminiGateway'
+import { createGeminiGatewayTranslationAdapter, checkGeminiGateway, rephraseGeminiGateway, isPermanentGatewayError } from '../src/main/geminiGateway'
 import { parseAiJsonObject } from '../src/shared/aiOutput'
 import { planTranslation } from '../src/main/translation/planner'
 import { translateWithAdapter } from '../src/main/translation/orchestrator'
@@ -32,8 +32,12 @@ function completion(items: Array<{ id: string; text: string }>): Response {
   return new Response(JSON.stringify({
     model: 'gemini-advanced',
     gateway_metadata: {
+      contract_version: 2,
       requested_model: 'gemini-advanced',
       resolved_model: 'gemini-advanced',
+      observed_model_id: 'e6fa609c3fa255c0',
+      model_verification: 'matched',
+      completion_state: 'complete',
       upstream_attempts: 2,
       upstream_retry_reasons: ['invalid-json-object']
     },
@@ -61,6 +65,11 @@ test('Gemini Gateway keeps a 44-cue short in one batch and performs exactly draf
       requests.push({ url: String(url), body })
       assert.equal(body.model, 'gemini-advanced')
       assert.equal(body.temporary, true)
+      assert.deepEqual(body.gateway_requirements, {
+        contract_version: 2,
+        require_verified_model: true,
+        require_complete_response: true
+      })
       assert.equal(body.response_format.json_schema.strict, true)
       assert.deepEqual(body.response_format.json_schema.schema.required, ['translations'])
       const final = requests.length === 2
@@ -149,7 +158,7 @@ test('Gemini Gateway connection check discovers gemini-advanced without a genera
   try {
     globalThis.fetch = async (url, init) => {
       request = { url: String(url), method: init?.method }
-      return new Response(JSON.stringify({ models: ['gemini-advanced'], model_selection: 'exact', schema_mode: 'prompt-only' }))
+      return new Response(JSON.stringify({ gateway_contract_version: 2, models: ['gemini-advanced'], model_selection: 'observed-id-required', schema_mode: 'prompt-only' }))
     }
     const result = await checkGeminiGateway('http://127.0.0.1:4982/openai/v1')
     assert.equal(result.ok, true)
@@ -163,16 +172,34 @@ test('Gemini Gateway connection check reports expired gateway cookies before mod
   const oldFetch = globalThis.fetch
   try {
     globalThis.fetch = async () => new Response(JSON.stringify({
+      gateway_contract_version: 2,
       models: [],
       provider_ready: false,
       provider_error: 'authentication_required',
-      model_selection: 'exact',
+      model_selection: 'observed-id-required',
       schema_mode: 'prompt-only'
     }))
     const result = await checkGeminiGateway('http://127.0.0.1:4982/openai/v1')
     assert.equal(result.ok, false)
     assert.match(result.message, /cookie Gemini.*hết hạn hoặc không hợp lệ/iu)
     assert.doesNotMatch(result.message, /chưa cung cấp gemini-advanced/iu)
+  } finally {
+    globalThis.fetch = oldFetch
+  }
+})
+
+test('Gemini Gateway connection check requires contract version 2', async () => {
+  const oldFetch = globalThis.fetch
+  try {
+    globalThis.fetch = async () => new Response(JSON.stringify({
+      gateway_contract_version: 1,
+      models: ['gemini-advanced'],
+      model_selection: 'exact',
+      schema_mode: 'prompt-only'
+    }))
+    const result = await checkGeminiGateway('http://127.0.0.1:4982/openai/v1')
+    assert.equal(result.ok, false)
+    assert.match(result.message, /chưa hỗ trợ hợp đồng phiên bản 2/iu)
   } finally {
     globalThis.fetch = oldFetch
   }
@@ -185,13 +212,88 @@ test('Gemini Gateway rejects a model fallback reported by the gateway', async ()
   try {
     globalThis.fetch = async () => new Response(JSON.stringify({
       model: 'gemini-2.5-flash',
-      gateway_metadata: { resolved_model: 'gemini-2.5-flash' },
+      gateway_metadata: {
+        contract_version: 2,
+        resolved_model: 'gemini-2.5-flash',
+        observed_model_id: 'c80884df2d854497',
+        model_verification: 'matched',
+        completion_state: 'complete'
+      },
       choices: [{ message: { content: JSON.stringify({ translations: { 'cue-1': 'Volvo.' } }) }, finish_reason: 'stop' }]
     }))
     await assert.rejects(adapter.requestOnce(batch, new AbortController().signal), /thay vì gemini-advanced/u)
   } finally {
     globalThis.fetch = oldFetch
   }
+})
+
+test('Gemini Gateway rejects responses lacking contract version 2 or verified model', async () => {
+  const adapter = createGeminiGatewayTranslationAdapter()
+  const batch = planTranslation(input(1), adapter.capability).batches[0]
+  const oldFetch = globalThis.fetch
+  try {
+    // Missing contract version
+    globalThis.fetch = async () => new Response(JSON.stringify({
+      model: 'gemini-advanced',
+      choices: [{ message: { content: JSON.stringify({ translations: { 'cue-1': 'Volvo.' } }) }, finish_reason: 'stop' }]
+    }))
+    await assert.rejects(adapter.requestOnce(batch, new AbortController().signal), /phiên bản 2/u)
+
+    // Model verification not matched
+    globalThis.fetch = async () => new Response(JSON.stringify({
+      model: 'gemini-advanced',
+      gateway_metadata: {
+        contract_version: 2,
+        resolved_model: 'gemini-advanced',
+        observed_model_id: 'e6fa609c3fa255c0',
+        model_verification: 'unverified',
+        completion_state: 'complete'
+      },
+      choices: [{ message: { content: JSON.stringify({ translations: { 'cue-1': 'Volvo.' } }) }, finish_reason: 'stop' }]
+    }))
+    await assert.rejects(adapter.requestOnce(batch, new AbortController().signal), /trạng thái unverified/u)
+
+    // Incomplete completion_state
+    globalThis.fetch = async () => new Response(JSON.stringify({
+      model: 'gemini-advanced',
+      gateway_metadata: {
+        contract_version: 2,
+        resolved_model: 'gemini-advanced',
+        observed_model_id: 'e6fa609c3fa255c0',
+        model_verification: 'matched',
+        completion_state: 'incomplete'
+      },
+      choices: [{ message: { content: JSON.stringify({ translations: { 'cue-1': 'Volvo.' } }) }, finish_reason: 'stop' }]
+    }))
+    await assert.rejects(adapter.requestOnce(batch, new AbortController().signal), /chưa hoàn tất/u)
+  } finally {
+    globalThis.fetch = oldFetch
+  }
+})
+
+test('Gemini Gateway reports clear message for model-unavailable error', async () => {
+  const adapter = createGeminiGatewayTranslationAdapter()
+  const batch = planTranslation(input(1), adapter.capability).batches[0]
+  const oldFetch = globalThis.fetch
+  try {
+    globalThis.fetch = async () => new Response(JSON.stringify({
+      error: { code: 'model-unavailable', message: 'model gemini-advanced is not available' }
+    }), { status: 422 })
+    await assert.rejects(adapter.requestOnce(batch, new AbortController().signal), /chưa hỗ trợ Gemini 3.1 Pro/u)
+  } finally {
+    globalThis.fetch = oldFetch
+  }
+})
+
+test('isPermanentGatewayError classifies permanent vs transient errors', () => {
+  assert.equal(isPermanentGatewayError('Tài khoản Google của gateway chưa hỗ trợ Gemini 3.1 Pro (cần gói Google One AI Premium).'), true)
+  assert.equal(isPermanentGatewayError('Gemini Gateway trả về model không khớp: expected 3.1 Pro'), true)
+  assert.equal(isPermanentGatewayError('Cookie Gemini của gateway đã hết hạn hoặc không hợp lệ.'), true)
+  assert.equal(isPermanentGatewayError('Gemini Gateway không thể chuẩn hóa JSON có cấu trúc: invalid-structured-json'), true)
+  assert.equal(isPermanentGatewayError('Gemini Gateway không trả về hợp đồng phiên bản 2'), true)
+  assert.equal(isPermanentGatewayError('Gemini Gateway không xác thực được model: trạng thái unverified.'), true)
+  assert.equal(isPermanentGatewayError('Lỗi mạng tạm thời khi gọi gateway'), false)
+  assert.equal(isPermanentGatewayError('Gateway timeout sau 60s'), false)
 })
 
 test('Gemini Gateway rephrase keeps the existing labelled-candidate grammar', async () => {
@@ -202,7 +304,14 @@ test('Gemini Gateway rephrase keeps the existing labelled-candidate grammar', as
       body = JSON.parse(String(init?.body || '{}'))
       return new Response(JSON.stringify({
         model: 'gemini-advanced',
-        gateway_metadata: { resolved_model: 'gemini-advanced', upstream_attempts: 1 },
+        gateway_metadata: {
+          contract_version: 2,
+          resolved_model: 'gemini-advanced',
+          observed_model_id: 'e6fa609c3fa255c0',
+          model_verification: 'matched',
+          completion_state: 'complete',
+          upstream_attempts: 1
+        },
         choices: [{ message: { content: '[cue-1:1] Bản ngắn hơn' }, finish_reason: 'stop' }]
       }))
     }

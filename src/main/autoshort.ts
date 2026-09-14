@@ -54,6 +54,7 @@ import { createLocalTranslationAdapter, loadLocalKey, checkLocalTranslateKey } f
 import {
   checkGeminiGateway,
   createGeminiGatewayTranslationAdapter,
+  isPermanentGatewayError,
   rephraseGeminiGateway
 } from './geminiGateway'
 import { generateSpeech, generateVoiceClone, getTtsModels, checkTtsServerHealth, getEdgeTtsModelInfo, fetchEdgeVoices } from './tts'
@@ -3354,7 +3355,11 @@ async function executeJob(job: AutoShortJob): Promise<AutoShortBatchResult> {
         return processSingleVideo(job, item, job.request.config, index, totalCount, policy, reservation,
           attempt, itemOutputDir)
       },
-      shouldRetry: (result) => result.status === 'error' && result.recovery?.retryable === true,
+      shouldRetry: (result) => {
+        if (result.status !== 'error' || result.recovery?.retryable !== true) return false
+        if (isPermanentGatewayError(result.error)) return false
+        return true
+      },
       onRetryScheduled: (itemResult, index, item, totalCount) => {
         if (itemResult.artifactDir) retryOutputDirs.set(item.id, dirname(itemResult.artifactDir))
         emitProgress(job, item, 'queued', 0,

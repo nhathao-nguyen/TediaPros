@@ -47,6 +47,7 @@ import {
 } from './autoShortOcrCheckpoint'
 import type { AutoShortExecutionPolicy } from './autoShortExecutionPolicy'
 import { classifyAutoShortTtsRecovery } from './autoShortTtsRecovery'
+import { isPermanentGatewayError } from './geminiGateway'
 import {
   createOcrBlurAuditMetadata,
   createSubtitlePlacementAuditMetadata,
@@ -1910,6 +1911,9 @@ export function createAutoShortItemProcessor(
         : !isCancelled
           ? classifyAutoShortTtsRecovery(error, message, context.recoveryAttempt || 1)
           : undefined
+      if (recovery && isPermanentGatewayError(rawMessage)) {
+        recovery.retryable = false
+      }
 
       const structuredTranslation = error && typeof error === 'object'
         ? error as { translationAssessment?: TranslationAssessment; translationBudget?: TranslationBudgetSnapshot }

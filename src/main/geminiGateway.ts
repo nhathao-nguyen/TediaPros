@@ -111,11 +111,47 @@ function normalizeBaseUrl(value?: string): string {
   return raw
 }
 
+export function isPermanentGatewayError(message?: string): boolean {
+  if (!message) return false
+  return /model-unavailable|model-mismatch|invalid-structured-json|chưa hỗ trợ Gemini 3.1 Pro|không khớp|hết hạn hoặc không hợp lệ|hợp đồng phiên bản 2|observed_model_id|trạng thái unverified|trạng thái mismatch/iu.test(message)
+}
+
 function providerError(status: number, detail: string): Error {
-  const retryable = status === 408 || status === 425 || status === 429 || status >= 500
-  return Object.assign(new Error(detail || `Gemini Gateway báo lỗi HTTP ${status}.`), {
+  let errorCode: string | undefined
+  let errorMsg: string | undefined
+  try {
+    const parsed = JSON.parse(detail)
+    errorCode = parsed?.error?.code || parsed?.gateway_metadata?.error_code
+    errorMsg = parsed?.error?.message
+  } catch {}
+
+  let message = detail || `Gemini Gateway báo lỗi HTTP ${status}.`
+  let providerCode: 'provider-transient' | 'provider-auth' | 'provider-protocol' = 'provider-protocol'
+
+  if (errorCode === 'model-unavailable') {
+    message = 'Tài khoản Google của gateway chưa hỗ trợ Gemini 3.1 Pro (cần gói Google One AI Premium hoặc Gemini Advanced).'
+    providerCode = 'provider-protocol'
+  } else if (errorCode === 'model-mismatch') {
+    message = `Gemini Gateway trả về model không khớp: ${errorMsg || detail}`
+    providerCode = 'provider-protocol'
+  } else if (errorCode === 'invalid-structured-json') {
+    message = `Gemini Gateway không thể chuẩn hóa JSON có cấu trúc: ${errorMsg || detail}`
+    providerCode = 'provider-protocol'
+  } else if (errorCode === 'upstream-incomplete') {
+    message = `Gemini Gateway phản hồi chưa hoàn tất từ upstream: ${errorMsg || detail}`
+    providerCode = 'provider-transient'
+  } else if (errorCode === 'upstream-transient' || status === 408 || status === 425 || status === 429 || status >= 500) {
+    message = errorMsg ? `Gemini Gateway lỗi upstream: ${errorMsg}` : (detail || `Gemini Gateway báo lỗi HTTP ${status}.`)
+    providerCode = 'provider-transient'
+  } else if (status === 401 || status === 403 || errorCode === 'authentication_required') {
+    message = 'Cookie Gemini của gateway đã hết hạn hoặc không hợp lệ. Hãy cập nhật cookie rồi khởi động lại gateway.'
+    providerCode = 'provider-auth'
+  }
+
+  return Object.assign(new Error(message), {
     status,
-    providerCode: retryable ? 'provider-transient' : status === 401 || status === 403 ? 'provider-auth' : 'provider-protocol'
+    providerCode,
+    errorCode
   })
 }
 
@@ -133,6 +169,11 @@ async function requestGateway(
     temperature: 0.2,
     max_tokens: maxOutputTokens,
     temporary: true,
+    gateway_requirements: {
+      contract_version: 2,
+      require_verified_model: true,
+      require_complete_response: true
+    },
     ...(structuredJson ? { response_format: TRANSLATION_RESPONSE_FORMAT } : {})
   }
   try {
@@ -153,7 +194,17 @@ async function requestGateway(
         message?: { content?: unknown; refusal?: unknown; tool_calls?: unknown }
         finish_reason?: unknown
       }>
-      gateway_metadata?: { requested_model?: unknown; resolved_model?: unknown; upstream_attempts?: unknown; upstream_retry_reasons?: unknown }
+      gateway_metadata?: {
+        contract_version?: unknown
+        requested_model?: unknown
+        resolved_model?: unknown
+        observed_model_id?: unknown
+        model_verification?: unknown
+        completion_state?: unknown
+        upstream_attempts?: unknown
+        upstream_retry_reasons?: unknown
+        error_code?: unknown
+      }
     }>(response, signal, 1024 * 1024)
     if (!Array.isArray(data.choices) || data.choices.length !== 1) {
       throw Object.assign(new Error('Gemini Gateway trả về số candidate không hợp lệ.'), { providerCode: 'provider-protocol' })
@@ -167,8 +218,23 @@ async function requestGateway(
     }
     const raw = typeof choice.message?.content === 'string' ? choice.message.content.trim() : ''
     if (!raw) throw Object.assign(new Error('Gemini Gateway trả về nội dung rỗng.'), { providerCode: 'provider-protocol' })
-    const resolved = typeof data.gateway_metadata?.resolved_model === 'string'
-      ? data.gateway_metadata.resolved_model
+
+    const meta = data.gateway_metadata
+    if (!meta || meta.contract_version !== 2) {
+      throw Object.assign(new Error('Gemini Gateway không trả về hợp đồng phiên bản 2 (contract_version: 2). Hãy nâng cấp gateway.'), { providerCode: 'provider-protocol' })
+    }
+    if (meta.model_verification !== 'matched') {
+      throw Object.assign(new Error(`Gemini Gateway không xác thực được model: trạng thái ${meta.model_verification}.`), { providerCode: 'provider-protocol' })
+    }
+    if (!meta.observed_model_id || typeof meta.observed_model_id !== 'string') {
+      throw Object.assign(new Error('Gemini Gateway không cung cấp observed_model_id hợp lệ.'), { providerCode: 'provider-protocol' })
+    }
+    if (meta.completion_state !== 'complete') {
+      throw Object.assign(new Error(`Gemini Gateway phản hồi chưa hoàn tất (completion_state: ${meta.completion_state}).`), { providerCode: 'provider-protocol' })
+    }
+
+    const resolved = typeof meta.resolved_model === 'string'
+      ? meta.resolved_model
       : typeof data.model === 'string' ? data.model : GEMINI_GATEWAY_MODEL
     if (resolved !== GEMINI_GATEWAY_MODEL) {
       throw Object.assign(new Error(`Gemini Gateway đã chọn model ${resolved} thay vì ${GEMINI_GATEWAY_MODEL}.`), { providerCode: 'provider-protocol' })
@@ -180,11 +246,11 @@ async function requestGateway(
       responseId: typeof data.id === 'string' ? data.id : undefined,
       finishReason,
       requestBody,
-      upstreamRetryReasons: Array.isArray(data.gateway_metadata?.upstream_retry_reasons)
-        ? data.gateway_metadata.upstream_retry_reasons.filter((item): item is string => typeof item === 'string').slice(0, 8)
+      upstreamRetryReasons: Array.isArray(meta.upstream_retry_reasons)
+        ? meta.upstream_retry_reasons.filter((item): item is string => typeof item === 'string').slice(0, 8)
         : [],
-      upstreamAttempts: typeof (data.gateway_metadata as { upstream_attempts?: unknown } | undefined)?.upstream_attempts === 'number'
-        ? Math.max(1, Math.floor((data.gateway_metadata as { upstream_attempts: number }).upstream_attempts))
+      upstreamAttempts: typeof meta.upstream_attempts === 'number'
+        ? Math.max(1, Math.floor(meta.upstream_attempts))
         : 1
     }
   } catch (error) {
@@ -419,6 +485,7 @@ export async function checkGeminiGateway(serverUrl?: string): Promise<DichKeySta
       provider_error?: unknown
       schema_mode?: unknown
       model_selection?: unknown
+      gateway_contract_version?: unknown
     }>(response, undefined, 256 * 1024)
     if (data.provider_ready === false && data.provider_error === 'authentication_required') {
       return {
@@ -426,11 +493,16 @@ export async function checkGeminiGateway(serverUrl?: string): Promise<DichKeySta
         message: 'Cookie Gemini của gateway đã hết hạn hoặc không hợp lệ. Hãy cập nhật GEMINI_1PSID và GEMINI_1PSIDTS rồi khởi động lại gateway.'
       }
     }
+    if (data.gateway_contract_version !== 2) {
+      return { ok: false, message: 'Gemini Gateway chưa hỗ trợ hợp đồng phiên bản 2. Hãy cập nhật gateway.' }
+    }
     const ids = Array.isArray(data.models) ? data.models.filter((item): item is string => typeof item === 'string') : []
     if (!ids.includes(GEMINI_GATEWAY_MODEL)) {
       return { ok: false, message: `Gateway chưa cung cấp ${GEMINI_GATEWAY_MODEL} (Gemini 3.1 Pro).` }
     }
-    if (data.model_selection !== 'exact') return { ok: false, message: 'Gateway chưa bật chọn model chính xác.' }
+    if (data.model_selection !== 'exact' && data.model_selection !== 'observed-id-required') {
+      return { ok: false, message: 'Gateway chưa bật chọn model chính xác hoặc observed-id-required.' }
+    }
     return { ok: true, message: `Đã kết nối Gemini Gateway · Gemini 3.1 Pro (${GEMINI_GATEWAY_MODEL}).` }
   } catch (error) {
     return { ok: false, message: `Không thể kết nối Gemini Gateway: ${error instanceof Error ? error.message : String(error)}` }
