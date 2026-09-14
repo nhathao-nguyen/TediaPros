@@ -16,6 +16,7 @@ import { selectBootstrapCues } from './durationPredictor'
 import { createAutoShortItemScope, type BranchOutcome } from '../autoShortItemScope'
 import { planDubbingTimeMap, mapDubbingTime, DubbingVideoExtensionLimitError, type DubbingTimeMap } from './timeMap'
 import { validateRephraseSemanticPreservation } from '../autoShortContentQuality'
+import { PreparationQueue } from './preparationQueue'
 
 export interface DubbingTtsRequest {
   cueId: string
@@ -99,6 +100,8 @@ export interface DubbingSynthesisInput {
   signal?: AbortSignal
   onProgress?: (completed: number, total: number, cueId: string, phase?: DubbingPhase) => void
   prefetchTts?: boolean
+  /** Edge-only bounded preparation. Results are always consumed in source order. */
+  preparationConcurrency?: 1 | 2
 }
 
 export interface DubbingSynthesisMetrics {
@@ -389,6 +392,7 @@ export async function synthesizeDubbingPlan(input: DubbingSynthesisInput): Promi
   const scope = createAutoShortItemScope(input.signal)
   const signal = scope.signal
   let caughtError: unknown = undefined
+  let preparationQueue: PreparationQueue<PreparedCue> | null = null
   try {
     const plan = clonePlan(input.plan)
     if (plan.cues.length === 0) throw new Error('DubbingPlan không có cue để tạo voice.')
@@ -442,6 +446,19 @@ export async function synthesizeDubbingPlan(input: DubbingSynthesisInput): Promi
     }
     const pendingPrefetch: { value: PendingPrefetch | null } = { value: null }
 
+    if (input.preparationConcurrency === 2) {
+      preparationQueue = new PreparationQueue(
+        plan.cues.length,
+        2,
+        async (index, preparationSignal) => {
+          const cue = plan.cues[index]
+          return prepared.get(cue.id)
+            || prepareNaturalCue(input, cue, cue.finalSpokenText, preparationSignal, 0)
+        },
+        signal
+      )
+    }
+
     const fitPreparedCue = async (
       cue: DubbingPlanCue,
       current: PreparedCue,
@@ -494,7 +511,7 @@ export async function synthesizeDubbingPlan(input: DubbingSynthesisInput): Promi
     }
 
     const schedulePrefetch = (index: number): void => {
-      if (!input.prefetchTts || index + 1 >= plan.cues.length) return
+      if (preparationQueue || !input.prefetchTts || index + 1 >= plan.cues.length) return
       const nextCue = plan.cues[index + 1]
       if (prepared.has(nextCue.id) || (pendingPrefetch.value && pendingPrefetch.value.cueId === nextCue.id)) return
       const text = nextCue.finalSpokenText.trim()
@@ -515,7 +532,10 @@ export async function synthesizeDubbingPlan(input: DubbingSynthesisInput): Promi
     for (let index = 0; index < plan.cues.length; index++) {
       throwIfAborted(signal)
       const cue = plan.cues[index]
-      let current = prepared.get(cue.id)
+      const alreadyPrepared = prepared.has(cue.id)
+      let current = preparationQueue
+        ? await preparationQueue.take(index)
+        : prepared.get(cue.id)
       if (!current) {
         const prefetched = pendingPrefetch.value
         if (prefetched && prefetched.cueId === cue.id) {
@@ -534,6 +554,8 @@ export async function synthesizeDubbingPlan(input: DubbingSynthesisInput): Promi
           }
         }
         if (!current) current = await prepareNaturalCue(input, cue, cue.finalSpokenText, signal, 0)
+        predictor.addSample(current.text, current.naturalDuration, input.language)
+      } else if (preparationQueue && !alreadyPrepared) {
         predictor.addSample(current.text, current.naturalDuration, input.language)
       }
       if (current.voice) voice = current.voice
@@ -986,6 +1008,7 @@ export async function synthesizeDubbingPlan(input: DubbingSynthesisInput): Promi
     caughtError = error
     throw error
   } finally {
+    await preparationQueue?.close()
     scope.abort(caughtError)
     await scope.drain()
     scope.dispose()

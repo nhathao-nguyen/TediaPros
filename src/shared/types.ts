@@ -981,6 +981,7 @@ export interface AutoShortConfig {
   backgroundMusic?: AutoShortBackgroundMusicConfig
   outputDir: string
   executionPolicy?: {
+    edgeTtsConcurrency?: 1 | 2
     maxActiveItems?: 1 | 2
     overlapIndependentStages?: boolean
     prefetchTts?: boolean
@@ -1173,6 +1174,9 @@ export type AutoShortStagePhase =
 export type AutoShortFailureKind = 'cancelled' | 'timeout' | 'transport' | 'provider' | 'content' | 'unknown'
 
 export interface AutoShortRequestSpan {
+  edgeFailureCode?: string
+  queueWaitMs?: number
+  networkDurationMs?: number
   url?: string
   queuedAtUtc?: string
   startedAtUtc?: string

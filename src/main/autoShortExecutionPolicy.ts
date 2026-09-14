@@ -1,4 +1,5 @@
 export interface AutoShortExecutionPolicy {
+  edgeTtsConcurrency: 1 | 2
   maxActiveItems: 1 | 2
   overlapIndependentStages: boolean
   prefetchTts: boolean
@@ -6,6 +7,7 @@ export interface AutoShortExecutionPolicy {
 }
 
 export const CONSERVATIVE_POLICY: Readonly<AutoShortExecutionPolicy> = Object.freeze({
+  edgeTtsConcurrency: 1,
   maxActiveItems: 1,
   // Keep one item at a time to protect GPU/RAM, but overlap the independent
   // visual branch with translation/TTS.  The OCR transport itself negotiates
@@ -30,6 +32,7 @@ export function resolveExecutionPolicy(
       : 'legacy-disk'
 
   return {
+    edgeTtsConcurrency: overrides.edgeTtsConcurrency === 2 ? 2 : 1,
     maxActiveItems: maxActive,
     overlapIndependentStages: overlap,
     prefetchTts: prefetch,

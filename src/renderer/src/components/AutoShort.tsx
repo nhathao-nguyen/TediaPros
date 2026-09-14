@@ -374,6 +374,7 @@ export default function AutoShort(): JSX.Element {
   const [ttsModel, setTtsModel] = usePersistedState('tblao.autoshort.ttsModel', '')
   const [ttsVoice, setTtsVoice] = usePersistedState('tblao.autoshort.ttsVoice', '')
   const [edgeVoice, setEdgeVoice] = usePersistedState('tblao.autoshort.edgeVoice', 'vi-VN-HoaiMyNeural')
+  const [edgeTtsConcurrency, setEdgeTtsConcurrency] = usePersistedState<1 | 2>('tblao.autoshort.edgeTtsConcurrency', 1)
   const [ttsSpeed, setTtsSpeed] = usePersistedState('tblao.autoshort.ttsSpeed', 1.0)
   const [paceMode, setPaceMode] = usePersistedState<'source-adaptive' | 'fixed'>('tblao.autoshort.paceMode', 'source-adaptive')
   const [clonedVoices] = usePersistedState<ClonedVoice[]>('tblao.tts.clonedVoices', [])
@@ -1221,6 +1222,7 @@ export default function AutoShort(): JSX.Element {
       separationPreset: audioMode === 'separate-vocals' ? separationPreset : undefined,
       originalAudioVolume,
       backgroundMusic: backgroundMusicConfig,
+      executionPolicy: ttsProvider === 'edge-tts' ? { edgeTtsConcurrency } : undefined,
       outputDir
     }
 
@@ -2375,6 +2377,17 @@ export default function AutoShort(): JSX.Element {
                             </option>
                           )}
                         </select>
+                      </label>
+                      <label className="field editor-field">
+                        <span>Tốc độ xử lý Edge-TTS</span>
+                        <select
+                          value={edgeTtsConcurrency}
+                          onChange={(e) => setEdgeTtsConcurrency(e.target.value === '2' ? 2 : 1)}
+                        >
+                          <option value={1}>Ổn định · 1 request cùng lúc</option>
+                          <option value={2}>Nhanh thử nghiệm · tối đa 2 request</option>
+                        </select>
+                        <small>Chế độ nhanh vẫn giới hạn nhịp request, tự lùi khi gặp 429 và giữ thứ tự câu thoại.</small>
                       </label>
                     </>
                   ) : (

@@ -176,6 +176,11 @@ export function sanitizeTelemetryEvent(event: AutoShortStageEventV1): AutoShortS
       actualTokens: typeof rs.actualTokens === 'number' ? rs.actualTokens : undefined,
       status: typeof rs.status === 'number' ? rs.status : undefined,
       durationMs: typeof rs.durationMs === 'number' ? Math.round(rs.durationMs) : undefined,
+      queueWaitMs: typeof rs.queueWaitMs === 'number' ? Math.max(0, Math.round(rs.queueWaitMs)) : undefined,
+      networkDurationMs: typeof rs.networkDurationMs === 'number' ? Math.max(0, Math.round(rs.networkDurationMs)) : undefined,
+      localDspDurationMs: typeof rs.localDspDurationMs === 'number' ? Math.max(0, Math.round(rs.localDspDurationMs)) : undefined,
+      audioDurationSec: typeof rs.audioDurationSec === 'number' ? rs.audioDurationSec : undefined,
+      edgeFailureCode: rs.edgeFailureCode ? sanitizeTelemetryText(rs.edgeFailureCode) : undefined,
       error: rs.error ? sanitizeTelemetryText(rs.error) : undefined,
       failureKind: rs.failureKind
     }))

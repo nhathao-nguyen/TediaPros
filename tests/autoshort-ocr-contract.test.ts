@@ -34,6 +34,20 @@ function autoShortRequest(config: Partial<AutoShortConfig> = {}): AutoShortStart
   }
 }
 
+test('execution policy accepts only bounded Edge-TTS concurrency', () => {
+  for (const edgeTtsConcurrency of [1, 2] as const) {
+    const result = validateAutoShortStartRequest(autoShortRequest({ executionPolicy: { edgeTtsConcurrency } }))
+    assert.equal(result.ok, true)
+    if (result.ok) assert.equal(result.value.config.executionPolicy?.edgeTtsConcurrency, edgeTtsConcurrency)
+  }
+  for (const edgeTtsConcurrency of [0, 3, '2', true]) {
+    const result = validateAutoShortStartRequest(autoShortRequest({
+      executionPolicy: { edgeTtsConcurrency } as never
+    }))
+    assert.equal(result.ok, false)
+  }
+})
+
 test('portrait setting preserves booleans, defaults off for old config and rejects malformed values', () => {
   for (const portraitBlur of [undefined, false, true]) {
     const result = validateAutoShortStartRequest(autoShortRequest({ portraitBlur }))

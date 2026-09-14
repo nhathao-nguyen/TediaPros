@@ -2,7 +2,7 @@ import assert from 'node:assert/strict'
 import test from 'node:test'
 import { createHash } from 'node:crypto'
 import { canonicalJson } from '../src/main/autoShortStageKeys'
-import { legacyNoCutDigests, matchesAutoShortItemConfigDigest } from '../src/main/autoShortCutIdentity'
+import { itemCutConfigDigest, legacyNoCutDigests, matchesAutoShortItemConfigDigest } from '../src/main/autoShortCutIdentity'
 import { buildAutoShortCheckpointFingerprintCandidates } from '../src/main/autoshort'
 import type { AutoShortConfig, AutoShortQueueItemInput } from '../src/shared/types'
 
@@ -31,6 +31,13 @@ test('does not widen digest compatibility for cut jobs', () => {
   }
   assert.equal(matchesAutoShortItemConfigDigest(hash(config), config, item.temporalEdit), false)
   assert.equal(matchesAutoShortItemConfigDigest(hash({ config, temporalEdit: item.temporalEdit }), config, item.temporalEdit), true)
+})
+
+test('execution scheduling changes do not invalidate a content checkpoint', () => {
+  const stable = { ...config, executionPolicy: { edgeTtsConcurrency: 1 as const } }
+  const faster = { ...config, executionPolicy: { edgeTtsConcurrency: 2 as const } }
+  assert.equal(itemCutConfigDigest(stable, undefined), itemCutConfigDigest(faster, undefined))
+  assert.equal(matchesAutoShortItemConfigDigest(itemCutConfigDigest(stable, undefined), faster, undefined), true)
 })
 
 test('keeps both known checkpoint fingerprints only for no-cut sources', () => {

@@ -49,6 +49,7 @@ const electronMockPlugin = {
 const knownTests = [
   'edge-tts-contract.test',
   'edge-tts-adapter.test',
+  'edge-tts-scheduler.test',
   'autoshort-edge-tts.test',
   'tts-audio-format.test',
   'app-profile.test',
@@ -89,6 +90,7 @@ const knownTests = [
   'autoshort-batch-store.test',
   'autoshort-batch-resume.test',
   'autoshort-tts-pipeline.test',
+  'dubbing-preparation-queue.test',
   'autoshort-tts-cache.test',
   'autoshort-disk-budget.test',
   'autoshort-resource-manager.test',

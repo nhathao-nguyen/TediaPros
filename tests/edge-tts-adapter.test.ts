@@ -5,7 +5,10 @@ import { join } from 'node:path'
 import { Readable } from 'node:stream'
 import test from 'node:test'
 import { collectEdgeAudio, createMsEdgeTtsTransport, escapeEdgeTtsText, msEdgeTtsTransport, withEdgeDeadline, type EdgeAudioSession, type EdgeTtsTransport } from '../src/main/edgeTtsTransport'
-import { fetchEdgeVoices, generateEdgeTTS, probeEdgeTtsSynthesis } from '../src/main/edgeTts'
+import { fetchEdgeVoices, generateEdgeTTS, probeEdgeTtsSynthesis, setEdgeTtsSchedulerForTests } from '../src/main/edgeTts'
+import { EdgeTtsScheduler } from '../src/main/edgeTtsScheduler'
+
+setEdgeTtsSchedulerForTests(new EdgeTtsScheduler({ spacingMs: 0, backoffMs: 0, cooldownMs: 0, random: () => 0 }))
 
 function session(chunks: readonly Uint8Array[], delayMs = 0): EdgeAudioSession & { disposed: number } {
   const value = {

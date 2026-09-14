@@ -243,6 +243,28 @@ function validateConfigRecord(raw: Record<string, unknown>): AutoShortConfig | s
     }
   }
   if (typeof raw.lamMo !== 'boolean' || typeof raw.ttsEnabled !== 'boolean' || typeof raw.voiceOverMode !== 'boolean') return 'Cấu hình bật/tắt không hợp lệ.'
+  if (raw.executionPolicy != null) {
+    if (!isRecord(raw.executionPolicy)) return 'Chính sách thực thi Auto Short không hợp lệ.'
+    const policy = raw.executionPolicy
+    if (policy.edgeTtsConcurrency != null && policy.edgeTtsConcurrency !== 1 && policy.edgeTtsConcurrency !== 2) {
+      return 'Mức song song Edge-TTS không hợp lệ.'
+    }
+    if (policy.maxActiveItems != null && policy.maxActiveItems !== 1 && policy.maxActiveItems !== 2) {
+      return 'Số video chạy đồng thời không hợp lệ.'
+    }
+    if (policy.overlapIndependentStages != null && typeof policy.overlapIndependentStages !== 'boolean') {
+      return 'Chính sách chạy song song các stage không hợp lệ.'
+    }
+    if (policy.prefetchTts != null && typeof policy.prefetchTts !== 'boolean') {
+      return 'Chính sách chuẩn bị TTS không hợp lệ.'
+    }
+    if (policy.ocrTransport != null
+      && policy.ocrTransport !== 'legacy-disk'
+      && policy.ocrTransport !== 'stream-full'
+      && policy.ocrTransport !== 'stream-roi') {
+      return 'Kênh truyền OCR không hợp lệ.'
+    }
+  }
   if (typeof raw.translateTarget !== 'string' || !raw.translateTarget.trim() || raw.translateTarget.length > 64) return 'Ngôn ngữ đích không hợp lệ.'
   if (raw.translateTarget !== 'none') {
     const targetLocale = raw.translateTarget.trim()

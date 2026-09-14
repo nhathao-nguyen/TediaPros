@@ -1,0 +1,592 @@
+{
+  "schemaVersion": 1,
+  "checkedAtUtc": "2026-09-14T01:22:57.611Z",
+  "platform": "win32-x64",
+  "countRequested": 50,
+  "countCompleted": 50,
+  "concurrency": 1,
+  "spacingMs": 1000,
+  "fullDecodeAndProbe": true,
+  "elapsedMs": 389809,
+  "wallP50Ms": 6959,
+  "wallP95Ms": 12834,
+  "peakSchedulerActive": 1,
+  "peakSchedulerQueued": 1,
+  "peakRssBytes": 74514432,
+  "retryAttempts": 11,
+  "failureCount": 0,
+  "samples": [
+    {
+      "index": 1,
+      "ok": true,
+      "wallMs": 10485,
+      "generationMs": 10481,
+      "durationMs": 6264,
+      "bytes": 300750,
+      "sha256": "5e9d9c79c88367a34949e440c64ccb5ac258fcadf46a36c5a829f57b36cd60b0",
+      "attempts": 1,
+      "failureCodes": []
+    },
+    {
+      "index": 2,
+      "ok": true,
+      "wallMs": 6319,
+      "generationMs": 6318,
+      "durationMs": 6360,
+      "bytes": 305358,
+      "sha256": "203261198f69609960fd9b3facee3ced3de0a50b214cae94aafe9fe7a533877e",
+      "attempts": 1,
+      "failureCodes": []
+    },
+    {
+      "index": 3,
+      "ok": true,
+      "wallMs": 14222,
+      "generationMs": 14220,
+      "durationMs": 6336,
+      "bytes": 304206,
+      "sha256": "a562c1591c1982b8f6ae5f8faacf1d23ed2e3bedee74fa54e0d093f801a4cd17",
+      "attempts": 2,
+      "failureCodes": [
+        "transient_network"
+      ]
+    },
+    {
+      "index": 4,
+      "ok": true,
+      "wallMs": 12834,
+      "generationMs": 12832,
+      "durationMs": 6288,
+      "bytes": 301902,
+      "sha256": "5abdc55570144e2bdfecad4335ec72f36ecb67ac0b5aec6cc582a54a34575e4b",
+      "attempts": 2,
+      "failureCodes": [
+        "transient_network"
+      ]
+    },
+    {
+      "index": 5,
+      "ok": true,
+      "wallMs": 11374,
+      "generationMs": 11372,
+      "durationMs": 6336,
+      "bytes": 304206,
+      "sha256": "11eb214d6233d8164cd456df518df76888554b14803dd14c54cab3ec2d38b27b",
+      "attempts": 2,
+      "failureCodes": [
+        "transient_network"
+      ]
+    },
+    {
+      "index": 6,
+      "ok": true,
+      "wallMs": 5122,
+      "generationMs": 5122,
+      "durationMs": 6384,
+      "bytes": 306510,
+      "sha256": "150eade455ec84a3a92cf2e1f4144a360b3af59a55c07a3036cfebe5fb9a02a0",
+      "attempts": 1,
+      "failureCodes": []
+    },
+    {
+      "index": 7,
+      "ok": true,
+      "wallMs": 10270,
+      "generationMs": 10269,
+      "durationMs": 6408,
+      "bytes": 307662,
+      "sha256": "034ed8ee4051341dd9719e6f335ba0a3a3af341619cafa739ea4a38691e612df",
+      "attempts": 2,
+      "failureCodes": [
+        "transient_network"
+      ]
+    },
+    {
+      "index": 8,
+      "ok": true,
+      "wallMs": 8680,
+      "generationMs": 8678,
+      "durationMs": 6312,
+      "bytes": 303054,
+      "sha256": "9a214281e707919009192ed7ab5ec744aff797f76ea43dec82665a995a6c0d98",
+      "attempts": 1,
+      "failureCodes": []
+    },
+    {
+      "index": 9,
+      "ok": true,
+      "wallMs": 5885,
+      "generationMs": 5884,
+      "durationMs": 6312,
+      "bytes": 303054,
+      "sha256": "c45ad1341428c64e81a0ecc33ade34a24be99283ef2e97a1752d426ce0efd3b4",
+      "attempts": 1,
+      "failureCodes": []
+    },
+    {
+      "index": 10,
+      "ok": true,
+      "wallMs": 4796,
+      "generationMs": 4795,
+      "durationMs": 6384,
+      "bytes": 306510,
+      "sha256": "e272efdcaf05c8d107c04854b949e21e1e73d944398a9e955fda002350ac83b4",
+      "attempts": 1,
+      "failureCodes": []
+    },
+    {
+      "index": 11,
+      "ok": true,
+      "wallMs": 8690,
+      "generationMs": 8689,
+      "durationMs": 6504,
+      "bytes": 312270,
+      "sha256": "c6c7e7199fb797aa58a7691b17aaea11502cb4bd82d1b803d8ed6d619cbb1e66",
+      "attempts": 1,
+      "failureCodes": []
+    },
+    {
+      "index": 12,
+      "ok": true,
+      "wallMs": 5858,
+      "generationMs": 5856,
+      "durationMs": 6600,
+      "bytes": 316878,
+      "sha256": "e47f85fa09e6b0616cf075a599dcbdac5f4186f3145116cadd891fd23f57c2ad",
+      "attempts": 1,
+      "failureCodes": []
+    },
+    {
+      "index": 13,
+      "ok": true,
+      "wallMs": 6363,
+      "generationMs": 6361,
+      "durationMs": 6576,
+      "bytes": 315726,
+      "sha256": "1258cdfdb0c747a7dcc27156d5e082898cc55759ad310afcb155647fd60b322b",
+      "attempts": 1,
+      "failureCodes": []
+    },
+    {
+      "index": 14,
+      "ok": true,
+      "wallMs": 6281,
+      "generationMs": 6280,
+      "durationMs": 6552,
+      "bytes": 314574,
+      "sha256": "ab30e597377bc6f120c6ac630fb93f93df5d92c8d9e3b25f052b93dcf7217a2c",
+      "attempts": 1,
+      "failureCodes": []
+    },
+    {
+      "index": 15,
+      "ok": true,
+      "wallMs": 13231,
+      "generationMs": 13229,
+      "durationMs": 6552,
+      "bytes": 314574,
+      "sha256": "4e07f584059b6e8ef57a53dcdee066f6fd06fe70ddc75fb9d4d9e56746f7df4a",
+      "attempts": 2,
+      "failureCodes": [
+        "transient_network"
+      ]
+    },
+    {
+      "index": 16,
+      "ok": true,
+      "wallMs": 11437,
+      "generationMs": 11437,
+      "durationMs": 6600,
+      "bytes": 316878,
+      "sha256": "32e5b7c7a92f0fd92f0cfc313d9d42851f58621ea3f65ff19cfa00a2157582e0",
+      "attempts": 2,
+      "failureCodes": [
+        "transient_network"
+      ]
+    },
+    {
+      "index": 17,
+      "ok": true,
+      "wallMs": 7021,
+      "generationMs": 7019,
+      "durationMs": 6552,
+      "bytes": 314574,
+      "sha256": "b0798cc94027cd4d9b4b37b7b843816a3af4bd1c7f6705c68f6f8a5aef7123b0",
+      "attempts": 1,
+      "failureCodes": []
+    },
+    {
+      "index": 18,
+      "ok": true,
+      "wallMs": 7230,
+      "generationMs": 7228,
+      "durationMs": 6552,
+      "bytes": 314574,
+      "sha256": "111df564b3be6f4c3ca1f64265ecfd034eb89d978224c354e66e10c02ce068bc",
+      "attempts": 1,
+      "failureCodes": []
+    },
+    {
+      "index": 19,
+      "ok": true,
+      "wallMs": 12160,
+      "generationMs": 12159,
+      "durationMs": 6576,
+      "bytes": 315726,
+      "sha256": "610acfbd6938e514231b654f1516b3f6dfc40da561d6e28a3684bff336110fc4",
+      "attempts": 2,
+      "failureCodes": [
+        "transient_network"
+      ]
+    },
+    {
+      "index": 20,
+      "ok": true,
+      "wallMs": 5558,
+      "generationMs": 5557,
+      "durationMs": 6576,
+      "bytes": 315726,
+      "sha256": "26873faf031221ccfa76c5584d5222325730b357e4be799f75185c34429cca9d",
+      "attempts": 1,
+      "failureCodes": []
+    },
+    {
+      "index": 21,
+      "ok": true,
+      "wallMs": 7401,
+      "generationMs": 7399,
+      "durationMs": 6672,
+      "bytes": 320334,
+      "sha256": "4a1d999e3508957f254cd2e180a24c19c43c1bc862b7ba5f1f8c7f2d186217e1",
+      "attempts": 1,
+      "failureCodes": []
+    },
+    {
+      "index": 22,
+      "ok": true,
+      "wallMs": 6487,
+      "generationMs": 6486,
+      "durationMs": 6768,
+      "bytes": 324942,
+      "sha256": "8621656c4503136fab68b91a03d5b3b75378b722522e78dc07d374bf1aa23111",
+      "attempts": 1,
+      "failureCodes": []
+    },
+    {
+      "index": 23,
+      "ok": true,
+      "wallMs": 7032,
+      "generationMs": 7029,
+      "durationMs": 6696,
+      "bytes": 321486,
+      "sha256": "e1ca213ae39ff3052ba7ff34922db91d2a9d81c6d0f38ce455786b466b340e33",
+      "attempts": 1,
+      "failureCodes": []
+    },
+    {
+      "index": 24,
+      "ok": true,
+      "wallMs": 5743,
+      "generationMs": 5739,
+      "durationMs": 6744,
+      "bytes": 323790,
+      "sha256": "03d9b340fadc2a72032080cc338bbf648b4b3ad280515a9dc80ca46e45ed4d9a",
+      "attempts": 1,
+      "failureCodes": []
+    },
+    {
+      "index": 25,
+      "ok": true,
+      "wallMs": 11410,
+      "generationMs": 11409,
+      "durationMs": 6672,
+      "bytes": 320334,
+      "sha256": "8246f9533a7b8a861aaaa68f5bffd4fd0e4541bb78987e0029e38e3e9c9efce9",
+      "attempts": 2,
+      "failureCodes": [
+        "transient_network"
+      ]
+    },
+    {
+      "index": 26,
+      "ok": true,
+      "wallMs": 10605,
+      "generationMs": 10602,
+      "durationMs": 6744,
+      "bytes": 323790,
+      "sha256": "51b211112883370f7d40e8a9ccfa164d06dde2869d6208273be0977440647e88",
+      "attempts": 2,
+      "failureCodes": [
+        "transient_network"
+      ]
+    },
+    {
+      "index": 27,
+      "ok": true,
+      "wallMs": 6959,
+      "generationMs": 6957,
+      "durationMs": 6720,
+      "bytes": 322638,
+      "sha256": "d6de5833fb46e1fedaa58eb9c6ba609e27733a9125599225b922fd798700a075",
+      "attempts": 1,
+      "failureCodes": []
+    },
+    {
+      "index": 28,
+      "ok": true,
+      "wallMs": 5479,
+      "generationMs": 5478,
+      "durationMs": 6696,
+      "bytes": 321486,
+      "sha256": "cc58b6f6042ca0bd8251f7acc0cee50c54f2b77890ad98343372bd5ebce32ac5",
+      "attempts": 1,
+      "failureCodes": []
+    },
+    {
+      "index": 29,
+      "ok": true,
+      "wallMs": 9657,
+      "generationMs": 9655,
+      "durationMs": 6720,
+      "bytes": 322638,
+      "sha256": "cf7f510ae302f9371c4d80a77d771f46b1c9721d87871ea92ba663eafa7fdb91",
+      "attempts": 1,
+      "failureCodes": []
+    },
+    {
+      "index": 30,
+      "ok": true,
+      "wallMs": 5874,
+      "generationMs": 5872,
+      "durationMs": 6552,
+      "bytes": 314574,
+      "sha256": "c1e3821740bdbe53047096c66ba1dd5209f4464a2e3121d26fe560e680a76d00",
+      "attempts": 1,
+      "failureCodes": []
+    },
+    {
+      "index": 31,
+      "ok": true,
+      "wallMs": 6822,
+      "generationMs": 6821,
+      "durationMs": 6696,
+      "bytes": 321486,
+      "sha256": "acffb12bbdb93668262aef67bda5061b71866546e0ab97c38760ae14e52f1232",
+      "attempts": 1,
+      "failureCodes": []
+    },
+    {
+      "index": 32,
+      "ok": true,
+      "wallMs": 8346,
+      "generationMs": 8345,
+      "durationMs": 6768,
+      "bytes": 324942,
+      "sha256": "92d5b169453ede432cb152d0a5f49f5e40b2dae39d44879204351e5ae984c634",
+      "attempts": 1,
+      "failureCodes": []
+    },
+    {
+      "index": 33,
+      "ok": true,
+      "wallMs": 3588,
+      "generationMs": 3587,
+      "durationMs": 6696,
+      "bytes": 321486,
+      "sha256": "49fe9a7b1bfa579c8f15551dc15b0f12f81925055917bc89a1cb39251dfe84d2",
+      "attempts": 1,
+      "failureCodes": []
+    },
+    {
+      "index": 34,
+      "ok": true,
+      "wallMs": 5602,
+      "generationMs": 5601,
+      "durationMs": 6744,
+      "bytes": 323790,
+      "sha256": "9260feeb7540988f0482a19cab486791d9a43a511457f7d5cac0dae05dad8cd2",
+      "attempts": 1,
+      "failureCodes": []
+    },
+    {
+      "index": 35,
+      "ok": true,
+      "wallMs": 6497,
+      "generationMs": 6496,
+      "durationMs": 6672,
+      "bytes": 320334,
+      "sha256": "dc2a3ededbb7702e0fa9ab94d356f5e0938e2d3782cd2b10f2953c7e38740b2d",
+      "attempts": 1,
+      "failureCodes": []
+    },
+    {
+      "index": 36,
+      "ok": true,
+      "wallMs": 7849,
+      "generationMs": 7849,
+      "durationMs": 6744,
+      "bytes": 323790,
+      "sha256": "1243f23227d2f3bc03ddec9e4809b261a2fca1e4691c489e6a825d35fe3a632d",
+      "attempts": 1,
+      "failureCodes": []
+    },
+    {
+      "index": 37,
+      "ok": true,
+      "wallMs": 6049,
+      "generationMs": 6047,
+      "durationMs": 6720,
+      "bytes": 322638,
+      "sha256": "824cc9f7f43ae3f42dca0607f6a8568270b220de3f89b81009d6ee5f1326eade",
+      "attempts": 1,
+      "failureCodes": []
+    },
+    {
+      "index": 38,
+      "ok": true,
+      "wallMs": 10877,
+      "generationMs": 10876,
+      "durationMs": 6696,
+      "bytes": 321486,
+      "sha256": "6f4703dacbe469b689688d73d3f3d77a957bcd967226a3fa849a9dd616b122b9",
+      "attempts": 2,
+      "failureCodes": [
+        "transient_network"
+      ]
+    },
+    {
+      "index": 39,
+      "ok": true,
+      "wallMs": 6551,
+      "generationMs": 6551,
+      "durationMs": 6696,
+      "bytes": 321486,
+      "sha256": "68c6b13e91faaa2d074aa7c1e45e0d88f0d772106367db80e2aeef16b4b48f8d",
+      "attempts": 1,
+      "failureCodes": []
+    },
+    {
+      "index": 40,
+      "ok": true,
+      "wallMs": 7019,
+      "generationMs": 7017,
+      "durationMs": 6552,
+      "bytes": 314574,
+      "sha256": "7158ca39f458f242febfb4518a750a6a9a730f1639753918007f34c2e2b9f41f",
+      "attempts": 1,
+      "failureCodes": []
+    },
+    {
+      "index": 41,
+      "ok": true,
+      "wallMs": 6134,
+      "generationMs": 6131,
+      "durationMs": 6648,
+      "bytes": 319182,
+      "sha256": "9cc229f006359c7599eaac528752c398c9af63708fad29ca4ec0cf4dc6178b9b",
+      "attempts": 1,
+      "failureCodes": []
+    },
+    {
+      "index": 42,
+      "ok": true,
+      "wallMs": 7086,
+      "generationMs": 7084,
+      "durationMs": 6768,
+      "bytes": 324942,
+      "sha256": "f579ab45dacac4eaf53fe00ac071a4a3c4bc61ebc59720c497ce636ae043000e",
+      "attempts": 1,
+      "failureCodes": []
+    },
+    {
+      "index": 43,
+      "ok": true,
+      "wallMs": 6175,
+      "generationMs": 6174,
+      "durationMs": 6720,
+      "bytes": 322638,
+      "sha256": "2c955e9ad76d37d044964c4c1cb552c9fae550a70049545561a6f5ea44f77999",
+      "attempts": 1,
+      "failureCodes": []
+    },
+    {
+      "index": 44,
+      "ok": true,
+      "wallMs": 8364,
+      "generationMs": 8362,
+      "durationMs": 6768,
+      "bytes": 324942,
+      "sha256": "8ade350e12d7148aec1df547f4406fd5d8413dbacd52fe3b76f5c75e9b8c2921",
+      "attempts": 1,
+      "failureCodes": []
+    },
+    {
+      "index": 45,
+      "ok": true,
+      "wallMs": 5569,
+      "generationMs": 5566,
+      "durationMs": 6672,
+      "bytes": 320334,
+      "sha256": "57c604f884bf51a8309e5066e8b946f1edd35264fae3034a5f8087c693df5539",
+      "attempts": 1,
+      "failureCodes": []
+    },
+    {
+      "index": 46,
+      "ok": true,
+      "wallMs": 5004,
+      "generationMs": 5003,
+      "durationMs": 6744,
+      "bytes": 323790,
+      "sha256": "7d7079bb2bc2dfc2c3a720f552a48e1f4668b55fb9b67cb673a9f920653aa923",
+      "attempts": 1,
+      "failureCodes": []
+    },
+    {
+      "index": 47,
+      "ok": true,
+      "wallMs": 5652,
+      "generationMs": 5650,
+      "durationMs": 6720,
+      "bytes": 322638,
+      "sha256": "8790127b4020ca2926c0d60b16c0b2a7bd348ed79c42086bc2d9c2bc2677f810",
+      "attempts": 1,
+      "failureCodes": []
+    },
+    {
+      "index": 48,
+      "ok": true,
+      "wallMs": 7346,
+      "generationMs": 7344,
+      "durationMs": 6696,
+      "bytes": 321486,
+      "sha256": "09b85abd039949719486bd3a3e6bc528638f8c9f34fb5f087bda2d7b22ad4c1b",
+      "attempts": 1,
+      "failureCodes": []
+    },
+    {
+      "index": 49,
+      "ok": true,
+      "wallMs": 11917,
+      "generationMs": 11915,
+      "durationMs": 6696,
+      "bytes": 321486,
+      "sha256": "36e58c8a043ec2316c4329a0710f144b43b473667f2a12e1092064ee81dc9431",
+      "attempts": 2,
+      "failureCodes": [
+        "transient_network"
+      ]
+    },
+    {
+      "index": 50,
+      "ok": true,
+      "wallMs": 6894,
+      "generationMs": 6891,
+      "durationMs": 6576,
+      "bytes": 315726,
+      "sha256": "5ffc4e407057c1731fa4003b34e344e04f87d81eabcdb2677c9007225b28fc0d",
+      "attempts": 1,
+      "failureCodes": []
+    }
+  ]
+}

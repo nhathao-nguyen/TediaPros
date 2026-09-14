@@ -2,6 +2,10 @@ import { app } from 'electron'
 import { mkdir, readFile, writeFile, stat, rename, rm } from 'node:fs/promises'
 import { dirname, join } from 'node:path'
 import { randomUUID } from 'node:crypto'
+import { readFileSync, mkdirSync, writeFileSync, renameSync } from 'node:fs'
+import { EdgeTtsScheduler, type EdgeAttempt, type EdgeServiceState } from './edgeTtsScheduler'
+import { classifyEdgeFailure, EdgeTtsError } from './edgeTtsRecovery'
+import { getGlobalResourceManager } from './autoShortResourceManager'
 import { spawn } from 'node:child_process'
 import { logInfo, logWarn, errLabel, debugRaw } from './logger'
 import { EDGE_VOICE_ID_PATTERN, resolveEdgeVoice, validateEdgeProsody } from '../shared/edgeTtsContract'
@@ -25,6 +29,56 @@ import type {
 } from '../shared/types'
 
 export type { EdgeVoiceDefinition }
+
+let globalEdgeScheduler: EdgeTtsScheduler | undefined
+export function getEdgeTtsScheduler(): EdgeTtsScheduler {
+  if (!globalEdgeScheduler) {
+    const root = join(app.getPath('userData'), 'edge-tts-state')
+    const path = join(root, 'recovery.json')
+    let state: EdgeServiceState | undefined
+    try {
+      const saved = JSON.parse(readFileSync(path, 'utf8')) as EdgeServiceState
+      if (Number.isFinite(saved.nextEligibleAt) && typeof saved.circuit === 'boolean') {
+        state = { nextEligibleAt: Math.max(0, saved.nextEligibleAt), circuit: saved.circuit,
+          probeFailures: 0, blocked: saved.blocked }
+      }
+    } catch { /* first use has no recovery receipt */ }
+    globalEdgeScheduler = new EdgeTtsScheduler({ state, saveState: (value) => {
+      try {
+        mkdirSync(root, { recursive: true })
+        const partial = join(root, 'recovery.partial')
+        writeFileSync(partial, JSON.stringify(value))
+        renameSync(partial, path)
+      } catch { logWarn('[EdgeTTS] Không lưu được trạng thái cooldown; trạng thái phiên hiện tại vẫn có hiệu lực.') }
+    } })
+  }
+  return globalEdgeScheduler
+}
+
+/** Replaces process-global state so adapter tests never inherit production pacing. */
+export function setEdgeTtsSchedulerForTests(scheduler: EdgeTtsScheduler | undefined): void {
+  globalEdgeScheduler = scheduler
+}
+
+function scheduleEdge<T>(
+  operation: (attempt: EdgeAttempt) => Promise<T>, signal?: AbortSignal,
+  hooks: EdgeTtsRuntimeHooks = {}, onAttempt?: (attempt: EdgeAttempt) => void
+): Promise<T> {
+  // Injected transports preserve isolated adapter tests; scheduler tests inject their own scheduler.
+  if (hooks.transport && !hooks.scheduler) {
+    const started = Date.now()
+    const attempt: EdgeAttempt = {
+      requestId: randomUUID(), retryIndex: 0, queuedAtUtc: new Date(started).toISOString(),
+      startedAtUtc: new Date(started).toISOString(), queueWaitMs: 0
+    }
+    return operation(attempt).finally(() => {
+      attempt.endedAtUtc = new Date().toISOString()
+      attempt.durationMs = Date.now() - started
+      onAttempt?.(attempt)
+    })
+  }
+  return (hooks.scheduler || getEdgeTtsScheduler()).run(operation, signal, onAttempt)
+}
 
 /**
  * Danh sách các giọng Microsoft Edge-TTS thông dụng được hỗ trợ sẵn.
@@ -328,7 +382,7 @@ let catalogRequest: EdgeVoiceCatalogRequest | null = null
 async function loadEdgeVoices(signal?: AbortSignal): Promise<EdgeVoiceCatalogResult> {
   const checkedAtUtc = new Date().toISOString()
   try {
-    const rawVoices = await withEdgeDeadline((deadlineSignal) => msEdgeTtsTransport.getVoices(deadlineSignal), signal)
+    const rawVoices = await scheduleEdge(() => withEdgeDeadline((deadlineSignal) => msEdgeTtsTransport.getVoices(deadlineSignal), signal), signal)
     if (Array.isArray(rawVoices) && rawVoices.length > 0) {
       const mapped: EdgeVoiceDefinition[] = rawVoices.flatMap((raw) => {
         if (!raw || typeof raw !== 'object') return []
@@ -487,6 +541,7 @@ function formatEdgeRate(speed?: number): string | undefined {
 type EdgeMediaResult = { stdout: string; stderr: string }
 
 export interface EdgeTtsRuntimeHooks {
+  scheduler?: EdgeTtsScheduler
   transport?: EdgeTtsTransport
   voices?: readonly EdgeVoiceDefinition[]
   resolveFfmpeg?: () => Promise<string | null>
@@ -540,11 +595,11 @@ export async function probeEdgeTtsSynthesis(
   hooks: EdgeTtsRuntimeHooks = {}
 ): Promise<void> {
   const transport = hooks.transport || msEdgeTtsTransport
-  await withEdgeDeadline(async (deadlineSignal) => {
+  await scheduleEdge(() => withEdgeDeadline(async (deadlineSignal) => {
     const active = await transport.open({ text: 'TediaPros', voice }, deadlineSignal)
     const audio = await collectEdgeAudio(active, deadlineSignal, 2 * 1024 * 1024)
     assertTtsAudioHeader(audio, 'audio/mpeg')
-  }, signal, hooks.deadlineMs)
+  }, signal, hooks.deadlineMs), signal, hooks)
 }
 
 /**
@@ -604,12 +659,13 @@ export async function generateEdgeTTS(
   logInfo(`[EdgeTTS] Đang tạo giọng nói (${text.length} ký tự, voice=${voice}, rate=${rateStr || 'default'}, pitch=${pitchStr || 'default'})`)
 
   const startTime = Date.now()
-  const requestSpan: AutoShortRequestSpan = {
+  let requestSpan: AutoShortRequestSpan = {
     url: EDGE_TTS_ENDPOINT_ID,
     queuedAtUtc: new Date(startTime).toISOString(),
     retryIndex: 0,
     sourceChars: Array.from(text).length
   }
+  const requestSpans: AutoShortRequestSpan[] = []
 
   const finalPath = outputPath || join(
     app.getPath('temp'),
@@ -620,7 +676,10 @@ export async function generateEdgeTTS(
   const outputPartialPath = `${finalPath}.${randomUUID()}.output.partial`
   let publishedFinal = false
   try {
-    const completed = await withEdgeDeadline(async (deadlineSignal) => {
+    const completed = await scheduleEdge(async (attempt) => {
+      requestSpan = { url: EDGE_TTS_ENDPOINT_ID, sourceChars: Array.from(text).length, ...attempt }
+      let networkPhase = true
+      return withEdgeDeadline(async (deadlineSignal) => {
       requestSpan.startedAtUtc = new Date().toISOString()
       const transport = hooks.transport || msEdgeTtsTransport
       const session = await transport.open({ text, voice, rate: rateStr, pitch: pitchStr }, deadlineSignal)
@@ -628,13 +687,17 @@ export async function generateEdgeTTS(
         requestSpan.firstResponseAtUtc ||= new Date().toISOString()
       })
       assertTtsAudioHeader(buffer, 'audio/mpeg')
+      requestSpan.networkDurationMs = Date.now() - Date.parse(requestSpan.startedAtUtc!)
+      networkPhase = false
       throwIfEdgeAborted(deadlineSignal)
       if (await stat(finalPath).then(() => true).catch(() => false)) {
         throw new Error('File đầu ra Edge-TTS đã tồn tại')
       }
       const ffmpeg = await (hooks.resolveFfmpeg || resolveFfmpeg)()
       if (!ffmpeg) throw new Error('Thiếu FFmpeg để xác thực audio Edge-TTS')
-      const runMedia = hooks.runMedia || runEdgeMedia
+      const runMedia = hooks.runMedia || ((command: string, args: string[], s: AbortSignal) =>
+        getGlobalResourceManager().withLease(['local-audio-dsp'], s, () => runEdgeMedia(command, args, s)))
+      const mediaStarted = performance.now()
       const ffprobe = join(dirname(ffmpeg), process.platform === 'win32' ? 'ffprobe.exe' : 'ffprobe')
       await mkdir(dirname(finalPath), { recursive: true })
       await writeFile(sourcePartialPath, buffer)
@@ -661,6 +724,7 @@ export async function generateEdgeTTS(
         '-v', 'error', '-show_entries', 'format=duration', '-of', 'default=nw=1', validatedPath
       ], deadlineSignal)
       const durationMs = parseProbedDurationMs(probe.stdout)
+      requestSpan.localDspDurationMs = Math.round(performance.now() - mediaStarted)
       throwIfEdgeAborted(deadlineSignal)
       await rename(validatedPath, finalPath)
       publishedFinal = true
@@ -675,11 +739,23 @@ export async function generateEdgeTTS(
       throwIfEdgeAborted(deadlineSignal)
       if (!fileStat.isFile() || fileStat.size <= 0) throw new Error('Không thể xác thực file âm thanh Edge-TTS trên đĩa')
       return { buffer, durationMs, audioMimeType }
-    }, signal, hooks.deadlineMs)
+      }, signal, hooks.deadlineMs).catch((error: unknown) => {
+        if (hooks.transport && !hooks.scheduler) throw error
+        if (signal?.aborted || networkPhase) throw classifyEdgeFailure(error, signal?.aborted)
+        const classified = classifyEdgeFailure(error)
+        throw new EdgeTtsError(classified.code === 'disk' ? 'disk' : 'local_media', 'Edge-TTS không xác thực được audio cục bộ; không thử lại mạng.')
+      })
+    }, signal, hooks, (attempt) => { Object.assign(requestSpan, attempt); requestSpans.push({ ...requestSpan }) })
     const generationMs = Date.now() - startTime
-    requestSpan.endedAtUtc = new Date().toISOString()
-    requestSpan.durationMs = generationMs
-    requestSpan.audioDurationSec = completed.durationMs / 1000
+    if (requestSpans.length > 0) {
+      requestSpans[requestSpans.length - 1] = {
+        ...requestSpans[requestSpans.length - 1],
+        audioDurationSec: completed.durationMs / 1000
+      }
+    } else {
+      requestSpans.push({ ...requestSpan, endedAtUtc: new Date().toISOString(), durationMs: generationMs,
+        audioDurationSec: completed.durationMs / 1000 })
+    }
     logInfo(`[EdgeTTS] Hoàn tất tạo giọng (${completed.buffer.length} bytes, ${(completed.durationMs / 1000).toFixed(2)}s) trong ${generationMs}ms`)
     return {
       ok: true,
@@ -693,7 +769,7 @@ export async function generateEdgeTTS(
       provider: 'edge-tts',
       voice,
       speed,
-      requestSpans: [requestSpan]
+      requestSpans
     }
   } catch (error) {
     await Promise.all([
@@ -703,11 +779,14 @@ export async function generateEdgeTTS(
     ])
     debugRaw('Edge-TTS generation failed', error)
     const message = signal?.aborted ? 'Đã hủy tác vụ' : errLabel(error)
-    requestSpan.endedAtUtc = new Date().toISOString()
-    requestSpan.durationMs = Date.now() - startTime
-    requestSpan.error = message
-    requestSpan.failureKind = signal?.aborted ? 'cancelled' : /thời gian chờ/u.test(message) ? 'timeout' : 'transport'
+    const failureKind = signal?.aborted ? 'cancelled' : /thời gian chờ/u.test(message) ? 'timeout' : 'transport'
+    if (requestSpans.length > 0) {
+      requestSpans[requestSpans.length - 1] = { ...requestSpans[requestSpans.length - 1], error: message, failureKind }
+    } else {
+      requestSpans.push({ ...requestSpan, endedAtUtc: new Date().toISOString(), durationMs: Date.now() - startTime,
+        error: message, failureKind })
+    }
     logWarn(`[EdgeTTS] Lỗi: ${message}`)
-    return { ok: false, error: message, provider: 'edge-tts', voice, speed, requestSpans: [requestSpan] }
+    return { ok: false, error: message, provider: 'edge-tts', voice, speed, requestSpans }
   }
 }

@@ -108,6 +108,12 @@ sequenceDiagram
     Coord->>Trans: Dịch thuật cues (OpenAI / Gemini / Local) với Context Cues
     Coord->>TTS: Tổng hợp giọng đọc (Edge / Local TTS), áp dụng trần tempo (1.10 - 1.80x)
 
+    opt Edge-TTS preset 2
+        TTS->>TTS: Global scheduler cap=2, start spacing=1s
+        TTS->>TTS: Chuẩn bị lookahead tối đa 4 cue
+        TTS->>TTS: Consume kết quả theo thứ tự cue nguồn
+    end
+
     alt Voice vẫn dài sau phục hồi nội dung
         Coord->>Coord: Làm chậm hình tối đa 20%, replay trong nhóm nguồn, tổng thêm tối đa 60%
     end

@@ -8,12 +8,19 @@ function digest(value: unknown): string {
   return createHash('sha256').update(canonicalJson(value)).digest('hex')
 }
 
+function contentConfig(config: AutoShortConfig): Omit<AutoShortConfig, 'executionPolicy'> {
+  const { executionPolicy: _executionPolicy, ...content } = config
+  return content
+}
+
 export function legacyNoCutDigests(config: AutoShortConfig): readonly string[] {
   return [digest(config), digest({ config, temporalEdit: undefined })]
 }
 
 export function itemCutConfigDigest(config: AutoShortConfig, temporalEdit: AutoShortQueueItemInput['temporalEdit']): string {
-  return digest({ config, temporalEdit })
+  // Scheduling knobs do not alter media bytes, cue identity, or cache keys.
+  // Keeping them out lets a paused batch resume with a safer/faster scheduler.
+  return digest({ config: contentConfig(config), temporalEdit })
 }
 
 export function matchesAutoShortItemConfigDigest(
@@ -21,8 +28,11 @@ export function matchesAutoShortItemConfigDigest(
   config: AutoShortConfig,
   temporalEdit: AutoShortQueueItemInput['temporalEdit']
 ): boolean {
-  if (temporalEdit === undefined) return legacyNoCutDigests(config).includes(storedDigest)
-  return storedDigest === itemCutConfigDigest(config, temporalEdit)
+  if (storedDigest === itemCutConfigDigest(config, temporalEdit)) return true
+  // Backward compatibility for journals created before scheduling policy was
+  // excluded from the digest.
+  if (temporalEdit === undefined && legacyNoCutDigests(config).includes(storedDigest)) return true
+  return storedDigest === digest({ config, temporalEdit })
 }
 
 export function semanticFrameEditDigest(edit: AutoShortTemporalEditV2): string {

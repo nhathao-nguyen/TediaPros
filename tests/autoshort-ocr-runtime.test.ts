@@ -52,6 +52,7 @@ test('OCR transport negotiation defaults to stream-full only for a qualified bin
 
 test('AutoShort defaults keep one item but overlap visual OCR and prefer ROI streaming', () => {
   assert.deepEqual(resolveExecutionPolicy(), {
+    edgeTtsConcurrency: 1,
     maxActiveItems: 1,
     overlapIndependentStages: true,
     prefetchTts: false,

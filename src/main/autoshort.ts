@@ -52,7 +52,7 @@ import { createGeminiTranslationAdapter, loadKey as loadGeminiKey } from './gemi
 import { createOpenAiTranslationAdapter, loadKey as loadOpenAiKey } from './openai'
 import { createLocalTranslationAdapter, loadLocalKey, checkLocalTranslateKey } from './localTranslate'
 import { generateSpeech, generateVoiceClone, getTtsModels, checkTtsServerHealth, getEdgeTtsModelInfo, fetchEdgeVoices } from './tts'
-import { probeEdgeTtsSynthesis } from './edgeTts'
+import { getEdgeTtsScheduler, probeEdgeTtsSynthesis } from './edgeTts'
 import { resolveEdgeVoice, resolveEdgeVoiceForPreflight } from '../shared/edgeTtsContract'
 import { EDGE_TTS_ENDPOINT_ID } from './edgeTtsIdentity'
 import { cancelBurn, probeBurnMedia, burnAutoShort } from './burn'
@@ -2765,6 +2765,22 @@ export async function synthesizeVoice(
     }
   }
   logInfo(`[AutoShort] Tạo và đo audio TTS thật trước; chỉ cue vượt giới hạn đo được mới có một lượt rephrase cứu lỗi, giữ trần ${AUTO_SHORT_TTS_HARD_MAX_TEMPO.toFixed(2)}x.`)
+  let edgeProgressPercent = 58
+  const unsubscribeEdgeScheduler = isEdgeTts
+    ? getEdgeTtsScheduler().subscribe((state) => {
+        if (!state.queued && !state.circuit && !state.blocked) return
+        const remainingSeconds = Math.max(0, Math.ceil((state.nextEligibleAt - Date.now()) / 1000))
+        const wait = remainingSeconds > 0 ? `; thử lại sau ${remainingSeconds}s` : ''
+        const reason = state.blocked
+          ? `tạm dừng (${state.blocked})`
+          : state.circuit
+            ? 'đang thăm dò phục hồi'
+            : 'đang chờ rate gate'
+        emitProgress(job, item, 'generating_tts', edgeProgressPercent,
+          `Edge-TTS: ${state.active} đang chạy, ${state.queued} đang chờ; ${reason}${wait}`,
+          index, total)
+      })
+    : undefined
   const synthesized = await synthesizeDubbingPlan({
     allowVideoExtension: true,
     recoveryAttempt,
@@ -2813,6 +2829,7 @@ export async function synthesizeVoice(
     onProgress: (completed, count, cueId, phase = 'measure') => {
       const safeCount = Math.max(1, count)
       const progress = 58 + (completed / safeCount) * 20
+      edgeProgressPercent = Math.max(edgeProgressPercent, progress)
       const message = phase === 'batch-rephrase'
         ? `Rút gọn ${completed}/${count} cue quá dài (phase=batch-rephrase)`
         : phase === 'rescue'
@@ -2822,8 +2839,9 @@ export async function synthesizeVoice(
             : `Đo voice ${completed}/${count} (phase=measure; ${cueId})`
       emitProgress(job, item, 'generating_tts', progress, message, index, total)
     },
-    prefetchTts: Boolean(policy?.prefetchTts)
-  })
+    prefetchTts: Boolean(policy?.prefetchTts),
+    preparationConcurrency: isEdgeTts && policy?.edgeTtsConcurrency === 2 ? 2 : 1
+  }).finally(() => unsubscribeEdgeScheduler?.())
   for (const cue of synthesized.plan.cues) {
     const leadIn = cue.sourceStart - cue.start
     if (leadIn > 0.001) {
@@ -3264,8 +3282,15 @@ async function executeJob(job: AutoShortJob): Promise<AutoShortBatchResult> {
     if (!job.batchSnapshot) await initializeBatchJournal(job)
     const overlayImage = job.request.config.overlays?.image
     if (overlayImage) await readAutoShortOverlayImage(overlayImage.path, overlayImage.sha256)
-    await preflight(job)
     const policy = resolveExecutionPolicy(job.request.config?.executionPolicy)
+    if (job.request.config.ttsEnabled && job.request.config.ttsProvider === 'edge-tts') {
+      const scheduler = getEdgeTtsScheduler()
+      scheduler.configure(policy.edgeTtsConcurrency)
+      // Starting or resuming a batch is the explicit user action that closes a
+      // persisted access-denied circuit. Retry-After remains enforced.
+      scheduler.resume()
+    }
+    await preflight(job)
     // Every item is admitted through the shared per-volume ledger before any
     // child process. Two-item execution therefore cannot hide scratch usage on
     // one drive behind free space reported by a different output drive.

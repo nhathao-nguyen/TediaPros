@@ -1,5 +1,6 @@
 import { MsEdgeTTS, OUTPUT_FORMAT } from 'msedge-tts'
 import type { Readable } from 'node:stream'
+import { EdgeTtsError, parseRetryAfter } from './edgeTtsRecovery'
 
 export const EDGE_TTS_DEADLINE_MS = 60_000
 export const EDGE_TTS_MAX_AUDIO_BYTES = 16 * 1024 * 1024
@@ -156,7 +157,8 @@ export function createMsEdgeTtsTransport(createClient: () => EdgeClient = () => 
         headers: { Accept: 'application/json' },
         signal
       })
-      if (!response.ok) throw new Error(`Microsoft Edge-TTS voice catalog trả về HTTP ${response.status}`)
+      if (!response.ok) throw new EdgeTtsError(response.status === 429 ? 'rate_limited' : response.status === 401 || response.status === 403 ? 'access_denied' : response.status >= 500 ? 'provider_5xx' : 'invalid_input',
+        `Microsoft Edge-TTS voice catalog trả về HTTP ${response.status}`, response.status, parseRetryAfter(response.headers.get('retry-after')))
       return response.json()
     }
   }
