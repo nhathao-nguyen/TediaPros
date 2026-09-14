@@ -38,3 +38,11 @@ export function classifyEdgeFailure(error: unknown, cancelled = false): EdgeTtsE
 export function retryableEdgeFailure(error: EdgeTtsError): boolean {
   return ['rate_limited', 'timeout', 'transient_network', 'provider_5xx'].includes(error.code)
 }
+
+export function isEdgeFailureCode(value: unknown): value is EdgeFailureCode {
+  return typeof value === 'string' && [
+    'cancelled', 'rate_limited', 'access_denied', 'timeout', 'transient_network',
+    'provider_5xx', 'invalid_input', 'audio_validation', 'local_media', 'disk',
+    'unknown', 'circuit_open'
+  ].includes(value)
+}

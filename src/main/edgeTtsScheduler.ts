@@ -170,6 +170,13 @@ export class EdgeTtsScheduler {
             this.state.circuit = true
             this.state.nextEligibleAt = Math.max(this.state.nextEligibleAt, Date.now() + (this.options.cooldownMs ?? 30_000))
           }
+          // A request that exhausts all three transport attempts must give the
+          // item-level recovery pass a real cooldown even if a concurrent call
+          // happened to succeed between those attempts.
+          if (retryIndex === 2) {
+            this.state.circuit = true
+            this.state.nextEligibleAt = Math.max(this.state.nextEligibleAt, Date.now() + (this.options.cooldownMs ?? 30_000))
+          }
           if (this.state.probeFailures >= 2) this.state.blocked = 'circuit_open'
         }
         this.persist()

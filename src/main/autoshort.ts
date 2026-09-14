@@ -53,6 +53,7 @@ import { createOpenAiTranslationAdapter, loadKey as loadOpenAiKey } from './open
 import { createLocalTranslationAdapter, loadLocalKey, checkLocalTranslateKey } from './localTranslate'
 import { generateSpeech, generateVoiceClone, getTtsModels, checkTtsServerHealth, getEdgeTtsModelInfo, fetchEdgeVoices } from './tts'
 import { getEdgeTtsScheduler, probeEdgeTtsSynthesis } from './edgeTts'
+import { EdgeTtsError, isEdgeFailureCode } from './edgeTtsRecovery'
 import { resolveEdgeVoice, resolveEdgeVoiceForPreflight } from '../shared/edgeTtsContract'
 import { EDGE_TTS_ENDPOINT_ID } from './edgeTtsIdentity'
 import { cancelBurn, probeBurnMedia, burnAutoShort } from './burn'
@@ -2700,7 +2701,13 @@ export async function synthesizeVoice(
             }, producerSignal, producerTempPath)
           : await generateSpeech(requestInput, producerSignal, producerTempPath)
         if (result.requestSpans?.length) requestSpans.push(...result.requestSpans)
-        if (!result.ok || !result.savedPath) throw new Error(result.error || `TTS không trả audio cho cue ${request.cueId}.`)
+        if (!result.ok || !result.savedPath) {
+          const failureCode = result.requestSpans?.at(-1)?.edgeFailureCode
+          if (isEdgeTts && isEdgeFailureCode(failureCode)) {
+            throw new EdgeTtsError(failureCode, result.error || `TTS không trả audio cho cue ${request.cueId}.`)
+          }
+          throw new Error(result.error || `TTS không trả audio cho cue ${request.cueId}.`)
+        }
         return { path: result.savedPath, voice: result.voice || effectiveVoice }
       }, { bypass: request.cacheMode === 'bypass' })
       await copyFile(cacheValue.path, outputPath)

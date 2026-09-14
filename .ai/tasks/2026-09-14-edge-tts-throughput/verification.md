@@ -5,7 +5,7 @@
 - `npm.cmd run typecheck`: PASS, node và web 0 lỗi.
 - `npm.cmd run test:local-runtime`: PASS toàn bộ runner; các case có điều kiện thiếu `TEDIAPROS_TEST_FFMPEG` được runner ghi SKIP như trước.
 - `npm.cmd run build`: PASS production Main, preload và renderer.
-- Regression mới: scheduler/recovery 5 PASS; preparation queue 4 PASS, gồm 500 unique unit, cap 2 và lookahead 4; Edge adapter 20 PASS.
+- Regression mới: scheduler/recovery 6 PASS; preparation queue 4 PASS, gồm 500 unique unit, cap 2 và lookahead 4; Edge adapter 20 PASS.
 
 ## Live full-adapter gates
 
@@ -17,6 +17,8 @@ Managed FFmpeg: `C:\Users\PC\AppData\Roaming\tediapros\bin\ffmpeg.exe`. Mọi sa
 | 100 request, concurrency 2 | 96 success + 1 exhausted failure; dừng ở 97/100 | 241,669 ms | 2,579 ms | 11,315 ms | 2 | 7 |
 
 Lượt 100 không gặp `403` hoặc `429`, nhưng sample 95 gặp `transient_network` ở cả ba attempt và không có audio hợp lệ. Harness phiên này dừng khi một request transient đã hết retry, nên ba sample cuối chưa được dispatch. Đây là gate fail vì không đạt 100/100 và retry ratio cũng vượt mục tiêu 1%.
+
+Phát hiện này dẫn tới một sửa lỗi bổ sung: typed `transient_network` giờ được giữ xuyên qua TTS cache adapter, request hết ba attempt mở cooldown 30 giây, và queue AutoShort cho item đúng một recovery pass dùng lại các cue cache hit. Regression xác nhận pass thứ hai không thể lặp vô hạn. Kết quả live ở bảng là bằng chứng trước sửa này và không được đổi thành 100/100 bằng suy luận.
 
 Không chạy mốc 500. Kết quả hiện tại không hỗ trợ kết luận 400–500 request cho một video sẽ ổn định trên Edge-TTS tại thời điểm thử. Preset 2 giảm p50 quan sát được nhưng vẫn để ở nhãn thử nghiệm và mặc định tiếp tục là 1.
 

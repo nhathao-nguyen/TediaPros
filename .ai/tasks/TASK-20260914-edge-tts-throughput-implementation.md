@@ -17,6 +17,7 @@ Giảm nghẽn TTS trong AutoShort bằng scheduler dùng chung và preparation 
 - [x] Mặc định một request; UI chỉ cho chọn preset 1 hoặc 2.
 - [x] 429/timeout/network/5xx dùng retry hữu hạn; 401/403 không tự retry hàng loạt.
 - [x] Circuit/cooldown toàn Main được lưu atomically và có thao tác start/resume rõ ràng.
+- [x] Transient failure hết ba attempt giữ typed code, mở cooldown và cho item đúng một recovery pass từ cache.
 - [x] Hai cue có thể chuẩn bị đồng thời nhưng planner/output vẫn consume theo source order.
 - [x] Offline fixture 500 unit không thiếu/lặp và không vượt cap/lookahead.
 - [x] Đổi concurrency không làm invalid content checkpoint.
@@ -65,7 +66,7 @@ npm.cmd run test:local-runtime -- autoshort-cut-legacy-resume.test autoshort-ocr
 ### Kết quả hiện tại
 
 - Typecheck: PASS, node và web 0 lỗi.
-- Scheduler/recovery: 5 PASS.
+- Scheduler/recovery: 6 PASS, gồm exhausted transient → cooldown → một item recovery pass.
 - Preparation queue: 4 PASS, gồm corpus 500 unit, cap 2 và lookahead 4.
 - Edge adapter: 20 PASS; OCR runtime: 15 PASS; legacy TTS pipeline: 6 PASS.
 - Contract/resume/UI: các test đã chạy PASS.

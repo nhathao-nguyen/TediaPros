@@ -23,6 +23,8 @@ Main process dùng một scheduler Edge-TTS chung cho catalog, synthesis probe, 
 
 Chỉ `rate_limited`, timeout mạng, lỗi kết nối tạm thời và HTTP 5xx được retry, tối đa ba attempt. Backoff khởi điểm 2/4 giây cộng jitter. HTTP 429 hạ concurrency về 1 và tôn trọng `Retry-After`; HTTP 401/403 dừng Edge cho tới khi người dùng bắt đầu hoặc tiếp tục batch sau khi xử lý kết nối. Circuit toàn tiến trình mở sau ba lỗi transport liên tiếp và giữ cooldown 30 giây. Trạng thái cooldown được lưu trong `edge-tts-state/recovery.json` dưới user data bằng ghi partial rồi rename.
 
+Nếu một cue vẫn lỗi transient sau ba attempt, AutoShort đánh dấu item `provider-transient`, mở cooldown rồi cho item đúng một recovery pass. Audio cue đã commit tiếp tục là cache hit; pass thứ hai không tự lặp lại nếu dịch vụ vẫn lỗi.
+
 Ở preset 2, dubbing chuẩn bị tối đa hai cue đồng thời và lookahead tối đa bốn cue. Audio có thể hoàn tất lệch thứ tự, nhưng predictor, overflow/rephrase, timeline và output chỉ consume theo thứ tự cue nguồn. Decode/probe FFmpeg vẫn qua lease `local-audio-dsp`; cancel hủy waiter đang chờ và drain work của item trước khi đóng scope. Progress AutoShort hiển thị số request đang chạy/chờ cùng lý do cooldown/circuit.
 
 ## Audio và cache

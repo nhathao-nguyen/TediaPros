@@ -46,6 +46,7 @@ import {
   type OcrSourceCueEvidence
 } from './autoShortOcrCheckpoint'
 import type { AutoShortExecutionPolicy } from './autoShortExecutionPolicy'
+import { classifyAutoShortTtsRecovery } from './autoShortTtsRecovery'
 import {
   createOcrBlurAuditMetadata,
   createSubtitlePlacementAuditMetadata,
@@ -1874,12 +1875,8 @@ export function createAutoShortItemProcessor(
             missingSeconds: error.requiredExtensionSeconds,
             requiredPercent: error.requiredPercent
           }
-        : !isCancelled && /audio TTS không hợp lệ|không trả về audio TTS/iu.test(message)
-          ? {
-              kind: 'tts-quality' as const,
-              retryable: (context.recoveryAttempt || 1) === 1,
-              attempt: context.recoveryAttempt || 1
-            }
+        : !isCancelled
+          ? classifyAutoShortTtsRecovery(error, message, context.recoveryAttempt || 1)
           : undefined
 
       const structuredTranslation = error && typeof error === 'object'

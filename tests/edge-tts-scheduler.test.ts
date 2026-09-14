@@ -2,6 +2,7 @@ import assert from 'node:assert/strict'
 import test from 'node:test'
 import { EdgeTtsError, classifyEdgeFailure, parseRetryAfter, retryableEdgeFailure } from '../src/main/edgeTtsRecovery'
 import { EdgeTtsScheduler } from '../src/main/edgeTtsScheduler'
+import { classifyAutoShortTtsRecovery } from '../src/main/autoShortTtsRecovery'
 
 const tick = (): Promise<void> => new Promise((resolve) => setImmediate(resolve))
 
@@ -81,4 +82,19 @@ test('Edge scheduler blocks access denial until an explicit resume', async () =>
   await assert.rejects(scheduler.run(async () => 'unreachable'), (error: EdgeTtsError) => error.code === 'circuit_open')
   scheduler.resume()
   assert.equal(await scheduler.run(async () => 'restored'), 'restored')
+})
+
+test('an exhausted transient request opens cooldown and remains item-recoverable once', async () => {
+  const scheduler = new EdgeTtsScheduler({ spacingMs: 0, backoffMs: 0, cooldownMs: 5, random: () => 0 })
+  const failure = new EdgeTtsError('transient_network', 'socket reset')
+  await assert.rejects(scheduler.run(async () => { throw failure }), failure)
+  assert.equal(scheduler.snapshot().circuit, true)
+  assert.deepEqual(classifyAutoShortTtsRecovery(failure, failure.message, 1), {
+    kind: 'provider-transient', retryable: true, attempt: 1
+  })
+  assert.deepEqual(classifyAutoShortTtsRecovery(failure, failure.message, 2), {
+    kind: 'provider-transient', retryable: false, attempt: 2
+  })
+  assert.equal(await scheduler.run(async () => 'half-open success'), 'half-open success')
+  assert.equal(scheduler.snapshot().circuit, false)
 })

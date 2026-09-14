@@ -780,11 +780,15 @@ export async function generateEdgeTTS(
     debugRaw('Edge-TTS generation failed', error)
     const message = signal?.aborted ? 'Đã hủy tác vụ' : errLabel(error)
     const failureKind = signal?.aborted ? 'cancelled' : /thời gian chờ/u.test(message) ? 'timeout' : 'transport'
+    const edgeFailureCode = error instanceof EdgeTtsError ? error.code : undefined
     if (requestSpans.length > 0) {
-      requestSpans[requestSpans.length - 1] = { ...requestSpans[requestSpans.length - 1], error: message, failureKind }
+      requestSpans[requestSpans.length - 1] = {
+        ...requestSpans[requestSpans.length - 1], error: message, failureKind,
+        edgeFailureCode: requestSpans[requestSpans.length - 1].edgeFailureCode || edgeFailureCode
+      }
     } else {
       requestSpans.push({ ...requestSpan, endedAtUtc: new Date().toISOString(), durationMs: Date.now() - startTime,
-        error: message, failureKind })
+        error: message, failureKind, edgeFailureCode })
     }
     logWarn(`[EdgeTTS] Lỗi: ${message}`)
     return { ok: false, error: message, provider: 'edge-tts', voice, speed, requestSpans }

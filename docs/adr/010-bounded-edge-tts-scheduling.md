@@ -13,6 +13,8 @@ Main process sở hữu một `EdgeTtsScheduler` dùng chung cho catalog, synthe
 
 HTTP 403/401 mở trạng thái `access_denied` và dừng dispatch. Ba lỗi transport liên tiếp mở circuit 30 giây; chỉ một request được dùng làm probe, và hai probe lỗi chuyển sang chờ thao tác chạy/tiếp tục mới. `nextEligibleAt`, circuit và lý do block được ghi atomically trong user data để restart không xóa cooldown.
 
+Một request vẫn lỗi sau ba attempt cũng mở cooldown, kể cả khi request song song khác vừa thành công. AutoShort giữ typed failure `provider-transient`, cho item một recovery pass sau cooldown và dùng lại audio cache đã commit; pass thứ hai không tiếp tục lặp vô hạn.
+
 Preset `2` dùng `PreparationQueue` trong dubbing. Queue có hai worker, lookahead tối đa bốn cue, chuẩn bị synthesis/trim/duration ở ngoài thứ tự nhưng chỉ trả kết quả cho planner theo thứ tự nguồn. Predictor, overflow, structural split, rephrase và finalization vẫn chạy tuần tự. Legacy `prefetchTts` không chạy cùng preparation queue. Decode và probe Edge dùng lease `local-audio-dsp` hiện có.
 
 `executionPolicy` chỉ điều khiển lịch chạy nên bị loại khỏi content checkpoint digest. Resume có thể đổi preset mà không làm mất media/cache hợp lệ; matcher vẫn nhận digest cũ để tương thích journal đã tạo.
