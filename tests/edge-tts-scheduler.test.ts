@@ -1,10 +1,14 @@
 import assert from 'node:assert/strict'
 import test from 'node:test'
 import { EdgeTtsError, classifyEdgeFailure, parseRetryAfter, retryableEdgeFailure } from '../src/main/edgeTtsRecovery'
-import { EdgeTtsScheduler } from '../src/main/edgeTtsScheduler'
+import { EDGE_TTS_DEFAULT_SPACING_MS, EdgeTtsScheduler } from '../src/main/edgeTtsScheduler'
 import { classifyAutoShortTtsRecovery } from '../src/main/autoShortTtsRecovery'
 
 const tick = (): Promise<void> => new Promise((resolve) => setImmediate(resolve))
+
+test('Edge scheduler keeps the live-qualified 1.5 second default start spacing', () => {
+  assert.equal(EDGE_TTS_DEFAULT_SPACING_MS, 1_500)
+})
 
 test('Edge recovery classifies provider failures without retrying terminal requests', () => {
   assert.equal(classifyEdgeFailure(new Error('Unexpected server response: 429')).code, 'rate_limited')

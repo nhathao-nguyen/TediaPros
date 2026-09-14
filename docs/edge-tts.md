@@ -19,7 +19,7 @@ Voice lưu riêng lựa chọn tại `tblao.voice.edgeVoice`; AutoShort dùng `t
 
 ## Scheduler, retry và chế độ tăng tốc
 
-Main process dùng một scheduler Edge-TTS chung cho catalog, synthesis probe, Voice và AutoShort. Cấu hình cũ mặc định `Ổn định · 1 request cùng lúc`; AutoShort cho phép chọn `Nhanh thử nghiệm · tối đa 2 request`. Giá trị được kiểm tra tại IPC và Main clamp về `1 | 2`. Scheduler giãn thời điểm bắt đầu request 1 giây nên không tích lũy burst sau thời gian idle.
+Main process dùng một scheduler Edge-TTS chung cho catalog, synthesis probe, Voice và AutoShort. Cấu hình cũ mặc định `Ổn định · 1 request cùng lúc`; AutoShort cho phép chọn `Nhanh thử nghiệm · tối đa 2 request`. Giá trị được kiểm tra tại IPC và Main clamp về `1 | 2`. Scheduler giãn thời điểm bắt đầu request 1,5 giây nên không tích lũy burst sau thời gian idle. Mốc này được chọn từ live qualification 100 request: nhịp 1 giây cần ba retry, còn nhịp 1,5 giây đạt 100/100 không retry ở cả hai preset. Preset 2 không giảm tổng thời gian trong workload đó vì peak active vẫn là 1, nên tiếp tục được coi là thử nghiệm.
 
 Chỉ `rate_limited`, timeout mạng, lỗi kết nối tạm thời và HTTP 5xx được retry, tối đa ba attempt. Backoff khởi điểm 2/4 giây cộng jitter. HTTP 429 hạ concurrency về 1 và tôn trọng `Retry-After`; HTTP 401/403 dừng Edge cho tới khi người dùng bắt đầu hoặc tiếp tục batch sau khi xử lý kết nối. Circuit toàn tiến trình mở sau ba lỗi transport liên tiếp và giữ cooldown 30 giây. Trạng thái cooldown được lưu trong `edge-tts-state/recovery.json` dưới user data bằng ghi partial rồi rename.
 

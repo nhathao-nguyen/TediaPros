@@ -9,7 +9,7 @@ AutoShort có thể cần hàng trăm speech unit cho một batch. Gọi Edge-TT
 
 ## Quyết định
 
-Main process sở hữu một `EdgeTtsScheduler` dùng chung cho catalog, synthesis probe và synthesis thực tế. Scheduler có hai preset hợp lệ: `1` và `2`, giãn thời điểm bắt đầu request mặc định 1 giây, retry tối đa ba attempt cho 429, timeout mạng, lỗi kết nối tạm thời và 5xx. Retry dùng backoff 2/4 giây cộng jitter; 429 tôn trọng thời gian lớn hơn giữa backoff và `Retry-After`, đồng thời hạ concurrency về 1.
+Main process sở hữu một `EdgeTtsScheduler` dùng chung cho catalog, synthesis probe và synthesis thực tế. Scheduler có hai preset hợp lệ: `1` và `2`, giãn thời điểm bắt đầu request mặc định 1,5 giây, retry tối đa ba attempt cho 429, timeout mạng, lỗi kết nối tạm thời và 5xx. Retry dùng backoff 2/4 giây cộng jitter; 429 tôn trọng thời gian lớn hơn giữa backoff và `Retry-After`, đồng thời hạ concurrency về 1. Live qualification 100 request ở nhịp 1 giây hoàn tất 100/100 nhưng cần ba retry; cùng corpus ở nhịp 1,5 giây đạt 100/100 không retry ở cả preset 1 và 2, nên nhịp chậm hơn trở thành mặc định.
 
 HTTP 403/401 mở trạng thái `access_denied` và dừng dispatch. Ba lỗi transport liên tiếp mở circuit 30 giây; chỉ một request được dùng làm probe, và hai probe lỗi chuyển sang chờ thao tác chạy/tiếp tục mới. `nextEligibleAt`, circuit và lý do block được ghi atomically trong user data để restart không xóa cooldown.
 
@@ -26,6 +26,7 @@ Preset `2` dùng `PreparationQueue` trong dubbing. Queue có hai worker, lookahe
 - Queue giữ số work và file tạm hữu hạn theo concurrency/lookahead, còn output cue luôn theo source order.
 - UI có thể hiển thị số request đang chạy/chờ, circuit/cooldown và thời gian thử lại qua progress hiện có; không thêm IPC không định kiểu.
 - Scheduler hiện giữ slot cho tới khi request đã decode, probe và publish xong. Điều này thận trọng hơn việc trả slot ngay sau khi đóng socket và tránh vượt cap khi cleanup chưa quiesce.
+- Với workload qualification hiện tại, nhịp 1,5 giây giữ peak active ở 1 kể cả preset 2; preset 2 không tạo lợi ích throughput đo được và tiếp tục mang nhãn thử nghiệm.
 
 ## Kiểm chứng bắt buộc
 

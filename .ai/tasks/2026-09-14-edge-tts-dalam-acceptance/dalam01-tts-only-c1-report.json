@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "runId": "dalam01-tts-only-c1",
+  "checkedAtUtc": "2026-09-14T02:36:40.599Z",
+  "elapsedMs": 72273,
+  "source": "F:\\Son\\doyuin\\LauHaiSan\\dalam\\2025-04-08_大海退潮啦，海鲜就要现抓现吃_赶海_7490882160954461476.mp4",
+  "sourceSha256Before": "50140ca1d518f4dbe80d564bbabce727790f066e619d31aa3d45cbcd4042e1ee",
+  "sourceSha256After": "50140ca1d518f4dbe80d564bbabce727790f066e619d31aa3d45cbcd4042e1ee",
+  "sourceUnchanged": true,
+  "itemResult": {
+    "itemId": "dalam01-tts-only-c1-item",
+    "filePath": "F:\\Son\\doyuin\\LauHaiSan\\dalam\\2025-04-08_大海退潮啦，海鲜就要现抓现吃_赶海_7490882160954461476.mp4",
+    "status": "done",
+    "outputPath": "F:\\Son\\doyuin\\LauHaiSan\\dalam-edge-tts-acceptance\\outputs\\2025-04-08_大海退潮啦，海鲜就要现抓现吃_赶海_7490882160954461476 (2)\\2025-04-08_大海退潮啦，海鲜就要现抓现吃_赶海_7490882160954461476-phude.mp4",
+    "artifactDir": "F:\\Son\\doyuin\\LauHaiSan\\dalam-edge-tts-acceptance\\outputs\\2025-04-08_大海退潮啦，海鲜就要现抓现吃_赶海_7490882160954461476 (2)\\.autoshort-audit-56dd92a0-761c-4b07-8730-238aafc3540b-dalam01-tts-only-c1-item",
+    "extractedCueCount": 56,
+    "generatedVoiceCount": 32,
+    "voice": "zh-CN-XiaoxiaoNeural",
+    "translationAssessment": {
+      "version": "translation-assessment-v2",
+      "disposition": "validated",
+      "issues": [],
+      "languageEvidence": "unknown"
+    }
+  }
+}

@@ -1,0 +1,79 @@
+{
+  "ready": true,
+  "method": "whisper",
+  "requestedDevice": "cpu",
+  "effectiveDevice": "cpu",
+  "dependencies": [
+    {
+      "id": "ffmpeg",
+      "label": "FFmpeg",
+      "required": true,
+      "ready": true,
+      "downloadBytes": 75000000
+    },
+    {
+      "id": "whisper-engine",
+      "label": "Whisper engine",
+      "required": true,
+      "ready": true
+    },
+    {
+      "id": "whisper-model",
+      "label": "Model Whisper small",
+      "required": true,
+      "ready": true,
+      "downloadBytes": 484000000
+    }
+  ],
+  "model": {
+    "id": "small",
+    "repoId": "Systran/faster-whisper-small",
+    "installed": true,
+    "complete": true,
+    "valid": true,
+    "downloadBytes": 484000000,
+    "path": "F:\\Son\\doyuin\\LauHaiSan\\dalam-edge-tts-acceptance\\profile-dalam01-tts-only-c1\\whisper-models\\small",
+    "sha256": "3e305921506d8872816023e4c273e75d2419fb89b24da97b4fe7bce14170d671"
+  },
+  "stageCapabilities": [
+    {
+      "stage": "asr",
+      "required": true,
+      "support": "supported",
+      "qualified": false,
+      "reason": "Engine/model đã sẵn sàng; chất lượng theo corpus chưa được chứng nhận."
+    },
+    {
+      "stage": "ocr",
+      "required": false,
+      "support": "supported",
+      "qualified": false,
+      "reason": "Không dùng OCR trong cấu hình này."
+    },
+    {
+      "stage": "translation",
+      "required": false,
+      "support": "supported",
+      "qualified": false,
+      "reason": "Không yêu cầu dịch trong cấu hình dependency."
+    },
+    {
+      "stage": "tts",
+      "required": true,
+      "support": "unknown",
+      "qualified": false,
+      "reason": "TTS capability phụ thuộc model/server và cần kiểm tra riêng."
+    },
+    {
+      "stage": "render",
+      "required": true,
+      "support": "supported",
+      "qualified": false,
+      "reason": "FFmpeg đã sẵn sàng; media/font qualification vẫn tách riêng."
+    }
+  ],
+  "temporalCut": {
+    "editing": true,
+    "execution": true
+  }
+}

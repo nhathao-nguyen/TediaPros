@@ -4,7 +4,7 @@ import { tmpdir } from 'node:os'
 import { dirname, join, resolve } from 'node:path'
 import { performance } from 'node:perf_hooks'
 import { generateEdgeTTS } from '../src/main/edgeTts'
-import { EdgeTtsScheduler } from '../src/main/edgeTtsScheduler'
+import { EDGE_TTS_DEFAULT_SPACING_MS, EdgeTtsScheduler } from '../src/main/edgeTtsScheduler'
 
 function argument(name: string): string | undefined {
   const index = process.argv.indexOf(name)
@@ -20,14 +20,16 @@ function percentile(values: readonly number[], ratio: number): number {
 async function main(): Promise<void> {
   const count = Number(argument('--count'))
   const concurrency = Number(argument('--concurrency')) === 2 ? 2 : 1
+  const spacingMs = Number(argument('--spacing-ms') || String(EDGE_TTS_DEFAULT_SPACING_MS))
   const ffmpegPath = resolve(argument('--ffmpeg') || '')
   const outputPath = resolve(argument('--output') || '')
   if (!Number.isSafeInteger(count) || count < 1 || count > 500) throw new Error('--count phải trong 1..500')
+  if (!Number.isSafeInteger(spacingMs) || spacingMs < 1_000 || spacingMs > 10_000) throw new Error('--spacing-ms phải trong 1000..10000')
   if (!ffmpegPath || !(await stat(ffmpegPath).catch(() => null))?.isFile()) throw new Error('--ffmpeg phải là managed FFmpeg tồn tại')
   if (!argument('--output')) throw new Error('Thiếu --output')
 
   const scratch = await mkdtemp(join(tmpdir(), `tedia-edge-live-${count}-`))
-  const scheduler = new EdgeTtsScheduler({ concurrency, spacingMs: 1_000 })
+  const scheduler = new EdgeTtsScheduler({ concurrency, spacingMs })
   let peakActive = 0
   let peakQueued = 0
   let peakRss = process.memoryUsage().rss
@@ -66,10 +68,15 @@ async function main(): Promise<void> {
       sha256,
       attempts: result.requestSpans?.length || 0,
       failureCodes,
+      requestSpans: result.requestSpans,
       error: result.ok ? undefined : result.error
     }
-    if (failureCodes.includes('access_denied') || failureCodes.includes('rate_limited')) {
-      stopReason = failureCodes.includes('access_denied') ? 'access_denied' : 'rate_limited'
+    if (failureCodes.includes('access_denied') || failureCodes.includes('rate_limited') || failureCodes.includes('circuit_open')) {
+      stopReason = failureCodes.includes('access_denied')
+        ? 'access_denied'
+        : failureCodes.includes('rate_limited')
+          ? 'rate_limited'
+          : 'circuit_open'
     }
   }
   }
@@ -79,6 +86,11 @@ async function main(): Promise<void> {
   const completed = samples.filter(Boolean)
   const wallValues = completed.map((sample) => Number(sample.wallMs))
   const failures = completed.filter((sample) => sample.ok !== true)
+  const successes = completed.filter((sample) => sample.ok === true)
+  const successWallValues = successes.map((sample) => Number(sample.wallMs))
+  const networkSpans = completed
+    .flatMap((sample) => Array.isArray(sample.requestSpans) ? sample.requestSpans as Array<Record<string, unknown>> : [])
+    .filter((span) => span.edgeFailureCode !== 'circuit_open')
   const artifact = {
     schemaVersion: 1,
     checkedAtUtc: new Date().toISOString(),
@@ -86,15 +98,20 @@ async function main(): Promise<void> {
     countRequested: count,
     countCompleted: completed.length,
     concurrency,
-    spacingMs: 1_000,
+    spacingMs,
     fullDecodeAndProbe: true,
     elapsedMs: Math.round(performance.now() - started),
     wallP50Ms: percentile(wallValues, 0.5),
     wallP95Ms: percentile(wallValues, 0.95),
+    successWallP50Ms: percentile(successWallValues, 0.5),
+    successWallP95Ms: percentile(successWallValues, 0.95),
     peakSchedulerActive: peakActive,
     peakSchedulerQueued: peakQueued,
     peakRssBytes: peakRss,
     retryAttempts: completed.reduce((sum, sample) => sum + Math.max(0, Number(sample.attempts) - 1), 0),
+    networkAttemptCount: networkSpans.length,
+    networkFailureAttemptCount: networkSpans.filter((span) => Boolean(span.edgeFailureCode)).length,
+    successCount: successes.length,
     failureCount: failures.length,
     stopReason: stopReason || (failures.length ? 'request_failed' : undefined),
     samples: completed

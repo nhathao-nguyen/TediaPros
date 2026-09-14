@@ -121,6 +121,13 @@ test('rejects a looping overlong TTS clip for a short interjection', () => {
   assert.equal(policyModule.validateVoiceAudioCompleteness('Oh my!', 1.1).ok, true)
 })
 
+test('accepts measured natural duration for a Chinese phrase without whitespace', () => {
+  const text = '那个大山贝看见了吗现代有点长桶里它在这个带石头缝里头'
+  const result = policyModule.validateVoiceAudioCompleteness(text, 7.924)
+  assert.equal(result.ok, true, result.error)
+  assert.ok(result.wordCountExpected > 1, 'CJK text must not collapse into one duration unit')
+})
+
 test('refreshes an overlong TTS cache entry before planning video extension', async () => {
   const requests: Array<{ cacheMode?: 'prefer' | 'bypass' }> = []
   const result = await synthesisModule.synthesizeDubbingPlan({

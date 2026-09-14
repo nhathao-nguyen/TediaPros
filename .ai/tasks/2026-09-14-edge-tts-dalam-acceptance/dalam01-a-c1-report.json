@@ -1,0 +1,16 @@
+{
+  "schemaVersion": 1,
+  "runId": "dalam01-a-c1",
+  "checkedAtUtc": "2026-09-14T02:30:44.673Z",
+  "elapsedMs": 31438,
+  "source": "F:\\Son\\doyuin\\LauHaiSan\\dalam\\2025-04-08_大海退潮啦，海鲜就要现抓现吃_赶海_7490882160954461476.mp4",
+  "sourceSha256Before": "50140ca1d518f4dbe80d564bbabce727790f066e619d31aa3d45cbcd4042e1ee",
+  "sourceSha256After": "50140ca1d518f4dbe80d564bbabce727790f066e619d31aa3d45cbcd4042e1ee",
+  "sourceUnchanged": true,
+  "itemResult": {
+    "itemId": "dalam01-a-c1-item",
+    "filePath": "F:\\Son\\doyuin\\LauHaiSan\\dalam\\2025-04-08_大海退潮啦，海鲜就要现抓现吃_赶海_7490882160954461476.mp4",
+    "status": "error",
+    "error": "Không thể kết nối tới server AI: quá thời gian chờ — máy chủ không phản hồi"
+  }
+}

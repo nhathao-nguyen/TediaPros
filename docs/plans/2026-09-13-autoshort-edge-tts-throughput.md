@@ -1,9 +1,9 @@
 # Kế hoạch cải thiện tốc độ và độ bền Edge TTS trong AutoShort
 
-> **Trạng thái triển khai 2026-09-14:** M0-M3 đã có phần lõi trong code: failure classification, telemetry attempt, scheduler toàn Main, retry/circuit/cooldown lưu bền, preparation queue 2 worker/lookahead 4, preset UI 1/2, progress chờ dịch vụ và resume không đổi content digest. Offline corpus 500 unit đã pass. M4 live: 50 concurrency 1 đạt 50/50 nhưng cần 11 retry; 100 concurrency 2 dừng ở 97 sample với một lỗi `transient_network` sau ba attempt. Gate không đạt nên không chạy 500 hoặc hai video DALAM; preset 1 vẫn là mặc định. Xem `.ai/tasks/2026-09-14-edge-tts-throughput/verification.md`.
+> **Trạng thái triển khai 2026-09-14:** M0-M3 đã có phần lõi trong code: failure classification, telemetry attempt, scheduler toàn Main, retry/circuit/cooldown lưu bền, preparation queue 2 worker/lookahead 4, preset UI 1/2, progress chờ dịch vụ và resume không đổi content digest. Offline corpus 500 unit đã pass. M4 live chọn nhịp mặc định 1.500 ms sau khi hai lượt 100 request đạt 100/100, không retry; concurrency 2 không tăng throughput vì rate gate vẫn là nút thắt. Lượt 500 không đạt: 283 success, 8 exhausted failure rồi circuit dừng network. DALAM-01 TTS-only đã render thành công 32/32 nhóm thoại; luồng dịch tiếng Việt còn bị chặn bởi local translation server timeout. Preset 1 vẫn là mặc định. Xem `.ai/tasks/2026-09-14-edge-tts-throughput/verification.md` và `.ai/tasks/2026-09-14-edge-tts-dalam-acceptance/acceptance.md`.
 
 Ngày: 2026-09-13. Baseline: `main@0c743aa`.
-Trạng thái: **PROPOSED — mới lập kế hoạch, chưa triển khai hoặc nghiệm thu tải lớn.**
+Trạng thái: **IMPLEMENTED — live 100 đạt; live 500 và dịch tiếng Việt chưa đạt.**
 
 ## 1. Mục tiêu và giới hạn bằng chứng
 
@@ -38,7 +38,7 @@ Các số sau là tham số đề xuất để đo, không phải quota Microsof
 |---|---|---|
 | Video hoạt động | 1 | 1 |
 | Edge request đang truyền | 1 | 2 |
-| Khoảng cách tối thiểu giữa các lần bắt đầu | 1.000 ms | 1.000 ms, burst capacity 1 |
+| Khoảng cách tối thiểu giữa các lần bắt đầu | 1.500 ms | 1.500 ms, burst capacity 1; được chọn từ live gate 100 request |
 | Cửa sổ unit chuẩn bị ahead | 2 | 4, tối đa `2 × concurrency` |
 | Audio DSP đồng thời | 1 | 1; thử 2 riêng sau khi đo |
 | Attempt mạng cho một logical request | 1 | tối đa 3, gồm lần đầu + 2 retry |

@@ -1,6 +1,6 @@
 # TASK-20260914: Triển khai Edge-TTS throughput và recovery có giới hạn
 
-- **Trạng thái:** Đã kiểm chứng local; live gate không đạt
+- **Trạng thái:** Đã kiểm chứng; live 100 đạt, live 500 không đạt
 - **Người thực hiện:** Codex
 - **Thời gian:** 2026-09-14
 
@@ -23,7 +23,9 @@ Giảm nghẽn TTS trong AutoShort bằng scheduler dùng chung và preparation 
 - [x] Đổi concurrency không làm invalid content checkpoint.
 - [x] Typecheck pass 100% không có lỗi.
 - [x] Toàn bộ local runtime suite và build pass.
-- [x] Live 50 và 100 có artifact; mốc 100 không đạt 100/100 nên dừng trước 500 và video DALAM.
+- [x] Hai lượt live 100 ở spacing 1.500 ms đạt 100/100, không retry.
+- [x] DALAM-01 TTS-only tạo output thật đủ 32/32 speech unit, source không đổi và tempo dưới 1.80x.
+- [ ] Live 500 đạt 500/500: lượt thực tế đạt 283 success, 8 exhausted failure rồi circuit dừng network.
 
 ---
 
@@ -51,6 +53,8 @@ Giảm nghẽn TTS trong AutoShort bằng scheduler dùng chung và preparation 
 - `[MODIFY]` `src/main/ipcSecurity.ts`, `src/main/index.ts`: cho đúng renderer entry `file://` của preview/unpackaged đi qua IPC gate; packaged cũng chỉ nhận đúng entry thay vì mọi file URL.
 - `[MODIFY]` `src/shared/types.ts`, `src/shared/autoShortContract.ts`, `src/renderer/src/components/AutoShort.tsx`
 - `[NEW]` `tests/edge-tts-scheduler.test.ts`, `tests/dubbing-preparation-queue.test.ts`, `docs/adr/010-bounded-edge-tts-scheduling.md`
+- `[MODIFY]` `src/main/autoShortPolicy.ts`: tokenization nhận biết CJK cho kiểm tra audio completeness.
+- `[NEW]` `scripts/run-autoshort-dalam-qualification.mjs`, `scripts/autoshort-dalam-qualification-worker.ts`: harness video thật với profile/output cô lập và hash nguồn trước/sau.
 
 ---
 
@@ -60,6 +64,7 @@ Giảm nghẽn TTS trong AutoShort bằng scheduler dùng chung và preparation 
 
 ```powershell
 npm.cmd run typecheck
+npm.cmd run test:local-runtime
 npm.cmd run test:local-runtime -- edge-tts-scheduler.test dubbing-preparation-queue.test edge-tts-adapter.test autoshort-ocr-runtime.test autoshort-tts-pipeline.test
 npm.cmd run test:local-runtime -- autoshort-cut-legacy-resume.test autoshort-ocr-contract.test autoshort-ui-contract.test
 npm.cmd run test:local-runtime -- ipc-origin-validation.test autoshort-ui-contract.test
@@ -69,7 +74,8 @@ npm.cmd run build
 ### Kết quả hiện tại
 
 - Typecheck: PASS, node và web 0 lỗi.
-- Scheduler/recovery: 6 PASS, gồm exhausted transient → cooldown → một item recovery pass.
+- Full local runtime runner sau thay đổi cuối: PASS, exit 0; các test media cần biến FFmpeg riêng được ghi SKIP có điều kiện.
+- Scheduler/recovery: 7 PASS, gồm spacing mặc định 1.500 ms và exhausted transient → cooldown → một item recovery pass.
 - Preparation queue: 4 PASS, gồm corpus 500 unit, cap 2 và lookahead 4.
 - Edge adapter: 20 PASS; OCR runtime: 15 PASS; legacy TTS pipeline: 6 PASS.
 - Contract/resume/UI: các test đã chạy PASS.
@@ -78,9 +84,11 @@ npm.cmd run build
 
 ### Những phần chưa kiểm tra / Rủi ro còn lại
 
-- Live 50 concurrency 1: 50/50 hợp lệ, 11 retry, 389.809 giây, p50 6.959 giây, p95 12.834 giây.
-- Live 100 concurrency 2: 97 sample được chạy, một sample lỗi `transient_network` sau 3 attempt; 3 sample cuối không dispatch do harness gate phiên đó dừng sớm. Retry và failure vượt ngưỡng nên không chạy 500/video.
-- Chưa có full AutoShort output từ DALAM-01/DALAM-02 vì live gate 100 không đạt.
+- Live 100 concurrency 1, spacing 1.500 ms: 100/100 hợp lệ, 0 retry, 150.391 giây.
+- Live 100 concurrency 2, spacing 1.500 ms: 100/100 hợp lệ, 0 retry, 150.039 giây; peak active vẫn là 1 nên không có lợi ích throughput.
+- Live 500 concurrency 1: 291 logical request tới network, 283 thành công, 8 exhausted; 67/350 network attempt transient lỗi, 36 request recovery thành công; circuit từ chối cục bộ 209 mẫu còn lại. Gate không đạt.
+- DALAM-01 TTS-only: 56 source cue, 32/32 speech unit, output thật 131 giây; 29 request mới thành công attempt đầu và 3 cache hit; tempo tối đa 1.0918x.
+- Target tiếng Việt chưa chạy hết vì local translation server timeout 30 giây ở preflight. DALAM-02 chưa chạy.
 - macOS ARM64 chưa live-qualified.
 
 ---
@@ -88,5 +96,7 @@ npm.cmd run build
 ## 7. Bước Tiếp Theo / Ghi Chú Bàn Giao (Handoff Notes)
 
 - Bằng chứng chi tiết: `.ai/tasks/2026-09-14-edge-tts-throughput/verification.md` và hai JSON live.
-- Giữ preset 1 là mặc định; preset 2 tiếp tục mang nhãn thử nghiệm. Chỉ chạy lại 500/video sau khi một lượt 100 mới đạt failure/retry gate.
+- Giữ preset 1 là mặc định với spacing 1.500 ms; preset 2 tiếp tục mang nhãn thử nghiệm vì rate gate triệt tiêu lợi ích throughput trong phép đo hiện tại.
+- Không chạy thêm tải live trong phiên này sau khi circuit mở; cần chờ dịch vụ hồi phục rồi dùng batch nhỏ/chia đợt thay vì ép tiếp 500 request.
+- Bằng chứng video: `.ai/tasks/2026-09-14-edge-tts-dalam-acceptance/acceptance.md`.
 - Không đưa tám MP4 benchmark không liên quan trong `.ai/tasks/2026-09-12-dalam-encoder-test/` vào commit.

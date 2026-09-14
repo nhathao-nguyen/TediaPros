@@ -1,6 +1,8 @@
 import { randomUUID } from 'node:crypto'
 import { classifyEdgeFailure, EdgeTtsError, retryableEdgeFailure, type EdgeFailureCode } from './edgeTtsRecovery'
 
+export const EDGE_TTS_DEFAULT_SPACING_MS = 1_500
+
 export interface EdgeServiceState {
   nextEligibleAt: number
   blocked?: EdgeFailureCode
@@ -106,7 +108,7 @@ export class EdgeTtsScheduler {
     const ticket = this.queue.splice(candidate, 1)[0]
     ticket.signal?.removeEventListener('abort', ticket.abort)
     this.active++
-    this.nextStart = now + (this.options.spacingMs ?? 1000)
+    this.nextStart = now + (this.options.spacingMs ?? EDGE_TTS_DEFAULT_SPACING_MS)
     let released = false
     ticket.resolve(() => { if (!released) { released = true; this.active--; this.pump() } })
     this.pump()

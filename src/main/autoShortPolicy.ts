@@ -1066,13 +1066,21 @@ export interface VoiceCompletenessCheckResult {
 }
 
 function tokenizeWords(text: string): string[] {
-  return text
+  const normalize = (value: string): string => value
     .toLowerCase()
     .normalize('NFD')
     .replace(/[\u0300-\u036f]/g, '')
-    .replace(/[^\p{L}\p{N}]+/gu, ' ')
-    .trim()
-    .split(/\s+/)
+    .replace(/[^\p{L}\p{N}]+/gu, '')
+  try {
+    const segmented = Array.from(new Intl.Segmenter(undefined, { granularity: 'word' }).segment(text))
+      .filter((part) => part.isWordLike)
+      .map((part) => normalize(part.segment))
+      .filter(Boolean)
+    if (segmented.length) return segmented
+  } catch { /* fall back for runtimes without Intl.Segmenter */ }
+  return text
+    .split(/[^\p{L}\p{N}]+/gu)
+    .map(normalize)
     .filter(Boolean)
 }
 

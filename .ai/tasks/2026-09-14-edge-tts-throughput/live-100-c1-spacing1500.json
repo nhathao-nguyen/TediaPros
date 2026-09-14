@@ -1,0 +1,2820 @@
+{
+  "schemaVersion": 1,
+  "checkedAtUtc": "2026-09-14T02:11:57.404Z",
+  "platform": "win32-x64",
+  "countRequested": 100,
+  "countCompleted": 100,
+  "concurrency": 1,
+  "spacingMs": 1500,
+  "fullDecodeAndProbe": true,
+  "elapsedMs": 150391,
+  "wallP50Ms": 1506,
+  "wallP95Ms": 1652,
+  "peakSchedulerActive": 1,
+  "peakSchedulerQueued": 1,
+  "peakRssBytes": 88133632,
+  "retryAttempts": 0,
+  "failureCount": 0,
+  "samples": [
+    {
+      "index": 1,
+      "ok": true,
+      "wallMs": 1106,
+      "generationMs": 1103,
+      "durationMs": 6264,
+      "bytes": 300750,
+      "sha256": "cae8f20ce01835c13e583956240b4c0a227197e808d19b77d1ca1606bc096257",
+      "attempts": 1,
+      "failureCodes": [],
+      "requestSpans": [
+        {
+          "url": "edge-tts:msedge-tts:2.0.7",
+          "sourceChars": 77,
+          "requestId": "f35c6705-e47c-4a51-a7cc-939ca88e06d5",
+          "retryIndex": 0,
+          "queuedAtUtc": "2026-09-14T02:09:27.016Z",
+          "startedAtUtc": "2026-09-14T02:09:27.016Z",
+          "queueWaitMs": 0,
+          "firstResponseAtUtc": "2026-09-14T02:09:27.829Z",
+          "networkDurationMs": 988,
+          "localDspDurationMs": 112,
+          "endedAtUtc": "2026-09-14T02:09:28.118Z",
+          "durationMs": 1102,
+          "audioDurationSec": 6.264
+        }
+      ]
+    },
+    {
+      "index": 2,
+      "ok": true,
+      "wallMs": 1247,
+      "generationMs": 1246,
+      "durationMs": 6360,
+      "bytes": 305358,
+      "sha256": "e6b9fd915b7ea8d5839572a1227ff3d9f2b5193ffb33351fd73b255f67acba87",
+      "attempts": 1,
+      "failureCodes": [],
+      "requestSpans": [
+        {
+          "url": "edge-tts:msedge-tts:2.0.7",
+          "sourceChars": 77,
+          "requestId": "87586ec9-80b5-43a3-be8b-5c4fa6c37236",
+          "retryIndex": 0,
+          "queuedAtUtc": "2026-09-14T02:09:28.119Z",
+          "startedAtUtc": "2026-09-14T02:09:28.530Z",
+          "queueWaitMs": 411,
+          "firstResponseAtUtc": "2026-09-14T02:09:29.061Z",
+          "networkDurationMs": 720,
+          "localDspDurationMs": 114,
+          "endedAtUtc": "2026-09-14T02:09:29.365Z",
+          "durationMs": 835,
+          "audioDurationSec": 6.36
+        }
+      ]
+    },
+    {
+      "index": 3,
+      "ok": true,
+      "wallMs": 1530,
+      "generationMs": 1529,
+      "durationMs": 6336,
+      "bytes": 304206,
+      "sha256": "5fa48ab6ebf38b74895dd1a9a042dd4cb285eaa18a05b1c672a46d38f2a49e9d",
+      "attempts": 1,
+      "failureCodes": [],
+      "requestSpans": [
+        {
+          "url": "edge-tts:msedge-tts:2.0.7",
+          "sourceChars": 77,
+          "requestId": "2e14e450-653a-4376-8b6a-7df9807b4af9",
+          "retryIndex": 0,
+          "queuedAtUtc": "2026-09-14T02:09:29.366Z",
+          "startedAtUtc": "2026-09-14T02:09:30.032Z",
+          "queueWaitMs": 666,
+          "firstResponseAtUtc": "2026-09-14T02:09:30.590Z",
+          "networkDurationMs": 751,
+          "localDspDurationMs": 110,
+          "endedAtUtc": "2026-09-14T02:09:30.895Z",
+          "durationMs": 863,
+          "audioDurationSec": 6.336
+        }
+      ]
+    },
+    {
+      "index": 4,
+      "ok": true,
+      "wallMs": 1691,
+      "generationMs": 1689,
+      "durationMs": 6288,
+      "bytes": 301902,
+      "sha256": "1abba61c1f92afa09b3cefe67ca6f98e79135c6a6ee58032208a5356132f53ab",
+      "attempts": 1,
+      "failureCodes": [],
+      "requestSpans": [
+        {
+          "url": "edge-tts:msedge-tts:2.0.7",
+          "sourceChars": 77,
+          "requestId": "fe58f3ac-64aa-49d0-8bbf-97404b42b68a",
+          "retryIndex": 0,
+          "queuedAtUtc": "2026-09-14T02:09:30.896Z",
+          "startedAtUtc": "2026-09-14T02:09:31.543Z",
+          "queueWaitMs": 647,
+          "firstResponseAtUtc": "2026-09-14T02:09:32.251Z",
+          "networkDurationMs": 928,
+          "localDspDurationMs": 113,
+          "endedAtUtc": "2026-09-14T02:09:32.585Z",
+          "durationMs": 1042,
+          "audioDurationSec": 6.288
+        }
+      ]
+    },
+    {
+      "index": 5,
+      "ok": true,
+      "wallMs": 1461,
+      "generationMs": 1459,
+      "durationMs": 6336,
+      "bytes": 304206,
+      "sha256": "813e0520f834e21148264e8c761ff8978385bde46996761dffcac9f41a315b8d",
+      "attempts": 1,
+      "failureCodes": [],
+      "requestSpans": [
+        {
+          "url": "edge-tts:msedge-tts:2.0.7",
+          "sourceChars": 77,
+          "requestId": "e34d4d1d-f087-4da7-90eb-60519e0f0c36",
+          "retryIndex": 0,
+          "queuedAtUtc": "2026-09-14T02:09:32.587Z",
+          "startedAtUtc": "2026-09-14T02:09:33.050Z",
+          "queueWaitMs": 463,
+          "firstResponseAtUtc": "2026-09-14T02:09:33.718Z",
+          "networkDurationMs": 864,
+          "localDspDurationMs": 130,
+          "endedAtUtc": "2026-09-14T02:09:34.046Z",
+          "durationMs": 996,
+          "audioDurationSec": 6.336
+        }
+      ]
+    },
+    {
+      "index": 6,
+      "ok": true,
+      "wallMs": 1410,
+      "generationMs": 1408,
+      "durationMs": 6384,
+      "bytes": 306510,
+      "sha256": "43a04258603aca0081a8ae55310923182ce916ebfd386cc06cfdae7171b4798e",
+      "attempts": 1,
+      "failureCodes": [],
+      "requestSpans": [
+        {
+          "url": "edge-tts:msedge-tts:2.0.7",
+          "sourceChars": 77,
+          "requestId": "11418efa-435a-4121-82f6-386e849fefc7",
+          "retryIndex": 0,
+          "queuedAtUtc": "2026-09-14T02:09:34.048Z",
+          "startedAtUtc": "2026-09-14T02:09:34.555Z",
+          "queueWaitMs": 507,
+          "firstResponseAtUtc": "2026-09-14T02:09:35.146Z",
+          "networkDurationMs": 786,
+          "localDspDurationMs": 113,
+          "endedAtUtc": "2026-09-14T02:09:35.456Z",
+          "durationMs": 901,
+          "audioDurationSec": 6.384
+        }
+      ]
+    },
+    {
+      "index": 7,
+      "ok": true,
+      "wallMs": 1511,
+      "generationMs": 1509,
+      "durationMs": 6408,
+      "bytes": 307662,
+      "sha256": "2fc9af31ca9db127fcd4600ee1ae39f4ebc61ce07af9928256c5e616e2cef47e",
+      "attempts": 1,
+      "failureCodes": [],
+      "requestSpans": [
+        {
+          "url": "edge-tts:msedge-tts:2.0.7",
+          "sourceChars": 77,
+          "requestId": "6c852137-542d-4c62-91cd-61b28653618b",
+          "retryIndex": 0,
+          "queuedAtUtc": "2026-09-14T02:09:35.457Z",
+          "startedAtUtc": "2026-09-14T02:09:36.070Z",
+          "queueWaitMs": 613,
+          "firstResponseAtUtc": "2026-09-14T02:09:36.659Z",
+          "networkDurationMs": 784,
+          "localDspDurationMs": 110,
+          "endedAtUtc": "2026-09-14T02:09:36.966Z",
+          "durationMs": 896,
+          "audioDurationSec": 6.408
+        }
+      ]
+    },
+    {
+      "index": 8,
+      "ok": true,
+      "wallMs": 1484,
+      "generationMs": 1483,
+      "durationMs": 6312,
+      "bytes": 303054,
+      "sha256": "58fa54f446e6c8e560adeca62d50a25694e8a35a476799728d7df2e9a92c51a2",
+      "attempts": 1,
+      "failureCodes": [],
+      "requestSpans": [
+        {
+          "url": "edge-tts:msedge-tts:2.0.7",
+          "sourceChars": 77,
+          "requestId": "6d2b148b-7599-47f7-b963-448a1063d3e3",
+          "retryIndex": 0,
+          "queuedAtUtc": "2026-09-14T02:09:36.968Z",
+          "startedAtUtc": "2026-09-14T02:09:37.573Z",
+          "queueWaitMs": 605,
+          "firstResponseAtUtc": "2026-09-14T02:09:38.161Z",
+          "networkDurationMs": 760,
+          "localDspDurationMs": 116,
+          "endedAtUtc": "2026-09-14T02:09:38.451Z",
+          "durationMs": 878,
+          "audioDurationSec": 6.312
+        }
+      ]
+    },
+    {
+      "index": 9,
+      "ok": true,
+      "wallMs": 1536,
+      "generationMs": 1534,
+      "durationMs": 6312,
+      "bytes": 303054,
+      "sha256": "04e02620c2c36c402135e5fad1294ff8b6d125d52ba03fab7eb47380811a1625",
+      "attempts": 1,
+      "failureCodes": [],
+      "requestSpans": [
+        {
+          "url": "edge-tts:msedge-tts:2.0.7",
+          "sourceChars": 77,
+          "requestId": "3d8cc339-9c6f-4d14-ba25-19aed4022bf2",
+          "retryIndex": 0,
+          "queuedAtUtc": "2026-09-14T02:09:38.452Z",
+          "startedAtUtc": "2026-09-14T02:09:39.080Z",
+          "queueWaitMs": 628,
+          "firstResponseAtUtc": "2026-09-14T02:09:39.685Z",
+          "networkDurationMs": 776,
+          "localDspDurationMs": 127,
+          "endedAtUtc": "2026-09-14T02:09:39.985Z",
+          "durationMs": 905,
+          "audioDurationSec": 6.312
+        }
+      ]
+    },
+    {
+      "index": 10,
+      "ok": true,
+      "wallMs": 1492,
+      "generationMs": 1490,
+      "durationMs": 6384,
+      "bytes": 306510,
+      "sha256": "fb1d99060d296831bcf73c926e8f7bb779e663f402410e79e8a29fd192b5415f",
+      "attempts": 1,
+      "failureCodes": [],
+      "requestSpans": [
+        {
+          "url": "edge-tts:msedge-tts:2.0.7",
+          "sourceChars": 78,
+          "requestId": "810883b0-2bf5-4afa-a112-8b06e4e1c8d2",
+          "retryIndex": 0,
+          "queuedAtUtc": "2026-09-14T02:09:39.989Z",
+          "startedAtUtc": "2026-09-14T02:09:40.582Z",
+          "queueWaitMs": 593,
+          "firstResponseAtUtc": "2026-09-14T02:09:41.133Z",
+          "networkDurationMs": 766,
+          "localDspDurationMs": 129,
+          "endedAtUtc": "2026-09-14T02:09:41.479Z",
+          "durationMs": 897,
+          "audioDurationSec": 6.384
+        }
+      ]
+    },
+    {
+      "index": 11,
+      "ok": true,
+      "wallMs": 1652,
+      "generationMs": 1650,
+      "durationMs": 6504,
+      "bytes": 312270,
+      "sha256": "d449c6911fc5e8ea260405bb1790f4fbb283eff040008c97fa98bc2ab06655ce",
+      "attempts": 1,
+      "failureCodes": [],
+      "requestSpans": [
+        {
+          "url": "edge-tts:msedge-tts:2.0.7",
+          "sourceChars": 78,
+          "requestId": "ae662c14-8a3b-41ef-b0a8-147b59217837",
+          "retryIndex": 0,
+          "queuedAtUtc": "2026-09-14T02:09:41.480Z",
+          "startedAtUtc": "2026-09-14T02:09:42.097Z",
+          "queueWaitMs": 617,
+          "firstResponseAtUtc": "2026-09-14T02:09:42.815Z",
+          "networkDurationMs": 901,
+          "localDspDurationMs": 131,
+          "endedAtUtc": "2026-09-14T02:09:43.130Z",
+          "durationMs": 1033,
+          "audioDurationSec": 6.504
+        }
+      ]
+    },
+    {
+      "index": 12,
+      "ok": true,
+      "wallMs": 1338,
+      "generationMs": 1337,
+      "durationMs": 6600,
+      "bytes": 316878,
+      "sha256": "661229c835ede176429ac12570e03fd6c2ecdd38ad45bf8ca80c3810e24fbd10",
+      "attempts": 1,
+      "failureCodes": [],
+      "requestSpans": [
+        {
+          "url": "edge-tts:msedge-tts:2.0.7",
+          "sourceChars": 78,
+          "requestId": "25a5fef4-6b5f-4b9d-8712-bb098c987f15",
+          "retryIndex": 0,
+          "queuedAtUtc": "2026-09-14T02:09:43.132Z",
+          "startedAtUtc": "2026-09-14T02:09:43.599Z",
+          "queueWaitMs": 467,
+          "firstResponseAtUtc": "2026-09-14T02:09:44.163Z",
+          "networkDurationMs": 757,
+          "localDspDurationMs": 112,
+          "endedAtUtc": "2026-09-14T02:09:44.469Z",
+          "durationMs": 870,
+          "audioDurationSec": 6.6
+        }
+      ]
+    },
+    {
+      "index": 13,
+      "ok": true,
+      "wallMs": 1528,
+      "generationMs": 1526,
+      "durationMs": 6576,
+      "bytes": 315726,
+      "sha256": "5594a4683ac2c073aeafeba963c711b6ed01b50d1dc3230cb5da643129f6dee8",
+      "attempts": 1,
+      "failureCodes": [],
+      "requestSpans": [
+        {
+          "url": "edge-tts:msedge-tts:2.0.7",
+          "sourceChars": 78,
+          "requestId": "c3dd87dc-2e0b-450d-9a7b-b50281dfc71d",
+          "retryIndex": 0,
+          "queuedAtUtc": "2026-09-14T02:09:44.470Z",
+          "startedAtUtc": "2026-09-14T02:09:45.112Z",
+          "queueWaitMs": 642,
+          "firstResponseAtUtc": "2026-09-14T02:09:45.685Z",
+          "networkDurationMs": 748,
+          "localDspDurationMs": 133,
+          "endedAtUtc": "2026-09-14T02:09:45.996Z",
+          "durationMs": 884,
+          "audioDurationSec": 6.576
+        }
+      ]
+    },
+    {
+      "index": 14,
+      "ok": true,
+      "wallMs": 1583,
+      "generationMs": 1580,
+      "durationMs": 6552,
+      "bytes": 314574,
+      "sha256": "12577efa42329aa47601119c2cc12bd43bdc4b2dee546977759b9a5dca3bad61",
+      "attempts": 1,
+      "failureCodes": [],
+      "requestSpans": [
+        {
+          "url": "edge-tts:msedge-tts:2.0.7",
+          "sourceChars": 78,
+          "requestId": "9a78852e-b384-439a-b1db-98b7c2fc4c84",
+          "retryIndex": 0,
+          "queuedAtUtc": "2026-09-14T02:09:45.998Z",
+          "startedAtUtc": "2026-09-14T02:09:46.625Z",
+          "queueWaitMs": 627,
+          "firstResponseAtUtc": "2026-09-14T02:09:47.266Z",
+          "networkDurationMs": 837,
+          "localDspDurationMs": 114,
+          "endedAtUtc": "2026-09-14T02:09:47.578Z",
+          "durationMs": 953,
+          "audioDurationSec": 6.552
+        }
+      ]
+    },
+    {
+      "index": 15,
+      "ok": true,
+      "wallMs": 1634,
+      "generationMs": 1632,
+      "durationMs": 6552,
+      "bytes": 314574,
+      "sha256": "279202f83eb1f1eb4b80730c01fe36ffa2b1f2df1e97c8977410f99e6fadbc8e",
+      "attempts": 1,
+      "failureCodes": [],
+      "requestSpans": [
+        {
+          "url": "edge-tts:msedge-tts:2.0.7",
+          "sourceChars": 78,
+          "requestId": "5d038640-dea3-461a-9b90-5720d4d6cdce",
+          "retryIndex": 0,
+          "queuedAtUtc": "2026-09-14T02:09:47.581Z",
+          "startedAtUtc": "2026-09-14T02:09:48.129Z",
+          "queueWaitMs": 548,
+          "firstResponseAtUtc": "2026-09-14T02:09:48.841Z",
+          "networkDurationMs": 957,
+          "localDspDurationMs": 125,
+          "endedAtUtc": "2026-09-14T02:09:49.213Z",
+          "durationMs": 1084,
+          "audioDurationSec": 6.552
+        }
+      ]
+    },
+    {
+      "index": 16,
+      "ok": true,
+      "wallMs": 1370,
+      "generationMs": 1369,
+      "durationMs": 6600,
+      "bytes": 316878,
+      "sha256": "a090b3a53ca7dccea41e42323bc9205f7bdeb9fe36bb13261e180cc94ef2fcc1",
+      "attempts": 1,
+      "failureCodes": [],
+      "requestSpans": [
+        {
+          "url": "edge-tts:msedge-tts:2.0.7",
+          "sourceChars": 78,
+          "requestId": "3a334b34-0106-4068-8029-646b0a61d603",
+          "retryIndex": 0,
+          "queuedAtUtc": "2026-09-14T02:09:49.214Z",
+          "startedAtUtc": "2026-09-14T02:09:49.641Z",
+          "queueWaitMs": 427,
+          "firstResponseAtUtc": "2026-09-14T02:09:50.264Z",
+          "networkDurationMs": 822,
+          "localDspDurationMs": 119,
+          "endedAtUtc": "2026-09-14T02:09:50.583Z",
+          "durationMs": 942,
+          "audioDurationSec": 6.6
+        }
+      ]
+    },
+    {
+      "index": 17,
+      "ok": true,
+      "wallMs": 1542,
+      "generationMs": 1540,
+      "durationMs": 6552,
+      "bytes": 314574,
+      "sha256": "3bd37e28b781412a3f8bc069e4d3a97380ce627a15041084521a916c36dc0ce1",
+      "attempts": 1,
+      "failureCodes": [],
+      "requestSpans": [
+        {
+          "url": "edge-tts:msedge-tts:2.0.7",
+          "sourceChars": 78,
+          "requestId": "7ab5861b-6ed4-42e4-a44c-d48f8b590fed",
+          "retryIndex": 0,
+          "queuedAtUtc": "2026-09-14T02:09:50.585Z",
+          "startedAtUtc": "2026-09-14T02:09:51.149Z",
+          "queueWaitMs": 564,
+          "firstResponseAtUtc": "2026-09-14T02:09:51.776Z",
+          "networkDurationMs": 849,
+          "localDspDurationMs": 126,
+          "endedAtUtc": "2026-09-14T02:09:52.125Z",
+          "durationMs": 976,
+          "audioDurationSec": 6.552
+        }
+      ]
+    },
+    {
+      "index": 18,
+      "ok": true,
+      "wallMs": 1474,
+      "generationMs": 1473,
+      "durationMs": 6552,
+      "bytes": 314574,
+      "sha256": "669ebb4192d6fc5a9e4b9a5e402733c085066f023cf84bd54b52f068395e99e0",
+      "attempts": 1,
+      "failureCodes": [],
+      "requestSpans": [
+        {
+          "url": "edge-tts:msedge-tts:2.0.7",
+          "sourceChars": 78,
+          "requestId": "9eba6dd9-76a0-4330-8a88-3fea5f190cae",
+          "retryIndex": 0,
+          "queuedAtUtc": "2026-09-14T02:09:52.126Z",
+          "startedAtUtc": "2026-09-14T02:09:52.663Z",
+          "queueWaitMs": 537,
+          "firstResponseAtUtc": "2026-09-14T02:09:53.304Z",
+          "networkDurationMs": 810,
+          "localDspDurationMs": 123,
+          "endedAtUtc": "2026-09-14T02:09:53.599Z",
+          "durationMs": 936,
+          "audioDurationSec": 6.552
+        }
+      ]
+    },
+    {
+      "index": 19,
+      "ok": true,
+      "wallMs": 1551,
+      "generationMs": 1550,
+      "durationMs": 6576,
+      "bytes": 315726,
+      "sha256": "2840602b64a639d34f238429d619fb8b0cf0e54f09ee093ccf5239b88fa383a0",
+      "attempts": 1,
+      "failureCodes": [],
+      "requestSpans": [
+        {
+          "url": "edge-tts:msedge-tts:2.0.7",
+          "sourceChars": 78,
+          "requestId": "acefe040-b084-444f-9425-843cf74090e8",
+          "retryIndex": 0,
+          "queuedAtUtc": "2026-09-14T02:09:53.600Z",
+          "startedAtUtc": "2026-09-14T02:09:54.177Z",
+          "queueWaitMs": 577,
+          "firstResponseAtUtc": "2026-09-14T02:09:54.857Z",
+          "networkDurationMs": 851,
+          "localDspDurationMs": 120,
+          "endedAtUtc": "2026-09-14T02:09:55.150Z",
+          "durationMs": 973,
+          "audioDurationSec": 6.576
+        }
+      ]
+    },
+    {
+      "index": 20,
+      "ok": true,
+      "wallMs": 1424,
+      "generationMs": 1423,
+      "durationMs": 6576,
+      "bytes": 315726,
+      "sha256": "20e043a577a9ab6287532ad6345dca677080022272e1cff47b1eb2fa88f77886",
+      "attempts": 1,
+      "failureCodes": [],
+      "requestSpans": [
+        {
+          "url": "edge-tts:msedge-tts:2.0.7",
+          "sourceChars": 78,
+          "requestId": "0910f9bb-4f0b-435a-b921-275af0ee2c1e",
+          "retryIndex": 0,
+          "queuedAtUtc": "2026-09-14T02:09:55.152Z",
+          "startedAtUtc": "2026-09-14T02:09:55.692Z",
+          "queueWaitMs": 540,
+          "firstResponseAtUtc": "2026-09-14T02:09:56.286Z",
+          "networkDurationMs": 765,
+          "localDspDurationMs": 116,
+          "endedAtUtc": "2026-09-14T02:09:56.575Z",
+          "durationMs": 883,
+          "audioDurationSec": 6.576
+        }
+      ]
+    },
+    {
+      "index": 21,
+      "ok": true,
+      "wallMs": 1627,
+      "generationMs": 1625,
+      "durationMs": 6672,
+      "bytes": 320334,
+      "sha256": "98b399b15b6c5280aa2ba209a96f0c224cb6049db51483934dc8f6d7b9b24995",
+      "attempts": 1,
+      "failureCodes": [],
+      "requestSpans": [
+        {
+          "url": "edge-tts:msedge-tts:2.0.7",
+          "sourceChars": 78,
+          "requestId": "4d3224f7-55bd-4454-b735-05017a41a6bd",
+          "retryIndex": 0,
+          "queuedAtUtc": "2026-09-14T02:09:56.576Z",
+          "startedAtUtc": "2026-09-14T02:09:57.196Z",
+          "queueWaitMs": 620,
+          "firstResponseAtUtc": "2026-09-14T02:09:57.909Z",
+          "networkDurationMs": 884,
+          "localDspDurationMs": 120,
+          "endedAtUtc": "2026-09-14T02:09:58.201Z",
+          "durationMs": 1005,
+          "audioDurationSec": 6.672
+        }
+      ]
+    },
+    {
+      "index": 22,
+      "ok": true,
+      "wallMs": 1434,
+      "generationMs": 1432,
+      "durationMs": 6768,
+      "bytes": 324942,
+      "sha256": "6cda58b9a72f7167bc4df77372fa7d15cab9359d306f8281b50e8249ab045cde",
+      "attempts": 1,
+      "failureCodes": [],
+      "requestSpans": [
+        {
+          "url": "edge-tts:msedge-tts:2.0.7",
+          "sourceChars": 78,
+          "requestId": "9f982f12-dab9-438b-86a1-1e2496ac34de",
+          "retryIndex": 0,
+          "queuedAtUtc": "2026-09-14T02:09:58.203Z",
+          "startedAtUtc": "2026-09-14T02:09:58.699Z",
+          "queueWaitMs": 496,
+          "firstResponseAtUtc": "2026-09-14T02:09:59.349Z",
+          "networkDurationMs": 826,
+          "localDspDurationMs": 108,
+          "endedAtUtc": "2026-09-14T02:09:59.635Z",
+          "durationMs": 936,
+          "audioDurationSec": 6.768
+        }
+      ]
+    },
+    {
+      "index": 23,
+      "ok": true,
+      "wallMs": 1458,
+      "generationMs": 1456,
+      "durationMs": 6696,
+      "bytes": 321486,
+      "sha256": "bb5546e817510e052d39224b760cca044908ba74de46bfe4bf99865b0c4ede2f",
+      "attempts": 1,
+      "failureCodes": [],
+      "requestSpans": [
+        {
+          "url": "edge-tts:msedge-tts:2.0.7",
+          "sourceChars": 78,
+          "requestId": "24c56f2e-f639-4844-89a7-ce4faf48cbbc",
+          "retryIndex": 0,
+          "queuedAtUtc": "2026-09-14T02:09:59.637Z",
+          "startedAtUtc": "2026-09-14T02:10:00.202Z",
+          "queueWaitMs": 565,
+          "firstResponseAtUtc": "2026-09-14T02:10:00.796Z",
+          "networkDurationMs": 772,
+          "localDspDurationMs": 116,
+          "endedAtUtc": "2026-09-14T02:10:01.093Z",
+          "durationMs": 891,
+          "audioDurationSec": 6.696
+        }
+      ]
+    },
+    {
+      "index": 24,
+      "ok": true,
+      "wallMs": 1622,
+      "generationMs": 1620,
+      "durationMs": 6744,
+      "bytes": 323790,
+      "sha256": "e176894f3814fe48b7e52961cc0cb132668c99f19d3be7eb62f11c59f5603217",
+      "attempts": 1,
+      "failureCodes": [],
+      "requestSpans": [
+        {
+          "url": "edge-tts:msedge-tts:2.0.7",
+          "sourceChars": 78,
+          "requestId": "d25feaec-aa35-4422-9df8-c856f420b511",
+          "retryIndex": 0,
+          "queuedAtUtc": "2026-09-14T02:10:01.094Z",
+          "startedAtUtc": "2026-09-14T02:10:01.704Z",
+          "queueWaitMs": 610,
+          "firstResponseAtUtc": "2026-09-14T02:10:02.357Z",
+          "networkDurationMs": 883,
+          "localDspDurationMs": 125,
+          "endedAtUtc": "2026-09-14T02:10:02.714Z",
+          "durationMs": 1010,
+          "audioDurationSec": 6.744
+        }
+      ]
+    },
+    {
+      "index": 25,
+      "ok": true,
+      "wallMs": 1486,
+      "generationMs": 1485,
+      "durationMs": 6672,
+      "bytes": 320334,
+      "sha256": "12704438e0297d1772d7849e5b22523d0246049663f5e3c77c389f8fa877dae0",
+      "attempts": 1,
+      "failureCodes": [],
+      "requestSpans": [
+        {
+          "url": "edge-tts:msedge-tts:2.0.7",
+          "sourceChars": 78,
+          "requestId": "f26090dd-e2bf-4cf2-aa30-40911670ba05",
+          "retryIndex": 0,
+          "queuedAtUtc": "2026-09-14T02:10:02.716Z",
+          "startedAtUtc": "2026-09-14T02:10:03.206Z",
+          "queueWaitMs": 490,
+          "firstResponseAtUtc": "2026-09-14T02:10:03.855Z",
+          "networkDurationMs": 884,
+          "localDspDurationMs": 110,
+          "endedAtUtc": "2026-09-14T02:10:04.201Z",
+          "durationMs": 995,
+          "audioDurationSec": 6.672
+        }
+      ]
+    },
+    {
+      "index": 26,
+      "ok": true,
+      "wallMs": 1428,
+      "generationMs": 1426,
+      "durationMs": 6744,
+      "bytes": 323790,
+      "sha256": "e6902ccd1199a4f1867cec74c7c0e8a48a00ad24b088cded22c1c98888058801",
+      "attempts": 1,
+      "failureCodes": [],
+      "requestSpans": [
+        {
+          "url": "edge-tts:msedge-tts:2.0.7",
+          "sourceChars": 78,
+          "requestId": "24df598d-2e31-4fd7-9dd6-2d65e377a1a6",
+          "retryIndex": 0,
+          "queuedAtUtc": "2026-09-14T02:10:04.202Z",
+          "startedAtUtc": "2026-09-14T02:10:04.722Z",
+          "queueWaitMs": 520,
+          "firstResponseAtUtc": "2026-09-14T02:10:05.317Z",
+          "networkDurationMs": 776,
+          "localDspDurationMs": 127,
+          "endedAtUtc": "2026-09-14T02:10:05.628Z",
+          "durationMs": 906,
+          "audioDurationSec": 6.744
+        }
+      ]
+    },
+    {
+      "index": 27,
+      "ok": true,
+      "wallMs": 1504,
+      "generationMs": 1502,
+      "durationMs": 6720,
+      "bytes": 322638,
+      "sha256": "dbfde96eea9558191bc1769567679b08fb32168d9e59cc740e07327f1cf0cb08",
+      "attempts": 1,
+      "failureCodes": [],
+      "requestSpans": [
+        {
+          "url": "edge-tts:msedge-tts:2.0.7",
+          "sourceChars": 78,
+          "requestId": "db63986f-c799-419d-9f57-3cb9ca8fcdc5",
+          "retryIndex": 0,
+          "queuedAtUtc": "2026-09-14T02:10:05.630Z",
+          "startedAtUtc": "2026-09-14T02:10:06.237Z",
+          "queueWaitMs": 607,
+          "firstResponseAtUtc": "2026-09-14T02:10:06.852Z",
+          "networkDurationMs": 788,
+          "localDspDurationMs": 106,
+          "endedAtUtc": "2026-09-14T02:10:07.132Z",
+          "durationMs": 895,
+          "audioDurationSec": 6.72
+        }
+      ]
+    },
+    {
+      "index": 28,
+      "ok": true,
+      "wallMs": 1508,
+      "generationMs": 1506,
+      "durationMs": 6696,
+      "bytes": 321486,
+      "sha256": "ecad76fc7b1ad6d1806ede86b4205dbfe1688ca1ff8ad8e20da4614066caf05b",
+      "attempts": 1,
+      "failureCodes": [],
+      "requestSpans": [
+        {
+          "url": "edge-tts:msedge-tts:2.0.7",
+          "sourceChars": 78,
+          "requestId": "e02b5612-d08f-44c0-80dc-644cba6adace",
+          "retryIndex": 0,
+          "queuedAtUtc": "2026-09-14T02:10:07.134Z",
+          "startedAtUtc": "2026-09-14T02:10:07.736Z",
+          "queueWaitMs": 602,
+          "firstResponseAtUtc": "2026-09-14T02:10:08.328Z",
+          "networkDurationMs": 790,
+          "localDspDurationMs": 113,
+          "endedAtUtc": "2026-09-14T02:10:08.640Z",
+          "durationMs": 904,
+          "audioDurationSec": 6.696
+        }
+      ]
+    },
+    {
+      "index": 29,
+      "ok": true,
+      "wallMs": 1508,
+      "generationMs": 1507,
+      "durationMs": 6720,
+      "bytes": 322638,
+      "sha256": "8647fb3b8b5f3d73c1c0a8f69fd464493ed26a9d697f8a7fb0473677c35a5b89",
+      "attempts": 1,
+      "failureCodes": [],
+      "requestSpans": [
+        {
+          "url": "edge-tts:msedge-tts:2.0.7",
+          "sourceChars": 78,
+          "requestId": "bb961f67-6a5f-4546-975c-74b4e65bb322",
+          "retryIndex": 0,
+          "queuedAtUtc": "2026-09-14T02:10:08.641Z",
+          "startedAtUtc": "2026-09-14T02:10:09.237Z",
+          "queueWaitMs": 596,
+          "firstResponseAtUtc": "2026-09-14T02:10:09.814Z",
+          "networkDurationMs": 800,
+          "localDspDurationMs": 108,
+          "endedAtUtc": "2026-09-14T02:10:10.148Z",
+          "durationMs": 911,
+          "audioDurationSec": 6.72
+        }
+      ]
+    },
+    {
+      "index": 30,
+      "ok": true,
+      "wallMs": 1495,
+      "generationMs": 1493,
+      "durationMs": 6552,
+      "bytes": 314574,
+      "sha256": "e01de02a982e175cc8ec33e69a1fd593c0d3a89013cf415ed276ec20f450abd8",
+      "attempts": 1,
+      "failureCodes": [],
+      "requestSpans": [
+        {
+          "url": "edge-tts:msedge-tts:2.0.7",
+          "sourceChars": 78,
+          "requestId": "595c2bf8-8b0a-4a05-99e0-474b3ecbc7b0",
+          "retryIndex": 0,
+          "queuedAtUtc": "2026-09-14T02:10:10.150Z",
+          "startedAtUtc": "2026-09-14T02:10:10.744Z",
+          "queueWaitMs": 594,
+          "firstResponseAtUtc": "2026-09-14T02:10:11.313Z",
+          "networkDurationMs": 770,
+          "localDspDurationMs": 128,
+          "endedAtUtc": "2026-09-14T02:10:11.643Z",
+          "durationMs": 899,
+          "audioDurationSec": 6.552
+        }
+      ]
+    },
+    {
+      "index": 31,
+      "ok": true,
+      "wallMs": 1625,
+      "generationMs": 1624,
+      "durationMs": 6696,
+      "bytes": 321486,
+      "sha256": "896f3e2051bbe83926394bc30f4614d9efd599f33d32dca66a7556654942b9cf",
+      "attempts": 1,
+      "failureCodes": [],
+      "requestSpans": [
+        {
+          "url": "edge-tts:msedge-tts:2.0.7",
+          "sourceChars": 78,
+          "requestId": "465d2d5b-54dc-4ac1-ad96-c138c7c3bb03",
+          "retryIndex": 0,
+          "queuedAtUtc": "2026-09-14T02:10:11.644Z",
+          "startedAtUtc": "2026-09-14T02:10:12.248Z",
+          "queueWaitMs": 604,
+          "firstResponseAtUtc": "2026-09-14T02:10:12.948Z",
+          "networkDurationMs": 898,
+          "localDspDurationMs": 121,
+          "endedAtUtc": "2026-09-14T02:10:13.268Z",
+          "durationMs": 1020,
+          "audioDurationSec": 6.696
+        }
+      ]
+    },
+    {
+      "index": 32,
+      "ok": true,
+      "wallMs": 1361,
+      "generationMs": 1360,
+      "durationMs": 6768,
+      "bytes": 324942,
+      "sha256": "5e835a02006ba847d4a34a880ec1bcc16d11a4eb85148ad1562a83f5b2d5aa13",
+      "attempts": 1,
+      "failureCodes": [],
+      "requestSpans": [
+        {
+          "url": "edge-tts:msedge-tts:2.0.7",
+          "sourceChars": 78,
+          "requestId": "9a868d4a-c693-4dac-9bef-8bc2972c653f",
+          "retryIndex": 0,
+          "queuedAtUtc": "2026-09-14T02:10:13.269Z",
+          "startedAtUtc": "2026-09-14T02:10:13.752Z",
+          "queueWaitMs": 483,
+          "firstResponseAtUtc": "2026-09-14T02:10:14.338Z",
+          "networkDurationMs": 763,
+          "localDspDurationMs": 112,
+          "endedAtUtc": "2026-09-14T02:10:14.629Z",
+          "durationMs": 877,
+          "audioDurationSec": 6.768
+        }
+      ]
+    },
+    {
+      "index": 33,
+      "ok": true,
+      "wallMs": 1468,
+      "generationMs": 1467,
+      "durationMs": 6696,
+      "bytes": 321486,
+      "sha256": "b44539623d769e7a8da21549b7e53d28bea09ef3050a1d377c6cce3ec2ecfa12",
+      "attempts": 1,
+      "failureCodes": [],
+      "requestSpans": [
+        {
+          "url": "edge-tts:msedge-tts:2.0.7",
+          "sourceChars": 78,
+          "requestId": "0e173d9b-423d-4525-9c46-f21d3bfeeba8",
+          "retryIndex": 0,
+          "queuedAtUtc": "2026-09-14T02:10:14.630Z",
+          "startedAtUtc": "2026-09-14T02:10:15.257Z",
+          "queueWaitMs": 627,
+          "firstResponseAtUtc": "2026-09-14T02:10:15.786Z",
+          "networkDurationMs": 712,
+          "localDspDurationMs": 127,
+          "endedAtUtc": "2026-09-14T02:10:16.097Z",
+          "durationMs": 840,
+          "audioDurationSec": 6.696
+        }
+      ]
+    },
+    {
+      "index": 34,
+      "ok": true,
+      "wallMs": 1627,
+      "generationMs": 1626,
+      "durationMs": 6744,
+      "bytes": 323790,
+      "sha256": "1c41d08b5634fd4ee4359a7f2c8d99ed4116fcdb20a212e0d606167f7e600180",
+      "attempts": 1,
+      "failureCodes": [],
+      "requestSpans": [
+        {
+          "url": "edge-tts:msedge-tts:2.0.7",
+          "sourceChars": 78,
+          "requestId": "4386f2e1-ce1c-43ae-9843-2fecb90fdf2e",
+          "retryIndex": 0,
+          "queuedAtUtc": "2026-09-14T02:10:16.098Z",
+          "startedAtUtc": "2026-09-14T02:10:16.762Z",
+          "queueWaitMs": 664,
+          "firstResponseAtUtc": "2026-09-14T02:10:17.399Z",
+          "networkDurationMs": 832,
+          "localDspDurationMs": 128,
+          "endedAtUtc": "2026-09-14T02:10:17.724Z",
+          "durationMs": 962,
+          "audioDurationSec": 6.744
+        }
+      ]
+    },
+    {
+      "index": 35,
+      "ok": true,
+      "wallMs": 1487,
+      "generationMs": 1486,
+      "durationMs": 6672,
+      "bytes": 320334,
+      "sha256": "f995c9cc4843d9b44e18d40fbf072389b58d3242827b91024cfbf3249ad82159",
+      "attempts": 1,
+      "failureCodes": [],
+      "requestSpans": [
+        {
+          "url": "edge-tts:msedge-tts:2.0.7",
+          "sourceChars": 78,
+          "requestId": "6256989e-d81d-492d-b03f-6a8af7cd5961",
+          "retryIndex": 0,
+          "queuedAtUtc": "2026-09-14T02:10:17.725Z",
+          "startedAtUtc": "2026-09-14T02:10:18.267Z",
+          "queueWaitMs": 542,
+          "firstResponseAtUtc": "2026-09-14T02:10:18.945Z",
+          "networkDurationMs": 833,
+          "localDspDurationMs": 109,
+          "endedAtUtc": "2026-09-14T02:10:19.211Z",
+          "durationMs": 944,
+          "audioDurationSec": 6.672
+        }
+      ]
+    },
+    {
+      "index": 36,
+      "ok": true,
+      "wallMs": 1474,
+      "generationMs": 1472,
+      "durationMs": 6744,
+      "bytes": 323790,
+      "sha256": "7da4b07bff153a6aec28ec30dafe91b8d32108430fa06f40b6f327668ca3512c",
+      "attempts": 1,
+      "failureCodes": [],
+      "requestSpans": [
+        {
+          "url": "edge-tts:msedge-tts:2.0.7",
+          "sourceChars": 78,
+          "requestId": "bcc5d5d3-6419-4d88-afdd-541e6c347de8",
+          "retryIndex": 0,
+          "queuedAtUtc": "2026-09-14T02:10:19.213Z",
+          "startedAtUtc": "2026-09-14T02:10:19.767Z",
+          "queueWaitMs": 554,
+          "firstResponseAtUtc": "2026-09-14T02:10:20.350Z",
+          "networkDurationMs": 793,
+          "localDspDurationMs": 124,
+          "endedAtUtc": "2026-09-14T02:10:20.685Z",
+          "durationMs": 918,
+          "audioDurationSec": 6.744
+        }
+      ]
+    },
+    {
+      "index": 37,
+      "ok": true,
+      "wallMs": 1528,
+      "generationMs": 1527,
+      "durationMs": 6720,
+      "bytes": 322638,
+      "sha256": "4825b84da39043b7b783594b599813ed3559bde7527a1c5108be3992ac869532",
+      "attempts": 1,
+      "failureCodes": [],
+      "requestSpans": [
+        {
+          "url": "edge-tts:msedge-tts:2.0.7",
+          "sourceChars": 78,
+          "requestId": "9980174b-2999-4959-8a07-d9ba74e7a846",
+          "retryIndex": 0,
+          "queuedAtUtc": "2026-09-14T02:10:20.686Z",
+          "startedAtUtc": "2026-09-14T02:10:21.274Z",
+          "queueWaitMs": 588,
+          "firstResponseAtUtc": "2026-09-14T02:10:21.906Z",
+          "networkDurationMs": 811,
+          "localDspDurationMs": 126,
+          "endedAtUtc": "2026-09-14T02:10:22.213Z",
+          "durationMs": 939,
+          "audioDurationSec": 6.72
+        }
+      ]
+    },
+    {
+      "index": 38,
+      "ok": true,
+      "wallMs": 1429,
+      "generationMs": 1428,
+      "durationMs": 6696,
+      "bytes": 321486,
+      "sha256": "ecd40ed76248e5db5c8511268afc5efd07f555291266a7727908fc12b054ce5f",
+      "attempts": 1,
+      "failureCodes": [],
+      "requestSpans": [
+        {
+          "url": "edge-tts:msedge-tts:2.0.7",
+          "sourceChars": 78,
+          "requestId": "a6163c7f-2e56-4e07-b928-93e6bb7306c4",
+          "retryIndex": 0,
+          "queuedAtUtc": "2026-09-14T02:10:22.214Z",
+          "startedAtUtc": "2026-09-14T02:10:22.781Z",
+          "queueWaitMs": 567,
+          "firstResponseAtUtc": "2026-09-14T02:10:23.340Z",
+          "networkDurationMs": 740,
+          "localDspDurationMs": 119,
+          "endedAtUtc": "2026-09-14T02:10:23.642Z",
+          "durationMs": 861,
+          "audioDurationSec": 6.696
+        }
+      ]
+    },
+    {
+      "index": 39,
+      "ok": true,
+      "wallMs": 1555,
+      "generationMs": 1554,
+      "durationMs": 6696,
+      "bytes": 321486,
+      "sha256": "703171c03a514d1235de7b0a14c2296d0836e3c0fec2deb84037f36701cd853c",
+      "attempts": 1,
+      "failureCodes": [],
+      "requestSpans": [
+        {
+          "url": "edge-tts:msedge-tts:2.0.7",
+          "sourceChars": 78,
+          "requestId": "fa7dcc98-8abd-40ed-aaf1-15b0cc14c941",
+          "retryIndex": 0,
+          "queuedAtUtc": "2026-09-14T02:10:23.643Z",
+          "startedAtUtc": "2026-09-14T02:10:24.288Z",
+          "queueWaitMs": 645,
+          "firstResponseAtUtc": "2026-09-14T02:10:24.846Z",
+          "networkDurationMs": 772,
+          "localDspDurationMs": 135,
+          "endedAtUtc": "2026-09-14T02:10:25.197Z",
+          "durationMs": 909,
+          "audioDurationSec": 6.696
+        }
+      ]
+    },
+    {
+      "index": 40,
+      "ok": true,
+      "wallMs": 1637,
+      "generationMs": 1635,
+      "durationMs": 6552,
+      "bytes": 314574,
+      "sha256": "75aaf0018e367c38a3053ca495c0676abf1bf940b817c4eaafbc95c07d6bb8e8",
+      "attempts": 1,
+      "failureCodes": [],
+      "requestSpans": [
+        {
+          "url": "edge-tts:msedge-tts:2.0.7",
+          "sourceChars": 78,
+          "requestId": "a30cc9db-9e8c-48a6-8ba3-0cb2f66c3d56",
+          "retryIndex": 0,
+          "queuedAtUtc": "2026-09-14T02:10:25.199Z",
+          "startedAtUtc": "2026-09-14T02:10:25.794Z",
+          "queueWaitMs": 595,
+          "firstResponseAtUtc": "2026-09-14T02:10:26.478Z",
+          "networkDurationMs": 926,
+          "localDspDurationMs": 111,
+          "endedAtUtc": "2026-09-14T02:10:26.834Z",
+          "durationMs": 1040,
+          "audioDurationSec": 6.552
+        }
+      ]
+    },
+    {
+      "index": 41,
+      "ok": true,
+      "wallMs": 1365,
+      "generationMs": 1363,
+      "durationMs": 6648,
+      "bytes": 319182,
+      "sha256": "7663c846fd13dbdeb517d744a3e38d14139a185a33fa41500da3ff8087842ede",
+      "attempts": 1,
+      "failureCodes": [],
+      "requestSpans": [
+        {
+          "url": "edge-tts:msedge-tts:2.0.7",
+          "sourceChars": 78,
+          "requestId": "48cf2f4e-cb86-4965-bc12-e4fdc22b0c93",
+          "retryIndex": 0,
+          "queuedAtUtc": "2026-09-14T02:10:26.835Z",
+          "startedAtUtc": "2026-09-14T02:10:27.296Z",
+          "queueWaitMs": 461,
+          "firstResponseAtUtc": "2026-09-14T02:10:27.894Z",
+          "networkDurationMs": 790,
+          "localDspDurationMs": 111,
+          "endedAtUtc": "2026-09-14T02:10:28.198Z",
+          "durationMs": 902,
+          "audioDurationSec": 6.648
+        }
+      ]
+    },
+    {
+      "index": 42,
+      "ok": true,
+      "wallMs": 1506,
+      "generationMs": 1505,
+      "durationMs": 6768,
+      "bytes": 324942,
+      "sha256": "ecf6a8e9fc8fdf5f531ff422c2bd5477825a113c2caa33b19937de5b204e5736",
+      "attempts": 1,
+      "failureCodes": [],
+      "requestSpans": [
+        {
+          "url": "edge-tts:msedge-tts:2.0.7",
+          "sourceChars": 78,
+          "requestId": "7b55dbf9-c5ac-430e-b021-57d23c30dc0a",
+          "retryIndex": 0,
+          "queuedAtUtc": "2026-09-14T02:10:28.201Z",
+          "startedAtUtc": "2026-09-14T02:10:28.805Z",
+          "queueWaitMs": 604,
+          "firstResponseAtUtc": "2026-09-14T02:10:29.405Z",
+          "networkDurationMs": 778,
+          "localDspDurationMs": 121,
+          "endedAtUtc": "2026-09-14T02:10:29.706Z",
+          "durationMs": 901,
+          "audioDurationSec": 6.768
+        }
+      ]
+    },
+    {
+      "index": 43,
+      "ok": true,
+      "wallMs": 1553,
+      "generationMs": 1552,
+      "durationMs": 6720,
+      "bytes": 322638,
+      "sha256": "b6683cba4091491fe7c0e57bdb31d578ac657b19d19125d0d1fb4aaf5198c6c2",
+      "attempts": 1,
+      "failureCodes": [],
+      "requestSpans": [
+        {
+          "url": "edge-tts:msedge-tts:2.0.7",
+          "sourceChars": 78,
+          "requestId": "afe0ee68-3f99-4ce3-aee1-2613553916e9",
+          "retryIndex": 0,
+          "queuedAtUtc": "2026-09-14T02:10:29.707Z",
+          "startedAtUtc": "2026-09-14T02:10:30.311Z",
+          "queueWaitMs": 604,
+          "firstResponseAtUtc": "2026-09-14T02:10:30.885Z",
+          "networkDurationMs": 836,
+          "localDspDurationMs": 110,
+          "endedAtUtc": "2026-09-14T02:10:31.259Z",
+          "durationMs": 948,
+          "audioDurationSec": 6.72
+        }
+      ]
+    },
+    {
+      "index": 44,
+      "ok": true,
+      "wallMs": 1404,
+      "generationMs": 1403,
+      "durationMs": 6768,
+      "bytes": 324942,
+      "sha256": "d9622a330703f4d67be5742ed08b74f21a452b27b08422fbeb1ea802a5d2bcc9",
+      "attempts": 1,
+      "failureCodes": [],
+      "requestSpans": [
+        {
+          "url": "edge-tts:msedge-tts:2.0.7",
+          "sourceChars": 78,
+          "requestId": "6107dc2b-b361-4fd7-b279-ed5a1644b46c",
+          "retryIndex": 0,
+          "queuedAtUtc": "2026-09-14T02:10:31.260Z",
+          "startedAtUtc": "2026-09-14T02:10:31.815Z",
+          "queueWaitMs": 555,
+          "firstResponseAtUtc": "2026-09-14T02:10:32.391Z",
+          "networkDurationMs": 745,
+          "localDspDurationMs": 101,
+          "endedAtUtc": "2026-09-14T02:10:32.663Z",
+          "durationMs": 848,
+          "audioDurationSec": 6.768
+        }
+      ]
+    },
+    {
+      "index": 45,
+      "ok": true,
+      "wallMs": 1564,
+      "generationMs": 1563,
+      "durationMs": 6672,
+      "bytes": 320334,
+      "sha256": "701b7bedd8430b2ebbf4a303686f16ab69bb511e9661260503aa762b3fbcf482",
+      "attempts": 1,
+      "failureCodes": [],
+      "requestSpans": [
+        {
+          "url": "edge-tts:msedge-tts:2.0.7",
+          "sourceChars": 78,
+          "requestId": "27f1aeb3-0de4-4dbc-9de4-bf6ec7149fa4",
+          "retryIndex": 0,
+          "queuedAtUtc": "2026-09-14T02:10:32.664Z",
+          "startedAtUtc": "2026-09-14T02:10:33.318Z",
+          "queueWaitMs": 654,
+          "firstResponseAtUtc": "2026-09-14T02:10:33.929Z",
+          "networkDurationMs": 794,
+          "localDspDurationMs": 112,
+          "endedAtUtc": "2026-09-14T02:10:34.227Z",
+          "durationMs": 909,
+          "audioDurationSec": 6.672
+        }
+      ]
+    },
+    {
+      "index": 46,
+      "ok": true,
+      "wallMs": 1640,
+      "generationMs": 1639,
+      "durationMs": 6744,
+      "bytes": 323790,
+      "sha256": "0c4f5c43780ecb7dd178a0090986c419253a7b3adb0706874ae28aaadcca6b3e",
+      "attempts": 1,
+      "failureCodes": [],
+      "requestSpans": [
+        {
+          "url": "edge-tts:msedge-tts:2.0.7",
+          "sourceChars": 78,
+          "requestId": "55faf591-0915-41b0-8fc2-13935c420b9b",
+          "retryIndex": 0,
+          "queuedAtUtc": "2026-09-14T02:10:34.228Z",
+          "startedAtUtc": "2026-09-14T02:10:34.824Z",
+          "queueWaitMs": 596,
+          "firstResponseAtUtc": "2026-09-14T02:10:35.471Z",
+          "networkDurationMs": 919,
+          "localDspDurationMs": 121,
+          "endedAtUtc": "2026-09-14T02:10:35.866Z",
+          "durationMs": 1043,
+          "audioDurationSec": 6.744
+        }
+      ]
+    },
+    {
+      "index": 47,
+      "ok": true,
+      "wallMs": 1309,
+      "generationMs": 1308,
+      "durationMs": 6720,
+      "bytes": 322638,
+      "sha256": "4e73a5c78f0ee3b59b6df4414678e01c3feacc5779379ee2c5299b150ce8ac92",
+      "attempts": 1,
+      "failureCodes": [],
+      "requestSpans": [
+        {
+          "url": "edge-tts:msedge-tts:2.0.7",
+          "sourceChars": 78,
+          "requestId": "174c22f4-dac5-4c3d-886b-e168ff732f30",
+          "retryIndex": 0,
+          "queuedAtUtc": "2026-09-14T02:10:35.868Z",
+          "startedAtUtc": "2026-09-14T02:10:36.328Z",
+          "queueWaitMs": 460,
+          "firstResponseAtUtc": "2026-09-14T02:10:36.872Z",
+          "networkDurationMs": 724,
+          "localDspDurationMs": 121,
+          "endedAtUtc": "2026-09-14T02:10:37.176Z",
+          "durationMs": 848,
+          "audioDurationSec": 6.72
+        }
+      ]
+    },
+    {
+      "index": 48,
+      "ok": true,
+      "wallMs": 1590,
+      "generationMs": 1589,
+      "durationMs": 6696,
+      "bytes": 321486,
+      "sha256": "a18f39071d00929fe9f3a4740178c56a3687eae9d6191d0b172efaf016f274d2",
+      "attempts": 1,
+      "failureCodes": [],
+      "requestSpans": [
+        {
+          "url": "edge-tts:msedge-tts:2.0.7",
+          "sourceChars": 78,
+          "requestId": "bf6cc7c4-4e53-4634-b032-c7344fd02ca4",
+          "retryIndex": 0,
+          "queuedAtUtc": "2026-09-14T02:10:37.177Z",
+          "startedAtUtc": "2026-09-14T02:10:37.841Z",
+          "queueWaitMs": 664,
+          "firstResponseAtUtc": "2026-09-14T02:10:38.450Z",
+          "networkDurationMs": 808,
+          "localDspDurationMs": 115,
+          "endedAtUtc": "2026-09-14T02:10:38.766Z",
+          "durationMs": 925,
+          "audioDurationSec": 6.696
+        }
+      ]
+    },
+    {
+      "index": 49,
+      "ok": true,
+      "wallMs": 1503,
+      "generationMs": 1502,
+      "durationMs": 6696,
+      "bytes": 321486,
+      "sha256": "9d9fb9ec00ea4120ea81cca7d48797ec42a563f9ffa33356a5fe4a5d0912ac36",
+      "attempts": 1,
+      "failureCodes": [],
+      "requestSpans": [
+        {
+          "url": "edge-tts:msedge-tts:2.0.7",
+          "sourceChars": 78,
+          "requestId": "a9772507-7628-4158-bf1c-78084b0a8de8",
+          "retryIndex": 0,
+          "queuedAtUtc": "2026-09-14T02:10:38.767Z",
+          "startedAtUtc": "2026-09-14T02:10:39.341Z",
+          "queueWaitMs": 574,
+          "firstResponseAtUtc": "2026-09-14T02:10:39.971Z",
+          "networkDurationMs": 809,
+          "localDspDurationMs": 118,
+          "endedAtUtc": "2026-09-14T02:10:40.269Z",
+          "durationMs": 928,
+          "audioDurationSec": 6.696
+        }
+      ]
+    },
+    {
+      "index": 50,
+      "ok": true,
+      "wallMs": 1520,
+      "generationMs": 1519,
+      "durationMs": 6576,
+      "bytes": 315726,
+      "sha256": "20020eac96c89ff49f5b86ab7232976925d1dcbac50c10ad37cc9f9f60bc15e5",
+      "attempts": 1,
+      "failureCodes": [],
+      "requestSpans": [
+        {
+          "url": "edge-tts:msedge-tts:2.0.7",
+          "sourceChars": 78,
+          "requestId": "d723c993-0be0-4924-9c2d-e770e0f01c69",
+          "retryIndex": 0,
+          "queuedAtUtc": "2026-09-14T02:10:40.270Z",
+          "startedAtUtc": "2026-09-14T02:10:40.846Z",
+          "queueWaitMs": 576,
+          "firstResponseAtUtc": "2026-09-14T02:10:41.470Z",
+          "networkDurationMs": 800,
+          "localDspDurationMs": 141,
+          "endedAtUtc": "2026-09-14T02:10:41.789Z",
+          "durationMs": 943,
+          "audioDurationSec": 6.576
+        }
+      ]
+    },
+    {
+      "index": 51,
+      "ok": true,
+      "wallMs": 1501,
+      "generationMs": 1499,
+      "durationMs": 6648,
+      "bytes": 319182,
+      "sha256": "63562d7ee22a6816c450d59377f5c18a5eca11f06a9af09fb28bb8e38fc26b68",
+      "attempts": 1,
+      "failureCodes": [],
+      "requestSpans": [
+        {
+          "url": "edge-tts:msedge-tts:2.0.7",
+          "sourceChars": 78,
+          "requestId": "1409c82f-92b0-4027-a127-0e16bccd2741",
+          "retryIndex": 0,
+          "queuedAtUtc": "2026-09-14T02:10:41.790Z",
+          "startedAtUtc": "2026-09-14T02:10:42.350Z",
+          "queueWaitMs": 560,
+          "firstResponseAtUtc": "2026-09-14T02:10:42.978Z",
+          "networkDurationMs": 829,
+          "localDspDurationMs": 109,
+          "endedAtUtc": "2026-09-14T02:10:43.289Z",
+          "durationMs": 939,
+          "audioDurationSec": 6.648
+        }
+      ]
+    },
+    {
+      "index": 52,
+      "ok": true,
+      "wallMs": 1480,
+      "generationMs": 1479,
+      "durationMs": 6744,
+      "bytes": 323790,
+      "sha256": "f251242bc6f7ddc1f310c3f25b1fdd890fc8caf9012c755440ec19781460fcb1",
+      "attempts": 1,
+      "failureCodes": [],
+      "requestSpans": [
+        {
+          "url": "edge-tts:msedge-tts:2.0.7",
+          "sourceChars": 78,
+          "requestId": "ce611565-9d93-4b14-982b-ac69543dbe3c",
+          "retryIndex": 0,
+          "queuedAtUtc": "2026-09-14T02:10:43.291Z",
+          "startedAtUtc": "2026-09-14T02:10:43.856Z",
+          "queueWaitMs": 565,
+          "firstResponseAtUtc": "2026-09-14T02:10:44.469Z",
+          "networkDurationMs": 794,
+          "localDspDurationMs": 118,
+          "endedAtUtc": "2026-09-14T02:10:44.770Z",
+          "durationMs": 914,
+          "audioDurationSec": 6.744
+        }
+      ]
+    },
+    {
+      "index": 53,
+      "ok": true,
+      "wallMs": 1572,
+      "generationMs": 1571,
+      "durationMs": 6720,
+      "bytes": 322638,
+      "sha256": "24f1b103a126b7e834d0eb0d1ffb362874bb059d595b78050b7f01809b05d65b",
+      "attempts": 1,
+      "failureCodes": [],
+      "requestSpans": [
+        {
+          "url": "edge-tts:msedge-tts:2.0.7",
+          "sourceChars": 78,
+          "requestId": "b57ce868-526d-4d98-8370-5d68b8610670",
+          "retryIndex": 0,
+          "queuedAtUtc": "2026-09-14T02:10:44.771Z",
+          "startedAtUtc": "2026-09-14T02:10:45.366Z",
+          "queueWaitMs": 595,
+          "firstResponseAtUtc": "2026-09-14T02:10:46.031Z",
+          "networkDurationMs": 849,
+          "localDspDurationMs": 125,
+          "endedAtUtc": "2026-09-14T02:10:46.342Z",
+          "durationMs": 976,
+          "audioDurationSec": 6.72
+        }
+      ]
+    },
+    {
+      "index": 54,
+      "ok": true,
+      "wallMs": 1533,
+      "generationMs": 1532,
+      "durationMs": 6744,
+      "bytes": 323790,
+      "sha256": "d48252fb00a08a85297e918a33dd6cfbd6f96d7a0139930b3e127b6fb1363f73",
+      "attempts": 1,
+      "failureCodes": [],
+      "requestSpans": [
+        {
+          "url": "edge-tts:msedge-tts:2.0.7",
+          "sourceChars": 78,
+          "requestId": "ef365964-6b27-4792-b8ae-7446052c79f8",
+          "retryIndex": 0,
+          "queuedAtUtc": "2026-09-14T02:10:46.343Z",
+          "startedAtUtc": "2026-09-14T02:10:46.868Z",
+          "queueWaitMs": 525,
+          "firstResponseAtUtc": "2026-09-14T02:10:47.567Z",
+          "networkDurationMs": 879,
+          "localDspDurationMs": 126,
+          "endedAtUtc": "2026-09-14T02:10:47.875Z",
+          "durationMs": 1007,
+          "audioDurationSec": 6.744
+        }
+      ]
+    },
+    {
+      "index": 55,
+      "ok": true,
+      "wallMs": 1373,
+      "generationMs": 1372,
+      "durationMs": 6696,
+      "bytes": 321486,
+      "sha256": "b05fed106299aa11de1bfc14a150bc7db7cc7d649724d5c8a446bb31f6633fdd",
+      "attempts": 1,
+      "failureCodes": [],
+      "requestSpans": [
+        {
+          "url": "edge-tts:msedge-tts:2.0.7",
+          "sourceChars": 78,
+          "requestId": "7b2aebd1-7b07-4e48-a35a-3da4231dd2d6",
+          "retryIndex": 0,
+          "queuedAtUtc": "2026-09-14T02:10:47.876Z",
+          "startedAtUtc": "2026-09-14T02:10:48.379Z",
+          "queueWaitMs": 503,
+          "firstResponseAtUtc": "2026-09-14T02:10:48.966Z",
+          "networkDurationMs": 762,
+          "localDspDurationMs": 106,
+          "endedAtUtc": "2026-09-14T02:10:49.248Z",
+          "durationMs": 869,
+          "audioDurationSec": 6.696
+        }
+      ]
+    },
+    {
+      "index": 56,
+      "ok": true,
+      "wallMs": 1667,
+      "generationMs": 1667,
+      "durationMs": 6720,
+      "bytes": 322638,
+      "sha256": "774eb1bcbaa1c0be3ab12f44da38a4954c66ba73db621fca66acf6dc2e090c2c",
+      "attempts": 1,
+      "failureCodes": [],
+      "requestSpans": [
+        {
+          "url": "edge-tts:msedge-tts:2.0.7",
+          "sourceChars": 78,
+          "requestId": "9aade83f-854e-4dca-85fd-d46317992f67",
+          "retryIndex": 0,
+          "queuedAtUtc": "2026-09-14T02:10:49.249Z",
+          "startedAtUtc": "2026-09-14T02:10:49.883Z",
+          "queueWaitMs": 634,
+          "firstResponseAtUtc": "2026-09-14T02:10:50.592Z",
+          "networkDurationMs": 920,
+          "localDspDurationMs": 112,
+          "endedAtUtc": "2026-09-14T02:10:50.916Z",
+          "durationMs": 1033,
+          "audioDurationSec": 6.72
+        }
+      ]
+    },
+    {
+      "index": 57,
+      "ok": true,
+      "wallMs": 1383,
+      "generationMs": 1382,
+      "durationMs": 6720,
+      "bytes": 322638,
+      "sha256": "215ff2a8c4bd065825fb02bf5019f2b9d8b0b8ac412f67faa76858eb606bbe74",
+      "attempts": 1,
+      "failureCodes": [],
+      "requestSpans": [
+        {
+          "url": "edge-tts:msedge-tts:2.0.7",
+          "sourceChars": 78,
+          "requestId": "3d318e0e-cbca-4e6c-bdc8-55c2842102fb",
+          "retryIndex": 0,
+          "queuedAtUtc": "2026-09-14T02:10:50.917Z",
+          "startedAtUtc": "2026-09-14T02:10:51.390Z",
+          "queueWaitMs": 473,
+          "firstResponseAtUtc": "2026-09-14T02:10:52.001Z",
+          "networkDurationMs": 793,
+          "localDspDurationMs": 115,
+          "endedAtUtc": "2026-09-14T02:10:52.299Z",
+          "durationMs": 909,
+          "audioDurationSec": 6.72
+        }
+      ]
+    },
+    {
+      "index": 58,
+      "ok": true,
+      "wallMs": 1469,
+      "generationMs": 1468,
+      "durationMs": 6696,
+      "bytes": 321486,
+      "sha256": "d25277e19eb36247cb660b5eadcc973e033539f820b8088ed89bb33b4db5ad88",
+      "attempts": 1,
+      "failureCodes": [],
+      "requestSpans": [
+        {
+          "url": "edge-tts:msedge-tts:2.0.7",
+          "sourceChars": 78,
+          "requestId": "5ceb2908-9e6f-4e79-a307-646b805b30c0",
+          "retryIndex": 0,
+          "queuedAtUtc": "2026-09-14T02:10:52.300Z",
+          "startedAtUtc": "2026-09-14T02:10:52.893Z",
+          "queueWaitMs": 593,
+          "firstResponseAtUtc": "2026-09-14T02:10:53.483Z",
+          "networkDurationMs": 765,
+          "localDspDurationMs": 108,
+          "endedAtUtc": "2026-09-14T02:10:53.768Z",
+          "durationMs": 875,
+          "audioDurationSec": 6.696
+        }
+      ]
+    },
+    {
+      "index": 59,
+      "ok": true,
+      "wallMs": 1567,
+      "generationMs": 1566,
+      "durationMs": 6720,
+      "bytes": 322638,
+      "sha256": "20a043ff41530dc7bd6400a343e5f1d31154cf6b6d23ceb55812cae13429ad70",
+      "attempts": 1,
+      "failureCodes": [],
+      "requestSpans": [
+        {
+          "url": "edge-tts:msedge-tts:2.0.7",
+          "sourceChars": 78,
+          "requestId": "8dba5453-a9a7-471b-a6be-79c065448448",
+          "retryIndex": 0,
+          "queuedAtUtc": "2026-09-14T02:10:53.769Z",
+          "startedAtUtc": "2026-09-14T02:10:54.398Z",
+          "queueWaitMs": 629,
+          "firstResponseAtUtc": "2026-09-14T02:10:55.025Z",
+          "networkDurationMs": 813,
+          "localDspDurationMs": 122,
+          "endedAtUtc": "2026-09-14T02:10:55.335Z",
+          "durationMs": 937,
+          "audioDurationSec": 6.72
+        }
+      ]
+    },
+    {
+      "index": 60,
+      "ok": true,
+      "wallMs": 1449,
+      "generationMs": 1448,
+      "durationMs": 6576,
+      "bytes": 315726,
+      "sha256": "d3009848006e6809a9034740b64586c4d1f61177043eda8fa63b90a768c88fa1",
+      "attempts": 1,
+      "failureCodes": [],
+      "requestSpans": [
+        {
+          "url": "edge-tts:msedge-tts:2.0.7",
+          "sourceChars": 78,
+          "requestId": "452d6a22-5767-4c0b-8288-34b613e05d53",
+          "retryIndex": 0,
+          "queuedAtUtc": "2026-09-14T02:10:55.336Z",
+          "startedAtUtc": "2026-09-14T02:10:55.904Z",
+          "queueWaitMs": 568,
+          "firstResponseAtUtc": "2026-09-14T02:10:56.492Z",
+          "networkDurationMs": 770,
+          "localDspDurationMs": 108,
+          "endedAtUtc": "2026-09-14T02:10:56.784Z",
+          "durationMs": 880,
+          "audioDurationSec": 6.576
+        }
+      ]
+    },
+    {
+      "index": 61,
+      "ok": true,
+      "wallMs": 1590,
+      "generationMs": 1589,
+      "durationMs": 6648,
+      "bytes": 319182,
+      "sha256": "536a926f3f2bb5b4c4eaa058b6b0970b5f54469a79e1318a19732bdbcba9beec",
+      "attempts": 1,
+      "failureCodes": [],
+      "requestSpans": [
+        {
+          "url": "edge-tts:msedge-tts:2.0.7",
+          "sourceChars": 78,
+          "requestId": "02fa1acc-9667-4927-ac51-dabc88067fcb",
+          "retryIndex": 0,
+          "queuedAtUtc": "2026-09-14T02:10:56.785Z",
+          "startedAtUtc": "2026-09-14T02:10:57.412Z",
+          "queueWaitMs": 627,
+          "firstResponseAtUtc": "2026-09-14T02:10:58.028Z",
+          "networkDurationMs": 855,
+          "localDspDurationMs": 105,
+          "endedAtUtc": "2026-09-14T02:10:58.374Z",
+          "durationMs": 962,
+          "audioDurationSec": 6.648
+        }
+      ]
+    },
+    {
+      "index": 62,
+      "ok": true,
+      "wallMs": 1339,
+      "generationMs": 1338,
+      "durationMs": 6744,
+      "bytes": 323790,
+      "sha256": "3cb9606d2f8909ab0ed2efbf5da40a94432967c71f253eb06ff01d1dcebe3e24",
+      "attempts": 1,
+      "failureCodes": [],
+      "requestSpans": [
+        {
+          "url": "edge-tts:msedge-tts:2.0.7",
+          "sourceChars": 78,
+          "requestId": "820e86bf-0ab5-44cd-931c-d47aaacb821d",
+          "retryIndex": 0,
+          "queuedAtUtc": "2026-09-14T02:10:58.375Z",
+          "startedAtUtc": "2026-09-14T02:10:58.928Z",
+          "queueWaitMs": 553,
+          "firstResponseAtUtc": "2026-09-14T02:10:59.445Z",
+          "networkDurationMs": 685,
+          "localDspDurationMs": 99,
+          "endedAtUtc": "2026-09-14T02:10:59.713Z",
+          "durationMs": 785,
+          "audioDurationSec": 6.744
+        }
+      ]
+    },
+    {
+      "index": 63,
+      "ok": true,
+      "wallMs": 1623,
+      "generationMs": 1621,
+      "durationMs": 6720,
+      "bytes": 322638,
+      "sha256": "0ad9f6d08e259cfb0082ebb55fc8f20297fb9a53bc382e3db6ddeeae3d14c63c",
+      "attempts": 1,
+      "failureCodes": [],
+      "requestSpans": [
+        {
+          "url": "edge-tts:msedge-tts:2.0.7",
+          "sourceChars": 78,
+          "requestId": "e4d9c954-6c8a-4b9e-88c0-905eac591a28",
+          "retryIndex": 0,
+          "queuedAtUtc": "2026-09-14T02:10:59.714Z",
+          "startedAtUtc": "2026-09-14T02:11:00.439Z",
+          "queueWaitMs": 725,
+          "firstResponseAtUtc": "2026-09-14T02:11:01.035Z",
+          "networkDurationMs": 790,
+          "localDspDurationMs": 105,
+          "endedAtUtc": "2026-09-14T02:11:01.335Z",
+          "durationMs": 896,
+          "audioDurationSec": 6.72
+        }
+      ]
+    },
+    {
+      "index": 64,
+      "ok": true,
+      "wallMs": 1588,
+      "generationMs": 1587,
+      "durationMs": 6744,
+      "bytes": 323790,
+      "sha256": "2a3bf53b3b7dd5b183b4342fa47b121c205ada3fc5e3561cfbd87967a2337428",
+      "attempts": 1,
+      "failureCodes": [],
+      "requestSpans": [
+        {
+          "url": "edge-tts:msedge-tts:2.0.7",
+          "sourceChars": 78,
+          "requestId": "1c1150e6-a661-4ea8-8b1e-41bcba753abb",
+          "retryIndex": 0,
+          "queuedAtUtc": "2026-09-14T02:11:01.337Z",
+          "startedAtUtc": "2026-09-14T02:11:01.946Z",
+          "queueWaitMs": 609,
+          "firstResponseAtUtc": "2026-09-14T02:11:02.574Z",
+          "networkDurationMs": 855,
+          "localDspDurationMs": 121,
+          "endedAtUtc": "2026-09-14T02:11:02.923Z",
+          "durationMs": 977,
+          "audioDurationSec": 6.744
+        }
+      ]
+    },
+    {
+      "index": 65,
+      "ok": true,
+      "wallMs": 1409,
+      "generationMs": 1406,
+      "durationMs": 6720,
+      "bytes": 322638,
+      "sha256": "d29cd2fb6c765514aae1924c514b06f58f4c087a9491aef13d674e5836b0e98a",
+      "attempts": 1,
+      "failureCodes": [],
+      "requestSpans": [
+        {
+          "url": "edge-tts:msedge-tts:2.0.7",
+          "sourceChars": 78,
+          "requestId": "5957d1c1-a28d-4aff-90ac-02f1b9d4def6",
+          "retryIndex": 0,
+          "queuedAtUtc": "2026-09-14T02:11:02.925Z",
+          "startedAtUtc": "2026-09-14T02:11:03.451Z",
+          "queueWaitMs": 526,
+          "firstResponseAtUtc": "2026-09-14T02:11:04.047Z",
+          "networkDurationMs": 769,
+          "localDspDurationMs": 110,
+          "endedAtUtc": "2026-09-14T02:11:04.331Z",
+          "durationMs": 880,
+          "audioDurationSec": 6.72
+        }
+      ]
+    },
+    {
+      "index": 66,
+      "ok": true,
+      "wallMs": 1636,
+      "generationMs": 1634,
+      "durationMs": 6792,
+      "bytes": 326094,
+      "sha256": "04e011fc67e17e8e2d723f4e99a3b6a932a5c14a4c67ab3c2f5d380792d4fa0d",
+      "attempts": 1,
+      "failureCodes": [],
+      "requestSpans": [
+        {
+          "url": "edge-tts:msedge-tts:2.0.7",
+          "sourceChars": 78,
+          "requestId": "a2d289e9-15de-470f-9135-675b32ad5ad7",
+          "retryIndex": 0,
+          "queuedAtUtc": "2026-09-14T02:11:04.333Z",
+          "startedAtUtc": "2026-09-14T02:11:04.958Z",
+          "queueWaitMs": 625,
+          "firstResponseAtUtc": "2026-09-14T02:11:05.665Z",
+          "networkDurationMs": 891,
+          "localDspDurationMs": 116,
+          "endedAtUtc": "2026-09-14T02:11:05.967Z",
+          "durationMs": 1009,
+          "audioDurationSec": 6.792
+        }
+      ]
+    },
+    {
+      "index": 67,
+      "ok": true,
+      "wallMs": 1441,
+      "generationMs": 1440,
+      "durationMs": 6720,
+      "bytes": 322638,
+      "sha256": "dd2003455e1ba48571685db7c198e0923122acb539db6a32234b5f3336f20999",
+      "attempts": 1,
+      "failureCodes": [],
+      "requestSpans": [
+        {
+          "url": "edge-tts:msedge-tts:2.0.7",
+          "sourceChars": 78,
+          "requestId": "1e2b3a7b-d098-45d5-81c0-f7626cd8379c",
+          "retryIndex": 0,
+          "queuedAtUtc": "2026-09-14T02:11:05.969Z",
+          "startedAtUtc": "2026-09-14T02:11:06.460Z",
+          "queueWaitMs": 491,
+          "firstResponseAtUtc": "2026-09-14T02:11:07.105Z",
+          "networkDurationMs": 838,
+          "localDspDurationMs": 109,
+          "endedAtUtc": "2026-09-14T02:11:07.409Z",
+          "durationMs": 949,
+          "audioDurationSec": 6.72
+        }
+      ]
+    },
+    {
+      "index": 68,
+      "ok": true,
+      "wallMs": 1538,
+      "generationMs": 1537,
+      "durationMs": 6720,
+      "bytes": 322638,
+      "sha256": "0517cd65a9153fb82a71e8071cd2c873c70634d35a6bde89f830d939cfcaa977",
+      "attempts": 1,
+      "failureCodes": [],
+      "requestSpans": [
+        {
+          "url": "edge-tts:msedge-tts:2.0.7",
+          "sourceChars": 78,
+          "requestId": "562a1c9e-5cfd-4d67-a6a4-104a2a7cc3ab",
+          "retryIndex": 0,
+          "queuedAtUtc": "2026-09-14T02:11:07.410Z",
+          "startedAtUtc": "2026-09-14T02:11:07.969Z",
+          "queueWaitMs": 559,
+          "firstResponseAtUtc": "2026-09-14T02:11:08.639Z",
+          "networkDurationMs": 852,
+          "localDspDurationMs": 123,
+          "endedAtUtc": "2026-09-14T02:11:08.947Z",
+          "durationMs": 978,
+          "audioDurationSec": 6.72
+        }
+      ]
+    },
+    {
+      "index": 69,
+      "ok": true,
+      "wallMs": 1496,
+      "generationMs": 1495,
+      "durationMs": 6744,
+      "bytes": 323790,
+      "sha256": "d16c7da877d78dedaa6ccc72bb2dbc884c6d1a97c7890659f8a89ae53f5189ca",
+      "attempts": 1,
+      "failureCodes": [],
+      "requestSpans": [
+        {
+          "url": "edge-tts:msedge-tts:2.0.7",
+          "sourceChars": 78,
+          "requestId": "3210fbdf-79f0-41d8-8da5-d6102b9a2a34",
+          "retryIndex": 0,
+          "queuedAtUtc": "2026-09-14T02:11:08.948Z",
+          "startedAtUtc": "2026-09-14T02:11:09.474Z",
+          "queueWaitMs": 526,
+          "firstResponseAtUtc": "2026-09-14T02:11:10.131Z",
+          "networkDurationMs": 847,
+          "localDspDurationMs": 121,
+          "endedAtUtc": "2026-09-14T02:11:10.443Z",
+          "durationMs": 969,
+          "audioDurationSec": 6.744
+        }
+      ]
+    },
+    {
+      "index": 70,
+      "ok": true,
+      "wallMs": 1577,
+      "generationMs": 1575,
+      "durationMs": 6576,
+      "bytes": 315726,
+      "sha256": "c4d642d7781809770756f2ac4fff1f5d9222e7fdd28f30173e6c4f49bc88e718",
+      "attempts": 1,
+      "failureCodes": [],
+      "requestSpans": [
+        {
+          "url": "edge-tts:msedge-tts:2.0.7",
+          "sourceChars": 78,
+          "requestId": "350f9348-e628-4404-905d-1a851e87e605",
+          "retryIndex": 0,
+          "queuedAtUtc": "2026-09-14T02:11:10.444Z",
+          "startedAtUtc": "2026-09-14T02:11:10.977Z",
+          "queueWaitMs": 533,
+          "firstResponseAtUtc": "2026-09-14T02:11:11.709Z",
+          "networkDurationMs": 920,
+          "localDspDurationMs": 120,
+          "endedAtUtc": "2026-09-14T02:11:12.019Z",
+          "durationMs": 1042,
+          "audioDurationSec": 6.576
+        }
+      ]
+    },
+    {
+      "index": 71,
+      "ok": true,
+      "wallMs": 1336,
+      "generationMs": 1335,
+      "durationMs": 6648,
+      "bytes": 319182,
+      "sha256": "06ce5a93157bfe0ce4717e49d1af023018f7dfc08aa619531cebfeb47cc2e32f",
+      "attempts": 1,
+      "failureCodes": [],
+      "requestSpans": [
+        {
+          "url": "edge-tts:msedge-tts:2.0.7",
+          "sourceChars": 78,
+          "requestId": "ae1e0814-8eb4-4e8e-b7b6-2903f484882e",
+          "retryIndex": 0,
+          "queuedAtUtc": "2026-09-14T02:11:12.022Z",
+          "startedAtUtc": "2026-09-14T02:11:12.481Z",
+          "queueWaitMs": 459,
+          "firstResponseAtUtc": "2026-09-14T02:11:13.035Z",
+          "networkDurationMs": 737,
+          "localDspDurationMs": 135,
+          "endedAtUtc": "2026-09-14T02:11:13.356Z",
+          "durationMs": 875,
+          "audioDurationSec": 6.648
+        }
+      ]
+    },
+    {
+      "index": 72,
+      "ok": true,
+      "wallMs": 1685,
+      "generationMs": 1684,
+      "durationMs": 6744,
+      "bytes": 323790,
+      "sha256": "55c5c681fc26449aa3d70a93d5084eae1d2c879ffaf5cdef14fb829d7668b17b",
+      "attempts": 1,
+      "failureCodes": [],
+      "requestSpans": [
+        {
+          "url": "edge-tts:msedge-tts:2.0.7",
+          "sourceChars": 78,
+          "requestId": "29be86eb-5b1d-4e61-9131-8e6154771f3a",
+          "retryIndex": 0,
+          "queuedAtUtc": "2026-09-14T02:11:13.357Z",
+          "startedAtUtc": "2026-09-14T02:11:13.995Z",
+          "queueWaitMs": 638,
+          "firstResponseAtUtc": "2026-09-14T02:11:14.694Z",
+          "networkDurationMs": 942,
+          "localDspDurationMs": 103,
+          "endedAtUtc": "2026-09-14T02:11:15.041Z",
+          "durationMs": 1046,
+          "audioDurationSec": 6.744
+        }
+      ]
+    },
+    {
+      "index": 73,
+      "ok": true,
+      "wallMs": 1343,
+      "generationMs": 1342,
+      "durationMs": 6720,
+      "bytes": 322638,
+      "sha256": "5bf08064df158fb40c8b10ef945ee8c9514b8af515fefcce776a1b1de12b0f03",
+      "attempts": 1,
+      "failureCodes": [],
+      "requestSpans": [
+        {
+          "url": "edge-tts:msedge-tts:2.0.7",
+          "sourceChars": 78,
+          "requestId": "86e303a5-b560-4f87-84e5-7129789d0534",
+          "retryIndex": 0,
+          "queuedAtUtc": "2026-09-14T02:11:15.042Z",
+          "startedAtUtc": "2026-09-14T02:11:15.496Z",
+          "queueWaitMs": 454,
+          "firstResponseAtUtc": "2026-09-14T02:11:16.084Z",
+          "networkDurationMs": 785,
+          "localDspDurationMs": 100,
+          "endedAtUtc": "2026-09-14T02:11:16.384Z",
+          "durationMs": 888,
+          "audioDurationSec": 6.72
+        }
+      ]
+    },
+    {
+      "index": 74,
+      "ok": true,
+      "wallMs": 1545,
+      "generationMs": 1544,
+      "durationMs": 6744,
+      "bytes": 323790,
+      "sha256": "312904eb4c857f60cc3d200c50cc14cc96af3c731e3f7900e1cb1f1086e09b8e",
+      "attempts": 1,
+      "failureCodes": [],
+      "requestSpans": [
+        {
+          "url": "edge-tts:msedge-tts:2.0.7",
+          "sourceChars": 78,
+          "requestId": "e03f6a91-0949-4850-96e9-be5d803d2506",
+          "retryIndex": 0,
+          "queuedAtUtc": "2026-09-14T02:11:16.385Z",
+          "startedAtUtc": "2026-09-14T02:11:16.997Z",
+          "queueWaitMs": 612,
+          "firstResponseAtUtc": "2026-09-14T02:11:17.621Z",
+          "networkDurationMs": 820,
+          "localDspDurationMs": 111,
+          "endedAtUtc": "2026-09-14T02:11:17.929Z",
+          "durationMs": 932,
+          "audioDurationSec": 6.744
+        }
+      ]
+    },
+    {
+      "index": 75,
+      "ok": true,
+      "wallMs": 1549,
+      "generationMs": 1548,
+      "durationMs": 6720,
+      "bytes": 322638,
+      "sha256": "5e3a2e35686cf1b8f750c668cefa6f18392b220ff1523eda33f9a78461f6aef9",
+      "attempts": 1,
+      "failureCodes": [],
+      "requestSpans": [
+        {
+          "url": "edge-tts:msedge-tts:2.0.7",
+          "sourceChars": 78,
+          "requestId": "1a448a43-6a9f-4bc7-bd0b-843f853637f0",
+          "retryIndex": 0,
+          "queuedAtUtc": "2026-09-14T02:11:17.930Z",
+          "startedAtUtc": "2026-09-14T02:11:18.505Z",
+          "queueWaitMs": 575,
+          "firstResponseAtUtc": "2026-09-14T02:11:19.185Z",
+          "networkDurationMs": 857,
+          "localDspDurationMs": 114,
+          "endedAtUtc": "2026-09-14T02:11:19.478Z",
+          "durationMs": 973,
+          "audioDurationSec": 6.72
+        }
+      ]
+    },
+    {
+      "index": 76,
+      "ok": true,
+      "wallMs": 1513,
+      "generationMs": 1511,
+      "durationMs": 6744,
+      "bytes": 323790,
+      "sha256": "6a7508144271888422eb14a9f12729dcafdff8b285c7c8c9929b88882e31e944",
+      "attempts": 1,
+      "failureCodes": [],
+      "requestSpans": [
+        {
+          "url": "edge-tts:msedge-tts:2.0.7",
+          "sourceChars": 78,
+          "requestId": "73b2b0e6-3fad-44f7-8859-f9acc7098703",
+          "retryIndex": 0,
+          "queuedAtUtc": "2026-09-14T02:11:19.479Z",
+          "startedAtUtc": "2026-09-14T02:11:20.010Z",
+          "queueWaitMs": 531,
+          "firstResponseAtUtc": "2026-09-14T02:11:20.647Z",
+          "networkDurationMs": 853,
+          "localDspDurationMs": 125,
+          "endedAtUtc": "2026-09-14T02:11:20.990Z",
+          "durationMs": 980,
+          "audioDurationSec": 6.744
+        }
+      ]
+    },
+    {
+      "index": 77,
+      "ok": true,
+      "wallMs": 1533,
+      "generationMs": 1531,
+      "durationMs": 6744,
+      "bytes": 323790,
+      "sha256": "38ae6663c191d1a24e9bf39652fd72954a7e079cd04dc4a6ccb4065ed6fee507",
+      "attempts": 1,
+      "failureCodes": [],
+      "requestSpans": [
+        {
+          "url": "edge-tts:msedge-tts:2.0.7",
+          "sourceChars": 78,
+          "requestId": "36779b54-20e4-4aa4-bfa7-f9111a64ba0a",
+          "retryIndex": 0,
+          "queuedAtUtc": "2026-09-14T02:11:20.992Z",
+          "startedAtUtc": "2026-09-14T02:11:21.516Z",
+          "queueWaitMs": 524,
+          "firstResponseAtUtc": "2026-09-14T02:11:22.198Z",
+          "networkDurationMs": 890,
+          "localDspDurationMs": 115,
+          "endedAtUtc": "2026-09-14T02:11:22.522Z",
+          "durationMs": 1006,
+          "audioDurationSec": 6.744
+        }
+      ]
+    },
+    {
+      "index": 78,
+      "ok": true,
+      "wallMs": 1457,
+      "generationMs": 1456,
+      "durationMs": 6720,
+      "bytes": 322638,
+      "sha256": "10ab7ccb9162bbe7a661424aaa9f297dafaa780858c9d6a95488faaa43d9acae",
+      "attempts": 1,
+      "failureCodes": [],
+      "requestSpans": [
+        {
+          "url": "edge-tts:msedge-tts:2.0.7",
+          "sourceChars": 78,
+          "requestId": "7efbc235-0599-4ad8-adf2-34264c215cf8",
+          "retryIndex": 0,
+          "queuedAtUtc": "2026-09-14T02:11:22.525Z",
+          "startedAtUtc": "2026-09-14T02:11:23.018Z",
+          "queueWaitMs": 493,
+          "firstResponseAtUtc": "2026-09-14T02:11:23.677Z",
+          "networkDurationMs": 847,
+          "localDspDurationMs": 115,
+          "endedAtUtc": "2026-09-14T02:11:23.980Z",
+          "durationMs": 962,
+          "audioDurationSec": 6.72
+        }
+      ]
+    },
+    {
+      "index": 79,
+      "ok": true,
+      "wallMs": 1490,
+      "generationMs": 1488,
+      "durationMs": 6720,
+      "bytes": 322638,
+      "sha256": "de556c4749d63af712816b5677e058c2b24ec28500989374e96270268030ea60",
+      "attempts": 1,
+      "failureCodes": [],
+      "requestSpans": [
+        {
+          "url": "edge-tts:msedge-tts:2.0.7",
+          "sourceChars": 78,
+          "requestId": "f7ecfcc1-e96a-406f-942e-e8fbf1f53095",
+          "retryIndex": 0,
+          "queuedAtUtc": "2026-09-14T02:11:23.982Z",
+          "startedAtUtc": "2026-09-14T02:11:24.520Z",
+          "queueWaitMs": 538,
+          "firstResponseAtUtc": "2026-09-14T02:11:25.152Z",
+          "networkDurationMs": 834,
+          "localDspDurationMs": 115,
+          "endedAtUtc": "2026-09-14T02:11:25.470Z",
+          "durationMs": 950,
+          "audioDurationSec": 6.72
+        }
+      ]
+    },
+    {
+      "index": 80,
+      "ok": true,
+      "wallMs": 1559,
+      "generationMs": 1559,
+      "durationMs": 6552,
+      "bytes": 314574,
+      "sha256": "346881d7c5df5720a8c02ae8649927f875082ba668ba95f8322562d1d08b8db5",
+      "attempts": 1,
+      "failureCodes": [],
+      "requestSpans": [
+        {
+          "url": "edge-tts:msedge-tts:2.0.7",
+          "sourceChars": 78,
+          "requestId": "5e499ed6-d769-426c-b58a-1205b2763f3e",
+          "retryIndex": 0,
+          "queuedAtUtc": "2026-09-14T02:11:25.471Z",
+          "startedAtUtc": "2026-09-14T02:11:26.023Z",
+          "queueWaitMs": 552,
+          "firstResponseAtUtc": "2026-09-14T02:11:26.680Z",
+          "networkDurationMs": 898,
+          "localDspDurationMs": 107,
+          "endedAtUtc": "2026-09-14T02:11:27.030Z",
+          "durationMs": 1007,
+          "audioDurationSec": 6.552
+        }
+      ]
+    },
+    {
+      "index": 81,
+      "ok": true,
+      "wallMs": 1641,
+      "generationMs": 1640,
+      "durationMs": 6624,
+      "bytes": 318030,
+      "sha256": "6dea404bf7eeed15ddf5c68cace0d537bc7f63229acf1c72a104666e54029ea5",
+      "attempts": 1,
+      "failureCodes": [],
+      "requestSpans": [
+        {
+          "url": "edge-tts:msedge-tts:2.0.7",
+          "sourceChars": 78,
+          "requestId": "5e3e0acf-48f3-43b3-90e6-2b8ae0cc8821",
+          "retryIndex": 0,
+          "queuedAtUtc": "2026-09-14T02:11:27.031Z",
+          "startedAtUtc": "2026-09-14T02:11:27.538Z",
+          "queueWaitMs": 507,
+          "firstResponseAtUtc": "2026-09-14T02:11:28.343Z",
+          "networkDurationMs": 1007,
+          "localDspDurationMs": 125,
+          "endedAtUtc": "2026-09-14T02:11:28.671Z",
+          "durationMs": 1133,
+          "audioDurationSec": 6.624
+        }
+      ]
+    },
+    {
+      "index": 82,
+      "ok": true,
+      "wallMs": 1305,
+      "generationMs": 1303,
+      "durationMs": 6720,
+      "bytes": 322638,
+      "sha256": "0c7d664e435b0d3e765596029a2f9f09adfba504a7203ac5a3deb642d2a1dda7",
+      "attempts": 1,
+      "failureCodes": [],
+      "requestSpans": [
+        {
+          "url": "edge-tts:msedge-tts:2.0.7",
+          "sourceChars": 78,
+          "requestId": "68f84878-634d-4110-8a20-af5dbff2f8d7",
+          "retryIndex": 0,
+          "queuedAtUtc": "2026-09-14T02:11:28.672Z",
+          "startedAtUtc": "2026-09-14T02:11:29.052Z",
+          "queueWaitMs": 380,
+          "firstResponseAtUtc": "2026-09-14T02:11:29.653Z",
+          "networkDurationMs": 792,
+          "localDspDurationMs": 129,
+          "endedAtUtc": "2026-09-14T02:11:29.975Z",
+          "durationMs": 923,
+          "audioDurationSec": 6.72
+        }
+      ]
+    },
+    {
+      "index": 83,
+      "ok": true,
+      "wallMs": 1506,
+      "generationMs": 1506,
+      "durationMs": 6696,
+      "bytes": 321486,
+      "sha256": "b29ef03f89b324fe950b9bb174992d277f057bd26728e9b98c7ca0e18f893b5a",
+      "attempts": 1,
+      "failureCodes": [],
+      "requestSpans": [
+        {
+          "url": "edge-tts:msedge-tts:2.0.7",
+          "sourceChars": 78,
+          "requestId": "02f4cc09-71d0-4c2f-8278-a1868395ebeb",
+          "retryIndex": 0,
+          "queuedAtUtc": "2026-09-14T02:11:29.976Z",
+          "startedAtUtc": "2026-09-14T02:11:30.555Z",
+          "queueWaitMs": 579,
+          "firstResponseAtUtc": "2026-09-14T02:11:31.157Z",
+          "networkDurationMs": 806,
+          "localDspDurationMs": 118,
+          "endedAtUtc": "2026-09-14T02:11:31.482Z",
+          "durationMs": 927,
+          "audioDurationSec": 6.696
+        }
+      ]
+    },
+    {
+      "index": 84,
+      "ok": true,
+      "wallMs": 1490,
+      "generationMs": 1488,
+      "durationMs": 6720,
+      "bytes": 322638,
+      "sha256": "9abbb0035dad5d00248357c00468db24c0e2ab265afcc781a63b30a441938a7f",
+      "attempts": 1,
+      "failureCodes": [],
+      "requestSpans": [
+        {
+          "url": "edge-tts:msedge-tts:2.0.7",
+          "sourceChars": 78,
+          "requestId": "6f16184c-931a-478f-bd2f-c10faa50a621",
+          "retryIndex": 0,
+          "queuedAtUtc": "2026-09-14T02:11:31.483Z",
+          "startedAtUtc": "2026-09-14T02:11:32.059Z",
+          "queueWaitMs": 576,
+          "firstResponseAtUtc": "2026-09-14T02:11:32.661Z",
+          "networkDurationMs": 791,
+          "localDspDurationMs": 117,
+          "endedAtUtc": "2026-09-14T02:11:32.971Z",
+          "durationMs": 912,
+          "audioDurationSec": 6.72
+        }
+      ]
+    },
+    {
+      "index": 85,
+      "ok": true,
+      "wallMs": 1575,
+      "generationMs": 1574,
+      "durationMs": 6648,
+      "bytes": 319182,
+      "sha256": "8488e684d6da6a944b27ae49e8c391d20b9b8f3bd57be76df744d8dc872ac404",
+      "attempts": 1,
+      "failureCodes": [],
+      "requestSpans": [
+        {
+          "url": "edge-tts:msedge-tts:2.0.7",
+          "sourceChars": 78,
+          "requestId": "62e3b961-c911-4d56-8fdf-dc1eb2e8d0a9",
+          "retryIndex": 0,
+          "queuedAtUtc": "2026-09-14T02:11:32.973Z",
+          "startedAtUtc": "2026-09-14T02:11:33.562Z",
+          "queueWaitMs": 589,
+          "firstResponseAtUtc": "2026-09-14T02:11:34.252Z",
+          "networkDurationMs": 868,
+          "localDspDurationMs": 116,
+          "endedAtUtc": "2026-09-14T02:11:34.547Z",
+          "durationMs": 985,
+          "audioDurationSec": 6.648
+        }
+      ]
+    },
+    {
+      "index": 86,
+      "ok": true,
+      "wallMs": 1427,
+      "generationMs": 1426,
+      "durationMs": 6720,
+      "bytes": 322638,
+      "sha256": "e5ca844893e737856482f2b2e39097eae2b213a90e92b7b875e0bdbdca1f4649",
+      "attempts": 1,
+      "failureCodes": [],
+      "requestSpans": [
+        {
+          "url": "edge-tts:msedge-tts:2.0.7",
+          "sourceChars": 78,
+          "requestId": "be26d5e4-234d-4dc4-92cb-33dc6ee1f0cb",
+          "retryIndex": 0,
+          "queuedAtUtc": "2026-09-14T02:11:34.548Z",
+          "startedAtUtc": "2026-09-14T02:11:35.068Z",
+          "queueWaitMs": 520,
+          "firstResponseAtUtc": "2026-09-14T02:11:35.669Z",
+          "networkDurationMs": 796,
+          "localDspDurationMs": 109,
+          "endedAtUtc": "2026-09-14T02:11:35.974Z",
+          "durationMs": 906,
+          "audioDurationSec": 6.72
+        }
+      ]
+    },
+    {
+      "index": 87,
+      "ok": true,
+      "wallMs": 1445,
+      "generationMs": 1444,
+      "durationMs": 6672,
+      "bytes": 320334,
+      "sha256": "86fe2b3ffc7a2beefd7377e317cb4195022bb5c3fabe38c26e8ffbf3a8e30189",
+      "attempts": 1,
+      "failureCodes": [],
+      "requestSpans": [
+        {
+          "url": "edge-tts:msedge-tts:2.0.7",
+          "sourceChars": 78,
+          "requestId": "8cd3c611-014b-47b4-aba5-090874f57d9a",
+          "retryIndex": 0,
+          "queuedAtUtc": "2026-09-14T02:11:35.975Z",
+          "startedAtUtc": "2026-09-14T02:11:36.577Z",
+          "queueWaitMs": 602,
+          "firstResponseAtUtc": "2026-09-14T02:11:37.123Z",
+          "networkDurationMs": 719,
+          "localDspDurationMs": 122,
+          "endedAtUtc": "2026-09-14T02:11:37.419Z",
+          "durationMs": 842,
+          "audioDurationSec": 6.672
+        }
+      ]
+    },
+    {
+      "index": 88,
+      "ok": true,
+      "wallMs": 1633,
+      "generationMs": 1632,
+      "durationMs": 6696,
+      "bytes": 321486,
+      "sha256": "b61a57fc24ff349af1bad93c706ea0b6993db7925c8b57773237d48ddade9e69",
+      "attempts": 1,
+      "failureCodes": [],
+      "requestSpans": [
+        {
+          "url": "edge-tts:msedge-tts:2.0.7",
+          "sourceChars": 78,
+          "requestId": "a0f4ada6-0042-44f1-b0e9-c1cff51dd384",
+          "retryIndex": 0,
+          "queuedAtUtc": "2026-09-14T02:11:37.420Z",
+          "startedAtUtc": "2026-09-14T02:11:38.081Z",
+          "queueWaitMs": 661,
+          "firstResponseAtUtc": "2026-09-14T02:11:38.726Z",
+          "networkDurationMs": 848,
+          "localDspDurationMs": 121,
+          "endedAtUtc": "2026-09-14T02:11:39.052Z",
+          "durationMs": 971,
+          "audioDurationSec": 6.696
+        }
+      ]
+    },
+    {
+      "index": 89,
+      "ok": true,
+      "wallMs": 1522,
+      "generationMs": 1520,
+      "durationMs": 6696,
+      "bytes": 321486,
+      "sha256": "4bb67a7f13f980c1bfc77b0a353797331ee79a4cb7e57f3c3cb26cbaf5d88473",
+      "attempts": 1,
+      "failureCodes": [],
+      "requestSpans": [
+        {
+          "url": "edge-tts:msedge-tts:2.0.7",
+          "sourceChars": 78,
+          "requestId": "c0d11e67-ee90-4280-b21f-6963c9353dc3",
+          "retryIndex": 0,
+          "queuedAtUtc": "2026-09-14T02:11:39.053Z",
+          "startedAtUtc": "2026-09-14T02:11:39.597Z",
+          "queueWaitMs": 544,
+          "firstResponseAtUtc": "2026-09-14T02:11:40.248Z",
+          "networkDurationMs": 867,
+          "localDspDurationMs": 106,
+          "endedAtUtc": "2026-09-14T02:11:40.573Z",
+          "durationMs": 976,
+          "audioDurationSec": 6.696
+        }
+      ]
+    },
+    {
+      "index": 90,
+      "ok": true,
+      "wallMs": 1514,
+      "generationMs": 1514,
+      "durationMs": 6576,
+      "bytes": 315726,
+      "sha256": "449a8175778dc5999a8c6bdec38e0cd32c209880ebd691ce7ddf5a9162dec8f9",
+      "attempts": 1,
+      "failureCodes": [],
+      "requestSpans": [
+        {
+          "url": "edge-tts:msedge-tts:2.0.7",
+          "sourceChars": 78,
+          "requestId": "3ca013c1-38c5-434b-82b8-24179b5e84a6",
+          "retryIndex": 0,
+          "queuedAtUtc": "2026-09-14T02:11:40.575Z",
+          "startedAtUtc": "2026-09-14T02:11:41.102Z",
+          "queueWaitMs": 527,
+          "firstResponseAtUtc": "2026-09-14T02:11:41.749Z",
+          "networkDurationMs": 855,
+          "localDspDurationMs": 129,
+          "endedAtUtc": "2026-09-14T02:11:42.089Z",
+          "durationMs": 987,
+          "audioDurationSec": 6.576
+        }
+      ]
+    },
+    {
+      "index": 91,
+      "ok": true,
+      "wallMs": 1539,
+      "generationMs": 1537,
+      "durationMs": 6648,
+      "bytes": 319182,
+      "sha256": "94da0501ca27537f2c55b44960cd49309ade85cbf8def73f758ea24fc1666965",
+      "attempts": 1,
+      "failureCodes": [],
+      "requestSpans": [
+        {
+          "url": "edge-tts:msedge-tts:2.0.7",
+          "sourceChars": 78,
+          "requestId": "4d72051d-530a-4853-a06f-4c767cfe37e4",
+          "retryIndex": 0,
+          "queuedAtUtc": "2026-09-14T02:11:42.090Z",
+          "startedAtUtc": "2026-09-14T02:11:42.607Z",
+          "queueWaitMs": 517,
+          "firstResponseAtUtc": "2026-09-14T02:11:43.308Z",
+          "networkDurationMs": 909,
+          "localDspDurationMs": 109,
+          "endedAtUtc": "2026-09-14T02:11:43.627Z",
+          "durationMs": 1020,
+          "audioDurationSec": 6.648
+        }
+      ]
+    },
+    {
+      "index": 92,
+      "ok": true,
+      "wallMs": 1421,
+      "generationMs": 1420,
+      "durationMs": 6720,
+      "bytes": 322638,
+      "sha256": "891f88fbf605266044d449b630605b77ebafe78d9c70506972b26bf9db49f017",
+      "attempts": 1,
+      "failureCodes": [],
+      "requestSpans": [
+        {
+          "url": "edge-tts:msedge-tts:2.0.7",
+          "sourceChars": 78,
+          "requestId": "fc55c998-886e-4178-96ba-c0bb4ff91599",
+          "retryIndex": 0,
+          "queuedAtUtc": "2026-09-14T02:11:43.629Z",
+          "startedAtUtc": "2026-09-14T02:11:44.111Z",
+          "queueWaitMs": 482,
+          "firstResponseAtUtc": "2026-09-14T02:11:44.736Z",
+          "networkDurationMs": 814,
+          "localDspDurationMs": 122,
+          "endedAtUtc": "2026-09-14T02:11:45.049Z",
+          "durationMs": 938,
+          "audioDurationSec": 6.72
+        }
+      ]
+    },
+    {
+      "index": 93,
+      "ok": true,
+      "wallMs": 1569,
+      "generationMs": 1568,
+      "durationMs": 6696,
+      "bytes": 321486,
+      "sha256": "841808102b8a767d4f0002ed181663fa59be67c99219bbde85a2b499d9675bd4",
+      "attempts": 1,
+      "failureCodes": [],
+      "requestSpans": [
+        {
+          "url": "edge-tts:msedge-tts:2.0.7",
+          "sourceChars": 78,
+          "requestId": "a39b6cda-1861-4b70-801b-f83474aa4d28",
+          "retryIndex": 0,
+          "queuedAtUtc": "2026-09-14T02:11:45.050Z",
+          "startedAtUtc": "2026-09-14T02:11:45.621Z",
+          "queueWaitMs": 571,
+          "firstResponseAtUtc": "2026-09-14T02:11:46.329Z",
+          "networkDurationMs": 875,
+          "localDspDurationMs": 120,
+          "endedAtUtc": "2026-09-14T02:11:46.618Z",
+          "durationMs": 997,
+          "audioDurationSec": 6.696
+        }
+      ]
+    },
+    {
+      "index": 94,
+      "ok": true,
+      "wallMs": 1470,
+      "generationMs": 1468,
+      "durationMs": 6744,
+      "bytes": 323790,
+      "sha256": "6a76e124c95c34ea0e4da9e152b830bf1d80366cb47e5497c12ab4d949a500d0",
+      "attempts": 1,
+      "failureCodes": [],
+      "requestSpans": [
+        {
+          "url": "edge-tts:msedge-tts:2.0.7",
+          "sourceChars": 78,
+          "requestId": "c4d2d375-fb9b-4f9b-83f3-40a2b19a8a05",
+          "retryIndex": 0,
+          "queuedAtUtc": "2026-09-14T02:11:46.619Z",
+          "startedAtUtc": "2026-09-14T02:11:47.125Z",
+          "queueWaitMs": 506,
+          "firstResponseAtUtc": "2026-09-14T02:11:47.767Z",
+          "networkDurationMs": 848,
+          "localDspDurationMs": 113,
+          "endedAtUtc": "2026-09-14T02:11:48.087Z",
+          "durationMs": 962,
+          "audioDurationSec": 6.744
+        }
+      ]
+    },
+    {
+      "index": 95,
+      "ok": true,
+      "wallMs": 1499,
+      "generationMs": 1498,
+      "durationMs": 6672,
+      "bytes": 320334,
+      "sha256": "cf2f2065edc65b55efb5c5a4d32cb267db3c527d7a0ca4a84a6868173f06c9f7",
+      "attempts": 1,
+      "failureCodes": [],
+      "requestSpans": [
+        {
+          "url": "edge-tts:msedge-tts:2.0.7",
+          "sourceChars": 78,
+          "requestId": "328c98a6-5840-48ec-a930-49ff7175c722",
+          "retryIndex": 0,
+          "queuedAtUtc": "2026-09-14T02:11:48.088Z",
+          "startedAtUtc": "2026-09-14T02:11:48.639Z",
+          "queueWaitMs": 551,
+          "firstResponseAtUtc": "2026-09-14T02:11:49.285Z",
+          "networkDurationMs": 834,
+          "localDspDurationMs": 112,
+          "endedAtUtc": "2026-09-14T02:11:49.586Z",
+          "durationMs": 947,
+          "audioDurationSec": 6.672
+        }
+      ]
+    },
+    {
+      "index": 96,
+      "ok": true,
+      "wallMs": 1579,
+      "generationMs": 1578,
+      "durationMs": 6720,
+      "bytes": 322638,
+      "sha256": "a6fea784219da709e01b4c733fc9a21a0ed1ad2e826d6fe8c20d3254927c136e",
+      "attempts": 1,
+      "failureCodes": [],
+      "requestSpans": [
+        {
+          "url": "edge-tts:msedge-tts:2.0.7",
+          "sourceChars": 78,
+          "requestId": "9d731168-9bf7-4e67-b22b-f8bc4d7b78b3",
+          "retryIndex": 0,
+          "queuedAtUtc": "2026-09-14T02:11:49.588Z",
+          "startedAtUtc": "2026-09-14T02:11:50.144Z",
+          "queueWaitMs": 556,
+          "firstResponseAtUtc": "2026-09-14T02:11:50.863Z",
+          "networkDurationMs": 912,
+          "localDspDurationMs": 109,
+          "endedAtUtc": "2026-09-14T02:11:51.166Z",
+          "durationMs": 1022,
+          "audioDurationSec": 6.72
+        }
+      ]
+    },
+    {
+      "index": 97,
+      "ok": true,
+      "wallMs": 1341,
+      "generationMs": 1339,
+      "durationMs": 6720,
+      "bytes": 322638,
+      "sha256": "47de5bc5effb879a4656f9cce6f5db2f807976a561619df19c029fdbb05098eb",
+      "attempts": 1,
+      "failureCodes": [],
+      "requestSpans": [
+        {
+          "url": "edge-tts:msedge-tts:2.0.7",
+          "sourceChars": 78,
+          "requestId": "52dc5254-de6a-4750-a01d-e130e175846c",
+          "retryIndex": 0,
+          "queuedAtUtc": "2026-09-14T02:11:51.167Z",
+          "startedAtUtc": "2026-09-14T02:11:51.658Z",
+          "queueWaitMs": 491,
+          "firstResponseAtUtc": "2026-09-14T02:11:52.209Z",
+          "networkDurationMs": 738,
+          "localDspDurationMs": 108,
+          "endedAtUtc": "2026-09-14T02:11:52.506Z",
+          "durationMs": 848,
+          "audioDurationSec": 6.72
+        }
+      ]
+    },
+    {
+      "index": 98,
+      "ok": true,
+      "wallMs": 1740,
+      "generationMs": 1739,
+      "durationMs": 6648,
+      "bytes": 319182,
+      "sha256": "e6ea78209797de4a5ecd0788212031e2251ab249b0ce4591cf58a138ba38ff1e",
+      "attempts": 1,
+      "failureCodes": [],
+      "requestSpans": [
+        {
+          "url": "edge-tts:msedge-tts:2.0.7",
+          "sourceChars": 78,
+          "requestId": "5cd00584-2757-4c9d-9189-b2bc213e92b1",
+          "retryIndex": 0,
+          "queuedAtUtc": "2026-09-14T02:11:52.507Z",
+          "startedAtUtc": "2026-09-14T02:11:53.173Z",
+          "queueWaitMs": 666,
+          "firstResponseAtUtc": "2026-09-14T02:11:53.862Z",
+          "networkDurationMs": 957,
+          "localDspDurationMs": 114,
+          "endedAtUtc": "2026-09-14T02:11:54.246Z",
+          "durationMs": 1073,
+          "audioDurationSec": 6.648
+        }
+      ]
+    },
+    {
+      "index": 99,
+      "ok": true,
+      "wallMs": 1306,
+      "generationMs": 1305,
+      "durationMs": 6648,
+      "bytes": 319182,
+      "sha256": "11d273f65ad537fd73764af900530f7120beca07a53e3d0075cfcf1c56a1fa98",
+      "attempts": 1,
+      "failureCodes": [],
+      "requestSpans": [
+        {
+          "url": "edge-tts:msedge-tts:2.0.7",
+          "sourceChars": 78,
+          "requestId": "972a47be-5a7e-44dd-9184-76e397ddc5c9",
+          "retryIndex": 0,
+          "queuedAtUtc": "2026-09-14T02:11:54.247Z",
+          "startedAtUtc": "2026-09-14T02:11:54.675Z",
+          "queueWaitMs": 428,
+          "firstResponseAtUtc": "2026-09-14T02:11:55.249Z",
+          "networkDurationMs": 753,
+          "localDspDurationMs": 120,
+          "endedAtUtc": "2026-09-14T02:11:55.551Z",
+          "durationMs": 876,
+          "audioDurationSec": 6.648
+        }
+      ]
+    },
+    {
+      "index": 100,
+      "ok": true,
+      "wallMs": 1851,
+      "generationMs": 1848,
+      "durationMs": 6528,
+      "bytes": 313422,
+      "sha256": "2e212686150b9a2d52ee39b61b5f6eabefe215110b72a8ee3f771546b0ff9700",
+      "attempts": 1,
+      "failureCodes": [],
+      "requestSpans": [
+        {
+          "url": "edge-tts:msedge-tts:2.0.7",
+          "sourceChars": 79,
+          "requestId": "f1a4e89a-a172-459f-a600-1b6bcd830101",
+          "retryIndex": 0,
+          "queuedAtUtc": "2026-09-14T02:11:55.553Z",
+          "startedAtUtc": "2026-09-14T02:11:56.175Z",
+          "queueWaitMs": 622,
+          "firstResponseAtUtc": "2026-09-14T02:11:57.079Z",
+          "networkDurationMs": 1105,
+          "localDspDurationMs": 120,
+          "endedAtUtc": "2026-09-14T02:11:57.401Z",
+          "durationMs": 1226,
+          "audioDurationSec": 6.528
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,61 @@
+{
+  "schemaVersion": 1,
+  "runId": "dalam01-a-c1",
+  "source": "F:\\Son\\doyuin\\LauHaiSan\\dalam\\2025-04-08_大海退潮啦，海鲜就要现抓现吃_赶海_7490882160954461476.mp4",
+  "sourceSha256": "50140ca1d518f4dbe80d564bbabce727790f066e619d31aa3d45cbcd4042e1ee",
+  "appVersion": "34.5.8",
+  "platform": "win32-x64",
+  "config": {
+    "subtitleMethod": "whisper",
+    "whisperModel": "small",
+    "whisperDevice": "cpu",
+    "whisperLanguage": "zh",
+    "ocrRegion": {
+      "x0": 0.05,
+      "y0": 0.72,
+      "x1": 0.95,
+      "y1": 0.94
+    },
+    "blurRegions": [],
+    "lamMo": false,
+    "blurMode": "manual",
+    "ocrBlurProfile": "accurate",
+    "subRegion": {
+      "x0": 0.05,
+      "y0": 0.76,
+      "x1": 0.95,
+      "y1": 0.92
+    },
+    "subtitlePlacementMode": "manual",
+    "fontId": null,
+    "textColor": "#ffffff",
+    "outlineColor": "#000000",
+    "outlinePx": 6.5,
+    "bgEnabled": false,
+    "subtitleDisplayStyle": "standard",
+    "subtitleLayoutProfile": "vertical",
+    "subtitleAutoOptimize": true,
+    "translateTarget": "vi",
+    "translateProvider": "local",
+    "translateServerUrl": "http://192.168.1.16:8000",
+    "ttsEnabled": true,
+    "ttsProvider": "edge-tts",
+    "ttsModel": "edge-tts",
+    "ttsVoice": "vi-VN-HoaiMyNeural",
+    "ttsLanguage": "vi",
+    "ttsSpeed": 1,
+    "paceMode": "source-adaptive",
+    "voiceOverMode": false,
+    "audioMode": "replace",
+    "originalAudioVolume": 20,
+    "outputDir": "F:\\Son\\doyuin\\LauHaiSan\\dalam-edge-tts-acceptance\\outputs",
+    "executionPolicy": {
+      "edgeTtsConcurrency": 1,
+      "maxActiveItems": 1,
+      "overlapIndependentStages": true,
+      "prefetchTts": false,
+      "ocrTransport": "legacy-disk"
+    }
+  },
+  "secretFieldsPersisted": false
+}
