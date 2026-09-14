@@ -415,9 +415,17 @@ export async function checkGeminiGateway(serverUrl?: string): Promise<DichKeySta
     if (!response.ok) return { ok: false, message: `Gemini Gateway báo lỗi HTTP ${response.status}.` }
     const data = await readBoundedAiResponseJson<{
       models?: unknown
+      provider_ready?: unknown
+      provider_error?: unknown
       schema_mode?: unknown
       model_selection?: unknown
     }>(response, undefined, 256 * 1024)
+    if (data.provider_ready === false && data.provider_error === 'authentication_required') {
+      return {
+        ok: false,
+        message: 'Cookie Gemini của gateway đã hết hạn hoặc không hợp lệ. Hãy cập nhật GEMINI_1PSID và GEMINI_1PSIDTS rồi khởi động lại gateway.'
+      }
+    }
     const ids = Array.isArray(data.models) ? data.models.filter((item): item is string => typeof item === 'string') : []
     if (!ids.includes(GEMINI_GATEWAY_MODEL)) {
       return { ok: false, message: `Gateway chưa cung cấp ${GEMINI_GATEWAY_MODEL} (Gemini 3.1 Pro).` }

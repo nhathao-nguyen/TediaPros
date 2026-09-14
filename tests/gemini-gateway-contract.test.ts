@@ -158,6 +158,25 @@ test('Gemini Gateway connection check discovers gemini-advanced without a genera
   }
 })
 
+test('Gemini Gateway connection check reports expired gateway cookies before model availability', async () => {
+  const oldFetch = globalThis.fetch
+  try {
+    globalThis.fetch = async () => new Response(JSON.stringify({
+      models: [],
+      provider_ready: false,
+      provider_error: 'authentication_required',
+      model_selection: 'exact',
+      schema_mode: 'prompt-only'
+    }))
+    const result = await checkGeminiGateway('http://127.0.0.1:4982/openai/v1')
+    assert.equal(result.ok, false)
+    assert.match(result.message, /cookie Gemini.*hết hạn hoặc không hợp lệ/iu)
+    assert.doesNotMatch(result.message, /chưa cung cấp gemini-advanced/iu)
+  } finally {
+    globalThis.fetch = oldFetch
+  }
+})
+
 test('Gemini Gateway rejects a model fallback reported by the gateway', async () => {
   const adapter = createGeminiGatewayTranslationAdapter()
   const batch = planTranslation(input(1), adapter.capability).batches[0]
