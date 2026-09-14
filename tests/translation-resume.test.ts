@@ -5,6 +5,7 @@ import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { createTranslationBudget } from '../src/main/translation/budget'
 import { createTranslationRetryGeneration, readTranslationCheckpoint, writeTranslationCheckpoint, type TranslationCheckpoint } from '../src/main/translation/checkpoint'
+import { canReuseAcceptedTranslationCheckpoint } from '../src/main/autoShortItemCoordinator'
 import { planTranslation, type TranslationCapability } from '../src/main/translation/planner'
 import type { TranslationInput } from '../src/shared/translation'
 
@@ -21,6 +22,20 @@ async function fixture(run: (root: string) => Promise<void>): Promise<void> {
   const root = await mkdtemp(join(tmpdir(), 'tedia-translation-checkpoint-'))
   try { await run(root) } finally { await rm(root, { recursive: true, force: true }) }
 }
+
+test('downstream retry reuses an accepted translation with warnings without another provider request', () => {
+  const base = {
+    translatedCueCount: 113,
+    checkpointKey: 'same-key',
+    expectedKey: 'same-key',
+    checkpointModelIdentity: 'gemini-gateway:gemini-advanced:two-pass-v3',
+    expectedModelIdentity: 'gemini-gateway:gemini-advanced:two-pass-v3'
+  }
+  assert.equal(canReuseAcceptedTranslationCheckpoint({ ...base, disposition: 'with-warnings' }), true)
+  assert.equal(canReuseAcceptedTranslationCheckpoint({ ...base, disposition: 'validated' }), true)
+  assert.equal(canReuseAcceptedTranslationCheckpoint({ ...base, disposition: 'needs-review' }), false)
+  assert.equal(canReuseAcceptedTranslationCheckpoint({ ...base, checkpointKey: 'stale-key', disposition: 'with-warnings' }), false)
+})
 
 test('checkpoint persists a charged budget and valid batches atomically', async () => fixture(async (root) => {
   const plan = planTranslation(input, capability)

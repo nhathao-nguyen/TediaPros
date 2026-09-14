@@ -1203,7 +1203,7 @@ test('AutoShort key check uses the selected local translation server URL', async
   const renderer = await readFile(join(process.cwd(), 'src', 'renderer', 'src', 'components', 'AutoShort.tsx'), 'utf8')
   const preload = await readFile(join(process.cwd(), 'src', 'preload', 'index.ts'), 'utf8')
   const main = await readFile(join(process.cwd(), 'src', 'main', 'index.ts'), 'utf8')
-  assert.match(renderer, /translateCheckKey\(\s*translateProvider,\s*apiKeyInput\.trim\(\),\s*translateProvider === 'local' \? ttsServerUrl : undefined,[\s\S]{0,120}translateTarget,[\s\S]{0,80}whisperLanguage\s*\)/u)
+  assert.match(renderer, /translateCheckKey\(\s*translateProvider,\s*apiKeyInput\.trim\(\),\s*translateProvider === 'local'[\s\S]{0,120}translateProvider === 'gemini-gateway' \? geminiGatewayUrl : undefined,[\s\S]{0,120}translateTarget,[\s\S]{0,80}whisperLanguage\s*\)/u)
   assert.match(preload, /translateCheckKey:[\s\S]{0,220}targetLanguage\?: string,[\s\S]{0,100}sourceLanguage\?: string/u)
   assert.match(main, /checkLocalTranslateKey\(serverUrl, key, targetLanguage, sourceLanguage\)/u)
 })

@@ -341,13 +341,16 @@ export function deriveAutoShortCueWindows(
 
     let hardEnd: number
     if (index < cues.length - 1) {
-      const rawGap = nextStart - sourceStart
-      const effectiveGap = rawGap >= protectedGap + 0.05
+      const sourceSpan = nextStart - sourceStart
+      const sourceSilence = Math.max(0, nextStart - sourceEnd)
+      const canReserveFullGap = sourceSilence >= protectedGap + 0.05
+        || sourceSpan >= protectedGap + 0.1
+      const effectiveGap = canReserveFullGap
         ? protectedGap
-        : Math.min(protectedGap, Math.max(0.02, rawGap * 0.15))
+        : Math.min(protectedGap, Math.max(0.02, sourceSpan * 0.15))
       hardEnd = Math.min(
         videoDuration - finalGuard,
-        Math.max(sourceStart + Math.min(0.1, rawGap * 0.5), nextStart - effectiveGap)
+        Math.max(sourceStart + Math.min(0.1, sourceSpan * 0.5), nextStart - effectiveGap)
       )
     } else {
       hardEnd = Math.max(sourceStart + 0.05, videoDuration - finalGuard)

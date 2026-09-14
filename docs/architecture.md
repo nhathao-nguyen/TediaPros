@@ -73,6 +73,10 @@ graph TD
 
 AutoShort là tính năng phức tạp nhất trong TediaPros. Mỗi video chạy qua pipeline độc lập được điều phối bởi [autoShortItemCoordinator.ts](file:///f:/Son/tool/TediaPros/src/main/autoShortItemCoordinator.ts):
 
+Khi `translateProvider = gemini-gateway`, coordinator dùng adapter trong `src/main/geminiGateway.ts`. Adapter gửi một batch toàn bộ short qua OpenAI-compatible endpoint của CreateMediaTool, cố định `model = gemini-advanced`, rồi thực hiện hai generation tuần tự: `restore-translate` và `independent-review`. Gateway công bố model/capability bằng `GET /gateway/capabilities`; preflight đọc endpoint này nên không tạo generation. Wire output `two-pass-v3` dùng object `translations` ánh xạ trực tiếp cue ID sang text để giảm JSON lặp trên video nhiều cue; adapter chuyển nó về contract nội bộ trước khi parser xác nhận đủ và đúng toàn bộ ID. Prompt v3 yêu cầu reviewer phục hồi dấu câu và văn nói địa phương, đồng thời thay thế chỉ dẫn source-only cũ để không có hai quy tắc ranh giới xung đột. Nhóm TTS có thể dùng các ranh giới đã review nhưng vẫn giữ nguyên cue ID/timestamp, pause nguồn và người nói. Adapter lưu audit hai lượt trong artifact của item, còn gateway trả số upstream attempt cùng mã lý do retry. Checkpoint identity chứa endpoint profile, model và phiên bản two-pass để cấu hình cũ không tái sử dụng nhầm kết quả.
+
+Khi TTS hoặc render lỗi sau một bản dịch đã được chấp nhận, coordinator tái kiểm tra và dùng lại checkpoint `validated` hoặc `with-warnings` có cùng identity. Vì vậy retry downstream không tạo thêm hai generation Gemini; checkpoint `needs-review` vẫn cần thao tác retry rõ ràng.
+
 ```mermaid
 sequenceDiagram
     autonumber
@@ -137,6 +141,7 @@ sequenceDiagram
 ### 3.1. `src/renderer/` (Frontend React 19)
 - **Ảnh/chữ AutoShort:** nút `Ảnh / Chữ` và preview dùng cấu hình normalized trên khung đầu ra. Coordinator chuyển `overlays` vào render; `autoShortOverlays.ts` ghép ảnh/ASS sau xử lý nguồn và khung 9:16, trong cùng lượt FFmpeg. Xem [Ảnh/chữ xuyên suốt](autoshort-overlays.md).
 - **Provider giọng đọc:** Local AI Server là mặc định tương thích. Edge-TTS đi qua typed contract, origin-gated IPC và transport có deadline/abort. AutoShort chỉ chạy sau catalog live + synthesis probe; audio phải full-decode thành PCM WAV trước khi vào cache v2, rồi tiếp tục qua dubbing planner và batch journal. Xem [Microsoft Edge-TTS](edge-tts.md).
+- **Cửa sổ cue ngắn:** Dubbing planner và AutoShort policy dùng cùng công thức. Cue liền nhau chỉ giữ trọn protected gap 0,50 giây khi span còn tối thiểu 0,10 giây cho lời nói; nếu cue ngắn hơn, gap giảm theo span. Kiểm tra khoảng lặng thật dựa trên `next.start - current.end`, tránh coi toàn bộ `start - start` là khoảng lặng và tạo vách timing ở cue 550–600 ms.
 - **Trách nhiệm:** Trình diễn giao diện, nhận input từ người dùng, hiển thị tiến độ và logs thời gian thực.
 - **Ranh giới:** Tuyệt đối không gọi trực tiếp API Node.js (`fs`, `child_process`, `path`). Mọi tương tác với hệ thống phải qua `window.api` (preload bridge).
 

@@ -511,7 +511,7 @@ export interface BurnResult {
 }
 
 /** Nha cung cap dich phu de bang AI. */
-export type DichProvider = 'gemini' | 'openai' | 'local'
+export type DichProvider = 'gemini' | 'openai' | 'local' | 'gemini-gateway'
 
 export interface VideoSeoOptions {
   country: string
@@ -568,6 +568,8 @@ export interface SrtBlock {
 }
 
 export const DEFAULT_AI_SERVER_URL = 'http://127.0.0.1:8000'
+export const DEFAULT_GEMINI_GATEWAY_URL = 'http://127.0.0.1:4982/openai/v1'
+export const GEMINI_GATEWAY_MODEL = 'gemini-advanced'
 
 export const DICH_LANGS = [
   { code: 'vi', label: 'Tiếng Việt' },

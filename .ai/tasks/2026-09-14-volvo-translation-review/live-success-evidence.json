@@ -1,0 +1,17 @@
+{
+  "evidence": "LIVE_CONFIRMED: successful Volvo SRT run through CreateMediaTool before the final nested-retry cap; final cap is TEST_CONFIRMED and capability-confirmed.",
+  "executedAt": "2026-09-14",
+  "gatewayCalls": 2,
+  "observedUpstreamAttempts": 8,
+  "finalStructuredAttemptCapPerCall": 3,
+  "finalPrimaryTranslationUpstreamAttemptCapPerVideo": 6,
+  "cueCount": 44,
+  "sourceCueCount": 44,
+  "containsWooting": false,
+  "containsPixelBranch": false,
+  "containsVolvo": true,
+  "containsOak": true,
+  "outputSha256": "fe7f53258e61faf4907a2b540122e465db943c68dc69ed170fd8a84db2236930",
+  "finalGatewayPid": 1236,
+  "finalGatewayBinarySha256": "946b0691eaa835bd867db9c54efd5809b3ef204807c8f0610bcd7c9e875fecc8"
+}

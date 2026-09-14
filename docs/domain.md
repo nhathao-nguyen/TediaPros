@@ -17,7 +17,7 @@ Tất cả các ngưỡng âm thanh đều được hiệu chuẩn vật lý, đ
 - **Onset Continuous Duration (`0.03s` / 30ms):** Thời gian liên tục vượt ngưỡng để xác nhận bắt đầu phát âm, lọc bỏ tiếng click chuột hoặc tạp âm cực ngắn.
 - **Speech Offset Sensitivity (`-50 dB`):** Ngưỡng xác định kết thúc phát âm.
 - **Offset Continuous Duration (`0.10s` / 100ms):** Đảm bảo âm đuôi của từ không bị cắt cụt đột ngột.
-- **Protected Gap (`AUTO_SHORT_TTS_MIN_GAP_SECONDS = 0.50s`):** Khoảng lặng tự nhiên tối thiểu giữa câu kết thúc và câu tiếp theo. Giữ cho giọng đọc không bị dồn dập, thở dốc.
+- **Protected Gap (`AUTO_SHORT_TTS_MIN_GAP_SECONDS = 0.50s`):** Khoảng lặng tự nhiên tối thiểu giữa câu kết thúc và câu tiếp theo. Giữ cho giọng đọc không bị dồn dập, thở dốc. Với cue nguồn rất ngắn và liền cue kế tiếp, planner dùng khoảng đệm giảm theo nhịp cue nếu việc giữ trọn 0,50 giây chỉ còn dưới 0,10 giây để nói; khoảng lặng nguồn thực sự từ 0,55 giây trở lên vẫn giữ đủ 0,50 giây.
 - **TTS Provider:** Config cũ hoặc thiếu provider được hiểu là `local-tts`. `edge-tts` phải có model/voice explicit, không nhận clone hoặc provider options trong AutoShort, tổng hợp ở `1.0x`; tempo để khớp timeline do DSP planner áp dụng sau đó trong trần `1.80x`.
 
 ### 1.3. Chính Sách Điều Chỉnh Nhịp Độ (Dubbing Tempo Policy)
@@ -75,6 +75,17 @@ Khi dịch sang ngôn ngữ mới (vd: Tiếng Trung $\rightarrow$ Tiếng Việ
 ---
 
 ## 4. Khái Niệm Phụ Đề & Kiểu Dáng (Subtitle Domain)
+
+### 4.0. Dịch short qua Gemini Gateway
+
+- Provider `gemini-gateway` gọi CreateMediaTool tại `http://127.0.0.1:4982/openai/v1` và cố định wire model `gemini-advanced` (Gemini 3.1 Pro theo ánh xạ do người vận hành gateway xác nhận).
+- Mỗi video ở luồng thành công dùng đúng hai gateway generation call: lượt một đọc toàn bộ ledger cue để khôi phục lỗi ASR/OCR có căn cứ và dịch; lượt hai là một reviewer mới, nhận lại toàn bộ nguồn cùng bản nháp rồi trả JSON cuối. Nếu Gemini trả lỗi tạm thời hoặc JSON hỏng, mỗi lượt được thử tối đa ba upstream attempts; trần cả video là sáu thay vì để hai tầng retry nhân nhau.
+- Toàn bộ cue của một short được giữ trong một batch khi dùng provider này. Cue ID và timestamp vẫn do code quản lý; model trả compact keyed JSON `translations{cue-id:text}`, adapter dựng lại `items[{id,text}]`, rồi parser từ chối thiếu ID, thừa ID, trùng ID, Markdown hoặc model fallback. Dạng compact giảm phần khóa lặp lại trên video nhiều cue mà không chuyển quyền sở hữu identity cho model.
+- Prompt v3 buộc reviewer khôi phục dấu câu trên toàn bài và viết lại theo văn nói tự nhiên của locale đích. Chỉ dẫn gateway thay thế rõ quy tắc source-only cũ để prompt không tự mâu thuẫn. Trước TTS, code chỉ dùng dấu câu đích đã qua review để tạo ranh giới câu; pause nguồn từ 600 ms và nhãn người nói vẫn là ranh giới cứng. Kết quả không có dấu kết câu cuối, hoặc có chuỗi dài quá 10 cue/18 giây mà không có ranh giới an toàn, bị từ chối thay vì đọc thành một đoạn sai nhịp.
+- Khi item ở `needs-review`, nút `Thử lại dịch` tăng retry generation và tự chạy lại đúng item đó trong một thao tác; không yêu cầu người dùng chuẩn bị rồi bấm nút chạy toàn bộ lần thứ hai.
+- Mỗi item lưu `gemini-gateway-translation-audit.json` trong artifacts. Tệp này ghi prompt version, request/response của hai lượt, SHA-256 nội dung trả về, model thực tế, số upstream attempt và lý do retry dạng mã an toàn; cookie xác thực không được đưa vào artifact.
+- Kiểm tra kết nối dùng endpoint capability và không tiêu thụ generation request. Rephrase do tràn thời lượng TTS là request phát sinh riêng, chỉ chạy khi đo audio thật cho thấy cue không vừa trong chính sách dubbing.
+- Nếu một bước sau dịch thất bại, checkpoint có đủ cue, đúng identity và assessment `validated` hoặc `with-warnings` được kiểm tra cấu trúc lại rồi tái sử dụng. Chỉ `needs-review`, identity cũ hoặc nội dung không còn hợp lệ mới gọi lại provider.
 
 ### 4.1. Hiệu Ứng Trình Diễn (Display Styles)
 - **Standard:** Hiển thị trọn câu tĩnh theo từng dòng.

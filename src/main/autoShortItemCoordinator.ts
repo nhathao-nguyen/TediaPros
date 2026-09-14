@@ -368,11 +368,31 @@ function translationModelIdentity(config: AutoShortConfig): { modelIdentity: str
       profileId: sanitizeEndpointAlias(config.translateServerUrl) || 'local-default'
     }
   }
+  if (config.translateProvider === 'gemini-gateway') {
+    return {
+      modelIdentity: 'gemini-gateway:gemini-advanced:two-pass-v3',
+      revisionKnown: false,
+      profileId: sanitizeEndpointAlias(config.translateServerUrl) || 'gemini-gateway-default'
+    }
+  }
   return {
     modelIdentity: `${config.translateProvider}:configured-model`,
     revisionKnown: false,
     profileId: `${config.translateProvider}-account`
   }
+}
+
+export function canReuseAcceptedTranslationCheckpoint(input: {
+  translatedCueCount: number
+  checkpointKey?: string
+  expectedKey: string
+  checkpointModelIdentity?: string
+  expectedModelIdentity: string
+  disposition?: TranslationAssessment['disposition']
+}): boolean {
+  return input.translatedCueCount > 0 && input.checkpointKey === input.expectedKey &&
+    input.checkpointModelIdentity === input.expectedModelIdentity &&
+    (input.disposition === 'validated' || input.disposition === 'with-warnings')
 }
 
 /**
@@ -1121,7 +1141,7 @@ export function createAutoShortItemProcessor(
           assessmentVersion: 'translation-assessment-v2',
           options: {
             sourceDigest: processingDigest,
-            contextRadius: 2,
+            contextMode: config.translateProvider === 'gemini-gateway' ? 'whole-document' : 'neighbor-radius-2',
             videoDuration: config.ttsEnabled ? processingMeta.giay : undefined,
             mode: translationMode,
             strict: true
@@ -1166,8 +1186,15 @@ export function createAutoShortItemProcessor(
           }
         }
 
-        if (checkpoint.translatedCues && checkpoint.translationKey === translationKey && checkpoint.translationModelIdentity === model.modelIdentity && checkpoint.translationAssessment?.disposition !== 'needs-review') {
-          const restored = revalidate(checkpoint.translatedCues.map((cue) => ({ id: cue.id, text: cue.text })), true)
+        if (canReuseAcceptedTranslationCheckpoint({
+          translatedCueCount: checkpoint.translatedCues?.length || 0,
+          checkpointKey: checkpoint.translationKey,
+          expectedKey: translationKey,
+          checkpointModelIdentity: checkpoint.translationModelIdentity,
+          expectedModelIdentity: model.modelIdentity,
+          disposition: checkpoint.translationAssessment?.disposition
+        })) {
+          const restored = revalidate(checkpoint.translatedCues!.map((cue) => ({ id: cue.id, text: cue.text })))
           if (restored) {
             logInfo(`[AutoShort] Phục hồi ${restored.length} câu dịch đã được kiểm tra từ checkpoint.`)
             await writeFile(targetSrtPath, serializeSrt(restored), 'utf8')
@@ -1270,7 +1297,8 @@ export function createAutoShortItemProcessor(
             }, async (budget) => {
               checkpoint.translationBudget = budget
               await saveCheckpoint()
-            }, reusablePartial, checkpoint.translationBudget, processingMeta.giay)
+            }, reusablePartial, checkpoint.translationBudget, processingMeta.giay,
+            config.translateProvider === 'gemini-gateway' ? join(workDir, 'gemini-gateway-translation-audit.json') : undefined)
             providerTranslationAssessment = strictResult.assessment
             const translated = parseSrt(await readFile(targetSrtPath, 'utf8')).cues.filter((cue) => cue.text.trim())
             const restored = revalidate(mergeRecoveredTranslationItems(
@@ -1307,6 +1335,10 @@ export function createAutoShortItemProcessor(
         checkpoint.translationModelIdentity = model.modelIdentity
         await saveCheckpoint()
         artifactEntries.push({ source: targetSrtPath, name: 'translated.srt' })
+        const gatewayAuditPath = join(workDir, 'gemini-gateway-translation-audit.json')
+        if (config.translateProvider === 'gemini-gateway' && await fileExists(gatewayAuditPath)) {
+          artifactEntries.push({ source: gatewayAuditPath, name: 'gemini-gateway-translation-audit.json' })
+        }
       }
 
       const contentAssessment = assessContentQuality({ sourceCues, targetCues })

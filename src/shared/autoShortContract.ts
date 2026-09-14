@@ -23,7 +23,7 @@ export type AutoShortValidation =
   | { ok: false; error: string }
 
 const METHODS = new Set<AutoShortSubtitleMethod>(['whisper', 'ocr', 'whisper-ocr'])
-const PROVIDERS = new Set(['gemini', 'openai', 'local'])
+const PROVIDERS = new Set(['gemini', 'openai', 'local', 'gemini-gateway'])
 const DISPLAY_STYLES = new Set<SubtitleDisplayStyle>(['standard', 'word-reveal', 'word-highlight'])
 const LAYOUTS = new Set<SubtitleLayoutProfile>(['readable', 'social', 'vertical'])
 const MODELS = new Set(['base', 'small', 'medium'])

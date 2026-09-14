@@ -51,6 +51,11 @@ import { detectGpu } from './gpu'
 import { createGeminiTranslationAdapter, loadKey as loadGeminiKey } from './gemini'
 import { createOpenAiTranslationAdapter, loadKey as loadOpenAiKey } from './openai'
 import { createLocalTranslationAdapter, loadLocalKey, checkLocalTranslateKey } from './localTranslate'
+import {
+  checkGeminiGateway,
+  createGeminiGatewayTranslationAdapter,
+  rephraseGeminiGateway
+} from './geminiGateway'
 import { generateSpeech, generateVoiceClone, getTtsModels, checkTtsServerHealth, getEdgeTtsModelInfo, fetchEdgeVoices } from './tts'
 import { getEdgeTtsScheduler, probeEdgeTtsSynthesis } from './edgeTts'
 import { EdgeTtsError, isEdgeFailureCode } from './edgeTtsRecovery'
@@ -1280,7 +1285,8 @@ async function requestTranslation(
   onBudget?: (snapshot: TranslationBudgetSnapshot) => Promise<void> | void,
   resumeItems: readonly TranslationItem[] = [],
   restoredBudget?: TranslationBudgetSnapshot,
-  videoDuration?: number
+  videoDuration?: number,
+  geminiGatewayAuditPath?: string
 ): Promise<{ assessment?: TranslationAssessment; budget?: TranslationBudgetSnapshot }> {
   // AutoShort uses one provider-neutral scheduler. Provider modules only make
   // one request and expose the canonical prompt/response contract; this
@@ -1378,6 +1384,8 @@ async function requestTranslation(
   let adapter: TranslationAdapter
   if (config.translateProvider === 'local') {
     adapter = createLocalTranslationAdapter(await loadLocalKey(), config.translateServerUrl)
+  } else if (config.translateProvider === 'gemini-gateway') {
+    adapter = createGeminiGatewayTranslationAdapter(config.translateServerUrl, { auditPath: geminiGatewayAuditPath })
   } else if (config.translateProvider === 'openai') {
     const key = await loadOpenAiKey()
     if (!key.trim()) throw new Error('Chưa có API key OpenAI.')
@@ -1395,6 +1403,7 @@ async function requestTranslation(
     restoredBudget,
     resumeItems: reusable,
     beforeDispatch: onBudget,
+    autoRepairContentWarnings: config.translateProvider === 'gemini-gateway' ? false : undefined,
     onBatch: async (_batchId, batch, budget) => {
       await onBudget?.(budget)
       for (const item of batch.items) completedIds.add(item.id)
@@ -1491,9 +1500,10 @@ export async function translateStrict(
   onBudget?: (snapshot: TranslationBudgetSnapshot) => Promise<void> | void,
   resumeItems: readonly TranslationItem[] = [],
   restoredBudget?: TranslationBudgetSnapshot,
-  videoDuration?: number
+  videoDuration?: number,
+  geminiGatewayAuditPath?: string
 ): Promise<{ assessment?: TranslationAssessment; budget?: TranslationBudgetSnapshot }> {
-  const result = await requestTranslation(config, input, output, onProgress, signal, sourceLanguage, onBatch, onBudget, resumeItems, restoredBudget, videoDuration)
+  const result = await requestTranslation(config, input, output, onProgress, signal, sourceLanguage, onBatch, onBudget, resumeItems, restoredBudget, videoDuration, geminiGatewayAuditPath)
   const source = parseSrt(await readFile(input, 'utf8')).cues
   const translated = parseSrt(await readFile(output, 'utf8')).cues
   // Never infer identity by position or silently copy source text. A
@@ -1688,6 +1698,11 @@ export async function rephraseDubbingCue(
         return []
       }
       return extractRephrasedTexts(content, cueId)
+    } else if (config.translateProvider === 'gemini-gateway') {
+      const text = await getGlobalResourceManager().withLease(['external-title'], signal, () =>
+        rephraseGeminiGateway(config.translateServerUrl, messages, signal))
+      if (!text) return []
+      return extractRephrasedTexts(text, cueId)
     } else if (config.translateProvider === 'gemini') {
       const { rephraseGeminiCue } = await import('./gemini')
       const text = await getGlobalResourceManager().withLease(['external-title'], signal, () => rephraseGeminiCue(systemPrompt, userPrompt, signal))
@@ -2628,7 +2643,11 @@ export async function synthesizeVoice(
     if (!target || !target.text.trim()) throw new Error(`Không tìm thấy text dịch cho cue ${cue.id}.`)
     return { id: cue.id, text: spokenTextWithoutSpeakerLabel(target.text) }
   })
-  const translatedPlan = groupDubbingPlanForSpeech(applyDubbingTranslations(sourcePlan, targetItems), language)
+  const translatedPlan = groupDubbingPlanForSpeech(
+    applyDubbingTranslations(sourcePlan, targetItems),
+    language,
+    { reviewedTargetBoundaries: config.translateProvider === 'gemini-gateway' }
+  )
   logInfo(`[AutoShort] Gom ${sourcePlan.cues.length} mảnh phụ đề thành ${translatedPlan.cues.length} đoạn thoại; giữ đủ source cue ID và khoảng nghỉ giữa các đoạn.`)
   const referenceInfo = config.ttsRefAudioPath
     ? await stat(config.ttsRefAudioPath).then((info) => ({ path: config.ttsRefAudioPath, size: info.size, mtimeMs: info.mtimeMs })).catch(() => ({ path: config.ttsRefAudioPath, size: 0, mtimeMs: 0 }))
@@ -3240,6 +3259,10 @@ async function preflight(job: AutoShortJob): Promise<void> {
     const key = await loadLocalKey()
     const health = await preflightStep<DichKeyStatus>('kiểm tra dịch nội bộ', () => checkLocalTranslateKey(config.translateServerUrl, key))
     if (!health.ok) throw new Error(health.message || 'Không kết nối được server dịch nội bộ')
+  }
+  if (config.translateTarget !== 'none' && config.translateProvider === 'gemini-gateway') {
+    const health = await preflightStep<DichKeyStatus>('kiểm tra Gemini Gateway', () => checkGeminiGateway(config.translateServerUrl))
+    if (!health.ok) throw new Error(health.message || 'Không kết nối được Gemini Gateway')
   }
   if (config.ttsEnabled) {
     if (config.ttsProvider === 'edge-tts') {

@@ -14,13 +14,17 @@ import { SOURCE_SPEECH_GROUP_PREFIX } from '../sourceSpeechGrouping'
 export const TRANSLATION_PLAN_VERSION = 'translation-plan-v3'
 
 export interface TranslationCapability extends SharedTranslationCapability {
-  provider: 'local' | 'gemini' | 'openai' | 'fixture'
+  provider: 'local' | 'gemini' | 'openai' | 'gemini-gateway' | 'fixture'
   modelIdentity: string
   revisionKnown: boolean
   format: 'json-items' | 'id-lines'
   contextTokens: number | null
   outputTokens: number | null
   countTokens?: (text: string) => number
+  /** Qualified provider path that should keep a short's complete cue ledger in one request. */
+  wholeDocument?: boolean
+  /** Provider adapter already performs its own source-grounded independent content review. */
+  independentContentReview?: boolean
 }
 
 export interface TranslationUnitMapping {
@@ -140,9 +144,10 @@ function normalizedInput(input: TranslationInput): TranslationInput {
 export function planTranslation(input: TranslationInput, capability: TranslationCapability): TranslationPlan {
   const source = withSourceSpeechGroups(normalizedInput(input))
   const warnings: string[] = []
+  const outputTokenCeiling = capability.wholeDocument ? 16_384 : 2_048
   const outputTokens = capability.outputTokens == null
     ? 2_048
-    : Math.max(1, Math.min(2_048, Math.floor(capability.outputTokens)))
+    : Math.max(1, Math.min(outputTokenCeiling, Math.floor(capability.outputTokens)))
   const maxChars = Math.max(256, Math.min(4_000, Math.floor(outputTokens * 3)))
   const units = source.cues.flatMap((cue) => splitCue(cue, maxChars))
   const mapping = units.map((item) => item.mapping)
@@ -205,12 +210,12 @@ export function planTranslation(input: TranslationInput, capability: Translation
     // does not make otherwise valid cues unsupported.
     const candidate = pending.length > 0 ? [...pending, ...group] : group
     const exceedsContext = !fitsContext(candidate)
-    const exceedsLegacy = currentCost + groupCost > 20_000 || pending.length + group.length > 24
+    const exceedsLegacy = !capability.wholeDocument && (currentCost + groupCost > 20_000 || pending.length + group.length > 24)
     if (pending.length > 0 && (exceedsContext || exceedsLegacy)) flush()
-    if (group.length > 1 && (!fitsContext(group) || group.length > 24 || groupCost > 20_000)) {
+    if (group.length > 1 && (!fitsContext(group) || (!capability.wholeDocument && (group.length > 24 || groupCost > 20_000)))) {
       for (const item of group) {
         const nextCost = pending.reduce((sum, entry) => sum + entry.cue.text.length + 64, 0) + item.cue.text.length + 64
-        if (pending.length > 0 && (!fitsContext([...pending, item]) || pending.length >= 24 || nextCost > 20_000)) flush()
+        if (pending.length > 0 && (!fitsContext([...pending, item]) || (!capability.wholeDocument && (pending.length >= 24 || nextCost > 20_000)))) flush()
         pending.push(item)
       }
     } else {

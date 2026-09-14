@@ -159,7 +159,7 @@ export function parseTranslationResponse(
           limits: { maxBytes: 1024 * 1024, maxDepth: 16, maxMembers: Math.max(64, (expected.length + contextIds.length) * 4 + 8), maxCandidates: 1 }
         }).value
         assertExactKeys(parsed, ['items'])
-        if (!Array.isArray(parsed.items) || parsed.items.length > Math.min(100, expected.length + contextIds.length + 16)) {
+        if (!Array.isArray(parsed.items) || parsed.items.length > Math.min(1_000, expected.length + contextIds.length + 16)) {
           issues.push(issue('provider-protocol', 'JSON dịch phải chứa đúng mảng items trong giới hạn cue yêu cầu.'))
         } else items.push(...parsed.items.map(normalizeItem))
       } catch {

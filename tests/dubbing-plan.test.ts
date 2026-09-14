@@ -9,6 +9,24 @@ import * as subtitleModule from '../src/main/dubbing/subtitles'
 import * as synthesisModule from '../src/main/dubbing/synthesis'
 import { planDubbingTimeMap, mapDubbingTime } from '../src/main/dubbing/timeMap'
 
+test('adjacent 560ms cue uses a reduced gap instead of losing the full protected gap', () => {
+  const cue = { id: 'cue-91-175050', start: 175.05, end: 175.61, text: '完事' }
+  const window = planModule.deriveDubbingWindow(cue, 175.61, 201.95)
+
+  assert.ok(Math.abs(window.hardEnd - 175.526) < 1e-9)
+  assert.ok(Math.abs(window.availableDuration - 0.476) < 1e-9)
+})
+
+test('AutoShort adjacent 560ms cue uses the same reduced-gap policy', () => {
+  const windows = policyModule.deriveAutoShortCueWindows([
+    { id: 'cue-91-175050', start: 175.05, end: 175.61, text: '完事' },
+    { id: 'cue-92-175610', start: 175.61, end: 176.39, text: '也干净了' }
+  ], 201.95)
+
+  assert.ok(Math.abs(windows[0].hardEnd - 175.526) < 1e-9)
+  assert.ok(Math.abs(windows[0].availableDuration - 0.476) < 1e-9)
+})
+
 test('local extension preserves unchanged segments and enforces 60 percent independently', () => {
   const map = planDubbingTimeMap(6, [
     { id: 'a', start: 0, sourceEnd: 1.5, naturalDuration: 3.4, availableDuration: 1.5 },

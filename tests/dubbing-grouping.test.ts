@@ -3,6 +3,7 @@ import test from 'node:test'
 import * as plans from '../src/main/dubbing/plan'
 import { applyDubbingTranslations, dubbingSpeakingDurations } from '../src/main/dubbing/translation'
 import { synthesizeDubbingPlan } from '../src/main/dubbing/synthesis'
+import { buildDubbingSubtitleSegments } from '../src/main/dubbing/subtitles'
 import { parseSrt } from '../src/shared/subtitles'
 import video30SourceCues from './fixtures/video30-source-cues.json'
 
@@ -52,6 +53,70 @@ test('speech segmentation is fixed by the source before translation length or pu
     const translated = applyDubbingTranslations(original, source.map(cue => ({ id: cue.id, text })))
     assert.deepEqual(group(translated).cues.map(cue => cue.sourceCueIds), expected)
   }
+})
+
+test('reviewed whole-document punctuation may keep a seven-cue sentence intact', () => {
+  const source = Array.from({ length: 9 }, (_, index) => ({
+    id: `s${index}`,
+    start: index,
+    end: index + 1,
+    text: '连续的原文片段'
+  }))
+  const translated = applyDubbingTranslations(
+    plans.buildDubbingPlan({ videoDuration: 10, cues: source }),
+    source.map((cue, index) => ({
+      id: cue.id,
+      text: index === 6 ? 'kết thúc câu đầu.' : index === 8 ? 'kết thúc câu sau.' : `mảnh ${index + 1}`
+    }))
+  )
+  const result = plans.groupDubbingPlanForSpeech(translated, 'vi-VN', { reviewedTargetBoundaries: true })
+  assert.deepEqual(result.cues.map((cue) => cue.sourceCueIds), [source.slice(0, 7).map((cue) => cue.id), ['s7', 's8']])
+  assert.deepEqual(result.cues.flatMap((cue) => cue.sourceCueIds), source.map((cue) => cue.id))
+  assert.equal(plans.validateDubbingPlan(result).ok, true)
+})
+
+test('semantic subtitle chunks avoid splitting common Vietnamese compounds', () => {
+  const text = 'mới biết được sự thật thì ra đây là nhà vệ sinh khô của gia đình anh thiết kế này cũng có cái khôn của nó vì càng đào sâu càng chứa được nhiều'
+  const chunks = buildDubbingSubtitleSegments({
+    cueId: 'vi', sourceIndex: 0, start: 0, end: 8, finalSpokenText: text
+  }, 54)
+  assert.equal(chunks.map((cue) => cue.text).join(' '), text)
+  assert.ok(chunks.every((cue) => cue.text.length <= 54))
+  const boundaries = chunks.slice(0, -1).map((cue, index) => `${cue.text.split(/\s+/u).at(-1)?.toLowerCase()} ${chunks[index + 1].text.split(/\s+/u)[0]?.toLowerCase()}`)
+  assert.equal(boundaries.includes('nhà vệ'), false)
+  assert.equal(boundaries.includes('thiết kế'), false)
+})
+
+test('Africa pit regression follows reviewed sentences instead of five six-cue partitions', () => {
+  const ends = [2.24, 3.7, 4.78, 6.38, 8.1, 8.84, 10.18, 11.78, 13.32, 15.46, 17.3, 18.98, 20.3, 21.92, 23.9, 25.7, 27.48, 28.1, 29.18, 30.66, 31.98, 33.3, 35.66, 36.36, 38.06, 39.64, 40.6, 41.84]
+  const sourceText = [
+    '本来还以为这位非洲小哥终于开窍', '居然开始想起来打井了', '可越看越不对劲', '谁家的井挖成这种形状', '而且还挖得如此光滑公正',
+    '很多人认为', '它是挖来做白事用的', '然而你看这位小哥挖的规模', '无论是深度或者广度', '装下一整个部落的人都绰绰有余',
+    '所以这种深坑绝非等闲', '最终向旁边的酋长打听', '才艰难的揭开奥秘', '原来这是小哥一家人的旱侧',
+    '这种设计隐藏着智慧的光芒', '理论上挖的越深装的越多', '甚至达到惊人的25米深',
+    '越深的地方', '空气流动越少', '臭味就很难飘上来', '苍蝇蚊虫也下不去', '相对来说也更卫生',
+    '满足小哥一家十几口一辈子的需求', '不出意外的话', '一侧传三代完全没问题',
+    '唯一的缺点就是下雨天', '可能容易打滑', '上厕所需要注意安全'
+  ]
+  const targetText = [
+    'Cứ ngỡ anh chàng châu Phi này cuối cùng cũng nghĩ ra', 'chuyện đào giếng', 'nhưng càng nhìn càng thấy lạ', 'ai lại đào giếng kiểu này', 'mà còn phẳng phiu, vuông vức đến vậy.',
+    'Nhiều người nghĩ', 'đây là huyệt để chôn cất', 'nhưng nhìn quy mô cái hố', 'từ độ sâu đến độ rộng', 'chứa cả một bộ tộc vẫn còn dư.',
+    'Vì thế cái hố này không hề bình thường', 'phải hỏi tù trưởng ở gần đó', 'người ta mới biết được sự thật', 'đây là hố xí của gia đình anh.',
+    'Cách thiết kế này cũng có cái khôn của nó', 'đào càng sâu thì chứa càng nhiều', 'có hố sâu tới tận 25 mét.',
+    'Càng xuống sâu', 'không khí càng ít lưu thông', 'mùi hôi càng khó bốc lên', 'ruồi muỗi cũng khó bay xuống', 'nhờ vậy cũng vệ sinh hơn.',
+    'Một hố đủ cho hơn chục người trong nhà dùng cả đời', 'nếu không có gì bất trắc', 'thì truyền qua ba đời cũng không thành vấn đề.',
+    'Nhược điểm duy nhất là khi trời mưa', 'bề mặt dễ trơn trượt', 'nên phải cẩn thận khi đi vệ sinh.'
+  ]
+  const source = sourceText.map((text, index) => ({ id: `cue-${index + 1}`, start: index ? ends[index - 1] : 0, end: ends[index], text }))
+  const translated = applyDubbingTranslations(
+    plans.buildDubbingPlan({ videoDuration: 42.067, cues: source }),
+    targetText.map((text, index) => ({ id: `cue-${index + 1}`, text }))
+  )
+  const result = plans.groupDubbingPlanForSpeech(translated, 'vi-VN', { reviewedTargetBoundaries: true })
+  assert.deepEqual(result.cues.map((cue) => cue.sourceCueIds.length), [5, 5, 4, 3, 5, 3, 3])
+  assert.equal(result.cues.some((cue) => /nhiều người nghĩ$/u.test(cue.translatedText)), false)
+  assert.equal(result.cues.some((cue) => /tù trưởng ở gần đó$/u.test(cue.translatedText)), false)
+  assert.equal(plans.validateDubbingPlan(result).ok, true)
 })
 
 test('video30 original unpunctuated checkpoint keeps cues 45 and 46 together without rewriting source', () => {

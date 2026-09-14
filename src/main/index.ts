@@ -108,6 +108,7 @@ import {
   localTranslateSrt,
   saveLocalKey
 } from './localTranslate'
+import { checkGeminiGateway, translateSrtWithGeminiGateway } from './geminiGateway'
 import { cancelOcr, installOcrEngine, ocrEngineStatus, ocrVideo } from './ocr'
 import { boCuc, burnSubtitle, cancelBurn, docFileSrt, probeBurnMedia, srtGiay } from './burn'
 import { prepareAudioPreview } from './audioPreview'
@@ -905,14 +906,17 @@ function registerIpc(): void {
 
   // ---- Dich phu de bang API key cua user (Gemini | ChatGPT | AI noi bo) ----
   const isProvider = (p: unknown): p is DichProvider =>
-    p === 'gemini' || p === 'openai' || p === 'local'
+    p === 'gemini' || p === 'openai' || p === 'local' || p === 'gemini-gateway'
 
   ipcMain.handle('translate:hasKey', async (_e, provider: DichProvider) => {
     if (!isProvider(provider)) return false
-    return provider === 'openai' ? openaiHasKey() : provider === 'local' ? hasLocalKey() : geminiHasKey()
+    return provider === 'gemini-gateway'
+      ? true
+      : provider === 'openai' ? openaiHasKey() : provider === 'local' ? hasLocalKey() : geminiHasKey()
   })
   ipcMain.handle('translate:saveKey', async (_e, provider: DichProvider, key: string) => {
     if (!isProvider(provider)) return
+    if (provider === 'gemini-gateway') return
     return provider === 'openai'
       ? openaiSaveKey(key)
       : provider === 'local'
@@ -921,6 +925,7 @@ function registerIpc(): void {
   })
   ipcMain.handle('translate:checkKey', async (_e, provider: DichProvider, key: string, serverUrl?: string, targetLanguage?: string, sourceLanguage?: string) => {
     if (!isProvider(provider)) return { ok: false, message: 'Nhà cung cấp không hợp lệ.' }
+    if (provider === 'gemini-gateway') return checkGeminiGateway(serverUrl)
     return provider === 'openai'
       ? openaiCheckKey(key)
       : provider === 'local'
@@ -938,6 +943,12 @@ function registerIpc(): void {
       serverUrl?: string
     ) => {
       const p: DichProvider = isProvider(provider) ? provider : 'gemini'
+      if (p === 'gemini-gateway') {
+        return translateSrtWithGeminiGateway(srtPath, outPath, dich, serverUrl, {
+          onProgress: (d: number, t: number) => event.sender.send('translate:progress', { done: d, total: t }),
+          mode: 'subtitle'
+        })
+      }
       if (p === 'local') {
         return localTranslateSrt(srtPath, outPath, dich, serverUrl, undefined, (d: number, t: number) =>
           event.sender.send('translate:progress', { done: d, total: t }),

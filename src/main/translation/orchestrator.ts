@@ -473,7 +473,7 @@ export async function translateWithAdapter(
       (item.code === 'protected-token-suspect' || item.code === 'language-suspect') &&
       item.cueIds.length > 0)
     const repairIds = [...new Set(repairableIssues.flatMap((item) => item.cueIds))]
-    if (options.autoRepairContentWarnings !== false && repairIds.length > 0) {
+    if (options.autoRepairContentWarnings !== false && !adapter.capability.independentContentReview && repairIds.length > 0) {
       const selectedCues = input.cues.filter((cue) => repairIds.includes(cue.id))
       if (selectedCues.length > 0) {
         const repairInput: TranslationInput = {

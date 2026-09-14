@@ -7,7 +7,7 @@ export function readDichProvider(): DichProvider {
   try {
     const raw = localStorage.getItem(KEY)
     const v = raw != null ? (JSON.parse(raw) as string) : 'gemini'
-    return v === 'openai' ? 'openai' : 'gemini'
+    return v === 'openai' || v === 'local' || v === 'gemini-gateway' ? v : 'gemini'
   } catch {
     return 'gemini'
   }

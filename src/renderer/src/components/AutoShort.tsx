@@ -1,6 +1,7 @@
 import type { JSX } from 'react'
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import {
+  DEFAULT_GEMINI_GATEWAY_URL,
   DEFAULT_AI_SERVER_URL,
   DICH_LANGS,
   type AutoShortAudioMode,
@@ -280,7 +281,11 @@ export default function AutoShort(): JSX.Element {
   const [titleSeoOptions, setTitleSeoOptions] = usePersistedState<VideoSeoOptions>('tblao.videoSeo.options.v1', { ...DEFAULT_VIDEO_SEO_OPTIONS })
   const [translateProvider, setTranslateProvider] = usePersistedState<DichProvider>(
     'tblao.autoshort.transProvider',
-    'local'
+    'gemini-gateway'
+  )
+  const [geminiGatewayUrl, setGeminiGatewayUrl] = usePersistedState(
+    'tblao.autoshort.geminiGatewayUrl',
+    DEFAULT_GEMINI_GATEWAY_URL
   )
   const [translationSynopsis, setTranslationSynopsis] = usePersistedState('tblao.autoshort.translationSynopsis', '')
   const [translationGlossaryText, setTranslationGlossaryText] = usePersistedState('tblao.autoshort.translationGlossary', '')
@@ -1043,7 +1048,9 @@ export default function AutoShort(): JSX.Element {
       const res = await window.api.translateCheckKey(
         translateProvider,
         apiKeyInput.trim(),
-        translateProvider === 'local' ? ttsServerUrl : undefined,
+        translateProvider === 'local'
+          ? ttsServerUrl
+          : translateProvider === 'gemini-gateway' ? geminiGatewayUrl : undefined,
         translateTarget,
         whisperLanguage
       )
@@ -1080,14 +1087,15 @@ export default function AutoShort(): JSX.Element {
   }
 
   // Khởi động chạy hàng loạt Auto Short
-  const startBatch = async (resume?: BatchSnapshot): Promise<void> => {
+  const startBatch = async (resume?: BatchSnapshot, explicitRetryIds?: ReadonlySet<string>): Promise<void> => {
     if (tasks.length === 0 || isRunning || sttnPreviewRunning) return
     const resumeIds = resume ? new Set(resumeCandidateIds(resume)) : null
-    const retryOnly = !resumeIds && retryPendingIds.size > 0
+    const effectiveRetryIds = explicitRetryIds?.size ? explicitRetryIds : retryPendingIds
+    const retryOnly = !resumeIds && effectiveRetryIds.size > 0
     const runnableTasks = resumeIds
       ? tasks.filter((task) => resumeIds.has(task.id))
       : retryOnly
-      ? tasks.filter((task) => retryPendingIds.has(task.id))
+      ? tasks.filter((task) => effectiveRetryIds.has(task.id))
       : tasks
     if (runnableTasks.length === 0) {
       setRetryPendingIdList([])
@@ -1197,7 +1205,9 @@ export default function AutoShort(): JSX.Element {
       outlineScale: outlinePx / SUBTITLE_STYLE_REFERENCE_HEIGHT,
       translateTarget,
       translateProvider,
-      translateServerUrl: ttsServerUrl,
+      translateServerUrl: translateProvider === 'local'
+        ? ttsServerUrl
+        : translateProvider === 'gemini-gateway' ? geminiGatewayUrl : undefined,
       translationGuidance: translateTarget !== 'none' ? guidance.value : undefined,
       videoTitle: titleEnabled ? {
         provider: titleProvider,
@@ -1273,6 +1283,7 @@ export default function AutoShort(): JSX.Element {
       currentStepMessage: `Đã chuẩn bị lượt thử lại bản dịch #${result.generation ?? 1}; bấm Bắt đầu chạy lại để gọi provider.`
     } : item))
     setRetryPendingIdList((prev) => prev.includes(task.id) ? prev : [...prev, task.id])
+    await startBatch(undefined, new Set([task.id]))
   }
 
   const chooseOutputDir = async (): Promise<void> => {
@@ -1783,16 +1794,21 @@ export default function AutoShort(): JSX.Element {
                           onChange={(e) => setTranslateProvider(e.target.value as DichProvider)}
                         >
                           <option value="local">AI nội bộ (TTS-Server)</option>
+                          <option value="gemini-gateway">Gemini 3.1 Pro (CreateMediaTool)</option>
                           <option value="gemini">Google Gemini AI</option>
                           <option value="openai">OpenAI (ChatGPT)</option>
                         </select>
                       </label>
 
-                      {translateProvider === 'local' && <label className="field editor-field">
-                        <span>Địa chỉ server AI</span>
-                        <input type="url" value={ttsServerUrl} disabled={isRunning}
-                          onChange={(event) => setTtsServerUrl(event.target.value)}
-                          placeholder={DEFAULT_AI_SERVER_URL} />
+                      {(translateProvider === 'local' || translateProvider === 'gemini-gateway') && <label className="field editor-field">
+                        <span>{translateProvider === 'gemini-gateway' ? 'Địa chỉ Gemini Gateway' : 'Địa chỉ server AI'}</span>
+                        <input type="url"
+                          value={translateProvider === 'gemini-gateway' ? geminiGatewayUrl : ttsServerUrl}
+                          disabled={isRunning}
+                          onChange={(event) => translateProvider === 'gemini-gateway'
+                            ? setGeminiGatewayUrl(event.target.value)
+                            : setTtsServerUrl(event.target.value)}
+                          placeholder={translateProvider === 'gemini-gateway' ? DEFAULT_GEMINI_GATEWAY_URL : DEFAULT_AI_SERVER_URL} />
                       </label>}
 
                       <details className="autoshort-key-card">
@@ -1813,7 +1829,21 @@ export default function AutoShort(): JSX.Element {
                       </details>
 
                       <div className="autoshort-key-card">
-                        {translateProvider === 'gemini' ? <GeminiKeys disabled={isRunning} onChanged={setHasStoredKey} /> : <>
+                        {translateProvider === 'gemini' ? <GeminiKeys disabled={isRunning} onChanged={setHasStoredKey} /> : translateProvider === 'gemini-gateway' ? <>
+                          <div className="autoshort-key-header">
+                            <span className="muted small">Model cố định: Gemini 3.1 Pro (<code>gemini-advanced</code>)</span>
+                            <span className="autoshort-key-badge saved">2 lượt / video</span>
+                          </div>
+                          <button type="button" className="btn primary" disabled={keyTesting || isRunning}
+                            onClick={() => void handleSaveAndTestKey()}>
+                            {keyTesting ? 'Đang kiểm tra…' : 'Kiểm tra gateway và model'}
+                          </button>
+                          {keyFeedback && (
+                            <div className={`autoshort-key-feedback ${keyFeedback.ok ? 'success' : 'error'}`}>
+                              {keyFeedback.ok ? '✓ ' : '✕ '}{keyFeedback.message}
+                            </div>
+                          )}
+                        </> : <>
                         <div className="autoshort-key-header">
                           <span className="muted small">
                             {translateProvider === 'local'
@@ -2847,7 +2877,7 @@ export default function AutoShort(): JSX.Element {
                                   void prepareTranslationRetry(task)
                                 }}
                               >
-                                Chuẩn bị thử lại dịch
+                                Thử lại dịch
                               </button>
                             )}
                             {task.titlePath && !task.seoMetadata && <button type="button" className="btn ghost sm"

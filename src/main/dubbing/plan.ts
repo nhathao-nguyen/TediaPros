@@ -1,5 +1,5 @@
 import type { SubtitleCue } from '../../shared/subtitles'
-import { joinGroupText } from '../semanticGrouping'
+import { extractSpeaker, isSentenceTerminal, joinGroupText } from '../semanticGrouping'
 import { groupSourceSpeechCues } from '../sourceSpeechGrouping'
 
 export const DUBBING_PLAN_VERSION = 3 as const
@@ -108,13 +108,16 @@ export function deriveDubbingWindow(
   if (nextSourceStart == null) {
     hardEnd = Math.max(source.start + 0.05, videoDuration - finalGuardSeconds)
   } else {
-    const rawGap = Math.max(0, nextSourceStart - source.start)
-    const effectiveGap = rawGap >= protectedGapSeconds + 0.05
+    const sourceSpan = Math.max(0, nextSourceStart - source.start)
+    const sourceSilence = Math.max(0, nextSourceStart - source.end)
+    const canReserveFullGap = sourceSilence >= protectedGapSeconds + 0.05
+      || sourceSpan >= protectedGapSeconds + 0.1
+    const effectiveGap = canReserveFullGap
       ? protectedGapSeconds
-      : Math.min(protectedGapSeconds, Math.max(0.02, rawGap * 0.15))
+      : Math.min(protectedGapSeconds, Math.max(0.02, sourceSpan * 0.15))
     hardEnd = Math.min(
       videoDuration - finalGuardSeconds,
-      Math.max(source.start + Math.min(0.1, rawGap * 0.5), nextSourceStart - effectiveGap)
+      Math.max(source.start + Math.min(0.1, sourceSpan * 0.5), nextSourceStart - effectiveGap)
     )
   }
   if (!(hardEnd > source.start)) {
@@ -176,12 +179,49 @@ export function buildDubbingPlan(input: DubbingPlanInput): DubbingPlan {
   }
 }
 
-/** Reuse source-only partitions established before translation, retaining every original anchor. */
-export function groupDubbingPlanForSpeech(plan: DubbingPlan, locale: string): DubbingPlan {
+export interface DubbingSpeechGroupingOptions {
+  /** Use only after a full-document reviewer has validated target punctuation. */
+  reviewedTargetBoundaries?: boolean
+}
+
+function groupByReviewedTargetBoundaries(cues: readonly DubbingPlanCue[]): DubbingPlanCue[][] {
+  const groups: DubbingPlanCue[][] = []
+  let current: DubbingPlanCue[] = []
+  for (let index = 0; index < cues.length; index++) {
+    const cue = cues[index]
+    current.push(cue)
+    const next = cues[index + 1]
+    const speaker = extractSpeaker(cue.sourceText)
+    const nextSpeaker = next ? extractSpeaker(next.sourceText) : null
+    const boundary = !next || isSentenceTerminal(cue.translatedText) || isSentenceTerminal(cue.sourceText)
+      || next.sourceStart - cue.sourceEnd >= 0.6 - 1e-9
+      || (speaker !== nextSpeaker && (speaker !== null || nextSpeaker !== null))
+    if (!boundary) {
+      const duration = cue.sourceEnd - current[0].sourceStart
+      if (current.length >= 10 || duration >= 18) {
+        throw new Error(`Bản dịch chưa có ranh giới câu an toàn trước cue ${cue.id}; dừng trước khi tạo voice.`)
+      }
+      continue
+    }
+    groups.push(current)
+    current = []
+  }
+  return groups
+}
+
+/** Reuse source partitions by default. A reviewed Gemini whole-document result
+ * may opt into its validated target punctuation while source IDs/times remain authoritative. */
+export function groupDubbingPlanForSpeech(
+  plan: DubbingPlan,
+  locale: string,
+  options: DubbingSpeechGroupingOptions = {}
+): DubbingPlan {
   if (plan.cues.some((cue) => cue.sourceCueIds.length > 1)) return plan
-  const groups = groupSourceSpeechCues(plan.cues.map(cue => ({
-    id: cue.id, start: cue.sourceStart, end: cue.sourceEnd, text: cue.sourceText, cue
-  }))).map(group => group.cues.map(entry => entry.cue))
+  const groups = options.reviewedTargetBoundaries
+    ? groupByReviewedTargetBoundaries(plan.cues)
+    : groupSourceSpeechCues(plan.cues.map(cue => ({
+        id: cue.id, start: cue.sourceStart, end: cue.sourceEnd, text: cue.sourceText, cue
+      }))).map(group => group.cues.map(entry => entry.cue))
   const sourceCues = (plan.sourceCues || plan.cues.map((cue) => ({
     id: cue.id, start: cue.sourceStart, end: cue.sourceEnd, text: cue.sourceText
   }))).map((cue) => ({ ...cue }))

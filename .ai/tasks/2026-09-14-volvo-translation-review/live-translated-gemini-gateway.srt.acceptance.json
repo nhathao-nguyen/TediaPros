@@ -1,0 +1,112 @@
+{
+  "evidence": "Live CreateMediaTool gateway generation on 2026-09-14",
+  "ok": true,
+  "count": 44,
+  "disposition": "with-warnings",
+  "issueCodes": [
+    "protected-token-suspect",
+    "protected-token-suspect",
+    "protected-token-suspect",
+    "protected-token-suspect",
+    "protected-token-suspect",
+    "protected-token-suspect"
+  ],
+  "gatewayCalls": 2,
+  "upstreamAttempts": 8,
+  "containsWooting": false,
+  "containsPixelBranch": false,
+  "containsVolvo": true,
+  "containsOak": true,
+  "selected": [
+    {
+      "id": "cue-26-43060",
+      "start": 43.06,
+      "text": "tựa như cành cây sồi khẽ uốn cong,"
+    },
+    {
+      "id": "cue-27-44720",
+      "start": 44.72,
+      "text": "phát ra tiếng \"rắc\" thật khẽ khàng."
+    },
+    {
+      "id": "cue-28-46160",
+      "start": 46.16,
+      "text": "Sau đó cả đội số hóa âm thanh từ rừng già này,"
+    },
+    {
+      "id": "cue-29-48740",
+      "start": 48.74,
+      "text": "tinh chỉnh liên tục,"
+    },
+    {
+      "id": "cue-30-49720",
+      "start": 49.72,
+      "text": "cuối cùng biến nó thành"
+    },
+    {
+      "id": "cue-31-50660",
+      "start": 50.66,
+      "text": "tiếng bấm độc quyền trên phím Volvo."
+    },
+    {
+      "id": "cue-32-52320",
+      "start": 52.32,
+      "text": "Đó là lý do"
+    },
+    {
+      "id": "cue-33-53120",
+      "start": 53.12,
+      "text": "rất nhiều người bảo phím bấm Volvo"
+    },
+    {
+      "id": "cue-34-55060",
+      "start": 55.06,
+      "text": "là phím bấm thư giãn nhất mạng xã hội."
+    },
+    {
+      "id": "cue-35-56840",
+      "start": 56.84,
+      "text": "Lắng nghe tiếng dịu êm từ khu rừng,"
+    },
+    {
+      "id": "cue-36-58500",
+      "start": 58.5,
+      "text": "đường có tắc đến mấy,"
+    },
+    {
+      "id": "cue-37-59320",
+      "start": 59.32,
+      "text": "lòng có bực bội đến đâu,"
+    },
+    {
+      "id": "cue-38-60480",
+      "start": 60.48,
+      "text": "dường như cũng được xoa dịu tức thì."
+    },
+    {
+      "id": "cue-39-61940",
+      "start": 61.94,
+      "text": "Hóa ra sự tận tâm đích thực"
+    },
+    {
+      "id": "cue-40-62980",
+      "start": 62.98,
+      "text": "vẫn luôn ẩn giấu trong"
+    },
+    {
+      "id": "cue-41-64080",
+      "start": 64.08,
+      "text": "những chi tiết nhỏ xíu hay bị bỏ qua."
+    },
+    {
+      "id": "cue-42-65640",
+      "start": 65.64,
+      "text": "Bạn còn bắt gặp"
+    },
+    {
+      "id": "cue-43-66460",
+      "start": 66.46,
+      "text": "thiết kế ấm lòng nào trên xe hơi nữa không?"
+    }
+  ]
+}

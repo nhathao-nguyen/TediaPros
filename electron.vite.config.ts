@@ -24,6 +24,7 @@ export default defineConfig({
   },
   renderer: {
     root: 'src/renderer',
+    cacheDir: resolve(__dirname, '.vite-codex-dev-cache'),
     resolve: {
       alias: {
         '@renderer': resolve(__dirname, 'src/renderer/src')

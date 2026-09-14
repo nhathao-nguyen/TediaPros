@@ -1,0 +1,355 @@
+{
+  "evidence": "Offline replay of current code using saved SRT; not a captured live provider request.",
+  "sourceCount": 44,
+  "targetCount": 44,
+  "timelinesAndIdsEqual": true,
+  "sourceTerminalPunctuationCount": 0,
+  "targetTerminalPunctuationCount": 1,
+  "batches": [
+    {
+      "id": "translation-batch-1",
+      "cueNumbers": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19,
+        20,
+        21,
+        22,
+        23,
+        24
+      ],
+      "before": [],
+      "after": [
+        {
+          "cue": 25,
+          "text": "终于在无数次测试后"
+        },
+        {
+          "cue": 26,
+          "text": "他们找到了"
+        }
+      ],
+      "containsCorrectVolvo": true,
+      "containsMisheardVolvo": false
+    },
+    {
+      "id": "translation-batch-2",
+      "cueNumbers": [
+        25,
+        26,
+        27,
+        28,
+        29,
+        30,
+        31,
+        32,
+        33,
+        34,
+        35,
+        36,
+        37,
+        38,
+        39,
+        40,
+        41,
+        42,
+        43,
+        44
+      ],
+      "before": [
+        {
+          "cue": 23,
+          "text": "有机就算听上千遍上万遍"
+        },
+        {
+          "cue": 24,
+          "text": "也依然觉得舒服的自然声"
+        }
+      ],
+      "after": [],
+      "containsCorrectVolvo": false,
+      "containsMisheardVolvo": true
+    }
+  ],
+  "structuralQuality": {
+    "ok": true,
+    "findings": [
+      {
+        "severity": "warning",
+        "code": "protected-token-mismatch",
+        "cueId": "cue-0-0",
+        "message": "Cue cue-0-0 thay đổi số, đơn vị hoặc phủ định quan trọng ( -> neg:question)."
+      },
+      {
+        "severity": "warning",
+        "code": "protected-token-mismatch",
+        "cueId": "cue-1-740",
+        "message": "Cue cue-1-740 thay đổi số, đơn vị hoặc phủ định quan trọng (neg:statement -> )."
+      },
+      {
+        "severity": "warning",
+        "code": "protected-token-mismatch",
+        "cueId": "cue-14-24600",
+        "message": "Cue cue-14-24600 thay đổi số, đơn vị hoặc phủ định quan trọng (num:2 -> )."
+      },
+      {
+        "severity": "warning",
+        "code": "protected-token-mismatch",
+        "cueId": "cue-20-34320",
+        "message": "Cue cue-20-34320 thay đổi số, đơn vị hoặc phủ định quan trọng (num:1 -> )."
+      },
+      {
+        "severity": "warning",
+        "code": "protected-token-mismatch",
+        "cueId": "cue-24-40540",
+        "message": "Cue cue-24-40540 thay đổi số, đơn vị hoặc phủ định quan trọng (neg:statement -> )."
+      }
+    ]
+  },
+  "languageQuality": {
+    "languageEvidence": "unknown",
+    "issues": []
+  },
+  "replay": {
+    "calls": [
+      [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19,
+        20,
+        21,
+        22,
+        23,
+        24
+      ],
+      [
+        25,
+        26,
+        27,
+        28,
+        29,
+        30,
+        31,
+        32,
+        33,
+        34,
+        35,
+        36,
+        37,
+        38,
+        39,
+        40,
+        41,
+        42,
+        43,
+        44
+      ],
+      [
+        1,
+        2,
+        15,
+        21,
+        25
+      ]
+    ],
+    "assessment": {
+      "version": "translation-assessment-v2",
+      "disposition": "with-warnings",
+      "issues": [
+        {
+          "code": "protected-token-suspect",
+          "severity": "warning",
+          "cueIds": [
+            "cue-0-0"
+          ],
+          "confidence": "heuristic",
+          "message": "Cue cue-0-0 thay đổi số, đơn vị hoặc phủ định quan trọng ( -> neg:question)."
+        },
+        {
+          "code": "protected-token-suspect",
+          "severity": "warning",
+          "cueIds": [
+            "cue-1-740"
+          ],
+          "confidence": "heuristic",
+          "message": "Cue cue-1-740 thay đổi số, đơn vị hoặc phủ định quan trọng (neg:statement -> )."
+        },
+        {
+          "code": "protected-token-suspect",
+          "severity": "warning",
+          "cueIds": [
+            "cue-14-24600"
+          ],
+          "confidence": "heuristic",
+          "message": "Cue cue-14-24600 thay đổi số, đơn vị hoặc phủ định quan trọng (num:2 -> )."
+        },
+        {
+          "code": "protected-token-suspect",
+          "severity": "warning",
+          "cueIds": [
+            "cue-20-34320"
+          ],
+          "confidence": "heuristic",
+          "message": "Cue cue-20-34320 thay đổi số, đơn vị hoặc phủ định quan trọng (num:1 -> )."
+        },
+        {
+          "code": "protected-token-suspect",
+          "severity": "warning",
+          "cueIds": [
+            "cue-24-40540"
+          ],
+          "confidence": "heuristic",
+          "message": "Cue cue-24-40540 thay đổi số, đơn vị hoặc phủ định quan trọng (neg:statement -> )."
+        }
+      ],
+      "languageEvidence": "unknown"
+    },
+    "returnedCount": 44,
+    "wrongWootingSurvived": [
+      {
+        "id": "cue-31-50660",
+        "text": "âm thanh bấm phím độc quyền của Wooting"
+      },
+      {
+        "id": "cue-33-53120",
+        "text": "nhiều người nói bàn phím Wooting"
+      }
+    ],
+    "wrongPixelSurvived": [
+      {
+        "id": "cue-26-43060",
+        "text": "khi cành cây pixel khẽ cong"
+      }
+    ]
+  },
+  "speechGroups": [
+    {
+      "id": "source-speech-v1:cue-0-0",
+      "cueNumbers": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6
+      ]
+    },
+    {
+      "id": "source-speech-v1:cue-6-11660",
+      "cueNumbers": [
+        7,
+        8,
+        9,
+        10,
+        11,
+        12
+      ]
+    },
+    {
+      "id": "source-speech-v1:cue-12-20960",
+      "cueNumbers": [
+        13,
+        14,
+        15,
+        16,
+        17,
+        18
+      ]
+    },
+    {
+      "id": "source-speech-v1:cue-18-31680",
+      "cueNumbers": [
+        19,
+        20,
+        21,
+        22,
+        23,
+        24
+      ]
+    },
+    {
+      "id": "source-speech-v1:cue-24-40540",
+      "cueNumbers": [
+        25,
+        26,
+        27,
+        28
+      ]
+    },
+    {
+      "id": "source-speech-v1:cue-28-46160",
+      "cueNumbers": [
+        29,
+        30,
+        31,
+        32,
+        33,
+        34
+      ]
+    },
+    {
+      "id": "source-speech-v1:cue-34-55060",
+      "cueNumbers": [
+        35,
+        36,
+        37,
+        38
+      ]
+    },
+    {
+      "id": "source-speech-v1:cue-38-60480",
+      "cueNumbers": [
+        39,
+        40,
+        41,
+        42,
+        43,
+        44
+      ]
+    }
+  ],
+  "spoken": {
+    "count": 8,
+    "unchanged": true,
+    "rephrased": 0
+  },
+  "timing": {
+    "averageTempo": 1.1441,
+    "maxTempo": 1.2136,
+    "rephraseCount": 0,
+    "overflowCount": 0,
+    "timingWarnings": []
+  }
+}

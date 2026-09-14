@@ -85,3 +85,10 @@ test('both video workflows pass live locale and SEO options into metadata genera
   assert.match(settings, /list=\{countryListId\}/u)
   assert.match(settings, /value="auto">Tự động theo locale/u)
 })
+
+test('translation recovery is one click and starts only the prepared item', async () => {
+  const component = await readFile(join(process.cwd(), 'src/renderer/src/components/AutoShort.tsx'), 'utf8')
+  assert.match(component, /startBatch\(undefined,\s*new Set\(\[task\.id\]\)\)/u)
+  assert.match(component, />\s*Thử lại dịch\s*<\/button>/u)
+  assert.doesNotMatch(component, />\s*Chuẩn bị thử lại dịch\s*<\/button>/u)
+})

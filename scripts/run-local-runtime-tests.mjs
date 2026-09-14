@@ -111,6 +111,7 @@ const knownTests = [
   'translation-language.test',
   'translation-orchestrator.test',
   'translation-provider-contract.test',
+  'gemini-gateway-contract.test',
   'gemini-keys.test',
   'translation-transport.test',
   'translation-identity.test',
