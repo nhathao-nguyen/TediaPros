@@ -86,7 +86,7 @@ export default function VideoTitleSettings(props: Props): JSX.Element {
   return <div className="card gk" style={{ padding: 12 }}>
     <label className="check"><input type="checkbox" checked={enabled} disabled={unavailable}
       onChange={(event) => onEnabledChange(event.target.checked)} /><span>Tạo tiêu đề, mô tả, tags và hashtags từ SRT</span></label>
-    <p className="muted small">{unavailableReason || 'AI tạo một tiêu đề, description một đoạn, tags và hashtags; tất cả lưu chung trong tieude.txt.'}</p>
+    <p className="muted small">{unavailableReason || 'AI tạo metadata ngắn dùng chung cho YouTube Shorts, TikTok và Reels; tất cả lưu trong tieude.txt.'}</p>
     {enabled && !unavailableReason && <div style={{ display: 'grid', gap: 10 }}>
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: 10 }}>
         <label className="field editor-field"><span>AI tạo metadata</span><select value={provider} disabled={disabled || savingKey}
@@ -99,35 +99,40 @@ export default function VideoTitleSettings(props: Props): JSX.Element {
             {DICH_LANGS.map((item) => <option key={item.code} value={item.code}>{item.label}</option>)}
             <option value="en-US"/><option value="en-GB"/><option value="pt-BR"/><option value="pt-PT"/><option value="zh-Hans"/><option value="zh-Hant"/>
           </datalist></label>
-        <label className="field editor-field"><span>Quốc gia</span><input list={countryListId} value={seo.country} disabled={disabled} maxLength={4}
-          spellCheck={false} placeholder="auto hoặc US" onChange={(event) => updateSeo('country', event.target.value.trim().toLowerCase() === 'auto' ? 'auto' : event.target.value.trim().toUpperCase())} />
-          <datalist id={countryListId}><option value="auto">Tự động theo locale</option>
-            {COUNTRY_CODES.map((code) => <option key={code} value={code}>{REGION_DISPLAY_NAMES?.of(code) || code}</option>)}
-          </datalist></label>
-        <SelectField label="Kiểu tiêu đề" value={seo.titleStyle} disabled={disabled} options={[
-          ['auto', 'Tự động'], ['title-case', 'Title Case'], ['sentence-case', 'Sentence case'], ['native', 'Tự nhiên theo locale']
-        ]} onChange={(value) => updateSeo('titleStyle', value as VideoSeoOptions['titleStyle'])} />
         <SelectField label="Độ dài description" value={seo.descriptionLength} disabled={disabled} options={[
-          ['short', 'Ngắn · 2–3 câu'], ['medium', 'Trung bình'], ['long', 'Dài']
+          ['short', 'Ngắn · 1–2 câu'], ['medium', 'Trung bình · 2–3 câu'], ['long', 'Dài · 3–4 câu']
         ]} onChange={(value) => updateSeo('descriptionLength', value as VideoSeoOptions['descriptionLength'])} />
         <SelectField label="Phong cách description" value={seo.descriptionStyle} disabled={disabled} options={[
           ['balanced', 'Cân bằng'], ['seo', 'SEO'], ['storytelling', 'Kể chuyện'], ['conversion', 'Chuyển đổi'], ['educational', 'Giáo dục']
         ]} onChange={(value) => updateSeo('descriptionStyle', value as VideoSeoOptions['descriptionStyle'])} />
-        <SelectField label="Giọng SEO" value={seo.keywordTone} disabled={disabled} options={[
-          ['natural', 'Tự nhiên'], ['aggressive', 'Mạnh'], ['educational', 'Giáo dục'], ['entertainment', 'Giải trí']
-        ]} onChange={(value) => updateSeo('keywordTone', value as VideoSeoOptions['keywordTone'])} />
-        <SelectField label="Mật độ từ khóa" value={seo.keywordDensity} disabled={disabled} options={[
-          ['light', 'Nhẹ'], ['normal', 'Bình thường'], ['strong', 'Mạnh']
-        ]} onChange={(value) => updateSeo('keywordDensity', value as VideoSeoOptions['keywordDensity'])} />
-        <SelectField label="Disclaimer" value={seo.disclaimerMode} disabled={disabled} options={[
-          ['auto', 'Tự động'], ['none', 'Không'], ['medical', 'Y tế'], ['finance', 'Tài chính'], ['legal', 'Pháp lý'],
-          ['affiliate', 'Tiếp thị liên kết'], ['safety', 'An toàn'], ['informational', 'Thông tin']
-        ]} onChange={(value) => updateSeo('disclaimerMode', value as VideoSeoOptions['disclaimerMode'])} />
       </div>
-      <label className="field editor-field"><span>Tên kênh</span><input value={seo.channelName} disabled={disabled} maxLength={200}
-        onChange={(event) => updateSeo('channelName', event.target.value)} /></label>
       <label className="field editor-field"><span>Giọng thương hiệu</span><textarea value={seo.brandVoice} disabled={disabled} maxLength={2000} rows={2}
         placeholder="Ví dụ: ngắn gọn, trực tiếp, không cường điệu" onChange={(event) => updateSeo('brandVoice', event.target.value)} /></label>
+      <p className="muted small" style={{ margin: 0 }}>Độ dài đầu ra không làm thay đổi lượng nội dung SRT mà pipeline gửi tới AI.</p>
+      <details><summary className="small">Tùy chọn metadata nâng cao</summary>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: 10, marginTop: 10 }}>
+          <label className="field editor-field"><span>Quốc gia</span><input list={countryListId} value={seo.country} disabled={disabled} maxLength={4}
+            spellCheck={false} placeholder="auto hoặc US" onChange={(event) => updateSeo('country', event.target.value.trim().toLowerCase() === 'auto' ? 'auto' : event.target.value.trim().toUpperCase())} />
+            <datalist id={countryListId}><option value="auto">Tự động theo locale</option>
+              {COUNTRY_CODES.map((code) => <option key={code} value={code}>{REGION_DISPLAY_NAMES?.of(code) || code}</option>)}
+            </datalist></label>
+          <SelectField label="Cách viết hoa tiêu đề" value={seo.titleStyle} disabled={disabled} options={[
+            ['auto', 'Tự động'], ['title-case', 'Title Case'], ['sentence-case', 'Sentence case'], ['native', 'Tự nhiên theo locale']
+          ]} onChange={(value) => updateSeo('titleStyle', value as VideoSeoOptions['titleStyle'])} />
+          <SelectField label="Giọng SEO" value={seo.keywordTone} disabled={disabled} options={[
+            ['natural', 'Tự nhiên'], ['aggressive', 'Mạnh'], ['educational', 'Giáo dục'], ['entertainment', 'Giải trí']
+          ]} onChange={(value) => updateSeo('keywordTone', value as VideoSeoOptions['keywordTone'])} />
+          <SelectField label="Mật độ từ khóa" value={seo.keywordDensity} disabled={disabled} options={[
+            ['light', 'Nhẹ'], ['normal', 'Bình thường'], ['strong', 'Mạnh']
+          ]} onChange={(value) => updateSeo('keywordDensity', value as VideoSeoOptions['keywordDensity'])} />
+          <SelectField label="Disclaimer" value={seo.disclaimerMode} disabled={disabled} options={[
+            ['auto', 'Tự động'], ['none', 'Không'], ['medical', 'Y tế'], ['finance', 'Tài chính'], ['legal', 'Pháp lý'],
+            ['affiliate', 'Tiếp thị liên kết'], ['safety', 'An toàn'], ['informational', 'Thông tin']
+          ]} onChange={(value) => updateSeo('disclaimerMode', value as VideoSeoOptions['disclaimerMode'])} />
+          <label className="field editor-field"><span>Tên kênh</span><input value={seo.channelName} disabled={disabled} maxLength={200}
+            onChange={(event) => updateSeo('channelName', event.target.value)} /></label>
+        </div>
+      </details>
       <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
         <button type="button" className="btn ghost sm" disabled={disabled} onClick={savePreset}>Lưu bộ nhớ thị trường</button>
         <button type="button" className="btn ghost sm" disabled={disabled} onClick={loadPreset}>Nạp</button>
