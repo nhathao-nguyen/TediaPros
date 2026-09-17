@@ -1,0 +1,21 @@
+{
+  "ok": true,
+  "elapsedSeconds": 0.209,
+  "cues": 23,
+  "sourceEdits": 12,
+  "reviewStatus": "needs_adjustment",
+  "metrics": {
+    "totalCues": 23,
+    "knownErrorsEvaluated": null,
+    "fixedAsrErrors": null,
+    "corruptedCleanCues": null,
+    "droppedCues": 0,
+    "cueIdIntegrity": true,
+    "timestampsIntegrity": true,
+    "accuracyRate": null,
+    "sourceEditsCount": 17,
+    "appliedReplacementsCount": 4,
+    "findingsCount": 4,
+    "cueCountPreserved": true
+  }
+}

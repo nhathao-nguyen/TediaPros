@@ -80,7 +80,7 @@ function protectedTokens(text: string): string[] {
 
 export interface RephraseSemanticResult {
   ok: boolean
-  reasons: Array<'protected-token' | 'named-entity' | 'relation' | 'lexical-anchor'>
+  reasons: Array<'protected-token' | 'named-entity' | 'relation' | 'lexical-anchor' | 'quantified-object' | 'action-order'>
 }
 
 const REPHRASE_STOP_WORDS = new Set([
@@ -128,6 +128,111 @@ function relationAnchors(text: string): Set<string> {
   return new Set(relations.filter(([, pattern]) => pattern.test(normalized)).map(([name]) => name))
 }
 
+const QUANTITY_WORDS: Record<string, string> = {
+  một: '1', hai: '2', ba: '3', bốn: '4', tư: '4', năm: '5', sáu: '6', bảy: '7', tám: '8', chín: '9', mười: '10',
+  one: '1', two: '2', three: '3', four: '4', five: '5', six: '6', seven: '7', eight: '8', nine: '9', ten: '10'
+}
+const QUANTIFIED_MEASURES = new Set([
+  'thìa', 'muỗng', 'cốc', 'chén', 'ly', 'chai', 'hộp', 'túi', 'miếng', 'con', 'cái', 'quả', 'kg', 'g', 'gram', 'lít', 'ml',
+  'spoon', 'spoons', 'tablespoon', 'tablespoons', 'cup', 'cups', 'bottle', 'bottles', 'box', 'boxes', 'bag', 'bags',
+  'piece', 'pieces', 'kilogram', 'kilograms', 'gram', 'grams', 'liter', 'liters', 'ml', 'times', 'time'
+])
+
+function wordTokens(text: string): string[] {
+  return text.normalize('NFKC').toLowerCase().match(/[\p{L}\p{N}]+/gu) || []
+}
+
+function canonicalQuantity(value: string): string | null {
+  if (/^\p{N}+$/u.test(value)) return value
+  return QUANTITY_WORDS[value] || null
+}
+
+/**
+ * Cross-language source repair cannot be proven locally in full, but an
+ * explicit quantity is objective evidence that must survive the repair. Keep
+ * this deliberately narrower than the same-language rephrase gate: source
+ * and target vocabulary are expected to differ, while `2` and `20` are not.
+ */
+function sourceRepairNumericTokens(text: string): string[] {
+  const explicit = protectedTokens(text)
+    .filter((token) => token.startsWith('num:') || token.startsWith('ordinal:'))
+  const written = wordTokens(text)
+    // Arabic/Unicode digit spans are already represented by `protectedTokens`.
+    // Do not add the same span a second time merely because it is also a word
+    // token; retain lexical number words (two/hai/...) as their own evidence.
+    .filter((token) => !/^[-+]?\p{N}+(?:[.,]\p{N}+)*$/u.test(token))
+    .map((token) => canonicalQuantity(token))
+    .filter((token): token is string => Boolean(token))
+    .map((token) => `num:${token}`)
+  return [...explicit, ...written].sort()
+}
+
+export interface SourceRepairSemanticResult extends RephraseSemanticResult {
+  /** False means the source did not contain a deterministic numeric fact. */
+  checkedNumbers: boolean
+}
+
+/**
+ * Reject a source-anchored repair when it changes an explicit source number
+ * before any TTS request is made. Number words such as `two`/`hai` are
+ * normalized too, so localization does not create a false rejection.
+ */
+export function validateSourceRepairNumericPreservation(
+  sourceText: string,
+  candidateText: string
+): SourceRepairSemanticResult {
+  const sourceNumbers = sourceRepairNumericTokens(sourceText)
+  if (sourceNumbers.length === 0) return { ok: true, reasons: [], checkedNumbers: false }
+  const candidateNumbers = sourceRepairNumericTokens(candidateText)
+  const ok = sourceNumbers.join('\u0000') === candidateNumbers.join('\u0000')
+  return {
+    ok,
+    reasons: ok ? [] : ['protected-token'],
+    checkedNumbers: true
+  }
+}
+
+function normalizedMeasure(value: string): string {
+  return value.endsWith('s') && value.length > 3 ? value.slice(0, -1) : value
+}
+
+/** High-confidence object evidence only: numeral + explicit classifier/unit + noun.
+ * Keep a multiset rather than a quantity/unit map: `2 spoons salt` and
+ * `2 spoons sugar` are two facts, and an inventory may be reordered without
+ * changing either fact. */
+function quantifiedObjects(text: string): string[] {
+  const tokens = wordTokens(text)
+  const result: string[] = []
+  for (let index = 0; index + 2 < tokens.length; index++) {
+    const quantity = canonicalQuantity(tokens[index]!)
+    if (!quantity) continue
+    const rawMeasure = tokens[index + 1]!
+    if (!QUANTIFIED_MEASURES.has(rawMeasure)) continue
+    let objectIndex = index + 2
+    if (tokens[objectIndex] === 'of') objectIndex++
+    const object = tokens[objectIndex]
+    if (!object || REPHRASE_STOP_WORDS.has(object) || canonicalQuantity(object)) continue
+    result.push(`${quantity}|${normalizedMeasure(rawMeasure)}|${object}`)
+  }
+  return result.sort()
+}
+
+function actionSignature(text: string): string {
+  return wordTokens(text)
+    .filter((token) => token.length > 1 && !REPHRASE_STOP_WORDS.has(token)
+      && !['before', 'after', 'trước', 'khi', 'sau'].includes(token))
+    .join(' ')
+}
+
+function beforeActionOrder(text: string): [string, string] | null {
+  const normalized = text.normalize('NFKC').toLowerCase().trim()
+  const match = normalized.match(/^(.+?)\s+(?:before|trước\s+khi)\s+(.+?)(?:[.!?]|$)/u)
+  if (!match) return null
+  const first = actionSignature(match[1] || '')
+  const second = actionSignature(match[2] || '')
+  return first && second ? [first, second] : null
+}
+
 /** Conservative same-language gate for TTS rescue candidates. It only rejects
  * evidence that can be checked deterministically; it does not claim complete
  * semantic equivalence. The original measured text remains the safe fallback. */
@@ -152,6 +257,19 @@ export function validateRephraseSemanticPreservation(
   const currentRelations = relationAnchors(currentText)
   const candidateRelations = relationAnchors(candidateText)
   if ([...currentRelations].some((anchor) => !candidateRelations.has(anchor))) reasons.add('relation')
+
+  const currentQuantifiedObjects = quantifiedObjects(currentText)
+  const candidateQuantifiedObjects = quantifiedObjects(candidateText)
+  if (currentQuantifiedObjects.join('\u0000') !== candidateQuantifiedObjects.join('\u0000')) {
+    reasons.add('quantified-object')
+  }
+
+  const currentOrder = beforeActionOrder(currentText)
+  const candidateOrder = beforeActionOrder(candidateText)
+  if (currentOrder && candidateOrder && currentOrder[0] !== currentOrder[1]
+    && currentOrder[0] === candidateOrder[1] && currentOrder[1] === candidateOrder[0]) {
+    reasons.add('action-order')
+  }
 
   return { ok: reasons.size === 0, reasons: [...reasons] }
 }

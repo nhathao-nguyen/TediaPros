@@ -1,3 +1,4 @@
+import { createHash } from 'node:crypto'
 import { createDurationPredictor, type DurationPredictor } from './durationPredictor'
 import { compactEnglishDubbingQuestion, dubbingSpeakingDurations } from './translation'
 import { buildDubbingSubtitle, buildDubbingSubtitleSegments, type DubbingSubtitleCue } from './subtitles'
@@ -15,8 +16,79 @@ import { DUBBING_MAX_EARLY_START_SECONDS, deriveDubbingWindow, type DubbingPlan,
 import { selectBootstrapCues } from './durationPredictor'
 import { createAutoShortItemScope, type BranchOutcome } from '../autoShortItemScope'
 import { planDubbingTimeMap, mapDubbingTime, DubbingVideoExtensionLimitError, type DubbingTimeMap } from './timeMap'
-import { validateRephraseSemanticPreservation } from '../autoShortContentQuality'
+import { validateRephraseSemanticPreservation, validateSourceRepairNumericPreservation } from '../autoShortContentQuality'
+import { canonicalJson } from '../autoShortStageKeys'
 import { PreparationQueue } from './preparationQueue'
+import { nextFeedbackAction, type FeedbackCandidate } from './feedbackDecision'
+
+export type DubbingFeedbackCandidateOutcome = 'dispatching' | 'completed' | 'failed'
+
+/**
+ * In-memory only: maps item identity to opaque candidate hashes and outcomes.
+ * A queue item has at most two automatic attempts and each synthesis run caps
+ * rescue candidates at three per speech unit. A selected candidate's existing
+ * transient audio is retained only for the same active job/recovery; nothing
+ * in this journal is checkpointed, logged or persisted.
+ */
+export interface DubbingFeedbackAcceptedCandidate {
+  text: string
+  rawPath: string
+  trimmedPath: string
+  naturalDuration: number
+  rephrased: boolean
+  voice?: string
+}
+
+export interface DubbingFeedbackJournal {
+  readonly items: Map<string, Map<string, DubbingFeedbackCandidateOutcome>>
+  readonly accepted: Map<string, Map<string, DubbingFeedbackAcceptedCandidate>>
+}
+
+export function createDubbingFeedbackJournal(): DubbingFeedbackJournal {
+  return { items: new Map(), accepted: new Map() }
+}
+
+export function hashFeedbackCandidate(input: {
+  sourceCueIds: readonly string[]
+  text: string
+  model: string
+  voice?: string | null
+  options?: Record<string, unknown>
+}): string {
+  return createHash('sha256').update(canonicalJson({
+    sourceCueIds: input.sourceCueIds,
+    text: input.text,
+    model: input.model,
+    voice: input.voice || null,
+    options: input.options || {}
+  })).digest('hex')
+}
+
+function feedbackAttempts(input: DubbingSynthesisInput): Map<string, DubbingFeedbackCandidateOutcome> | null {
+  const itemId = input.feedbackJournalItemId?.trim()
+  if (!input.feedbackJournal || !itemId) return null
+  let attempts = input.feedbackJournal.items.get(itemId)
+  if (!attempts) {
+    attempts = new Map()
+    input.feedbackJournal.items.set(itemId, attempts)
+  }
+  return attempts
+}
+
+function feedbackAcceptedCandidates(input: DubbingSynthesisInput): Map<string, DubbingFeedbackAcceptedCandidate> | null {
+  const itemId = input.feedbackJournalItemId?.trim()
+  if (!input.feedbackJournal || !itemId) return null
+  let candidates = input.feedbackJournal.accepted.get(itemId)
+  if (!candidates) {
+    candidates = new Map()
+    input.feedbackJournal.accepted.set(itemId, candidates)
+  }
+  return candidates
+}
+
+function feedbackCueKey(cue: DubbingPlanCue): string {
+  return canonicalJson(cue.sourceCueIds)
+}
 
 export interface DubbingTtsRequest {
   cueId: string
@@ -75,6 +147,19 @@ export interface DubbingSynthesisInput {
   model: string
   voice?: string | null
   options?: Record<string, unknown>
+  /** Per-job, per-item in-memory retry guard. Never checkpointed or persisted. */
+  feedbackJournal?: DubbingFeedbackJournal
+  feedbackJournalItemId?: string
+  /**
+   * Materialize a selected cue outside scratch before it is remembered for a
+   * later item retry. The journal itself remains in-memory and stores only
+   * the returned app-owned paths.
+   */
+  persistAcceptedCue?: (
+    cue: DubbingPlanCue,
+    candidate: DubbingFeedbackAcceptedCandidate,
+    signal: AbortSignal
+  ) => Promise<DubbingFeedbackAcceptedCandidate>
   fixedTempo?: number
   localTempoDelta?: number
   /** Enabled only when source dialogue is absent from the rendered mix. */
@@ -95,6 +180,8 @@ export interface DubbingSynthesisInput {
     batchSize?: number
     previousSeconds?: number
     candidateSeconds?: number
+    /** The source-repair path is source-prompted; explicit numbers are locally guarded when present. */
+    semanticEvidence?: 'same-language-guard' | 'source-repair-unverified' | 'source-repair-numeric-guard'
   }) => void
   onStructuralSplit?: (event: { cueId: string; sourceCueIds: readonly string[]; partCount: number }) => void
   signal?: AbortSignal
@@ -144,6 +231,25 @@ interface PreparedCue {
   naturalDuration: number
   rephrased: boolean
   voice?: string
+}
+
+function restoreAcceptedCue(cue: DubbingPlanCue, candidate: DubbingFeedbackAcceptedCandidate): PreparedCue {
+  return { cue, ...candidate }
+}
+
+async function retainAcceptedCue(input: DubbingSynthesisInput, cue: DubbingPlanCue, prepared: PreparedCue, signal: AbortSignal): Promise<void> {
+  const candidate: DubbingFeedbackAcceptedCandidate = {
+    text: prepared.text,
+    rawPath: prepared.rawPath,
+    trimmedPath: prepared.trimmedPath,
+    naturalDuration: prepared.naturalDuration,
+    rephrased: prepared.rephrased,
+    voice: prepared.voice
+  }
+  const retained = input.persistAcceptedCue
+    ? await input.persistAcceptedCue(cue, candidate, signal)
+    : candidate
+  feedbackAcceptedCandidates(input)?.set(feedbackCueKey(cue), retained)
 }
 
 interface MeasuredSpeechSlot {
@@ -414,10 +520,13 @@ export async function synthesizeDubbingPlan(input: DubbingSynthesisInput): Promi
     for (const bootstrapCue of bootstrap) {
       throwIfAborted(signal)
       const cue = plan.cues.find((candidate) => candidate.id === bootstrapCue.id) as DubbingPlanCue
-      const current = await prepareNaturalCue(input, cue, cue.finalSpokenText, signal, 0)
+      const retained = feedbackAcceptedCandidates(input)?.get(feedbackCueKey(cue))
+      const current = retained
+        ? restoreAcceptedCue(cue, retained)
+        : await prepareNaturalCue(input, cue, cue.finalSpokenText, signal, 0)
       prepared.set(cue.id, current)
       if (current.voice) voice = current.voice
-      predictor.addSample(current.text, current.naturalDuration, input.language)
+      if (!retained) predictor.addSample(current.text, current.naturalDuration, input.language)
     }
 
     // Bootstrap audio is real output and has already updated the profile. Lock
@@ -452,7 +561,9 @@ export async function synthesizeDubbingPlan(input: DubbingSynthesisInput): Promi
         2,
         async (index, preparationSignal) => {
           const cue = plan.cues[index]
-          return prepared.get(cue.id)
+          const retained = feedbackAcceptedCandidates(input)?.get(feedbackCueKey(cue))
+          return (retained ? restoreAcceptedCue(cue, retained) : undefined)
+            || prepared.get(cue.id)
             || prepareNaturalCue(input, cue, cue.finalSpokenText, preparationSignal, 0)
         },
         signal
@@ -513,6 +624,7 @@ export async function synthesizeDubbingPlan(input: DubbingSynthesisInput): Promi
     const schedulePrefetch = (index: number): void => {
       if (preparationQueue || !input.prefetchTts || index + 1 >= plan.cues.length) return
       const nextCue = plan.cues[index + 1]
+      if (feedbackAcceptedCandidates(input)?.has(feedbackCueKey(nextCue))) return
       if (prepared.has(nextCue.id) || (pendingPrefetch.value && pendingPrefetch.value.cueId === nextCue.id)) return
       const text = nextCue.finalSpokenText.trim()
       pendingPrefetch.value = {
@@ -532,10 +644,11 @@ export async function synthesizeDubbingPlan(input: DubbingSynthesisInput): Promi
     for (let index = 0; index < plan.cues.length; index++) {
       throwIfAborted(signal)
       const cue = plan.cues[index]
-      const alreadyPrepared = prepared.has(cue.id)
+      const retained = feedbackAcceptedCandidates(input)?.get(feedbackCueKey(cue))
+      const alreadyPrepared = prepared.has(cue.id) || Boolean(retained)
       let current = preparationQueue
         ? await preparationQueue.take(index)
-        : prepared.get(cue.id)
+        : (retained ? restoreAcceptedCue(cue, retained) : prepared.get(cue.id))
       if (!current) {
         const prefetched = pendingPrefetch.value
         if (prefetched && prefetched.cueId === cue.id) {
@@ -688,29 +801,86 @@ export async function synthesizeDubbingPlan(input: DubbingSynthesisInput): Promi
       if (!request) continue
       throwIfAborted(signal)
       const candidates = candidatesByCue.get(request.cueId) || []
-      const compactQuestions = [state.current.text, ...candidates]
-        .map((text) => compactEnglishDubbingQuestion(text, input.language))
-        .filter((text): text is string => text !== null)
-      const semanticBasis = input.recoveryAttempt === 2 && state.cue.sourceText.trim()
-        ? state.cue.sourceText
-        : state.current.text
-      const validTexts = [...new Set([...compactQuestions, ...candidates]
+      const sourceRepair = input.recoveryAttempt === 2 && state.cue.sourceText.trim().length > 0
+      // A source-repair response is deliberately treated as a new translation
+      // from the source. Do not manufacture a shorter candidate from an
+      // untrusted current target, and do not misapply the same-language guard
+      // to a source/target language pair. The provider prompt and the measured
+      // audio gates still constrain it. When source has explicit numbers, a
+      // deterministic cross-language numeric gate rejects a changed quantity
+      // before expensive TTS; otherwise telemetry remains honestly unverified.
+      const candidateInputs = sourceRepair
+        ? candidates
+        : [
+            ...[state.current.text, ...candidates]
+              .map((text) => compactEnglishDubbingQuestion(text, input.language))
+              .filter((text): text is string => text !== null),
+            ...candidates
+          ]
+      const validCandidates = [...new Set(candidateInputs
         .map((text) => text.trim())
-        .filter((text) => text && !containsRephraseLabel(text, [state.cue.id])))].filter((text) =>
-          text === state.current.text.trim() || validateRephraseSemanticPreservation(semanticBasis, text, input.language).ok)
-      const ranked = validTexts
-        .filter((text) => text !== state.current.text.trim())
-        .map((text) => ({ text, predictedSeconds: predictor.estimate(text, { locale: input.language }).seconds }))
+        .filter((text) => text && !containsRephraseLabel(text, [state.cue.id])))].flatMap((text): Array<{ text: string; semanticEvidence: 'source-repair-unverified' | 'source-repair-numeric-guard' | 'same-language-guard' }> => {
+        if (sourceRepair) {
+          const numericGate = validateSourceRepairNumericPreservation(state.cue.sourceText, text)
+          if (!numericGate.ok) return []
+          return [{
+            text,
+            semanticEvidence: numericGate.checkedNumbers ? 'source-repair-numeric-guard' as const : 'source-repair-unverified' as const
+          }]
+        }
+        if (text === state.current.text.trim()
+          || validateRephraseSemanticPreservation(state.current.text, text, input.language).ok) {
+          return [{ text, semanticEvidence: 'same-language-guard' as const }]
+        }
+        return []
+      })
+      const ranked = validCandidates
+        .filter((candidate) => candidate.text !== state.current.text.trim())
+        .map((candidate) => ({ ...candidate, predictedSeconds: predictor.estimate(candidate.text, { locale: input.language }).seconds }))
         .filter((candidate) => Number.isFinite(candidate.predictedSeconds) && candidate.predictedSeconds > 0)
         .sort((left, right) => left.predictedSeconds - right.predictedSeconds)
         .slice(0, 3)
+      const attempts = feedbackAttempts(input)
+      const feedbackCandidates: Array<FeedbackCandidate & {
+        semanticEvidence: 'source-repair-unverified' | 'source-repair-numeric-guard' | 'same-language-guard'
+      }> = ranked.map((candidate) => ({
+        hash: hashFeedbackCandidate({
+          sourceCueIds: state.cue.sourceCueIds,
+          text: candidate.text,
+          model: input.model,
+          voice: input.voice,
+          options: input.options
+        }),
+        text: candidate.text,
+        quality: 'eligible',
+        semanticEvidence: candidate.semanticEvidence
+      }))
+      const tried = new Set(attempts?.keys() || [])
       const original = state.current
       let best = original
       let accepted = false
-      for (const [attempt, candidate] of ranked.entries()) {
+      let dispatchedCandidate = false
+      for (let attempt = 0; attempt < 3; attempt++) {
         throwIfAborted(signal)
+        const action = nextFeedbackAction(feedbackCandidates, tried, signal.aborted)
+        if (action.type === 'stop') break
+        const candidate = action.candidate as FeedbackCandidate & {
+          semanticEvidence: 'source-repair-unverified' | 'source-repair-numeric-guard' | 'same-language-guard'
+        }
+        // Claim before TTS starts, so a failed/cancelled dispatch cannot be
+        // replayed by the item's later recovery attempt.
+        tried.add(candidate.hash)
+        attempts?.set(candidate.hash, 'dispatching')
+        dispatchedCandidate = true
         rescueAttemptCount++
-        const replacement = await prepareNaturalCue(input, state.cue, candidate.text, signal, attempt + 1)
+        let replacement: PreparedCue
+        try {
+          replacement = await prepareNaturalCue(input, state.cue, candidate.text, signal, attempt + 1)
+          attempts?.set(candidate.hash, 'completed')
+        } catch (error) {
+          attempts?.set(candidate.hash, 'failed')
+          throw error
+        }
         const complete = validateVoiceAudioCompleteness(replacement.text, replacement.naturalDuration).ok
         const improved = replacement.naturalDuration < best.naturalDuration - DUBBING_TIMING_TOLERANCE_SECONDS
         const fits = replacement.naturalDuration <= state.measuredSlot.maximumAvailableDuration * AUTO_SHORT_TTS_HARD_MAX_TEMPO
@@ -720,7 +890,8 @@ export async function synthesizeDubbingPlan(input: DubbingSynthesisInput): Promi
           outcome: !complete ? 'incomplete-audio' : !improved ? 'no-improvement' : fits ? 'accepted' : 'improved-overflow',
           candidateCount: candidates.length,
           previousSeconds: best.naturalDuration,
-          candidateSeconds: replacement.naturalDuration
+          candidateSeconds: replacement.naturalDuration,
+          semanticEvidence: candidate.semanticEvidence
         })
         if (complete && improved) {
           best = replacement
@@ -728,6 +899,7 @@ export async function synthesizeDubbingPlan(input: DubbingSynthesisInput): Promi
         }
         if (complete && improved && fits) {
           state.current = replacement
+          await retainAcceptedCue(input, state.cue, replacement, signal)
           state.provisionalPath = undefined
           state.provisionalDuration = undefined
           state.provisionalTargetDuration = undefined
@@ -739,12 +911,14 @@ export async function synthesizeDubbingPlan(input: DubbingSynthesisInput): Promi
         }
       }
       if (!accepted && best !== original) state.current = best
-      if (!ranked.length) {
+      if (!dispatchedCandidate) {
         input.onRephrase?.({
           cueId: state.cue.id,
           phase: 'rescue',
           candidateCount: candidates.length,
-          outcome: validTexts.includes(original.text.trim()) ? 'unchanged' : candidates.length && !validTexts.length ? 'invalid-candidate' : 'no-candidate'
+          outcome: validCandidates.some((candidate) => candidate.text === original.text.trim())
+            ? 'unchanged'
+            : candidates.length && !validCandidates.length ? 'invalid-candidate' : 'no-candidate'
         })
       }
       rescueIndex++
@@ -754,9 +928,19 @@ export async function synthesizeDubbingPlan(input: DubbingSynthesisInput): Promi
     const finalCues: DubbingPlanCue[] = []
     let timeMap: DubbingTimeMap | undefined
     if (input.allowVideoExtension) {
+      const sourceVideoDuration = plan.videoDuration
+      // The source window has already selected either the normal protected gap
+      // or the reduced gap allowed for a very short adjacent cue. Preserve that
+      // absolute pause while mapping. Re-deriving from the stretched span can
+      // cross the 600ms threshold and incorrectly replace (for example) a 90ms
+      // source pause with 500ms, consuming the extension that was just added.
+      const reservedGaps = measuredStates.map((state, index) => {
+        const boundary = measuredStates[index + 1]?.cue.sourceStart ?? sourceVideoDuration
+        return Math.max(0, boundary - state.cue.hardEnd)
+      })
       let candidateMap: DubbingTimeMap
       try {
-        candidateMap = planDubbingTimeMap(plan.videoDuration, measuredStates.map((state) => ({
+        candidateMap = planDubbingTimeMap(sourceVideoDuration, measuredStates.map((state) => ({
           id: state.cue.id, start: state.cue.sourceStart, sourceEnd: state.cue.sourceEnd,
           naturalDuration: state.current.naturalDuration, availableDuration: state.safeAvailable
         })), AUTO_SHORT_TTS_HARD_MAX_TEMPO)
@@ -785,12 +969,18 @@ export async function synthesizeDubbingPlan(input: DubbingSynthesisInput): Promi
           state.provisionalPath = undefined
           state.provisionalDuration = undefined
         }
-        const mappedSources = measuredStates.map(({ cue }) => ({ id: cue.id, start: cue.sourceStart, end: cue.sourceEnd, text: cue.sourceText }))
-        const mappedWindows = deriveDubbingWindows(mappedSources, plan.videoDuration)
-        const mappedDurations = dubbingSpeakingDurations(mappedSources, plan.videoDuration)
         measuredStates.forEach((state, i) => {
-          Object.assign(state.cue, mappedWindows[i])
-          state.safeAvailable = mappedDurations[i]
+          const boundary = measuredStates[i + 1]?.cue.sourceStart ?? plan.videoDuration
+          const hardEnd = Math.max(state.cue.sourceStart + 0.05, boundary - reservedGaps[i])
+          const availableDuration = Math.max(0.05, hardEnd - state.cue.sourceStart)
+          Object.assign(state.cue, {
+            cueId: state.cue.id,
+            start: state.cue.sourceStart,
+            preferredEnd: state.cue.sourceEnd,
+            hardEnd,
+            availableDuration
+          })
+          state.safeAvailable = availableDuration
         })
       }
     }

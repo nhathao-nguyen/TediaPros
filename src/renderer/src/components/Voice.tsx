@@ -9,7 +9,8 @@ import {
   type TtsModelInfo,
   type TtsProvider,
   type TtsServerHealth,
-  type TtsSpeechRequest
+  type TtsSpeechRequest,
+  type TtsVoiceProfileSummary
 } from '../../../shared/types'
 import { compatibleEdgeVoices, resolveEdgeVoice } from '../../../shared/edgeTtsContract'
 import { ttsAudioFormat } from '../../../shared/ttsAudioFormat'
@@ -204,6 +205,7 @@ export default function Voice(): JSX.Element {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [lastResult, setLastResult] = useState<TtsGenerateResult | null>(null)
+  const [voiceProfile, setVoiceProfile] = useState<TtsVoiceProfileSummary | null>(null)
   const [currentAudioUrl, setCurrentAudioUrl] = useState<string | null>(null)
   const [history, setHistory] = useState<HistoryItem[]>([])
   const [savingAudio, setSavingAudio] = useState(false)
@@ -233,6 +235,37 @@ export default function Voice(): JSX.Element {
       : modelVoices.length > 0
         ? modelVoices
         : [defaultModelVoice]
+
+  const selectedCloneForProfile = clonedVoices.find((cv) => `clone:${cv.id}` === selectedVoice)
+  const profileReferencePath = mode === 'clone' ? refAudioPath : selectedCloneForProfile?.referenceAudioPath
+  const profileVoice = ttsProvider === 'edge-tts' ? selectedEdgeVoice : (profileReferencePath ? undefined : selectedVoice)
+
+  useEffect(() => {
+    let active = true
+    const request = {
+      provider: ttsProvider,
+      serverUrl,
+      model: ttsProvider === 'edge-tts' ? 'edge-tts' : selectedModel,
+      voice: profileVoice,
+      language: selectedLanguage,
+      speed,
+      options: ttsProvider === 'edge-tts' ? { pitch: edgePitch !== '+0Hz' ? edgePitch : undefined } : {
+        denoise,
+        temperature,
+        top_p: topP,
+        repetition_penalty: repetitionPenalty
+      },
+      referenceAudioPath: profileReferencePath || undefined
+    }
+    void window.api.ttsGetVoiceProfile(request).then((summary) => {
+      if (active) setVoiceProfile(summary)
+    }).catch(() => {
+      if (active) setVoiceProfile(null)
+    })
+    return () => {
+      active = false
+    }
+  }, [denoise, edgePitch, mode, profileReferencePath, profileVoice, repetitionPenalty, selectedLanguage, selectedModel, serverUrl, speed, temperature, topP, ttsProvider])
 
   // Dynamic language options based on model capabilities
   const languageOptions = modelLanguages.map((code) => {
@@ -376,6 +409,14 @@ export default function Voice(): JSX.Element {
           return
         }
         setLastResult(res)
+        void window.api.ttsGetVoiceProfile({
+          provider: 'edge-tts',
+          model: 'edge-tts',
+          voice: selectedEdgeVoice,
+          language: selectedLanguage,
+          speed,
+          options: { pitch: edgePitch !== '+0Hz' ? edgePitch : undefined }
+        }).then(setVoiceProfile).catch(() => undefined)
         const playUrl = res.savedPath
           ? localMediaSource(res.savedPath)
           : `data:${res.audioMimeType || 'audio/mpeg'};base64,${res.audioBase64}`
@@ -454,6 +495,7 @@ export default function Voice(): JSX.Element {
         }
 
         const req: TtsCloneRequest = {
+          provider: 'local-tts',
           serverUrl,
           apiKey,
           text: cleanText,
@@ -491,6 +533,7 @@ export default function Voice(): JSX.Element {
       } else {
         const isNamed = selectedModelInfo?.supports_named_voice !== false
         const req: TtsSpeechRequest = {
+          provider: 'local-tts',
           serverUrl,
           apiKey,
           text: cleanText,
@@ -510,6 +553,21 @@ export default function Voice(): JSX.Element {
       }
 
       setLastResult(res)
+      void window.api.ttsGetVoiceProfile({
+        provider: 'local-tts',
+        serverUrl,
+        model: selectedModel,
+        voice: profileReferencePath ? undefined : selectedVoice,
+        language: selectedLanguage,
+        speed,
+        options: {
+          denoise,
+          temperature,
+          top_p: topP,
+          repetition_penalty: repetitionPenalty
+        },
+        referenceAudioPath: profileReferencePath || undefined
+      }).then(setVoiceProfile).catch(() => undefined)
       const playUrl = res.savedPath
         ? localMediaSource(res.savedPath)
         : `data:${res.audioMimeType || 'audio/wav'};base64,${res.audioBase64}`
@@ -1173,6 +1231,27 @@ export default function Voice(): JSX.Element {
                   </button>
                 </div>
               </div>
+            </div>
+          )}
+
+          {voiceProfile && (
+            <div className="voice-result-box" style={{ marginTop: 12 }}>
+              <div className="voice-result-head">
+                <span className="voice-result-title">📈 Hồ sơ nhịp đọc của voice</span>
+                <span className="voice-stat-badge">
+                  {voiceProfile.status === 'cold' ? 'Chưa đủ dữ liệu' : voiceProfile.status === 'qualified' ? 'Đã đủ mẫu' : 'Advisory'}
+                </span>
+              </div>
+              <div className="muted small" style={{ lineHeight: 1.5 }}>
+                {voiceProfile.status === 'cold' || voiceProfile.rateMedian == null
+                  ? 'Profile sẽ được tạo dần từ các lượt đọc thành công; chưa dùng để tự động hiệu chuẩn.'
+                  : <>Proxy spoken-unit: {voiceProfile.rateP10?.toFixed(1)}–{voiceProfile.rateP90?.toFixed(1)} đơn vị/giây, median {voiceProfile.rateMedian.toFixed(1)} · {voiceProfile.eligibleSampleCount} mẫu hợp lệ.</>}
+              </div>
+              {voiceProfile.uncertaintyReasons && voiceProfile.uncertaintyReasons.length > 0 && (
+                <div className="muted small" style={{ marginTop: 4 }}>
+                  Không chắc chắn: {voiceProfile.uncertaintyReasons.join(', ')}
+                </div>
+              )}
             </div>
           )}
 

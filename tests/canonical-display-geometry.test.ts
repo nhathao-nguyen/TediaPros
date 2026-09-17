@@ -146,6 +146,27 @@ test('duration selection chooses video stream over container and audio', () => {
   assert.equal(meta4.containerDurationSeconds, 0)
 })
 
+test('media metadata keeps nominal and average FPS so VFR sources remain identifiable', () => {
+  const meta = parseCanonicalMediaMetadata({
+    streams: [
+      {
+        codec_type: 'video',
+        width: 1080,
+        height: 1920,
+        duration: '137.8',
+        r_frame_rate: '30/1',
+        avg_frame_rate: '20375/689'
+      }
+    ],
+    format: { duration: '137.8' }
+  })
+
+  assert.equal(meta.frameRate, 30)
+  assert.ok(meta.averageFrameRate != null)
+  assert.ok(Math.abs(meta.averageFrameRate - 20375 / 689) < 1e-9)
+  assert.equal(meta.isVariableFrameRate, true)
+})
+
 test('canonicalBurnDisplayFilter returns null for square SAR and zero start', () => {
   const square = deriveCanonicalDisplayGeometry({
     codedWidth: 1920,

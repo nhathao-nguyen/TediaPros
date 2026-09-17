@@ -4,11 +4,26 @@ import { mkdir, writeFile, stat } from 'node:fs/promises'
 import { join } from 'node:path'
 import { tmpdir } from 'node:os'
 import { createAutoShortItemScope } from '../src/main/autoShortItemScope'
-import { createAutoShortItemProcessor, type AutoShortItemContext } from '../src/main/autoShortItemCoordinator'
+import { buildAutoShortTtsJobAdapter, createAutoShortItemProcessor, type AutoShortItemContext } from '../src/main/autoShortItemCoordinator'
+import { createDubbingFeedbackJournal } from '../src/main/dubbing/synthesis'
 import { AutoShortResourceManager } from '../src/main/autoShortResourceManager'
 import type { AutoShortConfig } from '../src/shared/types'
 
 const tick = (ms = 25) => new Promise((r) => setTimeout(r, ms))
+
+test('coordinator TTS adapter carries the job feedback journal and item identity into synthesis', () => {
+  const journal = createDubbingFeedbackJournal()
+  const signal = new AbortController().signal
+  const resourceManager = new AutoShortResourceManager()
+  const adapter = buildAutoShortTtsJobAdapter({
+    jobId: 'job-one', itemId: 'item-one', signal, emit: () => {},
+    feedbackJournal: journal, resourceManager, artifactDir: 'C:\\audit'
+  })
+  assert.equal(adapter.feedbackJournal, journal)
+  assert.equal(adapter.feedbackJournalItemId, 'item-one')
+  assert.equal(adapter.acceptedCueStoreDir, 'C:\\audit\\accepted-dubbing-audio')
+  assert.equal(adapter.controller.signal, signal)
+})
 
 test('AutoShortItemScope: basic success execution', async () => {
   const scope = createAutoShortItemScope()
@@ -205,7 +220,8 @@ test('Coordinator scheduling: ASR failure does not start an independent visual b
       prefetchTts: false,
       ocrTransport: 'legacy-disk'
     },
-    resourceManager: new AutoShortResourceManager({ 'local-cpu-heavy': 2, 'local-gpu-heavy': 2 })
+    resourceManager: new AutoShortResourceManager({ 'local-cpu-heavy': 2, 'local-gpu-heavy': 2 }),
+    feedbackJournal: createDubbingFeedbackJournal()
   }
 
   const processorPromise = processor(context)
@@ -287,7 +303,8 @@ test('Coordinator scheduling: visual branch failure after ASR preserves its prim
       prefetchTts: false,
       ocrTransport: 'legacy-disk'
     },
-    resourceManager: new AutoShortResourceManager({ 'local-cpu-heavy': 2, 'local-gpu-heavy': 2 })
+    resourceManager: new AutoShortResourceManager({ 'local-cpu-heavy': 2, 'local-gpu-heavy': 2 }),
+    feedbackJournal: createDubbingFeedbackJournal()
   }
 
   await writeFile(join(root, 'whisper.srt'), '1\n00:00:01,000 --> 00:00:03,000\nGiọng nói\n')

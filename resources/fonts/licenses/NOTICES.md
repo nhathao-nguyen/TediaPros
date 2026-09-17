@@ -9,6 +9,11 @@ source commit are recorded in `../manifest.json`.
 Copyright 2022 The Noto Project Authors
 (https://github.com/notofonts/latin-greek-cyrillic)
 
+## Roboto
+
+Copyright 2011 The Roboto Project Authors
+(https://github.com/googlefonts/roboto-classic)
+
 ## Noto Sans Arabic
 
 Copyright 2022 The Noto Project Authors

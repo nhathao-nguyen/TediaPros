@@ -205,6 +205,94 @@ export function parseTranslationResponse(
   return { items: filteredItems, issues, complete: !hasErrors }
 }
 
+/**
+ * Parse the Gateway's opt-in text contract without applying the compatibility
+ * aliases used by the generic `id-lines` provider path.  The Gateway can
+ * return plain text instead of JSON, but the client still owns exact cue
+ * identity, bounded output and completion checks before converting it back to
+ * the canonical internal `{ items: [...] }` representation.
+ */
+export function parseCueLinesV1Response(
+  raw: string,
+  expectedIds: readonly string[],
+  truncated: boolean
+): ParseOutcome {
+  const issues: TranslationIssue[] = []
+  const expected = expectedIds.map((id) => id.trim())
+  if (expected.length === 0) {
+    issues.push(issue('invalid-source', 'cue-lines-v1 yêu cầu ít nhất một cue ID.'))
+  }
+  if (new Set(expected).size !== expected.length) {
+    issues.push(issue('invalid-source', 'Danh sách cue cần dịch bị trùng ID.'))
+  }
+  if (truncated) issues.push(issue('truncated-output', 'Phản hồi model bị cắt trước khi hoàn tất.'))
+
+  // A text contract must not silently accept JSON/fences/prose. Keep the
+  // parser bounded before splitting or allocating per-line strings.
+  const normalized = raw.replace(/^\uFEFF/u, '').trim()
+  const byteLength = Buffer.byteLength(normalized, 'utf8')
+  if (byteLength > 1024 * 1024) {
+    issues.push(issue('provider-protocol', 'Phản hồi cue-lines-v1 vượt giới hạn 1 MiB.'))
+  }
+  if (/^```/u.test(normalized)) {
+    issues.push(issue('unparsed-content', 'cue-lines-v1 không nhận Markdown fence.'))
+  }
+  if (/[\u0000-\u0008\u000B\u000C\u000E-\u001F]/u.test(normalized)) {
+    issues.push(issue('unparsed-content', 'cue-lines-v1 chứa ký tự điều khiển không hợp lệ.'))
+  }
+
+  const items: TranslationItem[] = []
+  if (normalized && byteLength <= 1024 * 1024 && !/^```/u.test(normalized)) {
+    const lines = normalized.replace(/\r\n/g, '\n').split('\n')
+    const maxLines = Math.min(1_000, expected.length + 16)
+    if (lines.length > maxLines) {
+      issues.push(issue('provider-protocol', `cue-lines-v1 vượt số dòng tối đa ${maxLines}.`))
+    }
+    const pattern = /^\[([^\]\r\n]+)\][ \t]+(.*)$/u
+    for (const line of lines.slice(0, maxLines)) {
+      if (!line.trim()) continue
+      if (line.length > 32 * 1024) {
+        issues.push(issue('provider-protocol', 'Một dòng cue-lines-v1 vượt giới hạn 32 KiB.'))
+        continue
+      }
+      const match = pattern.exec(line)
+      if (!match) {
+        issues.push(issue('unparsed-content', 'Phản hồi cue-lines-v1 có dòng ngoài định dạng [id] text.'))
+        continue
+      }
+      const id = match[1] || ''
+      const text = (match[2] || '').trim()
+      // Exact means no prefix stripping, numeric-position guessing or
+      // whitespace hidden inside the bracketed identity.
+      if (id.length > 256 || id.trim() !== id || !expected.includes(id)) {
+        issues.push(issue('unknown-id', `Cue ID ${id || '(rỗng)'} không thuộc tập yêu cầu.`, [id]))
+      }
+      if (/\[[^\]\r\n]*\]/u.test(text)) {
+        issues.push(issue('unparsed-content', `Cue ${id || '(rỗng)'} chứa ngoặc vuông dành riêng cho nhãn giao thức.`, [id]))
+      }
+      items.push({ id, text })
+    }
+  }
+
+  const markerIds = [...expected]
+  for (const item of items) {
+    const markers = embeddedCueMarkers(item.text, markerIds)
+    if (markers.length > 0) {
+      issues.push(issue(
+        'unparsed-content',
+        `Cue ${item.id || '(rỗng)'} chứa nhãn cue trong nội dung đọc (${markers.slice(0, 3).join(', ')}).`,
+        [item.id]
+      ))
+    }
+  }
+  // Passing no context set deliberately makes a context ID an error rather
+  // than the warning/silent filtering used by the legacy generic parser.
+  validateItems(items, expected, [], issues)
+  const hasErrors = issues.some((candidate) => candidate.severity === 'error')
+  const filteredItems = items.filter((item) => expected.includes(item.id))
+  return { items: filteredItems, issues, complete: !hasErrors }
+}
+
 /** Parse the separate rephrase grammar without treating free-form prose as a candidate. */
 export function parseRephraseResponse(raw: string, cueId: string): ParseOutcome {
   return parseBatchRephraseResponse(raw, [cueId])

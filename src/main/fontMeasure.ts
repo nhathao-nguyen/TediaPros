@@ -13,7 +13,8 @@ const parsedFontCache = new Map<string, opentype.Font>()
 export function createTextMeasurer(
   fontSizePx: number,
   family: string | null | undefined,
-  picked: BurnFontEntry | null
+  picked: BurnFontEntry | null,
+  fontWeight?: number
 ): MeasureFn {
   // Font lookup can be unavailable in isolated tests or during very early
   // startup; measurement must still have a deterministic fallback.

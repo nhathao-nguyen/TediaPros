@@ -1,0 +1,30 @@
+{
+  "schemaVersion": 2,
+  "state": "draft-validated",
+  "identity": "gemini-gateway:gemini-advanced:gemini-gateway-two-pass-v10:ai-output-parser-v1:gateway-draft-v2:cue-lines-v1:vi:12",
+  "raw": "{\"translations\":{\"cue-69-117890\":\"Chỉ cần dùng khăn ẩm lau sạch là được.\",\"cue-70-120070\":\"Ôi!\",\"cue-71-120430\":\"Vì toàn bộ áo đều được phủ sáp mà.\",\"cue-72-122630\":\"Thế nên khả năng chống gió và chống nước của nó.\",\"cue-73-124510\":\"Chắc là rất tốt đấy.\",\"cue-74-125590\":\"Xem này.\",\"cue-75-125990\":\"Xem này!\",\"cue-76-126430\":\"Nước đổ lên mà không hề thấm một giọt.\",\"cue-77-128790\":\"Tình hình cơ bản là như vậy.\",\"cue-78-130190\":\"Sau đó tùy thuộc vào hoàn cảnh của bản thân.\",\"cue-79-131750\":\"Các bạn có mua hay không.\",\"cue-80-132610\":\"Thì cứ cân nhắc nhé.\"}}",
+  "rawSha256": "b5bd34c2397e287753533dd2e20ef7bacf2674cd26d27c32a02cb8527d922f6d",
+  "observedModelId": "8c46e95b1a07cecc",
+  "observedModel": "3.5 Flash-Lite",
+  "routeFingerprint": "29ed9729dbdd53e76081fc89bd7f7991b6a6e2c770e964fd8fa2ceaa0c22c646",
+  "sourceDigest": "92d35f2d0f02180782ccb91b350d1040a0aef6b0088566264328227a028f24f3",
+  "expectedIds": [
+    "cue-69-117890",
+    "cue-70-120070",
+    "cue-71-120430",
+    "cue-72-122630",
+    "cue-73-124510",
+    "cue-74-125590",
+    "cue-75-125990",
+    "cue-76-126430",
+    "cue-77-128790",
+    "cue-78-130190",
+    "cue-79-131750",
+    "cue-80-132610"
+  ],
+  "targetLocale": "vi",
+  "draftPromptVersion": "gemini-gateway-two-pass-v10",
+  "reviewPromptVersion": "gemini-gateway-two-pass-v10",
+  "parserVersion": "ai-output-parser-v1:gateway-draft-v2",
+  "savedAtUtc": "2026-09-16T17:08:49.222Z"
+}

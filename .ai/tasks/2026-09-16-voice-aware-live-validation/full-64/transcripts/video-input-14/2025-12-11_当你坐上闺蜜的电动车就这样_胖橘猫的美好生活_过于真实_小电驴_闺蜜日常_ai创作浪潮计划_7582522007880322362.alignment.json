@@ -1,0 +1,58 @@
+{
+  "duration": 16.464375,
+  "language": "zh",
+  "segments": [
+    {
+      "start": 0.08,
+      "end": 1.08,
+      "text": "嘿嘿嘿",
+      "words": [
+        {
+          "text": "嘿",
+          "start": 0.08,
+          "end": 0.6,
+          "probability": 0.2359619140625
+        },
+        {
+          "text": "嘿",
+          "start": 0.6,
+          "end": 0.8,
+          "probability": 0.98583984375
+        },
+        {
+          "text": "嘿",
+          "start": 0.8,
+          "end": 1.08,
+          "probability": 0.98583984375
+        }
+      ]
+    }
+  ],
+  "cues": [
+    {
+      "start": 0.08,
+      "end": 1.08,
+      "text": "嘿嘿嘿",
+      "words": [
+        {
+          "text": "嘿",
+          "start": 0.08,
+          "end": 0.6,
+          "probability": 0.2359619140625
+        },
+        {
+          "text": "嘿",
+          "start": 0.6,
+          "end": 0.8,
+          "probability": 0.98583984375
+        },
+        {
+          "text": "嘿",
+          "start": 0.8,
+          "end": 1.08,
+          "probability": 0.98583984375
+        }
+      ]
+    }
+  ]
+}

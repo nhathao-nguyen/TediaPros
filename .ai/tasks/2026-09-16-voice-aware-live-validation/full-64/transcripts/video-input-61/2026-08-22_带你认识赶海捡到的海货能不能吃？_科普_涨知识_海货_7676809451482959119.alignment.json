@@ -1,0 +1,8888 @@
+{
+  "duration": 154.1586875,
+  "language": "zh",
+  "segments": [
+    {
+      "start": 0.0,
+      "end": 1.58,
+      "text": "感海之前记得仔细看看",
+      "words": [
+        {
+          "text": "感",
+          "start": 0.0,
+          "end": 0.2,
+          "probability": 0.1922607421875
+        },
+        {
+          "text": "海",
+          "start": 0.2,
+          "end": 0.38,
+          "probability": 0.8916015625
+        },
+        {
+          "text": "之前",
+          "start": 0.38,
+          "end": 0.68,
+          "probability": 0.9599609375
+        },
+        {
+          "text": "记",
+          "start": 0.68,
+          "end": 0.9,
+          "probability": 0.638671875
+        },
+        {
+          "text": "得",
+          "start": 0.9,
+          "end": 1.02,
+          "probability": 0.99169921875
+        },
+        {
+          "text": "仔",
+          "start": 1.02,
+          "end": 1.18,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "细",
+          "start": 1.18,
+          "end": 1.32,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "看看",
+          "start": 1.32,
+          "end": 1.58,
+          "probability": 0.9833984375
+        }
+      ]
+    },
+    {
+      "start": 1.58,
+      "end": 3.84,
+      "text": "感海发现这个能吃吗?",
+      "words": [
+        {
+          "text": "感",
+          "start": 1.58,
+          "end": 2.18,
+          "probability": 0.83203125
+        },
+        {
+          "text": "海",
+          "start": 2.18,
+          "end": 2.48,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "发",
+          "start": 2.48,
+          "end": 2.64,
+          "probability": 0.96923828125
+        },
+        {
+          "text": "现",
+          "start": 2.64,
+          "end": 2.84,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "这个",
+          "start": 2.84,
+          "end": 3.06,
+          "probability": 0.97265625
+        },
+        {
+          "text": "能",
+          "start": 3.06,
+          "end": 3.28,
+          "probability": 0.99169921875
+        },
+        {
+          "text": "吃",
+          "start": 3.28,
+          "end": 3.54,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "吗?",
+          "start": 3.54,
+          "end": 3.84,
+          "probability": 0.9033203125
+        }
+      ]
+    },
+    {
+      "start": 3.96,
+      "end": 4.78,
+      "text": "这是紫菜",
+      "words": [
+        {
+          "text": "这是",
+          "start": 3.96,
+          "end": 4.34,
+          "probability": 0.9443359375
+        },
+        {
+          "text": "紫",
+          "start": 4.34,
+          "end": 4.58,
+          "probability": 0.87939453125
+        },
+        {
+          "text": "菜",
+          "start": 4.58,
+          "end": 4.78,
+          "probability": 0.99658203125
+        }
+      ]
+    },
+    {
+      "start": 4.78,
+      "end": 5.9,
+      "text": "刚捞上来",
+      "words": [
+        {
+          "text": "刚",
+          "start": 4.78,
+          "end": 5.32,
+          "probability": 0.734375
+        },
+        {
+          "text": "捞",
+          "start": 5.32,
+          "end": 5.44,
+          "probability": 0.969970703125
+        },
+        {
+          "text": "上",
+          "start": 5.44,
+          "end": 5.64,
+          "probability": 0.99365234375
+        },
+        {
+          "text": "来",
+          "start": 5.64,
+          "end": 5.9,
+          "probability": 0.9990234375
+        }
+      ]
+    },
+    {
+      "start": 5.9,
+      "end": 7.54,
+      "text": "黑乎乎跟芋泥似的",
+      "words": [
+        {
+          "text": "黑",
+          "start": 5.9,
+          "end": 6.28,
+          "probability": 0.56884765625
+        },
+        {
+          "text": "乎",
+          "start": 6.28,
+          "end": 6.44,
+          "probability": 0.55718994140625
+        },
+        {
+          "text": "乎",
+          "start": 6.44,
+          "end": 6.6,
+          "probability": 0.994873046875
+        },
+        {
+          "text": "跟",
+          "start": 6.6,
+          "end": 6.78,
+          "probability": 0.9365234375
+        },
+        {
+          "text": "芋",
+          "start": 6.78,
+          "end": 6.94,
+          "probability": 0.54742431640625
+        },
+        {
+          "text": "泥",
+          "start": 6.94,
+          "end": 7.06,
+          "probability": 0.9228515625
+        },
+        {
+          "text": "似",
+          "start": 7.06,
+          "end": 7.22,
+          "probability": 0.9365234375
+        },
+        {
+          "text": "的",
+          "start": 7.22,
+          "end": 7.54,
+          "probability": 0.99951171875
+        }
+      ]
+    },
+    {
+      "start": 7.54,
+      "end": 8.28,
+      "text": "不能吃",
+      "words": [
+        {
+          "text": "不能",
+          "start": 7.54,
+          "end": 7.94,
+          "probability": 0.8525390625
+        },
+        {
+          "text": "吃",
+          "start": 7.94,
+          "end": 8.28,
+          "probability": 0.9990234375
+        }
+      ]
+    },
+    {
+      "start": 8.28,
+      "end": 10.18,
+      "text": "经过特殊加工处理后",
+      "words": [
+        {
+          "text": "经",
+          "start": 8.28,
+          "end": 8.76,
+          "probability": 0.93359375
+        },
+        {
+          "text": "过",
+          "start": 8.76,
+          "end": 8.96,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "特",
+          "start": 8.96,
+          "end": 9.14,
+          "probability": 0.9931640625
+        },
+        {
+          "text": "殊",
+          "start": 9.14,
+          "end": 9.28,
+          "probability": 0.998291015625
+        },
+        {
+          "text": "加",
+          "start": 9.28,
+          "end": 9.48,
+          "probability": 0.83447265625
+        },
+        {
+          "text": "工",
+          "start": 9.48,
+          "end": 9.64,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "处",
+          "start": 9.64,
+          "end": 9.82,
+          "probability": 0.9912109375
+        },
+        {
+          "text": "理",
+          "start": 9.82,
+          "end": 9.98,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "后",
+          "start": 9.98,
+          "end": 10.18,
+          "probability": 0.9951171875
+        }
+      ]
+    },
+    {
+      "start": 10.18,
+      "end": 12.62,
+      "text": "就能变成我们经常吃的紫菜了",
+      "words": [
+        {
+          "text": "就",
+          "start": 10.18,
+          "end": 10.68,
+          "probability": 0.9580078125
+        },
+        {
+          "text": "能",
+          "start": 10.68,
+          "end": 10.82,
+          "probability": 0.99658203125
+        },
+        {
+          "text": "变",
+          "start": 10.82,
+          "end": 11.0,
+          "probability": 0.997802734375
+        },
+        {
+          "text": "成",
+          "start": 11.0,
+          "end": 11.2,
+          "probability": 0.998046875
+        },
+        {
+          "text": "我们",
+          "start": 11.2,
+          "end": 11.42,
+          "probability": 0.99462890625
+        },
+        {
+          "text": "经",
+          "start": 11.42,
+          "end": 11.62,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "常",
+          "start": 11.62,
+          "end": 11.82,
+          "probability": 1.0
+        },
+        {
+          "text": "吃",
+          "start": 11.82,
+          "end": 12.0,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "的",
+          "start": 12.0,
+          "end": 12.12,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "紫",
+          "start": 12.12,
+          "end": 12.26,
+          "probability": 0.992431640625
+        },
+        {
+          "text": "菜",
+          "start": 12.26,
+          "end": 12.46,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "了",
+          "start": 12.46,
+          "end": 12.62,
+          "probability": 0.97998046875
+        }
+      ]
+    },
+    {
+      "start": 12.62,
+      "end": 14.74,
+      "text": "感海发现这个能吃吗?",
+      "words": [
+        {
+          "text": "感",
+          "start": 12.62,
+          "end": 13.08,
+          "probability": 0.98583984375
+        },
+        {
+          "text": "海",
+          "start": 13.08,
+          "end": 13.34,
+          "probability": 0.998046875
+        },
+        {
+          "text": "发",
+          "start": 13.34,
+          "end": 13.56,
+          "probability": 0.99658203125
+        },
+        {
+          "text": "现",
+          "start": 13.56,
+          "end": 13.74,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "这个",
+          "start": 13.74,
+          "end": 13.96,
+          "probability": 0.9892578125
+        },
+        {
+          "text": "能",
+          "start": 13.96,
+          "end": 14.18,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "吃",
+          "start": 14.18,
+          "end": 14.44,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "吗?",
+          "start": 14.44,
+          "end": 14.74,
+          "probability": 0.97314453125
+        }
+      ]
+    },
+    {
+      "start": 15.04,
+      "end": 15.98,
+      "text": "这是公牛海带",
+      "words": [
+        {
+          "text": "这是",
+          "start": 15.04,
+          "end": 15.24,
+          "probability": 0.9853515625
+        },
+        {
+          "text": "公",
+          "start": 15.24,
+          "end": 15.46,
+          "probability": 0.57080078125
+        },
+        {
+          "text": "牛",
+          "start": 15.46,
+          "end": 15.62,
+          "probability": 0.99365234375
+        },
+        {
+          "text": "海",
+          "start": 15.62,
+          "end": 15.82,
+          "probability": 0.986328125
+        },
+        {
+          "text": "带",
+          "start": 15.82,
+          "end": 15.98,
+          "probability": 0.9658203125
+        }
+      ]
+    },
+    {
+      "start": 15.98,
+      "end": 17.6,
+      "text": "也就是海带管子",
+      "words": [
+        {
+          "text": "也",
+          "start": 15.98,
+          "end": 16.54,
+          "probability": 0.86083984375
+        },
+        {
+          "text": "就是",
+          "start": 16.54,
+          "end": 16.74,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "海",
+          "start": 16.74,
+          "end": 17.04,
+          "probability": 0.9951171875
+        },
+        {
+          "text": "带",
+          "start": 17.04,
+          "end": 17.18,
+          "probability": 0.995849609375
+        },
+        {
+          "text": "管",
+          "start": 17.18,
+          "end": 17.38,
+          "probability": 0.72216796875
+        },
+        {
+          "text": "子",
+          "start": 17.38,
+          "end": 17.6,
+          "probability": 0.99951171875
+        }
+      ]
+    },
+    {
+      "start": 17.6,
+      "end": 18.42,
+      "text": "可以吃",
+      "words": [
+        {
+          "text": "可以",
+          "start": 17.6,
+          "end": 18.14,
+          "probability": 0.94287109375
+        },
+        {
+          "text": "吃",
+          "start": 18.14,
+          "end": 18.42,
+          "probability": 0.9990234375
+        }
+      ]
+    },
+    {
+      "start": 18.42,
+      "end": 21.52,
+      "text": "吃起来像脆萝卜或烟黄瓜一样嘎崩脆",
+      "words": [
+        {
+          "text": "吃",
+          "start": 18.42,
+          "end": 18.94,
+          "probability": 0.8115234375
+        },
+        {
+          "text": "起",
+          "start": 18.94,
+          "end": 19.1,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "来",
+          "start": 19.1,
+          "end": 19.24,
+          "probability": 1.0
+        },
+        {
+          "text": "像",
+          "start": 19.24,
+          "end": 19.44,
+          "probability": 0.98291015625
+        },
+        {
+          "text": "脆",
+          "start": 19.44,
+          "end": 19.64,
+          "probability": 0.755126953125
+        },
+        {
+          "text": "萝",
+          "start": 19.64,
+          "end": 19.78,
+          "probability": 0.97509765625
+        },
+        {
+          "text": "卜",
+          "start": 19.78,
+          "end": 19.92,
+          "probability": 0.982666015625
+        },
+        {
+          "text": "或",
+          "start": 19.92,
+          "end": 20.12,
+          "probability": 0.9248046875
+        },
+        {
+          "text": "烟",
+          "start": 20.12,
+          "end": 20.3,
+          "probability": 0.76953125
+        },
+        {
+          "text": "黄",
+          "start": 20.3,
+          "end": 20.5,
+          "probability": 0.99560546875
+        },
+        {
+          "text": "瓜",
+          "start": 20.5,
+          "end": 20.66,
+          "probability": 0.99609375
+        },
+        {
+          "text": "一",
+          "start": 20.66,
+          "end": 20.88,
+          "probability": 0.99462890625
+        },
+        {
+          "text": "样",
+          "start": 20.88,
+          "end": 20.98,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "嘎",
+          "start": 20.98,
+          "end": 21.16,
+          "probability": 0.906005859375
+        },
+        {
+          "text": "崩",
+          "start": 21.16,
+          "end": 21.3,
+          "probability": 0.564208984375
+        },
+        {
+          "text": "脆",
+          "start": 21.3,
+          "end": 21.52,
+          "probability": 0.96435546875
+        }
+      ]
+    },
+    {
+      "start": 21.52,
+      "end": 23.56,
+      "text": "感海发现这个能吃吗?",
+      "words": [
+        {
+          "text": "感",
+          "start": 21.52,
+          "end": 21.92,
+          "probability": 0.9931640625
+        },
+        {
+          "text": "海",
+          "start": 21.92,
+          "end": 22.18,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "发",
+          "start": 22.18,
+          "end": 22.4,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "现",
+          "start": 22.4,
+          "end": 22.58,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "这个",
+          "start": 22.58,
+          "end": 22.78,
+          "probability": 0.98974609375
+        },
+        {
+          "text": "能",
+          "start": 22.78,
+          "end": 23.0,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "吃",
+          "start": 23.0,
+          "end": 23.28,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "吗?",
+          "start": 23.28,
+          "end": 23.56,
+          "probability": 0.97216796875
+        }
+      ]
+    },
+    {
+      "start": 23.9,
+      "end": 24.56,
+      "text": "这是沙壁",
+      "words": [
+        {
+          "text": "这是",
+          "start": 23.9,
+          "end": 24.14,
+          "probability": 0.96484375
+        },
+        {
+          "text": "沙",
+          "start": 24.14,
+          "end": 24.38,
+          "probability": 0.83447265625
+        },
+        {
+          "text": "壁",
+          "start": 24.38,
+          "end": 24.56,
+          "probability": 0.77197265625
+        }
+      ]
+    },
+    {
+      "start": 24.56,
+      "end": 25.54,
+      "text": "不建议吃",
+      "words": [
+        {
+          "text": "不",
+          "start": 24.56,
+          "end": 24.98,
+          "probability": 0.78271484375
+        },
+        {
+          "text": "建",
+          "start": 24.98,
+          "end": 25.16,
+          "probability": 0.8603515625
+        },
+        {
+          "text": "议",
+          "start": 25.16,
+          "end": 25.26,
+          "probability": 0.9931640625
+        },
+        {
+          "text": "吃",
+          "start": 25.26,
+          "end": 25.54,
+          "probability": 0.99755859375
+        }
+      ]
+    },
+    {
+      "start": 25.54,
+      "end": 28.36,
+      "text": "按体型可以分成大沙壁和小沙壁",
+      "words": [
+        {
+          "text": "按",
+          "start": 25.54,
+          "end": 26.12,
+          "probability": 0.5673828125
+        },
+        {
+          "text": "体",
+          "start": 26.12,
+          "end": 26.3,
+          "probability": 0.98486328125
+        },
+        {
+          "text": "型",
+          "start": 26.3,
+          "end": 26.46,
+          "probability": 0.68505859375
+        },
+        {
+          "text": "可以",
+          "start": 26.46,
+          "end": 26.7,
+          "probability": 0.98193359375
+        },
+        {
+          "text": "分",
+          "start": 26.7,
+          "end": 26.92,
+          "probability": 0.98583984375
+        },
+        {
+          "text": "成",
+          "start": 26.92,
+          "end": 27.08,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "大",
+          "start": 27.08,
+          "end": 27.28,
+          "probability": 0.98486328125
+        },
+        {
+          "text": "沙",
+          "start": 27.28,
+          "end": 27.44,
+          "probability": 0.998291015625
+        },
+        {
+          "text": "壁",
+          "start": 27.44,
+          "end": 27.6,
+          "probability": 0.99658203125
+        },
+        {
+          "text": "和",
+          "start": 27.6,
+          "end": 27.78,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "小",
+          "start": 27.78,
+          "end": 27.98,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "沙",
+          "start": 27.98,
+          "end": 28.16,
+          "probability": 0.999755859375
+        },
+        {
+          "text": "壁",
+          "start": 28.16,
+          "end": 28.36,
+          "probability": 0.998291015625
+        }
+      ]
+    },
+    {
+      "start": 28.36,
+      "end": 30.34,
+      "text": "离开海水浸活几分钟",
+      "words": [
+        {
+          "text": "离",
+          "start": 28.36,
+          "end": 28.88,
+          "probability": 0.547027587890625
+        },
+        {
+          "text": "开",
+          "start": 28.88,
+          "end": 29.06,
+          "probability": 0.908203125
+        },
+        {
+          "text": "海",
+          "start": 29.06,
+          "end": 29.24,
+          "probability": 0.9853515625
+        },
+        {
+          "text": "水",
+          "start": 29.24,
+          "end": 29.42,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "浸",
+          "start": 29.42,
+          "end": 29.6,
+          "probability": 0.69482421875
+        },
+        {
+          "text": "活",
+          "start": 29.6,
+          "end": 29.78,
+          "probability": 0.5400390625
+        },
+        {
+          "text": "几",
+          "start": 29.78,
+          "end": 29.96,
+          "probability": 0.99658203125
+        },
+        {
+          "text": "分",
+          "start": 29.96,
+          "end": 30.12,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "钟",
+          "start": 30.12,
+          "end": 30.34,
+          "probability": 0.99755859375
+        }
+      ]
+    },
+    {
+      "start": 30.34,
+      "end": 31.56,
+      "text": "又能变成死沙壁",
+      "words": [
+        {
+          "text": "又",
+          "start": 30.34,
+          "end": 30.5,
+          "probability": 0.689453125
+        },
+        {
+          "text": "能",
+          "start": 30.5,
+          "end": 30.64,
+          "probability": 0.99267578125
+        },
+        {
+          "text": "变",
+          "start": 30.64,
+          "end": 30.84,
+          "probability": 0.99462890625
+        },
+        {
+          "text": "成",
+          "start": 30.84,
+          "end": 31.02,
+          "probability": 0.96435546875
+        },
+        {
+          "text": "死",
+          "start": 31.02,
+          "end": 31.2,
+          "probability": 0.93017578125
+        },
+        {
+          "text": "沙",
+          "start": 31.2,
+          "end": 31.38,
+          "probability": 0.693115234375
+        },
+        {
+          "text": "壁",
+          "start": 31.38,
+          "end": 31.56,
+          "probability": 0.73876953125
+        }
+      ]
+    },
+    {
+      "start": 31.56,
+      "end": 33.16,
+      "text": "这可不是在骂人",
+      "words": [
+        {
+          "text": "这",
+          "start": 31.56,
+          "end": 32.14,
+          "probability": 0.91357421875
+        },
+        {
+          "text": "可",
+          "start": 32.14,
+          "end": 32.3,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "不是",
+          "start": 32.3,
+          "end": 32.5,
+          "probability": 0.9931640625
+        },
+        {
+          "text": "在",
+          "start": 32.5,
+          "end": 32.76,
+          "probability": 0.6337890625
+        },
+        {
+          "text": "骂",
+          "start": 32.76,
+          "end": 32.92,
+          "probability": 0.997802734375
+        },
+        {
+          "text": "人",
+          "start": 32.92,
+          "end": 33.16,
+          "probability": 0.99951171875
+        }
+      ]
+    },
+    {
+      "start": 33.16,
+      "end": 35.08,
+      "text": "你千万不要爱特妮朋友",
+      "words": [
+        {
+          "text": "你",
+          "start": 33.16,
+          "end": 33.82,
+          "probability": 0.8896484375
+        },
+        {
+          "text": "千",
+          "start": 33.82,
+          "end": 34.0,
+          "probability": 0.998046875
+        },
+        {
+          "text": "万",
+          "start": 34.0,
+          "end": 34.16,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "不要",
+          "start": 34.16,
+          "end": 34.34,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "爱",
+          "start": 34.34,
+          "end": 34.58,
+          "probability": 0.483154296875
+        },
+        {
+          "text": "特",
+          "start": 34.58,
+          "end": 34.68,
+          "probability": 0.724609375
+        },
+        {
+          "text": "妮",
+          "start": 34.68,
+          "end": 34.8,
+          "probability": 0.63720703125
+        },
+        {
+          "text": "朋友",
+          "start": 34.8,
+          "end": 35.08,
+          "probability": 0.99072265625
+        }
+      ]
+    },
+    {
+      "start": 35.08,
+      "end": 36.64,
+      "text": "不过她先刷到了",
+      "words": [
+        {
+          "text": "不",
+          "start": 35.08,
+          "end": 35.64,
+          "probability": 0.90771484375
+        },
+        {
+          "text": "过",
+          "start": 35.64,
+          "end": 35.8,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "她",
+          "start": 35.8,
+          "end": 35.96,
+          "probability": 0.79443359375
+        },
+        {
+          "text": "先",
+          "start": 35.96,
+          "end": 36.14,
+          "probability": 0.98876953125
+        },
+        {
+          "text": "刷",
+          "start": 36.14,
+          "end": 36.32,
+          "probability": 0.970458984375
+        },
+        {
+          "text": "到了",
+          "start": 36.32,
+          "end": 36.64,
+          "probability": 0.99169921875
+        }
+      ]
+    },
+    {
+      "start": 36.64,
+      "end": 38.12,
+      "text": "指定会先爱特妮",
+      "words": [
+        {
+          "text": "指",
+          "start": 36.64,
+          "end": 37.04,
+          "probability": 0.4921875
+        },
+        {
+          "text": "定",
+          "start": 37.04,
+          "end": 37.2,
+          "probability": 0.98974609375
+        },
+        {
+          "text": "会",
+          "start": 37.2,
+          "end": 37.36,
+          "probability": 0.98193359375
+        },
+        {
+          "text": "先",
+          "start": 37.36,
+          "end": 37.58,
+          "probability": 0.99609375
+        },
+        {
+          "text": "爱",
+          "start": 37.58,
+          "end": 37.76,
+          "probability": 0.97509765625
+        },
+        {
+          "text": "特",
+          "start": 37.76,
+          "end": 37.9,
+          "probability": 0.99658203125
+        },
+        {
+          "text": "妮",
+          "start": 37.9,
+          "end": 38.12,
+          "probability": 0.961669921875
+        }
+      ]
+    },
+    {
+      "start": 38.12,
+      "end": 40.14,
+      "text": "感海发现这个能吃吗?",
+      "words": [
+        {
+          "text": "感",
+          "start": 38.12,
+          "end": 38.48,
+          "probability": 0.07818603515625
+        },
+        {
+          "text": "海",
+          "start": 38.48,
+          "end": 38.74,
+          "probability": 0.658203125
+        },
+        {
+          "text": "发",
+          "start": 38.74,
+          "end": 38.94,
+          "probability": 0.98974609375
+        },
+        {
+          "text": "现",
+          "start": 38.94,
+          "end": 39.14,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "这个",
+          "start": 39.14,
+          "end": 39.36,
+          "probability": 0.9609375
+        },
+        {
+          "text": "能",
+          "start": 39.36,
+          "end": 39.58,
+          "probability": 0.9912109375
+        },
+        {
+          "text": "吃",
+          "start": 39.58,
+          "end": 39.84,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "吗?",
+          "start": 39.84,
+          "end": 40.14,
+          "probability": 0.85693359375
+        }
+      ]
+    },
+    {
+      "start": 40.44,
+      "end": 41.08,
+      "text": "这是海蜇",
+      "words": [
+        {
+          "text": "这是",
+          "start": 40.44,
+          "end": 40.66,
+          "probability": 0.97265625
+        },
+        {
+          "text": "海",
+          "start": 40.66,
+          "end": 40.96,
+          "probability": 0.9931640625
+        },
+        {
+          "text": "蜇",
+          "start": 40.96,
+          "end": 41.08,
+          "probability": 0.86181640625
+        }
+      ]
+    },
+    {
+      "start": 41.08,
+      "end": 44.18,
+      "text": "工人在对新鲜海蜇进行出加工去毒",
+      "words": [
+        {
+          "text": "工",
+          "start": 41.08,
+          "end": 41.66,
+          "probability": 0.72216796875
+        },
+        {
+          "text": "人",
+          "start": 41.66,
+          "end": 41.82,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "在",
+          "start": 41.82,
+          "end": 42.0,
+          "probability": 0.91162109375
+        },
+        {
+          "text": "对",
+          "start": 42.0,
+          "end": 42.16,
+          "probability": 0.99267578125
+        },
+        {
+          "text": "新",
+          "start": 42.16,
+          "end": 42.38,
+          "probability": 0.9814453125
+        },
+        {
+          "text": "鲜",
+          "start": 42.38,
+          "end": 42.52,
+          "probability": 0.9993489583333334
+        },
+        {
+          "text": "海",
+          "start": 42.52,
+          "end": 42.74,
+          "probability": 0.99609375
+        },
+        {
+          "text": "蜇",
+          "start": 42.74,
+          "end": 42.9,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "进",
+          "start": 42.9,
+          "end": 43.12,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "行",
+          "start": 43.12,
+          "end": 43.32,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "出",
+          "start": 43.32,
+          "end": 43.46,
+          "probability": 0.94921875
+        },
+        {
+          "text": "加",
+          "start": 43.46,
+          "end": 43.66,
+          "probability": 0.54345703125
+        },
+        {
+          "text": "工",
+          "start": 43.66,
+          "end": 43.82,
+          "probability": 0.994140625
+        },
+        {
+          "text": "去",
+          "start": 43.82,
+          "end": 44.0,
+          "probability": 0.96337890625
+        },
+        {
+          "text": "毒",
+          "start": 44.0,
+          "end": 44.18,
+          "probability": 0.9111328125
+        }
+      ]
+    },
+    {
+      "start": 44.18,
+      "end": 45.58,
+      "text": "后续经过腌制",
+      "words": [
+        {
+          "text": "后",
+          "start": 44.18,
+          "end": 44.7,
+          "probability": 0.99365234375
+        },
+        {
+          "text": "续",
+          "start": 44.7,
+          "end": 44.88,
+          "probability": 0.892822265625
+        },
+        {
+          "text": "经",
+          "start": 44.88,
+          "end": 45.06,
+          "probability": 0.99609375
+        },
+        {
+          "text": "过",
+          "start": 45.06,
+          "end": 45.26,
+          "probability": 0.99267578125
+        },
+        {
+          "text": "腌",
+          "start": 45.26,
+          "end": 45.42,
+          "probability": 0.815673828125
+        },
+        {
+          "text": "制",
+          "start": 45.42,
+          "end": 45.58,
+          "probability": 0.9873046875
+        }
+      ]
+    },
+    {
+      "start": 45.58,
+      "end": 47.98,
+      "text": "就能变成夏天必吃的凉拌海蜇",
+      "words": [
+        {
+          "text": "就",
+          "start": 45.58,
+          "end": 45.86,
+          "probability": 0.9208984375
+        },
+        {
+          "text": "能",
+          "start": 45.86,
+          "end": 46.02,
+          "probability": 0.98974609375
+        },
+        {
+          "text": "变",
+          "start": 46.02,
+          "end": 46.18,
+          "probability": 0.997314453125
+        },
+        {
+          "text": "成",
+          "start": 46.18,
+          "end": 46.4,
+          "probability": 0.990234375
+        },
+        {
+          "text": "夏",
+          "start": 46.4,
+          "end": 46.6,
+          "probability": 0.921875
+        },
+        {
+          "text": "天",
+          "start": 46.6,
+          "end": 46.8,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "必",
+          "start": 46.8,
+          "end": 46.96,
+          "probability": 0.9658203125
+        },
+        {
+          "text": "吃",
+          "start": 46.96,
+          "end": 47.14,
+          "probability": 0.97265625
+        },
+        {
+          "text": "的",
+          "start": 47.14,
+          "end": 47.26,
+          "probability": 0.998046875
+        },
+        {
+          "text": "凉",
+          "start": 47.26,
+          "end": 47.42,
+          "probability": 0.756591796875
+        },
+        {
+          "text": "拌",
+          "start": 47.42,
+          "end": 47.56,
+          "probability": 0.970947265625
+        },
+        {
+          "text": "海",
+          "start": 47.56,
+          "end": 47.82,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "蜇",
+          "start": 47.82,
+          "end": 47.98,
+          "probability": 0.9967447916666666
+        }
+      ]
+    },
+    {
+      "start": 47.98,
+      "end": 50.04,
+      "text": "感海发现这个能吃吗?",
+      "words": [
+        {
+          "text": "感",
+          "start": 47.98,
+          "end": 48.38,
+          "probability": 0.9951171875
+        },
+        {
+          "text": "海",
+          "start": 48.38,
+          "end": 48.64,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "发",
+          "start": 48.64,
+          "end": 48.86,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "现",
+          "start": 48.86,
+          "end": 49.04,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "这个",
+          "start": 49.04,
+          "end": 49.26,
+          "probability": 0.9912109375
+        },
+        {
+          "text": "能",
+          "start": 49.26,
+          "end": 49.48,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "吃",
+          "start": 49.48,
+          "end": 49.74,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "吗?",
+          "start": 49.74,
+          "end": 50.04,
+          "probability": 0.97265625
+        }
+      ]
+    },
+    {
+      "start": 50.3,
+      "end": 51.12,
+      "text": "这是海葡萄",
+      "words": [
+        {
+          "text": "这是",
+          "start": 50.3,
+          "end": 50.52,
+          "probability": 0.98583984375
+        },
+        {
+          "text": "海",
+          "start": 50.52,
+          "end": 50.78,
+          "probability": 0.998046875
+        },
+        {
+          "text": "葡",
+          "start": 50.78,
+          "end": 50.94,
+          "probability": 0.951171875
+        },
+        {
+          "text": "萄",
+          "start": 50.94,
+          "end": 51.12,
+          "probability": 0.963623046875
+        }
+      ]
+    },
+    {
+      "start": 51.12,
+      "end": 51.98,
+      "text": "可以吃",
+      "words": [
+        {
+          "text": "可以",
+          "start": 51.12,
+          "end": 51.64,
+          "probability": 0.9384765625
+        },
+        {
+          "text": "吃",
+          "start": 51.64,
+          "end": 51.98,
+          "probability": 0.9990234375
+        }
+      ]
+    },
+    {
+      "start": 51.98,
+      "end": 53.24,
+      "text": "咬开有爆珠感",
+      "words": [
+        {
+          "text": "咬",
+          "start": 51.98,
+          "end": 52.36,
+          "probability": 0.78173828125
+        },
+        {
+          "text": "开",
+          "start": 52.36,
+          "end": 52.54,
+          "probability": 0.9814453125
+        },
+        {
+          "text": "有",
+          "start": 52.54,
+          "end": 52.7,
+          "probability": 0.974609375
+        },
+        {
+          "text": "爆",
+          "start": 52.7,
+          "end": 52.88,
+          "probability": 0.74560546875
+        },
+        {
+          "text": "珠",
+          "start": 52.88,
+          "end": 53.04,
+          "probability": 0.672119140625
+        },
+        {
+          "text": "感",
+          "start": 53.04,
+          "end": 53.24,
+          "probability": 0.93603515625
+        }
+      ]
+    },
+    {
+      "start": 53.24,
+      "end": 55.06,
+      "text": "自带清爽的海水鲜味",
+      "words": [
+        {
+          "text": "自",
+          "start": 53.24,
+          "end": 53.68,
+          "probability": 0.9697265625
+        },
+        {
+          "text": "带",
+          "start": 53.68,
+          "end": 53.82,
+          "probability": 0.992919921875
+        },
+        {
+          "text": "清",
+          "start": 53.82,
+          "end": 54.04,
+          "probability": 0.966796875
+        },
+        {
+          "text": "爽",
+          "start": 54.04,
+          "end": 54.2,
+          "probability": 0.999755859375
+        },
+        {
+          "text": "的",
+          "start": 54.2,
+          "end": 54.34,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "海",
+          "start": 54.34,
+          "end": 54.54,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "水",
+          "start": 54.54,
+          "end": 54.7,
+          "probability": 0.99462890625
+        },
+        {
+          "text": "鲜",
+          "start": 54.7,
+          "end": 54.9,
+          "probability": 0.91845703125
+        },
+        {
+          "text": "味",
+          "start": 54.9,
+          "end": 55.06,
+          "probability": 0.9931640625
+        }
+      ]
+    },
+    {
+      "start": 55.06,
+      "end": 57.1,
+      "text": "感海发现这个能吃吗?",
+      "words": [
+        {
+          "text": "感",
+          "start": 55.06,
+          "end": 55.44,
+          "probability": 0.9921875
+        },
+        {
+          "text": "海",
+          "start": 55.44,
+          "end": 55.7,
+          "probability": 0.998046875
+        },
+        {
+          "text": "发",
+          "start": 55.7,
+          "end": 55.92,
+          "probability": 0.998046875
+        },
+        {
+          "text": "现",
+          "start": 55.92,
+          "end": 56.12,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "这个",
+          "start": 56.12,
+          "end": 56.32,
+          "probability": 0.9931640625
+        },
+        {
+          "text": "能",
+          "start": 56.32,
+          "end": 56.54,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "吃",
+          "start": 56.54,
+          "end": 56.8,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "吗?",
+          "start": 56.8,
+          "end": 57.1,
+          "probability": 0.98046875
+        }
+      ]
+    },
+    {
+      "start": 57.1,
+      "end": 58.12,
+      "text": "这是墨鱼卵",
+      "words": [
+        {
+          "text": "这是",
+          "start": 57.1,
+          "end": 57.52,
+          "probability": 0.248779296875
+        },
+        {
+          "text": "墨",
+          "start": 57.52,
+          "end": 57.78,
+          "probability": 0.791259765625
+        },
+        {
+          "text": "鱼",
+          "start": 57.78,
+          "end": 57.94,
+          "probability": 0.9962565104166666
+        },
+        {
+          "text": "卵",
+          "start": 57.94,
+          "end": 58.12,
+          "probability": 0.990966796875
+        }
+      ]
+    },
+    {
+      "start": 58.12,
+      "end": 59.98,
+      "text": "彻底煮熟后就可以吃",
+      "words": [
+        {
+          "text": "彻",
+          "start": 58.12,
+          "end": 58.56,
+          "probability": 0.67041015625
+        },
+        {
+          "text": "底",
+          "start": 58.56,
+          "end": 58.74,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "煮",
+          "start": 58.74,
+          "end": 58.94,
+          "probability": 0.988525390625
+        },
+        {
+          "text": "熟",
+          "start": 58.94,
+          "end": 59.1,
+          "probability": 0.999755859375
+        },
+        {
+          "text": "后",
+          "start": 59.1,
+          "end": 59.28,
+          "probability": 0.98388671875
+        },
+        {
+          "text": "就可以",
+          "start": 59.28,
+          "end": 59.66,
+          "probability": 0.9619140625
+        },
+        {
+          "text": "吃",
+          "start": 59.66,
+          "end": 59.98,
+          "probability": 0.99609375
+        }
+      ]
+    },
+    {
+      "start": 59.98,
+      "end": 62.08,
+      "text": "是营养丰富的海鲜食材",
+      "words": [
+        {
+          "text": "是",
+          "start": 59.98,
+          "end": 60.44,
+          "probability": 0.693359375
+        },
+        {
+          "text": "营",
+          "start": 60.44,
+          "end": 60.62,
+          "probability": 0.963623046875
+        },
+        {
+          "text": "养",
+          "start": 60.62,
+          "end": 60.76,
+          "probability": 0.999755859375
+        },
+        {
+          "text": "丰",
+          "start": 60.76,
+          "end": 60.96,
+          "probability": 0.99462890625
+        },
+        {
+          "text": "富",
+          "start": 60.96,
+          "end": 61.1,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "的",
+          "start": 61.1,
+          "end": 61.24,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "海",
+          "start": 61.24,
+          "end": 61.44,
+          "probability": 0.99658203125
+        },
+        {
+          "text": "鲜",
+          "start": 61.44,
+          "end": 61.62,
+          "probability": 0.9967447916666666
+        },
+        {
+          "text": "食",
+          "start": 61.62,
+          "end": 61.78,
+          "probability": 0.98193359375
+        },
+        {
+          "text": "材",
+          "start": 61.78,
+          "end": 62.08,
+          "probability": 0.999755859375
+        }
+      ]
+    },
+    {
+      "start": 62.08,
+      "end": 64.02,
+      "text": "感海发现这个能吃吗?",
+      "words": [
+        {
+          "text": "感",
+          "start": 62.08,
+          "end": 62.38,
+          "probability": 0.03948974609375
+        },
+        {
+          "text": "海",
+          "start": 62.38,
+          "end": 62.64,
+          "probability": 0.724609375
+        },
+        {
+          "text": "发",
+          "start": 62.64,
+          "end": 62.84,
+          "probability": 0.98486328125
+        },
+        {
+          "text": "现",
+          "start": 62.84,
+          "end": 63.04,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "这个",
+          "start": 63.04,
+          "end": 63.26,
+          "probability": 0.97216796875
+        },
+        {
+          "text": "能",
+          "start": 63.26,
+          "end": 63.48,
+          "probability": 0.98828125
+        },
+        {
+          "text": "吃",
+          "start": 63.48,
+          "end": 63.74,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "吗?",
+          "start": 63.74,
+          "end": 64.02,
+          "probability": 0.81640625
+        }
+      ]
+    },
+    {
+      "start": 64.22,
+      "end": 65.12,
+      "text": "这是框蛇尾",
+      "words": [
+        {
+          "text": "这是",
+          "start": 64.22,
+          "end": 64.48,
+          "probability": 0.93994140625
+        },
+        {
+          "text": "框",
+          "start": 64.48,
+          "end": 64.74,
+          "probability": 0.6865234375
+        },
+        {
+          "text": "蛇",
+          "start": 64.74,
+          "end": 64.92,
+          "probability": 0.82958984375
+        },
+        {
+          "text": "尾",
+          "start": 64.92,
+          "end": 65.12,
+          "probability": 0.99658203125
+        }
+      ]
+    },
+    {
+      "start": 65.12,
+      "end": 66.4,
+      "text": "可能携带细菌",
+      "words": [
+        {
+          "text": "可能",
+          "start": 65.12,
+          "end": 65.6,
+          "probability": 0.2724609375
+        },
+        {
+          "text": "携",
+          "start": 65.6,
+          "end": 65.86,
+          "probability": 0.9677734375
+        },
+        {
+          "text": "带",
+          "start": 65.86,
+          "end": 66.0,
+          "probability": 0.998046875
+        },
+        {
+          "text": "细",
+          "start": 66.0,
+          "end": 66.22,
+          "probability": 0.994384765625
+        },
+        {
+          "text": "菌",
+          "start": 66.22,
+          "end": 66.4,
+          "probability": 0.996337890625
+        }
+      ]
+    },
+    {
+      "start": 66.4,
+      "end": 67.74,
+      "text": "病毒或寄生虫",
+      "words": [
+        {
+          "text": "病",
+          "start": 66.4,
+          "end": 66.84,
+          "probability": 0.763671875
+        },
+        {
+          "text": "毒",
+          "start": 66.84,
+          "end": 67.02,
+          "probability": 1.0
+        },
+        {
+          "text": "或",
+          "start": 67.02,
+          "end": 67.2,
+          "probability": 0.9130859375
+        },
+        {
+          "text": "寄",
+          "start": 67.2,
+          "end": 67.36,
+          "probability": 0.6881103515625
+        },
+        {
+          "text": "生",
+          "start": 67.36,
+          "end": 67.52,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "虫",
+          "start": 67.52,
+          "end": 67.74,
+          "probability": 0.93603515625
+        }
+      ]
+    },
+    {
+      "start": 67.74,
+      "end": 68.54,
+      "text": "不能吃",
+      "words": [
+        {
+          "text": "不能",
+          "start": 67.74,
+          "end": 68.2,
+          "probability": 0.568359375
+        },
+        {
+          "text": "吃",
+          "start": 68.2,
+          "end": 68.54,
+          "probability": 0.99853515625
+        }
+      ]
+    },
+    {
+      "start": 68.54,
+      "end": 70.54,
+      "text": "感海发现这个能吃吗?",
+      "words": [
+        {
+          "text": "感",
+          "start": 68.54,
+          "end": 68.88,
+          "probability": 0.97802734375
+        },
+        {
+          "text": "海",
+          "start": 68.88,
+          "end": 69.16,
+          "probability": 0.998046875
+        },
+        {
+          "text": "发",
+          "start": 69.16,
+          "end": 69.36,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "现",
+          "start": 69.36,
+          "end": 69.54,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "这个",
+          "start": 69.54,
+          "end": 69.76,
+          "probability": 0.99267578125
+        },
+        {
+          "text": "能",
+          "start": 69.76,
+          "end": 69.98,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "吃",
+          "start": 69.98,
+          "end": 70.24,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "吗?",
+          "start": 70.24,
+          "end": 70.54,
+          "probability": 0.98193359375
+        }
+      ]
+    },
+    {
+      "start": 70.78,
+      "end": 71.7,
+      "text": "这是海发菜",
+      "words": [
+        {
+          "text": "这是",
+          "start": 70.78,
+          "end": 71.0,
+          "probability": 0.98046875
+        },
+        {
+          "text": "海",
+          "start": 71.0,
+          "end": 71.28,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "发",
+          "start": 71.28,
+          "end": 71.42,
+          "probability": 0.59130859375
+        },
+        {
+          "text": "菜",
+          "start": 71.42,
+          "end": 71.7,
+          "probability": 0.99267578125
+        }
+      ]
+    },
+    {
+      "start": 71.7,
+      "end": 73.1,
+      "text": "看着像头发一样",
+      "words": [
+        {
+          "text": "看",
+          "start": 71.7,
+          "end": 72.06,
+          "probability": 0.947265625
+        },
+        {
+          "text": "着",
+          "start": 72.06,
+          "end": 72.22,
+          "probability": 0.9931640625
+        },
+        {
+          "text": "像",
+          "start": 72.22,
+          "end": 72.38,
+          "probability": 0.9931640625
+        },
+        {
+          "text": "头",
+          "start": 72.38,
+          "end": 72.58,
+          "probability": 0.98974609375
+        },
+        {
+          "text": "发",
+          "start": 72.58,
+          "end": 72.74,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "一",
+          "start": 72.74,
+          "end": 72.94,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "样",
+          "start": 72.94,
+          "end": 73.1,
+          "probability": 1.0
+        }
+      ]
+    },
+    {
+      "start": 73.1,
+      "end": 75.74,
+      "text": "清清洗和加热处理后就可以吃",
+      "words": [
+        {
+          "text": "清",
+          "start": 73.1,
+          "end": 73.56,
+          "probability": 0.06256103515625
+        },
+        {
+          "text": "清",
+          "start": 73.56,
+          "end": 73.78,
+          "probability": 0.92919921875
+        },
+        {
+          "text": "洗",
+          "start": 73.78,
+          "end": 73.94,
+          "probability": 0.96484375
+        },
+        {
+          "text": "和",
+          "start": 73.94,
+          "end": 74.12,
+          "probability": 0.87841796875
+        },
+        {
+          "text": "加",
+          "start": 74.12,
+          "end": 74.3,
+          "probability": 0.9736328125
+        },
+        {
+          "text": "热",
+          "start": 74.3,
+          "end": 74.46,
+          "probability": 0.9951171875
+        },
+        {
+          "text": "处",
+          "start": 74.46,
+          "end": 74.62,
+          "probability": 0.994873046875
+        },
+        {
+          "text": "理",
+          "start": 74.62,
+          "end": 74.78,
+          "probability": 1.0
+        },
+        {
+          "text": "后",
+          "start": 74.78,
+          "end": 74.98,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "就可以",
+          "start": 74.98,
+          "end": 75.34,
+          "probability": 0.98388671875
+        },
+        {
+          "text": "吃",
+          "start": 75.34,
+          "end": 75.74,
+          "probability": 0.99755859375
+        }
+      ]
+    },
+    {
+      "start": 75.74,
+      "end": 77.72,
+      "text": "感海发现这个能吃吗?",
+      "words": [
+        {
+          "text": "感",
+          "start": 75.74,
+          "end": 76.08,
+          "probability": 0.9833984375
+        },
+        {
+          "text": "海",
+          "start": 76.08,
+          "end": 76.36,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "发",
+          "start": 76.36,
+          "end": 76.56,
+          "probability": 0.998046875
+        },
+        {
+          "text": "现",
+          "start": 76.56,
+          "end": 76.76,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "这个",
+          "start": 76.76,
+          "end": 76.96,
+          "probability": 0.9931640625
+        },
+        {
+          "text": "能",
+          "start": 76.96,
+          "end": 77.18,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "吃",
+          "start": 77.18,
+          "end": 77.44,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "吗?",
+          "start": 77.44,
+          "end": 77.72,
+          "probability": 0.98974609375
+        }
+      ]
+    },
+    {
+      "start": 77.98,
+      "end": 78.66,
+      "text": "这是虎台",
+      "words": [
+        {
+          "text": "这是",
+          "start": 77.98,
+          "end": 78.2,
+          "probability": 0.9677734375
+        },
+        {
+          "text": "虎",
+          "start": 78.2,
+          "end": 78.48,
+          "probability": 0.95751953125
+        },
+        {
+          "text": "台",
+          "start": 78.48,
+          "end": 78.66,
+          "probability": 0.693359375
+        }
+      ]
+    },
+    {
+      "start": 78.66,
+      "end": 81.18,
+      "text": "会聚集很多重金属和海洋污染",
+      "words": [
+        {
+          "text": "会",
+          "start": 78.66,
+          "end": 79.04,
+          "probability": 0.91064453125
+        },
+        {
+          "text": "聚",
+          "start": 79.04,
+          "end": 79.22,
+          "probability": 0.969482421875
+        },
+        {
+          "text": "集",
+          "start": 79.22,
+          "end": 79.38,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "很多",
+          "start": 79.38,
+          "end": 79.68,
+          "probability": 0.99560546875
+        },
+        {
+          "text": "重",
+          "start": 79.68,
+          "end": 79.92,
+          "probability": 0.81298828125
+        },
+        {
+          "text": "金",
+          "start": 79.92,
+          "end": 80.1,
+          "probability": 0.9443359375
+        },
+        {
+          "text": "属",
+          "start": 80.1,
+          "end": 80.26,
+          "probability": 0.8740234375
+        },
+        {
+          "text": "和",
+          "start": 80.26,
+          "end": 80.48,
+          "probability": 0.9921875
+        },
+        {
+          "text": "海",
+          "start": 80.48,
+          "end": 80.7,
+          "probability": 0.99169921875
+        },
+        {
+          "text": "洋",
+          "start": 80.7,
+          "end": 80.82,
+          "probability": 0.997314453125
+        },
+        {
+          "text": "污",
+          "start": 80.82,
+          "end": 81.0,
+          "probability": 0.922607421875
+        },
+        {
+          "text": "染",
+          "start": 81.0,
+          "end": 81.18,
+          "probability": 0.99609375
+        }
+      ]
+    },
+    {
+      "start": 81.18,
+      "end": 81.98,
+      "text": "不能吃",
+      "words": [
+        {
+          "text": "不能",
+          "start": 81.18,
+          "end": 81.62,
+          "probability": 0.93359375
+        },
+        {
+          "text": "吃",
+          "start": 81.62,
+          "end": 81.98,
+          "probability": 0.99755859375
+        }
+      ]
+    },
+    {
+      "start": 81.98,
+      "end": 83.9,
+      "text": "感海发现这个能吃吗?",
+      "words": [
+        {
+          "text": "感",
+          "start": 81.98,
+          "end": 82.28,
+          "probability": 0.98779296875
+        },
+        {
+          "text": "海",
+          "start": 82.28,
+          "end": 82.56,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "发",
+          "start": 82.56,
+          "end": 82.76,
+          "probability": 0.998046875
+        },
+        {
+          "text": "现",
+          "start": 82.76,
+          "end": 82.94,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "这个",
+          "start": 82.94,
+          "end": 83.16,
+          "probability": 0.99365234375
+        },
+        {
+          "text": "能",
+          "start": 83.16,
+          "end": 83.36,
+          "probability": 0.998046875
+        },
+        {
+          "text": "吃",
+          "start": 83.36,
+          "end": 83.64,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "吗?",
+          "start": 83.64,
+          "end": 83.9,
+          "probability": 0.99267578125
+        }
+      ]
+    },
+    {
+      "start": 84.12,
+      "end": 84.92,
+      "text": "这是鹿脚藻",
+      "words": [
+        {
+          "text": "这是",
+          "start": 84.12,
+          "end": 84.32,
+          "probability": 0.97119140625
+        },
+        {
+          "text": "鹿",
+          "start": 84.32,
+          "end": 84.54,
+          "probability": 0.8828125
+        },
+        {
+          "text": "脚",
+          "start": 84.54,
+          "end": 84.72,
+          "probability": 0.664794921875
+        },
+        {
+          "text": "藻",
+          "start": 84.72,
+          "end": 84.92,
+          "probability": 0.701416015625
+        }
+      ]
+    },
+    {
+      "start": 84.92,
+      "end": 86.08,
+      "text": "人不能吃",
+      "words": [
+        {
+          "text": "人",
+          "start": 84.92,
+          "end": 85.52,
+          "probability": 0.93994140625
+        },
+        {
+          "text": "不能",
+          "start": 85.52,
+          "end": 85.74,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "吃",
+          "start": 85.74,
+          "end": 86.08,
+          "probability": 0.9990234375
+        }
+      ]
+    },
+    {
+      "start": 86.08,
+      "end": 87.62,
+      "text": "海洋生物可以吃",
+      "words": [
+        {
+          "text": "海",
+          "start": 86.08,
+          "end": 86.62,
+          "probability": 0.8056640625
+        },
+        {
+          "text": "洋",
+          "start": 86.62,
+          "end": 86.82,
+          "probability": 0.849365234375
+        },
+        {
+          "text": "生",
+          "start": 86.82,
+          "end": 86.96,
+          "probability": 0.99560546875
+        },
+        {
+          "text": "物",
+          "start": 86.96,
+          "end": 87.12,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "可以",
+          "start": 87.12,
+          "end": 87.32,
+          "probability": 0.9716796875
+        },
+        {
+          "text": "吃",
+          "start": 87.32,
+          "end": 87.62,
+          "probability": 0.9951171875
+        }
+      ]
+    },
+    {
+      "start": 87.62,
+      "end": 89.72,
+      "text": "感海发现这个能吃吗?",
+      "words": [
+        {
+          "text": "感",
+          "start": 87.62,
+          "end": 88.06,
+          "probability": 0.1434326171875
+        },
+        {
+          "text": "海",
+          "start": 88.06,
+          "end": 88.32,
+          "probability": 0.93310546875
+        },
+        {
+          "text": "发",
+          "start": 88.32,
+          "end": 88.52,
+          "probability": 0.451904296875
+        },
+        {
+          "text": "现",
+          "start": 88.52,
+          "end": 88.72,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "这个",
+          "start": 88.72,
+          "end": 88.92,
+          "probability": 0.9619140625
+        },
+        {
+          "text": "能",
+          "start": 88.92,
+          "end": 89.14,
+          "probability": 0.9931640625
+        },
+        {
+          "text": "吃",
+          "start": 89.14,
+          "end": 89.4,
+          "probability": 0.998046875
+        },
+        {
+          "text": "吗?",
+          "start": 89.4,
+          "end": 89.72,
+          "probability": 0.80908203125
+        }
+      ]
+    },
+    {
+      "start": 89.94,
+      "end": 90.6,
+      "text": "这是海苔",
+      "words": [
+        {
+          "text": "这是",
+          "start": 89.94,
+          "end": 90.16,
+          "probability": 0.9775390625
+        },
+        {
+          "text": "海",
+          "start": 90.16,
+          "end": 90.44,
+          "probability": 0.99609375
+        },
+        {
+          "text": "苔",
+          "start": 90.44,
+          "end": 90.6,
+          "probability": 0.943359375
+        }
+      ]
+    },
+    {
+      "start": 90.6,
+      "end": 91.5,
+      "text": "可以吃",
+      "words": [
+        {
+          "text": "可以",
+          "start": 90.6,
+          "end": 91.2,
+          "probability": 0.85986328125
+        },
+        {
+          "text": "吃",
+          "start": 91.2,
+          "end": 91.5,
+          "probability": 0.9951171875
+        }
+      ]
+    },
+    {
+      "start": 91.92,
+      "end": 93.4,
+      "text": "可以加工成健康零食",
+      "words": [
+        {
+          "text": "可以",
+          "start": 91.92,
+          "end": 92.12,
+          "probability": 0.6767578125
+        },
+        {
+          "text": "加",
+          "start": 92.12,
+          "end": 92.36,
+          "probability": 0.96240234375
+        },
+        {
+          "text": "工",
+          "start": 92.36,
+          "end": 92.52,
+          "probability": 0.9794921875
+        },
+        {
+          "text": "成",
+          "start": 92.52,
+          "end": 92.7,
+          "probability": 0.94287109375
+        },
+        {
+          "text": "健",
+          "start": 92.7,
+          "end": 92.86,
+          "probability": 0.9892578125
+        },
+        {
+          "text": "康",
+          "start": 92.86,
+          "end": 93.04,
+          "probability": 0.996826171875
+        },
+        {
+          "text": "零",
+          "start": 93.04,
+          "end": 93.18,
+          "probability": 0.879638671875
+        },
+        {
+          "text": "食",
+          "start": 93.18,
+          "end": 93.4,
+          "probability": 0.9892578125
+        }
+      ]
+    },
+    {
+      "start": 93.4,
+      "end": 95.58,
+      "text": "感海发现这个能吃吗?",
+      "words": [
+        {
+          "text": "感",
+          "start": 93.4,
+          "end": 93.88,
+          "probability": 0.990234375
+        },
+        {
+          "text": "海",
+          "start": 93.88,
+          "end": 94.16,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "发",
+          "start": 94.16,
+          "end": 94.36,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "现",
+          "start": 94.36,
+          "end": 94.56,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "这个",
+          "start": 94.56,
+          "end": 94.76,
+          "probability": 0.99072265625
+        },
+        {
+          "text": "能",
+          "start": 94.76,
+          "end": 94.98,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "吃",
+          "start": 94.98,
+          "end": 95.24,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "吗?",
+          "start": 95.24,
+          "end": 95.58,
+          "probability": 0.98046875
+        }
+      ]
+    },
+    {
+      "start": 95.82,
+      "end": 96.86,
+      "text": "这是蓝黄章鱼",
+      "words": [
+        {
+          "text": "这是",
+          "start": 95.82,
+          "end": 96.04,
+          "probability": 0.9853515625
+        },
+        {
+          "text": "蓝",
+          "start": 96.04,
+          "end": 96.24,
+          "probability": 0.7900390625
+        },
+        {
+          "text": "黄",
+          "start": 96.24,
+          "end": 96.42,
+          "probability": 0.6480712890625
+        },
+        {
+          "text": "章",
+          "start": 96.42,
+          "end": 96.6,
+          "probability": 0.818603515625
+        },
+        {
+          "text": "鱼",
+          "start": 96.6,
+          "end": 96.86,
+          "probability": 0.9894205729166666
+        }
+      ]
+    },
+    {
+      "start": 96.86,
+      "end": 99.3,
+      "text": "是世界上最毒的海洋生物之一",
+      "words": [
+        {
+          "text": "是",
+          "start": 96.86,
+          "end": 97.34,
+          "probability": 0.9375
+        },
+        {
+          "text": "世界",
+          "start": 97.34,
+          "end": 97.58,
+          "probability": 0.99462890625
+        },
+        {
+          "text": "上",
+          "start": 97.58,
+          "end": 97.84,
+          "probability": 0.998046875
+        },
+        {
+          "text": "最",
+          "start": 97.84,
+          "end": 98.02,
+          "probability": 0.96044921875
+        },
+        {
+          "text": "毒",
+          "start": 98.02,
+          "end": 98.18,
+          "probability": 0.9306640625
+        },
+        {
+          "text": "的",
+          "start": 98.18,
+          "end": 98.32,
+          "probability": 0.99462890625
+        },
+        {
+          "text": "海",
+          "start": 98.32,
+          "end": 98.52,
+          "probability": 0.99658203125
+        },
+        {
+          "text": "洋",
+          "start": 98.52,
+          "end": 98.66,
+          "probability": 0.999755859375
+        },
+        {
+          "text": "生",
+          "start": 98.66,
+          "end": 98.8,
+          "probability": 1.0
+        },
+        {
+          "text": "物",
+          "start": 98.8,
+          "end": 98.96,
+          "probability": 1.0
+        },
+        {
+          "text": "之",
+          "start": 98.96,
+          "end": 99.12,
+          "probability": 0.994140625
+        },
+        {
+          "text": "一",
+          "start": 99.12,
+          "end": 99.3,
+          "probability": 0.99853515625
+        }
+      ]
+    },
+    {
+      "start": 99.3,
+      "end": 100.68,
+      "text": "连摸都不能摸",
+      "words": [
+        {
+          "text": "连",
+          "start": 99.3,
+          "end": 99.88,
+          "probability": 0.920166015625
+        },
+        {
+          "text": "摸",
+          "start": 99.88,
+          "end": 100.02,
+          "probability": 0.762451171875
+        },
+        {
+          "text": "都",
+          "start": 100.02,
+          "end": 100.18,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "不能",
+          "start": 100.18,
+          "end": 100.42,
+          "probability": 0.99609375
+        },
+        {
+          "text": "摸",
+          "start": 100.42,
+          "end": 100.68,
+          "probability": 0.99951171875
+        }
+      ]
+    },
+    {
+      "start": 100.68,
+      "end": 101.88,
+      "text": "更别说吃了",
+      "words": [
+        {
+          "text": "更",
+          "start": 100.68,
+          "end": 101.16,
+          "probability": 0.95458984375
+        },
+        {
+          "text": "别",
+          "start": 101.16,
+          "end": 101.34,
+          "probability": 0.9951171875
+        },
+        {
+          "text": "说",
+          "start": 101.34,
+          "end": 101.52,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "吃",
+          "start": 101.52,
+          "end": 101.7,
+          "probability": 0.9658203125
+        },
+        {
+          "text": "了",
+          "start": 101.7,
+          "end": 101.88,
+          "probability": 0.93798828125
+        }
+      ]
+    },
+    {
+      "start": 101.88,
+      "end": 103.9,
+      "text": "感海发现这个能吃吗?",
+      "words": [
+        {
+          "text": "感",
+          "start": 101.88,
+          "end": 102.26,
+          "probability": 0.9921875
+        },
+        {
+          "text": "海",
+          "start": 102.26,
+          "end": 102.52,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "发",
+          "start": 102.52,
+          "end": 102.72,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "现",
+          "start": 102.72,
+          "end": 102.92,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "这个",
+          "start": 102.92,
+          "end": 103.12,
+          "probability": 0.9951171875
+        },
+        {
+          "text": "能",
+          "start": 103.12,
+          "end": 103.34,
+          "probability": 0.998046875
+        },
+        {
+          "text": "吃",
+          "start": 103.34,
+          "end": 103.6,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "吗?",
+          "start": 103.6,
+          "end": 103.9,
+          "probability": 0.9873046875
+        }
+      ]
+    },
+    {
+      "start": 104.2,
+      "end": 105.18,
+      "text": "这是灯塔水母",
+      "words": [
+        {
+          "text": "这是",
+          "start": 104.2,
+          "end": 104.4,
+          "probability": 0.99365234375
+        },
+        {
+          "text": "灯",
+          "start": 104.4,
+          "end": 104.62,
+          "probability": 0.984619140625
+        },
+        {
+          "text": "塔",
+          "start": 104.62,
+          "end": 104.78,
+          "probability": 0.998046875
+        },
+        {
+          "text": "水",
+          "start": 104.78,
+          "end": 104.96,
+          "probability": 0.98486328125
+        },
+        {
+          "text": "母",
+          "start": 104.96,
+          "end": 105.18,
+          "probability": 0.94921875
+        }
+      ]
+    },
+    {
+      "start": 105.18,
+      "end": 107.66,
+      "text": "据说在特定环境下可以永生",
+      "words": [
+        {
+          "text": "据",
+          "start": 105.18,
+          "end": 105.78,
+          "probability": 0.98486328125
+        },
+        {
+          "text": "说",
+          "start": 105.78,
+          "end": 105.96,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "在",
+          "start": 105.96,
+          "end": 106.12,
+          "probability": 0.9951171875
+        },
+        {
+          "text": "特",
+          "start": 106.12,
+          "end": 106.3,
+          "probability": 0.99267578125
+        },
+        {
+          "text": "定",
+          "start": 106.3,
+          "end": 106.42,
+          "probability": 0.990234375
+        },
+        {
+          "text": "环",
+          "start": 106.42,
+          "end": 106.62,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "境",
+          "start": 106.62,
+          "end": 106.78,
+          "probability": 1.0
+        },
+        {
+          "text": "下",
+          "start": 106.78,
+          "end": 106.98,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "可以",
+          "start": 106.98,
+          "end": 107.26,
+          "probability": 0.98583984375
+        },
+        {
+          "text": "永",
+          "start": 107.26,
+          "end": 107.46,
+          "probability": 0.94677734375
+        },
+        {
+          "text": "生",
+          "start": 107.46,
+          "end": 107.66,
+          "probability": 0.99560546875
+        }
+      ]
+    },
+    {
+      "start": 107.66,
+      "end": 109.72,
+      "text": "触手上不满有毒刺细胞",
+      "words": [
+        {
+          "text": "触",
+          "start": 107.66,
+          "end": 108.2,
+          "probability": 0.758544921875
+        },
+        {
+          "text": "手",
+          "start": 108.2,
+          "end": 108.38,
+          "probability": 0.98779296875
+        },
+        {
+          "text": "上",
+          "start": 108.38,
+          "end": 108.56,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "不",
+          "start": 108.56,
+          "end": 108.72,
+          "probability": 0.97119140625
+        },
+        {
+          "text": "满",
+          "start": 108.72,
+          "end": 108.88,
+          "probability": 0.972412109375
+        },
+        {
+          "text": "有",
+          "start": 108.88,
+          "end": 109.06,
+          "probability": 0.9775390625
+        },
+        {
+          "text": "毒",
+          "start": 109.06,
+          "end": 109.2,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "刺",
+          "start": 109.2,
+          "end": 109.38,
+          "probability": 0.927001953125
+        },
+        {
+          "text": "细",
+          "start": 109.38,
+          "end": 109.54,
+          "probability": 0.846435546875
+        },
+        {
+          "text": "胞",
+          "start": 109.54,
+          "end": 109.72,
+          "probability": 0.90576171875
+        }
+      ]
+    },
+    {
+      "start": 109.72,
+      "end": 110.64,
+      "text": "不能吃",
+      "words": [
+        {
+          "text": "不能",
+          "start": 109.72,
+          "end": 110.3,
+          "probability": 0.76513671875
+        },
+        {
+          "text": "吃",
+          "start": 110.3,
+          "end": 110.64,
+          "probability": 0.998046875
+        }
+      ]
+    },
+    {
+      "start": 110.64,
+      "end": 112.7,
+      "text": "感海发现这个能吃吗?",
+      "words": [
+        {
+          "text": "感",
+          "start": 110.64,
+          "end": 111.06,
+          "probability": 0.98876953125
+        },
+        {
+          "text": "海",
+          "start": 111.06,
+          "end": 111.32,
+          "probability": 0.998046875
+        },
+        {
+          "text": "发",
+          "start": 111.32,
+          "end": 111.52,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "现",
+          "start": 111.52,
+          "end": 111.72,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "这个",
+          "start": 111.72,
+          "end": 111.92,
+          "probability": 0.994140625
+        },
+        {
+          "text": "能",
+          "start": 111.92,
+          "end": 112.14,
+          "probability": 0.998046875
+        },
+        {
+          "text": "吃",
+          "start": 112.14,
+          "end": 112.4,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "吗?",
+          "start": 112.4,
+          "end": 112.7,
+          "probability": 0.99462890625
+        }
+      ]
+    },
+    {
+      "start": 112.98,
+      "end": 113.66,
+      "text": "这是海马",
+      "words": [
+        {
+          "text": "这是",
+          "start": 112.98,
+          "end": 113.22,
+          "probability": 0.9951171875
+        },
+        {
+          "text": "海",
+          "start": 113.22,
+          "end": 113.48,
+          "probability": 0.99169921875
+        },
+        {
+          "text": "马",
+          "start": 113.48,
+          "end": 113.66,
+          "probability": 0.65380859375
+        }
+      ]
+    },
+    {
+      "start": 113.66,
+      "end": 115.7,
+      "text": "野生的保护动物不能吃",
+      "words": [
+        {
+          "text": "野",
+          "start": 113.66,
+          "end": 114.2,
+          "probability": 0.10369873046875
+        },
+        {
+          "text": "生",
+          "start": 114.2,
+          "end": 114.36,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "的",
+          "start": 114.36,
+          "end": 114.48,
+          "probability": 0.99169921875
+        },
+        {
+          "text": "保",
+          "start": 114.48,
+          "end": 114.64,
+          "probability": 0.974609375
+        },
+        {
+          "text": "护",
+          "start": 114.64,
+          "end": 114.8,
+          "probability": 0.6258544921875
+        },
+        {
+          "text": "动",
+          "start": 114.8,
+          "end": 114.94,
+          "probability": 0.61767578125
+        },
+        {
+          "text": "物",
+          "start": 114.94,
+          "end": 115.14,
+          "probability": 1.0
+        },
+        {
+          "text": "不能",
+          "start": 115.14,
+          "end": 115.38,
+          "probability": 0.9638671875
+        },
+        {
+          "text": "吃",
+          "start": 115.38,
+          "end": 115.7,
+          "probability": 0.9970703125
+        }
+      ]
+    },
+    {
+      "start": 115.7,
+      "end": 118.42,
+      "text": "养殖的可以作为中药材或自补品",
+      "words": [
+        {
+          "text": "养",
+          "start": 115.7,
+          "end": 116.26,
+          "probability": 0.8955078125
+        },
+        {
+          "text": "殖",
+          "start": 116.26,
+          "end": 116.4,
+          "probability": 0.967529296875
+        },
+        {
+          "text": "的",
+          "start": 116.4,
+          "end": 116.54,
+          "probability": 0.97119140625
+        },
+        {
+          "text": "可以",
+          "start": 116.54,
+          "end": 116.76,
+          "probability": 0.9853515625
+        },
+        {
+          "text": "作",
+          "start": 116.76,
+          "end": 116.96,
+          "probability": 0.9423828125
+        },
+        {
+          "text": "为",
+          "start": 116.96,
+          "end": 117.14,
+          "probability": 0.953125
+        },
+        {
+          "text": "中",
+          "start": 117.14,
+          "end": 117.28,
+          "probability": 0.74755859375
+        },
+        {
+          "text": "药",
+          "start": 117.28,
+          "end": 117.42,
+          "probability": 0.962890625
+        },
+        {
+          "text": "材",
+          "start": 117.42,
+          "end": 117.64,
+          "probability": 0.98388671875
+        },
+        {
+          "text": "或",
+          "start": 117.64,
+          "end": 117.86,
+          "probability": 0.8271484375
+        },
+        {
+          "text": "自",
+          "start": 117.86,
+          "end": 118.02,
+          "probability": 0.423828125
+        },
+        {
+          "text": "补",
+          "start": 118.02,
+          "end": 118.14,
+          "probability": 0.99267578125
+        },
+        {
+          "text": "品",
+          "start": 118.14,
+          "end": 118.42,
+          "probability": 0.9990234375
+        }
+      ]
+    },
+    {
+      "start": 118.42,
+      "end": 120.44,
+      "text": "感海发现这个能吃吗?",
+      "words": [
+        {
+          "text": "感",
+          "start": 118.42,
+          "end": 118.78,
+          "probability": 0.276611328125
+        },
+        {
+          "text": "海",
+          "start": 118.78,
+          "end": 119.04,
+          "probability": 0.87890625
+        },
+        {
+          "text": "发",
+          "start": 119.04,
+          "end": 119.26,
+          "probability": 0.986328125
+        },
+        {
+          "text": "现",
+          "start": 119.26,
+          "end": 119.44,
+          "probability": 0.998046875
+        },
+        {
+          "text": "这个",
+          "start": 119.44,
+          "end": 119.66,
+          "probability": 0.9619140625
+        },
+        {
+          "text": "能",
+          "start": 119.66,
+          "end": 119.88,
+          "probability": 0.990234375
+        },
+        {
+          "text": "吃",
+          "start": 119.88,
+          "end": 120.14,
+          "probability": 0.998046875
+        },
+        {
+          "text": "吗?",
+          "start": 120.14,
+          "end": 120.44,
+          "probability": 0.806640625
+        }
+      ]
+    },
+    {
+      "start": 120.62,
+      "end": 121.32,
+      "text": "这是海魁",
+      "words": [
+        {
+          "text": "这是",
+          "start": 120.62,
+          "end": 120.88,
+          "probability": 0.93798828125
+        },
+        {
+          "text": "海",
+          "start": 120.88,
+          "end": 121.14,
+          "probability": 0.98828125
+        },
+        {
+          "text": "魁",
+          "start": 121.14,
+          "end": 121.32,
+          "probability": 0.580078125
+        }
+      ]
+    },
+    {
+      "start": 121.32,
+      "end": 122.78,
+      "text": "触手含有毒素",
+      "words": [
+        {
+          "text": "触",
+          "start": 121.32,
+          "end": 121.9,
+          "probability": 0.58966064453125
+        },
+        {
+          "text": "手",
+          "start": 121.9,
+          "end": 122.06,
+          "probability": 0.8984375
+        },
+        {
+          "text": "含",
+          "start": 122.06,
+          "end": 122.24,
+          "probability": 0.920654296875
+        },
+        {
+          "text": "有",
+          "start": 122.24,
+          "end": 122.42,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "毒",
+          "start": 122.42,
+          "end": 122.56,
+          "probability": 0.998046875
+        },
+        {
+          "text": "素",
+          "start": 122.56,
+          "end": 122.78,
+          "probability": 0.99609375
+        }
+      ]
+    },
+    {
+      "start": 122.78,
+      "end": 123.82,
+      "text": "不见一吃",
+      "words": [
+        {
+          "text": "不",
+          "start": 122.78,
+          "end": 123.26,
+          "probability": 0.59375
+        },
+        {
+          "text": "见",
+          "start": 123.26,
+          "end": 123.44,
+          "probability": 0.87890625
+        },
+        {
+          "text": "一",
+          "start": 123.44,
+          "end": 123.62,
+          "probability": 0.6982421875
+        },
+        {
+          "text": "吃",
+          "start": 123.62,
+          "end": 123.82,
+          "probability": 0.94384765625
+        }
+      ]
+    },
+    {
+      "start": 123.82,
+      "end": 125.9,
+      "text": "感海发现这个能吃吗?",
+      "words": [
+        {
+          "text": "感",
+          "start": 123.82,
+          "end": 124.18,
+          "probability": 0.958984375
+        },
+        {
+          "text": "海",
+          "start": 124.18,
+          "end": 124.46,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "发",
+          "start": 124.46,
+          "end": 124.66,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "现",
+          "start": 124.66,
+          "end": 124.86,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "这个",
+          "start": 124.86,
+          "end": 125.06,
+          "probability": 0.98876953125
+        },
+        {
+          "text": "能",
+          "start": 125.06,
+          "end": 125.28,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "吃",
+          "start": 125.28,
+          "end": 125.54,
+          "probability": 0.998046875
+        },
+        {
+          "text": "吗?",
+          "start": 125.54,
+          "end": 125.9,
+          "probability": 0.982421875
+        }
+      ]
+    },
+    {
+      "start": 126.2,
+      "end": 127.76,
+      "text": "这可不是什么滚动的海胆",
+      "words": [
+        {
+          "text": "这",
+          "start": 126.2,
+          "end": 126.36,
+          "probability": 0.97607421875
+        },
+        {
+          "text": "可",
+          "start": 126.36,
+          "end": 126.5,
+          "probability": 0.99658203125
+        },
+        {
+          "text": "不是",
+          "start": 126.5,
+          "end": 126.68,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "什么",
+          "start": 126.68,
+          "end": 126.96,
+          "probability": 0.99267578125
+        },
+        {
+          "text": "滚",
+          "start": 126.96,
+          "end": 127.18,
+          "probability": 0.99560546875
+        },
+        {
+          "text": "动",
+          "start": 127.18,
+          "end": 127.32,
+          "probability": 0.98291015625
+        },
+        {
+          "text": "的",
+          "start": 127.32,
+          "end": 127.44,
+          "probability": 0.99658203125
+        },
+        {
+          "text": "海",
+          "start": 127.44,
+          "end": 127.62,
+          "probability": 0.99560546875
+        },
+        {
+          "text": "胆",
+          "start": 127.62,
+          "end": 127.76,
+          "probability": 0.9599609375
+        }
+      ]
+    },
+    {
+      "start": 127.76,
+      "end": 129.14,
+      "text": "这是老鼠乐",
+      "words": [
+        {
+          "text": "这是",
+          "start": 127.76,
+          "end": 128.5,
+          "probability": 0.95654296875
+        },
+        {
+          "text": "老",
+          "start": 128.5,
+          "end": 128.74,
+          "probability": 0.94091796875
+        },
+        {
+          "text": "鼠",
+          "start": 128.74,
+          "end": 128.9,
+          "probability": 0.9794921875
+        },
+        {
+          "text": "乐",
+          "start": 128.9,
+          "end": 129.14,
+          "probability": 0.8720703125
+        }
+      ]
+    },
+    {
+      "start": 129.14,
+      "end": 130.48,
+      "text": "一种固杀植物",
+      "words": [
+        {
+          "text": "一",
+          "start": 129.14,
+          "end": 129.58,
+          "probability": 0.77294921875
+        },
+        {
+          "text": "种",
+          "start": 129.58,
+          "end": 129.72,
+          "probability": 0.998046875
+        },
+        {
+          "text": "固",
+          "start": 129.72,
+          "end": 129.9,
+          "probability": 0.6478271484375
+        },
+        {
+          "text": "杀",
+          "start": 129.9,
+          "end": 130.08,
+          "probability": 0.93212890625
+        },
+        {
+          "text": "植",
+          "start": 130.08,
+          "end": 130.26,
+          "probability": 0.988525390625
+        },
+        {
+          "text": "物",
+          "start": 130.26,
+          "end": 130.48,
+          "probability": 1.0
+        }
+      ]
+    },
+    {
+      "start": 130.48,
+      "end": 131.34,
+      "text": "不能吃",
+      "words": [
+        {
+          "text": "不能",
+          "start": 130.48,
+          "end": 131.02,
+          "probability": 0.79931640625
+        },
+        {
+          "text": "吃",
+          "start": 131.02,
+          "end": 131.34,
+          "probability": 0.99853515625
+        }
+      ]
+    },
+    {
+      "start": 131.34,
+      "end": 133.32,
+      "text": "感海发现这个能吃吗?",
+      "words": [
+        {
+          "text": "感",
+          "start": 131.34,
+          "end": 131.68,
+          "probability": 0.9833984375
+        },
+        {
+          "text": "海",
+          "start": 131.68,
+          "end": 131.96,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "发",
+          "start": 131.96,
+          "end": 132.16,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "现",
+          "start": 132.16,
+          "end": 132.34,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "这个",
+          "start": 132.34,
+          "end": 132.56,
+          "probability": 0.9951171875
+        },
+        {
+          "text": "能",
+          "start": 132.56,
+          "end": 132.76,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "吃",
+          "start": 132.76,
+          "end": 133.04,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "吗?",
+          "start": 133.04,
+          "end": 133.32,
+          "probability": 0.98974609375
+        }
+      ]
+    },
+    {
+      "start": 133.64,
+      "end": 134.62,
+      "text": "这是马分海胆",
+      "words": [
+        {
+          "text": "这是",
+          "start": 133.64,
+          "end": 133.88,
+          "probability": 0.986328125
+        },
+        {
+          "text": "马",
+          "start": 133.88,
+          "end": 134.1,
+          "probability": 0.73095703125
+        },
+        {
+          "text": "分",
+          "start": 134.1,
+          "end": 134.26,
+          "probability": 0.130859375
+        },
+        {
+          "text": "海",
+          "start": 134.26,
+          "end": 134.46,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "胆",
+          "start": 134.46,
+          "end": 134.62,
+          "probability": 0.995361328125
+        }
+      ]
+    },
+    {
+      "start": 134.62,
+      "end": 135.52,
+      "text": "可以吃",
+      "words": [
+        {
+          "text": "可以",
+          "start": 134.62,
+          "end": 135.22,
+          "probability": 0.9326171875
+        },
+        {
+          "text": "吃",
+          "start": 135.22,
+          "end": 135.52,
+          "probability": 0.99853515625
+        }
+      ]
+    },
+    {
+      "start": 135.52,
+      "end": 136.9,
+      "text": "口感绵密清甜",
+      "words": [
+        {
+          "text": "口",
+          "start": 135.52,
+          "end": 136.0,
+          "probability": 0.81689453125
+        },
+        {
+          "text": "感",
+          "start": 136.0,
+          "end": 136.16,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "绵",
+          "start": 136.16,
+          "end": 136.32,
+          "probability": 0.917236328125
+        },
+        {
+          "text": "密",
+          "start": 136.32,
+          "end": 136.48,
+          "probability": 0.9833984375
+        },
+        {
+          "text": "清",
+          "start": 136.48,
+          "end": 136.66,
+          "probability": 0.80908203125
+        },
+        {
+          "text": "甜",
+          "start": 136.66,
+          "end": 136.9,
+          "probability": 0.9951171875
+        }
+      ]
+    },
+    {
+      "start": 136.9,
+      "end": 138.48,
+      "text": "像海鲜味咸淡黄",
+      "words": [
+        {
+          "text": "像",
+          "start": 136.9,
+          "end": 137.4,
+          "probability": 0.485107421875
+        },
+        {
+          "text": "海",
+          "start": 137.4,
+          "end": 137.62,
+          "probability": 0.99658203125
+        },
+        {
+          "text": "鲜",
+          "start": 137.62,
+          "end": 137.78,
+          "probability": 0.99560546875
+        },
+        {
+          "text": "味",
+          "start": 137.78,
+          "end": 137.9,
+          "probability": 0.302001953125
+        },
+        {
+          "text": "咸",
+          "start": 137.9,
+          "end": 138.1,
+          "probability": 0.834228515625
+        },
+        {
+          "text": "淡",
+          "start": 138.1,
+          "end": 138.22,
+          "probability": 0.76220703125
+        },
+        {
+          "text": "黄",
+          "start": 138.22,
+          "end": 138.48,
+          "probability": 0.97509765625
+        }
+      ]
+    },
+    {
+      "start": 138.48,
+      "end": 140.5,
+      "text": "感海发现这个能吃吗?",
+      "words": [
+        {
+          "text": "感",
+          "start": 138.48,
+          "end": 138.84,
+          "probability": 0.99609375
+        },
+        {
+          "text": "海",
+          "start": 138.84,
+          "end": 139.12,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "发",
+          "start": 139.12,
+          "end": 139.32,
+          "probability": 0.99658203125
+        },
+        {
+          "text": "现",
+          "start": 139.32,
+          "end": 139.5,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "这个",
+          "start": 139.5,
+          "end": 139.72,
+          "probability": 0.9931640625
+        },
+        {
+          "text": "能",
+          "start": 139.72,
+          "end": 139.92,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "吃",
+          "start": 139.92,
+          "end": 140.2,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "吗?",
+          "start": 140.2,
+          "end": 140.5,
+          "probability": 0.9873046875
+        }
+      ]
+    },
+    {
+      "start": 140.76,
+      "end": 141.46,
+      "text": "这是海鲜",
+      "words": [
+        {
+          "text": "这是",
+          "start": 140.76,
+          "end": 141.0,
+          "probability": 0.9697265625
+        },
+        {
+          "text": "海",
+          "start": 141.0,
+          "end": 141.3,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "鲜",
+          "start": 141.3,
+          "end": 141.46,
+          "probability": 0.9352213541666666
+        }
+      ]
+    },
+    {
+      "start": 141.46,
+      "end": 143.14,
+      "text": "部分品种还有毒素",
+      "words": [
+        {
+          "text": "部分",
+          "start": 141.46,
+          "end": 141.96,
+          "probability": 0.76708984375
+        },
+        {
+          "text": "品",
+          "start": 141.96,
+          "end": 142.22,
+          "probability": 0.96484375
+        },
+        {
+          "text": "种",
+          "start": 142.22,
+          "end": 142.38,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "还有",
+          "start": 142.38,
+          "end": 142.62,
+          "probability": 0.50439453125
+        },
+        {
+          "text": "毒",
+          "start": 142.62,
+          "end": 142.92,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "素",
+          "start": 142.92,
+          "end": 143.14,
+          "probability": 0.99951171875
+        }
+      ]
+    },
+    {
+      "start": 143.14,
+      "end": 144.14,
+      "text": "不见一吃",
+      "words": [
+        {
+          "text": "不",
+          "start": 143.14,
+          "end": 143.6,
+          "probability": 0.86328125
+        },
+        {
+          "text": "见",
+          "start": 143.6,
+          "end": 143.76,
+          "probability": 0.0899658203125
+        },
+        {
+          "text": "一",
+          "start": 143.76,
+          "end": 143.94,
+          "probability": 0.78173828125
+        },
+        {
+          "text": "吃",
+          "start": 143.94,
+          "end": 144.14,
+          "probability": 0.9794921875
+        }
+      ]
+    },
+    {
+      "start": 144.14,
+      "end": 146.26,
+      "text": "但可以抓回去晒干当标本",
+      "words": [
+        {
+          "text": "但",
+          "start": 144.14,
+          "end": 144.56,
+          "probability": 0.468017578125
+        },
+        {
+          "text": "可以",
+          "start": 144.56,
+          "end": 144.86,
+          "probability": 0.95556640625
+        },
+        {
+          "text": "抓",
+          "start": 144.86,
+          "end": 145.06,
+          "probability": 0.99267578125
+        },
+        {
+          "text": "回去",
+          "start": 145.06,
+          "end": 145.3,
+          "probability": 0.9462890625
+        },
+        {
+          "text": "晒",
+          "start": 145.3,
+          "end": 145.56,
+          "probability": 0.9716796875
+        },
+        {
+          "text": "干",
+          "start": 145.56,
+          "end": 145.72,
+          "probability": 0.84521484375
+        },
+        {
+          "text": "当",
+          "start": 145.72,
+          "end": 145.88,
+          "probability": 0.8935546875
+        },
+        {
+          "text": "标",
+          "start": 145.88,
+          "end": 146.04,
+          "probability": 0.9765625
+        },
+        {
+          "text": "本",
+          "start": 146.04,
+          "end": 146.26,
+          "probability": 0.990234375
+        }
+      ]
+    },
+    {
+      "start": 146.26,
+      "end": 148.3,
+      "text": "感海发现这个能吃吗?",
+      "words": [
+        {
+          "text": "感",
+          "start": 146.26,
+          "end": 146.66,
+          "probability": 0.0205841064453125
+        },
+        {
+          "text": "海",
+          "start": 146.66,
+          "end": 146.92,
+          "probability": 0.399169921875
+        },
+        {
+          "text": "发",
+          "start": 146.92,
+          "end": 147.12,
+          "probability": 0.990234375
+        },
+        {
+          "text": "现",
+          "start": 147.12,
+          "end": 147.32,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "这个",
+          "start": 147.32,
+          "end": 147.52,
+          "probability": 0.96875
+        },
+        {
+          "text": "能",
+          "start": 147.52,
+          "end": 147.74,
+          "probability": 0.9931640625
+        },
+        {
+          "text": "吃",
+          "start": 147.74,
+          "end": 148.0,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "吗?",
+          "start": 148.0,
+          "end": 148.3,
+          "probability": 0.84814453125
+        }
+      ]
+    },
+    {
+      "start": 148.46,
+      "end": 149.44,
+      "text": "这是暗康鱼",
+      "words": [
+        {
+          "text": "这是",
+          "start": 148.46,
+          "end": 148.82,
+          "probability": 0.9560546875
+        },
+        {
+          "text": "暗",
+          "start": 148.82,
+          "end": 149.08,
+          "probability": 0.76318359375
+        },
+        {
+          "text": "康",
+          "start": 149.08,
+          "end": 149.22,
+          "probability": 0.775146484375
+        },
+        {
+          "text": "鱼",
+          "start": 149.22,
+          "end": 149.44,
+          "probability": 0.9964192708333334
+        }
+      ]
+    },
+    {
+      "start": 149.44,
+      "end": 151.02,
+      "text": "虽外形有点丑陋",
+      "words": [
+        {
+          "text": "虽",
+          "start": 149.44,
+          "end": 149.92,
+          "probability": 0.883544921875
+        },
+        {
+          "text": "外",
+          "start": 149.92,
+          "end": 150.1,
+          "probability": 0.9892578125
+        },
+        {
+          "text": "形",
+          "start": 150.1,
+          "end": 150.28,
+          "probability": 0.64892578125
+        },
+        {
+          "text": "有",
+          "start": 150.28,
+          "end": 150.44,
+          "probability": 0.982421875
+        },
+        {
+          "text": "点",
+          "start": 150.44,
+          "end": 150.6,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "丑",
+          "start": 150.6,
+          "end": 150.8,
+          "probability": 0.950927734375
+        },
+        {
+          "text": "陋",
+          "start": 150.8,
+          "end": 151.02,
+          "probability": 0.990234375
+        }
+      ]
+    },
+    {
+      "start": 151.02,
+      "end": 152.68,
+      "text": "但是肉质紧实弹牙",
+      "words": [
+        {
+          "text": "但是",
+          "start": 151.02,
+          "end": 151.56,
+          "probability": 0.93212890625
+        },
+        {
+          "text": "肉",
+          "start": 151.56,
+          "end": 151.76,
+          "probability": 0.998046875
+        },
+        {
+          "text": "质",
+          "start": 151.76,
+          "end": 151.96,
+          "probability": 0.9814453125
+        },
+        {
+          "text": "紧",
+          "start": 151.96,
+          "end": 152.1,
+          "probability": 0.9013671875
+        },
+        {
+          "text": "实",
+          "start": 152.1,
+          "end": 152.26,
+          "probability": 0.88232421875
+        },
+        {
+          "text": "弹",
+          "start": 152.26,
+          "end": 152.46,
+          "probability": 0.8720703125
+        },
+        {
+          "text": "牙",
+          "start": 152.46,
+          "end": 152.68,
+          "probability": 0.91455078125
+        }
+      ]
+    },
+    {
+      "start": 152.68,
+      "end": 153.52,
+      "text": "能吃好吃",
+      "words": [
+        {
+          "text": "能",
+          "start": 152.68,
+          "end": 153.06,
+          "probability": 0.61474609375
+        },
+        {
+          "text": "吃",
+          "start": 153.06,
+          "end": 153.26,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "好吃",
+          "start": 153.26,
+          "end": 153.52,
+          "probability": 0.87890625
+        }
+      ]
+    }
+  ],
+  "cues": [
+    {
+      "start": 0.0,
+      "end": 1.58,
+      "text": "感海之前记得仔细看看",
+      "words": [
+        {
+          "text": "感",
+          "start": 0.0,
+          "end": 0.2,
+          "probability": 0.1922607421875
+        },
+        {
+          "text": "海",
+          "start": 0.2,
+          "end": 0.38,
+          "probability": 0.8916015625
+        },
+        {
+          "text": "之前",
+          "start": 0.38,
+          "end": 0.68,
+          "probability": 0.9599609375
+        },
+        {
+          "text": "记",
+          "start": 0.68,
+          "end": 0.9,
+          "probability": 0.638671875
+        },
+        {
+          "text": "得",
+          "start": 0.9,
+          "end": 1.02,
+          "probability": 0.99169921875
+        },
+        {
+          "text": "仔",
+          "start": 1.02,
+          "end": 1.18,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "细",
+          "start": 1.18,
+          "end": 1.32,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "看看",
+          "start": 1.32,
+          "end": 1.58,
+          "probability": 0.9833984375
+        }
+      ]
+    },
+    {
+      "start": 1.58,
+      "end": 3.84,
+      "text": "感海发现这个能吃吗?",
+      "words": [
+        {
+          "text": "感",
+          "start": 1.58,
+          "end": 2.18,
+          "probability": 0.83203125
+        },
+        {
+          "text": "海",
+          "start": 2.18,
+          "end": 2.48,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "发",
+          "start": 2.48,
+          "end": 2.64,
+          "probability": 0.96923828125
+        },
+        {
+          "text": "现",
+          "start": 2.64,
+          "end": 2.84,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "这个",
+          "start": 2.84,
+          "end": 3.06,
+          "probability": 0.97265625
+        },
+        {
+          "text": "能",
+          "start": 3.06,
+          "end": 3.28,
+          "probability": 0.99169921875
+        },
+        {
+          "text": "吃",
+          "start": 3.28,
+          "end": 3.54,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "吗?",
+          "start": 3.54,
+          "end": 3.84,
+          "probability": 0.9033203125
+        }
+      ]
+    },
+    {
+      "start": 3.96,
+      "end": 4.78,
+      "text": "这是紫菜",
+      "words": [
+        {
+          "text": "这是",
+          "start": 3.96,
+          "end": 4.34,
+          "probability": 0.9443359375
+        },
+        {
+          "text": "紫",
+          "start": 4.34,
+          "end": 4.58,
+          "probability": 0.87939453125
+        },
+        {
+          "text": "菜",
+          "start": 4.58,
+          "end": 4.78,
+          "probability": 0.99658203125
+        }
+      ]
+    },
+    {
+      "start": 4.78,
+      "end": 5.9,
+      "text": "刚捞上来",
+      "words": [
+        {
+          "text": "刚",
+          "start": 4.78,
+          "end": 5.32,
+          "probability": 0.734375
+        },
+        {
+          "text": "捞",
+          "start": 5.32,
+          "end": 5.44,
+          "probability": 0.969970703125
+        },
+        {
+          "text": "上",
+          "start": 5.44,
+          "end": 5.64,
+          "probability": 0.99365234375
+        },
+        {
+          "text": "来",
+          "start": 5.64,
+          "end": 5.9,
+          "probability": 0.9990234375
+        }
+      ]
+    },
+    {
+      "start": 5.9,
+      "end": 7.54,
+      "text": "黑乎乎跟芋泥似的",
+      "words": [
+        {
+          "text": "黑",
+          "start": 5.9,
+          "end": 6.28,
+          "probability": 0.56884765625
+        },
+        {
+          "text": "乎",
+          "start": 6.28,
+          "end": 6.44,
+          "probability": 0.55718994140625
+        },
+        {
+          "text": "乎",
+          "start": 6.44,
+          "end": 6.6,
+          "probability": 0.994873046875
+        },
+        {
+          "text": "跟",
+          "start": 6.6,
+          "end": 6.78,
+          "probability": 0.9365234375
+        },
+        {
+          "text": "芋",
+          "start": 6.78,
+          "end": 6.94,
+          "probability": 0.54742431640625
+        },
+        {
+          "text": "泥",
+          "start": 6.94,
+          "end": 7.06,
+          "probability": 0.9228515625
+        },
+        {
+          "text": "似",
+          "start": 7.06,
+          "end": 7.22,
+          "probability": 0.9365234375
+        },
+        {
+          "text": "的",
+          "start": 7.22,
+          "end": 7.54,
+          "probability": 0.99951171875
+        }
+      ]
+    },
+    {
+      "start": 7.54,
+      "end": 8.28,
+      "text": "不能吃",
+      "words": [
+        {
+          "text": "不能",
+          "start": 7.54,
+          "end": 7.94,
+          "probability": 0.8525390625
+        },
+        {
+          "text": "吃",
+          "start": 7.94,
+          "end": 8.28,
+          "probability": 0.9990234375
+        }
+      ]
+    },
+    {
+      "start": 8.28,
+      "end": 10.18,
+      "text": "经过特殊加工处理后",
+      "words": [
+        {
+          "text": "经",
+          "start": 8.28,
+          "end": 8.76,
+          "probability": 0.93359375
+        },
+        {
+          "text": "过",
+          "start": 8.76,
+          "end": 8.96,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "特",
+          "start": 8.96,
+          "end": 9.14,
+          "probability": 0.9931640625
+        },
+        {
+          "text": "殊",
+          "start": 9.14,
+          "end": 9.28,
+          "probability": 0.998291015625
+        },
+        {
+          "text": "加",
+          "start": 9.28,
+          "end": 9.48,
+          "probability": 0.83447265625
+        },
+        {
+          "text": "工",
+          "start": 9.48,
+          "end": 9.64,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "处",
+          "start": 9.64,
+          "end": 9.82,
+          "probability": 0.9912109375
+        },
+        {
+          "text": "理",
+          "start": 9.82,
+          "end": 9.98,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "后",
+          "start": 9.98,
+          "end": 10.18,
+          "probability": 0.9951171875
+        }
+      ]
+    },
+    {
+      "start": 10.18,
+      "end": 12.62,
+      "text": "就能变成我们经常吃的紫菜了",
+      "words": [
+        {
+          "text": "就",
+          "start": 10.18,
+          "end": 10.68,
+          "probability": 0.9580078125
+        },
+        {
+          "text": "能",
+          "start": 10.68,
+          "end": 10.82,
+          "probability": 0.99658203125
+        },
+        {
+          "text": "变",
+          "start": 10.82,
+          "end": 11.0,
+          "probability": 0.997802734375
+        },
+        {
+          "text": "成",
+          "start": 11.0,
+          "end": 11.2,
+          "probability": 0.998046875
+        },
+        {
+          "text": "我们",
+          "start": 11.2,
+          "end": 11.42,
+          "probability": 0.99462890625
+        },
+        {
+          "text": "经",
+          "start": 11.42,
+          "end": 11.62,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "常",
+          "start": 11.62,
+          "end": 11.82,
+          "probability": 1.0
+        },
+        {
+          "text": "吃",
+          "start": 11.82,
+          "end": 12.0,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "的",
+          "start": 12.0,
+          "end": 12.12,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "紫",
+          "start": 12.12,
+          "end": 12.26,
+          "probability": 0.992431640625
+        },
+        {
+          "text": "菜",
+          "start": 12.26,
+          "end": 12.46,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "了",
+          "start": 12.46,
+          "end": 12.62,
+          "probability": 0.97998046875
+        }
+      ]
+    },
+    {
+      "start": 12.62,
+      "end": 14.74,
+      "text": "感海发现这个能吃吗?",
+      "words": [
+        {
+          "text": "感",
+          "start": 12.62,
+          "end": 13.08,
+          "probability": 0.98583984375
+        },
+        {
+          "text": "海",
+          "start": 13.08,
+          "end": 13.34,
+          "probability": 0.998046875
+        },
+        {
+          "text": "发",
+          "start": 13.34,
+          "end": 13.56,
+          "probability": 0.99658203125
+        },
+        {
+          "text": "现",
+          "start": 13.56,
+          "end": 13.74,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "这个",
+          "start": 13.74,
+          "end": 13.96,
+          "probability": 0.9892578125
+        },
+        {
+          "text": "能",
+          "start": 13.96,
+          "end": 14.18,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "吃",
+          "start": 14.18,
+          "end": 14.44,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "吗?",
+          "start": 14.44,
+          "end": 14.74,
+          "probability": 0.97314453125
+        }
+      ]
+    },
+    {
+      "start": 15.04,
+      "end": 15.98,
+      "text": "这是公牛海带",
+      "words": [
+        {
+          "text": "这是",
+          "start": 15.04,
+          "end": 15.24,
+          "probability": 0.9853515625
+        },
+        {
+          "text": "公",
+          "start": 15.24,
+          "end": 15.46,
+          "probability": 0.57080078125
+        },
+        {
+          "text": "牛",
+          "start": 15.46,
+          "end": 15.62,
+          "probability": 0.99365234375
+        },
+        {
+          "text": "海",
+          "start": 15.62,
+          "end": 15.82,
+          "probability": 0.986328125
+        },
+        {
+          "text": "带",
+          "start": 15.82,
+          "end": 15.98,
+          "probability": 0.9658203125
+        }
+      ]
+    },
+    {
+      "start": 15.98,
+      "end": 17.6,
+      "text": "也就是海带管子",
+      "words": [
+        {
+          "text": "也",
+          "start": 15.98,
+          "end": 16.54,
+          "probability": 0.86083984375
+        },
+        {
+          "text": "就是",
+          "start": 16.54,
+          "end": 16.74,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "海",
+          "start": 16.74,
+          "end": 17.04,
+          "probability": 0.9951171875
+        },
+        {
+          "text": "带",
+          "start": 17.04,
+          "end": 17.18,
+          "probability": 0.995849609375
+        },
+        {
+          "text": "管",
+          "start": 17.18,
+          "end": 17.38,
+          "probability": 0.72216796875
+        },
+        {
+          "text": "子",
+          "start": 17.38,
+          "end": 17.6,
+          "probability": 0.99951171875
+        }
+      ]
+    },
+    {
+      "start": 17.6,
+      "end": 18.42,
+      "text": "可以吃",
+      "words": [
+        {
+          "text": "可以",
+          "start": 17.6,
+          "end": 18.14,
+          "probability": 0.94287109375
+        },
+        {
+          "text": "吃",
+          "start": 18.14,
+          "end": 18.42,
+          "probability": 0.9990234375
+        }
+      ]
+    },
+    {
+      "start": 18.42,
+      "end": 21.52,
+      "text": "吃起来像脆萝卜或烟黄瓜一样嘎崩脆",
+      "words": [
+        {
+          "text": "吃",
+          "start": 18.42,
+          "end": 18.94,
+          "probability": 0.8115234375
+        },
+        {
+          "text": "起",
+          "start": 18.94,
+          "end": 19.1,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "来",
+          "start": 19.1,
+          "end": 19.24,
+          "probability": 1.0
+        },
+        {
+          "text": "像",
+          "start": 19.24,
+          "end": 19.44,
+          "probability": 0.98291015625
+        },
+        {
+          "text": "脆",
+          "start": 19.44,
+          "end": 19.64,
+          "probability": 0.755126953125
+        },
+        {
+          "text": "萝",
+          "start": 19.64,
+          "end": 19.78,
+          "probability": 0.97509765625
+        },
+        {
+          "text": "卜",
+          "start": 19.78,
+          "end": 19.92,
+          "probability": 0.982666015625
+        },
+        {
+          "text": "或",
+          "start": 19.92,
+          "end": 20.12,
+          "probability": 0.9248046875
+        },
+        {
+          "text": "烟",
+          "start": 20.12,
+          "end": 20.3,
+          "probability": 0.76953125
+        },
+        {
+          "text": "黄",
+          "start": 20.3,
+          "end": 20.5,
+          "probability": 0.99560546875
+        },
+        {
+          "text": "瓜",
+          "start": 20.5,
+          "end": 20.66,
+          "probability": 0.99609375
+        },
+        {
+          "text": "一",
+          "start": 20.66,
+          "end": 20.88,
+          "probability": 0.99462890625
+        },
+        {
+          "text": "样",
+          "start": 20.88,
+          "end": 20.98,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "嘎",
+          "start": 20.98,
+          "end": 21.16,
+          "probability": 0.906005859375
+        },
+        {
+          "text": "崩",
+          "start": 21.16,
+          "end": 21.3,
+          "probability": 0.564208984375
+        },
+        {
+          "text": "脆",
+          "start": 21.3,
+          "end": 21.52,
+          "probability": 0.96435546875
+        }
+      ]
+    },
+    {
+      "start": 21.52,
+      "end": 23.56,
+      "text": "感海发现这个能吃吗?",
+      "words": [
+        {
+          "text": "感",
+          "start": 21.52,
+          "end": 21.92,
+          "probability": 0.9931640625
+        },
+        {
+          "text": "海",
+          "start": 21.92,
+          "end": 22.18,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "发",
+          "start": 22.18,
+          "end": 22.4,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "现",
+          "start": 22.4,
+          "end": 22.58,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "这个",
+          "start": 22.58,
+          "end": 22.78,
+          "probability": 0.98974609375
+        },
+        {
+          "text": "能",
+          "start": 22.78,
+          "end": 23.0,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "吃",
+          "start": 23.0,
+          "end": 23.28,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "吗?",
+          "start": 23.28,
+          "end": 23.56,
+          "probability": 0.97216796875
+        }
+      ]
+    },
+    {
+      "start": 23.9,
+      "end": 24.56,
+      "text": "这是沙壁",
+      "words": [
+        {
+          "text": "这是",
+          "start": 23.9,
+          "end": 24.14,
+          "probability": 0.96484375
+        },
+        {
+          "text": "沙",
+          "start": 24.14,
+          "end": 24.38,
+          "probability": 0.83447265625
+        },
+        {
+          "text": "壁",
+          "start": 24.38,
+          "end": 24.56,
+          "probability": 0.77197265625
+        }
+      ]
+    },
+    {
+      "start": 24.56,
+      "end": 25.54,
+      "text": "不建议吃",
+      "words": [
+        {
+          "text": "不",
+          "start": 24.56,
+          "end": 24.98,
+          "probability": 0.78271484375
+        },
+        {
+          "text": "建",
+          "start": 24.98,
+          "end": 25.16,
+          "probability": 0.8603515625
+        },
+        {
+          "text": "议",
+          "start": 25.16,
+          "end": 25.26,
+          "probability": 0.9931640625
+        },
+        {
+          "text": "吃",
+          "start": 25.26,
+          "end": 25.54,
+          "probability": 0.99755859375
+        }
+      ]
+    },
+    {
+      "start": 25.54,
+      "end": 28.36,
+      "text": "按体型可以分成大沙壁和小沙壁",
+      "words": [
+        {
+          "text": "按",
+          "start": 25.54,
+          "end": 26.12,
+          "probability": 0.5673828125
+        },
+        {
+          "text": "体",
+          "start": 26.12,
+          "end": 26.3,
+          "probability": 0.98486328125
+        },
+        {
+          "text": "型",
+          "start": 26.3,
+          "end": 26.46,
+          "probability": 0.68505859375
+        },
+        {
+          "text": "可以",
+          "start": 26.46,
+          "end": 26.7,
+          "probability": 0.98193359375
+        },
+        {
+          "text": "分",
+          "start": 26.7,
+          "end": 26.92,
+          "probability": 0.98583984375
+        },
+        {
+          "text": "成",
+          "start": 26.92,
+          "end": 27.08,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "大",
+          "start": 27.08,
+          "end": 27.28,
+          "probability": 0.98486328125
+        },
+        {
+          "text": "沙",
+          "start": 27.28,
+          "end": 27.44,
+          "probability": 0.998291015625
+        },
+        {
+          "text": "壁",
+          "start": 27.44,
+          "end": 27.6,
+          "probability": 0.99658203125
+        },
+        {
+          "text": "和",
+          "start": 27.6,
+          "end": 27.78,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "小",
+          "start": 27.78,
+          "end": 27.98,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "沙",
+          "start": 27.98,
+          "end": 28.16,
+          "probability": 0.999755859375
+        },
+        {
+          "text": "壁",
+          "start": 28.16,
+          "end": 28.36,
+          "probability": 0.998291015625
+        }
+      ]
+    },
+    {
+      "start": 28.36,
+      "end": 30.34,
+      "text": "离开海水浸活几分钟",
+      "words": [
+        {
+          "text": "离",
+          "start": 28.36,
+          "end": 28.88,
+          "probability": 0.547027587890625
+        },
+        {
+          "text": "开",
+          "start": 28.88,
+          "end": 29.06,
+          "probability": 0.908203125
+        },
+        {
+          "text": "海",
+          "start": 29.06,
+          "end": 29.24,
+          "probability": 0.9853515625
+        },
+        {
+          "text": "水",
+          "start": 29.24,
+          "end": 29.42,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "浸",
+          "start": 29.42,
+          "end": 29.6,
+          "probability": 0.69482421875
+        },
+        {
+          "text": "活",
+          "start": 29.6,
+          "end": 29.78,
+          "probability": 0.5400390625
+        },
+        {
+          "text": "几",
+          "start": 29.78,
+          "end": 29.96,
+          "probability": 0.99658203125
+        },
+        {
+          "text": "分",
+          "start": 29.96,
+          "end": 30.12,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "钟",
+          "start": 30.12,
+          "end": 30.34,
+          "probability": 0.99755859375
+        }
+      ]
+    },
+    {
+      "start": 30.34,
+      "end": 31.56,
+      "text": "又能变成死沙壁",
+      "words": [
+        {
+          "text": "又",
+          "start": 30.34,
+          "end": 30.5,
+          "probability": 0.689453125
+        },
+        {
+          "text": "能",
+          "start": 30.5,
+          "end": 30.64,
+          "probability": 0.99267578125
+        },
+        {
+          "text": "变",
+          "start": 30.64,
+          "end": 30.84,
+          "probability": 0.99462890625
+        },
+        {
+          "text": "成",
+          "start": 30.84,
+          "end": 31.02,
+          "probability": 0.96435546875
+        },
+        {
+          "text": "死",
+          "start": 31.02,
+          "end": 31.2,
+          "probability": 0.93017578125
+        },
+        {
+          "text": "沙",
+          "start": 31.2,
+          "end": 31.38,
+          "probability": 0.693115234375
+        },
+        {
+          "text": "壁",
+          "start": 31.38,
+          "end": 31.56,
+          "probability": 0.73876953125
+        }
+      ]
+    },
+    {
+      "start": 31.56,
+      "end": 33.16,
+      "text": "这可不是在骂人",
+      "words": [
+        {
+          "text": "这",
+          "start": 31.56,
+          "end": 32.14,
+          "probability": 0.91357421875
+        },
+        {
+          "text": "可",
+          "start": 32.14,
+          "end": 32.3,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "不是",
+          "start": 32.3,
+          "end": 32.5,
+          "probability": 0.9931640625
+        },
+        {
+          "text": "在",
+          "start": 32.5,
+          "end": 32.76,
+          "probability": 0.6337890625
+        },
+        {
+          "text": "骂",
+          "start": 32.76,
+          "end": 32.92,
+          "probability": 0.997802734375
+        },
+        {
+          "text": "人",
+          "start": 32.92,
+          "end": 33.16,
+          "probability": 0.99951171875
+        }
+      ]
+    },
+    {
+      "start": 33.16,
+      "end": 35.08,
+      "text": "你千万不要爱特妮朋友",
+      "words": [
+        {
+          "text": "你",
+          "start": 33.16,
+          "end": 33.82,
+          "probability": 0.8896484375
+        },
+        {
+          "text": "千",
+          "start": 33.82,
+          "end": 34.0,
+          "probability": 0.998046875
+        },
+        {
+          "text": "万",
+          "start": 34.0,
+          "end": 34.16,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "不要",
+          "start": 34.16,
+          "end": 34.34,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "爱",
+          "start": 34.34,
+          "end": 34.58,
+          "probability": 0.483154296875
+        },
+        {
+          "text": "特",
+          "start": 34.58,
+          "end": 34.68,
+          "probability": 0.724609375
+        },
+        {
+          "text": "妮",
+          "start": 34.68,
+          "end": 34.8,
+          "probability": 0.63720703125
+        },
+        {
+          "text": "朋友",
+          "start": 34.8,
+          "end": 35.08,
+          "probability": 0.99072265625
+        }
+      ]
+    },
+    {
+      "start": 35.08,
+      "end": 36.64,
+      "text": "不过她先刷到了",
+      "words": [
+        {
+          "text": "不",
+          "start": 35.08,
+          "end": 35.64,
+          "probability": 0.90771484375
+        },
+        {
+          "text": "过",
+          "start": 35.64,
+          "end": 35.8,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "她",
+          "start": 35.8,
+          "end": 35.96,
+          "probability": 0.79443359375
+        },
+        {
+          "text": "先",
+          "start": 35.96,
+          "end": 36.14,
+          "probability": 0.98876953125
+        },
+        {
+          "text": "刷",
+          "start": 36.14,
+          "end": 36.32,
+          "probability": 0.970458984375
+        },
+        {
+          "text": "到了",
+          "start": 36.32,
+          "end": 36.64,
+          "probability": 0.99169921875
+        }
+      ]
+    },
+    {
+      "start": 36.64,
+      "end": 38.12,
+      "text": "指定会先爱特妮",
+      "words": [
+        {
+          "text": "指",
+          "start": 36.64,
+          "end": 37.04,
+          "probability": 0.4921875
+        },
+        {
+          "text": "定",
+          "start": 37.04,
+          "end": 37.2,
+          "probability": 0.98974609375
+        },
+        {
+          "text": "会",
+          "start": 37.2,
+          "end": 37.36,
+          "probability": 0.98193359375
+        },
+        {
+          "text": "先",
+          "start": 37.36,
+          "end": 37.58,
+          "probability": 0.99609375
+        },
+        {
+          "text": "爱",
+          "start": 37.58,
+          "end": 37.76,
+          "probability": 0.97509765625
+        },
+        {
+          "text": "特",
+          "start": 37.76,
+          "end": 37.9,
+          "probability": 0.99658203125
+        },
+        {
+          "text": "妮",
+          "start": 37.9,
+          "end": 38.12,
+          "probability": 0.961669921875
+        }
+      ]
+    },
+    {
+      "start": 38.12,
+      "end": 40.14,
+      "text": "感海发现这个能吃吗?",
+      "words": [
+        {
+          "text": "感",
+          "start": 38.12,
+          "end": 38.48,
+          "probability": 0.07818603515625
+        },
+        {
+          "text": "海",
+          "start": 38.48,
+          "end": 38.74,
+          "probability": 0.658203125
+        },
+        {
+          "text": "发",
+          "start": 38.74,
+          "end": 38.94,
+          "probability": 0.98974609375
+        },
+        {
+          "text": "现",
+          "start": 38.94,
+          "end": 39.14,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "这个",
+          "start": 39.14,
+          "end": 39.36,
+          "probability": 0.9609375
+        },
+        {
+          "text": "能",
+          "start": 39.36,
+          "end": 39.58,
+          "probability": 0.9912109375
+        },
+        {
+          "text": "吃",
+          "start": 39.58,
+          "end": 39.84,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "吗?",
+          "start": 39.84,
+          "end": 40.14,
+          "probability": 0.85693359375
+        }
+      ]
+    },
+    {
+      "start": 40.44,
+      "end": 41.08,
+      "text": "这是海蜇",
+      "words": [
+        {
+          "text": "这是",
+          "start": 40.44,
+          "end": 40.66,
+          "probability": 0.97265625
+        },
+        {
+          "text": "海",
+          "start": 40.66,
+          "end": 40.96,
+          "probability": 0.9931640625
+        },
+        {
+          "text": "蜇",
+          "start": 40.96,
+          "end": 41.08,
+          "probability": 0.86181640625
+        }
+      ]
+    },
+    {
+      "start": 41.08,
+      "end": 44.18,
+      "text": "工人在对新鲜海蜇进行出加工去毒",
+      "words": [
+        {
+          "text": "工",
+          "start": 41.08,
+          "end": 41.66,
+          "probability": 0.72216796875
+        },
+        {
+          "text": "人",
+          "start": 41.66,
+          "end": 41.82,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "在",
+          "start": 41.82,
+          "end": 42.0,
+          "probability": 0.91162109375
+        },
+        {
+          "text": "对",
+          "start": 42.0,
+          "end": 42.16,
+          "probability": 0.99267578125
+        },
+        {
+          "text": "新",
+          "start": 42.16,
+          "end": 42.38,
+          "probability": 0.9814453125
+        },
+        {
+          "text": "鲜",
+          "start": 42.38,
+          "end": 42.52,
+          "probability": 0.9993489583333334
+        },
+        {
+          "text": "海",
+          "start": 42.52,
+          "end": 42.74,
+          "probability": 0.99609375
+        },
+        {
+          "text": "蜇",
+          "start": 42.74,
+          "end": 42.9,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "进",
+          "start": 42.9,
+          "end": 43.12,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "行",
+          "start": 43.12,
+          "end": 43.32,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "出",
+          "start": 43.32,
+          "end": 43.46,
+          "probability": 0.94921875
+        },
+        {
+          "text": "加",
+          "start": 43.46,
+          "end": 43.66,
+          "probability": 0.54345703125
+        },
+        {
+          "text": "工",
+          "start": 43.66,
+          "end": 43.82,
+          "probability": 0.994140625
+        },
+        {
+          "text": "去",
+          "start": 43.82,
+          "end": 44.0,
+          "probability": 0.96337890625
+        },
+        {
+          "text": "毒",
+          "start": 44.0,
+          "end": 44.18,
+          "probability": 0.9111328125
+        }
+      ]
+    },
+    {
+      "start": 44.18,
+      "end": 45.58,
+      "text": "后续经过腌制",
+      "words": [
+        {
+          "text": "后",
+          "start": 44.18,
+          "end": 44.7,
+          "probability": 0.99365234375
+        },
+        {
+          "text": "续",
+          "start": 44.7,
+          "end": 44.88,
+          "probability": 0.892822265625
+        },
+        {
+          "text": "经",
+          "start": 44.88,
+          "end": 45.06,
+          "probability": 0.99609375
+        },
+        {
+          "text": "过",
+          "start": 45.06,
+          "end": 45.26,
+          "probability": 0.99267578125
+        },
+        {
+          "text": "腌",
+          "start": 45.26,
+          "end": 45.42,
+          "probability": 0.815673828125
+        },
+        {
+          "text": "制",
+          "start": 45.42,
+          "end": 45.58,
+          "probability": 0.9873046875
+        }
+      ]
+    },
+    {
+      "start": 45.58,
+      "end": 47.98,
+      "text": "就能变成夏天必吃的凉拌海蜇",
+      "words": [
+        {
+          "text": "就",
+          "start": 45.58,
+          "end": 45.86,
+          "probability": 0.9208984375
+        },
+        {
+          "text": "能",
+          "start": 45.86,
+          "end": 46.02,
+          "probability": 0.98974609375
+        },
+        {
+          "text": "变",
+          "start": 46.02,
+          "end": 46.18,
+          "probability": 0.997314453125
+        },
+        {
+          "text": "成",
+          "start": 46.18,
+          "end": 46.4,
+          "probability": 0.990234375
+        },
+        {
+          "text": "夏",
+          "start": 46.4,
+          "end": 46.6,
+          "probability": 0.921875
+        },
+        {
+          "text": "天",
+          "start": 46.6,
+          "end": 46.8,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "必",
+          "start": 46.8,
+          "end": 46.96,
+          "probability": 0.9658203125
+        },
+        {
+          "text": "吃",
+          "start": 46.96,
+          "end": 47.14,
+          "probability": 0.97265625
+        },
+        {
+          "text": "的",
+          "start": 47.14,
+          "end": 47.26,
+          "probability": 0.998046875
+        },
+        {
+          "text": "凉",
+          "start": 47.26,
+          "end": 47.42,
+          "probability": 0.756591796875
+        },
+        {
+          "text": "拌",
+          "start": 47.42,
+          "end": 47.56,
+          "probability": 0.970947265625
+        },
+        {
+          "text": "海",
+          "start": 47.56,
+          "end": 47.82,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "蜇",
+          "start": 47.82,
+          "end": 47.98,
+          "probability": 0.9967447916666666
+        }
+      ]
+    },
+    {
+      "start": 47.98,
+      "end": 50.04,
+      "text": "感海发现这个能吃吗?",
+      "words": [
+        {
+          "text": "感",
+          "start": 47.98,
+          "end": 48.38,
+          "probability": 0.9951171875
+        },
+        {
+          "text": "海",
+          "start": 48.38,
+          "end": 48.64,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "发",
+          "start": 48.64,
+          "end": 48.86,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "现",
+          "start": 48.86,
+          "end": 49.04,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "这个",
+          "start": 49.04,
+          "end": 49.26,
+          "probability": 0.9912109375
+        },
+        {
+          "text": "能",
+          "start": 49.26,
+          "end": 49.48,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "吃",
+          "start": 49.48,
+          "end": 49.74,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "吗?",
+          "start": 49.74,
+          "end": 50.04,
+          "probability": 0.97265625
+        }
+      ]
+    },
+    {
+      "start": 50.3,
+      "end": 51.12,
+      "text": "这是海葡萄",
+      "words": [
+        {
+          "text": "这是",
+          "start": 50.3,
+          "end": 50.52,
+          "probability": 0.98583984375
+        },
+        {
+          "text": "海",
+          "start": 50.52,
+          "end": 50.78,
+          "probability": 0.998046875
+        },
+        {
+          "text": "葡",
+          "start": 50.78,
+          "end": 50.94,
+          "probability": 0.951171875
+        },
+        {
+          "text": "萄",
+          "start": 50.94,
+          "end": 51.12,
+          "probability": 0.963623046875
+        }
+      ]
+    },
+    {
+      "start": 51.12,
+      "end": 51.98,
+      "text": "可以吃",
+      "words": [
+        {
+          "text": "可以",
+          "start": 51.12,
+          "end": 51.64,
+          "probability": 0.9384765625
+        },
+        {
+          "text": "吃",
+          "start": 51.64,
+          "end": 51.98,
+          "probability": 0.9990234375
+        }
+      ]
+    },
+    {
+      "start": 51.98,
+      "end": 53.24,
+      "text": "咬开有爆珠感",
+      "words": [
+        {
+          "text": "咬",
+          "start": 51.98,
+          "end": 52.36,
+          "probability": 0.78173828125
+        },
+        {
+          "text": "开",
+          "start": 52.36,
+          "end": 52.54,
+          "probability": 0.9814453125
+        },
+        {
+          "text": "有",
+          "start": 52.54,
+          "end": 52.7,
+          "probability": 0.974609375
+        },
+        {
+          "text": "爆",
+          "start": 52.7,
+          "end": 52.88,
+          "probability": 0.74560546875
+        },
+        {
+          "text": "珠",
+          "start": 52.88,
+          "end": 53.04,
+          "probability": 0.672119140625
+        },
+        {
+          "text": "感",
+          "start": 53.04,
+          "end": 53.24,
+          "probability": 0.93603515625
+        }
+      ]
+    },
+    {
+      "start": 53.24,
+      "end": 55.06,
+      "text": "自带清爽的海水鲜味",
+      "words": [
+        {
+          "text": "自",
+          "start": 53.24,
+          "end": 53.68,
+          "probability": 0.9697265625
+        },
+        {
+          "text": "带",
+          "start": 53.68,
+          "end": 53.82,
+          "probability": 0.992919921875
+        },
+        {
+          "text": "清",
+          "start": 53.82,
+          "end": 54.04,
+          "probability": 0.966796875
+        },
+        {
+          "text": "爽",
+          "start": 54.04,
+          "end": 54.2,
+          "probability": 0.999755859375
+        },
+        {
+          "text": "的",
+          "start": 54.2,
+          "end": 54.34,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "海",
+          "start": 54.34,
+          "end": 54.54,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "水",
+          "start": 54.54,
+          "end": 54.7,
+          "probability": 0.99462890625
+        },
+        {
+          "text": "鲜",
+          "start": 54.7,
+          "end": 54.9,
+          "probability": 0.91845703125
+        },
+        {
+          "text": "味",
+          "start": 54.9,
+          "end": 55.06,
+          "probability": 0.9931640625
+        }
+      ]
+    },
+    {
+      "start": 55.06,
+      "end": 57.1,
+      "text": "感海发现这个能吃吗?",
+      "words": [
+        {
+          "text": "感",
+          "start": 55.06,
+          "end": 55.44,
+          "probability": 0.9921875
+        },
+        {
+          "text": "海",
+          "start": 55.44,
+          "end": 55.7,
+          "probability": 0.998046875
+        },
+        {
+          "text": "发",
+          "start": 55.7,
+          "end": 55.92,
+          "probability": 0.998046875
+        },
+        {
+          "text": "现",
+          "start": 55.92,
+          "end": 56.12,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "这个",
+          "start": 56.12,
+          "end": 56.32,
+          "probability": 0.9931640625
+        },
+        {
+          "text": "能",
+          "start": 56.32,
+          "end": 56.54,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "吃",
+          "start": 56.54,
+          "end": 56.8,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "吗?",
+          "start": 56.8,
+          "end": 57.1,
+          "probability": 0.98046875
+        }
+      ]
+    },
+    {
+      "start": 57.1,
+      "end": 58.12,
+      "text": "这是墨鱼卵",
+      "words": [
+        {
+          "text": "这是",
+          "start": 57.1,
+          "end": 57.52,
+          "probability": 0.248779296875
+        },
+        {
+          "text": "墨",
+          "start": 57.52,
+          "end": 57.78,
+          "probability": 0.791259765625
+        },
+        {
+          "text": "鱼",
+          "start": 57.78,
+          "end": 57.94,
+          "probability": 0.9962565104166666
+        },
+        {
+          "text": "卵",
+          "start": 57.94,
+          "end": 58.12,
+          "probability": 0.990966796875
+        }
+      ]
+    },
+    {
+      "start": 58.12,
+      "end": 59.98,
+      "text": "彻底煮熟后就可以吃",
+      "words": [
+        {
+          "text": "彻",
+          "start": 58.12,
+          "end": 58.56,
+          "probability": 0.67041015625
+        },
+        {
+          "text": "底",
+          "start": 58.56,
+          "end": 58.74,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "煮",
+          "start": 58.74,
+          "end": 58.94,
+          "probability": 0.988525390625
+        },
+        {
+          "text": "熟",
+          "start": 58.94,
+          "end": 59.1,
+          "probability": 0.999755859375
+        },
+        {
+          "text": "后",
+          "start": 59.1,
+          "end": 59.28,
+          "probability": 0.98388671875
+        },
+        {
+          "text": "就可以",
+          "start": 59.28,
+          "end": 59.66,
+          "probability": 0.9619140625
+        },
+        {
+          "text": "吃",
+          "start": 59.66,
+          "end": 59.98,
+          "probability": 0.99609375
+        }
+      ]
+    },
+    {
+      "start": 59.98,
+      "end": 62.08,
+      "text": "是营养丰富的海鲜食材",
+      "words": [
+        {
+          "text": "是",
+          "start": 59.98,
+          "end": 60.44,
+          "probability": 0.693359375
+        },
+        {
+          "text": "营",
+          "start": 60.44,
+          "end": 60.62,
+          "probability": 0.963623046875
+        },
+        {
+          "text": "养",
+          "start": 60.62,
+          "end": 60.76,
+          "probability": 0.999755859375
+        },
+        {
+          "text": "丰",
+          "start": 60.76,
+          "end": 60.96,
+          "probability": 0.99462890625
+        },
+        {
+          "text": "富",
+          "start": 60.96,
+          "end": 61.1,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "的",
+          "start": 61.1,
+          "end": 61.24,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "海",
+          "start": 61.24,
+          "end": 61.44,
+          "probability": 0.99658203125
+        },
+        {
+          "text": "鲜",
+          "start": 61.44,
+          "end": 61.62,
+          "probability": 0.9967447916666666
+        },
+        {
+          "text": "食",
+          "start": 61.62,
+          "end": 61.78,
+          "probability": 0.98193359375
+        },
+        {
+          "text": "材",
+          "start": 61.78,
+          "end": 62.08,
+          "probability": 0.999755859375
+        }
+      ]
+    },
+    {
+      "start": 62.08,
+      "end": 64.02,
+      "text": "感海发现这个能吃吗?",
+      "words": [
+        {
+          "text": "感",
+          "start": 62.08,
+          "end": 62.38,
+          "probability": 0.03948974609375
+        },
+        {
+          "text": "海",
+          "start": 62.38,
+          "end": 62.64,
+          "probability": 0.724609375
+        },
+        {
+          "text": "发",
+          "start": 62.64,
+          "end": 62.84,
+          "probability": 0.98486328125
+        },
+        {
+          "text": "现",
+          "start": 62.84,
+          "end": 63.04,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "这个",
+          "start": 63.04,
+          "end": 63.26,
+          "probability": 0.97216796875
+        },
+        {
+          "text": "能",
+          "start": 63.26,
+          "end": 63.48,
+          "probability": 0.98828125
+        },
+        {
+          "text": "吃",
+          "start": 63.48,
+          "end": 63.74,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "吗?",
+          "start": 63.74,
+          "end": 64.02,
+          "probability": 0.81640625
+        }
+      ]
+    },
+    {
+      "start": 64.22,
+      "end": 65.12,
+      "text": "这是框蛇尾",
+      "words": [
+        {
+          "text": "这是",
+          "start": 64.22,
+          "end": 64.48,
+          "probability": 0.93994140625
+        },
+        {
+          "text": "框",
+          "start": 64.48,
+          "end": 64.74,
+          "probability": 0.6865234375
+        },
+        {
+          "text": "蛇",
+          "start": 64.74,
+          "end": 64.92,
+          "probability": 0.82958984375
+        },
+        {
+          "text": "尾",
+          "start": 64.92,
+          "end": 65.12,
+          "probability": 0.99658203125
+        }
+      ]
+    },
+    {
+      "start": 65.12,
+      "end": 66.4,
+      "text": "可能携带细菌",
+      "words": [
+        {
+          "text": "可能",
+          "start": 65.12,
+          "end": 65.6,
+          "probability": 0.2724609375
+        },
+        {
+          "text": "携",
+          "start": 65.6,
+          "end": 65.86,
+          "probability": 0.9677734375
+        },
+        {
+          "text": "带",
+          "start": 65.86,
+          "end": 66.0,
+          "probability": 0.998046875
+        },
+        {
+          "text": "细",
+          "start": 66.0,
+          "end": 66.22,
+          "probability": 0.994384765625
+        },
+        {
+          "text": "菌",
+          "start": 66.22,
+          "end": 66.4,
+          "probability": 0.996337890625
+        }
+      ]
+    },
+    {
+      "start": 66.4,
+      "end": 67.74,
+      "text": "病毒或寄生虫",
+      "words": [
+        {
+          "text": "病",
+          "start": 66.4,
+          "end": 66.84,
+          "probability": 0.763671875
+        },
+        {
+          "text": "毒",
+          "start": 66.84,
+          "end": 67.02,
+          "probability": 1.0
+        },
+        {
+          "text": "或",
+          "start": 67.02,
+          "end": 67.2,
+          "probability": 0.9130859375
+        },
+        {
+          "text": "寄",
+          "start": 67.2,
+          "end": 67.36,
+          "probability": 0.6881103515625
+        },
+        {
+          "text": "生",
+          "start": 67.36,
+          "end": 67.52,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "虫",
+          "start": 67.52,
+          "end": 67.74,
+          "probability": 0.93603515625
+        }
+      ]
+    },
+    {
+      "start": 67.74,
+      "end": 68.54,
+      "text": "不能吃",
+      "words": [
+        {
+          "text": "不能",
+          "start": 67.74,
+          "end": 68.2,
+          "probability": 0.568359375
+        },
+        {
+          "text": "吃",
+          "start": 68.2,
+          "end": 68.54,
+          "probability": 0.99853515625
+        }
+      ]
+    },
+    {
+      "start": 68.54,
+      "end": 70.54,
+      "text": "感海发现这个能吃吗?",
+      "words": [
+        {
+          "text": "感",
+          "start": 68.54,
+          "end": 68.88,
+          "probability": 0.97802734375
+        },
+        {
+          "text": "海",
+          "start": 68.88,
+          "end": 69.16,
+          "probability": 0.998046875
+        },
+        {
+          "text": "发",
+          "start": 69.16,
+          "end": 69.36,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "现",
+          "start": 69.36,
+          "end": 69.54,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "这个",
+          "start": 69.54,
+          "end": 69.76,
+          "probability": 0.99267578125
+        },
+        {
+          "text": "能",
+          "start": 69.76,
+          "end": 69.98,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "吃",
+          "start": 69.98,
+          "end": 70.24,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "吗?",
+          "start": 70.24,
+          "end": 70.54,
+          "probability": 0.98193359375
+        }
+      ]
+    },
+    {
+      "start": 70.78,
+      "end": 71.7,
+      "text": "这是海发菜",
+      "words": [
+        {
+          "text": "这是",
+          "start": 70.78,
+          "end": 71.0,
+          "probability": 0.98046875
+        },
+        {
+          "text": "海",
+          "start": 71.0,
+          "end": 71.28,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "发",
+          "start": 71.28,
+          "end": 71.42,
+          "probability": 0.59130859375
+        },
+        {
+          "text": "菜",
+          "start": 71.42,
+          "end": 71.7,
+          "probability": 0.99267578125
+        }
+      ]
+    },
+    {
+      "start": 71.7,
+      "end": 73.1,
+      "text": "看着像头发一样",
+      "words": [
+        {
+          "text": "看",
+          "start": 71.7,
+          "end": 72.06,
+          "probability": 0.947265625
+        },
+        {
+          "text": "着",
+          "start": 72.06,
+          "end": 72.22,
+          "probability": 0.9931640625
+        },
+        {
+          "text": "像",
+          "start": 72.22,
+          "end": 72.38,
+          "probability": 0.9931640625
+        },
+        {
+          "text": "头",
+          "start": 72.38,
+          "end": 72.58,
+          "probability": 0.98974609375
+        },
+        {
+          "text": "发",
+          "start": 72.58,
+          "end": 72.74,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "一",
+          "start": 72.74,
+          "end": 72.94,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "样",
+          "start": 72.94,
+          "end": 73.1,
+          "probability": 1.0
+        }
+      ]
+    },
+    {
+      "start": 73.1,
+      "end": 75.74,
+      "text": "清清洗和加热处理后就可以吃",
+      "words": [
+        {
+          "text": "清",
+          "start": 73.1,
+          "end": 73.56,
+          "probability": 0.06256103515625
+        },
+        {
+          "text": "清",
+          "start": 73.56,
+          "end": 73.78,
+          "probability": 0.92919921875
+        },
+        {
+          "text": "洗",
+          "start": 73.78,
+          "end": 73.94,
+          "probability": 0.96484375
+        },
+        {
+          "text": "和",
+          "start": 73.94,
+          "end": 74.12,
+          "probability": 0.87841796875
+        },
+        {
+          "text": "加",
+          "start": 74.12,
+          "end": 74.3,
+          "probability": 0.9736328125
+        },
+        {
+          "text": "热",
+          "start": 74.3,
+          "end": 74.46,
+          "probability": 0.9951171875
+        },
+        {
+          "text": "处",
+          "start": 74.46,
+          "end": 74.62,
+          "probability": 0.994873046875
+        },
+        {
+          "text": "理",
+          "start": 74.62,
+          "end": 74.78,
+          "probability": 1.0
+        },
+        {
+          "text": "后",
+          "start": 74.78,
+          "end": 74.98,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "就可以",
+          "start": 74.98,
+          "end": 75.34,
+          "probability": 0.98388671875
+        },
+        {
+          "text": "吃",
+          "start": 75.34,
+          "end": 75.74,
+          "probability": 0.99755859375
+        }
+      ]
+    },
+    {
+      "start": 75.74,
+      "end": 77.72,
+      "text": "感海发现这个能吃吗?",
+      "words": [
+        {
+          "text": "感",
+          "start": 75.74,
+          "end": 76.08,
+          "probability": 0.9833984375
+        },
+        {
+          "text": "海",
+          "start": 76.08,
+          "end": 76.36,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "发",
+          "start": 76.36,
+          "end": 76.56,
+          "probability": 0.998046875
+        },
+        {
+          "text": "现",
+          "start": 76.56,
+          "end": 76.76,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "这个",
+          "start": 76.76,
+          "end": 76.96,
+          "probability": 0.9931640625
+        },
+        {
+          "text": "能",
+          "start": 76.96,
+          "end": 77.18,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "吃",
+          "start": 77.18,
+          "end": 77.44,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "吗?",
+          "start": 77.44,
+          "end": 77.72,
+          "probability": 0.98974609375
+        }
+      ]
+    },
+    {
+      "start": 77.98,
+      "end": 78.66,
+      "text": "这是虎台",
+      "words": [
+        {
+          "text": "这是",
+          "start": 77.98,
+          "end": 78.2,
+          "probability": 0.9677734375
+        },
+        {
+          "text": "虎",
+          "start": 78.2,
+          "end": 78.48,
+          "probability": 0.95751953125
+        },
+        {
+          "text": "台",
+          "start": 78.48,
+          "end": 78.66,
+          "probability": 0.693359375
+        }
+      ]
+    },
+    {
+      "start": 78.66,
+      "end": 81.18,
+      "text": "会聚集很多重金属和海洋污染",
+      "words": [
+        {
+          "text": "会",
+          "start": 78.66,
+          "end": 79.04,
+          "probability": 0.91064453125
+        },
+        {
+          "text": "聚",
+          "start": 79.04,
+          "end": 79.22,
+          "probability": 0.969482421875
+        },
+        {
+          "text": "集",
+          "start": 79.22,
+          "end": 79.38,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "很多",
+          "start": 79.38,
+          "end": 79.68,
+          "probability": 0.99560546875
+        },
+        {
+          "text": "重",
+          "start": 79.68,
+          "end": 79.92,
+          "probability": 0.81298828125
+        },
+        {
+          "text": "金",
+          "start": 79.92,
+          "end": 80.1,
+          "probability": 0.9443359375
+        },
+        {
+          "text": "属",
+          "start": 80.1,
+          "end": 80.26,
+          "probability": 0.8740234375
+        },
+        {
+          "text": "和",
+          "start": 80.26,
+          "end": 80.48,
+          "probability": 0.9921875
+        },
+        {
+          "text": "海",
+          "start": 80.48,
+          "end": 80.7,
+          "probability": 0.99169921875
+        },
+        {
+          "text": "洋",
+          "start": 80.7,
+          "end": 80.82,
+          "probability": 0.997314453125
+        },
+        {
+          "text": "污",
+          "start": 80.82,
+          "end": 81.0,
+          "probability": 0.922607421875
+        },
+        {
+          "text": "染",
+          "start": 81.0,
+          "end": 81.18,
+          "probability": 0.99609375
+        }
+      ]
+    },
+    {
+      "start": 81.18,
+      "end": 81.98,
+      "text": "不能吃",
+      "words": [
+        {
+          "text": "不能",
+          "start": 81.18,
+          "end": 81.62,
+          "probability": 0.93359375
+        },
+        {
+          "text": "吃",
+          "start": 81.62,
+          "end": 81.98,
+          "probability": 0.99755859375
+        }
+      ]
+    },
+    {
+      "start": 81.98,
+      "end": 83.9,
+      "text": "感海发现这个能吃吗?",
+      "words": [
+        {
+          "text": "感",
+          "start": 81.98,
+          "end": 82.28,
+          "probability": 0.98779296875
+        },
+        {
+          "text": "海",
+          "start": 82.28,
+          "end": 82.56,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "发",
+          "start": 82.56,
+          "end": 82.76,
+          "probability": 0.998046875
+        },
+        {
+          "text": "现",
+          "start": 82.76,
+          "end": 82.94,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "这个",
+          "start": 82.94,
+          "end": 83.16,
+          "probability": 0.99365234375
+        },
+        {
+          "text": "能",
+          "start": 83.16,
+          "end": 83.36,
+          "probability": 0.998046875
+        },
+        {
+          "text": "吃",
+          "start": 83.36,
+          "end": 83.64,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "吗?",
+          "start": 83.64,
+          "end": 83.9,
+          "probability": 0.99267578125
+        }
+      ]
+    },
+    {
+      "start": 84.12,
+      "end": 84.92,
+      "text": "这是鹿脚藻",
+      "words": [
+        {
+          "text": "这是",
+          "start": 84.12,
+          "end": 84.32,
+          "probability": 0.97119140625
+        },
+        {
+          "text": "鹿",
+          "start": 84.32,
+          "end": 84.54,
+          "probability": 0.8828125
+        },
+        {
+          "text": "脚",
+          "start": 84.54,
+          "end": 84.72,
+          "probability": 0.664794921875
+        },
+        {
+          "text": "藻",
+          "start": 84.72,
+          "end": 84.92,
+          "probability": 0.701416015625
+        }
+      ]
+    },
+    {
+      "start": 84.92,
+      "end": 86.08,
+      "text": "人不能吃",
+      "words": [
+        {
+          "text": "人",
+          "start": 84.92,
+          "end": 85.52,
+          "probability": 0.93994140625
+        },
+        {
+          "text": "不能",
+          "start": 85.52,
+          "end": 85.74,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "吃",
+          "start": 85.74,
+          "end": 86.08,
+          "probability": 0.9990234375
+        }
+      ]
+    },
+    {
+      "start": 86.08,
+      "end": 87.62,
+      "text": "海洋生物可以吃",
+      "words": [
+        {
+          "text": "海",
+          "start": 86.08,
+          "end": 86.62,
+          "probability": 0.8056640625
+        },
+        {
+          "text": "洋",
+          "start": 86.62,
+          "end": 86.82,
+          "probability": 0.849365234375
+        },
+        {
+          "text": "生",
+          "start": 86.82,
+          "end": 86.96,
+          "probability": 0.99560546875
+        },
+        {
+          "text": "物",
+          "start": 86.96,
+          "end": 87.12,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "可以",
+          "start": 87.12,
+          "end": 87.32,
+          "probability": 0.9716796875
+        },
+        {
+          "text": "吃",
+          "start": 87.32,
+          "end": 87.62,
+          "probability": 0.9951171875
+        }
+      ]
+    },
+    {
+      "start": 87.62,
+      "end": 89.72,
+      "text": "感海发现这个能吃吗?",
+      "words": [
+        {
+          "text": "感",
+          "start": 87.62,
+          "end": 88.06,
+          "probability": 0.1434326171875
+        },
+        {
+          "text": "海",
+          "start": 88.06,
+          "end": 88.32,
+          "probability": 0.93310546875
+        },
+        {
+          "text": "发",
+          "start": 88.32,
+          "end": 88.52,
+          "probability": 0.451904296875
+        },
+        {
+          "text": "现",
+          "start": 88.52,
+          "end": 88.72,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "这个",
+          "start": 88.72,
+          "end": 88.92,
+          "probability": 0.9619140625
+        },
+        {
+          "text": "能",
+          "start": 88.92,
+          "end": 89.14,
+          "probability": 0.9931640625
+        },
+        {
+          "text": "吃",
+          "start": 89.14,
+          "end": 89.4,
+          "probability": 0.998046875
+        },
+        {
+          "text": "吗?",
+          "start": 89.4,
+          "end": 89.72,
+          "probability": 0.80908203125
+        }
+      ]
+    },
+    {
+      "start": 89.94,
+      "end": 90.6,
+      "text": "这是海苔",
+      "words": [
+        {
+          "text": "这是",
+          "start": 89.94,
+          "end": 90.16,
+          "probability": 0.9775390625
+        },
+        {
+          "text": "海",
+          "start": 90.16,
+          "end": 90.44,
+          "probability": 0.99609375
+        },
+        {
+          "text": "苔",
+          "start": 90.44,
+          "end": 90.6,
+          "probability": 0.943359375
+        }
+      ]
+    },
+    {
+      "start": 90.6,
+      "end": 91.5,
+      "text": "可以吃",
+      "words": [
+        {
+          "text": "可以",
+          "start": 90.6,
+          "end": 91.2,
+          "probability": 0.85986328125
+        },
+        {
+          "text": "吃",
+          "start": 91.2,
+          "end": 91.5,
+          "probability": 0.9951171875
+        }
+      ]
+    },
+    {
+      "start": 91.92,
+      "end": 93.4,
+      "text": "可以加工成健康零食",
+      "words": [
+        {
+          "text": "可以",
+          "start": 91.92,
+          "end": 92.12,
+          "probability": 0.6767578125
+        },
+        {
+          "text": "加",
+          "start": 92.12,
+          "end": 92.36,
+          "probability": 0.96240234375
+        },
+        {
+          "text": "工",
+          "start": 92.36,
+          "end": 92.52,
+          "probability": 0.9794921875
+        },
+        {
+          "text": "成",
+          "start": 92.52,
+          "end": 92.7,
+          "probability": 0.94287109375
+        },
+        {
+          "text": "健",
+          "start": 92.7,
+          "end": 92.86,
+          "probability": 0.9892578125
+        },
+        {
+          "text": "康",
+          "start": 92.86,
+          "end": 93.04,
+          "probability": 0.996826171875
+        },
+        {
+          "text": "零",
+          "start": 93.04,
+          "end": 93.18,
+          "probability": 0.879638671875
+        },
+        {
+          "text": "食",
+          "start": 93.18,
+          "end": 93.4,
+          "probability": 0.9892578125
+        }
+      ]
+    },
+    {
+      "start": 93.4,
+      "end": 95.58,
+      "text": "感海发现这个能吃吗?",
+      "words": [
+        {
+          "text": "感",
+          "start": 93.4,
+          "end": 93.88,
+          "probability": 0.990234375
+        },
+        {
+          "text": "海",
+          "start": 93.88,
+          "end": 94.16,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "发",
+          "start": 94.16,
+          "end": 94.36,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "现",
+          "start": 94.36,
+          "end": 94.56,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "这个",
+          "start": 94.56,
+          "end": 94.76,
+          "probability": 0.99072265625
+        },
+        {
+          "text": "能",
+          "start": 94.76,
+          "end": 94.98,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "吃",
+          "start": 94.98,
+          "end": 95.24,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "吗?",
+          "start": 95.24,
+          "end": 95.58,
+          "probability": 0.98046875
+        }
+      ]
+    },
+    {
+      "start": 95.82,
+      "end": 96.86,
+      "text": "这是蓝黄章鱼",
+      "words": [
+        {
+          "text": "这是",
+          "start": 95.82,
+          "end": 96.04,
+          "probability": 0.9853515625
+        },
+        {
+          "text": "蓝",
+          "start": 96.04,
+          "end": 96.24,
+          "probability": 0.7900390625
+        },
+        {
+          "text": "黄",
+          "start": 96.24,
+          "end": 96.42,
+          "probability": 0.6480712890625
+        },
+        {
+          "text": "章",
+          "start": 96.42,
+          "end": 96.6,
+          "probability": 0.818603515625
+        },
+        {
+          "text": "鱼",
+          "start": 96.6,
+          "end": 96.86,
+          "probability": 0.9894205729166666
+        }
+      ]
+    },
+    {
+      "start": 96.86,
+      "end": 99.3,
+      "text": "是世界上最毒的海洋生物之一",
+      "words": [
+        {
+          "text": "是",
+          "start": 96.86,
+          "end": 97.34,
+          "probability": 0.9375
+        },
+        {
+          "text": "世界",
+          "start": 97.34,
+          "end": 97.58,
+          "probability": 0.99462890625
+        },
+        {
+          "text": "上",
+          "start": 97.58,
+          "end": 97.84,
+          "probability": 0.998046875
+        },
+        {
+          "text": "最",
+          "start": 97.84,
+          "end": 98.02,
+          "probability": 0.96044921875
+        },
+        {
+          "text": "毒",
+          "start": 98.02,
+          "end": 98.18,
+          "probability": 0.9306640625
+        },
+        {
+          "text": "的",
+          "start": 98.18,
+          "end": 98.32,
+          "probability": 0.99462890625
+        },
+        {
+          "text": "海",
+          "start": 98.32,
+          "end": 98.52,
+          "probability": 0.99658203125
+        },
+        {
+          "text": "洋",
+          "start": 98.52,
+          "end": 98.66,
+          "probability": 0.999755859375
+        },
+        {
+          "text": "生",
+          "start": 98.66,
+          "end": 98.8,
+          "probability": 1.0
+        },
+        {
+          "text": "物",
+          "start": 98.8,
+          "end": 98.96,
+          "probability": 1.0
+        },
+        {
+          "text": "之",
+          "start": 98.96,
+          "end": 99.12,
+          "probability": 0.994140625
+        },
+        {
+          "text": "一",
+          "start": 99.12,
+          "end": 99.3,
+          "probability": 0.99853515625
+        }
+      ]
+    },
+    {
+      "start": 99.3,
+      "end": 100.68,
+      "text": "连摸都不能摸",
+      "words": [
+        {
+          "text": "连",
+          "start": 99.3,
+          "end": 99.88,
+          "probability": 0.920166015625
+        },
+        {
+          "text": "摸",
+          "start": 99.88,
+          "end": 100.02,
+          "probability": 0.762451171875
+        },
+        {
+          "text": "都",
+          "start": 100.02,
+          "end": 100.18,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "不能",
+          "start": 100.18,
+          "end": 100.42,
+          "probability": 0.99609375
+        },
+        {
+          "text": "摸",
+          "start": 100.42,
+          "end": 100.68,
+          "probability": 0.99951171875
+        }
+      ]
+    },
+    {
+      "start": 100.68,
+      "end": 101.88,
+      "text": "更别说吃了",
+      "words": [
+        {
+          "text": "更",
+          "start": 100.68,
+          "end": 101.16,
+          "probability": 0.95458984375
+        },
+        {
+          "text": "别",
+          "start": 101.16,
+          "end": 101.34,
+          "probability": 0.9951171875
+        },
+        {
+          "text": "说",
+          "start": 101.34,
+          "end": 101.52,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "吃",
+          "start": 101.52,
+          "end": 101.7,
+          "probability": 0.9658203125
+        },
+        {
+          "text": "了",
+          "start": 101.7,
+          "end": 101.88,
+          "probability": 0.93798828125
+        }
+      ]
+    },
+    {
+      "start": 101.88,
+      "end": 103.9,
+      "text": "感海发现这个能吃吗?",
+      "words": [
+        {
+          "text": "感",
+          "start": 101.88,
+          "end": 102.26,
+          "probability": 0.9921875
+        },
+        {
+          "text": "海",
+          "start": 102.26,
+          "end": 102.52,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "发",
+          "start": 102.52,
+          "end": 102.72,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "现",
+          "start": 102.72,
+          "end": 102.92,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "这个",
+          "start": 102.92,
+          "end": 103.12,
+          "probability": 0.9951171875
+        },
+        {
+          "text": "能",
+          "start": 103.12,
+          "end": 103.34,
+          "probability": 0.998046875
+        },
+        {
+          "text": "吃",
+          "start": 103.34,
+          "end": 103.6,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "吗?",
+          "start": 103.6,
+          "end": 103.9,
+          "probability": 0.9873046875
+        }
+      ]
+    },
+    {
+      "start": 104.2,
+      "end": 105.18,
+      "text": "这是灯塔水母",
+      "words": [
+        {
+          "text": "这是",
+          "start": 104.2,
+          "end": 104.4,
+          "probability": 0.99365234375
+        },
+        {
+          "text": "灯",
+          "start": 104.4,
+          "end": 104.62,
+          "probability": 0.984619140625
+        },
+        {
+          "text": "塔",
+          "start": 104.62,
+          "end": 104.78,
+          "probability": 0.998046875
+        },
+        {
+          "text": "水",
+          "start": 104.78,
+          "end": 104.96,
+          "probability": 0.98486328125
+        },
+        {
+          "text": "母",
+          "start": 104.96,
+          "end": 105.18,
+          "probability": 0.94921875
+        }
+      ]
+    },
+    {
+      "start": 105.18,
+      "end": 107.66,
+      "text": "据说在特定环境下可以永生",
+      "words": [
+        {
+          "text": "据",
+          "start": 105.18,
+          "end": 105.78,
+          "probability": 0.98486328125
+        },
+        {
+          "text": "说",
+          "start": 105.78,
+          "end": 105.96,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "在",
+          "start": 105.96,
+          "end": 106.12,
+          "probability": 0.9951171875
+        },
+        {
+          "text": "特",
+          "start": 106.12,
+          "end": 106.3,
+          "probability": 0.99267578125
+        },
+        {
+          "text": "定",
+          "start": 106.3,
+          "end": 106.42,
+          "probability": 0.990234375
+        },
+        {
+          "text": "环",
+          "start": 106.42,
+          "end": 106.62,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "境",
+          "start": 106.62,
+          "end": 106.78,
+          "probability": 1.0
+        },
+        {
+          "text": "下",
+          "start": 106.78,
+          "end": 106.98,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "可以",
+          "start": 106.98,
+          "end": 107.26,
+          "probability": 0.98583984375
+        },
+        {
+          "text": "永",
+          "start": 107.26,
+          "end": 107.46,
+          "probability": 0.94677734375
+        },
+        {
+          "text": "生",
+          "start": 107.46,
+          "end": 107.66,
+          "probability": 0.99560546875
+        }
+      ]
+    },
+    {
+      "start": 107.66,
+      "end": 109.72,
+      "text": "触手上不满有毒刺细胞",
+      "words": [
+        {
+          "text": "触",
+          "start": 107.66,
+          "end": 108.2,
+          "probability": 0.758544921875
+        },
+        {
+          "text": "手",
+          "start": 108.2,
+          "end": 108.38,
+          "probability": 0.98779296875
+        },
+        {
+          "text": "上",
+          "start": 108.38,
+          "end": 108.56,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "不",
+          "start": 108.56,
+          "end": 108.72,
+          "probability": 0.97119140625
+        },
+        {
+          "text": "满",
+          "start": 108.72,
+          "end": 108.88,
+          "probability": 0.972412109375
+        },
+        {
+          "text": "有",
+          "start": 108.88,
+          "end": 109.06,
+          "probability": 0.9775390625
+        },
+        {
+          "text": "毒",
+          "start": 109.06,
+          "end": 109.2,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "刺",
+          "start": 109.2,
+          "end": 109.38,
+          "probability": 0.927001953125
+        },
+        {
+          "text": "细",
+          "start": 109.38,
+          "end": 109.54,
+          "probability": 0.846435546875
+        },
+        {
+          "text": "胞",
+          "start": 109.54,
+          "end": 109.72,
+          "probability": 0.90576171875
+        }
+      ]
+    },
+    {
+      "start": 109.72,
+      "end": 110.64,
+      "text": "不能吃",
+      "words": [
+        {
+          "text": "不能",
+          "start": 109.72,
+          "end": 110.3,
+          "probability": 0.76513671875
+        },
+        {
+          "text": "吃",
+          "start": 110.3,
+          "end": 110.64,
+          "probability": 0.998046875
+        }
+      ]
+    },
+    {
+      "start": 110.64,
+      "end": 112.7,
+      "text": "感海发现这个能吃吗?",
+      "words": [
+        {
+          "text": "感",
+          "start": 110.64,
+          "end": 111.06,
+          "probability": 0.98876953125
+        },
+        {
+          "text": "海",
+          "start": 111.06,
+          "end": 111.32,
+          "probability": 0.998046875
+        },
+        {
+          "text": "发",
+          "start": 111.32,
+          "end": 111.52,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "现",
+          "start": 111.52,
+          "end": 111.72,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "这个",
+          "start": 111.72,
+          "end": 111.92,
+          "probability": 0.994140625
+        },
+        {
+          "text": "能",
+          "start": 111.92,
+          "end": 112.14,
+          "probability": 0.998046875
+        },
+        {
+          "text": "吃",
+          "start": 112.14,
+          "end": 112.4,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "吗?",
+          "start": 112.4,
+          "end": 112.7,
+          "probability": 0.99462890625
+        }
+      ]
+    },
+    {
+      "start": 112.98,
+      "end": 113.66,
+      "text": "这是海马",
+      "words": [
+        {
+          "text": "这是",
+          "start": 112.98,
+          "end": 113.22,
+          "probability": 0.9951171875
+        },
+        {
+          "text": "海",
+          "start": 113.22,
+          "end": 113.48,
+          "probability": 0.99169921875
+        },
+        {
+          "text": "马",
+          "start": 113.48,
+          "end": 113.66,
+          "probability": 0.65380859375
+        }
+      ]
+    },
+    {
+      "start": 113.66,
+      "end": 115.7,
+      "text": "野生的保护动物不能吃",
+      "words": [
+        {
+          "text": "野",
+          "start": 113.66,
+          "end": 114.2,
+          "probability": 0.10369873046875
+        },
+        {
+          "text": "生",
+          "start": 114.2,
+          "end": 114.36,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "的",
+          "start": 114.36,
+          "end": 114.48,
+          "probability": 0.99169921875
+        },
+        {
+          "text": "保",
+          "start": 114.48,
+          "end": 114.64,
+          "probability": 0.974609375
+        },
+        {
+          "text": "护",
+          "start": 114.64,
+          "end": 114.8,
+          "probability": 0.6258544921875
+        },
+        {
+          "text": "动",
+          "start": 114.8,
+          "end": 114.94,
+          "probability": 0.61767578125
+        },
+        {
+          "text": "物",
+          "start": 114.94,
+          "end": 115.14,
+          "probability": 1.0
+        },
+        {
+          "text": "不能",
+          "start": 115.14,
+          "end": 115.38,
+          "probability": 0.9638671875
+        },
+        {
+          "text": "吃",
+          "start": 115.38,
+          "end": 115.7,
+          "probability": 0.9970703125
+        }
+      ]
+    },
+    {
+      "start": 115.7,
+      "end": 118.42,
+      "text": "养殖的可以作为中药材或自补品",
+      "words": [
+        {
+          "text": "养",
+          "start": 115.7,
+          "end": 116.26,
+          "probability": 0.8955078125
+        },
+        {
+          "text": "殖",
+          "start": 116.26,
+          "end": 116.4,
+          "probability": 0.967529296875
+        },
+        {
+          "text": "的",
+          "start": 116.4,
+          "end": 116.54,
+          "probability": 0.97119140625
+        },
+        {
+          "text": "可以",
+          "start": 116.54,
+          "end": 116.76,
+          "probability": 0.9853515625
+        },
+        {
+          "text": "作",
+          "start": 116.76,
+          "end": 116.96,
+          "probability": 0.9423828125
+        },
+        {
+          "text": "为",
+          "start": 116.96,
+          "end": 117.14,
+          "probability": 0.953125
+        },
+        {
+          "text": "中",
+          "start": 117.14,
+          "end": 117.28,
+          "probability": 0.74755859375
+        },
+        {
+          "text": "药",
+          "start": 117.28,
+          "end": 117.42,
+          "probability": 0.962890625
+        },
+        {
+          "text": "材",
+          "start": 117.42,
+          "end": 117.64,
+          "probability": 0.98388671875
+        },
+        {
+          "text": "或",
+          "start": 117.64,
+          "end": 117.86,
+          "probability": 0.8271484375
+        },
+        {
+          "text": "自",
+          "start": 117.86,
+          "end": 118.02,
+          "probability": 0.423828125
+        },
+        {
+          "text": "补",
+          "start": 118.02,
+          "end": 118.14,
+          "probability": 0.99267578125
+        },
+        {
+          "text": "品",
+          "start": 118.14,
+          "end": 118.42,
+          "probability": 0.9990234375
+        }
+      ]
+    },
+    {
+      "start": 118.42,
+      "end": 120.44,
+      "text": "感海发现这个能吃吗?",
+      "words": [
+        {
+          "text": "感",
+          "start": 118.42,
+          "end": 118.78,
+          "probability": 0.276611328125
+        },
+        {
+          "text": "海",
+          "start": 118.78,
+          "end": 119.04,
+          "probability": 0.87890625
+        },
+        {
+          "text": "发",
+          "start": 119.04,
+          "end": 119.26,
+          "probability": 0.986328125
+        },
+        {
+          "text": "现",
+          "start": 119.26,
+          "end": 119.44,
+          "probability": 0.998046875
+        },
+        {
+          "text": "这个",
+          "start": 119.44,
+          "end": 119.66,
+          "probability": 0.9619140625
+        },
+        {
+          "text": "能",
+          "start": 119.66,
+          "end": 119.88,
+          "probability": 0.990234375
+        },
+        {
+          "text": "吃",
+          "start": 119.88,
+          "end": 120.14,
+          "probability": 0.998046875
+        },
+        {
+          "text": "吗?",
+          "start": 120.14,
+          "end": 120.44,
+          "probability": 0.806640625
+        }
+      ]
+    },
+    {
+      "start": 120.62,
+      "end": 121.32,
+      "text": "这是海魁",
+      "words": [
+        {
+          "text": "这是",
+          "start": 120.62,
+          "end": 120.88,
+          "probability": 0.93798828125
+        },
+        {
+          "text": "海",
+          "start": 120.88,
+          "end": 121.14,
+          "probability": 0.98828125
+        },
+        {
+          "text": "魁",
+          "start": 121.14,
+          "end": 121.32,
+          "probability": 0.580078125
+        }
+      ]
+    },
+    {
+      "start": 121.32,
+      "end": 122.78,
+      "text": "触手含有毒素",
+      "words": [
+        {
+          "text": "触",
+          "start": 121.32,
+          "end": 121.9,
+          "probability": 0.58966064453125
+        },
+        {
+          "text": "手",
+          "start": 121.9,
+          "end": 122.06,
+          "probability": 0.8984375
+        },
+        {
+          "text": "含",
+          "start": 122.06,
+          "end": 122.24,
+          "probability": 0.920654296875
+        },
+        {
+          "text": "有",
+          "start": 122.24,
+          "end": 122.42,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "毒",
+          "start": 122.42,
+          "end": 122.56,
+          "probability": 0.998046875
+        },
+        {
+          "text": "素",
+          "start": 122.56,
+          "end": 122.78,
+          "probability": 0.99609375
+        }
+      ]
+    },
+    {
+      "start": 122.78,
+      "end": 123.82,
+      "text": "不见一吃",
+      "words": [
+        {
+          "text": "不",
+          "start": 122.78,
+          "end": 123.26,
+          "probability": 0.59375
+        },
+        {
+          "text": "见",
+          "start": 123.26,
+          "end": 123.44,
+          "probability": 0.87890625
+        },
+        {
+          "text": "一",
+          "start": 123.44,
+          "end": 123.62,
+          "probability": 0.6982421875
+        },
+        {
+          "text": "吃",
+          "start": 123.62,
+          "end": 123.82,
+          "probability": 0.94384765625
+        }
+      ]
+    },
+    {
+      "start": 123.82,
+      "end": 125.9,
+      "text": "感海发现这个能吃吗?",
+      "words": [
+        {
+          "text": "感",
+          "start": 123.82,
+          "end": 124.18,
+          "probability": 0.958984375
+        },
+        {
+          "text": "海",
+          "start": 124.18,
+          "end": 124.46,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "发",
+          "start": 124.46,
+          "end": 124.66,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "现",
+          "start": 124.66,
+          "end": 124.86,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "这个",
+          "start": 124.86,
+          "end": 125.06,
+          "probability": 0.98876953125
+        },
+        {
+          "text": "能",
+          "start": 125.06,
+          "end": 125.28,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "吃",
+          "start": 125.28,
+          "end": 125.54,
+          "probability": 0.998046875
+        },
+        {
+          "text": "吗?",
+          "start": 125.54,
+          "end": 125.9,
+          "probability": 0.982421875
+        }
+      ]
+    },
+    {
+      "start": 126.2,
+      "end": 127.76,
+      "text": "这可不是什么滚动的海胆",
+      "words": [
+        {
+          "text": "这",
+          "start": 126.2,
+          "end": 126.36,
+          "probability": 0.97607421875
+        },
+        {
+          "text": "可",
+          "start": 126.36,
+          "end": 126.5,
+          "probability": 0.99658203125
+        },
+        {
+          "text": "不是",
+          "start": 126.5,
+          "end": 126.68,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "什么",
+          "start": 126.68,
+          "end": 126.96,
+          "probability": 0.99267578125
+        },
+        {
+          "text": "滚",
+          "start": 126.96,
+          "end": 127.18,
+          "probability": 0.99560546875
+        },
+        {
+          "text": "动",
+          "start": 127.18,
+          "end": 127.32,
+          "probability": 0.98291015625
+        },
+        {
+          "text": "的",
+          "start": 127.32,
+          "end": 127.44,
+          "probability": 0.99658203125
+        },
+        {
+          "text": "海",
+          "start": 127.44,
+          "end": 127.62,
+          "probability": 0.99560546875
+        },
+        {
+          "text": "胆",
+          "start": 127.62,
+          "end": 127.76,
+          "probability": 0.9599609375
+        }
+      ]
+    },
+    {
+      "start": 127.76,
+      "end": 129.14,
+      "text": "这是老鼠乐",
+      "words": [
+        {
+          "text": "这是",
+          "start": 127.76,
+          "end": 128.5,
+          "probability": 0.95654296875
+        },
+        {
+          "text": "老",
+          "start": 128.5,
+          "end": 128.74,
+          "probability": 0.94091796875
+        },
+        {
+          "text": "鼠",
+          "start": 128.74,
+          "end": 128.9,
+          "probability": 0.9794921875
+        },
+        {
+          "text": "乐",
+          "start": 128.9,
+          "end": 129.14,
+          "probability": 0.8720703125
+        }
+      ]
+    },
+    {
+      "start": 129.14,
+      "end": 130.48,
+      "text": "一种固杀植物",
+      "words": [
+        {
+          "text": "一",
+          "start": 129.14,
+          "end": 129.58,
+          "probability": 0.77294921875
+        },
+        {
+          "text": "种",
+          "start": 129.58,
+          "end": 129.72,
+          "probability": 0.998046875
+        },
+        {
+          "text": "固",
+          "start": 129.72,
+          "end": 129.9,
+          "probability": 0.6478271484375
+        },
+        {
+          "text": "杀",
+          "start": 129.9,
+          "end": 130.08,
+          "probability": 0.93212890625
+        },
+        {
+          "text": "植",
+          "start": 130.08,
+          "end": 130.26,
+          "probability": 0.988525390625
+        },
+        {
+          "text": "物",
+          "start": 130.26,
+          "end": 130.48,
+          "probability": 1.0
+        }
+      ]
+    },
+    {
+      "start": 130.48,
+      "end": 131.34,
+      "text": "不能吃",
+      "words": [
+        {
+          "text": "不能",
+          "start": 130.48,
+          "end": 131.02,
+          "probability": 0.79931640625
+        },
+        {
+          "text": "吃",
+          "start": 131.02,
+          "end": 131.34,
+          "probability": 0.99853515625
+        }
+      ]
+    },
+    {
+      "start": 131.34,
+      "end": 133.32,
+      "text": "感海发现这个能吃吗?",
+      "words": [
+        {
+          "text": "感",
+          "start": 131.34,
+          "end": 131.68,
+          "probability": 0.9833984375
+        },
+        {
+          "text": "海",
+          "start": 131.68,
+          "end": 131.96,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "发",
+          "start": 131.96,
+          "end": 132.16,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "现",
+          "start": 132.16,
+          "end": 132.34,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "这个",
+          "start": 132.34,
+          "end": 132.56,
+          "probability": 0.9951171875
+        },
+        {
+          "text": "能",
+          "start": 132.56,
+          "end": 132.76,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "吃",
+          "start": 132.76,
+          "end": 133.04,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "吗?",
+          "start": 133.04,
+          "end": 133.32,
+          "probability": 0.98974609375
+        }
+      ]
+    },
+    {
+      "start": 133.64,
+      "end": 134.62,
+      "text": "这是马分海胆",
+      "words": [
+        {
+          "text": "这是",
+          "start": 133.64,
+          "end": 133.88,
+          "probability": 0.986328125
+        },
+        {
+          "text": "马",
+          "start": 133.88,
+          "end": 134.1,
+          "probability": 0.73095703125
+        },
+        {
+          "text": "分",
+          "start": 134.1,
+          "end": 134.26,
+          "probability": 0.130859375
+        },
+        {
+          "text": "海",
+          "start": 134.26,
+          "end": 134.46,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "胆",
+          "start": 134.46,
+          "end": 134.62,
+          "probability": 0.995361328125
+        }
+      ]
+    },
+    {
+      "start": 134.62,
+      "end": 135.52,
+      "text": "可以吃",
+      "words": [
+        {
+          "text": "可以",
+          "start": 134.62,
+          "end": 135.22,
+          "probability": 0.9326171875
+        },
+        {
+          "text": "吃",
+          "start": 135.22,
+          "end": 135.52,
+          "probability": 0.99853515625
+        }
+      ]
+    },
+    {
+      "start": 135.52,
+      "end": 136.9,
+      "text": "口感绵密清甜",
+      "words": [
+        {
+          "text": "口",
+          "start": 135.52,
+          "end": 136.0,
+          "probability": 0.81689453125
+        },
+        {
+          "text": "感",
+          "start": 136.0,
+          "end": 136.16,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "绵",
+          "start": 136.16,
+          "end": 136.32,
+          "probability": 0.917236328125
+        },
+        {
+          "text": "密",
+          "start": 136.32,
+          "end": 136.48,
+          "probability": 0.9833984375
+        },
+        {
+          "text": "清",
+          "start": 136.48,
+          "end": 136.66,
+          "probability": 0.80908203125
+        },
+        {
+          "text": "甜",
+          "start": 136.66,
+          "end": 136.9,
+          "probability": 0.9951171875
+        }
+      ]
+    },
+    {
+      "start": 136.9,
+      "end": 138.48,
+      "text": "像海鲜味咸淡黄",
+      "words": [
+        {
+          "text": "像",
+          "start": 136.9,
+          "end": 137.4,
+          "probability": 0.485107421875
+        },
+        {
+          "text": "海",
+          "start": 137.4,
+          "end": 137.62,
+          "probability": 0.99658203125
+        },
+        {
+          "text": "鲜",
+          "start": 137.62,
+          "end": 137.78,
+          "probability": 0.99560546875
+        },
+        {
+          "text": "味",
+          "start": 137.78,
+          "end": 137.9,
+          "probability": 0.302001953125
+        },
+        {
+          "text": "咸",
+          "start": 137.9,
+          "end": 138.1,
+          "probability": 0.834228515625
+        },
+        {
+          "text": "淡",
+          "start": 138.1,
+          "end": 138.22,
+          "probability": 0.76220703125
+        },
+        {
+          "text": "黄",
+          "start": 138.22,
+          "end": 138.48,
+          "probability": 0.97509765625
+        }
+      ]
+    },
+    {
+      "start": 138.48,
+      "end": 140.5,
+      "text": "感海发现这个能吃吗?",
+      "words": [
+        {
+          "text": "感",
+          "start": 138.48,
+          "end": 138.84,
+          "probability": 0.99609375
+        },
+        {
+          "text": "海",
+          "start": 138.84,
+          "end": 139.12,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "发",
+          "start": 139.12,
+          "end": 139.32,
+          "probability": 0.99658203125
+        },
+        {
+          "text": "现",
+          "start": 139.32,
+          "end": 139.5,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "这个",
+          "start": 139.5,
+          "end": 139.72,
+          "probability": 0.9931640625
+        },
+        {
+          "text": "能",
+          "start": 139.72,
+          "end": 139.92,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "吃",
+          "start": 139.92,
+          "end": 140.2,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "吗?",
+          "start": 140.2,
+          "end": 140.5,
+          "probability": 0.9873046875
+        }
+      ]
+    },
+    {
+      "start": 140.76,
+      "end": 141.46,
+      "text": "这是海鲜",
+      "words": [
+        {
+          "text": "这是",
+          "start": 140.76,
+          "end": 141.0,
+          "probability": 0.9697265625
+        },
+        {
+          "text": "海",
+          "start": 141.0,
+          "end": 141.3,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "鲜",
+          "start": 141.3,
+          "end": 141.46,
+          "probability": 0.9352213541666666
+        }
+      ]
+    },
+    {
+      "start": 141.46,
+      "end": 143.14,
+      "text": "部分品种还有毒素",
+      "words": [
+        {
+          "text": "部分",
+          "start": 141.46,
+          "end": 141.96,
+          "probability": 0.76708984375
+        },
+        {
+          "text": "品",
+          "start": 141.96,
+          "end": 142.22,
+          "probability": 0.96484375
+        },
+        {
+          "text": "种",
+          "start": 142.22,
+          "end": 142.38,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "还有",
+          "start": 142.38,
+          "end": 142.62,
+          "probability": 0.50439453125
+        },
+        {
+          "text": "毒",
+          "start": 142.62,
+          "end": 142.92,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "素",
+          "start": 142.92,
+          "end": 143.14,
+          "probability": 0.99951171875
+        }
+      ]
+    },
+    {
+      "start": 143.14,
+      "end": 144.14,
+      "text": "不见一吃",
+      "words": [
+        {
+          "text": "不",
+          "start": 143.14,
+          "end": 143.6,
+          "probability": 0.86328125
+        },
+        {
+          "text": "见",
+          "start": 143.6,
+          "end": 143.76,
+          "probability": 0.0899658203125
+        },
+        {
+          "text": "一",
+          "start": 143.76,
+          "end": 143.94,
+          "probability": 0.78173828125
+        },
+        {
+          "text": "吃",
+          "start": 143.94,
+          "end": 144.14,
+          "probability": 0.9794921875
+        }
+      ]
+    },
+    {
+      "start": 144.14,
+      "end": 146.26,
+      "text": "但可以抓回去晒干当标本",
+      "words": [
+        {
+          "text": "但",
+          "start": 144.14,
+          "end": 144.56,
+          "probability": 0.468017578125
+        },
+        {
+          "text": "可以",
+          "start": 144.56,
+          "end": 144.86,
+          "probability": 0.95556640625
+        },
+        {
+          "text": "抓",
+          "start": 144.86,
+          "end": 145.06,
+          "probability": 0.99267578125
+        },
+        {
+          "text": "回去",
+          "start": 145.06,
+          "end": 145.3,
+          "probability": 0.9462890625
+        },
+        {
+          "text": "晒",
+          "start": 145.3,
+          "end": 145.56,
+          "probability": 0.9716796875
+        },
+        {
+          "text": "干",
+          "start": 145.56,
+          "end": 145.72,
+          "probability": 0.84521484375
+        },
+        {
+          "text": "当",
+          "start": 145.72,
+          "end": 145.88,
+          "probability": 0.8935546875
+        },
+        {
+          "text": "标",
+          "start": 145.88,
+          "end": 146.04,
+          "probability": 0.9765625
+        },
+        {
+          "text": "本",
+          "start": 146.04,
+          "end": 146.26,
+          "probability": 0.990234375
+        }
+      ]
+    },
+    {
+      "start": 146.26,
+      "end": 148.3,
+      "text": "感海发现这个能吃吗?",
+      "words": [
+        {
+          "text": "感",
+          "start": 146.26,
+          "end": 146.66,
+          "probability": 0.0205841064453125
+        },
+        {
+          "text": "海",
+          "start": 146.66,
+          "end": 146.92,
+          "probability": 0.399169921875
+        },
+        {
+          "text": "发",
+          "start": 146.92,
+          "end": 147.12,
+          "probability": 0.990234375
+        },
+        {
+          "text": "现",
+          "start": 147.12,
+          "end": 147.32,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "这个",
+          "start": 147.32,
+          "end": 147.52,
+          "probability": 0.96875
+        },
+        {
+          "text": "能",
+          "start": 147.52,
+          "end": 147.74,
+          "probability": 0.9931640625
+        },
+        {
+          "text": "吃",
+          "start": 147.74,
+          "end": 148.0,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "吗?",
+          "start": 148.0,
+          "end": 148.3,
+          "probability": 0.84814453125
+        }
+      ]
+    },
+    {
+      "start": 148.46,
+      "end": 149.44,
+      "text": "这是暗康鱼",
+      "words": [
+        {
+          "text": "这是",
+          "start": 148.46,
+          "end": 148.82,
+          "probability": 0.9560546875
+        },
+        {
+          "text": "暗",
+          "start": 148.82,
+          "end": 149.08,
+          "probability": 0.76318359375
+        },
+        {
+          "text": "康",
+          "start": 149.08,
+          "end": 149.22,
+          "probability": 0.775146484375
+        },
+        {
+          "text": "鱼",
+          "start": 149.22,
+          "end": 149.44,
+          "probability": 0.9964192708333334
+        }
+      ]
+    },
+    {
+      "start": 149.44,
+      "end": 151.02,
+      "text": "虽外形有点丑陋",
+      "words": [
+        {
+          "text": "虽",
+          "start": 149.44,
+          "end": 149.92,
+          "probability": 0.883544921875
+        },
+        {
+          "text": "外",
+          "start": 149.92,
+          "end": 150.1,
+          "probability": 0.9892578125
+        },
+        {
+          "text": "形",
+          "start": 150.1,
+          "end": 150.28,
+          "probability": 0.64892578125
+        },
+        {
+          "text": "有",
+          "start": 150.28,
+          "end": 150.44,
+          "probability": 0.982421875
+        },
+        {
+          "text": "点",
+          "start": 150.44,
+          "end": 150.6,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "丑",
+          "start": 150.6,
+          "end": 150.8,
+          "probability": 0.950927734375
+        },
+        {
+          "text": "陋",
+          "start": 150.8,
+          "end": 151.02,
+          "probability": 0.990234375
+        }
+      ]
+    },
+    {
+      "start": 151.02,
+      "end": 152.68,
+      "text": "但是肉质紧实弹牙",
+      "words": [
+        {
+          "text": "但是",
+          "start": 151.02,
+          "end": 151.56,
+          "probability": 0.93212890625
+        },
+        {
+          "text": "肉",
+          "start": 151.56,
+          "end": 151.76,
+          "probability": 0.998046875
+        },
+        {
+          "text": "质",
+          "start": 151.76,
+          "end": 151.96,
+          "probability": 0.9814453125
+        },
+        {
+          "text": "紧",
+          "start": 151.96,
+          "end": 152.1,
+          "probability": 0.9013671875
+        },
+        {
+          "text": "实",
+          "start": 152.1,
+          "end": 152.26,
+          "probability": 0.88232421875
+        },
+        {
+          "text": "弹",
+          "start": 152.26,
+          "end": 152.46,
+          "probability": 0.8720703125
+        },
+        {
+          "text": "牙",
+          "start": 152.46,
+          "end": 152.68,
+          "probability": 0.91455078125
+        }
+      ]
+    },
+    {
+      "start": 152.68,
+      "end": 153.52,
+      "text": "能吃好吃",
+      "words": [
+        {
+          "text": "能",
+          "start": 152.68,
+          "end": 153.06,
+          "probability": 0.61474609375
+        },
+        {
+          "text": "吃",
+          "start": 153.06,
+          "end": 153.26,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "好吃",
+          "start": 153.26,
+          "end": 153.52,
+          "probability": 0.87890625
+        }
+      ]
+    }
+  ]
+}

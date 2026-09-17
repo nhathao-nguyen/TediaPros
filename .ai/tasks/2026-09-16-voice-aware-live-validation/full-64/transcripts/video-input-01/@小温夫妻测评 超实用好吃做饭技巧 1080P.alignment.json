@@ -1,0 +1,1126 @@
+{
+  "duration": 22.1300625,
+  "language": "zh",
+  "segments": [
+    {
+      "start": 0.0,
+      "end": 2.78,
+      "text": "魚肉 多放薑可以去腥增香",
+      "words": [
+        {
+          "text": "魚",
+          "start": 0.0,
+          "end": 0.28,
+          "probability": 0.595703125
+        },
+        {
+          "text": "肉",
+          "start": 0.28,
+          "end": 0.6,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "多",
+          "start": 0.72,
+          "end": 0.86,
+          "probability": 0.97265625
+        },
+        {
+          "text": "放",
+          "start": 0.86,
+          "end": 1.1,
+          "probability": 0.82421875
+        },
+        {
+          "text": "薑",
+          "start": 1.1,
+          "end": 1.4,
+          "probability": 0.681640625
+        },
+        {
+          "text": "可以",
+          "start": 1.4,
+          "end": 1.74,
+          "probability": 0.7939453125
+        },
+        {
+          "text": "去",
+          "start": 1.74,
+          "end": 2.02,
+          "probability": 0.89111328125
+        },
+        {
+          "text": "腥",
+          "start": 2.02,
+          "end": 2.28,
+          "probability": 0.98974609375
+        },
+        {
+          "text": "增",
+          "start": 2.28,
+          "end": 2.5,
+          "probability": 0.998291015625
+        },
+        {
+          "text": "香",
+          "start": 2.5,
+          "end": 2.78,
+          "probability": 0.998046875
+        }
+      ]
+    },
+    {
+      "start": 2.78,
+      "end": 6.08,
+      "text": "牛肉 多放番茄讓牛肉更軟爛",
+      "words": [
+        {
+          "text": "牛",
+          "start": 2.78,
+          "end": 3.26,
+          "probability": 0.96826171875
+        },
+        {
+          "text": "肉",
+          "start": 3.26,
+          "end": 3.64,
+          "probability": 1.0
+        },
+        {
+          "text": "多",
+          "start": 3.88,
+          "end": 3.98,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "放",
+          "start": 3.98,
+          "end": 4.2,
+          "probability": 0.998046875
+        },
+        {
+          "text": "番",
+          "start": 4.2,
+          "end": 4.4,
+          "probability": 0.943359375
+        },
+        {
+          "text": "茄",
+          "start": 4.4,
+          "end": 4.7,
+          "probability": 0.998779296875
+        },
+        {
+          "text": "讓",
+          "start": 4.7,
+          "end": 5.0,
+          "probability": 0.759765625
+        },
+        {
+          "text": "牛",
+          "start": 5.0,
+          "end": 5.18,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "肉",
+          "start": 5.18,
+          "end": 5.34,
+          "probability": 1.0
+        },
+        {
+          "text": "更",
+          "start": 5.34,
+          "end": 5.5,
+          "probability": 0.994140625
+        },
+        {
+          "text": "軟",
+          "start": 5.5,
+          "end": 5.74,
+          "probability": 0.995849609375
+        },
+        {
+          "text": "爛",
+          "start": 5.74,
+          "end": 6.08,
+          "probability": 0.987548828125
+        }
+      ]
+    },
+    {
+      "start": 6.08,
+      "end": 8.94,
+      "text": "雞肉 多放蒜提熟雞肉的風味",
+      "words": [
+        {
+          "text": "雞",
+          "start": 6.08,
+          "end": 6.38,
+          "probability": 0.98193359375
+        },
+        {
+          "text": "肉",
+          "start": 6.38,
+          "end": 6.76,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "多",
+          "start": 7.02,
+          "end": 7.1,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "放",
+          "start": 7.1,
+          "end": 7.3,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "蒜",
+          "start": 7.3,
+          "end": 7.56,
+          "probability": 0.990966796875
+        },
+        {
+          "text": "提",
+          "start": 7.56,
+          "end": 7.86,
+          "probability": 0.93408203125
+        },
+        {
+          "text": "熟",
+          "start": 7.86,
+          "end": 8.04,
+          "probability": 0.635986328125
+        },
+        {
+          "text": "雞",
+          "start": 8.04,
+          "end": 8.26,
+          "probability": 0.980712890625
+        },
+        {
+          "text": "肉",
+          "start": 8.26,
+          "end": 8.4,
+          "probability": 1.0
+        },
+        {
+          "text": "的",
+          "start": 8.4,
+          "end": 8.48,
+          "probability": 0.998046875
+        },
+        {
+          "text": "風",
+          "start": 8.48,
+          "end": 8.7,
+          "probability": 0.8994140625
+        },
+        {
+          "text": "味",
+          "start": 8.7,
+          "end": 8.94,
+          "probability": 0.99951171875
+        }
+      ]
+    },
+    {
+      "start": 8.94,
+      "end": 12.22,
+      "text": "羊肉 多放蘿蔔可解羊肉的山味",
+      "words": [
+        {
+          "text": "羊",
+          "start": 8.94,
+          "end": 9.36,
+          "probability": 0.965576171875
+        },
+        {
+          "text": "肉",
+          "start": 9.36,
+          "end": 9.74,
+          "probability": 1.0
+        },
+        {
+          "text": "多",
+          "start": 10.0,
+          "end": 10.12,
+          "probability": 0.99658203125
+        },
+        {
+          "text": "放",
+          "start": 10.12,
+          "end": 10.32,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "蘿",
+          "start": 10.32,
+          "end": 10.48,
+          "probability": 0.877685546875
+        },
+        {
+          "text": "蔔",
+          "start": 10.48,
+          "end": 10.76,
+          "probability": 0.994140625
+        },
+        {
+          "text": "可",
+          "start": 10.76,
+          "end": 11.0,
+          "probability": 0.93505859375
+        },
+        {
+          "text": "解",
+          "start": 11.0,
+          "end": 11.18,
+          "probability": 0.68505859375
+        },
+        {
+          "text": "羊",
+          "start": 11.18,
+          "end": 11.46,
+          "probability": 0.998779296875
+        },
+        {
+          "text": "肉",
+          "start": 11.46,
+          "end": 11.66,
+          "probability": 1.0
+        },
+        {
+          "text": "的",
+          "start": 11.66,
+          "end": 11.74,
+          "probability": 0.98974609375
+        },
+        {
+          "text": "山",
+          "start": 11.74,
+          "end": 12.0,
+          "probability": 0.402099609375
+        },
+        {
+          "text": "味",
+          "start": 12.0,
+          "end": 12.22,
+          "probability": 0.96630859375
+        }
+      ]
+    },
+    {
+      "start": 12.22,
+      "end": 15.58,
+      "text": "豬肉 多放八角增加豬肉的醇香",
+      "words": [
+        {
+          "text": "豬",
+          "start": 12.22,
+          "end": 12.68,
+          "probability": 0.977294921875
+        },
+        {
+          "text": "肉",
+          "start": 12.68,
+          "end": 13.0,
+          "probability": 1.0
+        },
+        {
+          "text": "多",
+          "start": 13.28,
+          "end": 13.38,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "放",
+          "start": 13.38,
+          "end": 13.58,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "八",
+          "start": 13.58,
+          "end": 13.8,
+          "probability": 0.919921875
+        },
+        {
+          "text": "角",
+          "start": 13.8,
+          "end": 14.02,
+          "probability": 0.98974609375
+        },
+        {
+          "text": "增",
+          "start": 14.02,
+          "end": 14.38,
+          "probability": 0.9794921875
+        },
+        {
+          "text": "加",
+          "start": 14.38,
+          "end": 14.54,
+          "probability": 1.0
+        },
+        {
+          "text": "豬",
+          "start": 14.54,
+          "end": 14.76,
+          "probability": 0.998291015625
+        },
+        {
+          "text": "肉",
+          "start": 14.76,
+          "end": 14.94,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "的",
+          "start": 14.94,
+          "end": 15.04,
+          "probability": 0.99462890625
+        },
+        {
+          "text": "醇",
+          "start": 15.04,
+          "end": 15.2,
+          "probability": 0.7802734375
+        },
+        {
+          "text": "香",
+          "start": 15.2,
+          "end": 15.58,
+          "probability": 0.99853515625
+        }
+      ]
+    },
+    {
+      "start": 15.58,
+      "end": 18.98,
+      "text": "土豆 多放醋使土豆口感更爽脆",
+      "words": [
+        {
+          "text": "土",
+          "start": 15.58,
+          "end": 16.06,
+          "probability": 0.88623046875
+        },
+        {
+          "text": "豆",
+          "start": 16.06,
+          "end": 16.36,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "多",
+          "start": 16.64,
+          "end": 16.8,
+          "probability": 0.99609375
+        },
+        {
+          "text": "放",
+          "start": 16.8,
+          "end": 17.0,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "醋",
+          "start": 17.0,
+          "end": 17.28,
+          "probability": 0.9951171875
+        },
+        {
+          "text": "使",
+          "start": 17.28,
+          "end": 17.5,
+          "probability": 0.61376953125
+        },
+        {
+          "text": "土",
+          "start": 17.5,
+          "end": 17.72,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "豆",
+          "start": 17.72,
+          "end": 17.86,
+          "probability": 1.0
+        },
+        {
+          "text": "口",
+          "start": 17.86,
+          "end": 18.04,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "感",
+          "start": 18.04,
+          "end": 18.22,
+          "probability": 0.9609375
+        },
+        {
+          "text": "更",
+          "start": 18.22,
+          "end": 18.4,
+          "probability": 0.9296875
+        },
+        {
+          "text": "爽",
+          "start": 18.4,
+          "end": 18.64,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "脆",
+          "start": 18.64,
+          "end": 18.98,
+          "probability": 0.999755859375
+        }
+      ]
+    },
+    {
+      "start": 18.98,
+      "end": 21.98,
+      "text": "豆腐 多放蔥提升豆腐的鮮香",
+      "words": [
+        {
+          "text": "豆",
+          "start": 18.98,
+          "end": 19.34,
+          "probability": 0.94677734375
+        },
+        {
+          "text": "腐",
+          "start": 19.34,
+          "end": 19.66,
+          "probability": 0.997802734375
+        },
+        {
+          "text": "多",
+          "start": 19.94,
+          "end": 20.06,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "放",
+          "start": 20.06,
+          "end": 20.28,
+          "probability": 1.0
+        },
+        {
+          "text": "蔥",
+          "start": 20.28,
+          "end": 20.54,
+          "probability": 0.979248046875
+        },
+        {
+          "text": "提",
+          "start": 20.54,
+          "end": 20.88,
+          "probability": 0.99072265625
+        },
+        {
+          "text": "升",
+          "start": 20.88,
+          "end": 21.02,
+          "probability": 0.74267578125
+        },
+        {
+          "text": "豆",
+          "start": 21.02,
+          "end": 21.22,
+          "probability": 0.998046875
+        },
+        {
+          "text": "腐",
+          "start": 21.22,
+          "end": 21.38,
+          "probability": 1.0
+        },
+        {
+          "text": "的",
+          "start": 21.38,
+          "end": 21.48,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "鮮",
+          "start": 21.48,
+          "end": 21.76,
+          "probability": 0.99658203125
+        },
+        {
+          "text": "香",
+          "start": 21.76,
+          "end": 21.98,
+          "probability": 0.99853515625
+        }
+      ]
+    }
+  ],
+  "cues": [
+    {
+      "start": 0.0,
+      "end": 2.78,
+      "text": "魚肉 多放薑可以去腥增香",
+      "words": [
+        {
+          "text": "魚",
+          "start": 0.0,
+          "end": 0.28,
+          "probability": 0.595703125
+        },
+        {
+          "text": "肉",
+          "start": 0.28,
+          "end": 0.6,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "多",
+          "start": 0.72,
+          "end": 0.86,
+          "probability": 0.97265625
+        },
+        {
+          "text": "放",
+          "start": 0.86,
+          "end": 1.1,
+          "probability": 0.82421875
+        },
+        {
+          "text": "薑",
+          "start": 1.1,
+          "end": 1.4,
+          "probability": 0.681640625
+        },
+        {
+          "text": "可以",
+          "start": 1.4,
+          "end": 1.74,
+          "probability": 0.7939453125
+        },
+        {
+          "text": "去",
+          "start": 1.74,
+          "end": 2.02,
+          "probability": 0.89111328125
+        },
+        {
+          "text": "腥",
+          "start": 2.02,
+          "end": 2.28,
+          "probability": 0.98974609375
+        },
+        {
+          "text": "增",
+          "start": 2.28,
+          "end": 2.5,
+          "probability": 0.998291015625
+        },
+        {
+          "text": "香",
+          "start": 2.5,
+          "end": 2.78,
+          "probability": 0.998046875
+        }
+      ]
+    },
+    {
+      "start": 2.78,
+      "end": 6.08,
+      "text": "牛肉 多放番茄讓牛肉更軟爛",
+      "words": [
+        {
+          "text": "牛",
+          "start": 2.78,
+          "end": 3.26,
+          "probability": 0.96826171875
+        },
+        {
+          "text": "肉",
+          "start": 3.26,
+          "end": 3.64,
+          "probability": 1.0
+        },
+        {
+          "text": "多",
+          "start": 3.88,
+          "end": 3.98,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "放",
+          "start": 3.98,
+          "end": 4.2,
+          "probability": 0.998046875
+        },
+        {
+          "text": "番",
+          "start": 4.2,
+          "end": 4.4,
+          "probability": 0.943359375
+        },
+        {
+          "text": "茄",
+          "start": 4.4,
+          "end": 4.7,
+          "probability": 0.998779296875
+        },
+        {
+          "text": "讓",
+          "start": 4.7,
+          "end": 5.0,
+          "probability": 0.759765625
+        },
+        {
+          "text": "牛",
+          "start": 5.0,
+          "end": 5.18,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "肉",
+          "start": 5.18,
+          "end": 5.34,
+          "probability": 1.0
+        },
+        {
+          "text": "更",
+          "start": 5.34,
+          "end": 5.5,
+          "probability": 0.994140625
+        },
+        {
+          "text": "軟",
+          "start": 5.5,
+          "end": 5.74,
+          "probability": 0.995849609375
+        },
+        {
+          "text": "爛",
+          "start": 5.74,
+          "end": 6.08,
+          "probability": 0.987548828125
+        }
+      ]
+    },
+    {
+      "start": 6.08,
+      "end": 8.94,
+      "text": "雞肉 多放蒜提熟雞肉的風味",
+      "words": [
+        {
+          "text": "雞",
+          "start": 6.08,
+          "end": 6.38,
+          "probability": 0.98193359375
+        },
+        {
+          "text": "肉",
+          "start": 6.38,
+          "end": 6.76,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "多",
+          "start": 7.02,
+          "end": 7.1,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "放",
+          "start": 7.1,
+          "end": 7.3,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "蒜",
+          "start": 7.3,
+          "end": 7.56,
+          "probability": 0.990966796875
+        },
+        {
+          "text": "提",
+          "start": 7.56,
+          "end": 7.86,
+          "probability": 0.93408203125
+        },
+        {
+          "text": "熟",
+          "start": 7.86,
+          "end": 8.04,
+          "probability": 0.635986328125
+        },
+        {
+          "text": "雞",
+          "start": 8.04,
+          "end": 8.26,
+          "probability": 0.980712890625
+        },
+        {
+          "text": "肉",
+          "start": 8.26,
+          "end": 8.4,
+          "probability": 1.0
+        },
+        {
+          "text": "的",
+          "start": 8.4,
+          "end": 8.48,
+          "probability": 0.998046875
+        },
+        {
+          "text": "風",
+          "start": 8.48,
+          "end": 8.7,
+          "probability": 0.8994140625
+        },
+        {
+          "text": "味",
+          "start": 8.7,
+          "end": 8.94,
+          "probability": 0.99951171875
+        }
+      ]
+    },
+    {
+      "start": 8.94,
+      "end": 12.22,
+      "text": "羊肉 多放蘿蔔可解羊肉的山味",
+      "words": [
+        {
+          "text": "羊",
+          "start": 8.94,
+          "end": 9.36,
+          "probability": 0.965576171875
+        },
+        {
+          "text": "肉",
+          "start": 9.36,
+          "end": 9.74,
+          "probability": 1.0
+        },
+        {
+          "text": "多",
+          "start": 10.0,
+          "end": 10.12,
+          "probability": 0.99658203125
+        },
+        {
+          "text": "放",
+          "start": 10.12,
+          "end": 10.32,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "蘿",
+          "start": 10.32,
+          "end": 10.48,
+          "probability": 0.877685546875
+        },
+        {
+          "text": "蔔",
+          "start": 10.48,
+          "end": 10.76,
+          "probability": 0.994140625
+        },
+        {
+          "text": "可",
+          "start": 10.76,
+          "end": 11.0,
+          "probability": 0.93505859375
+        },
+        {
+          "text": "解",
+          "start": 11.0,
+          "end": 11.18,
+          "probability": 0.68505859375
+        },
+        {
+          "text": "羊",
+          "start": 11.18,
+          "end": 11.46,
+          "probability": 0.998779296875
+        },
+        {
+          "text": "肉",
+          "start": 11.46,
+          "end": 11.66,
+          "probability": 1.0
+        },
+        {
+          "text": "的",
+          "start": 11.66,
+          "end": 11.74,
+          "probability": 0.98974609375
+        },
+        {
+          "text": "山",
+          "start": 11.74,
+          "end": 12.0,
+          "probability": 0.402099609375
+        },
+        {
+          "text": "味",
+          "start": 12.0,
+          "end": 12.22,
+          "probability": 0.96630859375
+        }
+      ]
+    },
+    {
+      "start": 12.22,
+      "end": 15.58,
+      "text": "豬肉 多放八角增加豬肉的醇香",
+      "words": [
+        {
+          "text": "豬",
+          "start": 12.22,
+          "end": 12.68,
+          "probability": 0.977294921875
+        },
+        {
+          "text": "肉",
+          "start": 12.68,
+          "end": 13.0,
+          "probability": 1.0
+        },
+        {
+          "text": "多",
+          "start": 13.28,
+          "end": 13.38,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "放",
+          "start": 13.38,
+          "end": 13.58,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "八",
+          "start": 13.58,
+          "end": 13.8,
+          "probability": 0.919921875
+        },
+        {
+          "text": "角",
+          "start": 13.8,
+          "end": 14.02,
+          "probability": 0.98974609375
+        },
+        {
+          "text": "增",
+          "start": 14.02,
+          "end": 14.38,
+          "probability": 0.9794921875
+        },
+        {
+          "text": "加",
+          "start": 14.38,
+          "end": 14.54,
+          "probability": 1.0
+        },
+        {
+          "text": "豬",
+          "start": 14.54,
+          "end": 14.76,
+          "probability": 0.998291015625
+        },
+        {
+          "text": "肉",
+          "start": 14.76,
+          "end": 14.94,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "的",
+          "start": 14.94,
+          "end": 15.04,
+          "probability": 0.99462890625
+        },
+        {
+          "text": "醇",
+          "start": 15.04,
+          "end": 15.2,
+          "probability": 0.7802734375
+        },
+        {
+          "text": "香",
+          "start": 15.2,
+          "end": 15.58,
+          "probability": 0.99853515625
+        }
+      ]
+    },
+    {
+      "start": 15.58,
+      "end": 18.98,
+      "text": "土豆 多放醋使土豆口感更爽脆",
+      "words": [
+        {
+          "text": "土",
+          "start": 15.58,
+          "end": 16.06,
+          "probability": 0.88623046875
+        },
+        {
+          "text": "豆",
+          "start": 16.06,
+          "end": 16.36,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "多",
+          "start": 16.64,
+          "end": 16.8,
+          "probability": 0.99609375
+        },
+        {
+          "text": "放",
+          "start": 16.8,
+          "end": 17.0,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "醋",
+          "start": 17.0,
+          "end": 17.28,
+          "probability": 0.9951171875
+        },
+        {
+          "text": "使",
+          "start": 17.28,
+          "end": 17.5,
+          "probability": 0.61376953125
+        },
+        {
+          "text": "土",
+          "start": 17.5,
+          "end": 17.72,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "豆",
+          "start": 17.72,
+          "end": 17.86,
+          "probability": 1.0
+        },
+        {
+          "text": "口",
+          "start": 17.86,
+          "end": 18.04,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "感",
+          "start": 18.04,
+          "end": 18.22,
+          "probability": 0.9609375
+        },
+        {
+          "text": "更",
+          "start": 18.22,
+          "end": 18.4,
+          "probability": 0.9296875
+        },
+        {
+          "text": "爽",
+          "start": 18.4,
+          "end": 18.64,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "脆",
+          "start": 18.64,
+          "end": 18.98,
+          "probability": 0.999755859375
+        }
+      ]
+    },
+    {
+      "start": 18.98,
+      "end": 21.98,
+      "text": "豆腐 多放蔥提升豆腐的鮮香",
+      "words": [
+        {
+          "text": "豆",
+          "start": 18.98,
+          "end": 19.34,
+          "probability": 0.94677734375
+        },
+        {
+          "text": "腐",
+          "start": 19.34,
+          "end": 19.66,
+          "probability": 0.997802734375
+        },
+        {
+          "text": "多",
+          "start": 19.94,
+          "end": 20.06,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "放",
+          "start": 20.06,
+          "end": 20.28,
+          "probability": 1.0
+        },
+        {
+          "text": "蔥",
+          "start": 20.28,
+          "end": 20.54,
+          "probability": 0.979248046875
+        },
+        {
+          "text": "提",
+          "start": 20.54,
+          "end": 20.88,
+          "probability": 0.99072265625
+        },
+        {
+          "text": "升",
+          "start": 20.88,
+          "end": 21.02,
+          "probability": 0.74267578125
+        },
+        {
+          "text": "豆",
+          "start": 21.02,
+          "end": 21.22,
+          "probability": 0.998046875
+        },
+        {
+          "text": "腐",
+          "start": 21.22,
+          "end": 21.38,
+          "probability": 1.0
+        },
+        {
+          "text": "的",
+          "start": 21.38,
+          "end": 21.48,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "鮮",
+          "start": 21.48,
+          "end": 21.76,
+          "probability": 0.99658203125
+        },
+        {
+          "text": "香",
+          "start": 21.76,
+          "end": 21.98,
+          "probability": 0.99853515625
+        }
+      ]
+    }
+  ]
+}

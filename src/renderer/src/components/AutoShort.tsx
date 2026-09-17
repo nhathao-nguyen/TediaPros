@@ -33,8 +33,15 @@ import {
   type VideoAdjustments,
   type TtsProvider,
   type EdgeVoiceDefinition,
-  type WhisperDevice
+  type WhisperDevice,
+  type AutoShortThumbnailMode,
+  type AutoShortThumbnailStyle,
+  type AutoShortThumbnailFontSize,
+  type AutoShortThumbnailProgress,
+  type AutoShortThumbnailResult,
+  type VideoTitleConfig
 } from '../../../shared/types'
+import { AutoShortThumbnailModal } from './AutoShortThumbnailModal'
 import { DEFAULT_VIDEO_SEO_OPTIONS } from '../../../shared/videoSeo'
 import { translationGuidanceError, type TranslationGuidance } from '../../../shared/translation'
 import { isAutomaticOcrProcessing, isSttnRemoval, normalizeAutoShortBlurMode, normalizeAutoShortOcrBlurProfile } from '../../../shared/autoShortOcrBlur'
@@ -52,6 +59,7 @@ import { useVideoTransport } from '../hooks/useVideoTransport'
 import { runLatestAutoShortMusicFolderRequest } from '../lib/latestAutoShortMusicFolderRequest'
 import { createAutoShortProgressCoalescer } from '../lib/autoshortProgressCoalescer'
 import { resumeCandidateIds, type BatchSnapshot } from '../../../shared/autoShortBatchJournal'
+import { providerWaitMessage, providerWaitNeedsAction } from '../../../shared/providerWaitPresentation'
 import {
   autoShortNormalizedRegionToPixels,
   clampAutoShortNormalizedRegion,
@@ -113,6 +121,23 @@ function formatBytes(bytes: number | undefined): string {
   return `${Math.ceil(bytes / 1_000_000)} MB`
 }
 
+function ProviderWaitCountdown({ nextEligibleAtUtc }: { nextEligibleAtUtc: string }) {
+  const [seconds, setSeconds] = useState(() => Math.max(0, Math.ceil((Date.parse(nextEligibleAtUtc) - Date.now()) / 1000)))
+  useEffect(() => {
+    const update = (): void => {
+      const remaining = Math.max(0, Math.ceil((Date.parse(nextEligibleAtUtc) - Date.now()) / 1000))
+      setSeconds(remaining)
+    }
+    update()
+    const timer = setInterval(update, 1000)
+    return () => clearInterval(timer)
+  }, [nextEligibleAtUtc])
+  if (seconds <= 0) return <span> · Sắp tiếp tục…</span>
+  const mins = Math.floor(seconds / 60)
+  const secs = seconds % 60
+  return <span> · Tiếp tục sau {mins > 0 ? `${mins}p ` : ''}{secs}s</span>
+}
+
 function normalizeTtsLanguageCode(code: string): string {
   const value = code.trim().toLowerCase().split(/[-_]/u)[0]
   const aliases: Record<string, string> = {
@@ -172,7 +197,7 @@ interface PreviewStageSize {
   height: number
 }
 
-type EditorTool = 'subtitle' | 'blur' | 'audio' | 'queue'
+type EditorTool = 'subtitle' | 'blur' | 'audio' | 'thumbnail' | 'queue'
 type FontLoadState = 'idle' | 'loading' | 'ready' | 'error'
 
 export default function AutoShort(): JSX.Element {
@@ -227,6 +252,38 @@ export default function AutoShort(): JSX.Element {
   const [previewStageSize, setPreviewStageSize] = useState<PreviewStageSize>({ width: 0, height: 0 })
   const [isStageFullscreen, setIsStageFullscreen] = useState(false)
   const [showCutPanel, setShowCutPanel] = useState(false)
+  const [showThumbnailModal, setShowThumbnailModal] = useState(false)
+  const [batchAutoThumbnail, setBatchAutoThumbnail] = usePersistedState('tblao.autoshort.batchThumbnail', true)
+  const [batchThumbnailMode, setBatchThumbnailMode] = usePersistedState<AutoShortThumbnailMode>(
+    'tblao.autoshort.batchThumbnailMode',
+    'first_frame'
+  )
+  const [thumbnailStyle, setThumbnailStyle] = usePersistedState<AutoShortThumbnailStyle>(
+    'tblao.autoshort.thumbnail.style',
+    'douyin_yellow'
+  )
+  const [thumbnailPosition, setThumbnailPosition] = usePersistedState<'ocr' | 'top' | 'center' | 'bottom'>(
+    'tblao.autoshort.thumbnail.position',
+    'ocr'
+  )
+  const [thumbnailFontSize, setThumbnailFontSize] = usePersistedState<AutoShortThumbnailFontSize>(
+    'tblao.autoshort.thumbnail.fontSize',
+    'large'
+  )
+  const [thumbnailAutoTitle, setThumbnailAutoTitle] = usePersistedState<boolean>(
+    'tblao.autoshort.thumbnail.autoTitle',
+    true
+  )
+  const [thumbnailCleanSubtitles, setThumbnailCleanSubtitles] = usePersistedState<boolean>(
+    'tblao.autoshort.thumbnail.cleanSubtitles',
+    true
+  )
+  const [thumbnailCustomTitle, setThumbnailCustomTitle] = useState<string>('')
+  const [thumbnailCapturedTime, setThumbnailCapturedTime] = useState<number>(0)
+  const [thumbnailGenerating, setThumbnailGenerating] = useState<boolean>(false)
+  const [thumbnailProgress, setThumbnailProgress] = useState<AutoShortThumbnailProgress | null>(null)
+  const [thumbnailResult, setThumbnailResult] = useState<AutoShortThumbnailResult | null>(null)
+  const [thumbnailError, setThumbnailError] = useState<string | null>(null)
 
   // Transport hook
   const transport = useVideoTransport(videoRef, previewPath)
@@ -236,6 +293,7 @@ export default function AutoShort(): JSX.Element {
   // OCR source region is independent from the output subtitle safe-area.
   const [ocrRegion, setOcrRegion] = useState<AutoShortNormalizedRegion | undefined>()
   const [fontId, setFontId] = usePersistedState('tblao.autoshort.fontId', 'auto')
+  const [fontWeight, setFontWeight] = usePersistedState('tblao.autoshort.fontWeight', 400)
   const [fonts, setFonts] = useState<BurnFontEntry[]>([])
   const [fontsLoaded, setFontsLoaded] = useState(false)
   const [previewFontFamily, setPreviewFontFamily] = useState('')
@@ -294,6 +352,7 @@ export default function AutoShort(): JSX.Element {
   const [hasStoredKey, setHasStoredKey] = useState(false)
   const [keyTesting, setKeyTesting] = useState(false)
   const [keyFeedback, setKeyFeedback] = useState<DichKeyStatus | null>(null)
+  const [retryingTitleId, setRetryingTitleId] = useState<string | null>(null)
   const [showKeyText, setShowKeyText] = useState(false)
 
   // Blur Regions
@@ -605,7 +664,9 @@ export default function AutoShort(): JSX.Element {
         const byId = new Map(current.map((item) => [item.id, item]))
         return result.snapshot!.items.sort((left, right) => left.ordinal - right.ordinal).map((record) => {
           const existing = byId.get(record.itemId)
-          if (existing) return { ...existing, temporalEdit: record.temporalEdit }
+          if (existing) return { ...existing, temporalEdit: record.temporalEdit, ...(record.providerWait ? {
+            status: 'waiting_provider' as const, providerWait: record.providerWait, currentStepMessage: providerWaitMessage(record.providerWait)
+          } : {}) }
           const fileName = record.inputPath.split(/[\\/]/u).pop() || record.inputPath
           return {
             id: record.itemId,
@@ -616,7 +677,8 @@ export default function AutoShort(): JSX.Element {
             percent: record.state === 'succeeded' ? 100 : 0,
             outputPath: record.outputReceipt?.path,
             error: record.failure?.message,
-            currentStepMessage: candidateIds.has(record.itemId) ? 'Có thể tiếp tục từ checkpoint.' : undefined
+            providerWait: record.providerWait,
+            currentStepMessage: record.providerWait ? providerWaitMessage(record.providerWait) : candidateIds.has(record.itemId) ? 'Có thể tiếp tục từ checkpoint.' : undefined
           }
         })
       })
@@ -633,9 +695,10 @@ export default function AutoShort(): JSX.Element {
         percent: event.itemStatus === 'done' ? 100 : Math.max(item.percent || 0, event.itemPercent),
         currentStepMessage: event.stageInfo?.waitReason ? `${event.itemMessage} (${event.stageInfo.waitReason})` : event.itemMessage,
         outputPath: event.outputPath || item.outputPath,
-        error: event.itemStatus === 'queued' ? undefined : event.error || item.error,
+        error: event.itemStatus === 'queued' || event.itemStatus === 'waiting_provider' ? undefined : event.error || item.error,
         translationAssessment: event.translationAssessment || item.translationAssessment,
-        translationIdentity: event.translationIdentity || item.translationIdentity
+        translationIdentity: event.translationIdentity || item.translationIdentity,
+        providerWait: event.providerWait || item.providerWait
       } : item))
       setOverallProgress({
         current: event.batchIndex,
@@ -671,15 +734,21 @@ export default function AutoShort(): JSX.Element {
       return
     }
     if (event.type !== 'batch-done') return
+    const providerWait = event.results.find((result) => result?.status === 'waiting_provider')?.providerWait
     setOverallProgress({
       current: event.totalCount,
       total: event.totalCount,
-      message: event.cancelledCount > 0
+      message: providerWait ? providerWaitMessage(providerWait) : event.cancelledCount > 0
         ? `Đã dừng: ${event.completedCount}/${event.totalCount} video hoàn tất`
         : `Đã xử lý ${event.completedCount}/${event.totalCount} video${event.needsReviewCount ? ` · ${event.needsReviewCount} cần kiểm tra` : ''}`
     })
     setIsRunning(false)
     setActiveJobId(null)
+    if (providerWait) {
+      void window.api.autoShortGetBatch(event.jobId).then((result) => {
+        if (result.ok && result.snapshot) setResumeSnapshot(result.snapshot)
+      }).catch(() => undefined)
+    }
   }, [])
 
   // Load font list
@@ -703,7 +772,7 @@ export default function AutoShort(): JSX.Element {
   // in localStorage; an explicitly persisted retry selection remains queued.
   useEffect(() => {
     const transient = new Set<AutoShortTaskItem['status']>([
-      'queued', 'extracting_sub', 'removing_subtitles', 'translating',
+      'queued', 'waiting_provider', 'extracting_sub', 'removing_subtitles', 'translating',
       'separating_audio', 'generating_tts', 'stitching_audio',
       'rendering_video'
     ])
@@ -825,7 +894,7 @@ export default function AutoShort(): JSX.Element {
         }
 
         const familyName = `tblao-font-${match.id}`
-        const face = new FontFace(familyName, preview.data)
+        const face = new FontFace(familyName, preview.data, { weight: '100 900' })
         await face.load()
         if (cancelled) return
         document.fonts.add(face)
@@ -1209,6 +1278,7 @@ export default function AutoShort(): JSX.Element {
       bgOpacity,
       subtitleDisplayStyle: (subtitleMethod !== 'ocr' && translateTarget === 'none' && !ttsEnabled) ? displayStyle : 'standard',
       subtitleFontSize: fontSize > 0 ? fontSize : undefined,
+      subtitleFontWeight: fontWeight,
       subtitleFontScale: fontSize > 0 ? fontSize / SUBTITLE_STYLE_REFERENCE_HEIGHT : undefined,
       highlightColor,
       subtitleHighlightPop: highlightPop,
@@ -1224,7 +1294,11 @@ export default function AutoShort(): JSX.Element {
       videoTitle: titleEnabled ? {
         provider: titleProvider,
         language: titleLanguage,
-        serverUrl: titleProvider === 'local' ? titleServerUrl : undefined,
+        serverUrl: titleProvider === 'local'
+          ? (titleServerUrl.trim() || undefined)
+          : titleProvider === 'gemini-gateway'
+            ? (titleServerUrl.trim() || geminiGatewayUrl.trim() || undefined)
+            : undefined,
         seo: titleSeoOptions
       } : undefined,
       ttsEnabled,
@@ -1245,11 +1319,21 @@ export default function AutoShort(): JSX.Element {
       originalAudioVolume,
       backgroundMusic: backgroundMusicConfig,
       executionPolicy: ttsProvider === 'edge-tts' ? { edgeTtsConcurrency } : undefined,
+      thumbnailConfig: batchAutoThumbnail ? {
+        enabled: true,
+        mode: batchThumbnailMode,
+        cleanSubtitles: thumbnailCleanSubtitles,
+        style: thumbnailStyle,
+        position: thumbnailPosition,
+        fontSize: thumbnailFontSize,
+        autoTitleFromAi: thumbnailAutoTitle
+      } : undefined,
       outputDir
     }
 
     const started = resume
-      ? await window.api.autoShortResume({ jobId: resume.jobId, expectedRevision: resume.revision, config })
+      ? await window.api.autoShortResume({ jobId: resume.jobId, expectedRevision: resume.revision, config,
+          retryUnknownOperation: resume.items.some((item) => item.providerWait && providerWaitNeedsAction(item.providerWait)) })
       : await window.api.autoShortStart({
         config,
         items: runnableTasks.map((task) => ({ id: task.id, filePath: task.filePath,
@@ -1296,6 +1380,51 @@ export default function AutoShort(): JSX.Element {
     } : item))
     setRetryPendingIdList((prev) => prev.includes(task.id) ? prev : [...prev, task.id])
     await startBatch(undefined, new Set([task.id]))
+  }
+
+  const retryTitle = async (task: AutoShortTaskItem): Promise<void> => {
+    if (retryingTitleId === task.id) return
+    setRetryingTitleId(task.id)
+    try {
+      const titleConfig: VideoTitleConfig = {
+        provider: titleProvider,
+        language: titleLanguage,
+        serverUrl: titleProvider === 'local'
+          ? (titleServerUrl.trim() || undefined)
+          : titleProvider === 'gemini-gateway'
+            ? (titleServerUrl.trim() || geminiGatewayUrl.trim() || undefined)
+            : undefined,
+        seo: titleSeoOptions
+      }
+      const result = await window.api.autoShortRetryTitle({
+        itemId: task.id,
+        outputPath: task.outputPath,
+        artifactDir: task.artifactDir,
+        config: titleConfig
+      })
+      if (result.ok) {
+        setTasks((prev) => prev.map((item) => item.id === task.id ? {
+          ...item,
+          title: result.title,
+          titlePath: result.titlePath,
+          seoMetadata: result.seoMetadata,
+          titleError: undefined,
+          currentStepMessage: 'Đã xuất video và tieude.txt'
+        } : item))
+      } else {
+        setTasks((prev) => prev.map((item) => item.id === task.id ? {
+          ...item,
+          titleError: result.error || 'Thử lại tạo tiêu đề thất bại.'
+        } : item))
+      }
+    } catch (error) {
+      setTasks((prev) => prev.map((item) => item.id === task.id ? {
+        ...item,
+        titleError: error instanceof Error ? error.message : 'Thử lại tạo tiêu đề thất bại.'
+      } : item))
+    } finally {
+      setRetryingTitleId(null)
+    }
   }
 
   const chooseOutputDir = async (): Promise<void> => {
@@ -1385,6 +1514,58 @@ export default function AutoShort(): JSX.Element {
     setDependencyError('Đã yêu cầu hủy. Lượt tải đang chạy sẽ dừng ở điểm an toàn gần nhất.')
   }
 
+  useEffect(() => {
+    return window.api.onAutoShortThumbnailProgress?.((p) => {
+      setThumbnailProgress(p)
+    })
+  }, [])
+
+  const handleManualCreateThumbnail = async (): Promise<void> => {
+    if (!selectedTask?.filePath) {
+      setThumbnailError('Chưa chọn video để tạo ảnh bìa.')
+      return
+    }
+    if (!outputDir) {
+      setThumbnailError('Chưa chọn thư mục lưu (ở thanh dưới cùng). Hãy chọn thư mục trước.')
+      return
+    }
+
+    setThumbnailGenerating(true)
+    setThumbnailError(null)
+    setThumbnailResult(null)
+    setThumbnailProgress({ percent: 5, message: 'Khởi tạo tiến trình tạo ảnh bìa…' })
+
+    try {
+      const activeTitle = thumbnailCustomTitle.trim() || baseName(selectedTask.filePath).replace(/\.[^/.]+$/, '')
+      const res = await window.api.autoShortCreateThumbnail({
+        videoPath: selectedTask.filePath,
+        mode: batchThumbnailMode,
+        timestampSeconds: batchThumbnailMode === 'current_frame' ? thumbnailCapturedTime : 0,
+        cleanSubtitles: thumbnailCleanSubtitles,
+        portraitBlur,
+        videoAdjustments: normalizedVideoAdjustments,
+        ocrRegion: { x0: 0, y0: 0, x1: 1, y1: 1 },
+        outputDir,
+        titleOverlay: activeTitle ? {
+          text: activeTitle,
+          style: thumbnailStyle,
+          position: thumbnailPosition,
+          fontSize: thumbnailFontSize
+        } : undefined
+      })
+
+      if (!res.ok) {
+        setThumbnailError(res.error || 'Tạo ảnh bìa thất bại.')
+      } else {
+        setThumbnailResult(res)
+      }
+    } catch (err) {
+      setThumbnailError(err instanceof Error ? err.message : 'Có lỗi xảy ra khi tạo ảnh bìa.')
+    } finally {
+      setThumbnailGenerating(false)
+    }
+  }
+
   return (
     <div className="video-editor autoshort-page" style={{ gridTemplateRows: 'minmax(0, 1fr) auto' }}>
       {/* KHU VỰC CHÍNH: 2 CỘT (TRÁI: BẢN XEM TRƯỚC, PHẢI: INSPECTOR) */}
@@ -1414,6 +1595,15 @@ export default function AutoShort(): JSX.Element {
               <PortraitBlurButton enabled={portraitBlur} onChange={setPortraitBlur} disabled={isRunning} />
               <VideoAdjustmentsControl value={normalizedVideoAdjustments} onChange={setVideoAdjustments} disabled={isRunning} />
               <AutoShortOverlayControl value={overlayState.value} onChange={setOverlaySettings} disabled={isRunning} configError={overlayState.error} />
+              <button
+                className="btn sm ghost"
+                type="button"
+                disabled={!selectedTask || isRunning}
+                onClick={() => setShowThumbnailModal(true)}
+                title="Tạo ảnh bìa (thumbnail) cho video short"
+              >
+                🖼️ Thumbnail
+              </button>
               {tasks.length > 0 && (
                 <select
                   value={selectedTask?.id || ''}
@@ -1537,6 +1727,7 @@ export default function AutoShort(): JSX.Element {
                     subtitleFontSize={fontSize > 0
                       ? videoPixelsFromReferenceHeight(fontSize, videoH, SUBTITLE_STYLE_REFERENCE_HEIGHT)
                       : undefined}
+                    subtitleFontWeight={fontWeight}
                     scaleSubtitleToVideo={portraitBlur}
                     highlightColor={highlightColor}
                     highlightPop={highlightPop}
@@ -1549,6 +1740,82 @@ export default function AutoShort(): JSX.Element {
                     showSafeArea={showSafeArea}
                     previewZoom={normalizedVideoAdjustments.zoom}
                   />
+                )}
+                {tool === 'thumbnail' && (
+                  <div
+                    className="autoshort-thumbnail-live-preview"
+                    style={{
+                      position: 'absolute',
+                      left: '50%',
+                      width: '88%',
+                      pointerEvents: 'none',
+                      textAlign: 'center',
+                      zIndex: 45,
+                      textTransform: 'uppercase',
+                      fontFamily: previewFontFamily || '"Noto Sans", Roboto, sans-serif',
+                      fontSize:
+                        thumbnailFontSize === 'huge'
+                          ? 'clamp(28px, 6.0vw, 48px)'
+                          : thumbnailFontSize === 'standard'
+                          ? 'clamp(20px, 4.2vw, 34px)'
+                          : 'clamp(24px, 5.2vw, 42px)',
+                      lineHeight: 1.2,
+                      ...(thumbnailPosition === 'ocr'
+                        ? thumbnailResult?.ok && thumbnailResult.detectedOcrRegion
+                          ? {
+                              top: `${Math.round(
+                                (((thumbnailResult.detectedOcrRegion.y0 + thumbnailResult.detectedOcrRegion.y1) / 2) /
+                                  (portraitBlur ? 1920 : (videoH || 1920))) *
+                                  100
+                              )}%`,
+                              transform: 'translate(-50%, -50%)'
+                            }
+                          : { top: '22%', transform: 'translateX(-50%)' }
+                        : thumbnailPosition === 'top'
+                        ? { top: '18%', transform: 'translateX(-50%)' }
+                        : thumbnailPosition === 'center'
+                        ? { top: '50%', transform: 'translate(-50%, -50%)' }
+                        : { bottom: '16%', transform: 'translateX(-50%)' }),
+                      ...(thumbnailStyle === 'douyin_yellow'
+                        ? {
+                            color: '#FFF500',
+                            fontWeight: 900,
+                            letterSpacing: '3px',
+                            WebkitTextStroke: '3px #A80000',
+                            textShadow:
+                              '0 0 4px #A80000, 3px 3px 0 #A80000, -3px -3px 0 #A80000, 3px -3px 0 #A80000, -3px 3px 0 #A80000, 5px 5px 8px rgba(0,0,0,0.9)'
+                          }
+                        : thumbnailStyle === 'douyin_black'
+                        ? {
+                            color: '#FFF500',
+                            fontWeight: 900,
+                            letterSpacing: '3px',
+                            WebkitTextStroke: '3.5px #000000',
+                            textShadow:
+                              '0 0 4px #000000, 3px 3px 0 #000000, -3px -3px 0 #000000, 3px -3px 0 #000000, -3px 3px 0 #000000, 5px 5px 8px rgba(0,0,0,0.9)'
+                          }
+                        : thumbnailStyle === 'sticker_red'
+                        ? {
+                            color: '#FFFFFF',
+                            fontWeight: 900,
+                            letterSpacing: '2px',
+                            WebkitTextStroke: '3px #E01515',
+                            textShadow:
+                              '0 0 3px #E01515, 3px 3px 0 #E01515, -3px -3px 0 #E01515, 3px -3px 0 #E01515, -3px 3px 0 #E01515, 4px 4px 8px rgba(0,0,0,0.8)'
+                          }
+                        : {
+                            color: '#FFFFFF',
+                            fontWeight: 900,
+                            letterSpacing: '2px',
+                            WebkitTextStroke: '3px #000000',
+                            textShadow:
+                              '0 0 3px #000000, 3px 3px 0 #000000, -3px -3px 0 #000000, 3px -3px 0 #000000, -3px 3px 0 #000000, 4px 4px 8px rgba(0,0,0,0.85)'
+                          })
+                    }}
+                  >
+                    {thumbnailCustomTitle.trim() ||
+                      (selectedTask?.filePath ? baseName(selectedTask.filePath).replace(/\.[^/.]+$/, '') : 'TIÊU ĐỀ VIDEO XU HƯỚNG')}
+                  </div>
                 )}
               </PortraitFramePreview>
             ) : (
@@ -1631,6 +1898,20 @@ export default function AutoShort(): JSX.Element {
               >
                 <span>{isStageFullscreen ? '×' : '⛶'}</span>
               </button>
+              <button
+                type="button"
+                className={`cue-transport-button ${tool === 'thumbnail' ? 'active' : ''}`}
+                onClick={() => {
+                  setTool('thumbnail')
+                  setBatchThumbnailMode('current_frame')
+                  setThumbnailCapturedTime(currentTime)
+                }}
+                title="Chuyển sang tab Ảnh bìa & lấy khung hình này"
+                disabled={!selectedTask || isRunning}
+                style={{ fontSize: 13 }}
+              >
+                <span>📸</span>
+              </button>
             </div>
           </div>
 
@@ -1655,7 +1936,7 @@ export default function AutoShort(): JSX.Element {
         </section>
 
         {/* ========================================================================= */}
-        {/* CỘT PHẢI: CẤU HÌNH BIÊN TẬP (INSPECTOR: PHỤ ĐỀ / LÀM MỜ / LỒNG TIẾNG / HÀNG ĐỢI) */}
+        {/* CỘT PHẢI: CẤU HÌNH BIÊN TẬP (INSPECTOR: PHỤ ĐỀ / LÀM MỜ / LỒNG TIẾNG / ẢNH BÌA / HÀNG ĐỢI) */}
         {/* ========================================================================= */}
         <aside className="editor-inspector" style={{ display: 'flex', flexDirection: 'column' }}>
           {/* Tab Bar chuyển đổi công cụ */}
@@ -1683,6 +1964,17 @@ export default function AutoShort(): JSX.Element {
               type="button"
             >
               Lồng tiếng
+            </button>
+            <button
+              className={tool === 'thumbnail' ? 'active' : ''}
+              onClick={() => {
+                setTool('thumbnail')
+                setThumbnailCapturedTime(currentTime)
+              }}
+              role="tab"
+              type="button"
+            >
+              Ảnh bìa 🖼️
             </button>
             <button
               className={tool === 'queue' ? 'active' : ''}
@@ -1806,7 +2098,7 @@ export default function AutoShort(): JSX.Element {
                           onChange={(e) => setTranslateProvider(e.target.value as DichProvider)}
                         >
                           <option value="local">AI nội bộ (TTS-Server)</option>
-                          <option value="gemini-gateway">Gemini 3.1 Pro (CreateMediaTool)</option>
+                          <option value="gemini-gateway">Gemini Gateway tự động (CreateMediaTool)</option>
                           <option value="gemini">Google Gemini AI</option>
                           <option value="openai">OpenAI (ChatGPT)</option>
                         </select>
@@ -1843,19 +2135,19 @@ export default function AutoShort(): JSX.Element {
                       <div className="autoshort-key-card">
                         {translateProvider === 'gemini' ? <GeminiKeys disabled={isRunning} onChanged={setHasStoredKey} /> : translateProvider === 'gemini-gateway' ? <>
                           <div className="autoshort-key-header">
-                            <span className="muted small">Model cố định: Gemini 3.1 Pro (<code>gemini-advanced</code>)</span>
+                            <span className="muted small">Model: tự động theo phản hồi thực tế của Google</span>
                             <span className="autoshort-key-badge saved">2 lượt / video</span>
                           </div>
                           <button type="button" className="btn primary" disabled={keyTesting || isRunning}
-                            onClick={() => void handleSaveAndTestKey(true)}>
-                            {keyTesting ? 'Đang kiểm tra…' : 'Kiểm tra gateway và model'}
+                            onClick={() => void handleSaveAndTestKey()}>
+                            {keyTesting ? 'Đang kiểm tra…' : 'Kiểm tra gateway'}
                           </button>
                           {keyFeedback && (
                             <div className={`autoshort-key-feedback ${keyFeedback.ok ? 'success' : 'error'}`}>
                               <div>{keyFeedback.ok ? '✓ ' : '✕ '}{keyFeedback.message}</div>
                               {keyFeedback.gatewayVerification?.verifiedAtUtc && (
                                 <div style={{ fontSize: '11px', marginTop: '4px', opacity: 0.85 }}>
-                                  Đã xác minh: {new Date(keyFeedback.gatewayVerification.verifiedAtUtc).toLocaleTimeString()} ({keyFeedback.gatewayVerification.observedModel || 'Gemini 3.1 Pro'})
+                                  Model đã quan sát: {keyFeedback.gatewayVerification.observedModel || 'không xác định'} · {new Date(keyFeedback.gatewayVerification.verifiedAtUtc).toLocaleTimeString()}
                                 </div>
                               )}
                             </div>
@@ -2122,6 +2414,19 @@ export default function AutoShort(): JSX.Element {
                     <span className="font-preview-dot" />
                     <span>{fontMessage || 'Chọn font để xem trực tiếp trên video.'}</span>
                   </div>
+
+                  <label className="field editor-field">
+                    <span>Độ đậm chữ</span>
+                    <select value={fontWeight} onChange={(e) => setFontWeight(Number(e.target.value))}>
+                      <option value={300}>300 · Mảnh (Light)</option>
+                      <option value={400}>400 · Thường (Regular)</option>
+                      <option value={500}>500 · Vừa (Medium)</option>
+                      <option value={600}>600 · Bán đậm (Semi-Bold)</option>
+                      <option value={700}>700 · Đậm (Bold)</option>
+                      <option value={800}>800 · Rất đậm (Extra Bold)</option>
+                      <option value={900}>900 · Cực đậm (Black)</option>
+                    </select>
+                  </label>
 
                   <label className="field editor-field">
                     <span>Cỡ chữ · {fontSize === 0 ? 'Tự động theo khung' : `${fontSize}px tại 1080×1920`}</span>
@@ -2818,7 +3123,378 @@ export default function AutoShort(): JSX.Element {
               )}
 
               {/* ------------------------------------------------------------- */}
-              {/* TAB 4: HÀNG ĐỢI XỬ LÝ (QUEUE)                                 */}
+              {/* TAB 4: ẢNH BÌA (THUMBNAIL)                                    */}
+              {/* ------------------------------------------------------------- */}
+              {tool === 'thumbnail' && (
+                <>
+                  <div className="editor-section-head">
+                    <div>
+                      <strong>Ảnh bìa video (Thumbnail)</strong>
+                      <small>Cắt khung hình đẹp, làm sạch chữ gốc và ghép tiêu đề Shorts/Douyin viral.</small>
+                    </div>
+                  </div>
+
+                  {/* 1. Tự động hóa trong hàng đợi */}
+                  <div className="subtitle-layout-card" style={{ padding: '12px 14px', borderRadius: 8, background: 'var(--panel-bg-alt, rgba(255,255,255,0.03))' }}>
+                    <div className="subtitle-layout-head" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <div>
+                        <strong>Tự động tạo ảnh bìa hàng loạt</strong>
+                        <small style={{ display: 'block', color: 'var(--muted)', marginTop: 2 }}>
+                          Tự động xuất <code>[tên_video]_thumb.jpg</code> ngay cạnh video sau khi render xong.
+                        </small>
+                      </div>
+                      <label className="editor-switch">
+                        <input
+                          type="checkbox"
+                          checked={batchAutoThumbnail}
+                          onChange={(e) => setBatchAutoThumbnail(e.target.checked)}
+                        />
+                        <span>{batchAutoThumbnail ? 'Bật' : 'Tắt'}</span>
+                      </label>
+                    </div>
+
+                    {batchAutoThumbnail && (
+                      <div style={{ marginTop: 10, paddingTop: 10, borderTop: '1px solid var(--border)' }}>
+                        <label className="gk-check editor-check" style={{ fontSize: '0.85rem' }}>
+                          <input
+                            type="checkbox"
+                            checked={thumbnailAutoTitle}
+                            onChange={(e) => setThumbnailAutoTitle(e.target.checked)}
+                          />
+                          <span>Tự động lấy text thumbnail AI (ưu tiên thumbnailText, fallback dòng 1 tieude.txt)</span>
+                        </label>
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="editor-section-divider" style={{ margin: '14px 0', borderBottom: '1px solid var(--border)' }} />
+
+                  {/* 2. Chọn khung hình */}
+                  <div className="editor-section-head">
+                    <div>
+                      <strong>Khung hình làm ảnh bìa</strong>
+                      <small>Chọn thời điểm cắt ảnh từ video gốc.</small>
+                    </div>
+                  </div>
+
+                  <div className="radio-pill-group" style={{ display: 'flex', gap: 8, marginTop: 4 }}>
+                    <label className={`radio-pill ${batchThumbnailMode === 'first_frame' ? 'active' : ''}`} style={{ flex: 1, textAlign: 'center' }}>
+                      <input
+                        type="radio"
+                        name="thumbnailMode"
+                        value="first_frame"
+                        checked={batchThumbnailMode === 'first_frame'}
+                        onChange={() => setBatchThumbnailMode('first_frame')}
+                      />
+                      <span>Đầu video (00:00)</span>
+                    </label>
+                    <label className={`radio-pill ${batchThumbnailMode === 'current_frame' ? 'active' : ''}`} style={{ flex: 1, textAlign: 'center' }}>
+                      <input
+                        type="radio"
+                        name="thumbnailMode"
+                        value="current_frame"
+                        checked={batchThumbnailMode === 'current_frame'}
+                        onChange={() => {
+                          setBatchThumbnailMode('current_frame')
+                          setThumbnailCapturedTime(currentTime)
+                        }}
+                      />
+                      <span>Dừng player ({formatTime(thumbnailCapturedTime)})</span>
+                    </label>
+                  </div>
+
+                  {batchThumbnailMode === 'current_frame' && (
+                    <div style={{ marginTop: 8, display: 'flex', alignItems: 'center', gap: 10 }}>
+                      <button
+                        type="button"
+                        className="btn sm ghost"
+                        onClick={() => setThumbnailCapturedTime(currentTime)}
+                        style={{ flex: 1 }}
+                      >
+                        ⏱️ Lấy thời điểm player hiện tại ({formatTime(currentTime)})
+                      </button>
+                    </div>
+                  )}
+
+                  <div className="editor-section-divider" style={{ margin: '14px 0', borderBottom: '1px solid var(--border)' }} />
+
+                  {/* 3. Xóa chữ gốc bằng STTN */}
+                  <div className="subtitle-layout-card" style={{ padding: '12px 14px', borderRadius: 8, background: 'var(--panel-bg-alt, rgba(255,255,255,0.03))' }}>
+                    <div className="subtitle-layout-head" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <div>
+                        <strong>Xóa sạch chữ tiếng Trung gốc bằng AI (STTN)</strong>
+                        <small style={{ display: 'block', color: 'var(--muted)', marginTop: 2 }}>
+                          Quét toàn bộ khung hình và phục hồi nền sạch sẽ, không để sót chữ tiêu đề cũ.
+                        </small>
+                      </div>
+                      <label className="editor-switch">
+                        <input
+                          type="checkbox"
+                          checked={thumbnailCleanSubtitles}
+                          onChange={(e) => setThumbnailCleanSubtitles(e.target.checked)}
+                        />
+                        <span>{thumbnailCleanSubtitles ? 'Bật' : 'Tắt'}</span>
+                      </label>
+                    </div>
+                  </div>
+
+                  <div className="editor-section-divider" style={{ margin: '14px 0', borderBottom: '1px solid var(--border)' }} />
+
+                  {/* 4. Ghép tiêu đề nổi bật */}
+                  <div className="editor-section-head">
+                    <div>
+                      <strong>Ghép tiêu đề nổi bật (Douyin Viral)</strong>
+                      <small>Chữ lớn, viền đậm 3D sắc nét như video xu hướng.</small>
+                    </div>
+                  </div>
+
+                  <label className="field editor-field">
+                    <span>Nội dung tiêu đề xem trước / tạo ngay</span>
+                    <input
+                      type="text"
+                      value={thumbnailCustomTitle}
+                      onChange={(e) => setThumbnailCustomTitle(e.target.value)}
+                      placeholder={selectedTask?.filePath ? baseName(selectedTask.filePath).replace(/\.[^/.]+$/, '') : 'Nhập tiêu đề hoặc để trống lấy tên video…'}
+                    />
+                    <small className="muted">Khi chạy hàng loạt tự động, hệ thống sẽ ưu tiên dùng tiêu đề tiếng Việt do AI Gemini sinh ra.</small>
+                  </label>
+
+                  <div style={{ marginTop: 8 }}>
+                    <span style={{ fontSize: '0.82rem', fontWeight: 600, display: 'block', marginBottom: 6 }}>Phong cách chữ (Style Preset)</span>
+                    <div className="radio-pill-group" style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 8 }}>
+                      <div
+                        onClick={() => setThumbnailStyle('douyin_yellow')}
+                        style={{
+                          border: thumbnailStyle === 'douyin_yellow' ? '2px solid #FFF500' : '1px solid var(--border)',
+                          borderRadius: 8,
+                          padding: '10px 8px',
+                          textAlign: 'center',
+                          cursor: 'pointer',
+                          background: thumbnailStyle === 'douyin_yellow' ? 'rgba(255, 245, 0, 0.12)' : 'transparent',
+                          transition: 'all 0.15s ease'
+                        }}
+                      >
+                        <div style={{ fontSize: '1.05rem', fontWeight: 900, color: '#FFF500', textShadow: '1.5px 1.5px 0 #A80000, -1.5px -1.5px 0 #A80000, 1.5px -1.5px 0 #A80000, -1.5px 1.5px 0 #A80000' }}>
+                          VÀNG ĐỎ
+                        </div>
+                        <small style={{ fontSize: '0.72rem', color: 'var(--muted)', display: 'block', marginTop: 4 }}>
+                          Douyin 3D
+                        </small>
+                      </div>
+
+                      <div
+                        onClick={() => setThumbnailStyle('douyin_black')}
+                        style={{
+                          border: thumbnailStyle === 'douyin_black' ? '2px solid #FFF500' : '1px solid var(--border)',
+                          borderRadius: 8,
+                          padding: '10px 8px',
+                          textAlign: 'center',
+                          cursor: 'pointer',
+                          background: thumbnailStyle === 'douyin_black' ? 'rgba(255, 245, 0, 0.12)' : 'transparent',
+                          transition: 'all 0.15s ease'
+                        }}
+                      >
+                        <div style={{ fontSize: '1.05rem', fontWeight: 900, color: '#FFF500', textShadow: '1.5px 1.5px 0 #000000, -1.5px -1.5px 0 #000000, 1.5px -1.5px 0 #000000, -1.5px 1.5px 0 #000000' }}>
+                          VÀNG ĐEN
+                        </div>
+                        <small style={{ fontSize: '0.72rem', color: 'var(--muted)', display: 'block', marginTop: 4 }}>
+                          Siêu tương phản
+                        </small>
+                      </div>
+
+                      <div
+                        onClick={() => setThumbnailStyle('sticker_red')}
+                        style={{
+                          border: thumbnailStyle === 'sticker_red' ? '2px solid #E01515' : '1px solid var(--border)',
+                          borderRadius: 8,
+                          padding: '10px 8px',
+                          textAlign: 'center',
+                          cursor: 'pointer',
+                          background: thumbnailStyle === 'sticker_red' ? 'rgba(224, 21, 21, 0.12)' : 'transparent',
+                          transition: 'all 0.15s ease'
+                        }}
+                      >
+                        <div style={{ fontSize: '1.05rem', fontWeight: 900, color: '#FFFFFF', textShadow: '1.5px 1.5px 0 #E01515, -1.5px -1.5px 0 #E01515, 1.5px -1.5px 0 #E01515, -1.5px 1.5px 0 #E01515' }}>
+                          NHÃN ĐỎ
+                        </div>
+                        <small style={{ fontSize: '0.72rem', color: 'var(--muted)', display: 'block', marginTop: 4 }}>
+                          Sticker nổi
+                        </small>
+                      </div>
+
+                      <div
+                        onClick={() => setThumbnailStyle('tiktok_white')}
+                        style={{
+                          border: thumbnailStyle === 'tiktok_white' ? '2px solid #ffffff' : '1px solid var(--border)',
+                          borderRadius: 8,
+                          padding: '10px 8px',
+                          textAlign: 'center',
+                          cursor: 'pointer',
+                          background: thumbnailStyle === 'tiktok_white' ? 'rgba(255, 255, 255, 0.08)' : 'transparent',
+                          transition: 'all 0.15s ease'
+                        }}
+                      >
+                        <div style={{ fontSize: '1.05rem', fontWeight: 900, color: '#FFFFFF', textShadow: '1.5px 1.5px 0 #000000, -1.5px -1.5px 0 #000000, 1.5px -1.5px 0 #000000, -1.5px 1.5px 0 #000000' }}>
+                          TRẮNG ĐEN
+                        </div>
+                        <small style={{ fontSize: '0.72rem', color: 'var(--muted)', display: 'block', marginTop: 4 }}>
+                          TikTok chuẩn
+                        </small>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div style={{ marginTop: 12 }}>
+                    <span style={{ fontSize: '0.82rem', fontWeight: 600, display: 'block', marginBottom: 6 }}>Cỡ chữ tiêu đề (Font Size)</span>
+                    <div className="radio-pill-group" style={{ display: 'flex', gap: 6 }}>
+                      <label className={`radio-pill ${thumbnailFontSize === 'standard' ? 'active' : ''}`} style={{ flex: 1, textAlign: 'center' }}>
+                        <input
+                          type="radio"
+                          name="thumbnailFontSize"
+                          value="standard"
+                          checked={thumbnailFontSize === 'standard'}
+                          onChange={() => setThumbnailFontSize('standard')}
+                        />
+                        <span>Vừa (100%)</span>
+                      </label>
+                      <label className={`radio-pill ${thumbnailFontSize === 'large' ? 'active' : ''}`} style={{ flex: 1, textAlign: 'center' }}>
+                        <input
+                          type="radio"
+                          name="thumbnailFontSize"
+                          value="large"
+                          checked={thumbnailFontSize === 'large'}
+                          onChange={() => setThumbnailFontSize('large')}
+                        />
+                        <span>🔥 To nổi bật</span>
+                      </label>
+                      <label className={`radio-pill ${thumbnailFontSize === 'huge' ? 'active' : ''}`} style={{ flex: 1, textAlign: 'center' }}>
+                        <input
+                          type="radio"
+                          name="thumbnailFontSize"
+                          value="huge"
+                          checked={thumbnailFontSize === 'huge'}
+                          onChange={() => setThumbnailFontSize('huge')}
+                        />
+                        <span>⚡ Cực đại</span>
+                      </label>
+                    </div>
+                  </div>
+
+                  <div style={{ marginTop: 12 }}>
+                    <span style={{ fontSize: '0.82rem', fontWeight: 600, display: 'block', marginBottom: 6 }}>Vị trí đặt tiêu đề</span>
+                    <div className="radio-pill-group" style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 6 }}>
+                      <label className={`radio-pill ${thumbnailPosition === 'ocr' ? 'active' : ''}`} style={{ textAlign: 'center' }}>
+                        <input
+                          type="radio"
+                          name="thumbnailPos"
+                          value="ocr"
+                          checked={thumbnailPosition === 'ocr'}
+                          onChange={() => setThumbnailPosition('ocr')}
+                        />
+                        <span>🎯 Chữ đã xóa</span>
+                      </label>
+                      <label className={`radio-pill ${thumbnailPosition === 'top' ? 'active' : ''}`} style={{ textAlign: 'center' }}>
+                        <input
+                          type="radio"
+                          name="thumbnailPos"
+                          value="top"
+                          checked={thumbnailPosition === 'top'}
+                          onChange={() => setThumbnailPosition('top')}
+                        />
+                        <span>Phía trên (20%)</span>
+                      </label>
+                      <label className={`radio-pill ${thumbnailPosition === 'center' ? 'active' : ''}`} style={{ textAlign: 'center' }}>
+                        <input
+                          type="radio"
+                          name="thumbnailPos"
+                          value="center"
+                          checked={thumbnailPosition === 'center'}
+                          onChange={() => setThumbnailPosition('center')}
+                        />
+                        <span>Ở giữa (50%)</span>
+                      </label>
+                      <label className={`radio-pill ${thumbnailPosition === 'bottom' ? 'active' : ''}`} style={{ textAlign: 'center' }}>
+                        <input
+                          type="radio"
+                          name="thumbnailPos"
+                          value="bottom"
+                          checked={thumbnailPosition === 'bottom'}
+                          onChange={() => setThumbnailPosition('bottom')}
+                        />
+                        <span>Phía dưới (80%)</span>
+                      </label>
+                    </div>
+                  </div>
+
+                  <div className="editor-section-divider" style={{ margin: '16px 0 12px', borderBottom: '1px solid var(--border)' }} />
+
+                  {/* 5. Nút bấm xuất ảnh bìa ngay */}
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                    <button
+                      type="button"
+                      className="btn primary"
+                      style={{ padding: '10px 14px', fontWeight: 600, fontSize: '0.92rem' }}
+                      disabled={!selectedTask || thumbnailGenerating}
+                      onClick={() => void handleManualCreateThumbnail()}
+                    >
+                      {thumbnailGenerating ? '⏳ Đang tạo ảnh bìa…' : '📸 Xuất ảnh bìa video này ngay'}
+                    </button>
+
+                    {thumbnailProgress && thumbnailGenerating && (
+                      <div style={{ marginTop: 4 }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.78rem', color: 'var(--muted)', marginBottom: 4 }}>
+                          <span>{thumbnailProgress.message}</span>
+                          <span>{thumbnailProgress.percent}%</span>
+                        </div>
+                        <div style={{ width: '100%', height: 4, background: 'var(--border)', borderRadius: 2, overflow: 'hidden' }}>
+                          <div
+                            style={{
+                              width: `${thumbnailProgress.percent}%`,
+                              height: '100%',
+                              background: 'var(--primary)',
+                              transition: 'width 0.2s ease'
+                            }}
+                          />
+                        </div>
+                      </div>
+                    )}
+
+                    {thumbnailError && (
+                      <div style={{ color: 'var(--danger)', fontSize: '0.82rem', marginTop: 4, padding: '6px 10px', background: 'rgba(239, 68, 68, 0.1)', borderRadius: 6 }}>
+                        ⚠️ {thumbnailError}
+                      </div>
+                    )}
+
+                    {thumbnailResult && thumbnailResult.ok && (
+                      <div style={{ marginTop: 8, padding: '10px', background: 'rgba(16, 185, 129, 0.08)', borderRadius: 8, border: '1px solid rgba(16, 185, 129, 0.25)' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
+                          <span style={{ fontSize: '0.85rem', color: 'var(--success, #10b981)', fontWeight: 600 }}>
+                            ✓ Đã xuất ảnh bìa thành công!
+                          </span>
+                          <button
+                            type="button"
+                            className="btn sm ghost"
+                            onClick={() => window.api.openPath(outputDir)}
+                            style={{ fontSize: '0.75rem', padding: '2px 8px' }}
+                          >
+                            📂 Mở thư mục
+                          </button>
+                        </div>
+                        <div style={{ borderRadius: 6, overflow: 'hidden', border: '1px solid var(--border)', maxHeight: 220, textAlign: 'center', background: '#000' }}>
+                          <img
+                            src={localMediaSource(thumbnailResult.thumbnailPath)}
+                            alt="Ảnh bìa đã tạo"
+                            style={{ maxWidth: '100%', maxHeight: 220, objectFit: 'contain' }}
+                          />
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </>
+              )}
+
+              {/* ------------------------------------------------------------- */}
+              {/* TAB 5: HÀNG ĐỢI XỬ LÝ (QUEUE)                                 */}
               {/* ------------------------------------------------------------- */}
               {tool === 'queue' && (
                 <>
@@ -2858,6 +3534,14 @@ export default function AutoShort(): JSX.Element {
                                 : ' · theo ranh giới frame'}</div>
                             ) : null}
                             {task.error && <div className="queue-item-msg" style={{ color: 'var(--danger)' }}>{task.error}</div>}
+                            {task.status === 'waiting_provider' && task.providerWait && (
+                              <div className="queue-item-msg small" style={{ color: '#f59e0b' }}>
+                                {providerWaitNeedsAction(task.providerWait) ? '⏸ Cần khôi phục Gemini Gateway' : '⏳ Đang chờ Gemini Gateway'}
+                                {!providerWaitNeedsAction(task.providerWait) && task.providerWait.nextEligibleAtUtc && (
+                                  <ProviderWaitCountdown nextEligibleAtUtc={task.providerWait.nextEligibleAtUtc} />
+                                )}
+                              </div>
+                            )}
                             {task.recovery && task.status === 'error' && (
                               <div className="queue-item-msg small" style={{ color: 'var(--danger)' }}>
                                 Phục hồi thời lượng lượt {task.recovery.attempt}/2
@@ -2902,6 +3586,20 @@ export default function AutoShort(): JSX.Element {
                               Mở tieude.txt
                             </button>}
                             {task.status === 'done' && (
+                              <button
+                                type="button"
+                                className="btn ghost sm"
+                                disabled={retryingTitleId === task.id}
+                                title={task.titlePath ? 'Tạo lại tiêu đề và ghi đè tieude.txt' : 'Thử lại tạo tiêu đề'}
+                                onClick={(event) => {
+                                  event.stopPropagation()
+                                  void retryTitle(task)
+                                }}
+                              >
+                                {retryingTitleId === task.id ? '⏳ Đang tạo lại tiêu đề…' : (task.titlePath ? '🔄 Tạo lại tiêu đề' : '🔄 Thử lại tạo tiêu đề')}
+                              </button>
+                            )}
+                            {task.status === 'done' && (
                               <div className="queue-item-msg small" style={{ color: 'var(--success)' }}>
                                 OCR {task.extractedCueCount ?? 0} cue · Dịch {task.translatedCueCount ?? 0} cue · TTS {task.generatedVoiceCount ?? 0} cue · Voice {task.voice || 'không xác định'} · Render FFmpeg hoàn tất
                               </div>
@@ -2925,16 +3623,18 @@ export default function AutoShort(): JSX.Element {
                             )}
                           </div>
                           <div className="queue-item-actions">
-                            <span className={`status-pill ${task.status === 'done' ? 'done' : task.status === 'error' ? 'error' : task.status === 'idle' ? 'idle' : 'working'}`}>
+                            <span className={`status-pill ${task.status === 'done' ? 'done' : task.status === 'error' ? 'error' : task.status === 'idle' ? 'idle' : task.status === 'waiting_provider' ? 'waiting' : 'working'}`}>
                               {task.status === 'idle'
                                 ? 'Sẵn sàng'
                                 : task.status === 'queued'
                                   ? 'Chờ'
-                                  : task.status === 'done'
-                                    ? 'Hoàn tất'
-                                    : task.status === 'error'
-                                      ? 'Lỗi'
-                                      : 'Đang chạy'}
+                                  : task.status === 'waiting_provider'
+                                    ? 'Chờ Gemini'
+                                    : task.status === 'done'
+                                      ? 'Hoàn tất'
+                                      : task.status === 'error'
+                                        ? 'Lỗi'
+                                        : 'Đang chạy'}
                             </span>
                             <button
                               className="btn ghost sm icon-btn"
@@ -3044,7 +3744,9 @@ export default function AutoShort(): JSX.Element {
               style={{ fontWeight: 700, padding: '10px 22px' }}
               type="button"
             >
-              ▶ Tiếp tục {resumeCandidateIds(resumeSnapshot).length} video
+              {resumeSnapshot.items.some((item) => item.providerWait?.reason === 'outcome-unknown')
+                ? '▶ Khôi phục Gateway và tiếp tục'
+                : `▶ Tiếp tục ${resumeCandidateIds(resumeSnapshot).length} video`}
             </button>
           </div>
         ) : (
@@ -3130,6 +3832,22 @@ export default function AutoShort(): JSX.Element {
           </div>
         </div>
       )}
+
+      <AutoShortThumbnailModal
+        isOpen={showThumbnailModal}
+        onClose={() => setShowThumbnailModal(false)}
+        videoPath={previewPath}
+        currentTime={currentTime}
+        outputDir={outputDir}
+        portraitBlur={portraitBlur}
+        videoAdjustments={normalizedVideoAdjustments}
+        ocrRegion={ocrRegion}
+        batchAutoThumbnail={batchAutoThumbnail}
+        onChangeBatchAutoThumbnail={setBatchAutoThumbnail}
+        batchThumbnailMode={batchThumbnailMode}
+        onChangeBatchThumbnailMode={setBatchThumbnailMode}
+        sttnReady={Boolean(readiness?.dependencies.find((item) => item.id === 'sttn-engine')?.ready)}
+      />
     </div>
   )
 }

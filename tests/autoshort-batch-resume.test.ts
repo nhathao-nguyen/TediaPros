@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict'
 import test from 'node:test'
 import {
+  migrateBatchSnapshotToV2,
   recoverInterruptedBatch,
   resumeCandidateIds,
   validateBatchSnapshot,
@@ -52,13 +53,63 @@ test('restart changes running to interrupted and resumes only pending work witho
 test('journal validation rejects secret fields, duplicates, unsupported versions and false success receipts', () => {
   assert.deepEqual(validateBatchSnapshot(snapshot()), snapshot())
   assert.throws(() => validateBatchSnapshot({ ...snapshot(), apiKey: 'secret' }), /field|trường|schema/iu)
-  assert.throws(() => validateBatchSnapshot({ ...snapshot(), schemaVersion: 2 }), /version|schema/iu)
+  assert.throws(() => validateBatchSnapshot({ ...snapshot(), schemaVersion: 3 }), /version|schema/iu)
   const duplicate = snapshot()
   duplicate.items[1].itemId = duplicate.items[0].itemId
   assert.throws(() => validateBatchSnapshot(duplicate), /trùng|duplicate/iu)
   const missingReceipt = snapshot()
   delete missingReceipt.items[0].outputReceipt
   assert.throws(() => validateBatchSnapshot(missingReceipt), /receipt|biên nhận/iu)
+})
+
+test('schema v2, waiting-provider validation, migration, and resume candidates', () => {
+  const v1 = snapshot()
+  const v2 = migrateBatchSnapshotToV2(v1)
+  assert.equal(v2.schemaVersion, 2)
+  assert.deepEqual(validateBatchSnapshot(v2), v2)
+
+  // waiting-provider requires providerWait
+  const waitingItem = {
+    ...v2.items[2],
+    state: 'waiting-provider' as const,
+    providerWait: {
+      operationId: 'op-123',
+      stage: 'restore-translate' as const,
+      reason: 'quota_exhausted: cooldown 60s',
+      nextEligibleAtUtc: '2026-09-17T12:00:00.000Z'
+    }
+  }
+  const snapshotWithWait: BatchSnapshot = {
+    ...v2,
+    items: [v2.items[0], v2.items[1], waitingItem, v2.items[3], v2.items[4]]
+  }
+  assert.deepEqual(validateBatchSnapshot(snapshotWithWait), snapshotWithWait)
+
+  for (const stage of ['restoration-draft', 'restoration-review'] as const) {
+    const restorationWait: BatchSnapshot = {
+      ...snapshotWithWait,
+      items: snapshotWithWait.items.map((item) => item.itemId === 'item-2'
+        ? { ...item, providerWait: { ...waitingItem.providerWait, stage } }
+        : item)
+    }
+    assert.equal(validateBatchSnapshot(restorationWait).items[2].providerWait?.stage, stage)
+  }
+
+  // candidates must include waiting-provider
+  const candidates = resumeCandidateIds(snapshotWithWait)
+  assert.deepEqual(candidates, ['item-2'])
+
+  // recoverInterruptedBatch preserves waiting-provider and providerWait
+  const recovered = recoverInterruptedBatch(snapshotWithWait)
+  assert.equal(recovered.items[2].state, 'waiting-provider')
+  assert.deepEqual(recovered.items[2].providerWait, waitingItem.providerWait)
+
+  // missing providerWait on waiting-provider throws
+  const badWait = {
+    ...snapshotWithWait,
+    items: snapshotWithWait.items.map((it) => it.itemId === 'item-2' ? { ...it, providerWait: undefined } : it)
+  }
+  assert.throws(() => validateBatchSnapshot(badWait), /waiting-provider.*providerWait/iu)
 })
 
 test('a 1000-item recovered queue preserves order and never resumes succeeded or failed items', () => {

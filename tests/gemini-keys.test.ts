@@ -192,6 +192,7 @@ test('Gemini validation errors never expose inputs and failed updates preserve e
   await gemini.saveKey('fixture-key-a')
   assert.throws(() => parseGeminiKeys('private secret'), error => !String(error).includes('private secret'))
   assert.throws(() => parseGeminiKeys(Array.from({ length: 21 }, (_, i) => `fixture-key-${i}`).join('\n')), /Tối đa 20/u)
+  assert.deepEqual(parseGeminiKeys('fixture.valid-gemini-key_12345'), ['fixture.valid-gemini-key_12345'])
   await assert.rejects(async () => gemini.addKeys('bad key'))
   assert.equal(await gemini.loadKey(), 'fixture-key-a')
   await gemini.addKeys('fixture-key-b')

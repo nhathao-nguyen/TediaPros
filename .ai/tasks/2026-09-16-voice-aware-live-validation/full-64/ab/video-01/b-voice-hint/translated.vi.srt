@@ -1,0 +1,27 @@
+1
+00:00:00,000 --> 00:00:02,780
+Thịt cá, cho nhiều gừng có thể khử mùi tanh và tăng hương thơm.
+
+2
+00:00:02,780 --> 00:00:06,080
+Thịt bò, cho nhiều cà chua giúp thịt mềm nhừ hơn.
+
+3
+00:00:06,080 --> 00:00:08,940
+Thịt gà, cho nhiều tỏi giúp tăng hương vị.
+
+4
+00:00:08,940 --> 00:00:12,220
+Thịt cừu, cho nhiều củ cải giúp khử mùi hôi.
+
+5
+00:00:12,220 --> 00:00:15,580
+Thịt lợn, cho nhiều hoa hồi giúp tăng hương thơm đậm đà.
+
+6
+00:00:15,580 --> 00:00:18,980
+Khoai tây, cho nhiều giấm giúp khoai ăn giòn hơn.
+
+7
+00:00:18,980 --> 00:00:21,980
+Đậu phụ, cho nhiều hành giúp tăng vị thơm ngon.

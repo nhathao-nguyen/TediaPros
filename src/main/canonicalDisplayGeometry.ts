@@ -16,13 +16,20 @@ export interface CanonicalVideoTiming {
   videoDurationSeconds: number
   containerDurationSeconds: number
   frameRate?: number
+  averageFrameRate?: number
+  isVariableFrameRate?: boolean
 }
 
 export interface CanonicalMediaMetadata {
   geometry?: CanonicalDisplayGeometry
   videoDurationSeconds: number | null
   containerDurationSeconds: number
+  /** Nominal/container rate from FFprobe `r_frame_rate`. */
   frameRate?: number
+  /** Measured stream average from FFprobe `avg_frame_rate`; authoritative for VFR. */
+  averageFrameRate?: number
+  /** True when nominal and average rates differ materially. */
+  isVariableFrameRate?: boolean
   hasAudio: boolean
   audioDurationSeconds?: number
   audioStartSeconds?: number
@@ -174,9 +181,20 @@ export interface FFprobeRawStream {
   start_time?: string
   duration?: string
   r_frame_rate?: string
+  avg_frame_rate?: string
   sample_aspect_ratio?: string
   tags?: { rotate?: string }
   side_data_list?: Array<{ rotation?: number }>
+}
+
+/** Parse an FFprobe rational frame-rate value such as `30000/1001`. */
+export function parseFrameRate(value: unknown): number | undefined {
+  if (typeof value !== 'string' && typeof value !== 'number') return undefined
+  const raw = String(value)
+  const [num, den] = raw.split('/').map(Number)
+  if (!Number.isFinite(num) || num <= 0 || !Number.isFinite(den) || den <= 0) return undefined
+  const rate = num / den
+  return Number.isFinite(rate) && rate > 0 ? rate : undefined
 }
 
 export interface FFprobeRawJson {
@@ -206,11 +224,11 @@ export function parseCanonicalMediaMetadata(parsed: FFprobeRawJson): CanonicalMe
     Number(videoStream?.tags?.rotate || 0)
   const rotation = Number.isFinite(rotationRaw) ? Math.round(rotationRaw) : 0
 
-  const [fpsNum, fpsDen] = (videoStream?.r_frame_rate || '').split('/').map(Number)
-  const frameRate =
-    Number.isFinite(fpsNum) && fpsNum > 0 && Number.isFinite(fpsDen) && fpsDen > 0
-      ? fpsNum / fpsDen
-      : undefined
+  const frameRate = parseFrameRate(videoStream?.r_frame_rate)
+  const averageFrameRate = parseFrameRate(videoStream?.avg_frame_rate)
+  const isVariableFrameRate = frameRate != null && averageFrameRate != null
+    ? Math.abs(frameRate - averageFrameRate) > 0.01
+    : undefined
 
   const videoStart = Number(videoStream?.start_time) || Number(parsed.format?.start_time) || 0
   const audioStart = Number(audioStream?.start_time) || 0
@@ -238,6 +256,8 @@ export function parseCanonicalMediaMetadata(parsed: FFprobeRawJson): CanonicalMe
     videoDurationSeconds,
     containerDurationSeconds,
     frameRate,
+    averageFrameRate,
+    isVariableFrameRate,
     hasAudio: Boolean(audioStream),
     audioDurationSeconds: positive(audioStream?.duration) ?? undefined,
     audioStartSeconds: audioStart,

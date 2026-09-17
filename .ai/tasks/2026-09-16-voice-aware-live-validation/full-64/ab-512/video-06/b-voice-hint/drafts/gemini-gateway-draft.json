@@ -1,0 +1,29 @@
+{
+  "schemaVersion": 2,
+  "state": "draft-validated",
+  "identity": "gemini-gateway:gemini-advanced:gemini-gateway-two-pass-v10:ai-output-parser-v1:gateway-draft-v2:cue-lines-v1:vi:11",
+  "raw": "{\"translations\":{\"cue-82-203490\":\"Qua phần thử nghiệm này,\",\"cue-83-205090\":\"thiết bị hút áp lực âm chống nghẹn\",\"cue-84-206070\":\"từ hiệu quả sử dụng cho đến lực hút\",\"cue-85-208050\":\"đều rất tốt.\",\"cue-86-209450\":\"Nếu bạn có lo lắng về vấn đề này,\",\"cue-87-210670\":\"hoàn toàn nên chuẩn bị một cái.\",\"cue-88-211810\":\"Nhưng Tiểu Ôn ở đây rất hy vọng mọi người\",\"cue-89-213650\":\"mãi mãi, mãi mãi, mãi mãi\",\"cue-90-214950\":\"không phải dùng đến nó.\",\"cue-91-215990\":\"Mọi người hãy cân nhắc kỹ\",\"cue-92-217310\":\"theo tình hình của mình.\"}}",
+  "rawSha256": "ccfd1ceb70f4f348fb05b9a192baf864165c13e4beed306a78345c441d1a1d9f",
+  "observedModelId": "8c46e95b1a07cecc",
+  "observedModel": "3.5 Flash-Lite",
+  "routeFingerprint": "29ed9729dbdd53e76081fc89bd7f7991b6a6e2c770e964fd8fa2ceaa0c22c646",
+  "sourceDigest": "30b31a99c4bee85d177b56461db24a9e0129b3323b6f997a8fe426926745e5e5",
+  "expectedIds": [
+    "cue-82-203490",
+    "cue-83-205090",
+    "cue-84-206070",
+    "cue-85-208050",
+    "cue-86-209450",
+    "cue-87-210670",
+    "cue-88-211810",
+    "cue-89-213650",
+    "cue-90-214950",
+    "cue-91-215990",
+    "cue-92-217310"
+  ],
+  "targetLocale": "vi",
+  "draftPromptVersion": "gemini-gateway-two-pass-v10",
+  "reviewPromptVersion": "gemini-gateway-two-pass-v10",
+  "parserVersion": "ai-output-parser-v1:gateway-draft-v2",
+  "savedAtUtc": "2026-09-16T17:10:44.448Z"
+}

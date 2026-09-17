@@ -1,6 +1,7 @@
 import { app } from 'electron'
 import { spawn } from 'node:child_process'
-import { chmod, readFile, writeFile, rm } from 'node:fs/promises'
+import { chmod, readFile, writeFile, rm, access } from 'node:fs/promises'
+import { constants } from 'node:fs'
 import { join } from 'node:path'
 import { resolveRuntimeExecutable, runtimeKindDir } from './runtimeResolver'
 import { probeRuntimeExecutable } from './runtimeProbes'
@@ -58,6 +59,39 @@ export function summarizeDouyinCompletion(
 function engineName(): string {
   return isWin ? 'dy-engine.exe' : 'dy-engine'
 }
+
+interface ResolvedDyEngine {
+  command: string
+  argsPrefix: string[]
+}
+
+async function fileExists(path: string): Promise<boolean> {
+  try {
+    await access(path, constants.F_OK)
+    return true
+  } catch {
+    return false
+  }
+}
+
+async function resolveEngine(): Promise<ResolvedDyEngine | null> {
+  if (!app.isPackaged) {
+    const localRunPy = join(app.getAppPath(), 'engines', 'douyin-engine', 'run.py')
+    if (await fileExists(localRunPy)) {
+      return { command: 'python', argsPrefix: [localRunPy] }
+    }
+  }
+  const bin = await resolveRuntimeExecutable('douyin', [engineName()])
+  if (bin) {
+    return { command: bin, argsPrefix: [] }
+  }
+  const localRunPy = join(app.getAppPath(), 'engines', 'douyin-engine', 'run.py')
+  if (await fileExists(localRunPy)) {
+    return { command: 'python', argsPrefix: [localRunPy] }
+  }
+  return null
+}
+
 async function resolveEnginePath(): Promise<string | null> {
   return resolveRuntimeExecutable('douyin', [engineName()])
 }
@@ -121,7 +155,7 @@ function buildConfig(req: DouyinRequest, cookies: Record<string, string>): objec
     proxy: req.proxy || '',
     database: true,
     database_path: libraryDbPath().replace(/\\/g, '/'),
-    browser_fallback: { enabled: false },
+    browser_fallback: { enabled: true, headless: true },
     progress: { quiet_logs: true },
     cookies
   }
@@ -139,7 +173,7 @@ export async function downloadDouyin(
   req: DouyinRequest,
   onProgress: (p: DouyinProgress) => void
 ): Promise<DouyinResult> {
-  const engine = await resolveEnginePath()
+  const engine = await resolveEngine()
   if (!engine) {
     return {
       id,
@@ -158,7 +192,7 @@ export async function downloadDouyin(
 
   try {
     return await new Promise<DouyinResult>((resolve) => {
-      const child = trackChildProcess(spawn(engine, ['-c', cfgPath, '--verbose'], {
+      const child = trackChildProcess(spawn(engine.command, [...engine.argsPrefix, '-c', cfgPath, '--verbose'], {
         windowsHide: true,
         env: { ...process.env, PYTHONUTF8: '1', PYTHONIOENCODING: 'utf-8' }
       }))

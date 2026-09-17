@@ -12,9 +12,27 @@ import { withSourceSpeechGroups } from './sourceGroups'
 export const TRANSLATION_PROMPT_VERSION = 'translation-v11'
 export const TRANSLATION_PARSER_VERSION = 'translation-parser-v4'
 
+export type ModelMessageContentPart =
+  | { type: 'text'; text: string }
+  | { type: 'input_audio'; input_audio: { data: string; format: 'mp3' | 'wav' } }
+
+/** OpenAI-compatible message body. Audio is intentionally supported only as an
+ * explicit content part so ordinary text translation cannot accidentally add
+ * an attachment. */
+export type ModelMessageContent = string | ModelMessageContentPart[]
+
 export interface ModelMessage {
   role: 'system' | 'user'
-  content: string
+  content: ModelMessageContent
+}
+
+/** Safe for audit hashes: it never returns base64 attachment data. */
+export function modelMessageText(content: ModelMessageContent): string {
+  if (typeof content === 'string') return content
+  return content
+    .filter((part): part is Extract<ModelMessageContentPart, { type: 'text' }> => part.type === 'text')
+    .map((part) => part.text)
+    .join('\n')
 }
 
 export interface RephraseCueInput {

@@ -1,0 +1,476 @@
+{
+  "success": true,
+  "cues": 113,
+  "client_generation_requests": 2,
+  "total_upstream_attempts": 2,
+  "observed_models": [
+    "3.1 Pro",
+    "3.1 Pro"
+  ],
+  "route_fingerprints": [
+    "29ed9729dbdd53e76081fc89bd7f7991b6a6e2c770e964fd8fa2ceaa0c22c646",
+    "29ed9729dbdd53e76081fc89bd7f7991b6a6e2c770e964fd8fa2ceaa0c22c646"
+  ],
+  "retry_reasons": [
+    null,
+    null
+  ],
+  "parsed": {
+    "items": [
+      {
+        "id": "cue-1",
+        "text": "Mọi người hãy nhìn kỹ vào đây."
+      },
+      {
+        "id": "cue-2",
+        "text": "Một khúc gỗ tưởng chừng bình thường,"
+      },
+      {
+        "id": "cue-3",
+        "text": "qua bàn tay người thợ,"
+      },
+      {
+        "id": "cue-4",
+        "text": "sẽ từ từ lộ ra những đường vân."
+      },
+      {
+        "id": "cue-5",
+        "text": "Đầu tiên chà bằng giấy nhám mịn,"
+      },
+      {
+        "id": "cue-6",
+        "text": "các cạnh nhất định phải bo tròn,"
+      },
+      {
+        "id": "cue-7",
+        "text": "không được để lại dằm."
+      },
+      {
+        "id": "cue-8",
+        "text": "Sau đó quét lên một lớp dầu sáp gỗ,"
+      },
+      {
+        "id": "cue-9",
+        "text": "màu sắc sẽ thay đổi ngay lập tức."
+      },
+      {
+        "id": "cue-10",
+        "text": "Đây chính là hơi ấm của đồ thủ công."
+      },
+      {
+        "id": "cue-11",
+        "text": "Mỗi bước đều đòi hỏi sự kiên nhẫn,"
+      },
+      {
+        "id": "cue-12",
+        "text": "chỉ cần hơi quá tay,"
+      },
+      {
+        "id": "cue-13",
+        "text": "thì có thể đổ sông đổ biển."
+      },
+      {
+        "id": "cue-14",
+        "text": "Chi tiết quyết định thành bại."
+      },
+      {
+        "id": "cue-15",
+        "text": "Cuối cùng là lắp ráp hoàn thiện."
+      },
+      {
+        "id": "cue-16",
+        "text": "Trông rất ấn tượng phải không?"
+      },
+      {
+        "id": "cue-17",
+        "text": "Mọi người hãy nhìn kỹ vào đây."
+      },
+      {
+        "id": "cue-18",
+        "text": "Một khúc gỗ tưởng chừng bình thường,"
+      },
+      {
+        "id": "cue-19",
+        "text": "qua bàn tay người thợ,"
+      },
+      {
+        "id": "cue-20",
+        "text": "sẽ từ từ lộ ra những đường vân."
+      },
+      {
+        "id": "cue-21",
+        "text": "Đầu tiên chà bằng giấy nhám mịn,"
+      },
+      {
+        "id": "cue-22",
+        "text": "các cạnh nhất định phải bo tròn,"
+      },
+      {
+        "id": "cue-23",
+        "text": "không được để lại dằm."
+      },
+      {
+        "id": "cue-24",
+        "text": "Sau đó quét lên một lớp dầu sáp gỗ,"
+      },
+      {
+        "id": "cue-25",
+        "text": "màu sắc sẽ thay đổi ngay lập tức."
+      },
+      {
+        "id": "cue-26",
+        "text": "Đây chính là hơi ấm của đồ thủ công."
+      },
+      {
+        "id": "cue-27",
+        "text": "Mỗi bước đều đòi hỏi sự kiên nhẫn,"
+      },
+      {
+        "id": "cue-28",
+        "text": "chỉ cần hơi quá tay,"
+      },
+      {
+        "id": "cue-29",
+        "text": "thì có thể đổ sông đổ biển."
+      },
+      {
+        "id": "cue-30",
+        "text": "Chi tiết quyết định thành bại."
+      },
+      {
+        "id": "cue-31",
+        "text": "Cuối cùng là lắp ráp hoàn thiện."
+      },
+      {
+        "id": "cue-32",
+        "text": "Trông rất ấn tượng phải không?"
+      },
+      {
+        "id": "cue-33",
+        "text": "Mọi người hãy nhìn kỹ vào đây."
+      },
+      {
+        "id": "cue-34",
+        "text": "Một khúc gỗ tưởng chừng bình thường,"
+      },
+      {
+        "id": "cue-35",
+        "text": "qua bàn tay người thợ,"
+      },
+      {
+        "id": "cue-36",
+        "text": "sẽ từ từ lộ ra những đường vân."
+      },
+      {
+        "id": "cue-37",
+        "text": "Đầu tiên chà bằng giấy nhám mịn,"
+      },
+      {
+        "id": "cue-38",
+        "text": "các cạnh nhất định phải bo tròn,"
+      },
+      {
+        "id": "cue-39",
+        "text": "không được để lại dằm."
+      },
+      {
+        "id": "cue-40",
+        "text": "Sau đó quét lên một lớp dầu sáp gỗ,"
+      },
+      {
+        "id": "cue-41",
+        "text": "màu sắc sẽ thay đổi ngay lập tức."
+      },
+      {
+        "id": "cue-42",
+        "text": "Đây chính là hơi ấm của đồ thủ công."
+      },
+      {
+        "id": "cue-43",
+        "text": "Mỗi bước đều đòi hỏi sự kiên nhẫn,"
+      },
+      {
+        "id": "cue-44",
+        "text": "chỉ cần hơi quá tay,"
+      },
+      {
+        "id": "cue-45",
+        "text": "thì có thể đổ sông đổ biển."
+      },
+      {
+        "id": "cue-46",
+        "text": "Chi tiết quyết định thành bại."
+      },
+      {
+        "id": "cue-47",
+        "text": "Cuối cùng là lắp ráp hoàn thiện."
+      },
+      {
+        "id": "cue-48",
+        "text": "Trông rất ấn tượng phải không?"
+      },
+      {
+        "id": "cue-49",
+        "text": "Mọi người hãy nhìn kỹ vào đây."
+      },
+      {
+        "id": "cue-50",
+        "text": "Một khúc gỗ tưởng chừng bình thường,"
+      },
+      {
+        "id": "cue-51",
+        "text": "qua bàn tay người thợ,"
+      },
+      {
+        "id": "cue-52",
+        "text": "sẽ từ từ lộ ra những đường vân."
+      },
+      {
+        "id": "cue-53",
+        "text": "Đầu tiên chà bằng giấy nhám mịn,"
+      },
+      {
+        "id": "cue-54",
+        "text": "các cạnh nhất định phải bo tròn,"
+      },
+      {
+        "id": "cue-55",
+        "text": "không được để lại dằm."
+      },
+      {
+        "id": "cue-56",
+        "text": "Sau đó quét lên một lớp dầu sáp gỗ,"
+      },
+      {
+        "id": "cue-57",
+        "text": "màu sắc sẽ thay đổi ngay lập tức."
+      },
+      {
+        "id": "cue-58",
+        "text": "Đây chính là hơi ấm của đồ thủ công."
+      },
+      {
+        "id": "cue-59",
+        "text": "Mỗi bước đều đòi hỏi sự kiên nhẫn,"
+      },
+      {
+        "id": "cue-60",
+        "text": "chỉ cần hơi quá tay,"
+      },
+      {
+        "id": "cue-61",
+        "text": "thì có thể đổ sông đổ biển."
+      },
+      {
+        "id": "cue-62",
+        "text": "Chi tiết quyết định thành bại."
+      },
+      {
+        "id": "cue-63",
+        "text": "Cuối cùng là lắp ráp hoàn thiện."
+      },
+      {
+        "id": "cue-64",
+        "text": "Trông rất ấn tượng phải không?"
+      },
+      {
+        "id": "cue-65",
+        "text": "Mọi người hãy nhìn kỹ vào đây."
+      },
+      {
+        "id": "cue-66",
+        "text": "Một khúc gỗ tưởng chừng bình thường,"
+      },
+      {
+        "id": "cue-67",
+        "text": "qua bàn tay người thợ,"
+      },
+      {
+        "id": "cue-68",
+        "text": "sẽ từ từ lộ ra những đường vân."
+      },
+      {
+        "id": "cue-69",
+        "text": "Đầu tiên chà bằng giấy nhám mịn,"
+      },
+      {
+        "id": "cue-70",
+        "text": "các cạnh nhất định phải bo tròn,"
+      },
+      {
+        "id": "cue-71",
+        "text": "không được để lại dằm."
+      },
+      {
+        "id": "cue-72",
+        "text": "Sau đó quét lên một lớp dầu sáp gỗ,"
+      },
+      {
+        "id": "cue-73",
+        "text": "màu sắc sẽ thay đổi ngay lập tức."
+      },
+      {
+        "id": "cue-74",
+        "text": "Đây chính là hơi ấm của đồ thủ công."
+      },
+      {
+        "id": "cue-75",
+        "text": "Mỗi bước đều đòi hỏi sự kiên nhẫn,"
+      },
+      {
+        "id": "cue-76",
+        "text": "chỉ cần hơi quá tay,"
+      },
+      {
+        "id": "cue-77",
+        "text": "thì có thể đổ sông đổ biển."
+      },
+      {
+        "id": "cue-78",
+        "text": "Chi tiết quyết định thành bại."
+      },
+      {
+        "id": "cue-79",
+        "text": "Cuối cùng là lắp ráp hoàn thiện."
+      },
+      {
+        "id": "cue-80",
+        "text": "Trông rất ấn tượng phải không?"
+      },
+      {
+        "id": "cue-81",
+        "text": "Mọi người hãy nhìn kỹ vào đây."
+      },
+      {
+        "id": "cue-82",
+        "text": "Một khúc gỗ tưởng chừng bình thường,"
+      },
+      {
+        "id": "cue-83",
+        "text": "qua bàn tay người thợ,"
+      },
+      {
+        "id": "cue-84",
+        "text": "sẽ từ từ lộ ra những đường vân."
+      },
+      {
+        "id": "cue-85",
+        "text": "Đầu tiên chà bằng giấy nhám mịn,"
+      },
+      {
+        "id": "cue-86",
+        "text": "các cạnh nhất định phải bo tròn,"
+      },
+      {
+        "id": "cue-87",
+        "text": "không được để lại dằm."
+      },
+      {
+        "id": "cue-88",
+        "text": "Sau đó quét lên một lớp dầu sáp gỗ,"
+      },
+      {
+        "id": "cue-89",
+        "text": "màu sắc sẽ thay đổi ngay lập tức."
+      },
+      {
+        "id": "cue-90",
+        "text": "Đây chính là hơi ấm của đồ thủ công."
+      },
+      {
+        "id": "cue-91",
+        "text": "Mỗi bước đều đòi hỏi sự kiên nhẫn,"
+      },
+      {
+        "id": "cue-92",
+        "text": "chỉ cần hơi quá tay,"
+      },
+      {
+        "id": "cue-93",
+        "text": "thì có thể đổ sông đổ biển."
+      },
+      {
+        "id": "cue-94",
+        "text": "Chi tiết quyết định thành bại."
+      },
+      {
+        "id": "cue-95",
+        "text": "Cuối cùng là lắp ráp hoàn thiện."
+      },
+      {
+        "id": "cue-96",
+        "text": "Trông rất ấn tượng phải không?"
+      },
+      {
+        "id": "cue-97",
+        "text": "Mọi người hãy nhìn kỹ vào đây."
+      },
+      {
+        "id": "cue-98",
+        "text": "Một khúc gỗ tưởng chừng bình thường,"
+      },
+      {
+        "id": "cue-99",
+        "text": "qua bàn tay người thợ,"
+      },
+      {
+        "id": "cue-100",
+        "text": "sẽ từ từ lộ ra những đường vân."
+      },
+      {
+        "id": "cue-101",
+        "text": "Đầu tiên chà bằng giấy nhám mịn,"
+      },
+      {
+        "id": "cue-102",
+        "text": "các cạnh nhất định phải bo tròn,"
+      },
+      {
+        "id": "cue-103",
+        "text": "không được để lại dằm."
+      },
+      {
+        "id": "cue-104",
+        "text": "Sau đó quét lên một lớp dầu sáp gỗ,"
+      },
+      {
+        "id": "cue-105",
+        "text": "màu sắc sẽ thay đổi ngay lập tức."
+      },
+      {
+        "id": "cue-106",
+        "text": "Đây chính là hơi ấm của đồ thủ công."
+      },
+      {
+        "id": "cue-107",
+        "text": "Mỗi bước đều đòi hỏi sự kiên nhẫn,"
+      },
+      {
+        "id": "cue-108",
+        "text": "chỉ cần hơi quá tay,"
+      },
+      {
+        "id": "cue-109",
+        "text": "thì có thể đổ sông đổ biển."
+      },
+      {
+        "id": "cue-110",
+        "text": "Chi tiết quyết định thành bại."
+      },
+      {
+        "id": "cue-111",
+        "text": "Cuối cùng là lắp ráp hoàn thiện."
+      },
+      {
+        "id": "cue-112",
+        "text": "Trông rất ấn tượng phải không?"
+      },
+      {
+        "id": "cue-113",
+        "text": "Mọi người hãy nhìn kỹ vào đây."
+      }
+    ],
+    "issues": [],
+    "complete": true
+  }
+}

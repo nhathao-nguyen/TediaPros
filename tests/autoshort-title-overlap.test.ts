@@ -14,7 +14,8 @@ const preparedMetadata = {
   title: 'Prepared title',
   description: 'A faithful description of the exported video.',
   tags: ['faithful video'],
-  hashtags: ['#faithfulvideo']
+  hashtags: ['#faithfulvideo'],
+  thumbnailText: ''
 }
 const result: BurnResult = { ok: true, output: 'C:\\output\\rendered.mp4' }
 const req: BurnReq = {

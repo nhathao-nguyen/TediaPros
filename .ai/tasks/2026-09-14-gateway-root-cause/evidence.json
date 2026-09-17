@@ -1,0 +1,73 @@
+{
+  "date": "2026-09-14",
+  "requestedModel": "gemini-advanced",
+  "fullPromptSha256": "19ca2117f7a2360db7d20a786d2430d77c99f5c776411bdef0bc20f20f2aca41",
+  "cases": [
+    {
+      "case": "minimal",
+      "promptBytes": 61,
+      "status": 200,
+      "elapsedMs": 3047,
+      "jsonValid": true,
+      "observedModel": "3.8 Flash",
+      "observedModelId": "56fdd199312815e2",
+      "textFrames": 3,
+      "completeJsonFrames": 3
+    },
+    {
+      "case": "full",
+      "promptBytes": 38367,
+      "status": 200,
+      "elapsedMs": 12131,
+      "error": "after 1 attempts: Gemini returned a transient failure message",
+      "observedModel": "3.8 Flash",
+      "observedModelId": "56fdd199312815e2",
+      "textFrames": 54,
+      "completeJsonFrames": 0
+    },
+    {
+      "case": "pro-minimal",
+      "promptBytes": 61,
+      "status": 200,
+      "elapsedMs": 25193,
+      "jsonValid": true,
+      "observedModel": "3.1 Pro",
+      "observedModelId": "e6fa609c3fa255c0",
+      "textFrames": 4,
+      "completeJsonFrames": 3
+    },
+    {
+      "case": "pro-full",
+      "promptBytes": 38367,
+      "elapsedMs": 239328,
+      "error": "context deadline exceeded",
+      "responseReceived": false,
+      "observedModel": null,
+      "requestedHeaderModelId": "e6fa609c3fa255c0"
+    },
+    {
+      "case": "pro-compact",
+      "promptBytes": 6624,
+      "status": 200,
+      "elapsedMs": 68519,
+      "observedModel": "3.1 Pro",
+      "observedModelId": "e6fa609c3fa255c0",
+      "keys": 113,
+      "missing": [],
+      "extra": [],
+      "nonStrings": [],
+      "semanticReview": false,
+      "actualBoundedParserPassed": true
+    },
+    {
+      "case": "baseline-compact",
+      "promptBytes": 6624,
+      "status": 200,
+      "elapsedMs": 7869,
+      "error": "Gemini returned a transient failure message",
+      "observedModel": "3.8 Flash",
+      "observedModelId": "56fdd199312815e2",
+      "completeJsonFrames": 0
+    }
+  ]
+}

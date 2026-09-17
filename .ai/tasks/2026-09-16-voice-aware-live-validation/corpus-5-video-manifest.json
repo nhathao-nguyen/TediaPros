@@ -1,0 +1,64 @@
+{
+  "schemaVersion": 1,
+  "createdAtUtc": "2026-09-16T09:42:00Z",
+  "sourceRoot": "F:\\Son\\test",
+  "selection": {
+    "method": "deterministic spread across sorted MP4 inventory",
+    "indicesZeroBased": [0, 15, 31, 47, 63],
+    "totalMp4Inventory": 64,
+    "sidecarInventory": {
+      "srt": 0,
+      "txt": 0,
+      "json": 0
+    }
+  },
+  "abStatus": "blocked_no_transcript",
+  "abStatusReason": "The selected folder contains source MP4 files but no subtitle/transcript sidecars. No transcript was invented; a real translation A/B requires an extracted or supplied transcript first.",
+  "videos": [
+    {
+      "indexZeroBased": 0,
+      "path": "F:\\Son\\test\\@小温夫妻测评 实测价格这么夯的五仁月饼，到底有什么猫腻？ 1080P.mp4",
+      "durationSec": 191.3,
+      "sizeBytes": 46621944,
+      "sha256": "41b2a6491a78c385b25036dae0758dcda3903bc91c3cd0dc005853a28901bf6f",
+      "srtPresent": false,
+      "transcriptPresent": false
+    },
+    {
+      "indexZeroBased": 15,
+      "path": "F:\\Son\\test\\2025-12-31_不是遗弃！芬兰宝宝在零下6度户外睡觉，竟是高质量小睡_科普_芬兰_睡觉_国外生活_7589964053678755124.mp4",
+      "durationSec": 56.006,
+      "sizeBytes": 22653773,
+      "sha256": "0af6897ca84f3520002ba664f7a791ba32c2e73ed0c397edbbe78617b188cd44",
+      "srtPresent": false,
+      "transcriptPresent": false
+    },
+    {
+      "indexZeroBased": 31,
+      "path": "F:\\Son\\test\\2026-05-31_古人造字真的超有智慧，好多常用词，根源全都来自木头！_青年创作者成长计划_涨知识_百young非遗计划_76459183984713597.mp4",
+      "durationSec": 61.811,
+      "sizeBytes": 25553853,
+      "sha256": "4c1535e66d78c4009ed7d17795dae76d3716aef452cc3343b5ff5cd98a5d89ff",
+      "srtPresent": false,
+      "transcriptPresent": false
+    },
+    {
+      "indexZeroBased": 47,
+      "path": "F:\\Son\\test\\2026-07-29_去一次重庆旅游，就等于去了全世界！_旅行推荐官_重庆旅游_重庆_景点打卡_山城_7667891023539916075.mp4",
+      "durationSec": 68.833,
+      "sizeBytes": 28539258,
+      "sha256": "ceb320632eec5eb48966816ad92e87ff50dd34892732878f5ff1109c457de669",
+      "srtPresent": false,
+      "transcriptPresent": false
+    },
+    {
+      "indexZeroBased": 63,
+      "path": "F:\\Son\\test\\2026-08-25_户外玩游戏前记得仔细看看_科普_涨知识_危险动作请勿模仿_7677916431630994739.mp4",
+      "durationSec": 160.008,
+      "sizeBytes": 81388199,
+      "sha256": "02d9ee9d1574c4ffbaa19581083dfabb9f7a0df317fe183f2584efda34eb11c4",
+      "srtPresent": false,
+      "transcriptPresent": false
+    }
+  ]
+}

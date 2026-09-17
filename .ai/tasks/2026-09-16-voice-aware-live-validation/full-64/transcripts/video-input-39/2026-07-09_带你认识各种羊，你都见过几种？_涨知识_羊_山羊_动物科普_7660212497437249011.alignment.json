@@ -1,0 +1,4802 @@
+{
+  "duration": 78.9725,
+  "language": "zh",
+  "segments": [
+    {
+      "start": 0.0,
+      "end": 1.44,
+      "text": "这种羊我买得起吗",
+      "words": [
+        {
+          "text": "这",
+          "start": 0.0,
+          "end": 0.18,
+          "probability": 0.49462890625
+        },
+        {
+          "text": "种",
+          "start": 0.18,
+          "end": 0.4,
+          "probability": 0.98828125
+        },
+        {
+          "text": "羊",
+          "start": 0.4,
+          "end": 0.52,
+          "probability": 0.9541015625
+        },
+        {
+          "text": "我",
+          "start": 0.52,
+          "end": 0.7,
+          "probability": 0.8984375
+        },
+        {
+          "text": "买",
+          "start": 0.7,
+          "end": 0.88,
+          "probability": 0.998779296875
+        },
+        {
+          "text": "得",
+          "start": 0.88,
+          "end": 1.0,
+          "probability": 0.8369140625
+        },
+        {
+          "text": "起",
+          "start": 1.0,
+          "end": 1.22,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "吗",
+          "start": 1.22,
+          "end": 1.44,
+          "probability": 0.97119140625
+        }
+      ]
+    },
+    {
+      "start": 1.44,
+      "end": 2.34,
+      "text": "买不起",
+      "words": [
+        {
+          "text": "买",
+          "start": 1.44,
+          "end": 2.08,
+          "probability": 0.87841796875
+        },
+        {
+          "text": "不起",
+          "start": 2.08,
+          "end": 2.34,
+          "probability": 0.9775390625
+        }
+      ]
+    },
+    {
+      "start": 2.34,
+      "end": 4.16,
+      "text": "这是大马士革山羊",
+      "words": [
+        {
+          "text": "这是",
+          "start": 2.34,
+          "end": 3.02,
+          "probability": 0.43115234375
+        },
+        {
+          "text": "大",
+          "start": 3.02,
+          "end": 3.24,
+          "probability": 0.9521484375
+        },
+        {
+          "text": "马",
+          "start": 3.24,
+          "end": 3.38,
+          "probability": 0.97900390625
+        },
+        {
+          "text": "士",
+          "start": 3.38,
+          "end": 3.54,
+          "probability": 0.44091796875
+        },
+        {
+          "text": "革",
+          "start": 3.54,
+          "end": 3.68,
+          "probability": 0.9501953125
+        },
+        {
+          "text": "山",
+          "start": 3.68,
+          "end": 3.88,
+          "probability": 0.9150390625
+        },
+        {
+          "text": "羊",
+          "start": 3.88,
+          "end": 4.16,
+          "probability": 0.994384765625
+        }
+      ]
+    },
+    {
+      "start": 4.16,
+      "end": 5.44,
+      "text": "约五十万一只",
+      "words": [
+        {
+          "text": "约",
+          "start": 4.16,
+          "end": 4.58,
+          "probability": 0.884521484375
+        },
+        {
+          "text": "五",
+          "start": 4.58,
+          "end": 4.76,
+          "probability": 0.52490234375
+        },
+        {
+          "text": "十",
+          "start": 4.76,
+          "end": 4.92,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "万",
+          "start": 4.92,
+          "end": 5.06,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "一",
+          "start": 5.06,
+          "end": 5.22,
+          "probability": 0.814453125
+        },
+        {
+          "text": "只",
+          "start": 5.22,
+          "end": 5.44,
+          "probability": 0.97900390625
+        }
+      ]
+    },
+    {
+      "start": 5.44,
+      "end": 7.06,
+      "text": "这种羊我买得起吗",
+      "words": [
+        {
+          "text": "这",
+          "start": 5.44,
+          "end": 5.78,
+          "probability": 0.91943359375
+        },
+        {
+          "text": "种",
+          "start": 5.78,
+          "end": 5.98,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "羊",
+          "start": 5.98,
+          "end": 6.1,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "我",
+          "start": 6.1,
+          "end": 6.28,
+          "probability": 0.9951171875
+        },
+        {
+          "text": "买",
+          "start": 6.28,
+          "end": 6.46,
+          "probability": 0.999755859375
+        },
+        {
+          "text": "得",
+          "start": 6.46,
+          "end": 6.58,
+          "probability": 0.9921875
+        },
+        {
+          "text": "起",
+          "start": 6.58,
+          "end": 6.82,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "吗",
+          "start": 6.82,
+          "end": 7.06,
+          "probability": 0.9970703125
+        }
+      ]
+    },
+    {
+      "start": 7.06,
+      "end": 7.98,
+      "text": "买不起",
+      "words": [
+        {
+          "text": "买",
+          "start": 7.06,
+          "end": 7.66,
+          "probability": 0.992919921875
+        },
+        {
+          "text": "不起",
+          "start": 7.66,
+          "end": 7.98,
+          "probability": 1.0
+        }
+      ]
+    },
+    {
+      "start": 7.98,
+      "end": 9.56,
+      "text": "这是瓦兰黑鼻羊",
+      "words": [
+        {
+          "text": "这是",
+          "start": 7.98,
+          "end": 8.62,
+          "probability": 0.92236328125
+        },
+        {
+          "text": "瓦",
+          "start": 8.62,
+          "end": 8.86,
+          "probability": 0.974609375
+        },
+        {
+          "text": "兰",
+          "start": 8.86,
+          "end": 8.98,
+          "probability": 0.515625
+        },
+        {
+          "text": "黑",
+          "start": 8.98,
+          "end": 9.2,
+          "probability": 0.97265625
+        },
+        {
+          "text": "鼻",
+          "start": 9.2,
+          "end": 9.32,
+          "probability": 0.59326171875
+        },
+        {
+          "text": "羊",
+          "start": 9.32,
+          "end": 9.56,
+          "probability": 0.994384765625
+        }
+      ]
+    },
+    {
+      "start": 9.56,
+      "end": 10.88,
+      "text": "约十二万一只",
+      "words": [
+        {
+          "text": "约",
+          "start": 9.56,
+          "end": 10.02,
+          "probability": 0.997802734375
+        },
+        {
+          "text": "十",
+          "start": 10.02,
+          "end": 10.22,
+          "probability": 0.9111328125
+        },
+        {
+          "text": "二",
+          "start": 10.22,
+          "end": 10.32,
+          "probability": 0.97412109375
+        },
+        {
+          "text": "万",
+          "start": 10.32,
+          "end": 10.46,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "一",
+          "start": 10.46,
+          "end": 10.64,
+          "probability": 0.99609375
+        },
+        {
+          "text": "只",
+          "start": 10.64,
+          "end": 10.88,
+          "probability": 0.99462890625
+        }
+      ]
+    },
+    {
+      "start": 10.88,
+      "end": 12.52,
+      "text": "这种羊我买得起吗",
+      "words": [
+        {
+          "text": "这",
+          "start": 10.88,
+          "end": 11.18,
+          "probability": 0.9912109375
+        },
+        {
+          "text": "种",
+          "start": 11.18,
+          "end": 11.4,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "羊",
+          "start": 11.4,
+          "end": 11.52,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "我",
+          "start": 11.52,
+          "end": 11.7,
+          "probability": 0.998046875
+        },
+        {
+          "text": "买",
+          "start": 11.7,
+          "end": 11.88,
+          "probability": 1.0
+        },
+        {
+          "text": "得",
+          "start": 11.88,
+          "end": 12.0,
+          "probability": 0.99560546875
+        },
+        {
+          "text": "起",
+          "start": 12.0,
+          "end": 12.24,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "吗",
+          "start": 12.24,
+          "end": 12.52,
+          "probability": 0.998046875
+        }
+      ]
+    },
+    {
+      "start": 12.52,
+      "end": 13.38,
+      "text": "买不起",
+      "words": [
+        {
+          "text": "买",
+          "start": 12.52,
+          "end": 13.0,
+          "probability": 0.999267578125
+        },
+        {
+          "text": "不起",
+          "start": 13.0,
+          "end": 13.38,
+          "probability": 1.0
+        }
+      ]
+    },
+    {
+      "start": 13.38,
+      "end": 14.96,
+      "text": "这是特克塞尔羊",
+      "words": [
+        {
+          "text": "这是",
+          "start": 13.38,
+          "end": 14.0,
+          "probability": 0.923828125
+        },
+        {
+          "text": "特",
+          "start": 14.0,
+          "end": 14.26,
+          "probability": 0.9794921875
+        },
+        {
+          "text": "克",
+          "start": 14.26,
+          "end": 14.38,
+          "probability": 0.8896484375
+        },
+        {
+          "text": "塞",
+          "start": 14.38,
+          "end": 14.58,
+          "probability": 0.94189453125
+        },
+        {
+          "text": "尔",
+          "start": 14.58,
+          "end": 14.72,
+          "probability": 0.99658203125
+        },
+        {
+          "text": "羊",
+          "start": 14.72,
+          "end": 14.96,
+          "probability": 0.906494140625
+        }
+      ]
+    },
+    {
+      "start": 14.96,
+      "end": 16.28,
+      "text": "约八万块一只",
+      "words": [
+        {
+          "text": "约",
+          "start": 14.96,
+          "end": 15.44,
+          "probability": 0.998046875
+        },
+        {
+          "text": "八",
+          "start": 15.44,
+          "end": 15.6,
+          "probability": 0.98291015625
+        },
+        {
+          "text": "万",
+          "start": 15.6,
+          "end": 15.76,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "块",
+          "start": 15.76,
+          "end": 15.9,
+          "probability": 0.99072265625
+        },
+        {
+          "text": "一",
+          "start": 15.9,
+          "end": 16.1,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "只",
+          "start": 16.1,
+          "end": 16.28,
+          "probability": 0.994140625
+        }
+      ]
+    },
+    {
+      "start": 16.28,
+      "end": 17.92,
+      "text": "这种羊我买得起吗",
+      "words": [
+        {
+          "text": "这",
+          "start": 16.28,
+          "end": 16.64,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "种",
+          "start": 16.64,
+          "end": 16.82,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "羊",
+          "start": 16.82,
+          "end": 16.96,
+          "probability": 0.999755859375
+        },
+        {
+          "text": "我",
+          "start": 16.96,
+          "end": 17.14,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "买",
+          "start": 17.14,
+          "end": 17.32,
+          "probability": 1.0
+        },
+        {
+          "text": "得",
+          "start": 17.32,
+          "end": 17.44,
+          "probability": 0.99609375
+        },
+        {
+          "text": "起",
+          "start": 17.44,
+          "end": 17.68,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "吗",
+          "start": 17.68,
+          "end": 17.92,
+          "probability": 0.99853515625
+        }
+      ]
+    },
+    {
+      "start": 17.92,
+      "end": 20.06,
+      "text": "这可是罕见的山神血羊",
+      "words": [
+        {
+          "text": "这",
+          "start": 17.92,
+          "end": 18.58,
+          "probability": 0.98681640625
+        },
+        {
+          "text": "可是",
+          "start": 18.58,
+          "end": 18.82,
+          "probability": 0.99609375
+        },
+        {
+          "text": "罕",
+          "start": 18.82,
+          "end": 19.06,
+          "probability": 0.799560546875
+        },
+        {
+          "text": "见",
+          "start": 19.06,
+          "end": 19.2,
+          "probability": 0.98388671875
+        },
+        {
+          "text": "的",
+          "start": 19.2,
+          "end": 19.34,
+          "probability": 0.99365234375
+        },
+        {
+          "text": "山",
+          "start": 19.34,
+          "end": 19.52,
+          "probability": 0.798828125
+        },
+        {
+          "text": "神",
+          "start": 19.52,
+          "end": 19.66,
+          "probability": 0.1944580078125
+        },
+        {
+          "text": "血",
+          "start": 19.66,
+          "end": 19.86,
+          "probability": 0.72412109375
+        },
+        {
+          "text": "羊",
+          "start": 19.86,
+          "end": 20.06,
+          "probability": 0.9990234375
+        }
+      ]
+    },
+    {
+      "start": 20.06,
+      "end": 22.16,
+      "text": "杀到极是好运来临的极杖",
+      "words": [
+        {
+          "text": "杀",
+          "start": 20.06,
+          "end": 20.62,
+          "probability": 0.899658203125
+        },
+        {
+          "text": "到",
+          "start": 20.62,
+          "end": 20.8,
+          "probability": 0.9794921875
+        },
+        {
+          "text": "极",
+          "start": 20.8,
+          "end": 20.96,
+          "probability": 0.7607421875
+        },
+        {
+          "text": "是",
+          "start": 20.96,
+          "end": 21.1,
+          "probability": 0.6708984375
+        },
+        {
+          "text": "好",
+          "start": 21.1,
+          "end": 21.26,
+          "probability": 0.453857421875
+        },
+        {
+          "text": "运",
+          "start": 21.26,
+          "end": 21.4,
+          "probability": 0.9189453125
+        },
+        {
+          "text": "来",
+          "start": 21.4,
+          "end": 21.56,
+          "probability": 0.98388671875
+        },
+        {
+          "text": "临",
+          "start": 21.56,
+          "end": 21.7,
+          "probability": 0.693359375
+        },
+        {
+          "text": "的",
+          "start": 21.7,
+          "end": 21.8,
+          "probability": 0.99609375
+        },
+        {
+          "text": "极",
+          "start": 21.8,
+          "end": 21.96,
+          "probability": 0.7000732421875
+        },
+        {
+          "text": "杖",
+          "start": 21.96,
+          "end": 22.16,
+          "probability": 0.71044921875
+        }
+      ]
+    },
+    {
+      "start": 22.16,
+      "end": 23.88,
+      "text": "建议送上三朵小花",
+      "words": [
+        {
+          "text": "建",
+          "start": 22.16,
+          "end": 22.68,
+          "probability": 0.7939453125
+        },
+        {
+          "text": "议",
+          "start": 22.68,
+          "end": 22.82,
+          "probability": 0.998779296875
+        },
+        {
+          "text": "送",
+          "start": 22.82,
+          "end": 22.98,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "上",
+          "start": 22.98,
+          "end": 23.16,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "三",
+          "start": 23.16,
+          "end": 23.36,
+          "probability": 0.984375
+        },
+        {
+          "text": "朵",
+          "start": 23.36,
+          "end": 23.48,
+          "probability": 0.9912109375
+        },
+        {
+          "text": "小",
+          "start": 23.48,
+          "end": 23.66,
+          "probability": 0.98876953125
+        },
+        {
+          "text": "花",
+          "start": 23.66,
+          "end": 23.88,
+          "probability": 0.99853515625
+        }
+      ]
+    },
+    {
+      "start": 23.88,
+      "end": 25.56,
+      "text": "往后必兵万事顺利",
+      "words": [
+        {
+          "text": "往",
+          "start": 23.88,
+          "end": 24.42,
+          "probability": 0.88427734375
+        },
+        {
+          "text": "后",
+          "start": 24.42,
+          "end": 24.6,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "必",
+          "start": 24.6,
+          "end": 24.76,
+          "probability": 0.5439453125
+        },
+        {
+          "text": "兵",
+          "start": 24.76,
+          "end": 24.9,
+          "probability": 0.719482421875
+        },
+        {
+          "text": "万",
+          "start": 24.9,
+          "end": 25.1,
+          "probability": 0.9541015625
+        },
+        {
+          "text": "事",
+          "start": 25.1,
+          "end": 25.24,
+          "probability": 0.8837890625
+        },
+        {
+          "text": "顺",
+          "start": 25.24,
+          "end": 25.38,
+          "probability": 0.991455078125
+        },
+        {
+          "text": "利",
+          "start": 25.38,
+          "end": 25.56,
+          "probability": 0.409423828125
+        }
+      ]
+    },
+    {
+      "start": 25.56,
+      "end": 26.64,
+      "text": "平安顺遂",
+      "words": [
+        {
+          "text": "平",
+          "start": 25.56,
+          "end": 26.02,
+          "probability": 0.95458984375
+        },
+        {
+          "text": "安",
+          "start": 26.02,
+          "end": 26.2,
+          "probability": 1.0
+        },
+        {
+          "text": "顺",
+          "start": 26.2,
+          "end": 26.38,
+          "probability": 0.999755859375
+        },
+        {
+          "text": "遂",
+          "start": 26.38,
+          "end": 26.64,
+          "probability": 0.6529541015625
+        }
+      ]
+    },
+    {
+      "start": 26.64,
+      "end": 28.2,
+      "text": "这种羊我买得起吗",
+      "words": [
+        {
+          "text": "这",
+          "start": 26.64,
+          "end": 26.92,
+          "probability": 0.98583984375
+        },
+        {
+          "text": "种",
+          "start": 26.92,
+          "end": 27.1,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "羊",
+          "start": 27.1,
+          "end": 27.26,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "我",
+          "start": 27.26,
+          "end": 27.44,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "买",
+          "start": 27.44,
+          "end": 27.62,
+          "probability": 1.0
+        },
+        {
+          "text": "得",
+          "start": 27.62,
+          "end": 27.74,
+          "probability": 0.99462890625
+        },
+        {
+          "text": "起",
+          "start": 27.74,
+          "end": 27.96,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "吗",
+          "start": 27.96,
+          "end": 28.2,
+          "probability": 0.99853515625
+        }
+      ]
+    },
+    {
+      "start": 28.2,
+      "end": 29.02,
+      "text": "买不起",
+      "words": [
+        {
+          "text": "买",
+          "start": 28.2,
+          "end": 28.76,
+          "probability": 0.998779296875
+        },
+        {
+          "text": "不起",
+          "start": 28.76,
+          "end": 29.02,
+          "probability": 0.99951171875
+        }
+      ]
+    },
+    {
+      "start": 29.02,
+      "end": 30.54,
+      "text": "这是吉萨尔羊",
+      "words": [
+        {
+          "text": "这是",
+          "start": 29.02,
+          "end": 29.78,
+          "probability": 0.09722900390625
+        },
+        {
+          "text": "吉",
+          "start": 29.78,
+          "end": 30.06,
+          "probability": 0.453857421875
+        },
+        {
+          "text": "萨",
+          "start": 30.06,
+          "end": 30.22,
+          "probability": 0.9658203125
+        },
+        {
+          "text": "尔",
+          "start": 30.22,
+          "end": 30.36,
+          "probability": 0.8486328125
+        },
+        {
+          "text": "羊",
+          "start": 30.36,
+          "end": 30.54,
+          "probability": 0.5557861328125
+        }
+      ]
+    },
+    {
+      "start": 30.54,
+      "end": 31.92,
+      "text": "约三十万一只",
+      "words": [
+        {
+          "text": "约",
+          "start": 30.54,
+          "end": 31.06,
+          "probability": 0.56689453125
+        },
+        {
+          "text": "三",
+          "start": 31.06,
+          "end": 31.26,
+          "probability": 0.3173828125
+        },
+        {
+          "text": "十",
+          "start": 31.26,
+          "end": 31.42,
+          "probability": 0.998046875
+        },
+        {
+          "text": "万",
+          "start": 31.42,
+          "end": 31.56,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "一",
+          "start": 31.56,
+          "end": 31.74,
+          "probability": 0.51318359375
+        },
+        {
+          "text": "只",
+          "start": 31.74,
+          "end": 31.92,
+          "probability": 0.9111328125
+        }
+      ]
+    },
+    {
+      "start": 31.92,
+      "end": 33.52,
+      "text": "这种羊我买得起吗",
+      "words": [
+        {
+          "text": "这",
+          "start": 31.92,
+          "end": 32.26,
+          "probability": 0.5966796875
+        },
+        {
+          "text": "种",
+          "start": 32.26,
+          "end": 32.48,
+          "probability": 0.998046875
+        },
+        {
+          "text": "羊",
+          "start": 32.48,
+          "end": 32.58,
+          "probability": 0.990234375
+        },
+        {
+          "text": "我",
+          "start": 32.58,
+          "end": 32.76,
+          "probability": 0.98095703125
+        },
+        {
+          "text": "买",
+          "start": 32.76,
+          "end": 32.96,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "得",
+          "start": 32.96,
+          "end": 33.08,
+          "probability": 0.8935546875
+        },
+        {
+          "text": "起",
+          "start": 33.08,
+          "end": 33.3,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "吗",
+          "start": 33.3,
+          "end": 33.52,
+          "probability": 0.986328125
+        }
+      ]
+    },
+    {
+      "start": 33.52,
+      "end": 34.46,
+      "text": "买不起",
+      "words": [
+        {
+          "text": "买",
+          "start": 33.52,
+          "end": 34.22,
+          "probability": 0.891357421875
+        },
+        {
+          "text": "不起",
+          "start": 34.22,
+          "end": 34.46,
+          "probability": 0.98193359375
+        }
+      ]
+    },
+    {
+      "start": 34.46,
+      "end": 36.08,
+      "text": "这是克里山绵羊",
+      "words": [
+        {
+          "text": "这是",
+          "start": 34.46,
+          "end": 35.18,
+          "probability": 0.677734375
+        },
+        {
+          "text": "克",
+          "start": 35.18,
+          "end": 35.42,
+          "probability": 0.9619140625
+        },
+        {
+          "text": "里",
+          "start": 35.42,
+          "end": 35.54,
+          "probability": 0.796875
+        },
+        {
+          "text": "山",
+          "start": 35.54,
+          "end": 35.7,
+          "probability": 0.85107421875
+        },
+        {
+          "text": "绵",
+          "start": 35.7,
+          "end": 35.86,
+          "probability": 0.85595703125
+        },
+        {
+          "text": "羊",
+          "start": 35.86,
+          "end": 36.08,
+          "probability": 0.998779296875
+        }
+      ]
+    },
+    {
+      "start": 36.08,
+      "end": 37.54,
+      "text": "约二十五万一只",
+      "words": [
+        {
+          "text": "约",
+          "start": 36.08,
+          "end": 36.52,
+          "probability": 0.994384765625
+        },
+        {
+          "text": "二",
+          "start": 36.52,
+          "end": 36.72,
+          "probability": 0.98779296875
+        },
+        {
+          "text": "十",
+          "start": 36.72,
+          "end": 36.86,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "五",
+          "start": 36.86,
+          "end": 36.98,
+          "probability": 0.98974609375
+        },
+        {
+          "text": "万",
+          "start": 36.98,
+          "end": 37.14,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "一",
+          "start": 37.14,
+          "end": 37.3,
+          "probability": 0.99267578125
+        },
+        {
+          "text": "只",
+          "start": 37.3,
+          "end": 37.54,
+          "probability": 0.99267578125
+        }
+      ]
+    },
+    {
+      "start": 37.54,
+      "end": 39.16,
+      "text": "这种羊我买得起吗",
+      "words": [
+        {
+          "text": "这",
+          "start": 37.54,
+          "end": 37.88,
+          "probability": 0.95458984375
+        },
+        {
+          "text": "种",
+          "start": 37.88,
+          "end": 38.08,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "羊",
+          "start": 38.08,
+          "end": 38.2,
+          "probability": 0.999267578125
+        },
+        {
+          "text": "我",
+          "start": 38.2,
+          "end": 38.38,
+          "probability": 0.99658203125
+        },
+        {
+          "text": "买",
+          "start": 38.38,
+          "end": 38.56,
+          "probability": 0.999755859375
+        },
+        {
+          "text": "得",
+          "start": 38.56,
+          "end": 38.68,
+          "probability": 0.990234375
+        },
+        {
+          "text": "起",
+          "start": 38.68,
+          "end": 38.94,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "吗",
+          "start": 38.94,
+          "end": 39.16,
+          "probability": 0.99755859375
+        }
+      ]
+    },
+    {
+      "start": 39.16,
+      "end": 39.92,
+      "text": "买不起",
+      "words": [
+        {
+          "text": "买",
+          "start": 39.16,
+          "end": 39.66,
+          "probability": 0.99658203125
+        },
+        {
+          "text": "不起",
+          "start": 39.66,
+          "end": 39.92,
+          "probability": 1.0
+        }
+      ]
+    },
+    {
+      "start": 39.92,
+      "end": 41.5,
+      "text": "这是瓦格吉尔羊",
+      "words": [
+        {
+          "text": "这是",
+          "start": 39.92,
+          "end": 40.56,
+          "probability": 0.94775390625
+        },
+        {
+          "text": "瓦",
+          "start": 40.56,
+          "end": 40.8,
+          "probability": 0.947265625
+        },
+        {
+          "text": "格",
+          "start": 40.8,
+          "end": 40.94,
+          "probability": 0.99072265625
+        },
+        {
+          "text": "吉",
+          "start": 40.94,
+          "end": 41.12,
+          "probability": 0.9560546875
+        },
+        {
+          "text": "尔",
+          "start": 41.12,
+          "end": 41.26,
+          "probability": 0.9873046875
+        },
+        {
+          "text": "羊",
+          "start": 41.26,
+          "end": 41.5,
+          "probability": 0.997802734375
+        }
+      ]
+    },
+    {
+      "start": 41.5,
+      "end": 42.84,
+      "text": "约八万块一只",
+      "words": [
+        {
+          "text": "约",
+          "start": 41.5,
+          "end": 41.98,
+          "probability": 0.997802734375
+        },
+        {
+          "text": "八",
+          "start": 41.98,
+          "end": 42.16,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "万",
+          "start": 42.16,
+          "end": 42.32,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "块",
+          "start": 42.32,
+          "end": 42.48,
+          "probability": 0.97705078125
+        },
+        {
+          "text": "一",
+          "start": 42.48,
+          "end": 42.66,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "只",
+          "start": 42.66,
+          "end": 42.84,
+          "probability": 0.994140625
+        }
+      ]
+    },
+    {
+      "start": 42.84,
+      "end": 44.5,
+      "text": "这种羊我买得起吗",
+      "words": [
+        {
+          "text": "这",
+          "start": 42.84,
+          "end": 43.24,
+          "probability": 0.99072265625
+        },
+        {
+          "text": "种",
+          "start": 43.24,
+          "end": 43.42,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "羊",
+          "start": 43.42,
+          "end": 43.58,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "我",
+          "start": 43.58,
+          "end": 43.74,
+          "probability": 0.998046875
+        },
+        {
+          "text": "买",
+          "start": 43.74,
+          "end": 43.92,
+          "probability": 0.999755859375
+        },
+        {
+          "text": "得",
+          "start": 43.92,
+          "end": 44.04,
+          "probability": 0.99267578125
+        },
+        {
+          "text": "起",
+          "start": 44.04,
+          "end": 44.28,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "吗",
+          "start": 44.28,
+          "end": 44.5,
+          "probability": 0.99853515625
+        }
+      ]
+    },
+    {
+      "start": 44.5,
+      "end": 45.38,
+      "text": "买不起",
+      "words": [
+        {
+          "text": "买",
+          "start": 44.5,
+          "end": 45.06,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "不起",
+          "start": 45.06,
+          "end": 45.38,
+          "probability": 1.0
+        }
+      ]
+    },
+    {
+      "start": 45.38,
+      "end": 46.84,
+      "text": "这是萨瓦克尼羊",
+      "words": [
+        {
+          "text": "这是",
+          "start": 45.38,
+          "end": 45.96,
+          "probability": 0.98828125
+        },
+        {
+          "text": "萨",
+          "start": 45.96,
+          "end": 46.16,
+          "probability": 0.988525390625
+        },
+        {
+          "text": "瓦",
+          "start": 46.16,
+          "end": 46.3,
+          "probability": 0.8621419270833334
+        },
+        {
+          "text": "克",
+          "start": 46.3,
+          "end": 46.46,
+          "probability": 0.9931640625
+        },
+        {
+          "text": "尼",
+          "start": 46.46,
+          "end": 46.64,
+          "probability": 0.97216796875
+        },
+        {
+          "text": "羊",
+          "start": 46.64,
+          "end": 46.84,
+          "probability": 0.919921875
+        }
+      ]
+    },
+    {
+      "start": 46.84,
+      "end": 48.24,
+      "text": "约三万块一只",
+      "words": [
+        {
+          "text": "约",
+          "start": 46.84,
+          "end": 47.3,
+          "probability": 0.996826171875
+        },
+        {
+          "text": "三",
+          "start": 47.3,
+          "end": 47.52,
+          "probability": 0.998046875
+        },
+        {
+          "text": "万",
+          "start": 47.52,
+          "end": 47.68,
+          "probability": 0.99658203125
+        },
+        {
+          "text": "块",
+          "start": 47.68,
+          "end": 47.86,
+          "probability": 0.998046875
+        },
+        {
+          "text": "一",
+          "start": 47.86,
+          "end": 48.06,
+          "probability": 0.998046875
+        },
+        {
+          "text": "只",
+          "start": 48.06,
+          "end": 48.24,
+          "probability": 0.99365234375
+        }
+      ]
+    },
+    {
+      "start": 48.24,
+      "end": 49.88,
+      "text": "这种羊我买得起吗",
+      "words": [
+        {
+          "text": "这",
+          "start": 48.24,
+          "end": 48.6,
+          "probability": 0.9892578125
+        },
+        {
+          "text": "种",
+          "start": 48.6,
+          "end": 48.82,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "羊",
+          "start": 48.82,
+          "end": 48.94,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "我",
+          "start": 48.94,
+          "end": 49.12,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "买",
+          "start": 49.12,
+          "end": 49.32,
+          "probability": 0.999755859375
+        },
+        {
+          "text": "得",
+          "start": 49.32,
+          "end": 49.42,
+          "probability": 0.99609375
+        },
+        {
+          "text": "起",
+          "start": 49.42,
+          "end": 49.66,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "吗",
+          "start": 49.66,
+          "end": 49.88,
+          "probability": 0.99853515625
+        }
+      ]
+    },
+    {
+      "start": 49.88,
+      "end": 50.72,
+      "text": "买不起",
+      "words": [
+        {
+          "text": "买",
+          "start": 49.88,
+          "end": 50.44,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "不起",
+          "start": 50.44,
+          "end": 50.72,
+          "probability": 1.0
+        }
+      ]
+    },
+    {
+      "start": 50.72,
+      "end": 52.44,
+      "text": "这是印度班杜尔羊",
+      "words": [
+        {
+          "text": "这是",
+          "start": 50.72,
+          "end": 51.4,
+          "probability": 0.982421875
+        },
+        {
+          "text": "印",
+          "start": 51.4,
+          "end": 51.64,
+          "probability": 0.99462890625
+        },
+        {
+          "text": "度",
+          "start": 51.64,
+          "end": 51.76,
+          "probability": 0.998046875
+        },
+        {
+          "text": "班",
+          "start": 51.76,
+          "end": 51.94,
+          "probability": 0.68408203125
+        },
+        {
+          "text": "杜",
+          "start": 51.94,
+          "end": 52.08,
+          "probability": 0.58258056640625
+        },
+        {
+          "text": "尔",
+          "start": 52.08,
+          "end": 52.24,
+          "probability": 0.996337890625
+        },
+        {
+          "text": "羊",
+          "start": 52.24,
+          "end": 52.44,
+          "probability": 0.9951171875
+        }
+      ]
+    },
+    {
+      "start": 52.44,
+      "end": 53.7,
+      "text": "约五万块一只",
+      "words": [
+        {
+          "text": "约",
+          "start": 52.44,
+          "end": 52.84,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "五",
+          "start": 52.84,
+          "end": 53.02,
+          "probability": 0.99462890625
+        },
+        {
+          "text": "万",
+          "start": 53.02,
+          "end": 53.2,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "块",
+          "start": 53.2,
+          "end": 53.36,
+          "probability": 0.998046875
+        },
+        {
+          "text": "一",
+          "start": 53.36,
+          "end": 53.56,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "只",
+          "start": 53.56,
+          "end": 53.7,
+          "probability": 0.9951171875
+        }
+      ]
+    },
+    {
+      "start": 53.7,
+      "end": 55.34,
+      "text": "这种羊我买得起吗",
+      "words": [
+        {
+          "text": "这",
+          "start": 53.7,
+          "end": 54.06,
+          "probability": 0.994140625
+        },
+        {
+          "text": "种",
+          "start": 54.06,
+          "end": 54.26,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "羊",
+          "start": 54.26,
+          "end": 54.38,
+          "probability": 0.999755859375
+        },
+        {
+          "text": "我",
+          "start": 54.38,
+          "end": 54.56,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "买",
+          "start": 54.56,
+          "end": 54.76,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "得",
+          "start": 54.76,
+          "end": 54.88,
+          "probability": 0.99462890625
+        },
+        {
+          "text": "起",
+          "start": 54.88,
+          "end": 55.1,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "吗",
+          "start": 55.1,
+          "end": 55.34,
+          "probability": 0.99853515625
+        }
+      ]
+    },
+    {
+      "start": 55.34,
+      "end": 56.18,
+      "text": "买不起",
+      "words": [
+        {
+          "text": "买",
+          "start": 55.34,
+          "end": 55.86,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "不起",
+          "start": 55.86,
+          "end": 56.18,
+          "probability": 1.0
+        }
+      ]
+    },
+    {
+      "start": 56.18,
+      "end": 57.46,
+      "text": "这是晕倒羊",
+      "words": [
+        {
+          "text": "这是",
+          "start": 56.18,
+          "end": 56.82,
+          "probability": 0.9765625
+        },
+        {
+          "text": "晕",
+          "start": 56.82,
+          "end": 57.06,
+          "probability": 0.7305908203125
+        },
+        {
+          "text": "倒",
+          "start": 57.06,
+          "end": 57.22,
+          "probability": 0.3134765625
+        },
+        {
+          "text": "羊",
+          "start": 57.22,
+          "end": 57.46,
+          "probability": 0.99169921875
+        }
+      ]
+    },
+    {
+      "start": 57.46,
+      "end": 58.74,
+      "text": "受惊兴奋时",
+      "words": [
+        {
+          "text": "受",
+          "start": 57.46,
+          "end": 58.02,
+          "probability": 0.501953125
+        },
+        {
+          "text": "惊",
+          "start": 58.02,
+          "end": 58.2,
+          "probability": 0.95458984375
+        },
+        {
+          "text": "兴",
+          "start": 58.2,
+          "end": 58.34,
+          "probability": 0.92626953125
+        },
+        {
+          "text": "奋",
+          "start": 58.34,
+          "end": 58.52,
+          "probability": 0.85546875
+        },
+        {
+          "text": "时",
+          "start": 58.52,
+          "end": 58.74,
+          "probability": 0.98779296875
+        }
+      ]
+    },
+    {
+      "start": 58.74,
+      "end": 60.24,
+      "text": "就会四肌僵硬倒地",
+      "words": [
+        {
+          "text": "就",
+          "start": 58.74,
+          "end": 59.04,
+          "probability": 0.293212890625
+        },
+        {
+          "text": "会",
+          "start": 59.04,
+          "end": 59.22,
+          "probability": 0.865234375
+        },
+        {
+          "text": "四",
+          "start": 59.22,
+          "end": 59.4,
+          "probability": 0.8701171875
+        },
+        {
+          "text": "肌",
+          "start": 59.4,
+          "end": 59.54,
+          "probability": 0.46368408203125
+        },
+        {
+          "text": "僵",
+          "start": 59.54,
+          "end": 59.72,
+          "probability": 0.744384765625
+        },
+        {
+          "text": "硬",
+          "start": 59.72,
+          "end": 59.86,
+          "probability": 0.998046875
+        },
+        {
+          "text": "倒",
+          "start": 59.86,
+          "end": 60.0,
+          "probability": 0.7744140625
+        },
+        {
+          "text": "地",
+          "start": 60.0,
+          "end": 60.24,
+          "probability": 0.9521484375
+        }
+      ]
+    },
+    {
+      "start": 60.24,
+      "end": 61.54,
+      "text": "约六万块一只",
+      "words": [
+        {
+          "text": "约",
+          "start": 60.24,
+          "end": 60.72,
+          "probability": 0.831787109375
+        },
+        {
+          "text": "六",
+          "start": 60.72,
+          "end": 60.9,
+          "probability": 0.32373046875
+        },
+        {
+          "text": "万",
+          "start": 60.9,
+          "end": 61.04,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "块",
+          "start": 61.04,
+          "end": 61.2,
+          "probability": 0.9912109375
+        },
+        {
+          "text": "一",
+          "start": 61.2,
+          "end": 61.38,
+          "probability": 0.9873046875
+        },
+        {
+          "text": "只",
+          "start": 61.38,
+          "end": 61.54,
+          "probability": 0.69775390625
+        }
+      ]
+    },
+    {
+      "start": 61.54,
+      "end": 63.16,
+      "text": "这种羊我买得起吗",
+      "words": [
+        {
+          "text": "这",
+          "start": 61.54,
+          "end": 61.88,
+          "probability": 0.84228515625
+        },
+        {
+          "text": "种",
+          "start": 61.88,
+          "end": 62.08,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "羊",
+          "start": 62.08,
+          "end": 62.22,
+          "probability": 0.77685546875
+        },
+        {
+          "text": "我",
+          "start": 62.22,
+          "end": 62.4,
+          "probability": 0.9775390625
+        },
+        {
+          "text": "买",
+          "start": 62.4,
+          "end": 62.58,
+          "probability": 0.999267578125
+        },
+        {
+          "text": "得",
+          "start": 62.58,
+          "end": 62.72,
+          "probability": 0.89453125
+        },
+        {
+          "text": "起",
+          "start": 62.72,
+          "end": 62.92,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "吗",
+          "start": 62.92,
+          "end": 63.16,
+          "probability": 0.98291015625
+        }
+      ]
+    },
+    {
+      "start": 63.16,
+      "end": 64.0,
+      "text": "买不起",
+      "words": [
+        {
+          "text": "买",
+          "start": 63.16,
+          "end": 63.74,
+          "probability": 0.95361328125
+        },
+        {
+          "text": "不起",
+          "start": 63.74,
+          "end": 64.0,
+          "probability": 0.98583984375
+        }
+      ]
+    },
+    {
+      "start": 64.0,
+      "end": 65.4,
+      "text": "这是瓦瓦羊",
+      "words": [
+        {
+          "text": "这是",
+          "start": 64.0,
+          "end": 64.56,
+          "probability": 0.55078125
+        },
+        {
+          "text": "瓦",
+          "start": 64.56,
+          "end": 64.82,
+          "probability": 0.6750386555989584
+        },
+        {
+          "text": "瓦",
+          "start": 64.82,
+          "end": 64.96,
+          "probability": 0.9501953125
+        },
+        {
+          "text": "羊",
+          "start": 64.96,
+          "end": 65.4,
+          "probability": 0.898681640625
+        }
+      ]
+    },
+    {
+      "start": 65.4,
+      "end": 66.54,
+      "text": "约八万块一只",
+      "words": [
+        {
+          "text": "约",
+          "start": 65.4,
+          "end": 65.62,
+          "probability": 0.984375
+        },
+        {
+          "text": "八",
+          "start": 65.62,
+          "end": 65.78,
+          "probability": 0.98291015625
+        },
+        {
+          "text": "万",
+          "start": 65.78,
+          "end": 65.96,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "块",
+          "start": 65.96,
+          "end": 66.12,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "一",
+          "start": 66.12,
+          "end": 66.32,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "只",
+          "start": 66.32,
+          "end": 66.54,
+          "probability": 0.99169921875
+        }
+      ]
+    },
+    {
+      "start": 66.54,
+      "end": 68.14,
+      "text": "这种羊我买得起吗",
+      "words": [
+        {
+          "text": "这",
+          "start": 66.54,
+          "end": 66.88,
+          "probability": 0.990234375
+        },
+        {
+          "text": "种",
+          "start": 66.88,
+          "end": 67.08,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "羊",
+          "start": 67.08,
+          "end": 67.22,
+          "probability": 0.998779296875
+        },
+        {
+          "text": "我",
+          "start": 67.22,
+          "end": 67.38,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "买",
+          "start": 67.38,
+          "end": 67.58,
+          "probability": 0.999755859375
+        },
+        {
+          "text": "得",
+          "start": 67.58,
+          "end": 67.7,
+          "probability": 0.9873046875
+        },
+        {
+          "text": "起",
+          "start": 67.7,
+          "end": 67.92,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "吗",
+          "start": 67.92,
+          "end": 68.14,
+          "probability": 0.99755859375
+        }
+      ]
+    },
+    {
+      "start": 68.14,
+      "end": 69.0,
+      "text": "买不起",
+      "words": [
+        {
+          "text": "买",
+          "start": 68.14,
+          "end": 68.72,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "不起",
+          "start": 68.72,
+          "end": 69.0,
+          "probability": 1.0
+        }
+      ]
+    },
+    {
+      "start": 69.0,
+      "end": 70.36,
+      "text": "这是刀狼羊",
+      "words": [
+        {
+          "text": "这是",
+          "start": 69.0,
+          "end": 69.64,
+          "probability": 0.904296875
+        },
+        {
+          "text": "刀",
+          "start": 69.64,
+          "end": 69.88,
+          "probability": 0.95751953125
+        },
+        {
+          "text": "狼",
+          "start": 69.88,
+          "end": 70.02,
+          "probability": 0.87890625
+        },
+        {
+          "text": "羊",
+          "start": 70.02,
+          "end": 70.36,
+          "probability": 0.997802734375
+        }
+      ]
+    },
+    {
+      "start": 70.36,
+      "end": 71.7,
+      "text": "这种顶级品项的",
+      "words": [
+        {
+          "text": "这",
+          "start": 70.36,
+          "end": 70.72,
+          "probability": 0.9853515625
+        },
+        {
+          "text": "种",
+          "start": 70.72,
+          "end": 70.88,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "顶",
+          "start": 70.88,
+          "end": 71.06,
+          "probability": 0.97705078125
+        },
+        {
+          "text": "级",
+          "start": 71.06,
+          "end": 71.22,
+          "probability": 0.997802734375
+        },
+        {
+          "text": "品",
+          "start": 71.22,
+          "end": 71.36,
+          "probability": 0.97705078125
+        },
+        {
+          "text": "项",
+          "start": 71.36,
+          "end": 71.56,
+          "probability": 0.772216796875
+        },
+        {
+          "text": "的",
+          "start": 71.56,
+          "end": 71.7,
+          "probability": 0.89208984375
+        }
+      ]
+    },
+    {
+      "start": 71.7,
+      "end": 73.14,
+      "text": "约一千四百万元一只",
+      "words": [
+        {
+          "text": "约",
+          "start": 71.7,
+          "end": 71.86,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "一",
+          "start": 71.86,
+          "end": 72.02,
+          "probability": 0.23046875
+        },
+        {
+          "text": "千",
+          "start": 72.02,
+          "end": 72.18,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "四",
+          "start": 72.18,
+          "end": 72.36,
+          "probability": 0.99658203125
+        },
+        {
+          "text": "百",
+          "start": 72.36,
+          "end": 72.52,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "万",
+          "start": 72.52,
+          "end": 72.66,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "元",
+          "start": 72.66,
+          "end": 72.8,
+          "probability": 0.93017578125
+        },
+        {
+          "text": "一",
+          "start": 72.8,
+          "end": 72.98,
+          "probability": 0.98095703125
+        },
+        {
+          "text": "只",
+          "start": 72.98,
+          "end": 73.14,
+          "probability": 0.98876953125
+        }
+      ]
+    },
+    {
+      "start": 73.14,
+      "end": 74.78,
+      "text": "这种羊我买得起吗",
+      "words": [
+        {
+          "text": "这",
+          "start": 73.14,
+          "end": 73.5,
+          "probability": 0.99462890625
+        },
+        {
+          "text": "种",
+          "start": 73.5,
+          "end": 73.7,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "羊",
+          "start": 73.7,
+          "end": 73.84,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "我",
+          "start": 73.84,
+          "end": 74.0,
+          "probability": 0.998046875
+        },
+        {
+          "text": "买",
+          "start": 74.0,
+          "end": 74.22,
+          "probability": 0.999755859375
+        },
+        {
+          "text": "得",
+          "start": 74.22,
+          "end": 74.32,
+          "probability": 0.98876953125
+        },
+        {
+          "text": "起",
+          "start": 74.32,
+          "end": 74.54,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "吗",
+          "start": 74.54,
+          "end": 74.78,
+          "probability": 0.99853515625
+        }
+      ]
+    },
+    {
+      "start": 74.78,
+      "end": 75.48,
+      "text": "买不起",
+      "words": [
+        {
+          "text": "买",
+          "start": 74.78,
+          "end": 75.24,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "不起",
+          "start": 75.24,
+          "end": 75.48,
+          "probability": 0.99951171875
+        }
+      ]
+    },
+    {
+      "start": 75.86,
+      "end": 77.58,
+      "text": "这是阿曼萨拉莱山羊",
+      "words": [
+        {
+          "text": "这是",
+          "start": 75.86,
+          "end": 76.22,
+          "probability": 0.9716796875
+        },
+        {
+          "text": "阿",
+          "start": 76.22,
+          "end": 76.46,
+          "probability": 0.98046875
+        },
+        {
+          "text": "曼",
+          "start": 76.46,
+          "end": 76.6,
+          "probability": 0.9921875
+        },
+        {
+          "text": "萨",
+          "start": 76.6,
+          "end": 76.76,
+          "probability": 0.94921875
+        },
+        {
+          "text": "拉",
+          "start": 76.76,
+          "end": 76.9,
+          "probability": 0.98681640625
+        },
+        {
+          "text": "莱",
+          "start": 76.9,
+          "end": 77.1,
+          "probability": 0.842041015625
+        },
+        {
+          "text": "山",
+          "start": 77.1,
+          "end": 77.26,
+          "probability": 0.912109375
+        },
+        {
+          "text": "羊",
+          "start": 77.26,
+          "end": 77.58,
+          "probability": 0.995361328125
+        }
+      ]
+    },
+    {
+      "start": 77.58,
+      "end": 78.7,
+      "text": "约二十万一只",
+      "words": [
+        {
+          "text": "约",
+          "start": 77.58,
+          "end": 77.96,
+          "probability": 0.996826171875
+        },
+        {
+          "text": "二",
+          "start": 77.96,
+          "end": 78.1,
+          "probability": 0.9853515625
+        },
+        {
+          "text": "十",
+          "start": 78.1,
+          "end": 78.24,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "万",
+          "start": 78.24,
+          "end": 78.38,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "一",
+          "start": 78.38,
+          "end": 78.54,
+          "probability": 0.974609375
+        },
+        {
+          "text": "只",
+          "start": 78.54,
+          "end": 78.7,
+          "probability": 0.99267578125
+        }
+      ]
+    }
+  ],
+  "cues": [
+    {
+      "start": 0.0,
+      "end": 1.44,
+      "text": "这种羊我买得起吗",
+      "words": [
+        {
+          "text": "这",
+          "start": 0.0,
+          "end": 0.18,
+          "probability": 0.49462890625
+        },
+        {
+          "text": "种",
+          "start": 0.18,
+          "end": 0.4,
+          "probability": 0.98828125
+        },
+        {
+          "text": "羊",
+          "start": 0.4,
+          "end": 0.52,
+          "probability": 0.9541015625
+        },
+        {
+          "text": "我",
+          "start": 0.52,
+          "end": 0.7,
+          "probability": 0.8984375
+        },
+        {
+          "text": "买",
+          "start": 0.7,
+          "end": 0.88,
+          "probability": 0.998779296875
+        },
+        {
+          "text": "得",
+          "start": 0.88,
+          "end": 1.0,
+          "probability": 0.8369140625
+        },
+        {
+          "text": "起",
+          "start": 1.0,
+          "end": 1.22,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "吗",
+          "start": 1.22,
+          "end": 1.44,
+          "probability": 0.97119140625
+        }
+      ]
+    },
+    {
+      "start": 1.44,
+      "end": 2.34,
+      "text": "买不起",
+      "words": [
+        {
+          "text": "买",
+          "start": 1.44,
+          "end": 2.08,
+          "probability": 0.87841796875
+        },
+        {
+          "text": "不起",
+          "start": 2.08,
+          "end": 2.34,
+          "probability": 0.9775390625
+        }
+      ]
+    },
+    {
+      "start": 2.34,
+      "end": 4.16,
+      "text": "这是大马士革山羊",
+      "words": [
+        {
+          "text": "这是",
+          "start": 2.34,
+          "end": 3.02,
+          "probability": 0.43115234375
+        },
+        {
+          "text": "大",
+          "start": 3.02,
+          "end": 3.24,
+          "probability": 0.9521484375
+        },
+        {
+          "text": "马",
+          "start": 3.24,
+          "end": 3.38,
+          "probability": 0.97900390625
+        },
+        {
+          "text": "士",
+          "start": 3.38,
+          "end": 3.54,
+          "probability": 0.44091796875
+        },
+        {
+          "text": "革",
+          "start": 3.54,
+          "end": 3.68,
+          "probability": 0.9501953125
+        },
+        {
+          "text": "山",
+          "start": 3.68,
+          "end": 3.88,
+          "probability": 0.9150390625
+        },
+        {
+          "text": "羊",
+          "start": 3.88,
+          "end": 4.16,
+          "probability": 0.994384765625
+        }
+      ]
+    },
+    {
+      "start": 4.16,
+      "end": 5.44,
+      "text": "约五十万一只",
+      "words": [
+        {
+          "text": "约",
+          "start": 4.16,
+          "end": 4.58,
+          "probability": 0.884521484375
+        },
+        {
+          "text": "五",
+          "start": 4.58,
+          "end": 4.76,
+          "probability": 0.52490234375
+        },
+        {
+          "text": "十",
+          "start": 4.76,
+          "end": 4.92,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "万",
+          "start": 4.92,
+          "end": 5.06,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "一",
+          "start": 5.06,
+          "end": 5.22,
+          "probability": 0.814453125
+        },
+        {
+          "text": "只",
+          "start": 5.22,
+          "end": 5.44,
+          "probability": 0.97900390625
+        }
+      ]
+    },
+    {
+      "start": 5.44,
+      "end": 7.06,
+      "text": "这种羊我买得起吗",
+      "words": [
+        {
+          "text": "这",
+          "start": 5.44,
+          "end": 5.78,
+          "probability": 0.91943359375
+        },
+        {
+          "text": "种",
+          "start": 5.78,
+          "end": 5.98,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "羊",
+          "start": 5.98,
+          "end": 6.1,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "我",
+          "start": 6.1,
+          "end": 6.28,
+          "probability": 0.9951171875
+        },
+        {
+          "text": "买",
+          "start": 6.28,
+          "end": 6.46,
+          "probability": 0.999755859375
+        },
+        {
+          "text": "得",
+          "start": 6.46,
+          "end": 6.58,
+          "probability": 0.9921875
+        },
+        {
+          "text": "起",
+          "start": 6.58,
+          "end": 6.82,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "吗",
+          "start": 6.82,
+          "end": 7.06,
+          "probability": 0.9970703125
+        }
+      ]
+    },
+    {
+      "start": 7.06,
+      "end": 7.98,
+      "text": "买不起",
+      "words": [
+        {
+          "text": "买",
+          "start": 7.06,
+          "end": 7.66,
+          "probability": 0.992919921875
+        },
+        {
+          "text": "不起",
+          "start": 7.66,
+          "end": 7.98,
+          "probability": 1.0
+        }
+      ]
+    },
+    {
+      "start": 7.98,
+      "end": 9.56,
+      "text": "这是瓦兰黑鼻羊",
+      "words": [
+        {
+          "text": "这是",
+          "start": 7.98,
+          "end": 8.62,
+          "probability": 0.92236328125
+        },
+        {
+          "text": "瓦",
+          "start": 8.62,
+          "end": 8.86,
+          "probability": 0.974609375
+        },
+        {
+          "text": "兰",
+          "start": 8.86,
+          "end": 8.98,
+          "probability": 0.515625
+        },
+        {
+          "text": "黑",
+          "start": 8.98,
+          "end": 9.2,
+          "probability": 0.97265625
+        },
+        {
+          "text": "鼻",
+          "start": 9.2,
+          "end": 9.32,
+          "probability": 0.59326171875
+        },
+        {
+          "text": "羊",
+          "start": 9.32,
+          "end": 9.56,
+          "probability": 0.994384765625
+        }
+      ]
+    },
+    {
+      "start": 9.56,
+      "end": 10.88,
+      "text": "约十二万一只",
+      "words": [
+        {
+          "text": "约",
+          "start": 9.56,
+          "end": 10.02,
+          "probability": 0.997802734375
+        },
+        {
+          "text": "十",
+          "start": 10.02,
+          "end": 10.22,
+          "probability": 0.9111328125
+        },
+        {
+          "text": "二",
+          "start": 10.22,
+          "end": 10.32,
+          "probability": 0.97412109375
+        },
+        {
+          "text": "万",
+          "start": 10.32,
+          "end": 10.46,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "一",
+          "start": 10.46,
+          "end": 10.64,
+          "probability": 0.99609375
+        },
+        {
+          "text": "只",
+          "start": 10.64,
+          "end": 10.88,
+          "probability": 0.99462890625
+        }
+      ]
+    },
+    {
+      "start": 10.88,
+      "end": 12.52,
+      "text": "这种羊我买得起吗",
+      "words": [
+        {
+          "text": "这",
+          "start": 10.88,
+          "end": 11.18,
+          "probability": 0.9912109375
+        },
+        {
+          "text": "种",
+          "start": 11.18,
+          "end": 11.4,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "羊",
+          "start": 11.4,
+          "end": 11.52,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "我",
+          "start": 11.52,
+          "end": 11.7,
+          "probability": 0.998046875
+        },
+        {
+          "text": "买",
+          "start": 11.7,
+          "end": 11.88,
+          "probability": 1.0
+        },
+        {
+          "text": "得",
+          "start": 11.88,
+          "end": 12.0,
+          "probability": 0.99560546875
+        },
+        {
+          "text": "起",
+          "start": 12.0,
+          "end": 12.24,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "吗",
+          "start": 12.24,
+          "end": 12.52,
+          "probability": 0.998046875
+        }
+      ]
+    },
+    {
+      "start": 12.52,
+      "end": 13.38,
+      "text": "买不起",
+      "words": [
+        {
+          "text": "买",
+          "start": 12.52,
+          "end": 13.0,
+          "probability": 0.999267578125
+        },
+        {
+          "text": "不起",
+          "start": 13.0,
+          "end": 13.38,
+          "probability": 1.0
+        }
+      ]
+    },
+    {
+      "start": 13.38,
+      "end": 14.96,
+      "text": "这是特克塞尔羊",
+      "words": [
+        {
+          "text": "这是",
+          "start": 13.38,
+          "end": 14.0,
+          "probability": 0.923828125
+        },
+        {
+          "text": "特",
+          "start": 14.0,
+          "end": 14.26,
+          "probability": 0.9794921875
+        },
+        {
+          "text": "克",
+          "start": 14.26,
+          "end": 14.38,
+          "probability": 0.8896484375
+        },
+        {
+          "text": "塞",
+          "start": 14.38,
+          "end": 14.58,
+          "probability": 0.94189453125
+        },
+        {
+          "text": "尔",
+          "start": 14.58,
+          "end": 14.72,
+          "probability": 0.99658203125
+        },
+        {
+          "text": "羊",
+          "start": 14.72,
+          "end": 14.96,
+          "probability": 0.906494140625
+        }
+      ]
+    },
+    {
+      "start": 14.96,
+      "end": 16.28,
+      "text": "约八万块一只",
+      "words": [
+        {
+          "text": "约",
+          "start": 14.96,
+          "end": 15.44,
+          "probability": 0.998046875
+        },
+        {
+          "text": "八",
+          "start": 15.44,
+          "end": 15.6,
+          "probability": 0.98291015625
+        },
+        {
+          "text": "万",
+          "start": 15.6,
+          "end": 15.76,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "块",
+          "start": 15.76,
+          "end": 15.9,
+          "probability": 0.99072265625
+        },
+        {
+          "text": "一",
+          "start": 15.9,
+          "end": 16.1,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "只",
+          "start": 16.1,
+          "end": 16.28,
+          "probability": 0.994140625
+        }
+      ]
+    },
+    {
+      "start": 16.28,
+      "end": 17.92,
+      "text": "这种羊我买得起吗",
+      "words": [
+        {
+          "text": "这",
+          "start": 16.28,
+          "end": 16.64,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "种",
+          "start": 16.64,
+          "end": 16.82,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "羊",
+          "start": 16.82,
+          "end": 16.96,
+          "probability": 0.999755859375
+        },
+        {
+          "text": "我",
+          "start": 16.96,
+          "end": 17.14,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "买",
+          "start": 17.14,
+          "end": 17.32,
+          "probability": 1.0
+        },
+        {
+          "text": "得",
+          "start": 17.32,
+          "end": 17.44,
+          "probability": 0.99609375
+        },
+        {
+          "text": "起",
+          "start": 17.44,
+          "end": 17.68,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "吗",
+          "start": 17.68,
+          "end": 17.92,
+          "probability": 0.99853515625
+        }
+      ]
+    },
+    {
+      "start": 17.92,
+      "end": 20.06,
+      "text": "这可是罕见的山神血羊",
+      "words": [
+        {
+          "text": "这",
+          "start": 17.92,
+          "end": 18.58,
+          "probability": 0.98681640625
+        },
+        {
+          "text": "可是",
+          "start": 18.58,
+          "end": 18.82,
+          "probability": 0.99609375
+        },
+        {
+          "text": "罕",
+          "start": 18.82,
+          "end": 19.06,
+          "probability": 0.799560546875
+        },
+        {
+          "text": "见",
+          "start": 19.06,
+          "end": 19.2,
+          "probability": 0.98388671875
+        },
+        {
+          "text": "的",
+          "start": 19.2,
+          "end": 19.34,
+          "probability": 0.99365234375
+        },
+        {
+          "text": "山",
+          "start": 19.34,
+          "end": 19.52,
+          "probability": 0.798828125
+        },
+        {
+          "text": "神",
+          "start": 19.52,
+          "end": 19.66,
+          "probability": 0.1944580078125
+        },
+        {
+          "text": "血",
+          "start": 19.66,
+          "end": 19.86,
+          "probability": 0.72412109375
+        },
+        {
+          "text": "羊",
+          "start": 19.86,
+          "end": 20.06,
+          "probability": 0.9990234375
+        }
+      ]
+    },
+    {
+      "start": 20.06,
+      "end": 22.16,
+      "text": "杀到极是好运来临的极杖",
+      "words": [
+        {
+          "text": "杀",
+          "start": 20.06,
+          "end": 20.62,
+          "probability": 0.899658203125
+        },
+        {
+          "text": "到",
+          "start": 20.62,
+          "end": 20.8,
+          "probability": 0.9794921875
+        },
+        {
+          "text": "极",
+          "start": 20.8,
+          "end": 20.96,
+          "probability": 0.7607421875
+        },
+        {
+          "text": "是",
+          "start": 20.96,
+          "end": 21.1,
+          "probability": 0.6708984375
+        },
+        {
+          "text": "好",
+          "start": 21.1,
+          "end": 21.26,
+          "probability": 0.453857421875
+        },
+        {
+          "text": "运",
+          "start": 21.26,
+          "end": 21.4,
+          "probability": 0.9189453125
+        },
+        {
+          "text": "来",
+          "start": 21.4,
+          "end": 21.56,
+          "probability": 0.98388671875
+        },
+        {
+          "text": "临",
+          "start": 21.56,
+          "end": 21.7,
+          "probability": 0.693359375
+        },
+        {
+          "text": "的",
+          "start": 21.7,
+          "end": 21.8,
+          "probability": 0.99609375
+        },
+        {
+          "text": "极",
+          "start": 21.8,
+          "end": 21.96,
+          "probability": 0.7000732421875
+        },
+        {
+          "text": "杖",
+          "start": 21.96,
+          "end": 22.16,
+          "probability": 0.71044921875
+        }
+      ]
+    },
+    {
+      "start": 22.16,
+      "end": 23.88,
+      "text": "建议送上三朵小花",
+      "words": [
+        {
+          "text": "建",
+          "start": 22.16,
+          "end": 22.68,
+          "probability": 0.7939453125
+        },
+        {
+          "text": "议",
+          "start": 22.68,
+          "end": 22.82,
+          "probability": 0.998779296875
+        },
+        {
+          "text": "送",
+          "start": 22.82,
+          "end": 22.98,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "上",
+          "start": 22.98,
+          "end": 23.16,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "三",
+          "start": 23.16,
+          "end": 23.36,
+          "probability": 0.984375
+        },
+        {
+          "text": "朵",
+          "start": 23.36,
+          "end": 23.48,
+          "probability": 0.9912109375
+        },
+        {
+          "text": "小",
+          "start": 23.48,
+          "end": 23.66,
+          "probability": 0.98876953125
+        },
+        {
+          "text": "花",
+          "start": 23.66,
+          "end": 23.88,
+          "probability": 0.99853515625
+        }
+      ]
+    },
+    {
+      "start": 23.88,
+      "end": 25.56,
+      "text": "往后必兵万事顺利",
+      "words": [
+        {
+          "text": "往",
+          "start": 23.88,
+          "end": 24.42,
+          "probability": 0.88427734375
+        },
+        {
+          "text": "后",
+          "start": 24.42,
+          "end": 24.6,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "必",
+          "start": 24.6,
+          "end": 24.76,
+          "probability": 0.5439453125
+        },
+        {
+          "text": "兵",
+          "start": 24.76,
+          "end": 24.9,
+          "probability": 0.719482421875
+        },
+        {
+          "text": "万",
+          "start": 24.9,
+          "end": 25.1,
+          "probability": 0.9541015625
+        },
+        {
+          "text": "事",
+          "start": 25.1,
+          "end": 25.24,
+          "probability": 0.8837890625
+        },
+        {
+          "text": "顺",
+          "start": 25.24,
+          "end": 25.38,
+          "probability": 0.991455078125
+        },
+        {
+          "text": "利",
+          "start": 25.38,
+          "end": 25.56,
+          "probability": 0.409423828125
+        }
+      ]
+    },
+    {
+      "start": 25.56,
+      "end": 26.64,
+      "text": "平安顺遂",
+      "words": [
+        {
+          "text": "平",
+          "start": 25.56,
+          "end": 26.02,
+          "probability": 0.95458984375
+        },
+        {
+          "text": "安",
+          "start": 26.02,
+          "end": 26.2,
+          "probability": 1.0
+        },
+        {
+          "text": "顺",
+          "start": 26.2,
+          "end": 26.38,
+          "probability": 0.999755859375
+        },
+        {
+          "text": "遂",
+          "start": 26.38,
+          "end": 26.64,
+          "probability": 0.6529541015625
+        }
+      ]
+    },
+    {
+      "start": 26.64,
+      "end": 28.2,
+      "text": "这种羊我买得起吗",
+      "words": [
+        {
+          "text": "这",
+          "start": 26.64,
+          "end": 26.92,
+          "probability": 0.98583984375
+        },
+        {
+          "text": "种",
+          "start": 26.92,
+          "end": 27.1,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "羊",
+          "start": 27.1,
+          "end": 27.26,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "我",
+          "start": 27.26,
+          "end": 27.44,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "买",
+          "start": 27.44,
+          "end": 27.62,
+          "probability": 1.0
+        },
+        {
+          "text": "得",
+          "start": 27.62,
+          "end": 27.74,
+          "probability": 0.99462890625
+        },
+        {
+          "text": "起",
+          "start": 27.74,
+          "end": 27.96,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "吗",
+          "start": 27.96,
+          "end": 28.2,
+          "probability": 0.99853515625
+        }
+      ]
+    },
+    {
+      "start": 28.2,
+      "end": 29.02,
+      "text": "买不起",
+      "words": [
+        {
+          "text": "买",
+          "start": 28.2,
+          "end": 28.76,
+          "probability": 0.998779296875
+        },
+        {
+          "text": "不起",
+          "start": 28.76,
+          "end": 29.02,
+          "probability": 0.99951171875
+        }
+      ]
+    },
+    {
+      "start": 29.02,
+      "end": 30.54,
+      "text": "这是吉萨尔羊",
+      "words": [
+        {
+          "text": "这是",
+          "start": 29.02,
+          "end": 29.78,
+          "probability": 0.09722900390625
+        },
+        {
+          "text": "吉",
+          "start": 29.78,
+          "end": 30.06,
+          "probability": 0.453857421875
+        },
+        {
+          "text": "萨",
+          "start": 30.06,
+          "end": 30.22,
+          "probability": 0.9658203125
+        },
+        {
+          "text": "尔",
+          "start": 30.22,
+          "end": 30.36,
+          "probability": 0.8486328125
+        },
+        {
+          "text": "羊",
+          "start": 30.36,
+          "end": 30.54,
+          "probability": 0.5557861328125
+        }
+      ]
+    },
+    {
+      "start": 30.54,
+      "end": 31.92,
+      "text": "约三十万一只",
+      "words": [
+        {
+          "text": "约",
+          "start": 30.54,
+          "end": 31.06,
+          "probability": 0.56689453125
+        },
+        {
+          "text": "三",
+          "start": 31.06,
+          "end": 31.26,
+          "probability": 0.3173828125
+        },
+        {
+          "text": "十",
+          "start": 31.26,
+          "end": 31.42,
+          "probability": 0.998046875
+        },
+        {
+          "text": "万",
+          "start": 31.42,
+          "end": 31.56,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "一",
+          "start": 31.56,
+          "end": 31.74,
+          "probability": 0.51318359375
+        },
+        {
+          "text": "只",
+          "start": 31.74,
+          "end": 31.92,
+          "probability": 0.9111328125
+        }
+      ]
+    },
+    {
+      "start": 31.92,
+      "end": 33.52,
+      "text": "这种羊我买得起吗",
+      "words": [
+        {
+          "text": "这",
+          "start": 31.92,
+          "end": 32.26,
+          "probability": 0.5966796875
+        },
+        {
+          "text": "种",
+          "start": 32.26,
+          "end": 32.48,
+          "probability": 0.998046875
+        },
+        {
+          "text": "羊",
+          "start": 32.48,
+          "end": 32.58,
+          "probability": 0.990234375
+        },
+        {
+          "text": "我",
+          "start": 32.58,
+          "end": 32.76,
+          "probability": 0.98095703125
+        },
+        {
+          "text": "买",
+          "start": 32.76,
+          "end": 32.96,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "得",
+          "start": 32.96,
+          "end": 33.08,
+          "probability": 0.8935546875
+        },
+        {
+          "text": "起",
+          "start": 33.08,
+          "end": 33.3,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "吗",
+          "start": 33.3,
+          "end": 33.52,
+          "probability": 0.986328125
+        }
+      ]
+    },
+    {
+      "start": 33.52,
+      "end": 34.46,
+      "text": "买不起",
+      "words": [
+        {
+          "text": "买",
+          "start": 33.52,
+          "end": 34.22,
+          "probability": 0.891357421875
+        },
+        {
+          "text": "不起",
+          "start": 34.22,
+          "end": 34.46,
+          "probability": 0.98193359375
+        }
+      ]
+    },
+    {
+      "start": 34.46,
+      "end": 36.08,
+      "text": "这是克里山绵羊",
+      "words": [
+        {
+          "text": "这是",
+          "start": 34.46,
+          "end": 35.18,
+          "probability": 0.677734375
+        },
+        {
+          "text": "克",
+          "start": 35.18,
+          "end": 35.42,
+          "probability": 0.9619140625
+        },
+        {
+          "text": "里",
+          "start": 35.42,
+          "end": 35.54,
+          "probability": 0.796875
+        },
+        {
+          "text": "山",
+          "start": 35.54,
+          "end": 35.7,
+          "probability": 0.85107421875
+        },
+        {
+          "text": "绵",
+          "start": 35.7,
+          "end": 35.86,
+          "probability": 0.85595703125
+        },
+        {
+          "text": "羊",
+          "start": 35.86,
+          "end": 36.08,
+          "probability": 0.998779296875
+        }
+      ]
+    },
+    {
+      "start": 36.08,
+      "end": 37.54,
+      "text": "约二十五万一只",
+      "words": [
+        {
+          "text": "约",
+          "start": 36.08,
+          "end": 36.52,
+          "probability": 0.994384765625
+        },
+        {
+          "text": "二",
+          "start": 36.52,
+          "end": 36.72,
+          "probability": 0.98779296875
+        },
+        {
+          "text": "十",
+          "start": 36.72,
+          "end": 36.86,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "五",
+          "start": 36.86,
+          "end": 36.98,
+          "probability": 0.98974609375
+        },
+        {
+          "text": "万",
+          "start": 36.98,
+          "end": 37.14,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "一",
+          "start": 37.14,
+          "end": 37.3,
+          "probability": 0.99267578125
+        },
+        {
+          "text": "只",
+          "start": 37.3,
+          "end": 37.54,
+          "probability": 0.99267578125
+        }
+      ]
+    },
+    {
+      "start": 37.54,
+      "end": 39.16,
+      "text": "这种羊我买得起吗",
+      "words": [
+        {
+          "text": "这",
+          "start": 37.54,
+          "end": 37.88,
+          "probability": 0.95458984375
+        },
+        {
+          "text": "种",
+          "start": 37.88,
+          "end": 38.08,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "羊",
+          "start": 38.08,
+          "end": 38.2,
+          "probability": 0.999267578125
+        },
+        {
+          "text": "我",
+          "start": 38.2,
+          "end": 38.38,
+          "probability": 0.99658203125
+        },
+        {
+          "text": "买",
+          "start": 38.38,
+          "end": 38.56,
+          "probability": 0.999755859375
+        },
+        {
+          "text": "得",
+          "start": 38.56,
+          "end": 38.68,
+          "probability": 0.990234375
+        },
+        {
+          "text": "起",
+          "start": 38.68,
+          "end": 38.94,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "吗",
+          "start": 38.94,
+          "end": 39.16,
+          "probability": 0.99755859375
+        }
+      ]
+    },
+    {
+      "start": 39.16,
+      "end": 39.92,
+      "text": "买不起",
+      "words": [
+        {
+          "text": "买",
+          "start": 39.16,
+          "end": 39.66,
+          "probability": 0.99658203125
+        },
+        {
+          "text": "不起",
+          "start": 39.66,
+          "end": 39.92,
+          "probability": 1.0
+        }
+      ]
+    },
+    {
+      "start": 39.92,
+      "end": 41.5,
+      "text": "这是瓦格吉尔羊",
+      "words": [
+        {
+          "text": "这是",
+          "start": 39.92,
+          "end": 40.56,
+          "probability": 0.94775390625
+        },
+        {
+          "text": "瓦",
+          "start": 40.56,
+          "end": 40.8,
+          "probability": 0.947265625
+        },
+        {
+          "text": "格",
+          "start": 40.8,
+          "end": 40.94,
+          "probability": 0.99072265625
+        },
+        {
+          "text": "吉",
+          "start": 40.94,
+          "end": 41.12,
+          "probability": 0.9560546875
+        },
+        {
+          "text": "尔",
+          "start": 41.12,
+          "end": 41.26,
+          "probability": 0.9873046875
+        },
+        {
+          "text": "羊",
+          "start": 41.26,
+          "end": 41.5,
+          "probability": 0.997802734375
+        }
+      ]
+    },
+    {
+      "start": 41.5,
+      "end": 42.84,
+      "text": "约八万块一只",
+      "words": [
+        {
+          "text": "约",
+          "start": 41.5,
+          "end": 41.98,
+          "probability": 0.997802734375
+        },
+        {
+          "text": "八",
+          "start": 41.98,
+          "end": 42.16,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "万",
+          "start": 42.16,
+          "end": 42.32,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "块",
+          "start": 42.32,
+          "end": 42.48,
+          "probability": 0.97705078125
+        },
+        {
+          "text": "一",
+          "start": 42.48,
+          "end": 42.66,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "只",
+          "start": 42.66,
+          "end": 42.84,
+          "probability": 0.994140625
+        }
+      ]
+    },
+    {
+      "start": 42.84,
+      "end": 44.5,
+      "text": "这种羊我买得起吗",
+      "words": [
+        {
+          "text": "这",
+          "start": 42.84,
+          "end": 43.24,
+          "probability": 0.99072265625
+        },
+        {
+          "text": "种",
+          "start": 43.24,
+          "end": 43.42,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "羊",
+          "start": 43.42,
+          "end": 43.58,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "我",
+          "start": 43.58,
+          "end": 43.74,
+          "probability": 0.998046875
+        },
+        {
+          "text": "买",
+          "start": 43.74,
+          "end": 43.92,
+          "probability": 0.999755859375
+        },
+        {
+          "text": "得",
+          "start": 43.92,
+          "end": 44.04,
+          "probability": 0.99267578125
+        },
+        {
+          "text": "起",
+          "start": 44.04,
+          "end": 44.28,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "吗",
+          "start": 44.28,
+          "end": 44.5,
+          "probability": 0.99853515625
+        }
+      ]
+    },
+    {
+      "start": 44.5,
+      "end": 45.38,
+      "text": "买不起",
+      "words": [
+        {
+          "text": "买",
+          "start": 44.5,
+          "end": 45.06,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "不起",
+          "start": 45.06,
+          "end": 45.38,
+          "probability": 1.0
+        }
+      ]
+    },
+    {
+      "start": 45.38,
+      "end": 46.84,
+      "text": "这是萨瓦克尼羊",
+      "words": [
+        {
+          "text": "这是",
+          "start": 45.38,
+          "end": 45.96,
+          "probability": 0.98828125
+        },
+        {
+          "text": "萨",
+          "start": 45.96,
+          "end": 46.16,
+          "probability": 0.988525390625
+        },
+        {
+          "text": "瓦",
+          "start": 46.16,
+          "end": 46.3,
+          "probability": 0.8621419270833334
+        },
+        {
+          "text": "克",
+          "start": 46.3,
+          "end": 46.46,
+          "probability": 0.9931640625
+        },
+        {
+          "text": "尼",
+          "start": 46.46,
+          "end": 46.64,
+          "probability": 0.97216796875
+        },
+        {
+          "text": "羊",
+          "start": 46.64,
+          "end": 46.84,
+          "probability": 0.919921875
+        }
+      ]
+    },
+    {
+      "start": 46.84,
+      "end": 48.24,
+      "text": "约三万块一只",
+      "words": [
+        {
+          "text": "约",
+          "start": 46.84,
+          "end": 47.3,
+          "probability": 0.996826171875
+        },
+        {
+          "text": "三",
+          "start": 47.3,
+          "end": 47.52,
+          "probability": 0.998046875
+        },
+        {
+          "text": "万",
+          "start": 47.52,
+          "end": 47.68,
+          "probability": 0.99658203125
+        },
+        {
+          "text": "块",
+          "start": 47.68,
+          "end": 47.86,
+          "probability": 0.998046875
+        },
+        {
+          "text": "一",
+          "start": 47.86,
+          "end": 48.06,
+          "probability": 0.998046875
+        },
+        {
+          "text": "只",
+          "start": 48.06,
+          "end": 48.24,
+          "probability": 0.99365234375
+        }
+      ]
+    },
+    {
+      "start": 48.24,
+      "end": 49.88,
+      "text": "这种羊我买得起吗",
+      "words": [
+        {
+          "text": "这",
+          "start": 48.24,
+          "end": 48.6,
+          "probability": 0.9892578125
+        },
+        {
+          "text": "种",
+          "start": 48.6,
+          "end": 48.82,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "羊",
+          "start": 48.82,
+          "end": 48.94,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "我",
+          "start": 48.94,
+          "end": 49.12,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "买",
+          "start": 49.12,
+          "end": 49.32,
+          "probability": 0.999755859375
+        },
+        {
+          "text": "得",
+          "start": 49.32,
+          "end": 49.42,
+          "probability": 0.99609375
+        },
+        {
+          "text": "起",
+          "start": 49.42,
+          "end": 49.66,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "吗",
+          "start": 49.66,
+          "end": 49.88,
+          "probability": 0.99853515625
+        }
+      ]
+    },
+    {
+      "start": 49.88,
+      "end": 50.72,
+      "text": "买不起",
+      "words": [
+        {
+          "text": "买",
+          "start": 49.88,
+          "end": 50.44,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "不起",
+          "start": 50.44,
+          "end": 50.72,
+          "probability": 1.0
+        }
+      ]
+    },
+    {
+      "start": 50.72,
+      "end": 52.44,
+      "text": "这是印度班杜尔羊",
+      "words": [
+        {
+          "text": "这是",
+          "start": 50.72,
+          "end": 51.4,
+          "probability": 0.982421875
+        },
+        {
+          "text": "印",
+          "start": 51.4,
+          "end": 51.64,
+          "probability": 0.99462890625
+        },
+        {
+          "text": "度",
+          "start": 51.64,
+          "end": 51.76,
+          "probability": 0.998046875
+        },
+        {
+          "text": "班",
+          "start": 51.76,
+          "end": 51.94,
+          "probability": 0.68408203125
+        },
+        {
+          "text": "杜",
+          "start": 51.94,
+          "end": 52.08,
+          "probability": 0.58258056640625
+        },
+        {
+          "text": "尔",
+          "start": 52.08,
+          "end": 52.24,
+          "probability": 0.996337890625
+        },
+        {
+          "text": "羊",
+          "start": 52.24,
+          "end": 52.44,
+          "probability": 0.9951171875
+        }
+      ]
+    },
+    {
+      "start": 52.44,
+      "end": 53.7,
+      "text": "约五万块一只",
+      "words": [
+        {
+          "text": "约",
+          "start": 52.44,
+          "end": 52.84,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "五",
+          "start": 52.84,
+          "end": 53.02,
+          "probability": 0.99462890625
+        },
+        {
+          "text": "万",
+          "start": 53.02,
+          "end": 53.2,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "块",
+          "start": 53.2,
+          "end": 53.36,
+          "probability": 0.998046875
+        },
+        {
+          "text": "一",
+          "start": 53.36,
+          "end": 53.56,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "只",
+          "start": 53.56,
+          "end": 53.7,
+          "probability": 0.9951171875
+        }
+      ]
+    },
+    {
+      "start": 53.7,
+      "end": 55.34,
+      "text": "这种羊我买得起吗",
+      "words": [
+        {
+          "text": "这",
+          "start": 53.7,
+          "end": 54.06,
+          "probability": 0.994140625
+        },
+        {
+          "text": "种",
+          "start": 54.06,
+          "end": 54.26,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "羊",
+          "start": 54.26,
+          "end": 54.38,
+          "probability": 0.999755859375
+        },
+        {
+          "text": "我",
+          "start": 54.38,
+          "end": 54.56,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "买",
+          "start": 54.56,
+          "end": 54.76,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "得",
+          "start": 54.76,
+          "end": 54.88,
+          "probability": 0.99462890625
+        },
+        {
+          "text": "起",
+          "start": 54.88,
+          "end": 55.1,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "吗",
+          "start": 55.1,
+          "end": 55.34,
+          "probability": 0.99853515625
+        }
+      ]
+    },
+    {
+      "start": 55.34,
+      "end": 56.18,
+      "text": "买不起",
+      "words": [
+        {
+          "text": "买",
+          "start": 55.34,
+          "end": 55.86,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "不起",
+          "start": 55.86,
+          "end": 56.18,
+          "probability": 1.0
+        }
+      ]
+    },
+    {
+      "start": 56.18,
+      "end": 57.46,
+      "text": "这是晕倒羊",
+      "words": [
+        {
+          "text": "这是",
+          "start": 56.18,
+          "end": 56.82,
+          "probability": 0.9765625
+        },
+        {
+          "text": "晕",
+          "start": 56.82,
+          "end": 57.06,
+          "probability": 0.7305908203125
+        },
+        {
+          "text": "倒",
+          "start": 57.06,
+          "end": 57.22,
+          "probability": 0.3134765625
+        },
+        {
+          "text": "羊",
+          "start": 57.22,
+          "end": 57.46,
+          "probability": 0.99169921875
+        }
+      ]
+    },
+    {
+      "start": 57.46,
+      "end": 58.74,
+      "text": "受惊兴奋时",
+      "words": [
+        {
+          "text": "受",
+          "start": 57.46,
+          "end": 58.02,
+          "probability": 0.501953125
+        },
+        {
+          "text": "惊",
+          "start": 58.02,
+          "end": 58.2,
+          "probability": 0.95458984375
+        },
+        {
+          "text": "兴",
+          "start": 58.2,
+          "end": 58.34,
+          "probability": 0.92626953125
+        },
+        {
+          "text": "奋",
+          "start": 58.34,
+          "end": 58.52,
+          "probability": 0.85546875
+        },
+        {
+          "text": "时",
+          "start": 58.52,
+          "end": 58.74,
+          "probability": 0.98779296875
+        }
+      ]
+    },
+    {
+      "start": 58.74,
+      "end": 60.24,
+      "text": "就会四肌僵硬倒地",
+      "words": [
+        {
+          "text": "就",
+          "start": 58.74,
+          "end": 59.04,
+          "probability": 0.293212890625
+        },
+        {
+          "text": "会",
+          "start": 59.04,
+          "end": 59.22,
+          "probability": 0.865234375
+        },
+        {
+          "text": "四",
+          "start": 59.22,
+          "end": 59.4,
+          "probability": 0.8701171875
+        },
+        {
+          "text": "肌",
+          "start": 59.4,
+          "end": 59.54,
+          "probability": 0.46368408203125
+        },
+        {
+          "text": "僵",
+          "start": 59.54,
+          "end": 59.72,
+          "probability": 0.744384765625
+        },
+        {
+          "text": "硬",
+          "start": 59.72,
+          "end": 59.86,
+          "probability": 0.998046875
+        },
+        {
+          "text": "倒",
+          "start": 59.86,
+          "end": 60.0,
+          "probability": 0.7744140625
+        },
+        {
+          "text": "地",
+          "start": 60.0,
+          "end": 60.24,
+          "probability": 0.9521484375
+        }
+      ]
+    },
+    {
+      "start": 60.24,
+      "end": 61.54,
+      "text": "约六万块一只",
+      "words": [
+        {
+          "text": "约",
+          "start": 60.24,
+          "end": 60.72,
+          "probability": 0.831787109375
+        },
+        {
+          "text": "六",
+          "start": 60.72,
+          "end": 60.9,
+          "probability": 0.32373046875
+        },
+        {
+          "text": "万",
+          "start": 60.9,
+          "end": 61.04,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "块",
+          "start": 61.04,
+          "end": 61.2,
+          "probability": 0.9912109375
+        },
+        {
+          "text": "一",
+          "start": 61.2,
+          "end": 61.38,
+          "probability": 0.9873046875
+        },
+        {
+          "text": "只",
+          "start": 61.38,
+          "end": 61.54,
+          "probability": 0.69775390625
+        }
+      ]
+    },
+    {
+      "start": 61.54,
+      "end": 63.16,
+      "text": "这种羊我买得起吗",
+      "words": [
+        {
+          "text": "这",
+          "start": 61.54,
+          "end": 61.88,
+          "probability": 0.84228515625
+        },
+        {
+          "text": "种",
+          "start": 61.88,
+          "end": 62.08,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "羊",
+          "start": 62.08,
+          "end": 62.22,
+          "probability": 0.77685546875
+        },
+        {
+          "text": "我",
+          "start": 62.22,
+          "end": 62.4,
+          "probability": 0.9775390625
+        },
+        {
+          "text": "买",
+          "start": 62.4,
+          "end": 62.58,
+          "probability": 0.999267578125
+        },
+        {
+          "text": "得",
+          "start": 62.58,
+          "end": 62.72,
+          "probability": 0.89453125
+        },
+        {
+          "text": "起",
+          "start": 62.72,
+          "end": 62.92,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "吗",
+          "start": 62.92,
+          "end": 63.16,
+          "probability": 0.98291015625
+        }
+      ]
+    },
+    {
+      "start": 63.16,
+      "end": 64.0,
+      "text": "买不起",
+      "words": [
+        {
+          "text": "买",
+          "start": 63.16,
+          "end": 63.74,
+          "probability": 0.95361328125
+        },
+        {
+          "text": "不起",
+          "start": 63.74,
+          "end": 64.0,
+          "probability": 0.98583984375
+        }
+      ]
+    },
+    {
+      "start": 64.0,
+      "end": 65.4,
+      "text": "这是瓦瓦羊",
+      "words": [
+        {
+          "text": "这是",
+          "start": 64.0,
+          "end": 64.56,
+          "probability": 0.55078125
+        },
+        {
+          "text": "瓦",
+          "start": 64.56,
+          "end": 64.82,
+          "probability": 0.6750386555989584
+        },
+        {
+          "text": "瓦",
+          "start": 64.82,
+          "end": 64.96,
+          "probability": 0.9501953125
+        },
+        {
+          "text": "羊",
+          "start": 64.96,
+          "end": 65.4,
+          "probability": 0.898681640625
+        }
+      ]
+    },
+    {
+      "start": 65.4,
+      "end": 66.54,
+      "text": "约八万块一只",
+      "words": [
+        {
+          "text": "约",
+          "start": 65.4,
+          "end": 65.62,
+          "probability": 0.984375
+        },
+        {
+          "text": "八",
+          "start": 65.62,
+          "end": 65.78,
+          "probability": 0.98291015625
+        },
+        {
+          "text": "万",
+          "start": 65.78,
+          "end": 65.96,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "块",
+          "start": 65.96,
+          "end": 66.12,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "一",
+          "start": 66.12,
+          "end": 66.32,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "只",
+          "start": 66.32,
+          "end": 66.54,
+          "probability": 0.99169921875
+        }
+      ]
+    },
+    {
+      "start": 66.54,
+      "end": 68.14,
+      "text": "这种羊我买得起吗",
+      "words": [
+        {
+          "text": "这",
+          "start": 66.54,
+          "end": 66.88,
+          "probability": 0.990234375
+        },
+        {
+          "text": "种",
+          "start": 66.88,
+          "end": 67.08,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "羊",
+          "start": 67.08,
+          "end": 67.22,
+          "probability": 0.998779296875
+        },
+        {
+          "text": "我",
+          "start": 67.22,
+          "end": 67.38,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "买",
+          "start": 67.38,
+          "end": 67.58,
+          "probability": 0.999755859375
+        },
+        {
+          "text": "得",
+          "start": 67.58,
+          "end": 67.7,
+          "probability": 0.9873046875
+        },
+        {
+          "text": "起",
+          "start": 67.7,
+          "end": 67.92,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "吗",
+          "start": 67.92,
+          "end": 68.14,
+          "probability": 0.99755859375
+        }
+      ]
+    },
+    {
+      "start": 68.14,
+      "end": 69.0,
+      "text": "买不起",
+      "words": [
+        {
+          "text": "买",
+          "start": 68.14,
+          "end": 68.72,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "不起",
+          "start": 68.72,
+          "end": 69.0,
+          "probability": 1.0
+        }
+      ]
+    },
+    {
+      "start": 69.0,
+      "end": 70.36,
+      "text": "这是刀狼羊",
+      "words": [
+        {
+          "text": "这是",
+          "start": 69.0,
+          "end": 69.64,
+          "probability": 0.904296875
+        },
+        {
+          "text": "刀",
+          "start": 69.64,
+          "end": 69.88,
+          "probability": 0.95751953125
+        },
+        {
+          "text": "狼",
+          "start": 69.88,
+          "end": 70.02,
+          "probability": 0.87890625
+        },
+        {
+          "text": "羊",
+          "start": 70.02,
+          "end": 70.36,
+          "probability": 0.997802734375
+        }
+      ]
+    },
+    {
+      "start": 70.36,
+      "end": 71.7,
+      "text": "这种顶级品项的",
+      "words": [
+        {
+          "text": "这",
+          "start": 70.36,
+          "end": 70.72,
+          "probability": 0.9853515625
+        },
+        {
+          "text": "种",
+          "start": 70.72,
+          "end": 70.88,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "顶",
+          "start": 70.88,
+          "end": 71.06,
+          "probability": 0.97705078125
+        },
+        {
+          "text": "级",
+          "start": 71.06,
+          "end": 71.22,
+          "probability": 0.997802734375
+        },
+        {
+          "text": "品",
+          "start": 71.22,
+          "end": 71.36,
+          "probability": 0.97705078125
+        },
+        {
+          "text": "项",
+          "start": 71.36,
+          "end": 71.56,
+          "probability": 0.772216796875
+        },
+        {
+          "text": "的",
+          "start": 71.56,
+          "end": 71.7,
+          "probability": 0.89208984375
+        }
+      ]
+    },
+    {
+      "start": 71.7,
+      "end": 73.14,
+      "text": "约一千四百万元一只",
+      "words": [
+        {
+          "text": "约",
+          "start": 71.7,
+          "end": 71.86,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "一",
+          "start": 71.86,
+          "end": 72.02,
+          "probability": 0.23046875
+        },
+        {
+          "text": "千",
+          "start": 72.02,
+          "end": 72.18,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "四",
+          "start": 72.18,
+          "end": 72.36,
+          "probability": 0.99658203125
+        },
+        {
+          "text": "百",
+          "start": 72.36,
+          "end": 72.52,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "万",
+          "start": 72.52,
+          "end": 72.66,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "元",
+          "start": 72.66,
+          "end": 72.8,
+          "probability": 0.93017578125
+        },
+        {
+          "text": "一",
+          "start": 72.8,
+          "end": 72.98,
+          "probability": 0.98095703125
+        },
+        {
+          "text": "只",
+          "start": 72.98,
+          "end": 73.14,
+          "probability": 0.98876953125
+        }
+      ]
+    },
+    {
+      "start": 73.14,
+      "end": 74.78,
+      "text": "这种羊我买得起吗",
+      "words": [
+        {
+          "text": "这",
+          "start": 73.14,
+          "end": 73.5,
+          "probability": 0.99462890625
+        },
+        {
+          "text": "种",
+          "start": 73.5,
+          "end": 73.7,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "羊",
+          "start": 73.7,
+          "end": 73.84,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "我",
+          "start": 73.84,
+          "end": 74.0,
+          "probability": 0.998046875
+        },
+        {
+          "text": "买",
+          "start": 74.0,
+          "end": 74.22,
+          "probability": 0.999755859375
+        },
+        {
+          "text": "得",
+          "start": 74.22,
+          "end": 74.32,
+          "probability": 0.98876953125
+        },
+        {
+          "text": "起",
+          "start": 74.32,
+          "end": 74.54,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "吗",
+          "start": 74.54,
+          "end": 74.78,
+          "probability": 0.99853515625
+        }
+      ]
+    },
+    {
+      "start": 74.78,
+      "end": 75.48,
+      "text": "买不起",
+      "words": [
+        {
+          "text": "买",
+          "start": 74.78,
+          "end": 75.24,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "不起",
+          "start": 75.24,
+          "end": 75.48,
+          "probability": 0.99951171875
+        }
+      ]
+    },
+    {
+      "start": 75.86,
+      "end": 77.58,
+      "text": "这是阿曼萨拉莱山羊",
+      "words": [
+        {
+          "text": "这是",
+          "start": 75.86,
+          "end": 76.22,
+          "probability": 0.9716796875
+        },
+        {
+          "text": "阿",
+          "start": 76.22,
+          "end": 76.46,
+          "probability": 0.98046875
+        },
+        {
+          "text": "曼",
+          "start": 76.46,
+          "end": 76.6,
+          "probability": 0.9921875
+        },
+        {
+          "text": "萨",
+          "start": 76.6,
+          "end": 76.76,
+          "probability": 0.94921875
+        },
+        {
+          "text": "拉",
+          "start": 76.76,
+          "end": 76.9,
+          "probability": 0.98681640625
+        },
+        {
+          "text": "莱",
+          "start": 76.9,
+          "end": 77.1,
+          "probability": 0.842041015625
+        },
+        {
+          "text": "山",
+          "start": 77.1,
+          "end": 77.26,
+          "probability": 0.912109375
+        },
+        {
+          "text": "羊",
+          "start": 77.26,
+          "end": 77.58,
+          "probability": 0.995361328125
+        }
+      ]
+    },
+    {
+      "start": 77.58,
+      "end": 78.7,
+      "text": "约二十万一只",
+      "words": [
+        {
+          "text": "约",
+          "start": 77.58,
+          "end": 77.96,
+          "probability": 0.996826171875
+        },
+        {
+          "text": "二",
+          "start": 77.96,
+          "end": 78.1,
+          "probability": 0.9853515625
+        },
+        {
+          "text": "十",
+          "start": 78.1,
+          "end": 78.24,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "万",
+          "start": 78.24,
+          "end": 78.38,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "一",
+          "start": 78.38,
+          "end": 78.54,
+          "probability": 0.974609375
+        },
+        {
+          "text": "只",
+          "start": 78.54,
+          "end": 78.7,
+          "probability": 0.99267578125
+        }
+      ]
+    }
+  ]
+}

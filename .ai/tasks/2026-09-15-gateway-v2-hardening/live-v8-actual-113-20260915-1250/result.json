@@ -1,0 +1,476 @@
+{
+  "success": true,
+  "cues": 113,
+  "client_generation_requests": 2,
+  "total_upstream_attempts": 2,
+  "observed_models": [
+    "3.1 Pro",
+    "3.1 Pro"
+  ],
+  "route_fingerprints": [
+    "29ed9729dbdd53e76081fc89bd7f7991b6a6e2c770e964fd8fa2ceaa0c22c646",
+    "29ed9729dbdd53e76081fc89bd7f7991b6a6e2c770e964fd8fa2ceaa0c22c646"
+  ],
+  "retry_reasons": [
+    null,
+    null
+  ],
+  "parsed": {
+    "items": [
+      {
+        "id": "cue-0-0",
+        "text": "Chỉ cần cho rau củ vào đây,"
+      },
+      {
+        "id": "cue-1-1360",
+        "text": "không cần phải thay bất kỳ lưỡi dao nào,"
+      },
+      {
+        "id": "cue-2-2900",
+        "text": "là bạn có thể thái lát, thái con chì, bào sợi và thái hạt lựu."
+      },
+      {
+        "id": "cue-3-5160",
+        "text": "Thật hay giả vậy?"
+      },
+      {
+        "id": "cue-4-6220",
+        "text": "Cùng xem video quảng cáo trước nhé."
+      },
+      {
+        "id": "cue-5-7140",
+        "text": "Trước đây nấu cơm mất một tiếng,"
+      },
+      {
+        "id": "cue-6-8800",
+        "text": "thì việc thái rau củ đã chiếm của tôi nửa tiếng rồi."
+      },
+      {
+        "id": "cue-7-10540",
+        "text": "Bây giờ có nó rồi,"
+      },
+      {
+        "id": "cue-8-11300",
+        "text": "ngay cả thái một đĩa khoai tây sợi cũng chỉ mất mười giây là xong."
+      },
+      {
+        "id": "cue-9-13940",
+        "text": "Hơn nữa không cần thay lưỡi dao đâu nhé."
+      },
+      {
+        "id": "cue-10-15780",
+        "text": "Chỉ cần xoay ba núm vặn là có thể chuyển đổi các hình dạng và độ dày khác nhau."
+      },
+      {
+        "id": "cue-11-19200",
+        "text": "Thái lát, thái con chì, bào sợi, thái hạt lựu đều không thành vấn đề."
+      },
+      {
+        "id": "cue-12-21780",
+        "text": "Tôi đã mua một chiếc y hệt trong video với giá 169."
+      },
+      {
+        "id": "cue-13-24960",
+        "text": "Nếu có thời gian rảnh, mong các bạn cho một lượt thích và theo dõi miễn phí."
+      },
+      {
+        "id": "cue-14-27380",
+        "text": "Phiền các bạn ủng hộ một chút nhé."
+      },
+      {
+        "id": "cue-15-28700",
+        "text": "Một chiếc máy không cần tháo lắp thay lưỡi dao,"
+      },
+      {
+        "id": "cue-16-30740",
+        "text": "mà vẫn có thể thái lát, thái con chì, bào sợi, thái hạt lựu."
+      },
+      {
+        "id": "cue-17-33260",
+        "text": "Thật không đấy?"
+      },
+      {
+        "id": "cue-18-34400",
+        "text": "Chúng ta cùng mở ra xem sao."
+      },
+      {
+        "id": "cue-19-36340",
+        "text": "Sau khi mở và lắp ráp xong thì nó trông như thế này."
+      },
+      {
+        "id": "cue-20-38300",
+        "text": "Mở phần này ra,"
+      },
+      {
+        "id": "cue-21-39300",
+        "text": "cái này sẽ bật ra."
+      },
+      {
+        "id": "cue-22-40540",
+        "text": "Như vậy là có thể thái lát, thái con chì, bào sợi, thái hạt lựu được rồi."
+      },
+      {
+        "id": "cue-23-43160",
+        "text": "Phần này là để cho nguyên liệu vào."
+      },
+      {
+        "id": "cue-24-45020",
+        "text": "Nó có tác dụng đẩy nguyên liệu vào trong,"
+      },
+      {
+        "id": "cue-25-47060",
+        "text": "giúp tránh làm đứt tay."
+      },
+      {
+        "id": "cue-26-47860",
+        "text": "Máy còn đi kèm một chiếc cọ nhỏ,"
+      },
+      {
+        "id": "cue-27-49320",
+        "text": "và một cuốn sách hướng dẫn rất dày."
+      },
+      {
+        "id": "cue-28-50580",
+        "text": "Không nói nhiều nữa,"
+      },
+      {
+        "id": "cue-29-51260",
+        "text": "tôi sẽ dùng thử cho các bạn xem,"
+      },
+      {
+        "id": "cue-30-52460",
+        "text": "tiện thể chuẩn bị chút nguyên liệu luôn."
+      },
+      {
+        "id": "cue-31-53640",
+        "text": "Mọi người hãy nhấn thích ủng hộ để chúng ta cùng thử nhé."
+      },
+      {
+        "id": "cue-32-55080",
+        "text": "Cùng xem núm xoay tròn lớn ở phía sau này,"
+      },
+      {
+        "id": "cue-33-56620",
+        "text": "trên này có các số từ 0 đến 8."
+      },
+      {
+        "id": "cue-34-58620",
+        "text": "Cái này dùng để điều chỉnh độ dày mỏng của lát cắt."
+      },
+      {
+        "id": "cue-35-61240",
+        "text": "Để tôi vặn thử cho các bạn xem nhé."
+      },
+      {
+        "id": "cue-36-62140",
+        "text": "Khi vặn thì phần này sẽ lùi về phía sau,"
+      },
+      {
+        "id": "cue-37-64400",
+        "text": "chứng tỏ lát cắt sẽ ngày càng dày hơn."
+      },
+      {
+        "id": "cue-38-65720",
+        "text": "Vặn ngược lại thì nó sẽ ngày càng mỏng đi."
+      },
+      {
+        "id": "cue-39-67640",
+        "text": "Hai cái này dùng để điều chỉnh thái con chì."
+      },
+      {
+        "id": "cue-40-69940",
+        "text": "Các bạn nhìn này, tôi vặn riêng một cái,"
+      },
+      {
+        "id": "cue-41-71480",
+        "text": "thì lưỡi dao thái con chì bên này sẽ nhô ra."
+      },
+      {
+        "id": "cue-42-73240",
+        "text": "Chúng ta hãy thử thái một củ cải trước,"
+      },
+      {
+        "id": "cue-43-74620",
+        "text": "xem thế nào nhé."
+      },
+      {
+        "id": "cue-44-75140",
+        "text": "Chỉnh nó về mức một,"
+      },
+      {
+        "id": "cue-45-77400",
+        "text": "để thái lát mỏng."
+      },
+      {
+        "id": "cue-46-79400",
+        "text": "Bắt đầu nào."
+      },
+      {
+        "id": "cue-47-82180",
+        "text": "Thú vị phết đấy."
+      },
+      {
+        "id": "cue-48-87460",
+        "text": "Xem những lát mỏng này đi,"
+      },
+      {
+        "id": "cue-49-90440",
+        "text": "rất mỏng,"
+      },
+      {
+        "id": "cue-50-92420",
+        "text": "và to đều nhau."
+      },
+      {
+        "id": "cue-51-93900",
+        "text": "Bây giờ chỉnh nó về mức bốn,"
+      },
+      {
+        "id": "cue-52-96000",
+        "text": "để có độ dày vừa phải."
+      },
+      {
+        "id": "cue-53-100800",
+        "text": "Rất trơn tru."
+      },
+      {
+        "id": "cue-54-102220",
+        "text": "Nó dày cỡ này."
+      },
+      {
+        "id": "cue-55-107080",
+        "text": "Quả thực rất ổn."
+      },
+      {
+        "id": "cue-56-107940",
+        "text": "Còn thừa một chút thì ép nó xuống."
+      },
+      {
+        "id": "cue-57-113860",
+        "text": "Hết rồi."
+      },
+      {
+        "id": "cue-58-114660",
+        "text": "Không còn sót lại chút rau củ nào."
+      },
+      {
+        "id": "cue-59-115920",
+        "text": "Phần đuôi rau củ cũng được thái sạch."
+      },
+      {
+        "id": "cue-60-117620",
+        "text": "Bên trong này rất sạch sẽ."
+      },
+      {
+        "id": "cue-61-119480",
+        "text": "Chúng ta thái thử khoai tây sợi nhé,"
+      },
+      {
+        "id": "cue-62-120760",
+        "text": "thử xem sao."
+      },
+      {
+        "id": "cue-63-121280",
+        "text": "Cũng chỉnh nó trước,"
+      },
+      {
+        "id": "cue-64-122560",
+        "text": "về mức một để bào sợi."
+      },
+      {
+        "id": "cue-65-127160",
+        "text": "Rất trơn tru."
+      },
+      {
+        "id": "cue-66-128620",
+        "text": "Nhìn những sợi rơi lả tả xuống phía sau này."
+      },
+      {
+        "id": "cue-67-133780",
+        "text": "Lấy phần này ra nào."
+      },
+      {
+        "id": "cue-68-136320",
+        "text": "Nhìn những sợi này xem,"
+      },
+      {
+        "id": "cue-69-137820",
+        "text": "tốt đấy."
+      },
+      {
+        "id": "cue-70-138720",
+        "text": "Bây giờ là thái hạt lựu."
+      },
+      {
+        "id": "cue-71-139320",
+        "text": "Nhất định phải đặt những lát củ cải to,"
+      },
+      {
+        "id": "cue-72-140680",
+        "text": "nằm ngang vào như thế này."
+      },
+      {
+        "id": "cue-73-145720",
+        "text": "Nhìn những hạt lựu này xem."
+      },
+      {
+        "id": "cue-74-148120",
+        "text": "Mọi người xem đi,"
+      },
+      {
+        "id": "cue-75-149500",
+        "text": "là những khối hình thoi nhỏ rất đều nhau."
+      },
+      {
+        "id": "cue-76-152000",
+        "text": "Tiếp theo chúng ta xem nó có dễ rửa không nhé."
+      },
+      {
+        "id": "cue-77-154080",
+        "text": "Cái này có một ưu điểm,"
+      },
+      {
+        "id": "cue-78-155280",
+        "text": "đó là các bạn nhìn này,"
+      },
+      {
+        "id": "cue-79-155720",
+        "text": "ở đây có hai cái chốt,"
+      },
+      {
+        "id": "cue-80-156800",
+        "text": "chỉ cần ấn một cái,"
+      },
+      {
+        "id": "cue-81-158380",
+        "text": "là có thể tháo phần trên này ra."
+      },
+      {
+        "id": "cue-82-159800",
+        "text": "Sau đó trực tiếp xả dưới vòi nước là được."
+      },
+      {
+        "id": "cue-83-162090",
+        "text": "Dù sao thì đây cũng là cắt rau củ,"
+      },
+      {
+        "id": "cue-84-163370",
+        "text": "đúng không?"
+      },
+      {
+        "id": "cue-85-163810",
+        "text": "Nó chắc chắn là có dính chút bẩn,"
+      },
+      {
+        "id": "cue-86-164970",
+        "text": "nhưng bẩn đến mức nào được chứ."
+      },
+      {
+        "id": "cue-87-165670",
+        "text": "Họ có cho chúng ta cái cọ nhỏ này,"
+      },
+      {
+        "id": "cue-88-167090",
+        "text": "chỉ cần chà nhẹ một cái,"
+      },
+      {
+        "id": "cue-89-170230",
+        "text": "là sạch ngay."
+      },
+      {
+        "id": "cue-90-171110",
+        "text": "Rửa tiếp cái này nhé."
+      },
+      {
+        "id": "cue-91-175050",
+        "text": "Xong."
+      },
+      {
+        "id": "cue-92-175610",
+        "text": "Cũng sạch rồi."
+      },
+      {
+        "id": "cue-93-176390",
+        "text": "Dù sao cũng là cắt rau củ,"
+      },
+      {
+        "id": "cue-94-177990",
+        "text": "bản thân nó cũng chẳng bẩn được bao nhiêu,"
+      },
+      {
+        "id": "cue-95-179390",
+        "text": "xả nước một cái là sạch."
+      },
+      {
+        "id": "cue-96-180570",
+        "text": "Quả thực chỉ với một chiếc máy này,"
+      },
+      {
+        "id": "cue-97-181710",
+        "text": "không cần phải thay thêm lưỡi dao nào,"
+      },
+      {
+        "id": "cue-98-183170",
+        "text": "mà vẫn có thể hoàn thành việc thái lát,"
+      },
+      {
+        "id": "cue-99-184150",
+        "text": "bào sợi, thái con chì và thái hạt lựu."
+      },
+      {
+        "id": "cue-100-185510",
+        "text": "Thực sự khá tốt."
+      },
+      {
+        "id": "cue-101-186930",
+        "text": "Hơn nữa sau khi gập lại,"
+      },
+      {
+        "id": "cue-102-188050",
+        "text": "việc cất giữ cũng rất tiện lợi."
+      },
+      {
+        "id": "cue-103-189250",
+        "text": "Có thể treo ở bất cứ đâu."
+      },
+      {
+        "id": "cue-104-190090",
+        "text": "Chất liệu của nó chúng tôi đã kiểm tra,"
+      },
+      {
+        "id": "cue-105-192150",
+        "text": "cũng đạt tiêu chuẩn."
+      },
+      {
+        "id": "cue-106-193050",
+        "text": "Nói chung là thực sự rất tốt."
+      },
+      {
+        "id": "cue-107-195250",
+        "text": "Nó có thể làm tăng tốc độ chuẩn bị đồ ăn của chúng ta lên rất nhiều,"
+      },
+      {
+        "id": "cue-108-197150",
+        "text": "rau củ cắt ra lại vừa đẹp vừa đều."
+      },
+      {
+        "id": "cue-109-198910",
+        "text": "Thực sự rất tốt."
+      },
+      {
+        "id": "cue-110-199830",
+        "text": "Nếu ai có nhu cầu,"
+      },
+      {
+        "id": "cue-111-200670",
+        "text": "thì có thể vào đường dẫn bên dưới,"
+      },
+      {
+        "id": "cue-112-201390",
+        "text": "để xem qua nhé."
+      }
+    ],
+    "issues": [],
+    "complete": true
+  }
+}

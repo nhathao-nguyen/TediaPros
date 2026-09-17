@@ -1,0 +1,6101 @@
+{
+  "schemaVersion": 1,
+  "kind": "tediapros-gemini-ab-corpus-summary",
+  "sourceReport": "F:\\Son\\tool\\TediaPros\\.ai\\tasks\\2026-09-16-voice-aware-live-validation\\full-64\\ab-512\\ab-report.json",
+  "generatedAtUtc": "2026-09-16T17:33:15.855Z",
+  "sourceVideoCount": 64,
+  "recordedVideoCount": 64,
+  "missingVideoCount": 0,
+  "doneVideoCount": 3,
+  "measuredArmCounts": {
+    "baseline": 4,
+    "candidate": 3
+  },
+  "statusCounts": {
+    "baseline": {
+      "done": 4,
+      "failed": 60
+    },
+    "candidate": {
+      "done": 3,
+      "failed": 61
+    }
+  },
+  "issueCodeCounts": {
+    "baseline": {
+      "provider-transient": 188,
+      "missing-id": 58,
+      "protected-token-suspect": 38,
+      "invalid-source": 2
+    },
+    "candidate": {
+      "provider-transient": 191,
+      "missing-id": 59,
+      "protected-token-suspect": 35,
+      "invalid-source": 2
+    }
+  },
+  "aggregate": {
+    "fitAt1_10": {
+      "baseline": {
+        "fit": 0,
+        "total": 167,
+        "rate": 0
+      },
+      "candidate": {
+        "fit": 0,
+        "total": 130,
+        "rate": 0
+      }
+    },
+    "fitAt1_25": {
+      "baseline": {
+        "fit": 1,
+        "total": 167,
+        "rate": 0.005988023952095809
+      },
+      "candidate": {
+        "fit": 2,
+        "total": 130,
+        "rate": 0.015384615384615385
+      }
+    },
+    "fitAt1_80": {
+      "baseline": {
+        "fit": 22,
+        "total": 167,
+        "rate": 0.1317365269461078
+      },
+      "candidate": {
+        "fit": 29,
+        "total": 130,
+        "rate": 0.2230769230769231
+      }
+    }
+  },
+  "pairedBootstrap": {
+    "fitAt1_10": {
+      "videos": 3,
+      "baseline": {
+        "fit": 0,
+        "total": 130,
+        "rate": 0
+      },
+      "candidate": {
+        "fit": 0,
+        "total": 130,
+        "rate": 0
+      },
+      "difference": 0,
+      "interval95": [
+        0,
+        0
+      ],
+      "resamples": 10000,
+      "seed": 1592598566
+    },
+    "fitAt1_25": {
+      "videos": 3,
+      "baseline": {
+        "fit": 1,
+        "total": 130,
+        "rate": 0.007692307692307693
+      },
+      "candidate": {
+        "fit": 2,
+        "total": 130,
+        "rate": 0.015384615384615385
+      },
+      "difference": 0.007692307692307693,
+      "interval95": [
+        0,
+        0.0125
+      ],
+      "resamples": 10000,
+      "seed": 1592598566
+    },
+    "fitAt1_80": {
+      "videos": 3,
+      "baseline": {
+        "fit": 22,
+        "total": 130,
+        "rate": 0.16923076923076924
+      },
+      "candidate": {
+        "fit": 29,
+        "total": 130,
+        "rate": 0.2230769230769231
+      },
+      "difference": 0.05384615384615385,
+      "interval95": [
+        0.023255813953488372,
+        0.14285714285714285
+      ],
+      "resamples": 10000,
+      "seed": 1592598566
+    }
+  },
+  "evidence": {
+    "timing": "proxy-estimate-from-live-edge-tts-profile; not measured translated WAV",
+    "semantic": "provider assessment only; human semantic review remains pending",
+    "voiceProfile": {
+      "median": 2.083,
+      "p10": 1.812,
+      "p90": 2.907
+    },
+    "outputContract": {
+      "baseline": "a-baseline: cue-lines-v1, no voice hint",
+      "candidate": "b-voice-hint: cue-lines-v1 + advisory vi-VN-HoaiMyNeural profile"
+    },
+    "outcome": "incomplete-or-inconclusive"
+  },
+  "videos": [
+    {
+      "index": 0,
+      "sourcePath": "F:\\Son\\test\\@小温夫妻测评 超实用好吃做饭技巧 1080P.mp4",
+      "baseline": {
+        "status": "done",
+        "disposition": "validated",
+        "cueCount": 7,
+        "translatedCueCount": 7,
+        "issueCodes": [],
+        "estimatedFit": {
+          "fitAt1_10": {
+            "fit": 0,
+            "total": 7
+          },
+          "fitAt1_25": {
+            "fit": 0,
+            "total": 7
+          },
+          "fitAt1_80": {
+            "fit": 2,
+            "total": 7
+          }
+        },
+        "measuredFit": {
+          "fitAt1_10": {
+            "fit": 0,
+            "total": 7
+          },
+          "fitAt1_25": {
+            "fit": 0,
+            "total": 7
+          },
+          "fitAt1_80": {
+            "fit": 2,
+            "total": 7
+          }
+        },
+        "fitEligibility": {
+          "completeTranslation": true
+        },
+        "semanticReview": "pending-human"
+      },
+      "candidate": {
+        "status": "done",
+        "disposition": "validated",
+        "cueCount": 7,
+        "translatedCueCount": 7,
+        "issueCodes": [],
+        "estimatedFit": {
+          "fitAt1_10": {
+            "fit": 0,
+            "total": 7
+          },
+          "fitAt1_25": {
+            "fit": 0,
+            "total": 7
+          },
+          "fitAt1_80": {
+            "fit": 3,
+            "total": 7
+          }
+        },
+        "measuredFit": {
+          "fitAt1_10": {
+            "fit": 0,
+            "total": 7
+          },
+          "fitAt1_25": {
+            "fit": 0,
+            "total": 7
+          },
+          "fitAt1_80": {
+            "fit": 3,
+            "total": 7
+          }
+        },
+        "fitEligibility": {
+          "completeTranslation": true
+        },
+        "semanticReview": "pending-human"
+      }
+    },
+    {
+      "index": 1,
+      "sourcePath": "F:\\Son\\test\\@小温夫妻测评 谁能告诉告诉我这姜末到底能做什么？磨泥器到底谁在用 1080P.mp4",
+      "baseline": {
+        "status": "failed",
+        "disposition": "needs-review",
+        "cueCount": 60,
+        "translatedCueCount": 15,
+        "issueCodes": [
+          "provider-transient",
+          "provider-transient",
+          "provider-transient",
+          "missing-id"
+        ],
+        "estimatedFit": {
+          "fitAt1_10": {
+            "fit": 45,
+            "total": 60
+          },
+          "fitAt1_25": {
+            "fit": 45,
+            "total": 60
+          },
+          "fitAt1_80": {
+            "fit": 45,
+            "total": 60
+          }
+        },
+        "measuredFit": {
+          "fitAt1_10": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_25": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_80": {
+            "fit": 0,
+            "total": 0
+          }
+        },
+        "fitEligibility": {
+          "completeTranslation": false
+        },
+        "semanticReview": "pending-human"
+      },
+      "candidate": {
+        "status": "failed",
+        "disposition": "needs-review",
+        "cueCount": 60,
+        "translatedCueCount": 0,
+        "issueCodes": [
+          "provider-transient",
+          "provider-transient",
+          "provider-transient",
+          "provider-transient",
+          "missing-id"
+        ],
+        "estimatedFit": {
+          "fitAt1_10": {
+            "fit": 60,
+            "total": 60
+          },
+          "fitAt1_25": {
+            "fit": 60,
+            "total": 60
+          },
+          "fitAt1_80": {
+            "fit": 60,
+            "total": 60
+          }
+        },
+        "measuredFit": {
+          "fitAt1_10": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_25": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_80": {
+            "fit": 0,
+            "total": 0
+          }
+        },
+        "fitEligibility": {
+          "completeTranslation": false
+        },
+        "semanticReview": "pending-human"
+      }
+    },
+    {
+      "index": 2,
+      "sourcePath": "F:\\Son\\test\\@小温夫妻测评 实测价格这么夯的五仁月饼，到底有什么猫腻？ 1080P.mp4",
+      "baseline": {
+        "status": "done",
+        "disposition": "with-warnings",
+        "cueCount": 80,
+        "translatedCueCount": 80,
+        "issueCodes": [
+          "protected-token-suspect",
+          "protected-token-suspect",
+          "protected-token-suspect",
+          "protected-token-suspect",
+          "protected-token-suspect",
+          "protected-token-suspect",
+          "protected-token-suspect",
+          "protected-token-suspect",
+          "protected-token-suspect",
+          "protected-token-suspect",
+          "protected-token-suspect",
+          "protected-token-suspect",
+          "protected-token-suspect",
+          "protected-token-suspect",
+          "protected-token-suspect",
+          "protected-token-suspect",
+          "protected-token-suspect",
+          "protected-token-suspect",
+          "protected-token-suspect",
+          "protected-token-suspect",
+          "protected-token-suspect",
+          "protected-token-suspect",
+          "protected-token-suspect",
+          "protected-token-suspect",
+          "protected-token-suspect",
+          "protected-token-suspect",
+          "protected-token-suspect",
+          "protected-token-suspect",
+          "protected-token-suspect"
+        ],
+        "estimatedFit": {
+          "fitAt1_10": {
+            "fit": 0,
+            "total": 80
+          },
+          "fitAt1_25": {
+            "fit": 1,
+            "total": 80
+          },
+          "fitAt1_80": {
+            "fit": 20,
+            "total": 80
+          }
+        },
+        "measuredFit": {
+          "fitAt1_10": {
+            "fit": 0,
+            "total": 80
+          },
+          "fitAt1_25": {
+            "fit": 1,
+            "total": 80
+          },
+          "fitAt1_80": {
+            "fit": 20,
+            "total": 80
+          }
+        },
+        "fitEligibility": {
+          "completeTranslation": true
+        },
+        "semanticReview": "pending-human"
+      },
+      "candidate": {
+        "status": "done",
+        "disposition": "with-warnings",
+        "cueCount": 80,
+        "translatedCueCount": 80,
+        "issueCodes": [
+          "protected-token-suspect",
+          "protected-token-suspect",
+          "protected-token-suspect",
+          "protected-token-suspect",
+          "protected-token-suspect",
+          "protected-token-suspect",
+          "protected-token-suspect",
+          "protected-token-suspect",
+          "protected-token-suspect",
+          "protected-token-suspect",
+          "protected-token-suspect",
+          "protected-token-suspect",
+          "protected-token-suspect",
+          "protected-token-suspect",
+          "protected-token-suspect",
+          "protected-token-suspect",
+          "protected-token-suspect",
+          "protected-token-suspect",
+          "protected-token-suspect",
+          "protected-token-suspect",
+          "protected-token-suspect",
+          "protected-token-suspect",
+          "protected-token-suspect",
+          "protected-token-suspect",
+          "protected-token-suspect",
+          "protected-token-suspect",
+          "protected-token-suspect",
+          "protected-token-suspect",
+          "protected-token-suspect",
+          "protected-token-suspect"
+        ],
+        "estimatedFit": {
+          "fitAt1_10": {
+            "fit": 0,
+            "total": 80
+          },
+          "fitAt1_25": {
+            "fit": 2,
+            "total": 80
+          },
+          "fitAt1_80": {
+            "fit": 25,
+            "total": 80
+          }
+        },
+        "measuredFit": {
+          "fitAt1_10": {
+            "fit": 0,
+            "total": 80
+          },
+          "fitAt1_25": {
+            "fit": 2,
+            "total": 80
+          },
+          "fitAt1_80": {
+            "fit": 25,
+            "total": 80
+          }
+        },
+        "fitEligibility": {
+          "completeTranslation": true
+        },
+        "semanticReview": "pending-human"
+      }
+    },
+    {
+      "index": 3,
+      "sourcePath": "F:\\Son\\test\\@小温夫妻测评 这个油蜡夹克到底是咋回事，品质到底怎么样？ 1080P.mp4",
+      "baseline": {
+        "status": "failed",
+        "disposition": "needs-review",
+        "cueCount": 81,
+        "translatedCueCount": 0,
+        "issueCodes": [
+          "provider-transient",
+          "provider-transient",
+          "provider-transient",
+          "provider-transient",
+          "missing-id"
+        ],
+        "estimatedFit": {
+          "fitAt1_10": {
+            "fit": 81,
+            "total": 81
+          },
+          "fitAt1_25": {
+            "fit": 81,
+            "total": 81
+          },
+          "fitAt1_80": {
+            "fit": 81,
+            "total": 81
+          }
+        },
+        "measuredFit": {
+          "fitAt1_10": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_25": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_80": {
+            "fit": 0,
+            "total": 0
+          }
+        },
+        "fitEligibility": {
+          "completeTranslation": false
+        },
+        "semanticReview": "pending-human"
+      },
+      "candidate": {
+        "status": "failed",
+        "disposition": "needs-review",
+        "cueCount": 81,
+        "translatedCueCount": 0,
+        "issueCodes": [
+          "provider-transient",
+          "provider-transient",
+          "provider-transient",
+          "provider-transient",
+          "missing-id"
+        ],
+        "estimatedFit": {
+          "fitAt1_10": {
+            "fit": 81,
+            "total": 81
+          },
+          "fitAt1_25": {
+            "fit": 81,
+            "total": 81
+          },
+          "fitAt1_80": {
+            "fit": 81,
+            "total": 81
+          }
+        },
+        "measuredFit": {
+          "fitAt1_10": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_25": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_80": {
+            "fit": 0,
+            "total": 0
+          }
+        },
+        "fitEligibility": {
+          "completeTranslation": false
+        },
+        "semanticReview": "pending-human"
+      }
+    },
+    {
+      "index": 4,
+      "sourcePath": "F:\\Son\\test\\2020-10-27_豪华海鲜螺蛳粉_美食_6888245857611795727.mp4",
+      "baseline": {
+        "status": "failed",
+        "disposition": "needs-review",
+        "cueCount": 62,
+        "translatedCueCount": 0,
+        "issueCodes": [
+          "provider-transient",
+          "provider-transient",
+          "provider-transient",
+          "missing-id"
+        ],
+        "estimatedFit": {
+          "fitAt1_10": {
+            "fit": 62,
+            "total": 62
+          },
+          "fitAt1_25": {
+            "fit": 62,
+            "total": 62
+          },
+          "fitAt1_80": {
+            "fit": 62,
+            "total": 62
+          }
+        },
+        "measuredFit": {
+          "fitAt1_10": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_25": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_80": {
+            "fit": 0,
+            "total": 0
+          }
+        },
+        "fitEligibility": {
+          "completeTranslation": false
+        },
+        "semanticReview": "pending-human"
+      },
+      "candidate": {
+        "status": "failed",
+        "disposition": "needs-review",
+        "cueCount": 62,
+        "translatedCueCount": 0,
+        "issueCodes": [
+          "provider-transient",
+          "provider-transient",
+          "provider-transient",
+          "missing-id"
+        ],
+        "estimatedFit": {
+          "fitAt1_10": {
+            "fit": 62,
+            "total": 62
+          },
+          "fitAt1_25": {
+            "fit": 62,
+            "total": 62
+          },
+          "fitAt1_80": {
+            "fit": 62,
+            "total": 62
+          }
+        },
+        "measuredFit": {
+          "fitAt1_10": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_25": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_80": {
+            "fit": 0,
+            "total": 0
+          }
+        },
+        "fitEligibility": {
+          "completeTranslation": false
+        },
+        "semanticReview": "pending-human"
+      }
+    },
+    {
+      "index": 5,
+      "sourcePath": "F:\\Son\\test\\2025-08-24_这个海姆立克仪真的好用吗？_测评_海姆立克急救法_亲测分享_有备无患_真实测评_7542118158246645033.mp4",
+      "baseline": {
+        "status": "failed",
+        "disposition": "needs-review",
+        "cueCount": 93,
+        "translatedCueCount": 0,
+        "issueCodes": [
+          "provider-transient",
+          "provider-transient",
+          "provider-transient",
+          "provider-transient",
+          "provider-transient",
+          "missing-id"
+        ],
+        "estimatedFit": {
+          "fitAt1_10": {
+            "fit": 93,
+            "total": 93
+          },
+          "fitAt1_25": {
+            "fit": 93,
+            "total": 93
+          },
+          "fitAt1_80": {
+            "fit": 93,
+            "total": 93
+          }
+        },
+        "measuredFit": {
+          "fitAt1_10": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_25": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_80": {
+            "fit": 0,
+            "total": 0
+          }
+        },
+        "fitEligibility": {
+          "completeTranslation": false
+        },
+        "semanticReview": "pending-human"
+      },
+      "candidate": {
+        "status": "failed",
+        "disposition": "needs-review",
+        "cueCount": 93,
+        "translatedCueCount": 0,
+        "issueCodes": [
+          "provider-transient",
+          "provider-transient",
+          "provider-transient",
+          "provider-transient",
+          "provider-transient",
+          "missing-id"
+        ],
+        "estimatedFit": {
+          "fitAt1_10": {
+            "fit": 93,
+            "total": 93
+          },
+          "fitAt1_25": {
+            "fit": 93,
+            "total": 93
+          },
+          "fitAt1_80": {
+            "fit": 93,
+            "total": 93
+          }
+        },
+        "measuredFit": {
+          "fitAt1_10": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_25": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_80": {
+            "fit": 0,
+            "total": 0
+          }
+        },
+        "fitEligibility": {
+          "completeTranslation": false
+        },
+        "semanticReview": "pending-human"
+      }
+    },
+    {
+      "index": 6,
+      "sourcePath": "F:\\Son\\test\\2025-11-10_不用来回换刀片就直接能切片、切丝、切条、切丁，真的假的？_测评_切菜器_亲测分享_厨房好物_切菜_7571053316352846457.mp4",
+      "baseline": {
+        "status": "failed",
+        "disposition": "needs-review",
+        "cueCount": 113,
+        "translatedCueCount": 0,
+        "issueCodes": [
+          "provider-transient",
+          "provider-transient",
+          "provider-transient",
+          "provider-transient",
+          "provider-transient",
+          "missing-id"
+        ],
+        "estimatedFit": {
+          "fitAt1_10": {
+            "fit": 113,
+            "total": 113
+          },
+          "fitAt1_25": {
+            "fit": 113,
+            "total": 113
+          },
+          "fitAt1_80": {
+            "fit": 113,
+            "total": 113
+          }
+        },
+        "measuredFit": {
+          "fitAt1_10": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_25": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_80": {
+            "fit": 0,
+            "total": 0
+          }
+        },
+        "fitEligibility": {
+          "completeTranslation": false
+        },
+        "semanticReview": "pending-human"
+      },
+      "candidate": {
+        "status": "failed",
+        "disposition": "needs-review",
+        "cueCount": 113,
+        "translatedCueCount": 0,
+        "issueCodes": [
+          "provider-transient",
+          "provider-transient",
+          "provider-transient",
+          "provider-transient",
+          "provider-transient",
+          "missing-id"
+        ],
+        "estimatedFit": {
+          "fitAt1_10": {
+            "fit": 113,
+            "total": 113
+          },
+          "fitAt1_25": {
+            "fit": 113,
+            "total": 113
+          },
+          "fitAt1_80": {
+            "fit": 113,
+            "total": 113
+          }
+        },
+        "measuredFit": {
+          "fitAt1_10": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_25": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_80": {
+            "fit": 0,
+            "total": 0
+          }
+        },
+        "fitEligibility": {
+          "completeTranslation": false
+        },
+        "semanticReview": "pending-human"
+      }
+    },
+    {
+      "index": 7,
+      "sourcePath": "F:\\Son\\test\\2025-12-07_当然要有闺蜜啦_闺蜜在一起的样子_过于真实_萌宠出道计划_ai创作浪潮计划_原来闺蜜的意义就是让我鲜活_75809531499653959.mp4",
+      "baseline": {
+        "status": "failed",
+        "disposition": "needs-review",
+        "cueCount": 1,
+        "translatedCueCount": 0,
+        "issueCodes": [
+          "provider-transient",
+          "missing-id"
+        ],
+        "estimatedFit": {
+          "fitAt1_10": {
+            "fit": 1,
+            "total": 1
+          },
+          "fitAt1_25": {
+            "fit": 1,
+            "total": 1
+          },
+          "fitAt1_80": {
+            "fit": 1,
+            "total": 1
+          }
+        },
+        "measuredFit": {
+          "fitAt1_10": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_25": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_80": {
+            "fit": 0,
+            "total": 0
+          }
+        },
+        "fitEligibility": {
+          "completeTranslation": false
+        },
+        "semanticReview": "pending-human"
+      },
+      "candidate": {
+        "status": "failed",
+        "disposition": "needs-review",
+        "cueCount": 1,
+        "translatedCueCount": 0,
+        "issueCodes": [
+          "provider-transient",
+          "missing-id"
+        ],
+        "estimatedFit": {
+          "fitAt1_10": {
+            "fit": 1,
+            "total": 1
+          },
+          "fitAt1_25": {
+            "fit": 1,
+            "total": 1
+          },
+          "fitAt1_80": {
+            "fit": 1,
+            "total": 1
+          }
+        },
+        "measuredFit": {
+          "fitAt1_10": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_25": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_80": {
+            "fit": 0,
+            "total": 0
+          }
+        },
+        "fitEligibility": {
+          "completeTranslation": false
+        },
+        "semanticReview": "pending-human"
+      }
+    },
+    {
+      "index": 8,
+      "sourcePath": "F:\\Son\\test\\2025-12-07_原来真有如此迷你的动物同类_涨知识_动物解说_7581065408287935744.mp4",
+      "baseline": {
+        "status": "failed",
+        "disposition": "needs-review",
+        "cueCount": 33,
+        "translatedCueCount": 0,
+        "issueCodes": [
+          "provider-transient",
+          "provider-transient",
+          "missing-id"
+        ],
+        "estimatedFit": {
+          "fitAt1_10": {
+            "fit": 33,
+            "total": 33
+          },
+          "fitAt1_25": {
+            "fit": 33,
+            "total": 33
+          },
+          "fitAt1_80": {
+            "fit": 33,
+            "total": 33
+          }
+        },
+        "measuredFit": {
+          "fitAt1_10": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_25": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_80": {
+            "fit": 0,
+            "total": 0
+          }
+        },
+        "fitEligibility": {
+          "completeTranslation": false
+        },
+        "semanticReview": "pending-human"
+      },
+      "candidate": {
+        "status": "failed",
+        "disposition": "needs-review",
+        "cueCount": 33,
+        "translatedCueCount": 0,
+        "issueCodes": [
+          "provider-transient",
+          "provider-transient",
+          "missing-id"
+        ],
+        "estimatedFit": {
+          "fitAt1_10": {
+            "fit": 33,
+            "total": 33
+          },
+          "fitAt1_25": {
+            "fit": 33,
+            "total": 33
+          },
+          "fitAt1_80": {
+            "fit": 33,
+            "total": 33
+          }
+        },
+        "measuredFit": {
+          "fitAt1_10": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_25": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_80": {
+            "fit": 0,
+            "total": 0
+          }
+        },
+        "fitEligibility": {
+          "completeTranslation": false
+        },
+        "semanticReview": "pending-human"
+      }
+    },
+    {
+      "index": 9,
+      "sourcePath": "F:\\Son\\test\\2025-12-08_以长颈鹿的实力，在自然界还从来没怕过谁_涨知识_动物科普_7581391454078012691.mp4",
+      "baseline": {
+        "status": "done",
+        "disposition": "with-warnings",
+        "cueCount": 43,
+        "translatedCueCount": 43,
+        "issueCodes": [
+          "protected-token-suspect",
+          "protected-token-suspect",
+          "protected-token-suspect",
+          "protected-token-suspect",
+          "protected-token-suspect",
+          "protected-token-suspect"
+        ],
+        "estimatedFit": {
+          "fitAt1_10": {
+            "fit": 0,
+            "total": 43
+          },
+          "fitAt1_25": {
+            "fit": 0,
+            "total": 43
+          },
+          "fitAt1_80": {
+            "fit": 0,
+            "total": 43
+          }
+        },
+        "measuredFit": {
+          "fitAt1_10": {
+            "fit": 0,
+            "total": 43
+          },
+          "fitAt1_25": {
+            "fit": 0,
+            "total": 43
+          },
+          "fitAt1_80": {
+            "fit": 0,
+            "total": 43
+          }
+        },
+        "fitEligibility": {
+          "completeTranslation": true
+        },
+        "semanticReview": "pending-human"
+      },
+      "candidate": {
+        "status": "done",
+        "disposition": "with-warnings",
+        "cueCount": 43,
+        "translatedCueCount": 43,
+        "issueCodes": [
+          "protected-token-suspect",
+          "protected-token-suspect",
+          "protected-token-suspect",
+          "protected-token-suspect",
+          "protected-token-suspect"
+        ],
+        "estimatedFit": {
+          "fitAt1_10": {
+            "fit": 0,
+            "total": 43
+          },
+          "fitAt1_25": {
+            "fit": 0,
+            "total": 43
+          },
+          "fitAt1_80": {
+            "fit": 1,
+            "total": 43
+          }
+        },
+        "measuredFit": {
+          "fitAt1_10": {
+            "fit": 0,
+            "total": 43
+          },
+          "fitAt1_25": {
+            "fit": 0,
+            "total": 43
+          },
+          "fitAt1_80": {
+            "fit": 1,
+            "total": 43
+          }
+        },
+        "fitEligibility": {
+          "completeTranslation": true
+        },
+        "semanticReview": "pending-human"
+      }
+    },
+    {
+      "index": 10,
+      "sourcePath": "F:\\Son\\test\\2025-12-09_老虎真能打的过大象吗？_涨知识_动物解说_7581752124002929960.mp4",
+      "baseline": {
+        "status": "done",
+        "disposition": "with-warnings",
+        "cueCount": 37,
+        "translatedCueCount": 37,
+        "issueCodes": [
+          "protected-token-suspect",
+          "protected-token-suspect",
+          "protected-token-suspect"
+        ],
+        "estimatedFit": {
+          "fitAt1_10": {
+            "fit": 0,
+            "total": 37
+          },
+          "fitAt1_25": {
+            "fit": 0,
+            "total": 37
+          },
+          "fitAt1_80": {
+            "fit": 0,
+            "total": 37
+          }
+        },
+        "measuredFit": {
+          "fitAt1_10": {
+            "fit": 0,
+            "total": 37
+          },
+          "fitAt1_25": {
+            "fit": 0,
+            "total": 37
+          },
+          "fitAt1_80": {
+            "fit": 0,
+            "total": 37
+          }
+        },
+        "fitEligibility": {
+          "completeTranslation": true
+        },
+        "semanticReview": "pending-human"
+      },
+      "candidate": {
+        "status": "failed",
+        "disposition": "needs-review",
+        "cueCount": 37,
+        "translatedCueCount": 0,
+        "issueCodes": [
+          "provider-transient",
+          "provider-transient",
+          "missing-id"
+        ],
+        "estimatedFit": {
+          "fitAt1_10": {
+            "fit": 37,
+            "total": 37
+          },
+          "fitAt1_25": {
+            "fit": 37,
+            "total": 37
+          },
+          "fitAt1_80": {
+            "fit": 37,
+            "total": 37
+          }
+        },
+        "measuredFit": {
+          "fitAt1_10": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_25": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_80": {
+            "fit": 0,
+            "total": 0
+          }
+        },
+        "fitEligibility": {
+          "completeTranslation": false
+        },
+        "semanticReview": "pending-human"
+      }
+    },
+    {
+      "index": 11,
+      "sourcePath": "F:\\Son\\test\\2025-12-09_善鳄到头终有豹_动物解说_7581828042910076200.mp4",
+      "baseline": {
+        "status": "failed",
+        "disposition": "needs-review",
+        "cueCount": 37,
+        "translatedCueCount": 0,
+        "issueCodes": [
+          "provider-transient",
+          "provider-transient",
+          "missing-id"
+        ],
+        "estimatedFit": {
+          "fitAt1_10": {
+            "fit": 37,
+            "total": 37
+          },
+          "fitAt1_25": {
+            "fit": 37,
+            "total": 37
+          },
+          "fitAt1_80": {
+            "fit": 37,
+            "total": 37
+          }
+        },
+        "measuredFit": {
+          "fitAt1_10": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_25": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_80": {
+            "fit": 0,
+            "total": 0
+          }
+        },
+        "fitEligibility": {
+          "completeTranslation": false
+        },
+        "semanticReview": "pending-human"
+      },
+      "candidate": {
+        "status": "failed",
+        "disposition": "needs-review",
+        "cueCount": 37,
+        "translatedCueCount": 0,
+        "issueCodes": [
+          "provider-transient",
+          "provider-transient",
+          "missing-id"
+        ],
+        "estimatedFit": {
+          "fitAt1_10": {
+            "fit": 37,
+            "total": 37
+          },
+          "fitAt1_25": {
+            "fit": 37,
+            "total": 37
+          },
+          "fitAt1_80": {
+            "fit": 37,
+            "total": 37
+          }
+        },
+        "measuredFit": {
+          "fitAt1_10": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_25": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_80": {
+            "fit": 0,
+            "total": 0
+          }
+        },
+        "fitEligibility": {
+          "completeTranslation": false
+        },
+        "semanticReview": "pending-human"
+      }
+    },
+    {
+      "index": 12,
+      "sourcePath": "F:\\Son\\test\\2025-12-10_真的对自己很好_爱你老己明天见_爱你老己改编挑战_胖橘猫的美好生活_萌宠出道计划_爱你老己明天见_ai创作浪潮计划_75820716179.mp4",
+      "baseline": {
+        "status": "failed",
+        "disposition": "needs-review",
+        "cueCount": 3,
+        "translatedCueCount": 0,
+        "issueCodes": [
+          "provider-transient",
+          "missing-id"
+        ],
+        "estimatedFit": {
+          "fitAt1_10": {
+            "fit": 3,
+            "total": 3
+          },
+          "fitAt1_25": {
+            "fit": 3,
+            "total": 3
+          },
+          "fitAt1_80": {
+            "fit": 3,
+            "total": 3
+          }
+        },
+        "measuredFit": {
+          "fitAt1_10": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_25": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_80": {
+            "fit": 0,
+            "total": 0
+          }
+        },
+        "fitEligibility": {
+          "completeTranslation": false
+        },
+        "semanticReview": "pending-human"
+      },
+      "candidate": {
+        "status": "failed",
+        "disposition": "needs-review",
+        "cueCount": 3,
+        "translatedCueCount": 0,
+        "issueCodes": [
+          "provider-transient",
+          "missing-id"
+        ],
+        "estimatedFit": {
+          "fitAt1_10": {
+            "fit": 3,
+            "total": 3
+          },
+          "fitAt1_25": {
+            "fit": 3,
+            "total": 3
+          },
+          "fitAt1_80": {
+            "fit": 3,
+            "total": 3
+          }
+        },
+        "measuredFit": {
+          "fitAt1_10": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_25": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_80": {
+            "fit": 0,
+            "total": 0
+          }
+        },
+        "fitEligibility": {
+          "completeTranslation": false
+        },
+        "semanticReview": "pending-human"
+      }
+    },
+    {
+      "index": 13,
+      "sourcePath": "F:\\Son\\test\\2025-12-11_当你坐上闺蜜的电动车就这样_胖橘猫的美好生活_过于真实_小电驴_闺蜜日常_ai创作浪潮计划_7582522007880322362.mp4",
+      "baseline": {
+        "status": "failed",
+        "disposition": "needs-review",
+        "cueCount": 1,
+        "translatedCueCount": 0,
+        "issueCodes": [
+          "provider-transient",
+          "missing-id"
+        ],
+        "estimatedFit": {
+          "fitAt1_10": {
+            "fit": 1,
+            "total": 1
+          },
+          "fitAt1_25": {
+            "fit": 1,
+            "total": 1
+          },
+          "fitAt1_80": {
+            "fit": 1,
+            "total": 1
+          }
+        },
+        "measuredFit": {
+          "fitAt1_10": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_25": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_80": {
+            "fit": 0,
+            "total": 0
+          }
+        },
+        "fitEligibility": {
+          "completeTranslation": false
+        },
+        "semanticReview": "pending-human"
+      },
+      "candidate": {
+        "status": "failed",
+        "disposition": "needs-review",
+        "cueCount": 1,
+        "translatedCueCount": 0,
+        "issueCodes": [
+          "provider-transient",
+          "missing-id"
+        ],
+        "estimatedFit": {
+          "fitAt1_10": {
+            "fit": 1,
+            "total": 1
+          },
+          "fitAt1_25": {
+            "fit": 1,
+            "total": 1
+          },
+          "fitAt1_80": {
+            "fit": 1,
+            "total": 1
+          }
+        },
+        "measuredFit": {
+          "fitAt1_10": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_25": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_80": {
+            "fit": 0,
+            "total": 0
+          }
+        },
+        "fitEligibility": {
+          "completeTranslation": false
+        },
+        "semanticReview": "pending-human"
+      }
+    },
+    {
+      "index": 14,
+      "sourcePath": "F:\\Son\\test\\2025-12-15_怎么好像越上班越没钱了_过于真实_打工人的精神状态_胖橘猫的美好生活_ai创作浪潮计划_赔钱上班_7583934819538423077.mp4",
+      "baseline": {
+        "status": "failed",
+        "disposition": "needs-review",
+        "cueCount": 3,
+        "translatedCueCount": 0,
+        "issueCodes": [
+          "provider-transient",
+          "missing-id"
+        ],
+        "estimatedFit": {
+          "fitAt1_10": {
+            "fit": 3,
+            "total": 3
+          },
+          "fitAt1_25": {
+            "fit": 3,
+            "total": 3
+          },
+          "fitAt1_80": {
+            "fit": 3,
+            "total": 3
+          }
+        },
+        "measuredFit": {
+          "fitAt1_10": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_25": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_80": {
+            "fit": 0,
+            "total": 0
+          }
+        },
+        "fitEligibility": {
+          "completeTranslation": false
+        },
+        "semanticReview": "pending-human"
+      },
+      "candidate": {
+        "status": "failed",
+        "disposition": "needs-review",
+        "cueCount": 3,
+        "translatedCueCount": 0,
+        "issueCodes": [
+          "provider-transient",
+          "missing-id"
+        ],
+        "estimatedFit": {
+          "fitAt1_10": {
+            "fit": 3,
+            "total": 3
+          },
+          "fitAt1_25": {
+            "fit": 3,
+            "total": 3
+          },
+          "fitAt1_80": {
+            "fit": 3,
+            "total": 3
+          }
+        },
+        "measuredFit": {
+          "fitAt1_10": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_25": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_80": {
+            "fit": 0,
+            "total": 0
+          }
+        },
+        "fitEligibility": {
+          "completeTranslation": false
+        },
+        "semanticReview": "pending-human"
+      }
+    },
+    {
+      "index": 15,
+      "sourcePath": "F:\\Son\\test\\2025-12-31_不是遗弃！芬兰宝宝在零下6度户外睡觉，竟是高质量小睡_科普_芬兰_睡觉_国外生活_7589964053678755124.mp4",
+      "baseline": {
+        "status": "failed",
+        "disposition": "needs-review",
+        "cueCount": 32,
+        "translatedCueCount": 0,
+        "issueCodes": [
+          "provider-transient",
+          "provider-transient",
+          "missing-id"
+        ],
+        "estimatedFit": {
+          "fitAt1_10": {
+            "fit": 32,
+            "total": 32
+          },
+          "fitAt1_25": {
+            "fit": 32,
+            "total": 32
+          },
+          "fitAt1_80": {
+            "fit": 32,
+            "total": 32
+          }
+        },
+        "measuredFit": {
+          "fitAt1_10": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_25": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_80": {
+            "fit": 0,
+            "total": 0
+          }
+        },
+        "fitEligibility": {
+          "completeTranslation": false
+        },
+        "semanticReview": "pending-human"
+      },
+      "candidate": {
+        "status": "failed",
+        "disposition": "needs-review",
+        "cueCount": 32,
+        "translatedCueCount": 0,
+        "issueCodes": [
+          "provider-transient",
+          "provider-transient",
+          "missing-id"
+        ],
+        "estimatedFit": {
+          "fitAt1_10": {
+            "fit": 32,
+            "total": 32
+          },
+          "fitAt1_25": {
+            "fit": 32,
+            "total": 32
+          },
+          "fitAt1_80": {
+            "fit": 32,
+            "total": 32
+          }
+        },
+        "measuredFit": {
+          "fitAt1_10": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_25": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_80": {
+            "fit": 0,
+            "total": 0
+          }
+        },
+        "fitEligibility": {
+          "completeTranslation": false
+        },
+        "semanticReview": "pending-human"
+      }
+    },
+    {
+      "index": 16,
+      "sourcePath": "F:\\Son\\test\\2025-12-31_混凝土搅拌车司机的噩梦！爬窄口砸硬块，稍不注意整辆车报废_科普_搅拌罐_工地_知识_7589912913318661376.mp4",
+      "baseline": {
+        "status": "failed",
+        "disposition": "needs-review",
+        "cueCount": 27,
+        "translatedCueCount": 0,
+        "issueCodes": [
+          "provider-transient",
+          "provider-transient",
+          "missing-id"
+        ],
+        "estimatedFit": {
+          "fitAt1_10": {
+            "fit": 27,
+            "total": 27
+          },
+          "fitAt1_25": {
+            "fit": 27,
+            "total": 27
+          },
+          "fitAt1_80": {
+            "fit": 27,
+            "total": 27
+          }
+        },
+        "measuredFit": {
+          "fitAt1_10": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_25": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_80": {
+            "fit": 0,
+            "total": 0
+          }
+        },
+        "fitEligibility": {
+          "completeTranslation": false
+        },
+        "semanticReview": "pending-human"
+      },
+      "candidate": {
+        "status": "failed",
+        "disposition": "needs-review",
+        "cueCount": 27,
+        "translatedCueCount": 0,
+        "issueCodes": [
+          "provider-transient",
+          "provider-transient",
+          "missing-id"
+        ],
+        "estimatedFit": {
+          "fitAt1_10": {
+            "fit": 27,
+            "total": 27
+          },
+          "fitAt1_25": {
+            "fit": 27,
+            "total": 27
+          },
+          "fitAt1_80": {
+            "fit": 27,
+            "total": 27
+          }
+        },
+        "measuredFit": {
+          "fitAt1_10": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_25": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_80": {
+            "fit": 0,
+            "total": 0
+          }
+        },
+        "fitEligibility": {
+          "completeTranslation": false
+        },
+        "semanticReview": "pending-human"
+      }
+    },
+    {
+      "index": 17,
+      "sourcePath": "F:\\Son\\test\\2025-12-31_没牙齿还能日吃7万只蚂蚁！穿山甲的舌头，藏着你不知道的狠活_科普_穿山甲_抖音动物图鉴_动物_青年创作者扶持计划_758989543174.mp4",
+      "baseline": {
+        "status": "failed",
+        "disposition": "needs-review",
+        "cueCount": 35,
+        "translatedCueCount": 0,
+        "issueCodes": [
+          "provider-transient",
+          "provider-transient",
+          "missing-id"
+        ],
+        "estimatedFit": {
+          "fitAt1_10": {
+            "fit": 35,
+            "total": 35
+          },
+          "fitAt1_25": {
+            "fit": 35,
+            "total": 35
+          },
+          "fitAt1_80": {
+            "fit": 35,
+            "total": 35
+          }
+        },
+        "measuredFit": {
+          "fitAt1_10": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_25": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_80": {
+            "fit": 0,
+            "total": 0
+          }
+        },
+        "fitEligibility": {
+          "completeTranslation": false
+        },
+        "semanticReview": "pending-human"
+      },
+      "candidate": {
+        "status": "failed",
+        "disposition": "needs-review",
+        "cueCount": 35,
+        "translatedCueCount": 0,
+        "issueCodes": [
+          "provider-transient",
+          "provider-transient",
+          "missing-id"
+        ],
+        "estimatedFit": {
+          "fitAt1_10": {
+            "fit": 35,
+            "total": 35
+          },
+          "fitAt1_25": {
+            "fit": 35,
+            "total": 35
+          },
+          "fitAt1_80": {
+            "fit": 35,
+            "total": 35
+          }
+        },
+        "measuredFit": {
+          "fitAt1_10": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_25": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_80": {
+            "fit": 0,
+            "total": 0
+          }
+        },
+        "fitEligibility": {
+          "completeTranslation": false
+        },
+        "semanticReview": "pending-human"
+      }
+    },
+    {
+      "index": 18,
+      "sourcePath": "F:\\Son\\test\\2025-12-31_已婚男人的反击有多狠？复仇床一出，老婆连夜求和_科普_夫妻_夫妻日常_复仇_已婚男人_7589940332742151424.mp4",
+      "baseline": {
+        "status": "failed",
+        "disposition": "needs-review",
+        "cueCount": 34,
+        "translatedCueCount": 0,
+        "issueCodes": [
+          "provider-transient",
+          "provider-transient",
+          "missing-id"
+        ],
+        "estimatedFit": {
+          "fitAt1_10": {
+            "fit": 34,
+            "total": 34
+          },
+          "fitAt1_25": {
+            "fit": 34,
+            "total": 34
+          },
+          "fitAt1_80": {
+            "fit": 34,
+            "total": 34
+          }
+        },
+        "measuredFit": {
+          "fitAt1_10": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_25": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_80": {
+            "fit": 0,
+            "total": 0
+          }
+        },
+        "fitEligibility": {
+          "completeTranslation": false
+        },
+        "semanticReview": "pending-human"
+      },
+      "candidate": {
+        "status": "failed",
+        "disposition": "needs-review",
+        "cueCount": 34,
+        "translatedCueCount": 0,
+        "issueCodes": [
+          "provider-transient",
+          "provider-transient",
+          "missing-id"
+        ],
+        "estimatedFit": {
+          "fitAt1_10": {
+            "fit": 34,
+            "total": 34
+          },
+          "fitAt1_25": {
+            "fit": 34,
+            "total": 34
+          },
+          "fitAt1_80": {
+            "fit": 34,
+            "total": 34
+          }
+        },
+        "measuredFit": {
+          "fitAt1_10": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_25": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_80": {
+            "fit": 0,
+            "total": 0
+          }
+        },
+        "fitEligibility": {
+          "completeTranslation": false
+        },
+        "semanticReview": "pending-human"
+      }
+    },
+    {
+      "index": 19,
+      "sourcePath": "F:\\Son\\test\\2026-03-14_这个厨房夹神器真的有必要吗？_厨房夹子_亲测分享_生活技巧_厨房好物_生活用品_7616961714160283057.mp4",
+      "baseline": {
+        "status": "failed",
+        "disposition": "needs-review",
+        "cueCount": 76,
+        "translatedCueCount": 0,
+        "issueCodes": [
+          "provider-transient",
+          "provider-transient",
+          "provider-transient",
+          "missing-id"
+        ],
+        "estimatedFit": {
+          "fitAt1_10": {
+            "fit": 76,
+            "total": 76
+          },
+          "fitAt1_25": {
+            "fit": 76,
+            "total": 76
+          },
+          "fitAt1_80": {
+            "fit": 76,
+            "total": 76
+          }
+        },
+        "measuredFit": {
+          "fitAt1_10": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_25": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_80": {
+            "fit": 0,
+            "total": 0
+          }
+        },
+        "fitEligibility": {
+          "completeTranslation": false
+        },
+        "semanticReview": "pending-human"
+      },
+      "candidate": {
+        "status": "failed",
+        "disposition": "needs-review",
+        "cueCount": 76,
+        "translatedCueCount": 0,
+        "issueCodes": [
+          "provider-transient",
+          "provider-transient",
+          "provider-transient",
+          "missing-id"
+        ],
+        "estimatedFit": {
+          "fitAt1_10": {
+            "fit": 76,
+            "total": 76
+          },
+          "fitAt1_25": {
+            "fit": 76,
+            "total": 76
+          },
+          "fitAt1_80": {
+            "fit": 76,
+            "total": 76
+          }
+        },
+        "measuredFit": {
+          "fitAt1_10": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_25": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_80": {
+            "fit": 0,
+            "total": 0
+          }
+        },
+        "fitEligibility": {
+          "completeTranslation": false
+        },
+        "semanticReview": "pending-human"
+      }
+    },
+    {
+      "index": 20,
+      "sourcePath": "F:\\Son\\test\\2026-03-14_最近很火的AI提效手册到底是不是割韭菜？_Ai_AI提效手册_亲测分享_生活技巧_涨知识_7617082085400269285.mp4",
+      "baseline": {
+        "status": "failed",
+        "disposition": "needs-review",
+        "cueCount": 109,
+        "translatedCueCount": 0,
+        "issueCodes": [
+          "provider-transient",
+          "provider-transient",
+          "provider-transient",
+          "provider-transient",
+          "provider-transient",
+          "provider-transient",
+          "missing-id"
+        ],
+        "estimatedFit": {
+          "fitAt1_10": {
+            "fit": 109,
+            "total": 109
+          },
+          "fitAt1_25": {
+            "fit": 109,
+            "total": 109
+          },
+          "fitAt1_80": {
+            "fit": 109,
+            "total": 109
+          }
+        },
+        "measuredFit": {
+          "fitAt1_10": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_25": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_80": {
+            "fit": 0,
+            "total": 0
+          }
+        },
+        "fitEligibility": {
+          "completeTranslation": false
+        },
+        "semanticReview": "pending-human"
+      },
+      "candidate": {
+        "status": "failed",
+        "disposition": "needs-review",
+        "cueCount": 109,
+        "translatedCueCount": 0,
+        "issueCodes": [
+          "provider-transient",
+          "provider-transient",
+          "provider-transient",
+          "provider-transient",
+          "provider-transient",
+          "provider-transient",
+          "missing-id"
+        ],
+        "estimatedFit": {
+          "fitAt1_10": {
+            "fit": 109,
+            "total": 109
+          },
+          "fitAt1_25": {
+            "fit": 109,
+            "total": 109
+          },
+          "fitAt1_80": {
+            "fit": 109,
+            "total": 109
+          }
+        },
+        "measuredFit": {
+          "fitAt1_10": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_25": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_80": {
+            "fit": 0,
+            "total": 0
+          }
+        },
+        "fitEligibility": {
+          "completeTranslation": false
+        },
+        "semanticReview": "pending-human"
+      }
+    },
+    {
+      "index": 21,
+      "sourcePath": "F:\\Son\\test\\2026-04-09_分享11种漂亮稀有的奇石，你都见过哪几个呢？（修改版）_奇石_冷知识科普_涨知识_宝石_7626594062224820090.mp4",
+      "baseline": {
+        "status": "failed",
+        "disposition": "needs-review",
+        "cueCount": 27,
+        "translatedCueCount": 0,
+        "issueCodes": [
+          "provider-transient",
+          "provider-transient",
+          "provider-transient",
+          "missing-id"
+        ],
+        "estimatedFit": {
+          "fitAt1_10": {
+            "fit": 27,
+            "total": 27
+          },
+          "fitAt1_25": {
+            "fit": 27,
+            "total": 27
+          },
+          "fitAt1_80": {
+            "fit": 27,
+            "total": 27
+          }
+        },
+        "measuredFit": {
+          "fitAt1_10": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_25": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_80": {
+            "fit": 0,
+            "total": 0
+          }
+        },
+        "fitEligibility": {
+          "completeTranslation": false
+        },
+        "semanticReview": "pending-human"
+      },
+      "candidate": {
+        "status": "failed",
+        "disposition": "needs-review",
+        "cueCount": 27,
+        "translatedCueCount": 0,
+        "issueCodes": [
+          "provider-transient",
+          "provider-transient",
+          "provider-transient",
+          "missing-id"
+        ],
+        "estimatedFit": {
+          "fitAt1_10": {
+            "fit": 27,
+            "total": 27
+          },
+          "fitAt1_25": {
+            "fit": 27,
+            "total": 27
+          },
+          "fitAt1_80": {
+            "fit": 27,
+            "total": 27
+          }
+        },
+        "measuredFit": {
+          "fitAt1_10": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_25": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_80": {
+            "fit": 0,
+            "total": 0
+          }
+        },
+        "fitEligibility": {
+          "completeTranslation": false
+        },
+        "semanticReview": "pending-human"
+      }
+    },
+    {
+      "index": 22,
+      "sourcePath": "F:\\Son\\test\\2026-04-10_遇到这些自然现象危险吗？_极端天气_自然现象_涨知识_冷知识科普_7627138583295527601.mp4",
+      "baseline": {
+        "status": "failed",
+        "disposition": "needs-review",
+        "cueCount": 68,
+        "translatedCueCount": 0,
+        "issueCodes": [
+          "provider-transient",
+          "provider-transient",
+          "provider-transient",
+          "provider-transient",
+          "missing-id"
+        ],
+        "estimatedFit": {
+          "fitAt1_10": {
+            "fit": 68,
+            "total": 68
+          },
+          "fitAt1_25": {
+            "fit": 68,
+            "total": 68
+          },
+          "fitAt1_80": {
+            "fit": 68,
+            "total": 68
+          }
+        },
+        "measuredFit": {
+          "fitAt1_10": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_25": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_80": {
+            "fit": 0,
+            "total": 0
+          }
+        },
+        "fitEligibility": {
+          "completeTranslation": false
+        },
+        "semanticReview": "pending-human"
+      },
+      "candidate": {
+        "status": "failed",
+        "disposition": "needs-review",
+        "cueCount": 68,
+        "translatedCueCount": 0,
+        "issueCodes": [
+          "provider-transient",
+          "provider-transient",
+          "provider-transient",
+          "provider-transient",
+          "missing-id"
+        ],
+        "estimatedFit": {
+          "fitAt1_10": {
+            "fit": 68,
+            "total": 68
+          },
+          "fitAt1_25": {
+            "fit": 68,
+            "total": 68
+          },
+          "fitAt1_80": {
+            "fit": 68,
+            "total": 68
+          }
+        },
+        "measuredFit": {
+          "fitAt1_10": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_25": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_80": {
+            "fit": 0,
+            "total": 0
+          }
+        },
+        "fitEligibility": {
+          "completeTranslation": false
+        },
+        "semanticReview": "pending-human"
+      }
+    },
+    {
+      "index": 23,
+      "sourcePath": "F:\\Son\\test\\2026-04-11_捡到这些还需要上班吗？（大合集）_奇石_珍品_涨知识_冷知识科普_7627297626183012281.mp4",
+      "baseline": {
+        "status": "failed",
+        "disposition": "needs-review",
+        "cueCount": 186,
+        "translatedCueCount": 0,
+        "issueCodes": [
+          "provider-transient",
+          "provider-transient",
+          "provider-transient",
+          "provider-transient",
+          "provider-transient",
+          "provider-transient",
+          "provider-transient",
+          "provider-transient",
+          "provider-transient",
+          "provider-transient",
+          "provider-transient",
+          "missing-id"
+        ],
+        "estimatedFit": {
+          "fitAt1_10": {
+            "fit": 186,
+            "total": 186
+          },
+          "fitAt1_25": {
+            "fit": 186,
+            "total": 186
+          },
+          "fitAt1_80": {
+            "fit": 186,
+            "total": 186
+          }
+        },
+        "measuredFit": {
+          "fitAt1_10": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_25": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_80": {
+            "fit": 0,
+            "total": 0
+          }
+        },
+        "fitEligibility": {
+          "completeTranslation": false
+        },
+        "semanticReview": "pending-human"
+      },
+      "candidate": {
+        "status": "failed",
+        "disposition": "needs-review",
+        "cueCount": 186,
+        "translatedCueCount": 0,
+        "issueCodes": [
+          "provider-transient",
+          "provider-transient",
+          "provider-transient",
+          "provider-transient",
+          "provider-transient",
+          "provider-transient",
+          "provider-transient",
+          "provider-transient",
+          "provider-transient",
+          "provider-transient",
+          "provider-transient",
+          "missing-id"
+        ],
+        "estimatedFit": {
+          "fitAt1_10": {
+            "fit": 186,
+            "total": 186
+          },
+          "fitAt1_25": {
+            "fit": 186,
+            "total": 186
+          },
+          "fitAt1_80": {
+            "fit": 186,
+            "total": 186
+          }
+        },
+        "measuredFit": {
+          "fitAt1_10": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_25": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_80": {
+            "fit": 0,
+            "total": 0
+          }
+        },
+        "fitEligibility": {
+          "completeTranslation": false
+        },
+        "semanticReview": "pending-human"
+      }
+    },
+    {
+      "index": 24,
+      "sourcePath": "F:\\Son\\test\\2026-04-11_野外遇到这些奇特的洞穴能不能掏，你都知道吗？（修改版）_洞_户外探险_冷知识科普_涨知识_7627472230256165050.mp4",
+      "baseline": {
+        "status": "failed",
+        "disposition": "needs-review",
+        "cueCount": 64,
+        "translatedCueCount": 0,
+        "issueCodes": [
+          "provider-transient",
+          "provider-transient",
+          "provider-transient",
+          "missing-id"
+        ],
+        "estimatedFit": {
+          "fitAt1_10": {
+            "fit": 64,
+            "total": 64
+          },
+          "fitAt1_25": {
+            "fit": 64,
+            "total": 64
+          },
+          "fitAt1_80": {
+            "fit": 64,
+            "total": 64
+          }
+        },
+        "measuredFit": {
+          "fitAt1_10": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_25": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_80": {
+            "fit": 0,
+            "total": 0
+          }
+        },
+        "fitEligibility": {
+          "completeTranslation": false
+        },
+        "semanticReview": "pending-human"
+      },
+      "candidate": {
+        "status": "failed",
+        "disposition": "needs-review",
+        "cueCount": 64,
+        "translatedCueCount": 0,
+        "issueCodes": [
+          "provider-transient",
+          "provider-transient",
+          "provider-transient",
+          "missing-id"
+        ],
+        "estimatedFit": {
+          "fitAt1_10": {
+            "fit": 64,
+            "total": 64
+          },
+          "fitAt1_25": {
+            "fit": 64,
+            "total": 64
+          },
+          "fitAt1_80": {
+            "fit": 64,
+            "total": 64
+          }
+        },
+        "measuredFit": {
+          "fitAt1_10": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_25": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_80": {
+            "fit": 0,
+            "total": 0
+          }
+        },
+        "fitEligibility": {
+          "completeTranslation": false
+        },
+        "semanticReview": "pending-human"
+      }
+    },
+    {
+      "index": 25,
+      "sourcePath": "F:\\Son\\test\\2026-04-14_鳗鱼之谜。没人见过的繁殖过程。_动物世界_动物科普_鳗鱼_7628541677656870187.mp4",
+      "baseline": {
+        "status": "failed",
+        "disposition": "needs-review",
+        "cueCount": 80,
+        "translatedCueCount": 0,
+        "issueCodes": [
+          "provider-transient",
+          "provider-transient",
+          "provider-transient",
+          "provider-transient",
+          "provider-transient",
+          "missing-id"
+        ],
+        "estimatedFit": {
+          "fitAt1_10": {
+            "fit": 80,
+            "total": 80
+          },
+          "fitAt1_25": {
+            "fit": 80,
+            "total": 80
+          },
+          "fitAt1_80": {
+            "fit": 80,
+            "total": 80
+          }
+        },
+        "measuredFit": {
+          "fitAt1_10": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_25": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_80": {
+            "fit": 0,
+            "total": 0
+          }
+        },
+        "fitEligibility": {
+          "completeTranslation": false
+        },
+        "semanticReview": "pending-human"
+      },
+      "candidate": {
+        "status": "failed",
+        "disposition": "needs-review",
+        "cueCount": 80,
+        "translatedCueCount": 0,
+        "issueCodes": [
+          "provider-transient",
+          "provider-transient",
+          "provider-transient",
+          "provider-transient",
+          "provider-transient",
+          "missing-id"
+        ],
+        "estimatedFit": {
+          "fitAt1_10": {
+            "fit": 80,
+            "total": 80
+          },
+          "fitAt1_25": {
+            "fit": 80,
+            "total": 80
+          },
+          "fitAt1_80": {
+            "fit": 80,
+            "total": 80
+          }
+        },
+        "measuredFit": {
+          "fitAt1_10": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_25": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_80": {
+            "fit": 0,
+            "total": 0
+          }
+        },
+        "fitEligibility": {
+          "completeTranslation": false
+        },
+        "semanticReview": "pending-human"
+      }
+    },
+    {
+      "index": 26,
+      "sourcePath": "F:\\Son\\test\\2026-05-02_免费自助海鲜面，现抓现吃_赶海_7633777211383876874.mp4",
+      "baseline": {
+        "status": "failed",
+        "disposition": "needs-review",
+        "cueCount": 66,
+        "translatedCueCount": 0,
+        "issueCodes": [
+          "provider-transient",
+          "provider-transient",
+          "provider-transient",
+          "missing-id"
+        ],
+        "estimatedFit": {
+          "fitAt1_10": {
+            "fit": 66,
+            "total": 66
+          },
+          "fitAt1_25": {
+            "fit": 66,
+            "total": 66
+          },
+          "fitAt1_80": {
+            "fit": 66,
+            "total": 66
+          }
+        },
+        "measuredFit": {
+          "fitAt1_10": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_25": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_80": {
+            "fit": 0,
+            "total": 0
+          }
+        },
+        "fitEligibility": {
+          "completeTranslation": false
+        },
+        "semanticReview": "pending-human"
+      },
+      "candidate": {
+        "status": "failed",
+        "disposition": "needs-review",
+        "cueCount": 66,
+        "translatedCueCount": 0,
+        "issueCodes": [
+          "provider-transient",
+          "provider-transient",
+          "provider-transient",
+          "missing-id"
+        ],
+        "estimatedFit": {
+          "fitAt1_10": {
+            "fit": 66,
+            "total": 66
+          },
+          "fitAt1_25": {
+            "fit": 66,
+            "total": 66
+          },
+          "fitAt1_80": {
+            "fit": 66,
+            "total": 66
+          }
+        },
+        "measuredFit": {
+          "fitAt1_10": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_25": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_80": {
+            "fit": 0,
+            "total": 0
+          }
+        },
+        "fitEligibility": {
+          "completeTranslation": false
+        },
+        "semanticReview": "pending-human"
+      }
+    },
+    {
+      "index": 27,
+      "sourcePath": "F:\\Son\\test\\2026-05-04_小渔村的海底捞火锅，现抓现吃_赶海_7635826549870103835.mp4",
+      "baseline": {
+        "status": "failed",
+        "disposition": "needs-review",
+        "cueCount": 59,
+        "translatedCueCount": 0,
+        "issueCodes": [
+          "provider-transient",
+          "provider-transient",
+          "provider-transient",
+          "missing-id"
+        ],
+        "estimatedFit": {
+          "fitAt1_10": {
+            "fit": 59,
+            "total": 59
+          },
+          "fitAt1_25": {
+            "fit": 59,
+            "total": 59
+          },
+          "fitAt1_80": {
+            "fit": 59,
+            "total": 59
+          }
+        },
+        "measuredFit": {
+          "fitAt1_10": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_25": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_80": {
+            "fit": 0,
+            "total": 0
+          }
+        },
+        "fitEligibility": {
+          "completeTranslation": false
+        },
+        "semanticReview": "pending-human"
+      },
+      "candidate": {
+        "status": "failed",
+        "disposition": "needs-review",
+        "cueCount": 59,
+        "translatedCueCount": 0,
+        "issueCodes": [
+          "provider-transient",
+          "provider-transient",
+          "provider-transient",
+          "missing-id"
+        ],
+        "estimatedFit": {
+          "fitAt1_10": {
+            "fit": 59,
+            "total": 59
+          },
+          "fitAt1_25": {
+            "fit": 59,
+            "total": 59
+          },
+          "fitAt1_80": {
+            "fit": 59,
+            "total": 59
+          }
+        },
+        "measuredFit": {
+          "fitAt1_10": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_25": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_80": {
+            "fit": 0,
+            "total": 0
+          }
+        },
+        "fitEligibility": {
+          "completeTranslation": false
+        },
+        "semanticReview": "pending-human"
+      }
+    },
+    {
+      "index": 28,
+      "sourcePath": "F:\\Son\\test\\2026-05-09_人类在肾上腺素的加持下。到底能爆发多少战斗力_动物世界_科普_动画短片_7637800837401546020.mp4",
+      "baseline": {
+        "status": "failed",
+        "disposition": "needs-review",
+        "cueCount": 161,
+        "translatedCueCount": 0,
+        "issueCodes": [
+          "provider-transient",
+          "provider-transient",
+          "provider-transient",
+          "provider-transient",
+          "provider-transient",
+          "provider-transient",
+          "provider-transient",
+          "provider-transient",
+          "missing-id"
+        ],
+        "estimatedFit": {
+          "fitAt1_10": {
+            "fit": 161,
+            "total": 161
+          },
+          "fitAt1_25": {
+            "fit": 161,
+            "total": 161
+          },
+          "fitAt1_80": {
+            "fit": 161,
+            "total": 161
+          }
+        },
+        "measuredFit": {
+          "fitAt1_10": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_25": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_80": {
+            "fit": 0,
+            "total": 0
+          }
+        },
+        "fitEligibility": {
+          "completeTranslation": false
+        },
+        "semanticReview": "pending-human"
+      },
+      "candidate": {
+        "status": "failed",
+        "disposition": "needs-review",
+        "cueCount": 161,
+        "translatedCueCount": 0,
+        "issueCodes": [
+          "provider-transient",
+          "provider-transient",
+          "provider-transient",
+          "provider-transient",
+          "provider-transient",
+          "provider-transient",
+          "provider-transient",
+          "provider-transient",
+          "missing-id"
+        ],
+        "estimatedFit": {
+          "fitAt1_10": {
+            "fit": 161,
+            "total": 161
+          },
+          "fitAt1_25": {
+            "fit": 161,
+            "total": 161
+          },
+          "fitAt1_80": {
+            "fit": 161,
+            "total": 161
+          }
+        },
+        "measuredFit": {
+          "fitAt1_10": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_25": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_80": {
+            "fit": 0,
+            "total": 0
+          }
+        },
+        "fitEligibility": {
+          "completeTranslation": false
+        },
+        "semanticReview": "pending-human"
+      }
+    },
+    {
+      "index": 29,
+      "sourcePath": "F:\\Son\\test\\2026-05-09_小渔村的自助海鲜面，现抓现吃_赶海_7637831486468525339.mp4",
+      "baseline": {
+        "status": "failed",
+        "disposition": "needs-review",
+        "cueCount": 72,
+        "translatedCueCount": 0,
+        "issueCodes": [
+          "provider-transient",
+          "provider-transient",
+          "provider-transient",
+          "missing-id"
+        ],
+        "estimatedFit": {
+          "fitAt1_10": {
+            "fit": 72,
+            "total": 72
+          },
+          "fitAt1_25": {
+            "fit": 72,
+            "total": 72
+          },
+          "fitAt1_80": {
+            "fit": 72,
+            "total": 72
+          }
+        },
+        "measuredFit": {
+          "fitAt1_10": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_25": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_80": {
+            "fit": 0,
+            "total": 0
+          }
+        },
+        "fitEligibility": {
+          "completeTranslation": false
+        },
+        "semanticReview": "pending-human"
+      },
+      "candidate": {
+        "status": "failed",
+        "disposition": "needs-review",
+        "cueCount": 72,
+        "translatedCueCount": 0,
+        "issueCodes": [
+          "provider-transient",
+          "provider-transient",
+          "provider-transient",
+          "missing-id"
+        ],
+        "estimatedFit": {
+          "fitAt1_10": {
+            "fit": 72,
+            "total": 72
+          },
+          "fitAt1_25": {
+            "fit": 72,
+            "total": 72
+          },
+          "fitAt1_80": {
+            "fit": 72,
+            "total": 72
+          }
+        },
+        "measuredFit": {
+          "fitAt1_10": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_25": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_80": {
+            "fit": 0,
+            "total": 0
+          }
+        },
+        "fitEligibility": {
+          "completeTranslation": false
+        },
+        "semanticReview": "pending-human"
+      }
+    },
+    {
+      "index": 30,
+      "sourcePath": "F:\\Son\\test\\2026-05-27_都说结发夫妻是怎么来的_青年创作者成长计划_涨知识_百young非遗计划_7644423387435011364.mp4",
+      "baseline": {
+        "status": "failed",
+        "disposition": "needs-review",
+        "cueCount": 43,
+        "translatedCueCount": 0,
+        "issueCodes": [
+          "provider-transient",
+          "provider-transient",
+          "missing-id"
+        ],
+        "estimatedFit": {
+          "fitAt1_10": {
+            "fit": 43,
+            "total": 43
+          },
+          "fitAt1_25": {
+            "fit": 43,
+            "total": 43
+          },
+          "fitAt1_80": {
+            "fit": 43,
+            "total": 43
+          }
+        },
+        "measuredFit": {
+          "fitAt1_10": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_25": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_80": {
+            "fit": 0,
+            "total": 0
+          }
+        },
+        "fitEligibility": {
+          "completeTranslation": false
+        },
+        "semanticReview": "pending-human"
+      },
+      "candidate": {
+        "status": "failed",
+        "disposition": "needs-review",
+        "cueCount": 43,
+        "translatedCueCount": 0,
+        "issueCodes": [
+          "provider-transient",
+          "provider-transient",
+          "missing-id"
+        ],
+        "estimatedFit": {
+          "fitAt1_10": {
+            "fit": 43,
+            "total": 43
+          },
+          "fitAt1_25": {
+            "fit": 43,
+            "total": 43
+          },
+          "fitAt1_80": {
+            "fit": 43,
+            "total": 43
+          }
+        },
+        "measuredFit": {
+          "fitAt1_10": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_25": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_80": {
+            "fit": 0,
+            "total": 0
+          }
+        },
+        "fitEligibility": {
+          "completeTranslation": false
+        },
+        "semanticReview": "pending-human"
+      }
+    },
+    {
+      "index": 31,
+      "sourcePath": "F:\\Son\\test\\2026-05-31_古人造字真的超有智慧，好多常用词，根源全都来自木头！_青年创作者成长计划_涨知识_百young非遗计划_76459183984713597.mp4",
+      "baseline": {
+        "status": "failed",
+        "disposition": "needs-review",
+        "cueCount": 28,
+        "translatedCueCount": 0,
+        "issueCodes": [
+          "provider-transient",
+          "provider-transient",
+          "missing-id"
+        ],
+        "estimatedFit": {
+          "fitAt1_10": {
+            "fit": 28,
+            "total": 28
+          },
+          "fitAt1_25": {
+            "fit": 28,
+            "total": 28
+          },
+          "fitAt1_80": {
+            "fit": 28,
+            "total": 28
+          }
+        },
+        "measuredFit": {
+          "fitAt1_10": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_25": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_80": {
+            "fit": 0,
+            "total": 0
+          }
+        },
+        "fitEligibility": {
+          "completeTranslation": false
+        },
+        "semanticReview": "pending-human"
+      },
+      "candidate": {
+        "status": "failed",
+        "disposition": "needs-review",
+        "cueCount": 28,
+        "translatedCueCount": 0,
+        "issueCodes": [
+          "provider-transient",
+          "provider-transient",
+          "missing-id"
+        ],
+        "estimatedFit": {
+          "fitAt1_10": {
+            "fit": 28,
+            "total": 28
+          },
+          "fitAt1_25": {
+            "fit": 28,
+            "total": 28
+          },
+          "fitAt1_80": {
+            "fit": 28,
+            "total": 28
+          }
+        },
+        "measuredFit": {
+          "fitAt1_10": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_25": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_80": {
+            "fit": 0,
+            "total": 0
+          }
+        },
+        "fitEligibility": {
+          "completeTranslation": false
+        },
+        "semanticReview": "pending-human"
+      }
+    },
+    {
+      "index": 32,
+      "sourcePath": "F:\\Son\\test\\2026-06-01_焊工_焊接技术_焊接_焊接设备_焊工焊接技巧。_7646410968356326818.mp4",
+      "baseline": {
+        "status": "failed",
+        "disposition": "needs-review",
+        "cueCount": 1,
+        "translatedCueCount": 0,
+        "issueCodes": [
+          "provider-transient",
+          "missing-id"
+        ],
+        "estimatedFit": {
+          "fitAt1_10": {
+            "fit": 1,
+            "total": 1
+          },
+          "fitAt1_25": {
+            "fit": 1,
+            "total": 1
+          },
+          "fitAt1_80": {
+            "fit": 1,
+            "total": 1
+          }
+        },
+        "measuredFit": {
+          "fitAt1_10": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_25": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_80": {
+            "fit": 0,
+            "total": 0
+          }
+        },
+        "fitEligibility": {
+          "completeTranslation": false
+        },
+        "semanticReview": "pending-human"
+      },
+      "candidate": {
+        "status": "failed",
+        "disposition": "needs-review",
+        "cueCount": 1,
+        "translatedCueCount": 0,
+        "issueCodes": [
+          "provider-transient",
+          "missing-id"
+        ],
+        "estimatedFit": {
+          "fitAt1_10": {
+            "fit": 1,
+            "total": 1
+          },
+          "fitAt1_25": {
+            "fit": 1,
+            "total": 1
+          },
+          "fitAt1_80": {
+            "fit": 1,
+            "total": 1
+          }
+        },
+        "measuredFit": {
+          "fitAt1_10": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_25": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_80": {
+            "fit": 0,
+            "total": 0
+          }
+        },
+        "fitEligibility": {
+          "completeTranslation": false
+        },
+        "semanticReview": "pending-human"
+      }
+    },
+    {
+      "index": 33,
+      "sourcePath": "F:\\Son\\test\\2026-06-02_焊接技术_焊工_电焊_焊接设备_电焊焊接实用技巧。_7646744896527286947.mp4",
+      "baseline": {
+        "status": "failed",
+        "disposition": null,
+        "cueCount": 0,
+        "translatedCueCount": 0,
+        "issueCodes": [
+          "invalid-source"
+        ],
+        "estimatedFit": {
+          "fitAt1_10": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_25": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_80": {
+            "fit": 0,
+            "total": 0
+          }
+        },
+        "measuredFit": {
+          "fitAt1_10": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_25": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_80": {
+            "fit": 0,
+            "total": 0
+          }
+        },
+        "fitEligibility": {
+          "completeTranslation": false
+        },
+        "semanticReview": "pending-human"
+      },
+      "candidate": {
+        "status": "failed",
+        "disposition": null,
+        "cueCount": 0,
+        "translatedCueCount": 0,
+        "issueCodes": [
+          "invalid-source"
+        ],
+        "estimatedFit": {
+          "fitAt1_10": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_25": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_80": {
+            "fit": 0,
+            "total": 0
+          }
+        },
+        "measuredFit": {
+          "fitAt1_10": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_25": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_80": {
+            "fit": 0,
+            "total": 0
+          }
+        },
+        "fitEligibility": {
+          "completeTranslation": false
+        },
+        "semanticReview": "pending-human"
+      }
+    },
+    {
+      "index": 34,
+      "sourcePath": "F:\\Son\\test\\2026-06-04_焊接技术_焊接设备_焊工_电焊_铆工_电焊焊接，铆工技术。_7647482148941703139.mp4",
+      "baseline": {
+        "status": "failed",
+        "disposition": "needs-review",
+        "cueCount": 1,
+        "translatedCueCount": 0,
+        "issueCodes": [
+          "provider-transient",
+          "missing-id"
+        ],
+        "estimatedFit": {
+          "fitAt1_10": {
+            "fit": 1,
+            "total": 1
+          },
+          "fitAt1_25": {
+            "fit": 1,
+            "total": 1
+          },
+          "fitAt1_80": {
+            "fit": 1,
+            "total": 1
+          }
+        },
+        "measuredFit": {
+          "fitAt1_10": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_25": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_80": {
+            "fit": 0,
+            "total": 0
+          }
+        },
+        "fitEligibility": {
+          "completeTranslation": false
+        },
+        "semanticReview": "pending-human"
+      },
+      "candidate": {
+        "status": "failed",
+        "disposition": "needs-review",
+        "cueCount": 1,
+        "translatedCueCount": 0,
+        "issueCodes": [
+          "provider-transient",
+          "missing-id"
+        ],
+        "estimatedFit": {
+          "fitAt1_10": {
+            "fit": 1,
+            "total": 1
+          },
+          "fitAt1_25": {
+            "fit": 1,
+            "total": 1
+          },
+          "fitAt1_80": {
+            "fit": 1,
+            "total": 1
+          }
+        },
+        "measuredFit": {
+          "fitAt1_10": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_25": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_80": {
+            "fit": 0,
+            "total": 0
+          }
+        },
+        "fitEligibility": {
+          "completeTranslation": false
+        },
+        "semanticReview": "pending-human"
+      }
+    },
+    {
+      "index": 35,
+      "sourcePath": "F:\\Son\\test\\2026-06-04_老祖宗流传下来的餐桌分寸藏着待人接物的传统礼仪与生活智慧_青年创作者成长计划_涨知识_百young非遗计划_764744314305015.mp4",
+      "baseline": {
+        "status": "failed",
+        "disposition": "needs-review",
+        "cueCount": 47,
+        "translatedCueCount": 0,
+        "issueCodes": [
+          "provider-transient",
+          "provider-transient",
+          "missing-id"
+        ],
+        "estimatedFit": {
+          "fitAt1_10": {
+            "fit": 47,
+            "total": 47
+          },
+          "fitAt1_25": {
+            "fit": 47,
+            "total": 47
+          },
+          "fitAt1_80": {
+            "fit": 47,
+            "total": 47
+          }
+        },
+        "measuredFit": {
+          "fitAt1_10": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_25": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_80": {
+            "fit": 0,
+            "total": 0
+          }
+        },
+        "fitEligibility": {
+          "completeTranslation": false
+        },
+        "semanticReview": "pending-human"
+      },
+      "candidate": {
+        "status": "failed",
+        "disposition": "needs-review",
+        "cueCount": 47,
+        "translatedCueCount": 0,
+        "issueCodes": [
+          "provider-transient",
+          "provider-transient",
+          "missing-id"
+        ],
+        "estimatedFit": {
+          "fitAt1_10": {
+            "fit": 47,
+            "total": 47
+          },
+          "fitAt1_25": {
+            "fit": 47,
+            "total": 47
+          },
+          "fitAt1_80": {
+            "fit": 47,
+            "total": 47
+          }
+        },
+        "measuredFit": {
+          "fitAt1_10": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_25": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_80": {
+            "fit": 0,
+            "total": 0
+          }
+        },
+        "fitEligibility": {
+          "completeTranslation": false
+        },
+        "semanticReview": "pending-human"
+      }
+    },
+    {
+      "index": 36,
+      "sourcePath": "F:\\Son\\test\\2026-06-05_焊接技术_焊工_焊接设备_电焊_电焊焊接技巧。_7647862922248929012.mp4",
+      "baseline": {
+        "status": "failed",
+        "disposition": null,
+        "cueCount": 0,
+        "translatedCueCount": 0,
+        "issueCodes": [
+          "invalid-source"
+        ],
+        "estimatedFit": {
+          "fitAt1_10": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_25": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_80": {
+            "fit": 0,
+            "total": 0
+          }
+        },
+        "measuredFit": {
+          "fitAt1_10": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_25": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_80": {
+            "fit": 0,
+            "total": 0
+          }
+        },
+        "fitEligibility": {
+          "completeTranslation": false
+        },
+        "semanticReview": "pending-human"
+      },
+      "candidate": {
+        "status": "failed",
+        "disposition": null,
+        "cueCount": 0,
+        "translatedCueCount": 0,
+        "issueCodes": [
+          "invalid-source"
+        ],
+        "estimatedFit": {
+          "fitAt1_10": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_25": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_80": {
+            "fit": 0,
+            "total": 0
+          }
+        },
+        "measuredFit": {
+          "fitAt1_10": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_25": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_80": {
+            "fit": 0,
+            "total": 0
+          }
+        },
+        "fitEligibility": {
+          "completeTranslation": false
+        },
+        "semanticReview": "pending-human"
+      }
+    },
+    {
+      "index": 37,
+      "sourcePath": "F:\\Son\\test\\2026-06-06_为啥老祖宗都偏爱这几棵树，如今学子奔赴考场祝金榜题名双桂流芳_涨知识_百young非遗计划_非遗新青年_全抖音为2026高考加油_7648.mp4",
+      "baseline": {
+        "status": "failed",
+        "disposition": "needs-review",
+        "cueCount": 44,
+        "translatedCueCount": 0,
+        "issueCodes": [
+          "provider-transient",
+          "provider-transient",
+          "missing-id"
+        ],
+        "estimatedFit": {
+          "fitAt1_10": {
+            "fit": 44,
+            "total": 44
+          },
+          "fitAt1_25": {
+            "fit": 44,
+            "total": 44
+          },
+          "fitAt1_80": {
+            "fit": 44,
+            "total": 44
+          }
+        },
+        "measuredFit": {
+          "fitAt1_10": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_25": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_80": {
+            "fit": 0,
+            "total": 0
+          }
+        },
+        "fitEligibility": {
+          "completeTranslation": false
+        },
+        "semanticReview": "pending-human"
+      },
+      "candidate": {
+        "status": "failed",
+        "disposition": "needs-review",
+        "cueCount": 44,
+        "translatedCueCount": 0,
+        "issueCodes": [
+          "provider-transient",
+          "provider-transient",
+          "missing-id"
+        ],
+        "estimatedFit": {
+          "fitAt1_10": {
+            "fit": 44,
+            "total": 44
+          },
+          "fitAt1_25": {
+            "fit": 44,
+            "total": 44
+          },
+          "fitAt1_80": {
+            "fit": 44,
+            "total": 44
+          }
+        },
+        "measuredFit": {
+          "fitAt1_10": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_25": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_80": {
+            "fit": 0,
+            "total": 0
+          }
+        },
+        "fitEligibility": {
+          "completeTranslation": false
+        },
+        "semanticReview": "pending-human"
+      }
+    },
+    {
+      "index": 38,
+      "sourcePath": "F:\\Son\\test\\2026-07-09_带你认识各种羊，你都见过几种？_涨知识_羊_山羊_动物科普_7660212497437249011.mp4",
+      "baseline": {
+        "status": "failed",
+        "disposition": "needs-review",
+        "cueCount": 57,
+        "translatedCueCount": 0,
+        "issueCodes": [
+          "provider-transient",
+          "provider-transient",
+          "provider-transient",
+          "missing-id"
+        ],
+        "estimatedFit": {
+          "fitAt1_10": {
+            "fit": 57,
+            "total": 57
+          },
+          "fitAt1_25": {
+            "fit": 57,
+            "total": 57
+          },
+          "fitAt1_80": {
+            "fit": 57,
+            "total": 57
+          }
+        },
+        "measuredFit": {
+          "fitAt1_10": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_25": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_80": {
+            "fit": 0,
+            "total": 0
+          }
+        },
+        "fitEligibility": {
+          "completeTranslation": false
+        },
+        "semanticReview": "pending-human"
+      },
+      "candidate": {
+        "status": "failed",
+        "disposition": "needs-review",
+        "cueCount": 57,
+        "translatedCueCount": 0,
+        "issueCodes": [
+          "provider-transient",
+          "provider-transient",
+          "provider-transient",
+          "missing-id"
+        ],
+        "estimatedFit": {
+          "fitAt1_10": {
+            "fit": 57,
+            "total": 57
+          },
+          "fitAt1_25": {
+            "fit": 57,
+            "total": 57
+          },
+          "fitAt1_80": {
+            "fit": 57,
+            "total": 57
+          }
+        },
+        "measuredFit": {
+          "fitAt1_10": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_25": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_80": {
+            "fit": 0,
+            "total": 0
+          }
+        },
+        "fitEligibility": {
+          "completeTranslation": false
+        },
+        "semanticReview": "pending-human"
+      }
+    },
+    {
+      "index": 39,
+      "sourcePath": "F:\\Son\\test\\2026-07-09_这种情况危险吗？_科普_危险_危险瞬间_涨知识_7660476896262376778.mp4",
+      "baseline": {
+        "status": "failed",
+        "disposition": "needs-review",
+        "cueCount": 41,
+        "translatedCueCount": 0,
+        "issueCodes": [
+          "provider-transient",
+          "provider-transient",
+          "missing-id"
+        ],
+        "estimatedFit": {
+          "fitAt1_10": {
+            "fit": 41,
+            "total": 41
+          },
+          "fitAt1_25": {
+            "fit": 41,
+            "total": 41
+          },
+          "fitAt1_80": {
+            "fit": 41,
+            "total": 41
+          }
+        },
+        "measuredFit": {
+          "fitAt1_10": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_25": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_80": {
+            "fit": 0,
+            "total": 0
+          }
+        },
+        "fitEligibility": {
+          "completeTranslation": false
+        },
+        "semanticReview": "pending-human"
+      },
+      "candidate": {
+        "status": "failed",
+        "disposition": "needs-review",
+        "cueCount": 41,
+        "translatedCueCount": 0,
+        "issueCodes": [
+          "provider-transient",
+          "provider-transient",
+          "missing-id"
+        ],
+        "estimatedFit": {
+          "fitAt1_10": {
+            "fit": 41,
+            "total": 41
+          },
+          "fitAt1_25": {
+            "fit": 41,
+            "total": 41
+          },
+          "fitAt1_80": {
+            "fit": 41,
+            "total": 41
+          }
+        },
+        "measuredFit": {
+          "fitAt1_10": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_25": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_80": {
+            "fit": 0,
+            "total": 0
+          }
+        },
+        "fitEligibility": {
+          "completeTranslation": false
+        },
+        "semanticReview": "pending-human"
+      }
+    },
+    {
+      "index": 40,
+      "sourcePath": "F:\\Son\\test\\2026-07-11_带你认识各种名贵犬，你见过几种？_涨知识_犬_狗狗_动物科普_7661212402629770186.mp4",
+      "baseline": {
+        "status": "failed",
+        "disposition": "needs-review",
+        "cueCount": 56,
+        "translatedCueCount": 0,
+        "issueCodes": [
+          "provider-transient",
+          "provider-transient",
+          "provider-transient",
+          "missing-id"
+        ],
+        "estimatedFit": {
+          "fitAt1_10": {
+            "fit": 56,
+            "total": 56
+          },
+          "fitAt1_25": {
+            "fit": 56,
+            "total": 56
+          },
+          "fitAt1_80": {
+            "fit": 56,
+            "total": 56
+          }
+        },
+        "measuredFit": {
+          "fitAt1_10": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_25": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_80": {
+            "fit": 0,
+            "total": 0
+          }
+        },
+        "fitEligibility": {
+          "completeTranslation": false
+        },
+        "semanticReview": "pending-human"
+      },
+      "candidate": {
+        "status": "failed",
+        "disposition": "needs-review",
+        "cueCount": 56,
+        "translatedCueCount": 0,
+        "issueCodes": [
+          "provider-transient",
+          "provider-transient",
+          "provider-transient",
+          "missing-id"
+        ],
+        "estimatedFit": {
+          "fitAt1_10": {
+            "fit": 56,
+            "total": 56
+          },
+          "fitAt1_25": {
+            "fit": 56,
+            "total": 56
+          },
+          "fitAt1_80": {
+            "fit": 56,
+            "total": 56
+          }
+        },
+        "measuredFit": {
+          "fitAt1_10": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_25": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_80": {
+            "fit": 0,
+            "total": 0
+          }
+        },
+        "fitEligibility": {
+          "completeTranslation": false
+        },
+        "semanticReview": "pending-human"
+      }
+    },
+    {
+      "index": 41,
+      "sourcePath": "F:\\Son\\test\\2026-07-12_这些动物的怪异行为你见过几种？_涨知识_动物怪异行为_动物的迷惑行为_动物科普_7661460997706514290.mp4",
+      "baseline": {
+        "status": "failed",
+        "disposition": "needs-review",
+        "cueCount": 47,
+        "translatedCueCount": 0,
+        "issueCodes": [
+          "provider-transient",
+          "provider-transient",
+          "missing-id"
+        ],
+        "estimatedFit": {
+          "fitAt1_10": {
+            "fit": 47,
+            "total": 47
+          },
+          "fitAt1_25": {
+            "fit": 47,
+            "total": 47
+          },
+          "fitAt1_80": {
+            "fit": 47,
+            "total": 47
+          }
+        },
+        "measuredFit": {
+          "fitAt1_10": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_25": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_80": {
+            "fit": 0,
+            "total": 0
+          }
+        },
+        "fitEligibility": {
+          "completeTranslation": false
+        },
+        "semanticReview": "pending-human"
+      },
+      "candidate": {
+        "status": "failed",
+        "disposition": "needs-review",
+        "cueCount": 47,
+        "translatedCueCount": 0,
+        "issueCodes": [
+          "provider-transient",
+          "provider-transient",
+          "missing-id"
+        ],
+        "estimatedFit": {
+          "fitAt1_10": {
+            "fit": 47,
+            "total": 47
+          },
+          "fitAt1_25": {
+            "fit": 47,
+            "total": 47
+          },
+          "fitAt1_80": {
+            "fit": 47,
+            "total": 47
+          }
+        },
+        "measuredFit": {
+          "fitAt1_10": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_25": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_80": {
+            "fit": 0,
+            "total": 0
+          }
+        },
+        "fitEligibility": {
+          "completeTranslation": false
+        },
+        "semanticReview": "pending-human"
+      }
+    },
+    {
+      "index": 42,
+      "sourcePath": "F:\\Son\\test\\2026-07-24_第一百三十集【实用自制工具】_自制工具_高性能实用工具_工具diy_自制工具分享_手工机械爱好者_7666029707880937902.mp4",
+      "baseline": {
+        "status": "failed",
+        "disposition": "needs-review",
+        "cueCount": 34,
+        "translatedCueCount": 0,
+        "issueCodes": [
+          "provider-transient",
+          "provider-transient",
+          "missing-id"
+        ],
+        "estimatedFit": {
+          "fitAt1_10": {
+            "fit": 34,
+            "total": 34
+          },
+          "fitAt1_25": {
+            "fit": 34,
+            "total": 34
+          },
+          "fitAt1_80": {
+            "fit": 34,
+            "total": 34
+          }
+        },
+        "measuredFit": {
+          "fitAt1_10": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_25": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_80": {
+            "fit": 0,
+            "total": 0
+          }
+        },
+        "fitEligibility": {
+          "completeTranslation": false
+        },
+        "semanticReview": "pending-human"
+      },
+      "candidate": {
+        "status": "failed",
+        "disposition": "needs-review",
+        "cueCount": 34,
+        "translatedCueCount": 0,
+        "issueCodes": [
+          "provider-transient",
+          "provider-transient",
+          "missing-id"
+        ],
+        "estimatedFit": {
+          "fitAt1_10": {
+            "fit": 34,
+            "total": 34
+          },
+          "fitAt1_25": {
+            "fit": 34,
+            "total": 34
+          },
+          "fitAt1_80": {
+            "fit": 34,
+            "total": 34
+          }
+        },
+        "measuredFit": {
+          "fitAt1_10": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_25": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_80": {
+            "fit": 0,
+            "total": 0
+          }
+        },
+        "fitEligibility": {
+          "completeTranslation": false
+        },
+        "semanticReview": "pending-human"
+      }
+    },
+    {
+      "index": 43,
+      "sourcePath": "F:\\Son\\test\\2026-07-24_第一百三十一集【生活实用技巧】_实用小技巧_实用生活小窍门_分享生活小技巧_生活实用技巧分享_小技巧分享_7666075572934423.mp4",
+      "baseline": {
+        "status": "failed",
+        "disposition": "needs-review",
+        "cueCount": 43,
+        "translatedCueCount": 0,
+        "issueCodes": [
+          "provider-transient",
+          "provider-transient",
+          "missing-id"
+        ],
+        "estimatedFit": {
+          "fitAt1_10": {
+            "fit": 43,
+            "total": 43
+          },
+          "fitAt1_25": {
+            "fit": 43,
+            "total": 43
+          },
+          "fitAt1_80": {
+            "fit": 43,
+            "total": 43
+          }
+        },
+        "measuredFit": {
+          "fitAt1_10": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_25": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_80": {
+            "fit": 0,
+            "total": 0
+          }
+        },
+        "fitEligibility": {
+          "completeTranslation": false
+        },
+        "semanticReview": "pending-human"
+      },
+      "candidate": {
+        "status": "failed",
+        "disposition": "needs-review",
+        "cueCount": 43,
+        "translatedCueCount": 0,
+        "issueCodes": [
+          "provider-transient",
+          "provider-transient",
+          "missing-id"
+        ],
+        "estimatedFit": {
+          "fitAt1_10": {
+            "fit": 43,
+            "total": 43
+          },
+          "fitAt1_25": {
+            "fit": 43,
+            "total": 43
+          },
+          "fitAt1_80": {
+            "fit": 43,
+            "total": 43
+          }
+        },
+        "measuredFit": {
+          "fitAt1_10": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_25": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_80": {
+            "fit": 0,
+            "total": 0
+          }
+        },
+        "fitEligibility": {
+          "completeTranslation": false
+        },
+        "semanticReview": "pending-human"
+      }
+    },
+    {
+      "index": 44,
+      "sourcePath": "F:\\Son\\test\\2026-07-26_贵州最漂亮的私人豪宅，城堡立于孤岛，宛如与世隔绝的童话王国！_旅行推荐官_豪宅_吉隆堡_贵州_童话王国_76666909994727375.mp4",
+      "baseline": {
+        "status": "failed",
+        "disposition": "needs-review",
+        "cueCount": 14,
+        "translatedCueCount": 0,
+        "issueCodes": [
+          "provider-transient",
+          "missing-id"
+        ],
+        "estimatedFit": {
+          "fitAt1_10": {
+            "fit": 14,
+            "total": 14
+          },
+          "fitAt1_25": {
+            "fit": 14,
+            "total": 14
+          },
+          "fitAt1_80": {
+            "fit": 14,
+            "total": 14
+          }
+        },
+        "measuredFit": {
+          "fitAt1_10": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_25": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_80": {
+            "fit": 0,
+            "total": 0
+          }
+        },
+        "fitEligibility": {
+          "completeTranslation": false
+        },
+        "semanticReview": "pending-human"
+      },
+      "candidate": {
+        "status": "failed",
+        "disposition": "needs-review",
+        "cueCount": 14,
+        "translatedCueCount": 0,
+        "issueCodes": [
+          "provider-transient",
+          "missing-id"
+        ],
+        "estimatedFit": {
+          "fitAt1_10": {
+            "fit": 14,
+            "total": 14
+          },
+          "fitAt1_25": {
+            "fit": 14,
+            "total": 14
+          },
+          "fitAt1_80": {
+            "fit": 14,
+            "total": 14
+          }
+        },
+        "measuredFit": {
+          "fitAt1_10": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_25": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_80": {
+            "fit": 0,
+            "total": 0
+          }
+        },
+        "fitEligibility": {
+          "completeTranslation": false
+        },
+        "semanticReview": "pending-human"
+      }
+    },
+    {
+      "index": 45,
+      "sourcePath": "F:\\Son\\test\\2026-07-27_海南最美的14个地方，去过一半此生无憾！_旅行推荐官_旅行大玩家_海南旅游_旅游景点_景点打卡_7667140076891131145.mp4",
+      "baseline": {
+        "status": "failed",
+        "disposition": "needs-review",
+        "cueCount": 17,
+        "translatedCueCount": 0,
+        "issueCodes": [
+          "provider-transient",
+          "missing-id"
+        ],
+        "estimatedFit": {
+          "fitAt1_10": {
+            "fit": 17,
+            "total": 17
+          },
+          "fitAt1_25": {
+            "fit": 17,
+            "total": 17
+          },
+          "fitAt1_80": {
+            "fit": 17,
+            "total": 17
+          }
+        },
+        "measuredFit": {
+          "fitAt1_10": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_25": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_80": {
+            "fit": 0,
+            "total": 0
+          }
+        },
+        "fitEligibility": {
+          "completeTranslation": false
+        },
+        "semanticReview": "pending-human"
+      },
+      "candidate": {
+        "status": "failed",
+        "disposition": "needs-review",
+        "cueCount": 17,
+        "translatedCueCount": 0,
+        "issueCodes": [
+          "provider-transient",
+          "missing-id"
+        ],
+        "estimatedFit": {
+          "fitAt1_10": {
+            "fit": 17,
+            "total": 17
+          },
+          "fitAt1_25": {
+            "fit": 17,
+            "total": 17
+          },
+          "fitAt1_80": {
+            "fit": 17,
+            "total": 17
+          }
+        },
+        "measuredFit": {
+          "fitAt1_10": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_25": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_80": {
+            "fit": 0,
+            "total": 0
+          }
+        },
+        "fitEligibility": {
+          "completeTranslation": false
+        },
+        "semanticReview": "pending-human"
+      }
+    },
+    {
+      "index": 46,
+      "sourcePath": "F:\\Son\\test\\2026-07-28_那些去了新加坡后才知道的事，可能会颠覆你的认知！_旅行推荐官_新加坡旅游_新加坡_新加坡冷知识_涨见识_76674513675392156.mp4",
+      "baseline": {
+        "status": "failed",
+        "disposition": "needs-review",
+        "cueCount": 31,
+        "translatedCueCount": 0,
+        "issueCodes": [
+          "provider-transient",
+          "provider-transient",
+          "missing-id"
+        ],
+        "estimatedFit": {
+          "fitAt1_10": {
+            "fit": 31,
+            "total": 31
+          },
+          "fitAt1_25": {
+            "fit": 31,
+            "total": 31
+          },
+          "fitAt1_80": {
+            "fit": 31,
+            "total": 31
+          }
+        },
+        "measuredFit": {
+          "fitAt1_10": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_25": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_80": {
+            "fit": 0,
+            "total": 0
+          }
+        },
+        "fitEligibility": {
+          "completeTranslation": false
+        },
+        "semanticReview": "pending-human"
+      },
+      "candidate": {
+        "status": "failed",
+        "disposition": "needs-review",
+        "cueCount": 31,
+        "translatedCueCount": 0,
+        "issueCodes": [
+          "provider-transient",
+          "provider-transient",
+          "missing-id"
+        ],
+        "estimatedFit": {
+          "fitAt1_10": {
+            "fit": 31,
+            "total": 31
+          },
+          "fitAt1_25": {
+            "fit": 31,
+            "total": 31
+          },
+          "fitAt1_80": {
+            "fit": 31,
+            "total": 31
+          }
+        },
+        "measuredFit": {
+          "fitAt1_10": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_25": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_80": {
+            "fit": 0,
+            "total": 0
+          }
+        },
+        "fitEligibility": {
+          "completeTranslation": false
+        },
+        "semanticReview": "pending-human"
+      }
+    },
+    {
+      "index": 47,
+      "sourcePath": "F:\\Son\\test\\2026-07-29_第一百三十二集【生活实用技巧】_生活实用技巧分享_快速接水管法_排水技巧_扎带固定方法_妙招小妙招_7667920486881615706.mp4",
+      "baseline": {
+        "status": "failed",
+        "disposition": "needs-review",
+        "cueCount": 37,
+        "translatedCueCount": 0,
+        "issueCodes": [
+          "provider-transient",
+          "provider-transient",
+          "missing-id"
+        ],
+        "estimatedFit": {
+          "fitAt1_10": {
+            "fit": 37,
+            "total": 37
+          },
+          "fitAt1_25": {
+            "fit": 37,
+            "total": 37
+          },
+          "fitAt1_80": {
+            "fit": 37,
+            "total": 37
+          }
+        },
+        "measuredFit": {
+          "fitAt1_10": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_25": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_80": {
+            "fit": 0,
+            "total": 0
+          }
+        },
+        "fitEligibility": {
+          "completeTranslation": false
+        },
+        "semanticReview": "pending-human"
+      },
+      "candidate": {
+        "status": "failed",
+        "disposition": "needs-review",
+        "cueCount": 37,
+        "translatedCueCount": 0,
+        "issueCodes": [
+          "provider-transient",
+          "provider-transient",
+          "missing-id"
+        ],
+        "estimatedFit": {
+          "fitAt1_10": {
+            "fit": 37,
+            "total": 37
+          },
+          "fitAt1_25": {
+            "fit": 37,
+            "total": 37
+          },
+          "fitAt1_80": {
+            "fit": 37,
+            "total": 37
+          }
+        },
+        "measuredFit": {
+          "fitAt1_10": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_25": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_80": {
+            "fit": 0,
+            "total": 0
+          }
+        },
+        "fitEligibility": {
+          "completeTranslation": false
+        },
+        "semanticReview": "pending-human"
+      }
+    },
+    {
+      "index": 48,
+      "sourcePath": "F:\\Son\\test\\2026-07-29_去一次重庆旅游，就等于去了全世界！_旅行推荐官_重庆旅游_重庆_景点打卡_山城_7667891023539916075.mp4",
+      "baseline": {
+        "status": "failed",
+        "disposition": "needs-review",
+        "cueCount": 16,
+        "translatedCueCount": 0,
+        "issueCodes": [
+          "provider-transient",
+          "provider-transient",
+          "missing-id"
+        ],
+        "estimatedFit": {
+          "fitAt1_10": {
+            "fit": 16,
+            "total": 16
+          },
+          "fitAt1_25": {
+            "fit": 16,
+            "total": 16
+          },
+          "fitAt1_80": {
+            "fit": 16,
+            "total": 16
+          }
+        },
+        "measuredFit": {
+          "fitAt1_10": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_25": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_80": {
+            "fit": 0,
+            "total": 0
+          }
+        },
+        "fitEligibility": {
+          "completeTranslation": false
+        },
+        "semanticReview": "pending-human"
+      },
+      "candidate": {
+        "status": "failed",
+        "disposition": "needs-review",
+        "cueCount": 16,
+        "translatedCueCount": 0,
+        "issueCodes": [
+          "provider-transient",
+          "provider-transient",
+          "missing-id"
+        ],
+        "estimatedFit": {
+          "fitAt1_10": {
+            "fit": 16,
+            "total": 16
+          },
+          "fitAt1_25": {
+            "fit": 16,
+            "total": 16
+          },
+          "fitAt1_80": {
+            "fit": 16,
+            "total": 16
+          }
+        },
+        "measuredFit": {
+          "fitAt1_10": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_25": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_80": {
+            "fit": 0,
+            "total": 0
+          }
+        },
+        "fitEligibility": {
+          "completeTranslation": false
+        },
+        "semanticReview": "pending-human"
+      }
+    },
+    {
+      "index": 49,
+      "sourcePath": "F:\\Son\\test\\2026-08-01_第三十三集【实用自制工具】_自制专用工具_自制实用工具_手工机械制作技巧_自制实用工具分享_自制工具制作方法_76690133429925.mp4",
+      "baseline": {
+        "status": "failed",
+        "disposition": "needs-review",
+        "cueCount": 42,
+        "translatedCueCount": 0,
+        "issueCodes": [
+          "provider-transient",
+          "provider-transient",
+          "provider-transient",
+          "missing-id"
+        ],
+        "estimatedFit": {
+          "fitAt1_10": {
+            "fit": 42,
+            "total": 42
+          },
+          "fitAt1_25": {
+            "fit": 42,
+            "total": 42
+          },
+          "fitAt1_80": {
+            "fit": 42,
+            "total": 42
+          }
+        },
+        "measuredFit": {
+          "fitAt1_10": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_25": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_80": {
+            "fit": 0,
+            "total": 0
+          }
+        },
+        "fitEligibility": {
+          "completeTranslation": false
+        },
+        "semanticReview": "pending-human"
+      },
+      "candidate": {
+        "status": "failed",
+        "disposition": "needs-review",
+        "cueCount": 42,
+        "translatedCueCount": 0,
+        "issueCodes": [
+          "provider-transient",
+          "provider-transient",
+          "provider-transient",
+          "missing-id"
+        ],
+        "estimatedFit": {
+          "fitAt1_10": {
+            "fit": 42,
+            "total": 42
+          },
+          "fitAt1_25": {
+            "fit": 42,
+            "total": 42
+          },
+          "fitAt1_80": {
+            "fit": 42,
+            "total": 42
+          }
+        },
+        "measuredFit": {
+          "fitAt1_10": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_25": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_80": {
+            "fit": 0,
+            "total": 0
+          }
+        },
+        "fitEligibility": {
+          "completeTranslation": false
+        },
+        "semanticReview": "pending-human"
+      }
+    },
+    {
+      "index": 50,
+      "sourcePath": "F:\\Son\\test\\2026-08-06_全网最可爱的4大萌虎，你最爱谁？_老虎_宫百万_二埋汰_动物园_动物园里有什么_7670731732831859108.mp4",
+      "baseline": {
+        "status": "failed",
+        "disposition": "needs-review",
+        "cueCount": 209,
+        "translatedCueCount": 0,
+        "issueCodes": [
+          "provider-transient",
+          "provider-transient",
+          "provider-transient",
+          "provider-transient",
+          "provider-transient",
+          "provider-transient",
+          "provider-transient",
+          "provider-transient",
+          "provider-transient",
+          "provider-transient",
+          "missing-id"
+        ],
+        "estimatedFit": {
+          "fitAt1_10": {
+            "fit": 209,
+            "total": 209
+          },
+          "fitAt1_25": {
+            "fit": 209,
+            "total": 209
+          },
+          "fitAt1_80": {
+            "fit": 209,
+            "total": 209
+          }
+        },
+        "measuredFit": {
+          "fitAt1_10": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_25": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_80": {
+            "fit": 0,
+            "total": 0
+          }
+        },
+        "fitEligibility": {
+          "completeTranslation": false
+        },
+        "semanticReview": "pending-human"
+      },
+      "candidate": {
+        "status": "failed",
+        "disposition": "needs-review",
+        "cueCount": 209,
+        "translatedCueCount": 0,
+        "issueCodes": [
+          "provider-transient",
+          "provider-transient",
+          "provider-transient",
+          "provider-transient",
+          "provider-transient",
+          "provider-transient",
+          "provider-transient",
+          "provider-transient",
+          "provider-transient",
+          "provider-transient",
+          "missing-id"
+        ],
+        "estimatedFit": {
+          "fitAt1_10": {
+            "fit": 209,
+            "total": 209
+          },
+          "fitAt1_25": {
+            "fit": 209,
+            "total": 209
+          },
+          "fitAt1_80": {
+            "fit": 209,
+            "total": 209
+          }
+        },
+        "measuredFit": {
+          "fitAt1_10": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_25": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_80": {
+            "fit": 0,
+            "total": 0
+          }
+        },
+        "fitEligibility": {
+          "completeTranslation": false
+        },
+        "semanticReview": "pending-human"
+      }
+    },
+    {
+      "index": 51,
+      "sourcePath": "F:\\Son\\test\\2026-08-07_修理厂行走的抹布小狗_狗狗_狗子的迷惑行为_萨摩耶_狗子日常_萌宠_7671121566684182342.mp4",
+      "baseline": {
+        "status": "failed",
+        "disposition": "needs-review",
+        "cueCount": 49,
+        "translatedCueCount": 0,
+        "issueCodes": [
+          "provider-transient",
+          "provider-transient",
+          "provider-transient",
+          "missing-id"
+        ],
+        "estimatedFit": {
+          "fitAt1_10": {
+            "fit": 49,
+            "total": 49
+          },
+          "fitAt1_25": {
+            "fit": 49,
+            "total": 49
+          },
+          "fitAt1_80": {
+            "fit": 49,
+            "total": 49
+          }
+        },
+        "measuredFit": {
+          "fitAt1_10": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_25": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_80": {
+            "fit": 0,
+            "total": 0
+          }
+        },
+        "fitEligibility": {
+          "completeTranslation": false
+        },
+        "semanticReview": "pending-human"
+      },
+      "candidate": {
+        "status": "failed",
+        "disposition": "needs-review",
+        "cueCount": 49,
+        "translatedCueCount": 0,
+        "issueCodes": [
+          "provider-transient",
+          "provider-transient",
+          "provider-transient",
+          "missing-id"
+        ],
+        "estimatedFit": {
+          "fitAt1_10": {
+            "fit": 49,
+            "total": 49
+          },
+          "fitAt1_25": {
+            "fit": 49,
+            "total": 49
+          },
+          "fitAt1_80": {
+            "fit": 49,
+            "total": 49
+          }
+        },
+        "measuredFit": {
+          "fitAt1_10": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_25": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_80": {
+            "fit": 0,
+            "total": 0
+          }
+        },
+        "fitEligibility": {
+          "completeTranslation": false
+        },
+        "semanticReview": "pending-human"
+      }
+    },
+    {
+      "index": 52,
+      "sourcePath": "F:\\Son\\test\\2026-08-09_全网唯一喜欢挨打的金毛，一天不挨打就浑身不舒服_狗狗_金毛_反骨小狗_狗子的迷惑行为_萌宠_7671814375347083236.mp4",
+      "baseline": {
+        "status": "failed",
+        "disposition": "needs-review",
+        "cueCount": 85,
+        "translatedCueCount": 0,
+        "issueCodes": [
+          "provider-transient",
+          "provider-transient",
+          "provider-transient",
+          "provider-transient",
+          "missing-id"
+        ],
+        "estimatedFit": {
+          "fitAt1_10": {
+            "fit": 85,
+            "total": 85
+          },
+          "fitAt1_25": {
+            "fit": 85,
+            "total": 85
+          },
+          "fitAt1_80": {
+            "fit": 85,
+            "total": 85
+          }
+        },
+        "measuredFit": {
+          "fitAt1_10": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_25": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_80": {
+            "fit": 0,
+            "total": 0
+          }
+        },
+        "fitEligibility": {
+          "completeTranslation": false
+        },
+        "semanticReview": "pending-human"
+      },
+      "candidate": {
+        "status": "failed",
+        "disposition": "needs-review",
+        "cueCount": 85,
+        "translatedCueCount": 0,
+        "issueCodes": [
+          "provider-transient",
+          "provider-transient",
+          "provider-transient",
+          "provider-transient",
+          "missing-id"
+        ],
+        "estimatedFit": {
+          "fitAt1_10": {
+            "fit": 85,
+            "total": 85
+          },
+          "fitAt1_25": {
+            "fit": 85,
+            "total": 85
+          },
+          "fitAt1_80": {
+            "fit": 85,
+            "total": 85
+          }
+        },
+        "measuredFit": {
+          "fitAt1_10": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_25": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_80": {
+            "fit": 0,
+            "total": 0
+          }
+        },
+        "fitEligibility": {
+          "completeTranslation": false
+        },
+        "semanticReview": "pending-human"
+      }
+    },
+    {
+      "index": 53,
+      "sourcePath": "F:\\Son\\test\\2026-08-11_流浪狗“回回”，奋不顾身拯救小猫_流浪狗_狗狗_动物的迷惑行为_萌宠出道计划_狗子成精了_7672583878954976959.mp4",
+      "baseline": {
+        "status": "failed",
+        "disposition": "needs-review",
+        "cueCount": 63,
+        "translatedCueCount": 0,
+        "issueCodes": [
+          "provider-transient",
+          "provider-transient",
+          "provider-transient",
+          "missing-id"
+        ],
+        "estimatedFit": {
+          "fitAt1_10": {
+            "fit": 63,
+            "total": 63
+          },
+          "fitAt1_25": {
+            "fit": 63,
+            "total": 63
+          },
+          "fitAt1_80": {
+            "fit": 63,
+            "total": 63
+          }
+        },
+        "measuredFit": {
+          "fitAt1_10": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_25": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_80": {
+            "fit": 0,
+            "total": 0
+          }
+        },
+        "fitEligibility": {
+          "completeTranslation": false
+        },
+        "semanticReview": "pending-human"
+      },
+      "candidate": {
+        "status": "failed",
+        "disposition": "needs-review",
+        "cueCount": 63,
+        "translatedCueCount": 0,
+        "issueCodes": [
+          "provider-transient",
+          "provider-transient",
+          "provider-transient",
+          "missing-id"
+        ],
+        "estimatedFit": {
+          "fitAt1_10": {
+            "fit": 63,
+            "total": 63
+          },
+          "fitAt1_25": {
+            "fit": 63,
+            "total": 63
+          },
+          "fitAt1_80": {
+            "fit": 63,
+            "total": 63
+          }
+        },
+        "measuredFit": {
+          "fitAt1_10": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_25": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_80": {
+            "fit": 0,
+            "total": 0
+          }
+        },
+        "fitEligibility": {
+          "completeTranslation": false
+        },
+        "semanticReview": "pending-human"
+      }
+    },
+    {
+      "index": 54,
+      "sourcePath": "F:\\Son\\test\\2026-08-17_怎么判断猫咪打架谁输谁赢_动物的迷惑行为_科普_动物世界_7674905934300319003.mp4",
+      "baseline": {
+        "status": "failed",
+        "disposition": "needs-review",
+        "cueCount": 105,
+        "translatedCueCount": 0,
+        "issueCodes": [
+          "provider-transient",
+          "provider-transient",
+          "provider-transient",
+          "provider-transient",
+          "provider-transient",
+          "missing-id"
+        ],
+        "estimatedFit": {
+          "fitAt1_10": {
+            "fit": 105,
+            "total": 105
+          },
+          "fitAt1_25": {
+            "fit": 105,
+            "total": 105
+          },
+          "fitAt1_80": {
+            "fit": 105,
+            "total": 105
+          }
+        },
+        "measuredFit": {
+          "fitAt1_10": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_25": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_80": {
+            "fit": 0,
+            "total": 0
+          }
+        },
+        "fitEligibility": {
+          "completeTranslation": false
+        },
+        "semanticReview": "pending-human"
+      },
+      "candidate": {
+        "status": "failed",
+        "disposition": "needs-review",
+        "cueCount": 105,
+        "translatedCueCount": 0,
+        "issueCodes": [
+          "provider-transient",
+          "provider-transient",
+          "provider-transient",
+          "provider-transient",
+          "provider-transient",
+          "missing-id"
+        ],
+        "estimatedFit": {
+          "fitAt1_10": {
+            "fit": 105,
+            "total": 105
+          },
+          "fitAt1_25": {
+            "fit": 105,
+            "total": 105
+          },
+          "fitAt1_80": {
+            "fit": 105,
+            "total": 105
+          }
+        },
+        "measuredFit": {
+          "fitAt1_10": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_25": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_80": {
+            "fit": 0,
+            "total": 0
+          }
+        },
+        "fitEligibility": {
+          "completeTranslation": false
+        },
+        "semanticReview": "pending-human"
+      }
+    },
+    {
+      "index": 55,
+      "sourcePath": "F:\\Son\\test\\2026-08-18_分享科普不同的螃蟹能不能吃？_科普_螃蟹_科普_涨知识_7675331033864178944.mp4",
+      "baseline": {
+        "status": "failed",
+        "disposition": "needs-review",
+        "cueCount": 108,
+        "translatedCueCount": 0,
+        "issueCodes": [
+          "provider-transient",
+          "provider-transient",
+          "provider-transient",
+          "provider-transient",
+          "provider-transient",
+          "missing-id"
+        ],
+        "estimatedFit": {
+          "fitAt1_10": {
+            "fit": 108,
+            "total": 108
+          },
+          "fitAt1_25": {
+            "fit": 108,
+            "total": 108
+          },
+          "fitAt1_80": {
+            "fit": 108,
+            "total": 108
+          }
+        },
+        "measuredFit": {
+          "fitAt1_10": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_25": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_80": {
+            "fit": 0,
+            "total": 0
+          }
+        },
+        "fitEligibility": {
+          "completeTranslation": false
+        },
+        "semanticReview": "pending-human"
+      },
+      "candidate": {
+        "status": "failed",
+        "disposition": "needs-review",
+        "cueCount": 108,
+        "translatedCueCount": 0,
+        "issueCodes": [
+          "provider-transient",
+          "provider-transient",
+          "provider-transient",
+          "provider-transient",
+          "provider-transient",
+          "missing-id"
+        ],
+        "estimatedFit": {
+          "fitAt1_10": {
+            "fit": 108,
+            "total": 108
+          },
+          "fitAt1_25": {
+            "fit": 108,
+            "total": 108
+          },
+          "fitAt1_80": {
+            "fit": 108,
+            "total": 108
+          }
+        },
+        "measuredFit": {
+          "fitAt1_10": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_25": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_80": {
+            "fit": 0,
+            "total": 0
+          }
+        },
+        "fitEligibility": {
+          "completeTranslation": false
+        },
+        "semanticReview": "pending-human"
+      }
+    },
+    {
+      "index": 56,
+      "sourcePath": "F:\\Son\\test\\2026-08-18_虎鲸和海豚的窃听风云。虎鲸利用声音捕捉海豚，海豚反利用逃跑_海豚_虎鲸_动物科普_7675374983220104457.mp4",
+      "baseline": {
+        "status": "failed",
+        "disposition": "needs-review",
+        "cueCount": 105,
+        "translatedCueCount": 0,
+        "issueCodes": [
+          "provider-transient",
+          "provider-transient",
+          "provider-transient",
+          "provider-transient",
+          "provider-transient",
+          "provider-transient",
+          "missing-id"
+        ],
+        "estimatedFit": {
+          "fitAt1_10": {
+            "fit": 105,
+            "total": 105
+          },
+          "fitAt1_25": {
+            "fit": 105,
+            "total": 105
+          },
+          "fitAt1_80": {
+            "fit": 105,
+            "total": 105
+          }
+        },
+        "measuredFit": {
+          "fitAt1_10": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_25": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_80": {
+            "fit": 0,
+            "total": 0
+          }
+        },
+        "fitEligibility": {
+          "completeTranslation": false
+        },
+        "semanticReview": "pending-human"
+      },
+      "candidate": {
+        "status": "failed",
+        "disposition": "needs-review",
+        "cueCount": 105,
+        "translatedCueCount": 0,
+        "issueCodes": [
+          "provider-transient",
+          "provider-transient",
+          "provider-transient",
+          "provider-transient",
+          "provider-transient",
+          "provider-transient",
+          "missing-id"
+        ],
+        "estimatedFit": {
+          "fitAt1_10": {
+            "fit": 105,
+            "total": 105
+          },
+          "fitAt1_25": {
+            "fit": 105,
+            "total": 105
+          },
+          "fitAt1_80": {
+            "fit": 105,
+            "total": 105
+          }
+        },
+        "measuredFit": {
+          "fitAt1_10": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_25": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_80": {
+            "fit": 0,
+            "total": 0
+          }
+        },
+        "fitEligibility": {
+          "completeTranslation": false
+        },
+        "semanticReview": "pending-human"
+      }
+    },
+    {
+      "index": 57,
+      "sourcePath": "F:\\Son\\test\\2026-08-19_分享科普不同的鸡能不能吃？_科普_涨知识_鸡_动物_7675673410625686784.mp4",
+      "baseline": {
+        "status": "failed",
+        "disposition": "needs-review",
+        "cueCount": 98,
+        "translatedCueCount": 0,
+        "issueCodes": [
+          "provider-transient",
+          "provider-transient",
+          "provider-transient",
+          "provider-transient",
+          "missing-id"
+        ],
+        "estimatedFit": {
+          "fitAt1_10": {
+            "fit": 98,
+            "total": 98
+          },
+          "fitAt1_25": {
+            "fit": 98,
+            "total": 98
+          },
+          "fitAt1_80": {
+            "fit": 98,
+            "total": 98
+          }
+        },
+        "measuredFit": {
+          "fitAt1_10": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_25": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_80": {
+            "fit": 0,
+            "total": 0
+          }
+        },
+        "fitEligibility": {
+          "completeTranslation": false
+        },
+        "semanticReview": "pending-human"
+      },
+      "candidate": {
+        "status": "failed",
+        "disposition": "needs-review",
+        "cueCount": 98,
+        "translatedCueCount": 0,
+        "issueCodes": [
+          "provider-transient",
+          "provider-transient",
+          "provider-transient",
+          "provider-transient",
+          "missing-id"
+        ],
+        "estimatedFit": {
+          "fitAt1_10": {
+            "fit": 98,
+            "total": 98
+          },
+          "fitAt1_25": {
+            "fit": 98,
+            "total": 98
+          },
+          "fitAt1_80": {
+            "fit": 98,
+            "total": 98
+          }
+        },
+        "measuredFit": {
+          "fitAt1_10": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_25": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_80": {
+            "fit": 0,
+            "total": 0
+          }
+        },
+        "fitEligibility": {
+          "completeTranslation": false
+        },
+        "semanticReview": "pending-human"
+      }
+    },
+    {
+      "index": 58,
+      "sourcePath": "F:\\Son\\test\\2026-08-20_分享科普不同的牛能不能吃？_科普_涨知识_牛_动物科普_7676075738134498600.mp4",
+      "baseline": {
+        "status": "failed",
+        "disposition": "needs-review",
+        "cueCount": 119,
+        "translatedCueCount": 0,
+        "issueCodes": [
+          "provider-transient",
+          "provider-transient",
+          "provider-transient",
+          "provider-transient",
+          "provider-transient",
+          "missing-id"
+        ],
+        "estimatedFit": {
+          "fitAt1_10": {
+            "fit": 119,
+            "total": 119
+          },
+          "fitAt1_25": {
+            "fit": 119,
+            "total": 119
+          },
+          "fitAt1_80": {
+            "fit": 119,
+            "total": 119
+          }
+        },
+        "measuredFit": {
+          "fitAt1_10": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_25": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_80": {
+            "fit": 0,
+            "total": 0
+          }
+        },
+        "fitEligibility": {
+          "completeTranslation": false
+        },
+        "semanticReview": "pending-human"
+      },
+      "candidate": {
+        "status": "failed",
+        "disposition": "needs-review",
+        "cueCount": 119,
+        "translatedCueCount": 0,
+        "issueCodes": [
+          "provider-transient",
+          "provider-transient",
+          "provider-transient",
+          "provider-transient",
+          "provider-transient",
+          "missing-id"
+        ],
+        "estimatedFit": {
+          "fitAt1_10": {
+            "fit": 119,
+            "total": 119
+          },
+          "fitAt1_25": {
+            "fit": 119,
+            "total": 119
+          },
+          "fitAt1_80": {
+            "fit": 119,
+            "total": 119
+          }
+        },
+        "measuredFit": {
+          "fitAt1_10": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_25": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_80": {
+            "fit": 0,
+            "total": 0
+          }
+        },
+        "fitEligibility": {
+          "completeTranslation": false
+        },
+        "semanticReview": "pending-human"
+      }
+    },
+    {
+      "index": 59,
+      "sourcePath": "F:\\Son\\test\\2026-08-21_野外捡石头的时候记得仔细看看_科普_涨知识_石头_石来运转_7676436405978975539.mp4",
+      "baseline": {
+        "status": "failed",
+        "disposition": "needs-review",
+        "cueCount": 56,
+        "translatedCueCount": 0,
+        "issueCodes": [
+          "provider-transient",
+          "provider-transient",
+          "provider-transient",
+          "missing-id"
+        ],
+        "estimatedFit": {
+          "fitAt1_10": {
+            "fit": 56,
+            "total": 56
+          },
+          "fitAt1_25": {
+            "fit": 56,
+            "total": 56
+          },
+          "fitAt1_80": {
+            "fit": 56,
+            "total": 56
+          }
+        },
+        "measuredFit": {
+          "fitAt1_10": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_25": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_80": {
+            "fit": 0,
+            "total": 0
+          }
+        },
+        "fitEligibility": {
+          "completeTranslation": false
+        },
+        "semanticReview": "pending-human"
+      },
+      "candidate": {
+        "status": "failed",
+        "disposition": "needs-review",
+        "cueCount": 56,
+        "translatedCueCount": 0,
+        "issueCodes": [
+          "provider-transient",
+          "provider-transient",
+          "provider-transient",
+          "missing-id"
+        ],
+        "estimatedFit": {
+          "fitAt1_10": {
+            "fit": 56,
+            "total": 56
+          },
+          "fitAt1_25": {
+            "fit": 56,
+            "total": 56
+          },
+          "fitAt1_80": {
+            "fit": 56,
+            "total": 56
+          }
+        },
+        "measuredFit": {
+          "fitAt1_10": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_25": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_80": {
+            "fit": 0,
+            "total": 0
+          }
+        },
+        "fitEligibility": {
+          "completeTranslation": false
+        },
+        "semanticReview": "pending-human"
+      }
+    },
+    {
+      "index": 60,
+      "sourcePath": "F:\\Son\\test\\2026-08-22_带你认识赶海捡到的海货能不能吃？_科普_涨知识_海货_7676809451482959119.mp4",
+      "baseline": {
+        "status": "failed",
+        "disposition": "needs-review",
+        "cueCount": 96,
+        "translatedCueCount": 0,
+        "issueCodes": [
+          "provider-transient",
+          "provider-transient",
+          "provider-transient",
+          "provider-transient",
+          "provider-transient",
+          "missing-id"
+        ],
+        "estimatedFit": {
+          "fitAt1_10": {
+            "fit": 96,
+            "total": 96
+          },
+          "fitAt1_25": {
+            "fit": 96,
+            "total": 96
+          },
+          "fitAt1_80": {
+            "fit": 96,
+            "total": 96
+          }
+        },
+        "measuredFit": {
+          "fitAt1_10": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_25": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_80": {
+            "fit": 0,
+            "total": 0
+          }
+        },
+        "fitEligibility": {
+          "completeTranslation": false
+        },
+        "semanticReview": "pending-human"
+      },
+      "candidate": {
+        "status": "failed",
+        "disposition": "needs-review",
+        "cueCount": 96,
+        "translatedCueCount": 0,
+        "issueCodes": [
+          "provider-transient",
+          "provider-transient",
+          "provider-transient",
+          "provider-transient",
+          "provider-transient",
+          "missing-id"
+        ],
+        "estimatedFit": {
+          "fitAt1_10": {
+            "fit": 96,
+            "total": 96
+          },
+          "fitAt1_25": {
+            "fit": 96,
+            "total": 96
+          },
+          "fitAt1_80": {
+            "fit": 96,
+            "total": 96
+          }
+        },
+        "measuredFit": {
+          "fitAt1_10": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_25": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_80": {
+            "fit": 0,
+            "total": 0
+          }
+        },
+        "fitEligibility": {
+          "completeTranslation": false
+        },
+        "semanticReview": "pending-human"
+      }
+    },
+    {
+      "index": 61,
+      "sourcePath": "F:\\Son\\test\\2026-08-23_路边采野花时记得仔细看看_科普_涨知识_花开富贵好运来_野花_7677188116926516534.mp4",
+      "baseline": {
+        "status": "failed",
+        "disposition": "needs-review",
+        "cueCount": 92,
+        "translatedCueCount": 0,
+        "issueCodes": [
+          "provider-transient",
+          "provider-transient",
+          "provider-transient",
+          "provider-transient",
+          "missing-id"
+        ],
+        "estimatedFit": {
+          "fitAt1_10": {
+            "fit": 92,
+            "total": 92
+          },
+          "fitAt1_25": {
+            "fit": 92,
+            "total": 92
+          },
+          "fitAt1_80": {
+            "fit": 92,
+            "total": 92
+          }
+        },
+        "measuredFit": {
+          "fitAt1_10": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_25": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_80": {
+            "fit": 0,
+            "total": 0
+          }
+        },
+        "fitEligibility": {
+          "completeTranslation": false
+        },
+        "semanticReview": "pending-human"
+      },
+      "candidate": {
+        "status": "failed",
+        "disposition": "needs-review",
+        "cueCount": 92,
+        "translatedCueCount": 0,
+        "issueCodes": [
+          "provider-transient",
+          "provider-transient",
+          "provider-transient",
+          "provider-transient",
+          "missing-id"
+        ],
+        "estimatedFit": {
+          "fitAt1_10": {
+            "fit": 92,
+            "total": 92
+          },
+          "fitAt1_25": {
+            "fit": 92,
+            "total": 92
+          },
+          "fitAt1_80": {
+            "fit": 92,
+            "total": 92
+          }
+        },
+        "measuredFit": {
+          "fitAt1_10": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_25": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_80": {
+            "fit": 0,
+            "total": 0
+          }
+        },
+        "fitEligibility": {
+          "completeTranslation": false
+        },
+        "semanticReview": "pending-human"
+      }
+    },
+    {
+      "index": 62,
+      "sourcePath": "F:\\Son\\test\\2026-08-24_带你认识各种魔鬼公路_科普_涨知识_魔鬼公路_公路_7677545223458704691.mp4",
+      "baseline": {
+        "status": "failed",
+        "disposition": "needs-review",
+        "cueCount": 86,
+        "translatedCueCount": 0,
+        "issueCodes": [
+          "provider-transient",
+          "provider-transient",
+          "provider-transient",
+          "provider-transient",
+          "missing-id"
+        ],
+        "estimatedFit": {
+          "fitAt1_10": {
+            "fit": 86,
+            "total": 86
+          },
+          "fitAt1_25": {
+            "fit": 86,
+            "total": 86
+          },
+          "fitAt1_80": {
+            "fit": 86,
+            "total": 86
+          }
+        },
+        "measuredFit": {
+          "fitAt1_10": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_25": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_80": {
+            "fit": 0,
+            "total": 0
+          }
+        },
+        "fitEligibility": {
+          "completeTranslation": false
+        },
+        "semanticReview": "pending-human"
+      },
+      "candidate": {
+        "status": "failed",
+        "disposition": "needs-review",
+        "cueCount": 86,
+        "translatedCueCount": 0,
+        "issueCodes": [
+          "provider-transient",
+          "provider-transient",
+          "provider-transient",
+          "provider-transient",
+          "missing-id"
+        ],
+        "estimatedFit": {
+          "fitAt1_10": {
+            "fit": 86,
+            "total": 86
+          },
+          "fitAt1_25": {
+            "fit": 86,
+            "total": 86
+          },
+          "fitAt1_80": {
+            "fit": 86,
+            "total": 86
+          }
+        },
+        "measuredFit": {
+          "fitAt1_10": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_25": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_80": {
+            "fit": 0,
+            "total": 0
+          }
+        },
+        "fitEligibility": {
+          "completeTranslation": false
+        },
+        "semanticReview": "pending-human"
+      }
+    },
+    {
+      "index": 63,
+      "sourcePath": "F:\\Son\\test\\2026-08-25_户外玩游戏前记得仔细看看_科普_涨知识_危险动作请勿模仿_7677916431630994739.mp4",
+      "baseline": {
+        "status": "failed",
+        "disposition": "needs-review",
+        "cueCount": 96,
+        "translatedCueCount": 0,
+        "issueCodes": [
+          "provider-transient",
+          "provider-transient",
+          "provider-transient",
+          "provider-transient",
+          "missing-id"
+        ],
+        "estimatedFit": {
+          "fitAt1_10": {
+            "fit": 96,
+            "total": 96
+          },
+          "fitAt1_25": {
+            "fit": 96,
+            "total": 96
+          },
+          "fitAt1_80": {
+            "fit": 96,
+            "total": 96
+          }
+        },
+        "measuredFit": {
+          "fitAt1_10": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_25": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_80": {
+            "fit": 0,
+            "total": 0
+          }
+        },
+        "fitEligibility": {
+          "completeTranslation": false
+        },
+        "semanticReview": "pending-human"
+      },
+      "candidate": {
+        "status": "failed",
+        "disposition": "needs-review",
+        "cueCount": 96,
+        "translatedCueCount": 0,
+        "issueCodes": [
+          "provider-transient",
+          "provider-transient",
+          "provider-transient",
+          "provider-transient",
+          "missing-id"
+        ],
+        "estimatedFit": {
+          "fitAt1_10": {
+            "fit": 96,
+            "total": 96
+          },
+          "fitAt1_25": {
+            "fit": 96,
+            "total": 96
+          },
+          "fitAt1_80": {
+            "fit": 96,
+            "total": 96
+          }
+        },
+        "measuredFit": {
+          "fitAt1_10": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_25": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_80": {
+            "fit": 0,
+            "total": 0
+          }
+        },
+        "fitEligibility": {
+          "completeTranslation": false
+        },
+        "semanticReview": "pending-human"
+      }
+    }
+  ]
+}

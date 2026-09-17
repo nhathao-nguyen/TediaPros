@@ -83,6 +83,8 @@ interface Props {
   subtitleDisplayStyle?: SubtitleDisplayStyle
   /** Co chu pixel video do main tinh cung mot lan voi ASS. */
   subtitleFontSize?: number
+  /** Do dam chu (font-weight CSS). */
+  subtitleFontWeight?: number
   /** Match the final composition when the source is shrunk into a portrait frame. */
   scaleSubtitleToVideo?: boolean
   highlightColor?: string
@@ -127,6 +129,7 @@ export default function RegionBox({
   subtitleTime = 0,
   subtitleDisplayStyle = 'standard',
   subtitleFontSize,
+  subtitleFontWeight,
   scaleSubtitleToVideo = false,
   highlightColor = '#43e7d5',
   highlightPop = true,
@@ -281,14 +284,14 @@ export default function RegionBox({
       ? `"${previewFontFamily}", Arial, sans-serif`
       : 'Arial, sans-serif'
     // Do theo co chu ASS (video px) de khop burn, khong theo previewFontSize man hinh
-    const fontCss = `${fs}px ${family}`
+    const fontCss = `${subtitleFontWeight ?? 400} ${fs}px ${family}`
     const measure = (t: string): number => {
       const w = measureCanvasText(fontCss, t)
       return w > 0 ? w : estimateTextWidthPx(t, fs)
     }
     const wrapped = ngatDongTheoPx(assText, maxW, measure, cueUsesCjkWrap(assText))
     return wrapped.split('\\N').filter(Boolean)
-  }, [bgEnabled, previewFontFamily, subRegion, subtitleFontSize, videoH, videoW])
+  }, [bgEnabled, previewFontFamily, subRegion, subtitleFontSize, subtitleFontWeight, videoH, videoW])
 
   const sampleAssLines = useMemo(() => {
     const planned = subtitleCues.flatMap((cue) => ('lines' in cue ? cue.lines : []))
@@ -324,10 +327,10 @@ export default function RegionBox({
       const family = previewFontFamily
         ? `"${previewFontFamily}", Arial, sans-serif`
         : 'Arial, sans-serif'
-      const measured = measureCanvasText(`${fontSize}px ${family}`, text)
+      const measured = measureCanvasText(`${subtitleFontWeight ?? 400} ${fontSize}px ${family}`, text)
       return measured > 0 ? measured : estimateTextWidthPx(text, fontSize)
     },
-    [previewFontFamily, subRegion, subtitleFontSize, videoH, videoW]
+    [previewFontFamily, subRegion, subtitleFontSize, subtitleFontWeight, videoH, videoW]
   )
 
   const effectTimelines = useMemo(
@@ -505,6 +508,8 @@ export default function RegionBox({
                 fontFamily: previewFontFamily
                   ? `"${previewFontFamily}", Arial, sans-serif`
                   : 'Arial, sans-serif',
+                fontWeight: subtitleFontWeight ?? 400,
+                fontVariationSettings: `"wght" ${subtitleFontWeight ?? 400}`,
                 color: textColor,
                 textShadow: outlineShadow,
                 ...(bgEnabled

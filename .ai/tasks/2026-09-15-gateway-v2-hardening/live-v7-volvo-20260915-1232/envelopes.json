@@ -1,0 +1,45 @@
+[
+  {
+    "status": 200,
+    "id": "chatcmpl-1789450284",
+    "model": "gemini-advanced",
+    "finish_reason": "stop",
+    "response_content_bytes": 2934,
+    "gateway_metadata": {
+      "gateway_contract_version": 2,
+      "requested_model": "gemini-advanced",
+      "resolved_model": "gemini-advanced",
+      "observed_model": "3.1 Pro",
+      "observed_model_id": "e6fa609c3fa255c0",
+      "model_verification": "matched",
+      "route_fingerprint": "29ed9729dbdd53e76081fc89bd7f7991b6a6e2c770e964fd8fa2ceaa0c22c646",
+      "completion_state": "complete",
+      "completion_evidence": "observed-terminal-frame-v1",
+      "normalization": [
+        "unwrap-json-fence"
+      ],
+      "logical_request_id": "c0f9c512-7a4a-43e9-92e1-2511faa5651d",
+      "upstream_attempts": 1
+    }
+  },
+  {
+    "status": 200,
+    "id": "chatcmpl-1789450322",
+    "model": "gemini-advanced",
+    "finish_reason": "stop",
+    "response_content_bytes": 2680,
+    "gateway_metadata": {
+      "gateway_contract_version": 2,
+      "requested_model": "gemini-advanced",
+      "resolved_model": "gemini-advanced",
+      "observed_model": "3.1 Pro",
+      "observed_model_id": "e6fa609c3fa255c0",
+      "model_verification": "matched",
+      "route_fingerprint": "29ed9729dbdd53e76081fc89bd7f7991b6a6e2c770e964fd8fa2ceaa0c22c646",
+      "completion_state": "complete",
+      "completion_evidence": "observed-terminal-frame-v1",
+      "logical_request_id": "1b0e6d19-f450-4a3e-9c27-a7d01cc08275",
+      "upstream_attempts": 1
+    }
+  }
+]

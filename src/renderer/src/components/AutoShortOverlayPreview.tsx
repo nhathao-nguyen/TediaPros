@@ -17,7 +17,7 @@ export default function AutoShortOverlayPreview({ value, width, height, fontFami
     let face: FontFace | undefined
     void window.api.loadBurnFontData(automaticId).then(async data => {
       if (!data || cancelled) return
-      face = new FontFace(`overlay-${automaticId}`, data.data)
+      face = new FontFace(`overlay-${automaticId}`, data.data, { weight: '100 900' })
       await face.load()
       if (cancelled) return
       document.fonts.add(face)

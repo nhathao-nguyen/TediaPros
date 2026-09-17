@@ -1,0 +1,42 @@
+[
+  {
+    "status": 200,
+    "id": "chatcmpl-1789450608",
+    "model": "gemini-advanced",
+    "finish_reason": "stop",
+    "response_content_bytes": 2916,
+    "gateway_metadata": {
+      "gateway_contract_version": 2,
+      "requested_model": "gemini-advanced",
+      "resolved_model": "gemini-advanced",
+      "observed_model": "3.1 Pro",
+      "observed_model_id": "e6fa609c3fa255c0",
+      "model_verification": "matched",
+      "route_fingerprint": "29ed9729dbdd53e76081fc89bd7f7991b6a6e2c770e964fd8fa2ceaa0c22c646",
+      "completion_state": "complete",
+      "completion_evidence": "observed-terminal-frame-v1",
+      "logical_request_id": "52d01e90-3ec7-4b89-8130-123e558222b0",
+      "upstream_attempts": 1
+    }
+  },
+  {
+    "status": 200,
+    "id": "chatcmpl-1789450633",
+    "model": "gemini-advanced",
+    "finish_reason": "stop",
+    "response_content_bytes": 2644,
+    "gateway_metadata": {
+      "gateway_contract_version": 2,
+      "requested_model": "gemini-advanced",
+      "resolved_model": "gemini-advanced",
+      "observed_model": "3.1 Pro",
+      "observed_model_id": "e6fa609c3fa255c0",
+      "model_verification": "matched",
+      "route_fingerprint": "29ed9729dbdd53e76081fc89bd7f7991b6a6e2c770e964fd8fa2ceaa0c22c646",
+      "completion_state": "complete",
+      "completion_evidence": "observed-terminal-frame-v1",
+      "logical_request_id": "16058c04-95b7-4a17-9925-461d91f357cd",
+      "upstream_attempts": 1
+    }
+  }
+]

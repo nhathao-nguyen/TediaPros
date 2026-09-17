@@ -91,6 +91,7 @@ export default function VideoTitleSettings(props: Props): JSX.Element {
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: 10 }}>
         <label className="field editor-field"><span>AI tạo metadata</span><select value={provider} disabled={disabled || savingKey}
           onChange={(event) => onProviderChange(event.target.value as DichProvider)}>
+          <option value="gemini-gateway">Gemini Gateway (CreateMediaTool)</option>
           <option value="local">Local AI</option><option value="gemini">Gemini (AI ngoài)</option><option value="openai">OpenAI (AI ngoài)</option>
         </select></label>
         <label className="field editor-field"><span>Locale metadata</span><input list={localeListId} value={language}
@@ -139,17 +140,17 @@ export default function VideoTitleSettings(props: Props): JSX.Element {
         <button type="button" className="btn ghost sm" disabled={disabled} onClick={resetPreset}>Đặt lại</button>
       </div>
       {presetStatus && <p className="muted small" role="status">{presetStatus}</p>}
-      <details open={provider === 'local' || !hasKey ? true : undefined}><summary className="small">
-        AI: {provider === 'gemini' ? 'Gemini' : provider === 'openai' ? 'OpenAI' : 'Local AI'}{hasKey ? ' · Đã có khóa API' : provider !== 'local' ? ' · Chưa có khóa API' : ''}
+      <details open={provider === 'local' || provider === 'gemini-gateway' || !hasKey ? true : undefined}><summary className="small">
+        AI: {provider === 'gemini-gateway' ? 'Gemini Gateway' : provider === 'gemini' ? 'Gemini' : provider === 'openai' ? 'OpenAI' : 'Local AI'}{hasKey ? ' · Đã có khóa API' : (provider !== 'local' && provider !== 'gemini-gateway') ? ' · Chưa có khóa API' : ''}
       </summary><div style={{ display: 'grid', gap: 10, marginTop: 10 }}>
-        {provider === 'local' && <label className="field editor-field"><span>Địa chỉ Local AI</span><input type="text" value={serverUrl}
-          disabled={disabled} spellCheck={false} onChange={(event) => onServerUrlChange(event.target.value)} /></label>}
-        {provider === 'gemini' ? <GeminiKeys disabled={disabled} onChanged={setHasKey} /> : <><label className="field editor-field"><span>Khóa API{provider === 'local' ? ' (nếu có)' : ''}</span><input type="password" value={key}
+        {(provider === 'local' || provider === 'gemini-gateway') && <label className="field editor-field"><span>{provider === 'gemini-gateway' ? 'Địa chỉ Gateway' : 'Địa chỉ Local AI'}</span><input type="text" value={serverUrl}
+          disabled={disabled} spellCheck={false} placeholder={provider === 'gemini-gateway' ? 'http://127.0.0.1:4982/openai/v1' : 'http://127.0.0.1:8000'} onChange={(event) => onServerUrlChange(event.target.value)} /></label>}
+        {provider === 'gemini' ? <GeminiKeys disabled={disabled} onChanged={setHasKey} /> : provider === 'gemini-gateway' ? null : <><label className="field editor-field"><span>Khóa API{provider === 'local' ? ' (nếu có)' : ''}</span><input type="password" value={key}
           disabled={disabled || savingKey} placeholder={hasKey ? 'Đã lưu · nhập khóa mới để thay' : 'Nhập khóa API'} autoComplete="off"
           spellCheck={false} onChange={(event) => setKey(event.target.value)} /></label>
         <button type="button" className="btn" disabled={disabled || savingKey || !key.trim()} onClick={() => void saveKey()}>
           {savingKey ? 'Đang lưu…' : 'Lưu khóa API'}</button></>}
-        <p className="muted small">SRT được gửi tới AI đã chọn; phí theo nhà cung cấp. Khóa API không nằm trong bộ nhớ thị trường.</p>
+        <p className="muted small">{provider === 'gemini-gateway' ? 'Sử dụng CreateMediaTool Gateway đang chạy trên máy.' : 'SRT được gửi tới AI đã chọn; phí theo nhà cung cấp. Khóa API không nằm trong bộ nhớ thị trường.'}</p>
       </div></details>
       {keyError && <p className="dy-err small" role="alert">{keyError}</p>}
     </div>}

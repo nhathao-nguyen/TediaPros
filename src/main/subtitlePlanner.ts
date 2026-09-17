@@ -39,14 +39,16 @@ export function resolveSubtitlePlanFont(
 export function createMainSubtitlePlan(
   cues: readonly SubtitleCue[],
   options: SubtitleLayoutOptions,
-  fontId: string | null | undefined
+  fontId: string | null | undefined,
+  fontWeight?: number
 ): MainSubtitlePlan {
   const resolvedFont = resolveSubtitlePlanFont(cues, fontId)
   const fontFamily = resolvedFont?.entry.family || 'Arial'
   const measure = createTextMeasurer(
     options.fontSize,
     fontFamily,
-    resolvedFont?.entry ?? null
+    resolvedFont?.entry ?? null,
+    fontWeight
   )
   return {
     plan: planSubtitleLayout(cues, options, measure),

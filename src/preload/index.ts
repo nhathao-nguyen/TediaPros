@@ -8,6 +8,9 @@ import {
   AutoShortSttnPreviewRequest,
   AutoShortSttnPreviewResult,
   AutoShortSttnPreviewProgress,
+  AutoShortThumbnailRequest,
+  AutoShortThumbnailResult,
+  AutoShortThumbnailProgress,
   AutoShortStartResult,
   AutoShortMusicLibraryResult,
   CookieCaptureEvent,
@@ -54,6 +57,8 @@ import {
   TtsModelInfo,
   TtsServerHealth,
   TtsSpeechRequest,
+  TtsVoiceProfileRequest,
+  TtsVoiceProfileSummary,
   UpdateStatus,
   VideoInfo,
   Video2xDevice,
@@ -376,6 +381,8 @@ const api = {
     ipcRenderer.invoke('tts:generateSpeech', req),
   ttsGenerateClone: (req: TtsCloneRequest): Promise<TtsGenerateResult> =>
     ipcRenderer.invoke('tts:generateClone', req),
+  ttsGetVoiceProfile: (req: TtsVoiceProfileRequest): Promise<TtsVoiceProfileSummary> =>
+    ipcRenderer.invoke('tts:getVoiceProfile', req),
   ttsSaveAudio: (
     audioBase64: string,
     defaultName?: string,
@@ -395,6 +402,13 @@ const api = {
     const listener = (_event: unknown, progress: AutoShortSttnPreviewProgress): void => cb(progress)
     ipcRenderer.on('auto-short:sttn-preview-progress', listener)
     return () => ipcRenderer.removeListener('auto-short:sttn-preview-progress', listener)
+  },
+  autoShortCreateThumbnail: (request: AutoShortThumbnailRequest): Promise<AutoShortThumbnailResult> =>
+    ipcRenderer.invoke('auto-short:create-thumbnail', request),
+  onAutoShortThumbnailProgress: (cb: (progress: AutoShortThumbnailProgress) => void): (() => void) => {
+    const listener = (_event: unknown, progress: AutoShortThumbnailProgress): void => cb(progress)
+    ipcRenderer.on('auto-short:thumbnail-progress', listener)
+    return () => ipcRenderer.removeListener('auto-short:thumbnail-progress', listener)
   },
   autoShortSelectVideos: (): Promise<{ ok: boolean; paths: string[] }> =>
     ipcRenderer.invoke('autoshort:selectVideos'),
@@ -423,6 +437,8 @@ const api = {
     ipcRenderer.invoke('autoshort:cancel', jobId),
   autoShortRetryTranslation: (request: { itemId: string; expectedIdentity: string }): Promise<{ ok: boolean; generation?: number; error?: string }> =>
     ipcRenderer.invoke('autoshort:retryTranslation', request),
+  autoShortRetryTitle: (request: import('../shared/types').AutoShortRetryTitleRequest): Promise<import('../shared/types').AutoShortRetryTitleResult> =>
+    ipcRenderer.invoke('autoshort:retryTitle', request),
   autoShortClearCache: (): Promise<{ ok: boolean; error?: string }> =>
     ipcRenderer.invoke('autoshort:clearCache'),
   onAutoShortEvent: (cb: (event: AutoShortEvent) => void): (() => void) => {

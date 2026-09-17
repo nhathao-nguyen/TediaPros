@@ -4,10 +4,12 @@ import { mkdtemp, readFile, rm } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { createGeminiGatewayTranslationAdapter, checkGeminiGateway, rephraseGeminiGateway, isPermanentGatewayError } from '../src/main/geminiGateway'
-import { parseAiJsonObject } from '../src/shared/aiOutput'
+import { AiOutputParseError, parseAiJsonObject } from '../src/shared/aiOutput'
 import { planTranslation } from '../src/main/translation/planner'
 import { translateWithAdapter } from '../src/main/translation/orchestrator'
 import type { TranslationInput } from '../src/shared/translation'
+// This fixture is also checked against the actual Go GatewayMetadata serializer.
+import gatewayMetadataFixture from './fixtures/gemini-gateway-v2-metadata.json'
 
 function input(count = 44): TranslationInput {
   return {
@@ -31,19 +33,26 @@ function input(count = 44): TranslationInput {
 function completion(items: Array<{ id: string; text: string }>): Response {
   return new Response(JSON.stringify({
     model: 'gemini-advanced',
-    gateway_metadata: {
-      contract_version: 2,
-      requested_model: 'gemini-advanced',
-      resolved_model: 'gemini-advanced',
-      observed_model_id: 'e6fa609c3fa255c0',
-      model_verification: 'matched',
-      completion_state: 'complete',
-      upstream_attempts: 2,
-      upstream_retry_reasons: ['invalid-json-object']
-    },
+    gateway_metadata: gatewayMetadataFixture,
     choices: [{ message: { content: JSON.stringify({
       translations: Object.fromEntries(items.map((item) => [item.id, item.text]))
     }) }, finish_reason: 'stop' }]
+  }))
+}
+
+function gatewayMetadata(overrides: Record<string, unknown> = {}): Record<string, unknown> {
+  return { ...gatewayMetadataFixture, ...overrides }
+}
+
+function gatewayCapabilities(): Response {
+  return new Response(JSON.stringify({
+    gateway_contract_version: 2,
+    provider_ready: true,
+    models: ['gemini-advanced'],
+    model_selection: 'observed-id-required',
+    gateway_model_routes: {
+      'gemini-advanced': { route_fingerprint: gatewayMetadataFixture.route_fingerprint }
+    }
   }))
 }
 
@@ -61,13 +70,14 @@ test('Gemini Gateway keeps a 44-cue short in one batch and performs exactly draf
   const requests: Array<{ url: string; body: any }> = []
   try {
     globalThis.fetch = async (url, init) => {
+      if (String(url).endsWith('/gateway/capabilities')) return gatewayCapabilities()
       const body = JSON.parse(String(init?.body || '{}'))
       requests.push({ url: String(url), body })
       assert.equal(body.model, 'gemini-advanced')
       assert.equal(body.temporary, true)
       assert.deepEqual(body.gateway_requirements, {
         contract_version: 2,
-        require_verified_model: true,
+        require_verified_model: false,
         require_complete_response: true
       })
       assert.equal(body.response_format.json_schema.strict, true)
@@ -88,28 +98,88 @@ test('Gemini Gateway keeps a 44-cue short in one batch and performs exactly draf
     assert.equal(result.items.find((item) => item.id === 'cue-43')?.text, 'Âm thanh nút bấm của Volvo.')
     assert.equal(requests.length, 2)
     assert.ok(requests.every((request) => request.url === 'http://127.0.0.1:4982/openai/v1/chat/completions'))
-    assert.match(requests[0].body.messages[0].content, /Read the complete source ledger/u)
-    assert.match(requests[0].body.messages[0].content, /established automotive wording/u)
+    assert.match(requests[0].body.messages[0].content, /Read the full source ledger/u)
+    assert.match(requests[0].body.messages[0].content, /natural automotive wording/u)
     assert.match(requests[0].body.messages[0].content, /Restore natural target-language punctuation/u)
     assert.doesNotMatch(requests[0].body.messages[0].content, /Translated punctuation must not redefine speech boundaries/u)
     assert.doesNotMatch(requests[0].body.messages[0].content, /form one speech unit established before translation/u)
     assert.match(requests[0].body.messages[0].content, /context hints, not target sentence boundaries/u)
     assert.match(requests[0].body.messages[0].content, /translations.*cue-id.*translation/iu)
     assert.match(requests[1].body.messages[0].content, /fresh translation reviewer/u)
-    assert.match(requests[1].body.messages[0].content, /computer-keyboard or legal-exclusivity wording/u)
+    assert.match(requests[1].body.messages[0].content, /never legal exclusivity or "độc quyền"/u)
     assert.match(requests[1].body.messages[0].content, /Rebuild punctuation/u)
     assert.match(requests[1].body.messages[1].content, /CANDIDATE_JSON/u)
     assert.match(requests[1].body.messages[1].content, /Wooting/u)
     assert.match(requests[1].body.messages[1].content, /沃尔沃/u)
     const audit = JSON.parse(await readFile(auditPath, 'utf8'))
-    assert.equal(audit.promptVersion, 'gemini-gateway-two-pass-v4')
+    assert.equal(audit.promptVersion, 'gemini-gateway-two-pass-v10')
     assert.deepEqual(audit.records.map((record: any) => record.stage), ['restore-translate', 'independent-review'])
+    assert.ok(audit.records.every((record: any) => record.contextTokens === 1_000_000))
+    assert.ok(audit.records.every((record: any) => record.capacityProvenance === 'user-confirmed'))
+    assert.ok(audit.records.every((record: any) => record.inputTokenProvenance === 'utf8-byte-estimate'))
     assert.equal(audit.records[1].response.sha256.length, 64)
     assert.deepEqual(audit.records[1].response.upstreamRetryReasons, ['invalid-json-object'])
     assert.equal(audit.records[1].request.messages[1].content.includes('CANDIDATE_JSON'), true)
   } finally {
     globalThis.fetch = oldFetch
     await rm(auditDir, { recursive: true, force: true })
+  }
+})
+
+test('Gemini Gateway gives draft and independent review separate request deadlines', async () => {
+  const source = input(1)
+  const adapter = createGeminiGatewayTranslationAdapter(undefined, { stageTimeoutMs: 40 })
+  const plan = planTranslation(source, adapter.capability)
+  const oldFetch = globalThis.fetch
+  let calls = 0
+  try {
+    globalThis.fetch = async (_url, init) => {
+      calls++
+      const requestSignal = init?.signal
+      await new Promise<void>((resolve, reject) => {
+        const timer = setTimeout(resolve, 25)
+        requestSignal?.addEventListener('abort', () => {
+          clearTimeout(timer)
+          reject(requestSignal.reason)
+        }, { once: true })
+      })
+      return completion(source.cues.map((cue) => ({ id: cue.id, text: `Bản dịch ${cue.id}.` })))
+    }
+    const result = await translateWithAdapter(source, adapter, new AbortController().signal, {
+      plan,
+      // The two sequential 25 ms stages exceed this logical-batch deadline.
+      // Adapter ownership must prevent stage 2 from inheriting stage 1's time.
+      requestTimeoutMs: 40
+    })
+    assert.notEqual(result.assessment.disposition, 'needs-review')
+    assert.equal(result.items.length, 1)
+    assert.equal(calls, 2)
+  } finally {
+    globalThis.fetch = oldFetch
+  }
+})
+
+test('Gemini Gateway stage deadline aborts a fetch that never settles', async () => {
+  const source = input(1)
+  const adapter = createGeminiGatewayTranslationAdapter(undefined, { stageTimeoutMs: 30 })
+  const plan = planTranslation(source, adapter.capability)
+  const oldFetch = globalThis.fetch
+  let calls = 0
+  try {
+    globalThis.fetch = async (_url, init) => {
+      calls++
+      return await new Promise<Response>((_resolve, reject) => {
+        const requestSignal = init?.signal
+        requestSignal?.addEventListener('abort', () => reject(requestSignal.reason), { once: true })
+      })
+    }
+    await assert.rejects(
+      adapter.requestOnce(plan.batches[0], new AbortController().signal, source),
+      /Gemini Gateway request timed out/u
+    )
+    assert.equal(calls, 1)
+  } finally {
+    globalThis.fetch = oldFetch
   }
 })
 
@@ -212,13 +282,10 @@ test('Gemini Gateway rejects a model fallback reported by the gateway', async ()
   try {
     globalThis.fetch = async () => new Response(JSON.stringify({
       model: 'gemini-2.5-flash',
-      gateway_metadata: {
-        contract_version: 2,
+      gateway_metadata: gatewayMetadata({
         resolved_model: 'gemini-2.5-flash',
-        observed_model_id: 'c80884df2d854497',
-        model_verification: 'matched',
-        completion_state: 'complete'
-      },
+        observed_model_id: 'c80884df2d854497'
+      }),
       choices: [{ message: { content: JSON.stringify({ translations: { 'cue-1': 'Volvo.' } }) }, finish_reason: 'stop' }]
     }))
     await assert.rejects(adapter.requestOnce(batch, new AbortController().signal), /thay vì gemini-advanced/u)
@@ -227,7 +294,7 @@ test('Gemini Gateway rejects a model fallback reported by the gateway', async ()
   }
 })
 
-test('Gemini Gateway rejects responses lacking contract version 2 or verified model', async () => {
+test('Gemini Gateway requires contract version 2 and accepts a different observed text model', async () => {
   const adapter = createGeminiGatewayTranslationAdapter()
   const batch = planTranslation(input(1), adapter.capability).batches[0]
   const oldFetch = globalThis.fetch
@@ -239,33 +306,68 @@ test('Gemini Gateway rejects responses lacking contract version 2 or verified mo
     }))
     await assert.rejects(adapter.requestOnce(batch, new AbortController().signal), /phiên bản 2/u)
 
-    // Model verification not matched
+    // The flexible model policy accepts a completed response even when Google
+    // served a different model than the requested catalog route.
     globalThis.fetch = async () => new Response(JSON.stringify({
       model: 'gemini-advanced',
-      gateway_metadata: {
-        contract_version: 2,
-        resolved_model: 'gemini-advanced',
-        observed_model_id: 'e6fa609c3fa255c0',
-        model_verification: 'unverified',
-        completion_state: 'complete'
-      },
+      gateway_metadata: gatewayMetadata({
+        model_verification: 'mismatch',
+        observed_model_id: 'cf41b0e0dd7d53e5',
+        observed_model: '3.5 Flash-Lite'
+      }),
       choices: [{ message: { content: JSON.stringify({ translations: { 'cue-1': 'Volvo.' } }) }, finish_reason: 'stop' }]
     }))
-    await assert.rejects(adapter.requestOnce(batch, new AbortController().signal), /trạng thái unverified/u)
+    const flexible = await adapter.requestOnce(batch, new AbortController().signal)
+    assert.equal(JSON.parse(flexible.raw).items[0].text, 'Volvo.')
 
     // Incomplete completion_state
     globalThis.fetch = async () => new Response(JSON.stringify({
       model: 'gemini-advanced',
-      gateway_metadata: {
-        contract_version: 2,
-        resolved_model: 'gemini-advanced',
-        observed_model_id: 'e6fa609c3fa255c0',
-        model_verification: 'matched',
-        completion_state: 'incomplete'
-      },
+      gateway_metadata: gatewayMetadata({ completion_state: 'incomplete' }),
       choices: [{ message: { content: JSON.stringify({ translations: { 'cue-1': 'Volvo.' } }) }, finish_reason: 'stop' }]
     }))
     await assert.rejects(adapter.requestOnce(batch, new AbortController().signal), /chưa hoàn tất/u)
+  } finally {
+    globalThis.fetch = oldFetch
+  }
+})
+
+test('Gemini Gateway requires route, completion evidence and a bounded attempt count', async () => {
+  const adapter = createGeminiGatewayTranslationAdapter()
+  const batch = planTranslation(input(1), adapter.capability).batches[0]
+  const oldFetch = globalThis.fetch
+  try {
+    for (const [name, mutate, expected] of [
+      ['route', (data: any) => { data.gateway_metadata.route_fingerprint = 'not-a-fingerprint' }, /route_fingerprint/u],
+      ['completion evidence', (data: any) => { delete data.gateway_metadata.completion_evidence }, /completion_evidence/u],
+      ['attempt cap', (data: any) => { data.gateway_metadata.upstream_attempts = 4 }, /upstream_attempts/u]
+    ] as const) {
+      globalThis.fetch = async () => {
+        const data = await completion([{ id: 'cue-1', text: 'Volvo.' }]).json() as any
+        mutate(data)
+        return new Response(JSON.stringify(data))
+      }
+      await assert.rejects(adapter.requestOnce(batch, new AbortController().signal), expected, name)
+    }
+  } finally {
+    globalThis.fetch = oldFetch
+  }
+})
+
+test('Gemini Gateway rejects legacy or incorrectly named response versions', async () => {
+  const adapter = createGeminiGatewayTranslationAdapter()
+  const batch = planTranslation(input(1), adapter.capability).batches[0]
+  const oldFetch = globalThis.fetch
+  try {
+    for (const version of [undefined, 1, '2']) {
+      globalThis.fetch = async () => {
+        const data = await completion([{ id: 'cue-1', text: 'Volvo.' }]).json()
+        data.gateway_metadata.gateway_contract_version = version
+        data.gateway_metadata.contract_version = 2 // request key cannot certify a response
+        return new Response(JSON.stringify(data))
+      }
+      await assert.rejects(adapter.requestOnce(batch, new AbortController().signal), /gateway_metadata.gateway_contract_version/u)
+    }
   } finally {
     globalThis.fetch = oldFetch
   }
@@ -304,14 +406,7 @@ test('Gemini Gateway rephrase keeps the existing labelled-candidate grammar', as
       body = JSON.parse(String(init?.body || '{}'))
       return new Response(JSON.stringify({
         model: 'gemini-advanced',
-        gateway_metadata: {
-          contract_version: 2,
-          resolved_model: 'gemini-advanced',
-          observed_model_id: 'e6fa609c3fa255c0',
-          model_verification: 'matched',
-          completion_state: 'complete',
-          upstream_attempts: 1
-        },
+        gateway_metadata: gatewayMetadata({ upstream_attempts: 1 }),
         choices: [{ message: { content: '[cue-1:1] Bản ngắn hơn' }, finish_reason: 'stop' }]
       }))
     }
@@ -342,10 +437,12 @@ test('Gemini Gateway structured JSON vectors parity with Go gateway normalizer',
     if (tc.expectedValid) {
       const parsed = parseAiJsonObject(tc.input, { allowFence: true, allowProseObject: false })
       assert.ok(parsed.value, `Case ${tc.name} should yield valid parsed object`)
+      assert.equal(parsed.normalizedText, tc.expectedText, `Case ${tc.name} normalized text must match Go`)
+      assert.deepEqual(parsed.normalization, tc.expectedOperations || [], `Case ${tc.name} normalization operations must match Go`)
     } else {
       assert.throws(
         () => parseAiJsonObject(tc.input, { allowFence: true, allowProseObject: false }),
-        (err: any) => Boolean(err),
+        (err: unknown) => err instanceof AiOutputParseError && err.code === tc.expectedErrorCode,
         `Case ${tc.name} must be rejected`
       )
     }
@@ -460,7 +557,8 @@ test('audit log redacts sensitive query parameters, tokens, and cookies', async 
 
   const oldFetch = globalThis.fetch
   try {
-    globalThis.fetch = async () => {
+    globalThis.fetch = async (url) => {
+      if (String(url).endsWith('/gateway/capabilities')) return gatewayCapabilities()
       throw new Error('Connection failed to https://gemini.google.com/rpc?token=SECRET_TOKEN_12345&psid=SECURE1PSID_SECRET with Cookie: __Secure-1PSID=SECRET_COOKIE')
     }
     await adapter.requestOnce(plan.batches[0], new AbortController().signal).catch(() => {})

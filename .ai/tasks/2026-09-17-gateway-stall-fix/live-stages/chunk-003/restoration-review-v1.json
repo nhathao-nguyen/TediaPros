@@ -1,0 +1,25 @@
+{
+  "schemaVersion": 1,
+  "state": "validated",
+  "stage": "restoration-review",
+  "identity": "35bbd76fdcff7e880bad04aad70298001df1d98b8329d6707985f95214da6cc9",
+  "routeFingerprint": "29ed9729dbdd53e76081fc89bd7f7991b6a6e2c770e964fd8fa2ceaa0c22c646",
+  "evidenceDigest": "a376094404ea542b33cc5895a15c806a09b2fa4f9b7aaf50ad03901965d88b71",
+  "expectedIds": [
+    "cue-16-25500",
+    "cue-17-26680",
+    "cue-18-27680",
+    "cue-19-29540",
+    "cue-20-31240",
+    "cue-21-32180",
+    "cue-22-33780"
+  ],
+  "targetLocale": "vi",
+  "promptVersion": "gateway-restoration-media-v2",
+  "parserVersion": "gateway-restoration-parser-v1",
+  "raw": "{\n  \"schemaVersion\": \"restoration-review-v1\",\n  \"candidateDigest\": \"43da14db76e8a1320971cb3066bf7c0bbd590eadbdb42905413aab388a06d222\",\n  \"reviewedCueIds\": [\n    \"cue-16-25500\",\n    \"cue-17-26680\",\n    \"cue-18-27680\",\n    \"cue-19-29540\",\n    \"cue-20-31240\",\n    \"cue-21-32180\",\n    \"cue-22-33780\"\n  ],\n  \"status\": \"needs_adjustment\",\n  \"confidenceScore\": 0.98,\n  \"reviewerNotes\": \"Added missing source edit for cue-22.\",\n  \"groupAssessments\": [\n    {\n      \"groupId\": \"g1\",\n      \"cueIds\": [\n        \"cue-16-25500\",\n        \"cue-17-26680\",\n        \"cue-18-27680\",\n        \"cue-19-29540\",\n        \"cue-20-31240\",\n        \"cue-21-32180\"\n      ],\n      \"status\": \"approved\",\n      \"reason\": \"Source edits and translations are accurate.\"\n    },\n    {\n      \"groupId\": \"g2\",\n      \"cueIds\": [\n        \"cue-22-33780\"\n      ],\n      \"status\": \"needs_adjustment\",\n      \"reason\": \"Missing source edit in the draft.\"\n    }\n  ],\n  \"findings\": [\n    {\n      \"code\": \"missing_source_edit\",\n      \"cueIds\": [\n        \"cue-22-33780\"\n      ],\n      \"evidenceRefs\": [\n        \"ocr_398\"\n      ],\n      \"note\": \"Source text for cue-22 is missing in draft sourceEdits.\",\n      \"resolution\": \"patched\",\n      \"severity\": \"error\"\n    }\n  ],\n  \"replacements\": [\n    {\n      \"groupId\": \"g2\",\n      \"items\": [\n        {\n          \"id\": \"cue-22-33780\",\n          \"target\": \"Thực sự rất xót xa cho đường chân tóc của họ.\"\n        }\n      ],\n      \"sentenceEndIds\": [\n        \"cue-22-33780\"\n      ],\n      \"sourceEdits\": [\n        {\n          \"evidenceRefs\": [\n            \"ocr_398\"\n          ],\n          \"id\": \"cue-22-33780\",\n          \"kind\": \"ocr_alignment\",\n          \"text\": \"真是好心疼他们的发际线\"\n        }\n      ]\n    }\n  ]\n}",
+  "rawSha256": "9d33c856d27f34421d79151e34312851ba28f939ba04db873efc6bf94f7349be",
+  "observedModelId": "e6fa609c3fa255c0",
+  "observedModel": "3.1 Pro",
+  "savedAtUtc": "2026-09-17T14:11:30.468Z"
+}

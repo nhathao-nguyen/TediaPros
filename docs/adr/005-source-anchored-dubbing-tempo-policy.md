@@ -114,3 +114,22 @@ Theo yêu cầu người dùng, trần kéo dài cục bộ `40%` ở các phầ
 Video, mask OCR và instrumental dùng cùng thứ tự segment. Audio nguồn ở chế độ mix bị tắt trong segment replay để không lặp thoại; narration và phụ đề đích chỉ phát một lần trên timeline output. Blur vẫn dùng Planar RGB sau khi mask đã được retime.
 
 Khi vẫn vượt 60%, item lưu cue ID, số giây và phần trăm cần thêm, tiếp tục các item còn lại rồi tự chạy lại một lần ở cuối batch. Lượt hai bỏ cache TTS nghi vấn và đổi prompt sang `repair-source`: `source_text` là bằng chứng nghĩa chính, `current_text` chỉ dùng để phát hiện lệch nội dung. Nếu lượt hai vẫn lỗi, batch kết thúc với lỗi được giữ lại; không lặp vô hạn, cắt lời hoặc vượt trần 1.80x.
+
+## Giữ quyết định khoảng nghỉ khi retime — 2026-09-15
+
+Khoảng nghỉ giữa hai speech unit được quyết định một lần trên timeline nguồn.
+Khi `planDubbingTimeMap` kéo dài hình, finalization giữ nguyên số giây đã dành
+cho khoảng nghỉ đó rồi tăng phần có thể phát lời bằng đúng phần thời gian được
+thêm. Không chạy lại heuristic chọn khoảng nghỉ từ span đã kéo dài. Nếu chạy
+lại, một cue nguồn sát ngưỡng `0.60s` có thể đổi từ khoảng nghỉ rút gọn sang
+`0.50s`, làm mất toàn bộ lợi ích retime và tạo lỗi tempo giả.
+
+Ca hồi quy `cue-70-138720` dùng đúng mốc `138.72–139.32`, khoảng nghỉ nguồn
+`0.09s` và WAV đo được `1.248s`. Sau retime, khoảng nghỉ vẫn là `0.09s`, audio
+fit trong `1.80x`, source cue ID/timestamp ledger không đổi và không cắt lời.
+
+Measured overflow qua Gemini Gateway được gom tối đa 8 cue trong một request
+rephrase. Đây là request cứu lỗi tùy điều kiện, tách khỏi hai generation dịch
+chuẩn (`restore-translate` và `independent-review`). Chỉ có thêm repair request
+cho các cue còn thiếu hoặc response không dùng được; cue đã hợp lệ không được
+gửi lại.

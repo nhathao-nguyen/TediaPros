@@ -1,0 +1,4734 @@
+{
+  "duration": 68.802125,
+  "language": "zh",
+  "segments": [
+    {
+      "start": 0.0,
+      "end": 0.9,
+      "text": "这是古代的你",
+      "words": [
+        {
+          "text": "这是",
+          "start": 0.0,
+          "end": 0.22,
+          "probability": 0.288818359375
+        },
+        {
+          "text": "古",
+          "start": 0.22,
+          "end": 0.46,
+          "probability": 0.99462890625
+        },
+        {
+          "text": "代",
+          "start": 0.46,
+          "end": 0.62,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "的",
+          "start": 0.62,
+          "end": 0.74,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "你",
+          "start": 0.74,
+          "end": 0.9,
+          "probability": 0.98876953125
+        }
+      ]
+    },
+    {
+      "start": 0.9,
+      "end": 3.02,
+      "text": "假若你把饭块直直戳进饭碗",
+      "words": [
+        {
+          "text": "假",
+          "start": 0.9,
+          "end": 1.34,
+          "probability": 0.9677734375
+        },
+        {
+          "text": "若",
+          "start": 1.34,
+          "end": 1.48,
+          "probability": 0.895263671875
+        },
+        {
+          "text": "你",
+          "start": 1.48,
+          "end": 1.56,
+          "probability": 0.9892578125
+        },
+        {
+          "text": "把",
+          "start": 1.56,
+          "end": 1.7,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "饭",
+          "start": 1.7,
+          "end": 1.86,
+          "probability": 0.79248046875
+        },
+        {
+          "text": "块",
+          "start": 1.86,
+          "end": 2.06,
+          "probability": 0.9638671875
+        },
+        {
+          "text": "直",
+          "start": 2.06,
+          "end": 2.24,
+          "probability": 0.970703125
+        },
+        {
+          "text": "直",
+          "start": 2.24,
+          "end": 2.44,
+          "probability": 0.9892578125
+        },
+        {
+          "text": "戳",
+          "start": 2.44,
+          "end": 2.54,
+          "probability": 0.938232421875
+        },
+        {
+          "text": "进",
+          "start": 2.54,
+          "end": 2.7,
+          "probability": 0.9853515625
+        },
+        {
+          "text": "饭",
+          "start": 2.7,
+          "end": 2.86,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "碗",
+          "start": 2.86,
+          "end": 3.02,
+          "probability": 0.995361328125
+        }
+      ]
+    },
+    {
+      "start": 3.02,
+      "end": 4.64,
+      "text": "老一辈称之为共快",
+      "words": [
+        {
+          "text": "老",
+          "start": 3.02,
+          "end": 3.38,
+          "probability": 0.9736328125
+        },
+        {
+          "text": "一",
+          "start": 3.38,
+          "end": 3.52,
+          "probability": 0.97802734375
+        },
+        {
+          "text": "辈",
+          "start": 3.52,
+          "end": 3.62,
+          "probability": 0.89697265625
+        },
+        {
+          "text": "称",
+          "start": 3.62,
+          "end": 3.8,
+          "probability": 0.991943359375
+        },
+        {
+          "text": "之",
+          "start": 3.8,
+          "end": 3.96,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "为",
+          "start": 3.96,
+          "end": 4.08,
+          "probability": 0.99560546875
+        },
+        {
+          "text": "共",
+          "start": 4.08,
+          "end": 4.38,
+          "probability": 0.51953125
+        },
+        {
+          "text": "快",
+          "start": 4.38,
+          "end": 4.64,
+          "probability": 0.64697265625
+        }
+      ]
+    },
+    {
+      "start": 4.64,
+      "end": 6.3,
+      "text": "跟祭祖上相一模一样",
+      "words": [
+        {
+          "text": "跟",
+          "start": 4.64,
+          "end": 5.16,
+          "probability": 0.82958984375
+        },
+        {
+          "text": "祭",
+          "start": 5.16,
+          "end": 5.34,
+          "probability": 0.61346435546875
+        },
+        {
+          "text": "祖",
+          "start": 5.34,
+          "end": 5.46,
+          "probability": 0.9814453125
+        },
+        {
+          "text": "上",
+          "start": 5.46,
+          "end": 5.62,
+          "probability": 0.92041015625
+        },
+        {
+          "text": "相",
+          "start": 5.62,
+          "end": 5.76,
+          "probability": 0.424560546875
+        },
+        {
+          "text": "一",
+          "start": 5.76,
+          "end": 5.92,
+          "probability": 0.87890625
+        },
+        {
+          "text": "模",
+          "start": 5.92,
+          "end": 6.04,
+          "probability": 0.94873046875
+        },
+        {
+          "text": "一",
+          "start": 6.04,
+          "end": 6.2,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "样",
+          "start": 6.2,
+          "end": 6.3,
+          "probability": 1.0
+        }
+      ]
+    },
+    {
+      "start": 6.3,
+      "end": 7.64,
+      "text": "长辈瞅见心头一锦",
+      "words": [
+        {
+          "text": "长",
+          "start": 6.3,
+          "end": 6.58,
+          "probability": 0.7802734375
+        },
+        {
+          "text": "辈",
+          "start": 6.58,
+          "end": 6.7,
+          "probability": 0.956298828125
+        },
+        {
+          "text": "瞅",
+          "start": 6.7,
+          "end": 6.86,
+          "probability": 0.7392578125
+        },
+        {
+          "text": "见",
+          "start": 6.86,
+          "end": 7.02,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "心",
+          "start": 7.02,
+          "end": 7.2,
+          "probability": 0.884765625
+        },
+        {
+          "text": "头",
+          "start": 7.2,
+          "end": 7.36,
+          "probability": 0.9931640625
+        },
+        {
+          "text": "一",
+          "start": 7.36,
+          "end": 7.52,
+          "probability": 0.740234375
+        },
+        {
+          "text": "锦",
+          "start": 7.52,
+          "end": 7.64,
+          "probability": 0.6148681640625
+        }
+      ]
+    },
+    {
+      "start": 7.64,
+      "end": 9.76,
+      "text": "好好一顿饭瞬间便祭奠现场",
+      "words": [
+        {
+          "text": "好好",
+          "start": 7.64,
+          "end": 8.08,
+          "probability": 0.927734375
+        },
+        {
+          "text": "一",
+          "start": 8.08,
+          "end": 8.26,
+          "probability": 0.9814453125
+        },
+        {
+          "text": "顿",
+          "start": 8.26,
+          "end": 8.34,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "饭",
+          "start": 8.34,
+          "end": 8.54,
+          "probability": 0.999755859375
+        },
+        {
+          "text": "瞬",
+          "start": 8.54,
+          "end": 8.82,
+          "probability": 0.98876953125
+        },
+        {
+          "text": "间",
+          "start": 8.82,
+          "end": 9.02,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "便",
+          "start": 9.02,
+          "end": 9.14,
+          "probability": 0.93359375
+        },
+        {
+          "text": "祭",
+          "start": 9.14,
+          "end": 9.32,
+          "probability": 0.826171875
+        },
+        {
+          "text": "奠",
+          "start": 9.32,
+          "end": 9.4,
+          "probability": 0.762939453125
+        },
+        {
+          "text": "现",
+          "start": 9.4,
+          "end": 9.56,
+          "probability": 0.9912109375
+        },
+        {
+          "text": "场",
+          "start": 9.56,
+          "end": 9.76,
+          "probability": 0.99755859375
+        }
+      ]
+    },
+    {
+      "start": 9.76,
+      "end": 10.62,
+      "text": "属实会气",
+      "words": [
+        {
+          "text": "属",
+          "start": 9.76,
+          "end": 10.08,
+          "probability": 0.54736328125
+        },
+        {
+          "text": "实",
+          "start": 10.08,
+          "end": 10.28,
+          "probability": 0.978515625
+        },
+        {
+          "text": "会",
+          "start": 10.28,
+          "end": 10.44,
+          "probability": 0.473388671875
+        },
+        {
+          "text": "气",
+          "start": 10.44,
+          "end": 10.62,
+          "probability": 0.2291259765625
+        }
+      ]
+    },
+    {
+      "start": 10.62,
+      "end": 12.62,
+      "text": "假若拿起筷子指向他人",
+      "words": [
+        {
+          "text": "假",
+          "start": 10.62,
+          "end": 11.16,
+          "probability": 0.99169921875
+        },
+        {
+          "text": "若",
+          "start": 11.16,
+          "end": 11.32,
+          "probability": 0.99658203125
+        },
+        {
+          "text": "拿",
+          "start": 11.32,
+          "end": 11.42,
+          "probability": 0.99658203125
+        },
+        {
+          "text": "起",
+          "start": 11.42,
+          "end": 11.6,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "筷",
+          "start": 11.6,
+          "end": 11.74,
+          "probability": 0.990966796875
+        },
+        {
+          "text": "子",
+          "start": 11.74,
+          "end": 11.92,
+          "probability": 1.0
+        },
+        {
+          "text": "指",
+          "start": 11.92,
+          "end": 12.1,
+          "probability": 0.84765625
+        },
+        {
+          "text": "向",
+          "start": 12.1,
+          "end": 12.24,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "他",
+          "start": 12.24,
+          "end": 12.42,
+          "probability": 0.9384765625
+        },
+        {
+          "text": "人",
+          "start": 12.42,
+          "end": 12.62,
+          "probability": 0.99951171875
+        }
+      ]
+    },
+    {
+      "start": 12.62,
+      "end": 14.3,
+      "text": "就是仙人指路",
+      "words": [
+        {
+          "text": "就是",
+          "start": 12.62,
+          "end": 13.12,
+          "probability": 0.95703125
+        },
+        {
+          "text": "仙",
+          "start": 13.12,
+          "end": 13.66,
+          "probability": 0.751708984375
+        },
+        {
+          "text": "人",
+          "start": 13.66,
+          "end": 13.88,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "指",
+          "start": 13.88,
+          "end": 14.08,
+          "probability": 0.69775390625
+        },
+        {
+          "text": "路",
+          "start": 14.08,
+          "end": 14.3,
+          "probability": 0.6513671875
+        }
+      ]
+    },
+    {
+      "start": 14.3,
+      "end": 15.84,
+      "text": "像拿着小棍对人",
+      "words": [
+        {
+          "text": "像",
+          "start": 14.3,
+          "end": 14.86,
+          "probability": 0.58349609375
+        },
+        {
+          "text": "拿",
+          "start": 14.86,
+          "end": 15.0,
+          "probability": 0.98388671875
+        },
+        {
+          "text": "着",
+          "start": 15.0,
+          "end": 15.12,
+          "probability": 0.9814453125
+        },
+        {
+          "text": "小",
+          "start": 15.12,
+          "end": 15.34,
+          "probability": 0.990234375
+        },
+        {
+          "text": "棍",
+          "start": 15.34,
+          "end": 15.48,
+          "probability": 0.93115234375
+        },
+        {
+          "text": "对",
+          "start": 15.48,
+          "end": 15.62,
+          "probability": 0.83544921875
+        },
+        {
+          "text": "人",
+          "start": 15.62,
+          "end": 15.84,
+          "probability": 0.99853515625
+        }
+      ]
+    },
+    {
+      "start": 15.84,
+      "end": 17.18,
+      "text": "等同于出言冒犯",
+      "words": [
+        {
+          "text": "等",
+          "start": 15.84,
+          "end": 16.18,
+          "probability": 0.97802734375
+        },
+        {
+          "text": "同",
+          "start": 16.18,
+          "end": 16.36,
+          "probability": 0.99560546875
+        },
+        {
+          "text": "于",
+          "start": 16.36,
+          "end": 16.5,
+          "probability": 0.994140625
+        },
+        {
+          "text": "出",
+          "start": 16.5,
+          "end": 16.68,
+          "probability": 0.76220703125
+        },
+        {
+          "text": "言",
+          "start": 16.68,
+          "end": 16.82,
+          "probability": 0.56787109375
+        },
+        {
+          "text": "冒",
+          "start": 16.82,
+          "end": 16.98,
+          "probability": 0.992919921875
+        },
+        {
+          "text": "犯",
+          "start": 16.98,
+          "end": 17.18,
+          "probability": 0.964599609375
+        }
+      ]
+    },
+    {
+      "start": 17.18,
+      "end": 18.18,
+      "text": "惹人反感",
+      "words": [
+        {
+          "text": "惹",
+          "start": 17.18,
+          "end": 17.68,
+          "probability": 0.57269287109375
+        },
+        {
+          "text": "人",
+          "start": 17.68,
+          "end": 17.8,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "反",
+          "start": 17.8,
+          "end": 17.94,
+          "probability": 0.68994140625
+        },
+        {
+          "text": "感",
+          "start": 17.94,
+          "end": 18.18,
+          "probability": 0.97216796875
+        }
+      ]
+    },
+    {
+      "start": 18.18,
+      "end": 19.94,
+      "text": "妥妥饭桌美礼帽天花板",
+      "words": [
+        {
+          "text": "妥",
+          "start": 18.18,
+          "end": 18.48,
+          "probability": 0.6851806640625
+        },
+        {
+          "text": "妥",
+          "start": 18.48,
+          "end": 18.64,
+          "probability": 0.9912109375
+        },
+        {
+          "text": "饭",
+          "start": 18.64,
+          "end": 18.8,
+          "probability": 0.91357421875
+        },
+        {
+          "text": "桌",
+          "start": 18.8,
+          "end": 18.96,
+          "probability": 0.989990234375
+        },
+        {
+          "text": "美",
+          "start": 18.96,
+          "end": 19.1,
+          "probability": 0.460693359375
+        },
+        {
+          "text": "礼",
+          "start": 19.1,
+          "end": 19.24,
+          "probability": 0.91357421875
+        },
+        {
+          "text": "帽",
+          "start": 19.24,
+          "end": 19.38,
+          "probability": 0.638671875
+        },
+        {
+          "text": "天",
+          "start": 19.38,
+          "end": 19.58,
+          "probability": 0.6953125
+        },
+        {
+          "text": "花",
+          "start": 19.58,
+          "end": 19.76,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "板",
+          "start": 19.76,
+          "end": 19.94,
+          "probability": 0.93603515625
+        }
+      ]
+    },
+    {
+      "start": 19.94,
+      "end": 21.52,
+      "text": "如果拿筷子敲打板边",
+      "words": [
+        {
+          "text": "如果",
+          "start": 19.94,
+          "end": 20.46,
+          "probability": 0.98876953125
+        },
+        {
+          "text": "拿",
+          "start": 20.46,
+          "end": 20.64,
+          "probability": 0.9951171875
+        },
+        {
+          "text": "筷",
+          "start": 20.64,
+          "end": 20.78,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "子",
+          "start": 20.78,
+          "end": 20.96,
+          "probability": 1.0
+        },
+        {
+          "text": "敲",
+          "start": 20.96,
+          "end": 21.1,
+          "probability": 0.994140625
+        },
+        {
+          "text": "打",
+          "start": 21.1,
+          "end": 21.22,
+          "probability": 0.9140625
+        },
+        {
+          "text": "板",
+          "start": 21.22,
+          "end": 21.36,
+          "probability": 0.8525390625
+        },
+        {
+          "text": "边",
+          "start": 21.36,
+          "end": 21.52,
+          "probability": 0.97021484375
+        }
+      ]
+    },
+    {
+      "start": 21.52,
+      "end": 22.26,
+      "text": "叮叮作响",
+      "words": [
+        {
+          "text": "叮",
+          "start": 21.52,
+          "end": 21.76,
+          "probability": 0.84375
+        },
+        {
+          "text": "叮",
+          "start": 21.76,
+          "end": 21.92,
+          "probability": 0.971923828125
+        },
+        {
+          "text": "作",
+          "start": 21.92,
+          "end": 22.06,
+          "probability": 0.66943359375
+        },
+        {
+          "text": "响",
+          "start": 22.06,
+          "end": 22.26,
+          "probability": 0.967041015625
+        }
+      ]
+    },
+    {
+      "start": 22.26,
+      "end": 24.06,
+      "text": "就是长辈口中的敲碗",
+      "words": [
+        {
+          "text": "就是",
+          "start": 22.26,
+          "end": 22.66,
+          "probability": 0.9794921875
+        },
+        {
+          "text": "长",
+          "start": 22.66,
+          "end": 22.88,
+          "probability": 0.9140625
+        },
+        {
+          "text": "辈",
+          "start": 22.88,
+          "end": 23.04,
+          "probability": 0.9931640625
+        },
+        {
+          "text": "口",
+          "start": 23.04,
+          "end": 23.2,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "中",
+          "start": 23.2,
+          "end": 23.38,
+          "probability": 0.9951171875
+        },
+        {
+          "text": "的",
+          "start": 23.38,
+          "end": 23.52,
+          "probability": 0.9912109375
+        },
+        {
+          "text": "敲",
+          "start": 23.52,
+          "end": 23.84,
+          "probability": 0.994140625
+        },
+        {
+          "text": "碗",
+          "start": 23.84,
+          "end": 24.06,
+          "probability": 0.7021484375
+        }
+      ]
+    },
+    {
+      "start": 24.06,
+      "end": 25.4,
+      "text": "饭桌上这么折腾",
+      "words": [
+        {
+          "text": "饭",
+          "start": 24.06,
+          "end": 24.44,
+          "probability": 0.9833984375
+        },
+        {
+          "text": "桌",
+          "start": 24.44,
+          "end": 24.6,
+          "probability": 0.999267578125
+        },
+        {
+          "text": "上",
+          "start": 24.6,
+          "end": 24.74,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "这么",
+          "start": 24.74,
+          "end": 24.96,
+          "probability": 0.98486328125
+        },
+        {
+          "text": "折",
+          "start": 24.96,
+          "end": 25.14,
+          "probability": 0.945556640625
+        },
+        {
+          "text": "腾",
+          "start": 25.14,
+          "end": 25.4,
+          "probability": 0.91015625
+        }
+      ]
+    },
+    {
+      "start": 25.4,
+      "end": 26.64,
+      "text": "东道主脸上挂不住",
+      "words": [
+        {
+          "text": "东",
+          "start": 25.4,
+          "end": 25.68,
+          "probability": 0.7001953125
+        },
+        {
+          "text": "道",
+          "start": 25.68,
+          "end": 25.8,
+          "probability": 0.92333984375
+        },
+        {
+          "text": "主",
+          "start": 25.8,
+          "end": 25.92,
+          "probability": 0.96484375
+        },
+        {
+          "text": "脸",
+          "start": 25.92,
+          "end": 26.04,
+          "probability": 0.993896484375
+        },
+        {
+          "text": "上",
+          "start": 26.04,
+          "end": 26.2,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "挂",
+          "start": 26.2,
+          "end": 26.34,
+          "probability": 0.979248046875
+        },
+        {
+          "text": "不",
+          "start": 26.34,
+          "end": 26.48,
+          "probability": 0.998046875
+        },
+        {
+          "text": "住",
+          "start": 26.48,
+          "end": 26.64,
+          "probability": 0.99951171875
+        }
+      ]
+    },
+    {
+      "start": 26.64,
+      "end": 28.88,
+      "text": "旁人看你向上门蹭饭的乞丐",
+      "words": [
+        {
+          "text": "旁",
+          "start": 26.64,
+          "end": 27.0,
+          "probability": 0.7086181640625
+        },
+        {
+          "text": "人",
+          "start": 27.0,
+          "end": 27.12,
+          "probability": 0.99267578125
+        },
+        {
+          "text": "看",
+          "start": 27.12,
+          "end": 27.26,
+          "probability": 0.99462890625
+        },
+        {
+          "text": "你",
+          "start": 27.26,
+          "end": 27.4,
+          "probability": 0.68701171875
+        },
+        {
+          "text": "向",
+          "start": 27.4,
+          "end": 27.48,
+          "probability": 0.83935546875
+        },
+        {
+          "text": "上",
+          "start": 27.48,
+          "end": 27.64,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "门",
+          "start": 27.64,
+          "end": 27.76,
+          "probability": 0.993896484375
+        },
+        {
+          "text": "蹭",
+          "start": 27.76,
+          "end": 27.98,
+          "probability": 0.852294921875
+        },
+        {
+          "text": "饭",
+          "start": 27.98,
+          "end": 28.16,
+          "probability": 0.972900390625
+        },
+        {
+          "text": "的",
+          "start": 28.16,
+          "end": 28.24,
+          "probability": 0.96142578125
+        },
+        {
+          "text": "乞",
+          "start": 28.24,
+          "end": 28.4,
+          "probability": 0.848876953125
+        },
+        {
+          "text": "丐",
+          "start": 28.4,
+          "end": 28.88,
+          "probability": 0.98388671875
+        }
+      ]
+    },
+    {
+      "start": 28.88,
+      "end": 30.68,
+      "text": "若是将筷子悬在菜盘上空",
+      "words": [
+        {
+          "text": "若",
+          "start": 28.88,
+          "end": 29.1,
+          "probability": 0.9892578125
+        },
+        {
+          "text": "是",
+          "start": 29.1,
+          "end": 29.22,
+          "probability": 0.99462890625
+        },
+        {
+          "text": "将",
+          "start": 29.22,
+          "end": 29.34,
+          "probability": 0.98095703125
+        },
+        {
+          "text": "筷",
+          "start": 29.34,
+          "end": 29.5,
+          "probability": 0.98095703125
+        },
+        {
+          "text": "子",
+          "start": 29.5,
+          "end": 29.68,
+          "probability": 1.0
+        },
+        {
+          "text": "悬",
+          "start": 29.68,
+          "end": 29.78,
+          "probability": 0.837646484375
+        },
+        {
+          "text": "在",
+          "start": 29.78,
+          "end": 29.96,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "菜",
+          "start": 29.96,
+          "end": 30.14,
+          "probability": 0.99609375
+        },
+        {
+          "text": "盘",
+          "start": 30.14,
+          "end": 30.3,
+          "probability": 0.9931640625
+        },
+        {
+          "text": "上",
+          "start": 30.3,
+          "end": 30.46,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "空",
+          "start": 30.46,
+          "end": 30.68,
+          "probability": 0.99365234375
+        }
+      ]
+    },
+    {
+      "start": 30.68,
+      "end": 31.36,
+      "text": "来回徘徊",
+      "words": [
+        {
+          "text": "来",
+          "start": 30.68,
+          "end": 30.8,
+          "probability": 0.9677734375
+        },
+        {
+          "text": "回",
+          "start": 30.8,
+          "end": 30.94,
+          "probability": 0.998046875
+        },
+        {
+          "text": "徘",
+          "start": 30.94,
+          "end": 31.14,
+          "probability": 0.94775390625
+        },
+        {
+          "text": "徊",
+          "start": 31.14,
+          "end": 31.36,
+          "probability": 0.994873046875
+        }
+      ]
+    },
+    {
+      "start": 31.36,
+      "end": 32.52,
+      "text": "叮半天不下手",
+      "words": [
+        {
+          "text": "叮",
+          "start": 31.36,
+          "end": 31.78,
+          "probability": 0.60113525390625
+        },
+        {
+          "text": "半",
+          "start": 31.78,
+          "end": 31.94,
+          "probability": 0.99609375
+        },
+        {
+          "text": "天",
+          "start": 31.94,
+          "end": 32.08,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "不",
+          "start": 32.08,
+          "end": 32.24,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "下",
+          "start": 32.24,
+          "end": 32.36,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "手",
+          "start": 32.36,
+          "end": 32.52,
+          "probability": 0.994140625
+        }
+      ]
+    },
+    {
+      "start": 32.52,
+      "end": 33.56,
+      "text": "传统说法叫",
+      "words": [
+        {
+          "text": "传",
+          "start": 32.52,
+          "end": 32.9,
+          "probability": 0.971435546875
+        },
+        {
+          "text": "统",
+          "start": 32.9,
+          "end": 33.08,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "说",
+          "start": 33.08,
+          "end": 33.26,
+          "probability": 0.9765625
+        },
+        {
+          "text": "法",
+          "start": 33.26,
+          "end": 33.4,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "叫",
+          "start": 33.4,
+          "end": 33.56,
+          "probability": 0.544921875
+        }
+      ]
+    },
+    {
+      "start": 33.56,
+      "end": 34.12,
+      "text": "一筷",
+      "words": [
+        {
+          "text": "一",
+          "start": 33.56,
+          "end": 33.96,
+          "probability": 0.291259765625
+        },
+        {
+          "text": "筷",
+          "start": 33.96,
+          "end": 34.12,
+          "probability": 0.87841796875
+        }
+      ]
+    },
+    {
+      "start": 34.12,
+      "end": 35.88,
+      "text": "耽误全拙干饭进度",
+      "words": [
+        {
+          "text": "耽",
+          "start": 34.12,
+          "end": 34.68,
+          "probability": 0.858642578125
+        },
+        {
+          "text": "误",
+          "start": 34.68,
+          "end": 34.84,
+          "probability": 0.990966796875
+        },
+        {
+          "text": "全",
+          "start": 34.84,
+          "end": 35.02,
+          "probability": 0.487060546875
+        },
+        {
+          "text": "拙",
+          "start": 35.02,
+          "end": 35.18,
+          "probability": 0.57342529296875
+        },
+        {
+          "text": "干",
+          "start": 35.18,
+          "end": 35.36,
+          "probability": 0.90576171875
+        },
+        {
+          "text": "饭",
+          "start": 35.36,
+          "end": 35.5,
+          "probability": 0.9208984375
+        },
+        {
+          "text": "进",
+          "start": 35.5,
+          "end": 35.7,
+          "probability": 0.45849609375
+        },
+        {
+          "text": "度",
+          "start": 35.7,
+          "end": 35.88,
+          "probability": 0.30078125
+        }
+      ]
+    },
+    {
+      "start": 35.88,
+      "end": 37.98,
+      "text": "快煎的汤汁容易滴滴搭搭",
+      "words": [
+        {
+          "text": "快",
+          "start": 35.88,
+          "end": 36.44,
+          "probability": 0.202392578125
+        },
+        {
+          "text": "煎",
+          "start": 36.44,
+          "end": 36.6,
+          "probability": 0.71728515625
+        },
+        {
+          "text": "的",
+          "start": 36.6,
+          "end": 36.7,
+          "probability": 0.99169921875
+        },
+        {
+          "text": "汤",
+          "start": 36.7,
+          "end": 36.9,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "汁",
+          "start": 36.9,
+          "end": 37.04,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "容易",
+          "start": 37.04,
+          "end": 37.34,
+          "probability": 0.994140625
+        },
+        {
+          "text": "滴",
+          "start": 37.34,
+          "end": 37.54,
+          "probability": 0.828857421875
+        },
+        {
+          "text": "滴",
+          "start": 37.54,
+          "end": 37.68,
+          "probability": 0.7081298828125
+        },
+        {
+          "text": "搭",
+          "start": 37.68,
+          "end": 37.84,
+          "probability": 0.72216796875
+        },
+        {
+          "text": "搭",
+          "start": 37.84,
+          "end": 37.98,
+          "probability": 0.9990234375
+        }
+      ]
+    },
+    {
+      "start": 37.98,
+      "end": 38.94,
+      "text": "好好一盘菜",
+      "words": [
+        {
+          "text": "好好",
+          "start": 37.98,
+          "end": 38.44,
+          "probability": 0.755859375
+        },
+        {
+          "text": "一",
+          "start": 38.44,
+          "end": 38.64,
+          "probability": 0.93603515625
+        },
+        {
+          "text": "盘",
+          "start": 38.64,
+          "end": 38.74,
+          "probability": 0.989990234375
+        },
+        {
+          "text": "菜",
+          "start": 38.74,
+          "end": 38.94,
+          "probability": 0.9970703125
+        }
+      ]
+    },
+    {
+      "start": 38.94,
+      "end": 40.38,
+      "text": "惨遭汤之洗礼",
+      "words": [
+        {
+          "text": "惨",
+          "start": 38.94,
+          "end": 39.22,
+          "probability": 0.958984375
+        },
+        {
+          "text": "遭",
+          "start": 39.22,
+          "end": 39.38,
+          "probability": 0.7242431640625
+        },
+        {
+          "text": "汤",
+          "start": 39.38,
+          "end": 39.56,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "之",
+          "start": 39.56,
+          "end": 39.76,
+          "probability": 0.469970703125
+        },
+        {
+          "text": "洗",
+          "start": 39.76,
+          "end": 39.92,
+          "probability": 0.422119140625
+        },
+        {
+          "text": "礼",
+          "start": 39.92,
+          "end": 40.38,
+          "probability": 0.869140625
+        }
+      ]
+    },
+    {
+      "start": 40.38,
+      "end": 41.96,
+      "text": "还有若是在整盘菜里",
+      "words": [
+        {
+          "text": "还有",
+          "start": 40.38,
+          "end": 40.68,
+          "probability": 0.95556640625
+        },
+        {
+          "text": "若",
+          "start": 40.68,
+          "end": 41.04,
+          "probability": 0.996826171875
+        },
+        {
+          "text": "是",
+          "start": 41.04,
+          "end": 41.18,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "在",
+          "start": 41.18,
+          "end": 41.3,
+          "probability": 0.99072265625
+        },
+        {
+          "text": "整",
+          "start": 41.3,
+          "end": 41.46,
+          "probability": 0.998046875
+        },
+        {
+          "text": "盘",
+          "start": 41.46,
+          "end": 41.62,
+          "probability": 0.999267578125
+        },
+        {
+          "text": "菜",
+          "start": 41.62,
+          "end": 41.8,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "里",
+          "start": 41.8,
+          "end": 41.96,
+          "probability": 0.9921875
+        }
+      ]
+    },
+    {
+      "start": 41.96,
+      "end": 43.22,
+      "text": "来回翻找爱吃的",
+      "words": [
+        {
+          "text": "来",
+          "start": 41.96,
+          "end": 42.18,
+          "probability": 0.99072265625
+        },
+        {
+          "text": "回",
+          "start": 42.18,
+          "end": 42.4,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "翻",
+          "start": 42.4,
+          "end": 42.56,
+          "probability": 0.8544921875
+        },
+        {
+          "text": "找",
+          "start": 42.56,
+          "end": 42.7,
+          "probability": 0.70263671875
+        },
+        {
+          "text": "爱",
+          "start": 42.7,
+          "end": 42.86,
+          "probability": 0.92041015625
+        },
+        {
+          "text": "吃",
+          "start": 42.86,
+          "end": 43.04,
+          "probability": 0.998046875
+        },
+        {
+          "text": "的",
+          "start": 43.04,
+          "end": 43.22,
+          "probability": 0.98779296875
+        }
+      ]
+    },
+    {
+      "start": 43.22,
+      "end": 44.42,
+      "text": "俗称超菜",
+      "words": [
+        {
+          "text": "俗",
+          "start": 43.22,
+          "end": 43.6,
+          "probability": 0.91259765625
+        },
+        {
+          "text": "称",
+          "start": 43.6,
+          "end": 43.8,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "超",
+          "start": 43.8,
+          "end": 44.2,
+          "probability": 0.529296875
+        },
+        {
+          "text": "菜",
+          "start": 44.2,
+          "end": 44.42,
+          "probability": 0.9560546875
+        }
+      ]
+    },
+    {
+      "start": 44.42,
+      "end": 46.28,
+      "text": "就是筷子粘满口水",
+      "words": [
+        {
+          "text": "就是",
+          "start": 44.42,
+          "end": 44.98,
+          "probability": 0.243408203125
+        },
+        {
+          "text": "筷",
+          "start": 44.98,
+          "end": 45.4,
+          "probability": 0.986572265625
+        },
+        {
+          "text": "子",
+          "start": 45.4,
+          "end": 45.6,
+          "probability": 1.0
+        },
+        {
+          "text": "粘",
+          "start": 45.6,
+          "end": 45.72,
+          "probability": 0.897705078125
+        },
+        {
+          "text": "满",
+          "start": 45.72,
+          "end": 45.88,
+          "probability": 0.951416015625
+        },
+        {
+          "text": "口",
+          "start": 45.88,
+          "end": 46.06,
+          "probability": 0.994140625
+        },
+        {
+          "text": "水",
+          "start": 46.06,
+          "end": 46.28,
+          "probability": 0.99951171875
+        }
+      ]
+    },
+    {
+      "start": 46.28,
+      "end": 47.12,
+      "text": "肆意乱角",
+      "words": [
+        {
+          "text": "肆",
+          "start": 46.28,
+          "end": 46.66,
+          "probability": 0.60369873046875
+        },
+        {
+          "text": "意",
+          "start": 46.66,
+          "end": 46.78,
+          "probability": 0.953125
+        },
+        {
+          "text": "乱",
+          "start": 46.78,
+          "end": 46.9,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "角",
+          "start": 46.9,
+          "end": 47.12,
+          "probability": 0.18310546875
+        }
+      ]
+    },
+    {
+      "start": 47.12,
+      "end": 48.88,
+      "text": "一盘好菜直接被污染",
+      "words": [
+        {
+          "text": "一",
+          "start": 47.12,
+          "end": 47.66,
+          "probability": 0.99560546875
+        },
+        {
+          "text": "盘",
+          "start": 47.66,
+          "end": 47.76,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "好",
+          "start": 47.76,
+          "end": 47.92,
+          "probability": 0.94970703125
+        },
+        {
+          "text": "菜",
+          "start": 47.92,
+          "end": 48.08,
+          "probability": 0.998046875
+        },
+        {
+          "text": "直接",
+          "start": 48.08,
+          "end": 48.38,
+          "probability": 0.98779296875
+        },
+        {
+          "text": "被",
+          "start": 48.38,
+          "end": 48.6,
+          "probability": 0.99169921875
+        },
+        {
+          "text": "污",
+          "start": 48.6,
+          "end": 48.76,
+          "probability": 0.915771484375
+        },
+        {
+          "text": "染",
+          "start": 48.76,
+          "end": 48.88,
+          "probability": 0.998046875
+        }
+      ]
+    },
+    {
+      "start": 48.88,
+      "end": 51.12,
+      "text": "同桌人瞬间没得动筷子的背口",
+      "words": [
+        {
+          "text": "同",
+          "start": 48.88,
+          "end": 49.28,
+          "probability": 0.8115234375
+        },
+        {
+          "text": "桌",
+          "start": 49.28,
+          "end": 49.42,
+          "probability": 0.931884765625
+        },
+        {
+          "text": "人",
+          "start": 49.42,
+          "end": 49.58,
+          "probability": 0.9921875
+        },
+        {
+          "text": "瞬",
+          "start": 49.58,
+          "end": 49.82,
+          "probability": 0.99658203125
+        },
+        {
+          "text": "间",
+          "start": 49.82,
+          "end": 50.04,
+          "probability": 0.99560546875
+        },
+        {
+          "text": "没",
+          "start": 50.04,
+          "end": 50.16,
+          "probability": 0.9482421875
+        },
+        {
+          "text": "得",
+          "start": 50.16,
+          "end": 50.28,
+          "probability": 0.8798828125
+        },
+        {
+          "text": "动",
+          "start": 50.28,
+          "end": 50.4,
+          "probability": 0.96826171875
+        },
+        {
+          "text": "筷",
+          "start": 50.4,
+          "end": 50.6,
+          "probability": 0.999267578125
+        },
+        {
+          "text": "子",
+          "start": 50.6,
+          "end": 50.78,
+          "probability": 1.0
+        },
+        {
+          "text": "的",
+          "start": 50.78,
+          "end": 50.88,
+          "probability": 0.98876953125
+        },
+        {
+          "text": "背",
+          "start": 50.88,
+          "end": 50.96,
+          "probability": 0.61572265625
+        },
+        {
+          "text": "口",
+          "start": 50.96,
+          "end": 51.12,
+          "probability": 0.382568359375
+        }
+      ]
+    },
+    {
+      "start": 51.12,
+      "end": 53.44,
+      "text": "最后若是把筷子一手扎在地面",
+      "words": [
+        {
+          "text": "最",
+          "start": 51.12,
+          "end": 51.68,
+          "probability": 0.9921875
+        },
+        {
+          "text": "后",
+          "start": 51.68,
+          "end": 51.82,
+          "probability": 1.0
+        },
+        {
+          "text": "若",
+          "start": 51.82,
+          "end": 51.96,
+          "probability": 0.998779296875
+        },
+        {
+          "text": "是",
+          "start": 51.96,
+          "end": 52.1,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "把",
+          "start": 52.1,
+          "end": 52.2,
+          "probability": 0.99658203125
+        },
+        {
+          "text": "筷",
+          "start": 52.2,
+          "end": 52.38,
+          "probability": 0.997802734375
+        },
+        {
+          "text": "子",
+          "start": 52.38,
+          "end": 52.56,
+          "probability": 1.0
+        },
+        {
+          "text": "一",
+          "start": 52.56,
+          "end": 52.72,
+          "probability": 0.34619140625
+        },
+        {
+          "text": "手",
+          "start": 52.72,
+          "end": 52.86,
+          "probability": 0.9833984375
+        },
+        {
+          "text": "扎",
+          "start": 52.86,
+          "end": 53.0,
+          "probability": 0.8642578125
+        },
+        {
+          "text": "在",
+          "start": 53.0,
+          "end": 53.14,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "地",
+          "start": 53.14,
+          "end": 53.28,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "面",
+          "start": 53.28,
+          "end": 53.44,
+          "probability": 0.9931640625
+        }
+      ]
+    },
+    {
+      "start": 53.44,
+      "end": 54.14,
+      "text": "老话讲",
+      "words": [
+        {
+          "text": "老",
+          "start": 53.44,
+          "end": 53.78,
+          "probability": 0.953125
+        },
+        {
+          "text": "话",
+          "start": 53.78,
+          "end": 53.96,
+          "probability": 0.59130859375
+        },
+        {
+          "text": "讲",
+          "start": 53.96,
+          "end": 54.14,
+          "probability": 0.93115234375
+        }
+      ]
+    },
+    {
+      "start": 54.14,
+      "end": 55.6,
+      "text": "惊扰家中先祖神明",
+      "words": [
+        {
+          "text": "惊",
+          "start": 54.14,
+          "end": 54.4,
+          "probability": 0.6295166015625
+        },
+        {
+          "text": "扰",
+          "start": 54.4,
+          "end": 54.54,
+          "probability": 0.978271484375
+        },
+        {
+          "text": "家",
+          "start": 54.54,
+          "end": 54.7,
+          "probability": 0.99267578125
+        },
+        {
+          "text": "中",
+          "start": 54.7,
+          "end": 54.86,
+          "probability": 0.9267578125
+        },
+        {
+          "text": "先",
+          "start": 54.86,
+          "end": 55.06,
+          "probability": 0.8037109375
+        },
+        {
+          "text": "祖",
+          "start": 55.06,
+          "end": 55.26,
+          "probability": 0.994873046875
+        },
+        {
+          "text": "神",
+          "start": 55.26,
+          "end": 55.4,
+          "probability": 0.9853515625
+        },
+        {
+          "text": "明",
+          "start": 55.4,
+          "end": 55.6,
+          "probability": 0.7138671875
+        }
+      ]
+    },
+    {
+      "start": 55.6,
+      "end": 57.24,
+      "text": "称之为落地精神",
+      "words": [
+        {
+          "text": "称",
+          "start": 55.6,
+          "end": 56.02,
+          "probability": 0.962158203125
+        },
+        {
+          "text": "之",
+          "start": 56.02,
+          "end": 56.16,
+          "probability": 0.99365234375
+        },
+        {
+          "text": "为",
+          "start": 56.16,
+          "end": 56.28,
+          "probability": 0.99365234375
+        },
+        {
+          "text": "落",
+          "start": 56.28,
+          "end": 56.64,
+          "probability": 0.517578125
+        },
+        {
+          "text": "地",
+          "start": 56.64,
+          "end": 56.84,
+          "probability": 0.91064453125
+        },
+        {
+          "text": "精",
+          "start": 56.84,
+          "end": 57.02,
+          "probability": 0.9306640625
+        },
+        {
+          "text": "神",
+          "start": 57.02,
+          "end": 57.24,
+          "probability": 0.998046875
+        }
+      ]
+    },
+    {
+      "start": 57.24,
+      "end": 58.28,
+      "text": "落地享生",
+      "words": [
+        {
+          "text": "落",
+          "start": 57.24,
+          "end": 57.76,
+          "probability": 0.97216796875
+        },
+        {
+          "text": "地",
+          "start": 57.76,
+          "end": 57.92,
+          "probability": 1.0
+        },
+        {
+          "text": "享",
+          "start": 57.92,
+          "end": 58.06,
+          "probability": 0.28662109375
+        },
+        {
+          "text": "生",
+          "start": 58.06,
+          "end": 58.28,
+          "probability": 0.56494140625
+        }
+      ]
+    },
+    {
+      "start": 58.28,
+      "end": 59.44,
+      "text": "打断洗间闲聊",
+      "words": [
+        {
+          "text": "打",
+          "start": 58.28,
+          "end": 58.58,
+          "probability": 0.56396484375
+        },
+        {
+          "text": "断",
+          "start": 58.58,
+          "end": 58.76,
+          "probability": 0.999755859375
+        },
+        {
+          "text": "洗",
+          "start": 58.76,
+          "end": 58.96,
+          "probability": 0.1885986328125
+        },
+        {
+          "text": "间",
+          "start": 58.96,
+          "end": 59.1,
+          "probability": 0.1285400390625
+        },
+        {
+          "text": "闲",
+          "start": 59.1,
+          "end": 59.24,
+          "probability": 0.89990234375
+        },
+        {
+          "text": "聊",
+          "start": 59.24,
+          "end": 59.44,
+          "probability": 0.91796875
+        }
+      ]
+    },
+    {
+      "start": 59.44,
+      "end": 60.78,
+      "text": "光荒张张剪筷子",
+      "words": [
+        {
+          "text": "光",
+          "start": 59.44,
+          "end": 59.8,
+          "probability": 0.207763671875
+        },
+        {
+          "text": "荒",
+          "start": 59.8,
+          "end": 59.96,
+          "probability": 0.6904296875
+        },
+        {
+          "text": "张",
+          "start": 59.96,
+          "end": 60.08,
+          "probability": 0.86328125
+        },
+        {
+          "text": "张",
+          "start": 60.08,
+          "end": 60.24,
+          "probability": 0.9931640625
+        },
+        {
+          "text": "剪",
+          "start": 60.24,
+          "end": 60.42,
+          "probability": 0.60638427734375
+        },
+        {
+          "text": "筷",
+          "start": 60.42,
+          "end": 60.6,
+          "probability": 0.98876953125
+        },
+        {
+          "text": "子",
+          "start": 60.6,
+          "end": 60.78,
+          "probability": 1.0
+        }
+      ]
+    },
+    {
+      "start": 60.78,
+      "end": 61.72,
+      "text": "遗憾全无",
+      "words": [
+        {
+          "text": "遗",
+          "start": 60.78,
+          "end": 61.08,
+          "probability": 0.6329345703125
+        },
+        {
+          "text": "憾",
+          "start": 61.08,
+          "end": 61.24,
+          "probability": 0.7119140625
+        },
+        {
+          "text": "全",
+          "start": 61.24,
+          "end": 61.44,
+          "probability": 0.50390625
+        },
+        {
+          "text": "无",
+          "start": 61.44,
+          "end": 61.72,
+          "probability": 0.84814453125
+        }
+      ]
+    },
+    {
+      "start": 61.72,
+      "end": 62.9,
+      "text": "两根小木筷",
+      "words": [
+        {
+          "text": "两",
+          "start": 61.72,
+          "end": 62.22,
+          "probability": 0.86279296875
+        },
+        {
+          "text": "根",
+          "start": 62.22,
+          "end": 62.36,
+          "probability": 0.9833984375
+        },
+        {
+          "text": "小",
+          "start": 62.36,
+          "end": 62.52,
+          "probability": 0.986328125
+        },
+        {
+          "text": "木",
+          "start": 62.52,
+          "end": 62.66,
+          "probability": 0.984375
+        },
+        {
+          "text": "筷",
+          "start": 62.66,
+          "end": 62.9,
+          "probability": 0.784912109375
+        }
+      ]
+    },
+    {
+      "start": 62.9,
+      "end": 65.02,
+      "text": "装满老祖宗传下的干饭规矩",
+      "words": [
+        {
+          "text": "装",
+          "start": 62.9,
+          "end": 63.26,
+          "probability": 0.945068359375
+        },
+        {
+          "text": "满",
+          "start": 63.26,
+          "end": 63.4,
+          "probability": 0.998779296875
+        },
+        {
+          "text": "老",
+          "start": 63.4,
+          "end": 63.54,
+          "probability": 0.97265625
+        },
+        {
+          "text": "祖",
+          "start": 63.54,
+          "end": 63.72,
+          "probability": 0.998779296875
+        },
+        {
+          "text": "宗",
+          "start": 63.72,
+          "end": 63.86,
+          "probability": 0.84765625
+        },
+        {
+          "text": "传",
+          "start": 63.86,
+          "end": 64.02,
+          "probability": 0.98828125
+        },
+        {
+          "text": "下",
+          "start": 64.02,
+          "end": 64.22,
+          "probability": 0.9521484375
+        },
+        {
+          "text": "的",
+          "start": 64.22,
+          "end": 64.32,
+          "probability": 0.998046875
+        },
+        {
+          "text": "干",
+          "start": 64.32,
+          "end": 64.46,
+          "probability": 0.63671875
+        },
+        {
+          "text": "饭",
+          "start": 64.46,
+          "end": 64.66,
+          "probability": 0.754150390625
+        },
+        {
+          "text": "规",
+          "start": 64.66,
+          "end": 64.82,
+          "probability": 0.992431640625
+        },
+        {
+          "text": "矩",
+          "start": 64.82,
+          "end": 65.02,
+          "probability": 0.989501953125
+        }
+      ]
+    },
+    {
+      "start": 65.02,
+      "end": 67.12,
+      "text": "中国人带人处事的人情智慧",
+      "words": [
+        {
+          "text": "中国",
+          "start": 65.02,
+          "end": 65.42,
+          "probability": 0.98583984375
+        },
+        {
+          "text": "人",
+          "start": 65.42,
+          "end": 65.62,
+          "probability": 0.998046875
+        },
+        {
+          "text": "带",
+          "start": 65.62,
+          "end": 65.78,
+          "probability": 0.692138671875
+        },
+        {
+          "text": "人",
+          "start": 65.78,
+          "end": 65.92,
+          "probability": 0.99658203125
+        },
+        {
+          "text": "处",
+          "start": 65.92,
+          "end": 66.1,
+          "probability": 0.661865234375
+        },
+        {
+          "text": "事",
+          "start": 66.1,
+          "end": 66.28,
+          "probability": 0.72509765625
+        },
+        {
+          "text": "的人",
+          "start": 66.28,
+          "end": 66.44,
+          "probability": 0.84228515625
+        },
+        {
+          "text": "情",
+          "start": 66.44,
+          "end": 66.7,
+          "probability": 0.97998046875
+        },
+        {
+          "text": "智",
+          "start": 66.7,
+          "end": 66.9,
+          "probability": 0.99072265625
+        },
+        {
+          "text": "慧",
+          "start": 66.9,
+          "end": 67.12,
+          "probability": 0.998779296875
+        }
+      ]
+    },
+    {
+      "start": 67.12,
+      "end": 68.5,
+      "text": "全藏在饭桌之上",
+      "words": [
+        {
+          "text": "全",
+          "start": 67.12,
+          "end": 67.42,
+          "probability": 0.90185546875
+        },
+        {
+          "text": "藏",
+          "start": 67.42,
+          "end": 67.66,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "在",
+          "start": 67.66,
+          "end": 67.8,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "饭",
+          "start": 67.8,
+          "end": 68.0,
+          "probability": 0.980712890625
+        },
+        {
+          "text": "桌",
+          "start": 68.0,
+          "end": 68.22,
+          "probability": 0.93994140625
+        },
+        {
+          "text": "之",
+          "start": 68.22,
+          "end": 68.34,
+          "probability": 0.8984375
+        },
+        {
+          "text": "上",
+          "start": 68.34,
+          "end": 68.5,
+          "probability": 0.9912109375
+        }
+      ]
+    }
+  ],
+  "cues": [
+    {
+      "start": 0.0,
+      "end": 0.9,
+      "text": "这是古代的你",
+      "words": [
+        {
+          "text": "这是",
+          "start": 0.0,
+          "end": 0.22,
+          "probability": 0.288818359375
+        },
+        {
+          "text": "古",
+          "start": 0.22,
+          "end": 0.46,
+          "probability": 0.99462890625
+        },
+        {
+          "text": "代",
+          "start": 0.46,
+          "end": 0.62,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "的",
+          "start": 0.62,
+          "end": 0.74,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "你",
+          "start": 0.74,
+          "end": 0.9,
+          "probability": 0.98876953125
+        }
+      ]
+    },
+    {
+      "start": 0.9,
+      "end": 3.02,
+      "text": "假若你把饭块直直戳进饭碗",
+      "words": [
+        {
+          "text": "假",
+          "start": 0.9,
+          "end": 1.34,
+          "probability": 0.9677734375
+        },
+        {
+          "text": "若",
+          "start": 1.34,
+          "end": 1.48,
+          "probability": 0.895263671875
+        },
+        {
+          "text": "你",
+          "start": 1.48,
+          "end": 1.56,
+          "probability": 0.9892578125
+        },
+        {
+          "text": "把",
+          "start": 1.56,
+          "end": 1.7,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "饭",
+          "start": 1.7,
+          "end": 1.86,
+          "probability": 0.79248046875
+        },
+        {
+          "text": "块",
+          "start": 1.86,
+          "end": 2.06,
+          "probability": 0.9638671875
+        },
+        {
+          "text": "直",
+          "start": 2.06,
+          "end": 2.24,
+          "probability": 0.970703125
+        },
+        {
+          "text": "直",
+          "start": 2.24,
+          "end": 2.44,
+          "probability": 0.9892578125
+        },
+        {
+          "text": "戳",
+          "start": 2.44,
+          "end": 2.54,
+          "probability": 0.938232421875
+        },
+        {
+          "text": "进",
+          "start": 2.54,
+          "end": 2.7,
+          "probability": 0.9853515625
+        },
+        {
+          "text": "饭",
+          "start": 2.7,
+          "end": 2.86,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "碗",
+          "start": 2.86,
+          "end": 3.02,
+          "probability": 0.995361328125
+        }
+      ]
+    },
+    {
+      "start": 3.02,
+      "end": 4.64,
+      "text": "老一辈称之为共快",
+      "words": [
+        {
+          "text": "老",
+          "start": 3.02,
+          "end": 3.38,
+          "probability": 0.9736328125
+        },
+        {
+          "text": "一",
+          "start": 3.38,
+          "end": 3.52,
+          "probability": 0.97802734375
+        },
+        {
+          "text": "辈",
+          "start": 3.52,
+          "end": 3.62,
+          "probability": 0.89697265625
+        },
+        {
+          "text": "称",
+          "start": 3.62,
+          "end": 3.8,
+          "probability": 0.991943359375
+        },
+        {
+          "text": "之",
+          "start": 3.8,
+          "end": 3.96,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "为",
+          "start": 3.96,
+          "end": 4.08,
+          "probability": 0.99560546875
+        },
+        {
+          "text": "共",
+          "start": 4.08,
+          "end": 4.38,
+          "probability": 0.51953125
+        },
+        {
+          "text": "快",
+          "start": 4.38,
+          "end": 4.64,
+          "probability": 0.64697265625
+        }
+      ]
+    },
+    {
+      "start": 4.64,
+      "end": 6.3,
+      "text": "跟祭祖上相一模一样",
+      "words": [
+        {
+          "text": "跟",
+          "start": 4.64,
+          "end": 5.16,
+          "probability": 0.82958984375
+        },
+        {
+          "text": "祭",
+          "start": 5.16,
+          "end": 5.34,
+          "probability": 0.61346435546875
+        },
+        {
+          "text": "祖",
+          "start": 5.34,
+          "end": 5.46,
+          "probability": 0.9814453125
+        },
+        {
+          "text": "上",
+          "start": 5.46,
+          "end": 5.62,
+          "probability": 0.92041015625
+        },
+        {
+          "text": "相",
+          "start": 5.62,
+          "end": 5.76,
+          "probability": 0.424560546875
+        },
+        {
+          "text": "一",
+          "start": 5.76,
+          "end": 5.92,
+          "probability": 0.87890625
+        },
+        {
+          "text": "模",
+          "start": 5.92,
+          "end": 6.04,
+          "probability": 0.94873046875
+        },
+        {
+          "text": "一",
+          "start": 6.04,
+          "end": 6.2,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "样",
+          "start": 6.2,
+          "end": 6.3,
+          "probability": 1.0
+        }
+      ]
+    },
+    {
+      "start": 6.3,
+      "end": 7.64,
+      "text": "长辈瞅见心头一锦",
+      "words": [
+        {
+          "text": "长",
+          "start": 6.3,
+          "end": 6.58,
+          "probability": 0.7802734375
+        },
+        {
+          "text": "辈",
+          "start": 6.58,
+          "end": 6.7,
+          "probability": 0.956298828125
+        },
+        {
+          "text": "瞅",
+          "start": 6.7,
+          "end": 6.86,
+          "probability": 0.7392578125
+        },
+        {
+          "text": "见",
+          "start": 6.86,
+          "end": 7.02,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "心",
+          "start": 7.02,
+          "end": 7.2,
+          "probability": 0.884765625
+        },
+        {
+          "text": "头",
+          "start": 7.2,
+          "end": 7.36,
+          "probability": 0.9931640625
+        },
+        {
+          "text": "一",
+          "start": 7.36,
+          "end": 7.52,
+          "probability": 0.740234375
+        },
+        {
+          "text": "锦",
+          "start": 7.52,
+          "end": 7.64,
+          "probability": 0.6148681640625
+        }
+      ]
+    },
+    {
+      "start": 7.64,
+      "end": 9.76,
+      "text": "好好一顿饭瞬间便祭奠现场",
+      "words": [
+        {
+          "text": "好好",
+          "start": 7.64,
+          "end": 8.08,
+          "probability": 0.927734375
+        },
+        {
+          "text": "一",
+          "start": 8.08,
+          "end": 8.26,
+          "probability": 0.9814453125
+        },
+        {
+          "text": "顿",
+          "start": 8.26,
+          "end": 8.34,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "饭",
+          "start": 8.34,
+          "end": 8.54,
+          "probability": 0.999755859375
+        },
+        {
+          "text": "瞬",
+          "start": 8.54,
+          "end": 8.82,
+          "probability": 0.98876953125
+        },
+        {
+          "text": "间",
+          "start": 8.82,
+          "end": 9.02,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "便",
+          "start": 9.02,
+          "end": 9.14,
+          "probability": 0.93359375
+        },
+        {
+          "text": "祭",
+          "start": 9.14,
+          "end": 9.32,
+          "probability": 0.826171875
+        },
+        {
+          "text": "奠",
+          "start": 9.32,
+          "end": 9.4,
+          "probability": 0.762939453125
+        },
+        {
+          "text": "现",
+          "start": 9.4,
+          "end": 9.56,
+          "probability": 0.9912109375
+        },
+        {
+          "text": "场",
+          "start": 9.56,
+          "end": 9.76,
+          "probability": 0.99755859375
+        }
+      ]
+    },
+    {
+      "start": 9.76,
+      "end": 10.62,
+      "text": "属实会气",
+      "words": [
+        {
+          "text": "属",
+          "start": 9.76,
+          "end": 10.08,
+          "probability": 0.54736328125
+        },
+        {
+          "text": "实",
+          "start": 10.08,
+          "end": 10.28,
+          "probability": 0.978515625
+        },
+        {
+          "text": "会",
+          "start": 10.28,
+          "end": 10.44,
+          "probability": 0.473388671875
+        },
+        {
+          "text": "气",
+          "start": 10.44,
+          "end": 10.62,
+          "probability": 0.2291259765625
+        }
+      ]
+    },
+    {
+      "start": 10.62,
+      "end": 12.62,
+      "text": "假若拿起筷子指向他人",
+      "words": [
+        {
+          "text": "假",
+          "start": 10.62,
+          "end": 11.16,
+          "probability": 0.99169921875
+        },
+        {
+          "text": "若",
+          "start": 11.16,
+          "end": 11.32,
+          "probability": 0.99658203125
+        },
+        {
+          "text": "拿",
+          "start": 11.32,
+          "end": 11.42,
+          "probability": 0.99658203125
+        },
+        {
+          "text": "起",
+          "start": 11.42,
+          "end": 11.6,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "筷",
+          "start": 11.6,
+          "end": 11.74,
+          "probability": 0.990966796875
+        },
+        {
+          "text": "子",
+          "start": 11.74,
+          "end": 11.92,
+          "probability": 1.0
+        },
+        {
+          "text": "指",
+          "start": 11.92,
+          "end": 12.1,
+          "probability": 0.84765625
+        },
+        {
+          "text": "向",
+          "start": 12.1,
+          "end": 12.24,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "他",
+          "start": 12.24,
+          "end": 12.42,
+          "probability": 0.9384765625
+        },
+        {
+          "text": "人",
+          "start": 12.42,
+          "end": 12.62,
+          "probability": 0.99951171875
+        }
+      ]
+    },
+    {
+      "start": 12.62,
+      "end": 14.3,
+      "text": "就是仙人指路",
+      "words": [
+        {
+          "text": "就是",
+          "start": 12.62,
+          "end": 13.12,
+          "probability": 0.95703125
+        },
+        {
+          "text": "仙",
+          "start": 13.12,
+          "end": 13.66,
+          "probability": 0.751708984375
+        },
+        {
+          "text": "人",
+          "start": 13.66,
+          "end": 13.88,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "指",
+          "start": 13.88,
+          "end": 14.08,
+          "probability": 0.69775390625
+        },
+        {
+          "text": "路",
+          "start": 14.08,
+          "end": 14.3,
+          "probability": 0.6513671875
+        }
+      ]
+    },
+    {
+      "start": 14.3,
+      "end": 15.84,
+      "text": "像拿着小棍对人",
+      "words": [
+        {
+          "text": "像",
+          "start": 14.3,
+          "end": 14.86,
+          "probability": 0.58349609375
+        },
+        {
+          "text": "拿",
+          "start": 14.86,
+          "end": 15.0,
+          "probability": 0.98388671875
+        },
+        {
+          "text": "着",
+          "start": 15.0,
+          "end": 15.12,
+          "probability": 0.9814453125
+        },
+        {
+          "text": "小",
+          "start": 15.12,
+          "end": 15.34,
+          "probability": 0.990234375
+        },
+        {
+          "text": "棍",
+          "start": 15.34,
+          "end": 15.48,
+          "probability": 0.93115234375
+        },
+        {
+          "text": "对",
+          "start": 15.48,
+          "end": 15.62,
+          "probability": 0.83544921875
+        },
+        {
+          "text": "人",
+          "start": 15.62,
+          "end": 15.84,
+          "probability": 0.99853515625
+        }
+      ]
+    },
+    {
+      "start": 15.84,
+      "end": 17.18,
+      "text": "等同于出言冒犯",
+      "words": [
+        {
+          "text": "等",
+          "start": 15.84,
+          "end": 16.18,
+          "probability": 0.97802734375
+        },
+        {
+          "text": "同",
+          "start": 16.18,
+          "end": 16.36,
+          "probability": 0.99560546875
+        },
+        {
+          "text": "于",
+          "start": 16.36,
+          "end": 16.5,
+          "probability": 0.994140625
+        },
+        {
+          "text": "出",
+          "start": 16.5,
+          "end": 16.68,
+          "probability": 0.76220703125
+        },
+        {
+          "text": "言",
+          "start": 16.68,
+          "end": 16.82,
+          "probability": 0.56787109375
+        },
+        {
+          "text": "冒",
+          "start": 16.82,
+          "end": 16.98,
+          "probability": 0.992919921875
+        },
+        {
+          "text": "犯",
+          "start": 16.98,
+          "end": 17.18,
+          "probability": 0.964599609375
+        }
+      ]
+    },
+    {
+      "start": 17.18,
+      "end": 18.18,
+      "text": "惹人反感",
+      "words": [
+        {
+          "text": "惹",
+          "start": 17.18,
+          "end": 17.68,
+          "probability": 0.57269287109375
+        },
+        {
+          "text": "人",
+          "start": 17.68,
+          "end": 17.8,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "反",
+          "start": 17.8,
+          "end": 17.94,
+          "probability": 0.68994140625
+        },
+        {
+          "text": "感",
+          "start": 17.94,
+          "end": 18.18,
+          "probability": 0.97216796875
+        }
+      ]
+    },
+    {
+      "start": 18.18,
+      "end": 19.94,
+      "text": "妥妥饭桌美礼帽天花板",
+      "words": [
+        {
+          "text": "妥",
+          "start": 18.18,
+          "end": 18.48,
+          "probability": 0.6851806640625
+        },
+        {
+          "text": "妥",
+          "start": 18.48,
+          "end": 18.64,
+          "probability": 0.9912109375
+        },
+        {
+          "text": "饭",
+          "start": 18.64,
+          "end": 18.8,
+          "probability": 0.91357421875
+        },
+        {
+          "text": "桌",
+          "start": 18.8,
+          "end": 18.96,
+          "probability": 0.989990234375
+        },
+        {
+          "text": "美",
+          "start": 18.96,
+          "end": 19.1,
+          "probability": 0.460693359375
+        },
+        {
+          "text": "礼",
+          "start": 19.1,
+          "end": 19.24,
+          "probability": 0.91357421875
+        },
+        {
+          "text": "帽",
+          "start": 19.24,
+          "end": 19.38,
+          "probability": 0.638671875
+        },
+        {
+          "text": "天",
+          "start": 19.38,
+          "end": 19.58,
+          "probability": 0.6953125
+        },
+        {
+          "text": "花",
+          "start": 19.58,
+          "end": 19.76,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "板",
+          "start": 19.76,
+          "end": 19.94,
+          "probability": 0.93603515625
+        }
+      ]
+    },
+    {
+      "start": 19.94,
+      "end": 21.52,
+      "text": "如果拿筷子敲打板边",
+      "words": [
+        {
+          "text": "如果",
+          "start": 19.94,
+          "end": 20.46,
+          "probability": 0.98876953125
+        },
+        {
+          "text": "拿",
+          "start": 20.46,
+          "end": 20.64,
+          "probability": 0.9951171875
+        },
+        {
+          "text": "筷",
+          "start": 20.64,
+          "end": 20.78,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "子",
+          "start": 20.78,
+          "end": 20.96,
+          "probability": 1.0
+        },
+        {
+          "text": "敲",
+          "start": 20.96,
+          "end": 21.1,
+          "probability": 0.994140625
+        },
+        {
+          "text": "打",
+          "start": 21.1,
+          "end": 21.22,
+          "probability": 0.9140625
+        },
+        {
+          "text": "板",
+          "start": 21.22,
+          "end": 21.36,
+          "probability": 0.8525390625
+        },
+        {
+          "text": "边",
+          "start": 21.36,
+          "end": 21.52,
+          "probability": 0.97021484375
+        }
+      ]
+    },
+    {
+      "start": 21.52,
+      "end": 22.26,
+      "text": "叮叮作响",
+      "words": [
+        {
+          "text": "叮",
+          "start": 21.52,
+          "end": 21.76,
+          "probability": 0.84375
+        },
+        {
+          "text": "叮",
+          "start": 21.76,
+          "end": 21.92,
+          "probability": 0.971923828125
+        },
+        {
+          "text": "作",
+          "start": 21.92,
+          "end": 22.06,
+          "probability": 0.66943359375
+        },
+        {
+          "text": "响",
+          "start": 22.06,
+          "end": 22.26,
+          "probability": 0.967041015625
+        }
+      ]
+    },
+    {
+      "start": 22.26,
+      "end": 24.06,
+      "text": "就是长辈口中的敲碗",
+      "words": [
+        {
+          "text": "就是",
+          "start": 22.26,
+          "end": 22.66,
+          "probability": 0.9794921875
+        },
+        {
+          "text": "长",
+          "start": 22.66,
+          "end": 22.88,
+          "probability": 0.9140625
+        },
+        {
+          "text": "辈",
+          "start": 22.88,
+          "end": 23.04,
+          "probability": 0.9931640625
+        },
+        {
+          "text": "口",
+          "start": 23.04,
+          "end": 23.2,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "中",
+          "start": 23.2,
+          "end": 23.38,
+          "probability": 0.9951171875
+        },
+        {
+          "text": "的",
+          "start": 23.38,
+          "end": 23.52,
+          "probability": 0.9912109375
+        },
+        {
+          "text": "敲",
+          "start": 23.52,
+          "end": 23.84,
+          "probability": 0.994140625
+        },
+        {
+          "text": "碗",
+          "start": 23.84,
+          "end": 24.06,
+          "probability": 0.7021484375
+        }
+      ]
+    },
+    {
+      "start": 24.06,
+      "end": 25.4,
+      "text": "饭桌上这么折腾",
+      "words": [
+        {
+          "text": "饭",
+          "start": 24.06,
+          "end": 24.44,
+          "probability": 0.9833984375
+        },
+        {
+          "text": "桌",
+          "start": 24.44,
+          "end": 24.6,
+          "probability": 0.999267578125
+        },
+        {
+          "text": "上",
+          "start": 24.6,
+          "end": 24.74,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "这么",
+          "start": 24.74,
+          "end": 24.96,
+          "probability": 0.98486328125
+        },
+        {
+          "text": "折",
+          "start": 24.96,
+          "end": 25.14,
+          "probability": 0.945556640625
+        },
+        {
+          "text": "腾",
+          "start": 25.14,
+          "end": 25.4,
+          "probability": 0.91015625
+        }
+      ]
+    },
+    {
+      "start": 25.4,
+      "end": 26.64,
+      "text": "东道主脸上挂不住",
+      "words": [
+        {
+          "text": "东",
+          "start": 25.4,
+          "end": 25.68,
+          "probability": 0.7001953125
+        },
+        {
+          "text": "道",
+          "start": 25.68,
+          "end": 25.8,
+          "probability": 0.92333984375
+        },
+        {
+          "text": "主",
+          "start": 25.8,
+          "end": 25.92,
+          "probability": 0.96484375
+        },
+        {
+          "text": "脸",
+          "start": 25.92,
+          "end": 26.04,
+          "probability": 0.993896484375
+        },
+        {
+          "text": "上",
+          "start": 26.04,
+          "end": 26.2,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "挂",
+          "start": 26.2,
+          "end": 26.34,
+          "probability": 0.979248046875
+        },
+        {
+          "text": "不",
+          "start": 26.34,
+          "end": 26.48,
+          "probability": 0.998046875
+        },
+        {
+          "text": "住",
+          "start": 26.48,
+          "end": 26.64,
+          "probability": 0.99951171875
+        }
+      ]
+    },
+    {
+      "start": 26.64,
+      "end": 28.88,
+      "text": "旁人看你向上门蹭饭的乞丐",
+      "words": [
+        {
+          "text": "旁",
+          "start": 26.64,
+          "end": 27.0,
+          "probability": 0.7086181640625
+        },
+        {
+          "text": "人",
+          "start": 27.0,
+          "end": 27.12,
+          "probability": 0.99267578125
+        },
+        {
+          "text": "看",
+          "start": 27.12,
+          "end": 27.26,
+          "probability": 0.99462890625
+        },
+        {
+          "text": "你",
+          "start": 27.26,
+          "end": 27.4,
+          "probability": 0.68701171875
+        },
+        {
+          "text": "向",
+          "start": 27.4,
+          "end": 27.48,
+          "probability": 0.83935546875
+        },
+        {
+          "text": "上",
+          "start": 27.48,
+          "end": 27.64,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "门",
+          "start": 27.64,
+          "end": 27.76,
+          "probability": 0.993896484375
+        },
+        {
+          "text": "蹭",
+          "start": 27.76,
+          "end": 27.98,
+          "probability": 0.852294921875
+        },
+        {
+          "text": "饭",
+          "start": 27.98,
+          "end": 28.16,
+          "probability": 0.972900390625
+        },
+        {
+          "text": "的",
+          "start": 28.16,
+          "end": 28.24,
+          "probability": 0.96142578125
+        },
+        {
+          "text": "乞",
+          "start": 28.24,
+          "end": 28.4,
+          "probability": 0.848876953125
+        },
+        {
+          "text": "丐",
+          "start": 28.4,
+          "end": 28.88,
+          "probability": 0.98388671875
+        }
+      ]
+    },
+    {
+      "start": 28.88,
+      "end": 30.68,
+      "text": "若是将筷子悬在菜盘上空",
+      "words": [
+        {
+          "text": "若",
+          "start": 28.88,
+          "end": 29.1,
+          "probability": 0.9892578125
+        },
+        {
+          "text": "是",
+          "start": 29.1,
+          "end": 29.22,
+          "probability": 0.99462890625
+        },
+        {
+          "text": "将",
+          "start": 29.22,
+          "end": 29.34,
+          "probability": 0.98095703125
+        },
+        {
+          "text": "筷",
+          "start": 29.34,
+          "end": 29.5,
+          "probability": 0.98095703125
+        },
+        {
+          "text": "子",
+          "start": 29.5,
+          "end": 29.68,
+          "probability": 1.0
+        },
+        {
+          "text": "悬",
+          "start": 29.68,
+          "end": 29.78,
+          "probability": 0.837646484375
+        },
+        {
+          "text": "在",
+          "start": 29.78,
+          "end": 29.96,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "菜",
+          "start": 29.96,
+          "end": 30.14,
+          "probability": 0.99609375
+        },
+        {
+          "text": "盘",
+          "start": 30.14,
+          "end": 30.3,
+          "probability": 0.9931640625
+        },
+        {
+          "text": "上",
+          "start": 30.3,
+          "end": 30.46,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "空",
+          "start": 30.46,
+          "end": 30.68,
+          "probability": 0.99365234375
+        }
+      ]
+    },
+    {
+      "start": 30.68,
+      "end": 31.36,
+      "text": "来回徘徊",
+      "words": [
+        {
+          "text": "来",
+          "start": 30.68,
+          "end": 30.8,
+          "probability": 0.9677734375
+        },
+        {
+          "text": "回",
+          "start": 30.8,
+          "end": 30.94,
+          "probability": 0.998046875
+        },
+        {
+          "text": "徘",
+          "start": 30.94,
+          "end": 31.14,
+          "probability": 0.94775390625
+        },
+        {
+          "text": "徊",
+          "start": 31.14,
+          "end": 31.36,
+          "probability": 0.994873046875
+        }
+      ]
+    },
+    {
+      "start": 31.36,
+      "end": 32.52,
+      "text": "叮半天不下手",
+      "words": [
+        {
+          "text": "叮",
+          "start": 31.36,
+          "end": 31.78,
+          "probability": 0.60113525390625
+        },
+        {
+          "text": "半",
+          "start": 31.78,
+          "end": 31.94,
+          "probability": 0.99609375
+        },
+        {
+          "text": "天",
+          "start": 31.94,
+          "end": 32.08,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "不",
+          "start": 32.08,
+          "end": 32.24,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "下",
+          "start": 32.24,
+          "end": 32.36,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "手",
+          "start": 32.36,
+          "end": 32.52,
+          "probability": 0.994140625
+        }
+      ]
+    },
+    {
+      "start": 32.52,
+      "end": 33.56,
+      "text": "传统说法叫",
+      "words": [
+        {
+          "text": "传",
+          "start": 32.52,
+          "end": 32.9,
+          "probability": 0.971435546875
+        },
+        {
+          "text": "统",
+          "start": 32.9,
+          "end": 33.08,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "说",
+          "start": 33.08,
+          "end": 33.26,
+          "probability": 0.9765625
+        },
+        {
+          "text": "法",
+          "start": 33.26,
+          "end": 33.4,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "叫",
+          "start": 33.4,
+          "end": 33.56,
+          "probability": 0.544921875
+        }
+      ]
+    },
+    {
+      "start": 33.56,
+      "end": 34.12,
+      "text": "一筷",
+      "words": [
+        {
+          "text": "一",
+          "start": 33.56,
+          "end": 33.96,
+          "probability": 0.291259765625
+        },
+        {
+          "text": "筷",
+          "start": 33.96,
+          "end": 34.12,
+          "probability": 0.87841796875
+        }
+      ]
+    },
+    {
+      "start": 34.12,
+      "end": 35.88,
+      "text": "耽误全拙干饭进度",
+      "words": [
+        {
+          "text": "耽",
+          "start": 34.12,
+          "end": 34.68,
+          "probability": 0.858642578125
+        },
+        {
+          "text": "误",
+          "start": 34.68,
+          "end": 34.84,
+          "probability": 0.990966796875
+        },
+        {
+          "text": "全",
+          "start": 34.84,
+          "end": 35.02,
+          "probability": 0.487060546875
+        },
+        {
+          "text": "拙",
+          "start": 35.02,
+          "end": 35.18,
+          "probability": 0.57342529296875
+        },
+        {
+          "text": "干",
+          "start": 35.18,
+          "end": 35.36,
+          "probability": 0.90576171875
+        },
+        {
+          "text": "饭",
+          "start": 35.36,
+          "end": 35.5,
+          "probability": 0.9208984375
+        },
+        {
+          "text": "进",
+          "start": 35.5,
+          "end": 35.7,
+          "probability": 0.45849609375
+        },
+        {
+          "text": "度",
+          "start": 35.7,
+          "end": 35.88,
+          "probability": 0.30078125
+        }
+      ]
+    },
+    {
+      "start": 35.88,
+      "end": 37.98,
+      "text": "快煎的汤汁容易滴滴搭搭",
+      "words": [
+        {
+          "text": "快",
+          "start": 35.88,
+          "end": 36.44,
+          "probability": 0.202392578125
+        },
+        {
+          "text": "煎",
+          "start": 36.44,
+          "end": 36.6,
+          "probability": 0.71728515625
+        },
+        {
+          "text": "的",
+          "start": 36.6,
+          "end": 36.7,
+          "probability": 0.99169921875
+        },
+        {
+          "text": "汤",
+          "start": 36.7,
+          "end": 36.9,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "汁",
+          "start": 36.9,
+          "end": 37.04,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "容易",
+          "start": 37.04,
+          "end": 37.34,
+          "probability": 0.994140625
+        },
+        {
+          "text": "滴",
+          "start": 37.34,
+          "end": 37.54,
+          "probability": 0.828857421875
+        },
+        {
+          "text": "滴",
+          "start": 37.54,
+          "end": 37.68,
+          "probability": 0.7081298828125
+        },
+        {
+          "text": "搭",
+          "start": 37.68,
+          "end": 37.84,
+          "probability": 0.72216796875
+        },
+        {
+          "text": "搭",
+          "start": 37.84,
+          "end": 37.98,
+          "probability": 0.9990234375
+        }
+      ]
+    },
+    {
+      "start": 37.98,
+      "end": 38.94,
+      "text": "好好一盘菜",
+      "words": [
+        {
+          "text": "好好",
+          "start": 37.98,
+          "end": 38.44,
+          "probability": 0.755859375
+        },
+        {
+          "text": "一",
+          "start": 38.44,
+          "end": 38.64,
+          "probability": 0.93603515625
+        },
+        {
+          "text": "盘",
+          "start": 38.64,
+          "end": 38.74,
+          "probability": 0.989990234375
+        },
+        {
+          "text": "菜",
+          "start": 38.74,
+          "end": 38.94,
+          "probability": 0.9970703125
+        }
+      ]
+    },
+    {
+      "start": 38.94,
+      "end": 40.38,
+      "text": "惨遭汤之洗礼",
+      "words": [
+        {
+          "text": "惨",
+          "start": 38.94,
+          "end": 39.22,
+          "probability": 0.958984375
+        },
+        {
+          "text": "遭",
+          "start": 39.22,
+          "end": 39.38,
+          "probability": 0.7242431640625
+        },
+        {
+          "text": "汤",
+          "start": 39.38,
+          "end": 39.56,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "之",
+          "start": 39.56,
+          "end": 39.76,
+          "probability": 0.469970703125
+        },
+        {
+          "text": "洗",
+          "start": 39.76,
+          "end": 39.92,
+          "probability": 0.422119140625
+        },
+        {
+          "text": "礼",
+          "start": 39.92,
+          "end": 40.38,
+          "probability": 0.869140625
+        }
+      ]
+    },
+    {
+      "start": 40.38,
+      "end": 41.96,
+      "text": "还有若是在整盘菜里",
+      "words": [
+        {
+          "text": "还有",
+          "start": 40.38,
+          "end": 40.68,
+          "probability": 0.95556640625
+        },
+        {
+          "text": "若",
+          "start": 40.68,
+          "end": 41.04,
+          "probability": 0.996826171875
+        },
+        {
+          "text": "是",
+          "start": 41.04,
+          "end": 41.18,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "在",
+          "start": 41.18,
+          "end": 41.3,
+          "probability": 0.99072265625
+        },
+        {
+          "text": "整",
+          "start": 41.3,
+          "end": 41.46,
+          "probability": 0.998046875
+        },
+        {
+          "text": "盘",
+          "start": 41.46,
+          "end": 41.62,
+          "probability": 0.999267578125
+        },
+        {
+          "text": "菜",
+          "start": 41.62,
+          "end": 41.8,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "里",
+          "start": 41.8,
+          "end": 41.96,
+          "probability": 0.9921875
+        }
+      ]
+    },
+    {
+      "start": 41.96,
+      "end": 43.22,
+      "text": "来回翻找爱吃的",
+      "words": [
+        {
+          "text": "来",
+          "start": 41.96,
+          "end": 42.18,
+          "probability": 0.99072265625
+        },
+        {
+          "text": "回",
+          "start": 42.18,
+          "end": 42.4,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "翻",
+          "start": 42.4,
+          "end": 42.56,
+          "probability": 0.8544921875
+        },
+        {
+          "text": "找",
+          "start": 42.56,
+          "end": 42.7,
+          "probability": 0.70263671875
+        },
+        {
+          "text": "爱",
+          "start": 42.7,
+          "end": 42.86,
+          "probability": 0.92041015625
+        },
+        {
+          "text": "吃",
+          "start": 42.86,
+          "end": 43.04,
+          "probability": 0.998046875
+        },
+        {
+          "text": "的",
+          "start": 43.04,
+          "end": 43.22,
+          "probability": 0.98779296875
+        }
+      ]
+    },
+    {
+      "start": 43.22,
+      "end": 44.42,
+      "text": "俗称超菜",
+      "words": [
+        {
+          "text": "俗",
+          "start": 43.22,
+          "end": 43.6,
+          "probability": 0.91259765625
+        },
+        {
+          "text": "称",
+          "start": 43.6,
+          "end": 43.8,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "超",
+          "start": 43.8,
+          "end": 44.2,
+          "probability": 0.529296875
+        },
+        {
+          "text": "菜",
+          "start": 44.2,
+          "end": 44.42,
+          "probability": 0.9560546875
+        }
+      ]
+    },
+    {
+      "start": 44.42,
+      "end": 46.28,
+      "text": "就是筷子粘满口水",
+      "words": [
+        {
+          "text": "就是",
+          "start": 44.42,
+          "end": 44.98,
+          "probability": 0.243408203125
+        },
+        {
+          "text": "筷",
+          "start": 44.98,
+          "end": 45.4,
+          "probability": 0.986572265625
+        },
+        {
+          "text": "子",
+          "start": 45.4,
+          "end": 45.6,
+          "probability": 1.0
+        },
+        {
+          "text": "粘",
+          "start": 45.6,
+          "end": 45.72,
+          "probability": 0.897705078125
+        },
+        {
+          "text": "满",
+          "start": 45.72,
+          "end": 45.88,
+          "probability": 0.951416015625
+        },
+        {
+          "text": "口",
+          "start": 45.88,
+          "end": 46.06,
+          "probability": 0.994140625
+        },
+        {
+          "text": "水",
+          "start": 46.06,
+          "end": 46.28,
+          "probability": 0.99951171875
+        }
+      ]
+    },
+    {
+      "start": 46.28,
+      "end": 47.12,
+      "text": "肆意乱角",
+      "words": [
+        {
+          "text": "肆",
+          "start": 46.28,
+          "end": 46.66,
+          "probability": 0.60369873046875
+        },
+        {
+          "text": "意",
+          "start": 46.66,
+          "end": 46.78,
+          "probability": 0.953125
+        },
+        {
+          "text": "乱",
+          "start": 46.78,
+          "end": 46.9,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "角",
+          "start": 46.9,
+          "end": 47.12,
+          "probability": 0.18310546875
+        }
+      ]
+    },
+    {
+      "start": 47.12,
+      "end": 48.88,
+      "text": "一盘好菜直接被污染",
+      "words": [
+        {
+          "text": "一",
+          "start": 47.12,
+          "end": 47.66,
+          "probability": 0.99560546875
+        },
+        {
+          "text": "盘",
+          "start": 47.66,
+          "end": 47.76,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "好",
+          "start": 47.76,
+          "end": 47.92,
+          "probability": 0.94970703125
+        },
+        {
+          "text": "菜",
+          "start": 47.92,
+          "end": 48.08,
+          "probability": 0.998046875
+        },
+        {
+          "text": "直接",
+          "start": 48.08,
+          "end": 48.38,
+          "probability": 0.98779296875
+        },
+        {
+          "text": "被",
+          "start": 48.38,
+          "end": 48.6,
+          "probability": 0.99169921875
+        },
+        {
+          "text": "污",
+          "start": 48.6,
+          "end": 48.76,
+          "probability": 0.915771484375
+        },
+        {
+          "text": "染",
+          "start": 48.76,
+          "end": 48.88,
+          "probability": 0.998046875
+        }
+      ]
+    },
+    {
+      "start": 48.88,
+      "end": 51.12,
+      "text": "同桌人瞬间没得动筷子的背口",
+      "words": [
+        {
+          "text": "同",
+          "start": 48.88,
+          "end": 49.28,
+          "probability": 0.8115234375
+        },
+        {
+          "text": "桌",
+          "start": 49.28,
+          "end": 49.42,
+          "probability": 0.931884765625
+        },
+        {
+          "text": "人",
+          "start": 49.42,
+          "end": 49.58,
+          "probability": 0.9921875
+        },
+        {
+          "text": "瞬",
+          "start": 49.58,
+          "end": 49.82,
+          "probability": 0.99658203125
+        },
+        {
+          "text": "间",
+          "start": 49.82,
+          "end": 50.04,
+          "probability": 0.99560546875
+        },
+        {
+          "text": "没",
+          "start": 50.04,
+          "end": 50.16,
+          "probability": 0.9482421875
+        },
+        {
+          "text": "得",
+          "start": 50.16,
+          "end": 50.28,
+          "probability": 0.8798828125
+        },
+        {
+          "text": "动",
+          "start": 50.28,
+          "end": 50.4,
+          "probability": 0.96826171875
+        },
+        {
+          "text": "筷",
+          "start": 50.4,
+          "end": 50.6,
+          "probability": 0.999267578125
+        },
+        {
+          "text": "子",
+          "start": 50.6,
+          "end": 50.78,
+          "probability": 1.0
+        },
+        {
+          "text": "的",
+          "start": 50.78,
+          "end": 50.88,
+          "probability": 0.98876953125
+        },
+        {
+          "text": "背",
+          "start": 50.88,
+          "end": 50.96,
+          "probability": 0.61572265625
+        },
+        {
+          "text": "口",
+          "start": 50.96,
+          "end": 51.12,
+          "probability": 0.382568359375
+        }
+      ]
+    },
+    {
+      "start": 51.12,
+      "end": 53.44,
+      "text": "最后若是把筷子一手扎在地面",
+      "words": [
+        {
+          "text": "最",
+          "start": 51.12,
+          "end": 51.68,
+          "probability": 0.9921875
+        },
+        {
+          "text": "后",
+          "start": 51.68,
+          "end": 51.82,
+          "probability": 1.0
+        },
+        {
+          "text": "若",
+          "start": 51.82,
+          "end": 51.96,
+          "probability": 0.998779296875
+        },
+        {
+          "text": "是",
+          "start": 51.96,
+          "end": 52.1,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "把",
+          "start": 52.1,
+          "end": 52.2,
+          "probability": 0.99658203125
+        },
+        {
+          "text": "筷",
+          "start": 52.2,
+          "end": 52.38,
+          "probability": 0.997802734375
+        },
+        {
+          "text": "子",
+          "start": 52.38,
+          "end": 52.56,
+          "probability": 1.0
+        },
+        {
+          "text": "一",
+          "start": 52.56,
+          "end": 52.72,
+          "probability": 0.34619140625
+        },
+        {
+          "text": "手",
+          "start": 52.72,
+          "end": 52.86,
+          "probability": 0.9833984375
+        },
+        {
+          "text": "扎",
+          "start": 52.86,
+          "end": 53.0,
+          "probability": 0.8642578125
+        },
+        {
+          "text": "在",
+          "start": 53.0,
+          "end": 53.14,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "地",
+          "start": 53.14,
+          "end": 53.28,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "面",
+          "start": 53.28,
+          "end": 53.44,
+          "probability": 0.9931640625
+        }
+      ]
+    },
+    {
+      "start": 53.44,
+      "end": 54.14,
+      "text": "老话讲",
+      "words": [
+        {
+          "text": "老",
+          "start": 53.44,
+          "end": 53.78,
+          "probability": 0.953125
+        },
+        {
+          "text": "话",
+          "start": 53.78,
+          "end": 53.96,
+          "probability": 0.59130859375
+        },
+        {
+          "text": "讲",
+          "start": 53.96,
+          "end": 54.14,
+          "probability": 0.93115234375
+        }
+      ]
+    },
+    {
+      "start": 54.14,
+      "end": 55.6,
+      "text": "惊扰家中先祖神明",
+      "words": [
+        {
+          "text": "惊",
+          "start": 54.14,
+          "end": 54.4,
+          "probability": 0.6295166015625
+        },
+        {
+          "text": "扰",
+          "start": 54.4,
+          "end": 54.54,
+          "probability": 0.978271484375
+        },
+        {
+          "text": "家",
+          "start": 54.54,
+          "end": 54.7,
+          "probability": 0.99267578125
+        },
+        {
+          "text": "中",
+          "start": 54.7,
+          "end": 54.86,
+          "probability": 0.9267578125
+        },
+        {
+          "text": "先",
+          "start": 54.86,
+          "end": 55.06,
+          "probability": 0.8037109375
+        },
+        {
+          "text": "祖",
+          "start": 55.06,
+          "end": 55.26,
+          "probability": 0.994873046875
+        },
+        {
+          "text": "神",
+          "start": 55.26,
+          "end": 55.4,
+          "probability": 0.9853515625
+        },
+        {
+          "text": "明",
+          "start": 55.4,
+          "end": 55.6,
+          "probability": 0.7138671875
+        }
+      ]
+    },
+    {
+      "start": 55.6,
+      "end": 57.24,
+      "text": "称之为落地精神",
+      "words": [
+        {
+          "text": "称",
+          "start": 55.6,
+          "end": 56.02,
+          "probability": 0.962158203125
+        },
+        {
+          "text": "之",
+          "start": 56.02,
+          "end": 56.16,
+          "probability": 0.99365234375
+        },
+        {
+          "text": "为",
+          "start": 56.16,
+          "end": 56.28,
+          "probability": 0.99365234375
+        },
+        {
+          "text": "落",
+          "start": 56.28,
+          "end": 56.64,
+          "probability": 0.517578125
+        },
+        {
+          "text": "地",
+          "start": 56.64,
+          "end": 56.84,
+          "probability": 0.91064453125
+        },
+        {
+          "text": "精",
+          "start": 56.84,
+          "end": 57.02,
+          "probability": 0.9306640625
+        },
+        {
+          "text": "神",
+          "start": 57.02,
+          "end": 57.24,
+          "probability": 0.998046875
+        }
+      ]
+    },
+    {
+      "start": 57.24,
+      "end": 58.28,
+      "text": "落地享生",
+      "words": [
+        {
+          "text": "落",
+          "start": 57.24,
+          "end": 57.76,
+          "probability": 0.97216796875
+        },
+        {
+          "text": "地",
+          "start": 57.76,
+          "end": 57.92,
+          "probability": 1.0
+        },
+        {
+          "text": "享",
+          "start": 57.92,
+          "end": 58.06,
+          "probability": 0.28662109375
+        },
+        {
+          "text": "生",
+          "start": 58.06,
+          "end": 58.28,
+          "probability": 0.56494140625
+        }
+      ]
+    },
+    {
+      "start": 58.28,
+      "end": 59.44,
+      "text": "打断洗间闲聊",
+      "words": [
+        {
+          "text": "打",
+          "start": 58.28,
+          "end": 58.58,
+          "probability": 0.56396484375
+        },
+        {
+          "text": "断",
+          "start": 58.58,
+          "end": 58.76,
+          "probability": 0.999755859375
+        },
+        {
+          "text": "洗",
+          "start": 58.76,
+          "end": 58.96,
+          "probability": 0.1885986328125
+        },
+        {
+          "text": "间",
+          "start": 58.96,
+          "end": 59.1,
+          "probability": 0.1285400390625
+        },
+        {
+          "text": "闲",
+          "start": 59.1,
+          "end": 59.24,
+          "probability": 0.89990234375
+        },
+        {
+          "text": "聊",
+          "start": 59.24,
+          "end": 59.44,
+          "probability": 0.91796875
+        }
+      ]
+    },
+    {
+      "start": 59.44,
+      "end": 60.78,
+      "text": "光荒张张剪筷子",
+      "words": [
+        {
+          "text": "光",
+          "start": 59.44,
+          "end": 59.8,
+          "probability": 0.207763671875
+        },
+        {
+          "text": "荒",
+          "start": 59.8,
+          "end": 59.96,
+          "probability": 0.6904296875
+        },
+        {
+          "text": "张",
+          "start": 59.96,
+          "end": 60.08,
+          "probability": 0.86328125
+        },
+        {
+          "text": "张",
+          "start": 60.08,
+          "end": 60.24,
+          "probability": 0.9931640625
+        },
+        {
+          "text": "剪",
+          "start": 60.24,
+          "end": 60.42,
+          "probability": 0.60638427734375
+        },
+        {
+          "text": "筷",
+          "start": 60.42,
+          "end": 60.6,
+          "probability": 0.98876953125
+        },
+        {
+          "text": "子",
+          "start": 60.6,
+          "end": 60.78,
+          "probability": 1.0
+        }
+      ]
+    },
+    {
+      "start": 60.78,
+      "end": 61.72,
+      "text": "遗憾全无",
+      "words": [
+        {
+          "text": "遗",
+          "start": 60.78,
+          "end": 61.08,
+          "probability": 0.6329345703125
+        },
+        {
+          "text": "憾",
+          "start": 61.08,
+          "end": 61.24,
+          "probability": 0.7119140625
+        },
+        {
+          "text": "全",
+          "start": 61.24,
+          "end": 61.44,
+          "probability": 0.50390625
+        },
+        {
+          "text": "无",
+          "start": 61.44,
+          "end": 61.72,
+          "probability": 0.84814453125
+        }
+      ]
+    },
+    {
+      "start": 61.72,
+      "end": 62.9,
+      "text": "两根小木筷",
+      "words": [
+        {
+          "text": "两",
+          "start": 61.72,
+          "end": 62.22,
+          "probability": 0.86279296875
+        },
+        {
+          "text": "根",
+          "start": 62.22,
+          "end": 62.36,
+          "probability": 0.9833984375
+        },
+        {
+          "text": "小",
+          "start": 62.36,
+          "end": 62.52,
+          "probability": 0.986328125
+        },
+        {
+          "text": "木",
+          "start": 62.52,
+          "end": 62.66,
+          "probability": 0.984375
+        },
+        {
+          "text": "筷",
+          "start": 62.66,
+          "end": 62.9,
+          "probability": 0.784912109375
+        }
+      ]
+    },
+    {
+      "start": 62.9,
+      "end": 65.02,
+      "text": "装满老祖宗传下的干饭规矩",
+      "words": [
+        {
+          "text": "装",
+          "start": 62.9,
+          "end": 63.26,
+          "probability": 0.945068359375
+        },
+        {
+          "text": "满",
+          "start": 63.26,
+          "end": 63.4,
+          "probability": 0.998779296875
+        },
+        {
+          "text": "老",
+          "start": 63.4,
+          "end": 63.54,
+          "probability": 0.97265625
+        },
+        {
+          "text": "祖",
+          "start": 63.54,
+          "end": 63.72,
+          "probability": 0.998779296875
+        },
+        {
+          "text": "宗",
+          "start": 63.72,
+          "end": 63.86,
+          "probability": 0.84765625
+        },
+        {
+          "text": "传",
+          "start": 63.86,
+          "end": 64.02,
+          "probability": 0.98828125
+        },
+        {
+          "text": "下",
+          "start": 64.02,
+          "end": 64.22,
+          "probability": 0.9521484375
+        },
+        {
+          "text": "的",
+          "start": 64.22,
+          "end": 64.32,
+          "probability": 0.998046875
+        },
+        {
+          "text": "干",
+          "start": 64.32,
+          "end": 64.46,
+          "probability": 0.63671875
+        },
+        {
+          "text": "饭",
+          "start": 64.46,
+          "end": 64.66,
+          "probability": 0.754150390625
+        },
+        {
+          "text": "规",
+          "start": 64.66,
+          "end": 64.82,
+          "probability": 0.992431640625
+        },
+        {
+          "text": "矩",
+          "start": 64.82,
+          "end": 65.02,
+          "probability": 0.989501953125
+        }
+      ]
+    },
+    {
+      "start": 65.02,
+      "end": 67.12,
+      "text": "中国人带人处事的人情智慧",
+      "words": [
+        {
+          "text": "中国",
+          "start": 65.02,
+          "end": 65.42,
+          "probability": 0.98583984375
+        },
+        {
+          "text": "人",
+          "start": 65.42,
+          "end": 65.62,
+          "probability": 0.998046875
+        },
+        {
+          "text": "带",
+          "start": 65.62,
+          "end": 65.78,
+          "probability": 0.692138671875
+        },
+        {
+          "text": "人",
+          "start": 65.78,
+          "end": 65.92,
+          "probability": 0.99658203125
+        },
+        {
+          "text": "处",
+          "start": 65.92,
+          "end": 66.1,
+          "probability": 0.661865234375
+        },
+        {
+          "text": "事",
+          "start": 66.1,
+          "end": 66.28,
+          "probability": 0.72509765625
+        },
+        {
+          "text": "的人",
+          "start": 66.28,
+          "end": 66.44,
+          "probability": 0.84228515625
+        },
+        {
+          "text": "情",
+          "start": 66.44,
+          "end": 66.7,
+          "probability": 0.97998046875
+        },
+        {
+          "text": "智",
+          "start": 66.7,
+          "end": 66.9,
+          "probability": 0.99072265625
+        },
+        {
+          "text": "慧",
+          "start": 66.9,
+          "end": 67.12,
+          "probability": 0.998779296875
+        }
+      ]
+    },
+    {
+      "start": 67.12,
+      "end": 68.5,
+      "text": "全藏在饭桌之上",
+      "words": [
+        {
+          "text": "全",
+          "start": 67.12,
+          "end": 67.42,
+          "probability": 0.90185546875
+        },
+        {
+          "text": "藏",
+          "start": 67.42,
+          "end": 67.66,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "在",
+          "start": 67.66,
+          "end": 67.8,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "饭",
+          "start": 67.8,
+          "end": 68.0,
+          "probability": 0.980712890625
+        },
+        {
+          "text": "桌",
+          "start": 68.0,
+          "end": 68.22,
+          "probability": 0.93994140625
+        },
+        {
+          "text": "之",
+          "start": 68.22,
+          "end": 68.34,
+          "probability": 0.8984375
+        },
+        {
+          "text": "上",
+          "start": 68.34,
+          "end": 68.5,
+          "probability": 0.9912109375
+        }
+      ]
+    }
+  ]
+}

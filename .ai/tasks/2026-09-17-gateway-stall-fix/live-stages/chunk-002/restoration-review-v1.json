@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "state": "validated",
+  "stage": "restoration-review",
+  "identity": "8f854f2ba8ee4d5f7827954742699e71e0f9fbd9b6bdee1ec9e632782b9ddc1f",
+  "routeFingerprint": "29ed9729dbdd53e76081fc89bd7f7991b6a6e2c770e964fd8fa2ceaa0c22c646",
+  "evidenceDigest": "1485072964334270f32426ef10ca6a7fe988438731fc60c69fc57c158af20a51",
+  "expectedIds": [
+    "cue-8-16160",
+    "cue-9-17520",
+    "cue-10-18800",
+    "cue-11-19620",
+    "cue-12-20740",
+    "cue-13-21640",
+    "cue-14-23120",
+    "cue-15-23640"
+  ],
+  "targetLocale": "vi",
+  "promptVersion": "gateway-restoration-media-v2",
+  "parserVersion": "gateway-restoration-parser-v1",
+  "raw": "{\n  \"schemaVersion\": \"restoration-review-v1\",\n  \"candidateDigest\": \"eb954d8960388bf743b906e1f1793dddabd4568d1607273623f6dc8a27c5f317\",\n  \"reviewedCueIds\": [\n    \"cue-8-16160\",\n    \"cue-9-17520\",\n    \"cue-10-18800\",\n    \"cue-11-19620\",\n    \"cue-12-20740\",\n    \"cue-13-21640\",\n    \"cue-14-23120\",\n    \"cue-15-23640\"\n  ],\n  \"status\": \"needs_adjustment\",\n  \"confidenceScore\": 0.95,\n  \"reviewerNotes\": \"The translation is mostly accurate, but there is a missing translation for a clause in cue-8 based on the audio and OCR. Cues 13 and 14 also have slight phrasing alignment issues that were smoothed out.\",\n  \"groupAssessments\": [\n    {\n      \"groupId\": \"g1\",\n      \"cueIds\": [\n        \"cue-8-16160\"\n      ],\n      \"status\": \"needs_adjustment\",\n      \"reason\": \"Missing translation for '就像这样用刷子一层一层的往头上刷'.\"\n    },\n    {\n      \"groupId\": \"g2\",\n      \"cueIds\": [\n        \"cue-13-21640\",\n        \"cue-14-23120\"\n      ],\n      \"status\": \"needs_adjustment\",\n      \"reason\": \"Better alignment with the audio pacing.\"\n    },\n    {\n      \"groupId\": \"g3\",\n      \"cueIds\": [\n        \"cue-9-17520\",\n        \"cue-10-18800\",\n        \"cue-11-19620\",\n        \"cue-12-20740\",\n        \"cue-15-23640\"\n      ],\n      \"status\": \"approved\",\n      \"reason\": \"Accurate translation and valid source edits.\"\n    }\n  ],\n  \"findings\": [\n    {\n      \"code\": \"missing_translation\",\n      \"severity\": \"error\",\n      \"cueIds\": [\n        \"cue-8-16160\"\n      ],\n      \"evidenceRefs\": [\n        \"ocr_139\",\n        \"audio_0\"\n      ],\n      \"note\": \"Missing translation for '就像这样用刷子一层一层的往头上刷'.\",\n      \"resolution\": \"patched\"\n    },\n    {\n      \"code\": \"alignment_issue\",\n      \"severity\": \"warning\",\n      \"cueIds\": [\n        \"cue-13-21640\",\n        \"cue-14-23120\"\n      ],\n      \"evidenceRefs\": [\n        \"ocr_194\",\n        \"ocr_200\",\n        \"audio_0\"\n      ],\n      \"note\": \"Realigned the subtitle segments to match the source audio pauses more naturally.\",\n      \"resolution\": \"patched\"\n    }\n  ],\n  \"replacements\": [\n    {\n      \"groupId\": \"g1\",\n      \"items\": [\n        {\n          \"id\": \"cue-8-16160\",\n          \"target\": \"Giống như thế này, dùng cọ quét từng lớp từng lớp lên đầu, chờ keo xịt tóc đông đặc và khô lại,\"\n        }\n      ],\n      \"sentenceEndIds\": [],\n      \"sourceEdits\": []\n    },\n    {\n      \"groupId\": \"g2\",\n      \"items\": [\n        {\n          \"id\": \"cue-13-21640\",\n          \"target\": \"nếu vào lúc này\"\n        },\n        {\n          \"id\": \"cue-14-23120\",\n          \"target\": \"đột nhiên da đầu bị ngứa thì phải làm sao.\"\n        }\n      ],\n      \"sentenceEndIds\": [\n        \"cue-14-23120\"\n      ],\n      \"sourceEdits\": []\n    }\n  ]\n}",
+  "rawSha256": "7ed4920bb25b1048bbe8dd7894f6dbf0cd77c4ae324015df274e086e3def201f",
+  "observedModelId": "e6fa609c3fa255c0",
+  "observedModel": "3.1 Pro",
+  "savedAtUtc": "2026-09-17T14:08:34.723Z"
+}

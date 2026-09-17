@@ -9,6 +9,22 @@ export type BatchItemState =
   | 'needs-review'
   | 'interrupted'
   | 'cancelled'
+  | 'waiting-provider'
+
+export type ProviderWaitStage =
+  | 'restore-translate'
+  | 'independent-review'
+  | 'restoration-draft'
+  | 'restoration-review'
+  | 'rephrase'
+  | 'metadata'
+
+export interface ProviderWaitRecord {
+  operationId: string
+  stage: ProviderWaitStage
+  reason: string
+  nextEligibleAtUtc: string | null
+}
 
 export interface BatchOutputReceipt {
   path: string
@@ -36,10 +52,11 @@ export interface BatchItemRecord {
   artifactDir?: string
   outputReceipt?: BatchOutputReceipt
   failure?: BatchFailure
+  providerWait?: ProviderWaitRecord
 }
 
 export interface BatchSnapshot {
-  schemaVersion: 1
+  schemaVersion: 1 | 2
   jobId: string
   revision: number
   createdAtUtc: string
@@ -48,7 +65,10 @@ export interface BatchSnapshot {
 }
 
 const STATES = new Set<BatchItemState>([
-  'pending', 'running', 'succeeded', 'failed', 'needs-review', 'interrupted', 'cancelled'
+  'pending', 'running', 'succeeded', 'failed', 'needs-review', 'interrupted', 'cancelled', 'waiting-provider'
+])
+const PROVIDER_WAIT_STAGES = new Set<ProviderWaitStage>([
+  'restore-translate', 'independent-review', 'restoration-draft', 'restoration-review', 'rephrase', 'metadata'
 ])
 const DIGEST = /^[a-f0-9]{64}$/u
 const SAFE_ID = /^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$/u
@@ -113,10 +133,29 @@ function validateFailure(value: unknown): BatchFailure {
   }
 }
 
+function validateProviderWait(value: unknown): ProviderWaitRecord {
+  const raw = record(value, 'Provider wait record')
+  exactFields(raw, ['operationId', 'stage', 'reason', 'nextEligibleAtUtc'], 'Provider wait record')
+  const stage = text(raw.stage, 'Provider wait stage', 64)
+  if (!PROVIDER_WAIT_STAGES.has(stage as ProviderWaitStage)) {
+    throw new Error('Provider wait stage không hợp lệ.')
+  }
+  let nextEligibleAtUtc: string | null = null
+  if (raw.nextEligibleAtUtc !== null && raw.nextEligibleAtUtc !== undefined) {
+    nextEligibleAtUtc = date(raw.nextEligibleAtUtc, 'Provider wait nextEligibleAtUtc')
+  }
+  return {
+    operationId: text(raw.operationId, 'Provider wait operationId', 128),
+    stage: stage as ProviderWaitStage,
+    reason: text(raw.reason, 'Provider wait reason', 1024),
+    nextEligibleAtUtc
+  }
+}
+
 export function validateBatchSnapshot(value: unknown): BatchSnapshot {
   const raw = record(value, 'Batch snapshot')
   exactFields(raw, ['schemaVersion', 'jobId', 'revision', 'createdAtUtc', 'updatedAtUtc', 'items'], 'Batch snapshot')
-  if (raw.schemaVersion !== 1) throw new Error('Batch snapshot schema version không được hỗ trợ.')
+  if (raw.schemaVersion !== 1 && raw.schemaVersion !== 2) throw new Error('Batch snapshot schema version không được hỗ trợ.')
   const jobId = text(raw.jobId, 'Batch job ID', 128)
   if (!SAFE_ID.test(jobId)) throw new Error('Batch job ID không hợp lệ.')
   if (!Array.isArray(raw.items) || raw.items.length > 100_000) throw new Error('Batch items không hợp lệ.')
@@ -126,7 +165,7 @@ export function validateBatchSnapshot(value: unknown): BatchSnapshot {
   const items = raw.items.map((value, index): BatchItemRecord => {
     const item = record(value, `Batch item ${index}`)
     exactFields(item, [
-      'itemId', 'inputPath', 'inputDigest', 'configDigest', 'temporalEdit', 'ordinal', 'attempt', 'state', 'reservedOutputDir', 'artifactDir', 'outputReceipt', 'failure'
+      'itemId', 'inputPath', 'inputDigest', 'configDigest', 'temporalEdit', 'ordinal', 'attempt', 'state', 'reservedOutputDir', 'artifactDir', 'outputReceipt', 'failure', 'providerWait'
     ], `Batch item ${index}`)
     const itemId = text(item.itemId, `Batch item ${index} ID`, 128)
     if (!SAFE_ID.test(itemId)) throw new Error(`Batch item ${index} ID không hợp lệ.`)
@@ -142,6 +181,13 @@ export function validateBatchSnapshot(value: unknown): BatchSnapshot {
       throw new Error('Output receipt chỉ hợp lệ cho succeeded hoặc needs-review.')
     }
     const failure = item.failure === undefined ? undefined : validateFailure(item.failure)
+    const providerWait = item.providerWait === undefined ? undefined : validateProviderWait(item.providerWait)
+    if (state === 'waiting-provider' && !providerWait) {
+      throw new Error('Batch item waiting-provider thiếu thông tin providerWait.')
+    }
+    if (providerWait && state !== 'waiting-provider' && state !== 'interrupted') {
+      throw new Error('Provider wait record chỉ hợp lệ cho waiting-provider hoặc interrupted.')
+    }
     let temporalEdit
     if (item.temporalEdit !== undefined) {
       const candidate = item.temporalEdit as { schemaVersion?: unknown }
@@ -161,12 +207,13 @@ export function validateBatchSnapshot(value: unknown): BatchSnapshot {
       ...(item.reservedOutputDir === undefined ? {} : { reservedOutputDir: text(item.reservedOutputDir, `Batch item ${index} reservedOutputDir`, 32768) }),
       ...(item.artifactDir === undefined ? {} : { artifactDir: text(item.artifactDir, `Batch item ${index} artifactDir`, 32768) }),
       ...(outputReceipt ? { outputReceipt } : {}),
-      ...(failure ? { failure } : {})
+      ...(failure ? { failure } : {}),
+      ...(providerWait ? { providerWait } : {})
     }
   })
 
   return {
-    schemaVersion: 1,
+    schemaVersion: raw.schemaVersion as 1 | 2,
     jobId,
     revision: integer(raw.revision, 'Batch revision'),
     createdAtUtc: date(raw.createdAtUtc, 'Batch createdAtUtc'),
@@ -175,19 +222,42 @@ export function validateBatchSnapshot(value: unknown): BatchSnapshot {
   }
 }
 
+export function migrateBatchSnapshotToV2(snapshot: BatchSnapshot): BatchSnapshot {
+  const validated = validateBatchSnapshot(snapshot)
+  if (validated.schemaVersion === 2) {
+    return validated
+  }
+  return {
+    ...validated,
+    schemaVersion: 2
+  }
+}
+
 export function recoverInterruptedBatch(snapshot: BatchSnapshot): BatchSnapshot {
   const source = validateBatchSnapshot(snapshot)
   return {
     ...source,
-    items: source.items.map((item) => item.state === 'running'
-      ? { ...item, state: 'interrupted', failure: { code: 'process_interrupted', message: 'Ứng dụng đã dừng trước khi mục hoàn tất.', recoverable: true } }
-      : { ...item, ...(item.outputReceipt ? { outputReceipt: { ...item.outputReceipt } } : {}), ...(item.failure ? { failure: { ...item.failure } } : {}) })
+    items: source.items.map((item) => {
+      if (item.state === 'running') {
+        return {
+          ...item,
+          state: 'interrupted',
+          failure: { code: 'process_interrupted', message: 'Ứng dụng đã dừng trước khi mục hoàn tất.', recoverable: true }
+        }
+      }
+      return {
+        ...item,
+        ...(item.outputReceipt ? { outputReceipt: { ...item.outputReceipt } } : {}),
+        ...(item.failure ? { failure: { ...item.failure } } : {}),
+        ...(item.providerWait ? { providerWait: { ...item.providerWait } } : {})
+      }
+    })
   }
 }
 
 export function resumeCandidateIds(snapshot: BatchSnapshot): string[] {
   return validateBatchSnapshot(snapshot).items
-    .filter((item) => item.state === 'pending' || item.state === 'interrupted')
+    .filter((item) => item.state === 'pending' || item.state === 'interrupted' || item.state === 'waiting-provider')
     .sort((left, right) => left.ordinal - right.ordinal)
     .map((item) => item.itemId)
 }

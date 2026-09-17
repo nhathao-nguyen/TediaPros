@@ -16,14 +16,16 @@ export default function VideoSeoResult({ metadata, titlePath }: { metadata: Vide
       {titlePath && <button type="button" className="btn ghost sm" onClick={() => void window.api.openPath(titlePath)}>Mở tieude.txt</button>}
     </div>
   }
-  const { title, description, tags, hashtags } = normalized
+  const { title, description, tags, hashtags, thumbnailText } = normalized
   return <div className="card" style={{ display: 'grid', gap: 8, padding: 10 }}>
     <strong>{title}</strong>
+    {thumbnailText && <p className="small" style={{ margin: 0, color: 'var(--primary)', fontWeight: 600 }}>🖼️ Thumbnail: {thumbnailText}</p>}
     <p className="small" style={{ margin: 0 }}>{description}</p>
     <p className="muted small" style={{ margin: 0, overflowWrap: 'anywhere' }}>Tags: {tags.join(', ')}</p>
     <p className="muted small" style={{ margin: 0, overflowWrap: 'anywhere' }}>Hashtags: {hashtags.join(' ')}</p>
     <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
       <button type="button" className="btn ghost sm" onClick={() => void copy(title)}>Copy tiêu đề</button>
+      {thumbnailText && <button type="button" className="btn ghost sm" onClick={() => void copy(thumbnailText)}>Copy thumbnail text</button>}
       <button type="button" className="btn ghost sm" onClick={() => void copy(description)}>Copy description</button>
       <button type="button" className="btn ghost sm" onClick={() => void copy(formatVideoSeoCaption(normalized))}>Sao chép caption</button>
       <button type="button" className="btn ghost sm" onClick={() => void copy(tags.join(', '))}>Copy tags</button>

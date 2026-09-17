@@ -1,0 +1,182 @@
+{
+  "duration": 17.021625,
+  "language": "zh",
+  "segments": [
+    {
+      "start": 0.02,
+      "end": 1.14,
+      "text": "哈嘻哈嘻哈嘻",
+      "words": [
+        {
+          "text": "哈",
+          "start": 0.02,
+          "end": 0.28,
+          "probability": 0.038665771484375
+        },
+        {
+          "text": "嘻",
+          "start": 0.28,
+          "end": 0.6,
+          "probability": 0.3173828125
+        },
+        {
+          "text": "哈",
+          "start": 0.6,
+          "end": 0.7,
+          "probability": 0.7333984375
+        },
+        {
+          "text": "嘻",
+          "start": 0.7,
+          "end": 0.96,
+          "probability": 0.99560546875
+        },
+        {
+          "text": "哈",
+          "start": 0.96,
+          "end": 1.14,
+          "probability": 0.30810546875
+        },
+        {
+          "text": "嘻",
+          "start": 1.14,
+          "end": 1.14,
+          "probability": 0.996337890625
+        }
+      ]
+    },
+    {
+      "start": 1.14,
+      "end": 1.38,
+      "text": "走",
+      "words": [
+        {
+          "text": "走",
+          "start": 1.14,
+          "end": 1.38,
+          "probability": 0.018829345703125
+        }
+      ]
+    },
+    {
+      "start": 1.38,
+      "end": 2.46,
+      "text": "哎呀哎呀",
+      "words": [
+        {
+          "text": "哎",
+          "start": 1.38,
+          "end": 1.94,
+          "probability": 0.0416259765625
+        },
+        {
+          "text": "呀",
+          "start": 1.94,
+          "end": 2.08,
+          "probability": 0.77978515625
+        },
+        {
+          "text": "哎",
+          "start": 2.08,
+          "end": 2.26,
+          "probability": 0.912109375
+        },
+        {
+          "text": "呀",
+          "start": 2.26,
+          "end": 2.46,
+          "probability": 0.9990234375
+        }
+      ]
+    }
+  ],
+  "cues": [
+    {
+      "start": 0.02,
+      "end": 1.14,
+      "text": "哈嘻哈嘻哈嘻",
+      "words": [
+        {
+          "text": "哈",
+          "start": 0.02,
+          "end": 0.28,
+          "probability": 0.038665771484375
+        },
+        {
+          "text": "嘻",
+          "start": 0.28,
+          "end": 0.6,
+          "probability": 0.3173828125
+        },
+        {
+          "text": "哈",
+          "start": 0.6,
+          "end": 0.7,
+          "probability": 0.7333984375
+        },
+        {
+          "text": "嘻",
+          "start": 0.7,
+          "end": 0.96,
+          "probability": 0.99560546875
+        },
+        {
+          "text": "哈",
+          "start": 0.96,
+          "end": 1.14,
+          "probability": 0.30810546875
+        },
+        {
+          "text": "嘻",
+          "start": 1.14,
+          "end": 1.14,
+          "probability": 0.996337890625
+        }
+      ]
+    },
+    {
+      "start": 1.14,
+      "end": 1.38,
+      "text": "走",
+      "words": [
+        {
+          "text": "走",
+          "start": 1.14,
+          "end": 1.38,
+          "probability": 0.018829345703125
+        }
+      ]
+    },
+    {
+      "start": 1.38,
+      "end": 2.46,
+      "text": "哎呀哎呀",
+      "words": [
+        {
+          "text": "哎",
+          "start": 1.38,
+          "end": 1.94,
+          "probability": 0.0416259765625
+        },
+        {
+          "text": "呀",
+          "start": 1.94,
+          "end": 2.08,
+          "probability": 0.77978515625
+        },
+        {
+          "text": "哎",
+          "start": 2.08,
+          "end": 2.26,
+          "probability": 0.912109375
+        },
+        {
+          "text": "呀",
+          "start": 2.26,
+          "end": 2.46,
+          "probability": 0.9990234375
+        }
+      ]
+    }
+  ]
+}

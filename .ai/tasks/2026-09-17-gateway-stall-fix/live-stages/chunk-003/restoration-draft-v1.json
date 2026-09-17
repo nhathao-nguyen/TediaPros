@@ -1,0 +1,25 @@
+{
+  "schemaVersion": 1,
+  "state": "validated",
+  "stage": "restoration-draft",
+  "identity": "35bbd76fdcff7e880bad04aad70298001df1d98b8329d6707985f95214da6cc9",
+  "routeFingerprint": "29ed9729dbdd53e76081fc89bd7f7991b6a6e2c770e964fd8fa2ceaa0c22c646",
+  "evidenceDigest": "a376094404ea542b33cc5895a15c806a09b2fa4f9b7aaf50ad03901965d88b71",
+  "expectedIds": [
+    "cue-16-25500",
+    "cue-17-26680",
+    "cue-18-27680",
+    "cue-19-29540",
+    "cue-20-31240",
+    "cue-21-32180",
+    "cue-22-33780"
+  ],
+  "targetLocale": "vi",
+  "promptVersion": "gateway-restoration-media-v2",
+  "parserVersion": "gateway-restoration-parser-v1",
+  "raw": "{\n  \"schemaVersion\": \"restoration-translation-v1\",\n  \"evidenceDigest\": \"a376094404ea542b33cc5895a15c806a09b2fa4f9b7aaf50ad03901965d88b71\",\n  \"sourceEdits\": [\n    {\n      \"id\": \"cue-16-25500\",\n      \"text\": \"如何清洗发胶也不是一件容易的事\",\n      \"kind\": \"ocr_alignment\",\n      \"evidenceRefs\": [\n        \"ocr_233\",\n        \"ocr_247\"\n      ]\n    },\n    {\n      \"id\": \"cue-17-26680\",\n      \"text\": \"发胶不溶于水\",\n      \"kind\": \"ocr_alignment\",\n      \"evidenceRefs\": [\n        \"ocr_252\",\n        \"ocr_264\"\n      ]\n    },\n    {\n      \"id\": \"cue-18-27680\",\n      \"text\": \"需要先用柔性溶剂来软化它\",\n      \"kind\": \"ocr_alignment\",\n      \"evidenceRefs\": [\n        \"ocr_267\",\n        \"ocr_309\"\n      ]\n    },\n    {\n      \"id\": \"cue-19-29540\",\n      \"text\": \"然后再耐心的一点点抠下来\",\n      \"kind\": \"ocr_alignment\",\n      \"evidenceRefs\": [\n        \"ocr_339\",\n        \"ocr_348\"\n      ]\n    },\n    {\n      \"id\": \"cue-20-31240\",\n      \"text\": \"如果性子急一点\",\n      \"kind\": \"ocr_alignment\",\n      \"evidenceRefs\": [\n        \"ocr_352\",\n        \"ocr_364\"\n      ]\n    },\n    {\n      \"id\": \"cue-21-32180\",\n      \"text\": \"就容易连头发都一起拽下来\",\n      \"kind\": \"ocr_alignment\",\n      \"evidenceRefs\": [\n        \"ocr_386\",\n        \"ocr_391\"\n      ]\n    }\n  ],\n  \"sentenceEndIds\": [\n    \"cue-16-25500\",\n    \"cue-17-26680\",\n    \"cue-19-29540\",\n    \"cue-21-32180\",\n    \"cue-22-33780\"\n  ],\n  \"entities\": [],\n  \"items\": [\n    {\n      \"id\": \"cue-16-25500\",\n      \"target\": \"Làm thế nào để gội sạch keo vuốt tóc cũng không phải chuyện dễ dàng.\"\n    },\n    {\n      \"id\": \"cue-17-26680\",\n      \"target\": \"Keo vuốt tóc không hòa tan trong nước,\"\n    },\n    {\n      \"id\": \"cue-18-27680\",\n      \"target\": \"nên cần phải dùng dung môi nhẹ để làm mềm nó trước,\"\n    },\n    {\n      \"id\": \"cue-19-29540\",\n      \"target\": \"rồi mới kiên nhẫn gỡ từng chút một xuống.\"\n    },\n    {\n      \"id\": \"cue-20-31240\",\n      \"target\": \"Nếu như tính tình mà hơi vội vàng,\"\n    },\n    {\n      \"id\": \"cue-21-32180\",\n      \"target\": \"thì rất dễ nhổ luôn cả tóc xuống theo.\"\n    },\n    {\n      \"id\": \"cue-22-33780\",\n      \"target\": \"Thực sự rất xót xa cho đường chân tóc của họ.\"\n    }\n  ],\n  \"synopsis\": \"Đoạn video giải thích sự khó khăn trong việc tẩy rửa keo vuốt tóc của các vận động viên bơi nghệ thuật và miêu tả quá trình tẩy keo đầy gian nan.\"\n}",
+  "rawSha256": "5d8067e46ec25191a41f6b887713e3bc8c65ab9c5bc3e3c7d7ac68011bceb1fb",
+  "observedModelId": "e6fa609c3fa255c0",
+  "observedModel": "3.1 Pro",
+  "savedAtUtc": "2026-09-17T14:10:38.783Z"
+}

@@ -1,0 +1,200 @@
+{
+  "success": true,
+  "cues": 44,
+  "client_generation_requests": 2,
+  "total_upstream_attempts": 2,
+  "observed_models": [
+    "3.1 Pro",
+    "3.1 Pro"
+  ],
+  "route_fingerprints": [
+    "29ed9729dbdd53e76081fc89bd7f7991b6a6e2c770e964fd8fa2ceaa0c22c646",
+    "29ed9729dbdd53e76081fc89bd7f7991b6a6e2c770e964fd8fa2ceaa0c22c646"
+  ],
+  "retry_reasons": [
+    null,
+    null
+  ],
+  "parsed": {
+    "items": [
+      {
+        "id": "cue-1",
+        "text": "Bạn có dám tin không,"
+      },
+      {
+        "id": "cue-2",
+        "text": "tiếng bấm phím điều hướng đầy mê hoặc của Volvo"
+      },
+      {
+        "id": "cue-3",
+        "text": "hoàn toàn không phải do lập trình viên tạo ra?"
+      },
+      {
+        "id": "cue-4",
+        "text": "Khi các hãng xe khác làm âm thanh nút bấm,"
+      },
+      {
+        "id": "cue-5",
+        "text": "họ đều ngồi trong văn phòng điều chỉnh thông số máy tính,"
+      },
+      {
+        "id": "cue-6",
+        "text": "nhưng các nhà thiết kế của Volvo lại không làm như vậy."
+      },
+      {
+        "id": "cue-7",
+        "text": "Ông nói rằng,"
+      },
+      {
+        "id": "cue-8",
+        "text": "âm thanh nút bấm này,"
+      },
+      {
+        "id": "cue-9",
+        "text": "chủ xe phải nghe hàng chục ngàn lần,"
+      },
+      {
+        "id": "cue-10",
+        "text": "không được chói tai, không được gượng gạo,"
+      },
+      {
+        "id": "cue-11",
+        "text": "lại càng không thể khiến người ta khó chịu khi nghe lâu."
+      },
+      {
+        "id": "cue-12",
+        "text": "Dù có kẹt xe giữa đường sá đông đúc,"
+      },
+      {
+        "id": "cue-13",
+        "text": "thì khi nghe thấy nó cũng phải khiến lòng người tĩnh lại."
+      },
+      {
+        "id": "cue-14",
+        "text": "Thế là ông đã dẫn theo toàn bộ đội ngũ,"
+      },
+      {
+        "id": "cue-15",
+        "text": "lao vào tận rừng sâu và ở đó suốt hai ngày trời,"
+      },
+      {
+        "id": "cue-16",
+        "text": "bẻ gãy hơn 300 cành cây khác nhau,"
+      },
+      {
+        "id": "cue-17",
+        "text": "để thử từng loại gỗ,"
+      },
+      {
+        "id": "cue-18",
+        "text": "âm thanh khi bẻ gãy của từng độ dày mỏng,"
+      },
+      {
+        "id": "cue-19",
+        "text": "hết lần này đến lần khác,"
+      },
+      {
+        "id": "cue-20",
+        "text": "thu lại hơn 300 loại âm thanh của tự nhiên."
+      },
+      {
+        "id": "cue-21",
+        "text": "Mục tiêu chỉ có một:"
+      },
+      {
+        "id": "cue-22",
+        "text": "tìm ra một loại"
+      },
+      {
+        "id": "cue-23",
+        "text": "âm thanh êm ái, tự nhiên, nghe một ngàn lần, mười ngàn lần"
+      },
+      {
+        "id": "cue-24",
+        "text": "cũng không thấy bực bội."
+      },
+      {
+        "id": "cue-25",
+        "text": "Cuối cùng sau vô số lần thử nghiệm,"
+      },
+      {
+        "id": "cue-26",
+        "text": "họ đã tìm ra."
+      },
+      {
+        "id": "cue-27",
+        "text": "Đó là lúc cành sồi nhẹ nhàng bị bẻ gãy,"
+      },
+      {
+        "id": "cue-28",
+        "text": "phát ra tiếng răng rắc thật êm ái."
+      },
+      {
+        "id": "cue-29",
+        "text": "Sau đó, họ đã số hóa đoạn âm thanh đến từ khu rừng lớn này,"
+      },
+      {
+        "id": "cue-30",
+        "text": "điều chỉnh lặp đi lặp lại,"
+      },
+      {
+        "id": "cue-31",
+        "text": "làm mượt nó,"
+      },
+      {
+        "id": "cue-32",
+        "text": "mới tạo thành tiếng bấm phím điều hướng đặc trưng của Volvo ngày nay."
+      },
+      {
+        "id": "cue-33",
+        "text": "Đó cũng là lý do vì sao"
+      },
+      {
+        "id": "cue-34",
+        "text": "rất nhiều chủ xe đều nói nút bấm của Volvo"
+      },
+      {
+        "id": "cue-35",
+        "text": "là nút bấm chữa lành nhất trên mạng."
+      },
+      {
+        "id": "cue-36",
+        "text": "Khi nghe thấy âm thanh đến từ tự nhiên này,"
+      },
+      {
+        "id": "cue-37",
+        "text": "cho dù bên ngoài có kẹt xe đến đâu,"
+      },
+      {
+        "id": "cue-38",
+        "text": "tâm trạng có bực dọc thế nào,"
+      },
+      {
+        "id": "cue-39",
+        "text": "cũng có thể được xoa dịu trong chớp mắt."
+      },
+      {
+        "id": "cue-40",
+        "text": "Hóa ra sự cao cấp,"
+      },
+      {
+        "id": "cue-41",
+        "text": "thực sự được giấu trong"
+      },
+      {
+        "id": "cue-42",
+        "text": "những chi tiết rất dễ bị bỏ qua đó."
+      },
+      {
+        "id": "cue-43",
+        "text": "Bạn còn từng thấy trên xe hơi"
+      },
+      {
+        "id": "cue-44",
+        "text": "có những thiết kế chi tiết ấm lòng nào nữa không?"
+      }
+    ],
+    "issues": [],
+    "complete": true
+  }
+}

@@ -13,7 +13,7 @@ import {
   stripOuterQuotes,
   validateTranslationItems
 } from './translate-shared'
-import { buildTranslationMessages, buildTranslationBatchMessages } from './translation/prompts'
+import { buildTranslationMessages, buildTranslationBatchMessages, modelMessageText } from './translation/prompts'
 import { parseTranslationResponse } from './translation/response'
 import type { TranslationAdapter } from './translation/orchestrator'
 import { translateFileWithAdapter } from './translation/fileRunner'
@@ -40,7 +40,7 @@ export async function hasKey(): Promise<boolean> {
 }
 
 // ---- Chon model ----
-const DU_PHONG = ['gemini-2.5-flash', 'gemini-2.0-flash', 'gemini-2.5-flash-lite']
+const DU_PHONG = ['gemini-3.8-flash', 'gemini-3.7-flash', 'gemini-3.6-flash', 'gemini-3.5-flash', 'gemini-3.5-flash-lite']
 const LOAI = /image|imagen|tts|audio|speech|embedding|robotics|computer-use|omni/
 
 function diem(n: string): number {
@@ -76,10 +76,7 @@ async function danhSach(key: string, signal?: AbortSignal): Promise<string[]> {
     /* rot ve du phong */
   }
   const pool = ds.length ? ds : DU_PHONG
-  // Translation may use at most two models selected by the configured
-  // provider profile. A long discovery list must never become an unbounded
-  // model-hop retry loop.
-  return pool.filter((n) => !LOAI.test(n)).sort((a, b) => diem(b) - diem(a)).slice(0, 2)
+  return pool.filter((n) => !LOAI.test(n)).sort((a, b) => diem(b) - diem(a)).slice(0, 5)
 }
 
 type GenKQ = GeminiRequestResult
@@ -123,7 +120,7 @@ async function goi(
   if (!res.ok) {
     const t = await readBoundedAiResponseText(res, signal, 64 * 1024).catch(() => '')
     signal?.throwIfAborted()
-    return { ok: false, lui: res.status === 429 || res.status >= 500, status: res.status,
+    return { ok: false, lui: res.status === 404 || res.status === 429 || res.status >= 500, status: res.status,
       retryAfterMs: geminiRetryAfterMs(res, t), err: t.split(key).join('[REDACTED]') }
   }
   const d = await readBoundedAiResponseJson<{ candidates?: { content?: { parts?: Array<{ text?: string; thought?: boolean; functionCall?: unknown; functionResponse?: unknown }> }; finishReason?: string }[] }>(res, signal)
@@ -156,9 +153,9 @@ async function goiCoLui(
   let cuoi: GenKQ = { ok: false, err: 'hết model' }
   for (const m of models) {
     const r = await runWithKeys(key, m, candidate => goi(candidate, m, sys, user, schema, han, signal), signal)
-    if (r.ok) return r
+    if (r.ok) return { ...r, model: m }
     debugRaw(`gemini ${m}`, r.err)
-    cuoi = r
+    cuoi = { ...r, model: m }
     if (!r.lui) break
   }
   return cuoi
@@ -234,7 +231,7 @@ export async function createGeminiTranslationAdapter(key?: string, signal?: Abor
   signal?.throwIfAborted()
   const models = await danhSach(key || await loadKey(), signal)
   let cursor = 0
-  const firstModel = models[0] || 'gemini-2.5-flash'
+  const firstModel = models[0] || 'gemini-3.5-flash'
   return {
     capability: {
       provider: 'gemini', modelIdentity: firstModel, revisionKnown: false,
@@ -249,7 +246,7 @@ export async function createGeminiTranslationAdapter(key?: string, signal?: Abor
       const messages = buildTranslationBatchMessages(batch, 'json-items')
       for (const candidateModel of candidates) {
         model = candidateModel
-        result = await runWithKeys(key, model, candidate => goi(candidate, model, messages[0].content, messages[1].content, SCHEMA, undefined, signal), signal)
+        result = await runWithKeys(key, model, candidate => goi(candidate, model, modelMessageText(messages[0].content), modelMessageText(messages[1].content), SCHEMA, undefined, signal), signal)
         if (!result.allKeysExhausted) break
         earliestRetryMs = Math.min(earliestRetryMs, result.retryAfterMs ?? 60_000)
       }
@@ -360,7 +357,7 @@ export async function translateSrt(
       glossary: []
     }
     const messages = buildTranslationMessages(promptInput, 'json-items')
-    const r = await goiCoLui(undefined, models, messages[0].content, messages[1].content, SCHEMA, undefined, options.signal)
+    const r = await goiCoLui(undefined, models, modelMessageText(messages[0].content), modelMessageText(messages[1].content), SCHEMA, undefined, options.signal)
     if (!r.ok) return { ok: false, error: errLabel(r.err) }
 
     const parsed = parseTranslationResponse(r.text || '', 'json-items', c.map((block) => block.id || ''), Boolean(r.truncated))
@@ -423,13 +420,13 @@ export async function completeGeminiStructured(
   const key = await loadKey()
   if (!key) return null
   const models = await danhSach(key, signal)
-  const model = models[0] || 'gemini-2.5-flash'
-  const result = await goiCoLui(undefined, [model], systemPrompt, userPrompt, geminiSchema(task), undefined, signal)
+  const candidateModels = models.length ? models : DU_PHONG
+  const result = await goiCoLui(undefined, candidateModels, systemPrompt, userPrompt, geminiSchema(task), undefined, signal)
   if (!result.ok || !result.text) return null
   return {
     rawText: result.text,
     provider: 'gemini',
-    modelIdentity: model,
+    modelIdentity: result.model || candidateModels[0] || 'gemini-3.5-flash',
     formatMode: 'schema-constrained',
     completion: classifyCompletion(result.finishReason),
     transport: 'complete',

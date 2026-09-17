@@ -1,0 +1,9 @@
+{
+  "schemaVersion": 1,
+  "clientRequestId": "1ac86daa-b6c1-482c-8ad0-26934a320eeb",
+  "operationToken": "28ab993b6ce4a43dce36f1d6395f2dfd34c16e5f755a86ce37319f344abcca8a",
+  "payloadSha256": "83dcc08ab55f090a38a9d1d72db84d04e7a214715b517bb3f7dc044f42ab93e4",
+  "stage": "restoration-draft",
+  "startedAtUtc": "2026-09-17T13:44:40.4891027Z",
+  "operationId": "op-5538c889-4976-4cf8-843e-62497578b3dc"
+}

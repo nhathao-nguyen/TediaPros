@@ -759,7 +759,7 @@ class DouyinAPIClient:
             return []
 
         target_url = f"{self.BASE_URL}/user/{sec_uid}"
-        timeout_ms = max(30, int(wait_timeout_seconds)) * 1000
+        timeout_ms = 30000
         ids: List[str] = []
         seen: set[str] = set()
         post_api_ids: List[str] = []
@@ -785,12 +785,15 @@ class DouyinAPIClient:
                 headless=headless,
                 args=[
                     "--disable-blink-features=AutomationControlled",
-                    "--disable-dev-shm-usage",
                     "--no-sandbox",
+                    "--disable-infobars",
                 ],
             )
+            ua = self.headers.get("User-Agent", "")
+            if "Firefox" in ua or "Macintosh" in ua or not ua:
+                ua = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36"
             context = await browser.new_context(
-                user_agent=self.headers.get("User-Agent", ""),
+                user_agent=ua,
                 locale="zh-CN",
                 viewport={"width": 1600, "height": 900},
             )
@@ -799,6 +802,10 @@ class DouyinAPIClient:
                 await context.add_cookies(cookies)
 
             page = await context.new_page()
+            await page.add_init_script("""
+                Object.defineProperty(navigator, 'webdriver', {get: () => undefined});
+                window.chrome = { runtime: {} };
+            """)
             pending_response_tasks: List[asyncio.Task] = []
 
             async def _handle_response(response):
@@ -806,12 +813,14 @@ class DouyinAPIClient:
                 url = response.url or ""
                 if "/aweme/v1/web/aweme/post/" not in url:
                     return
+                if response.status != 200:
+                    return
                 try:
                     data = await response.json()
                 except Exception:
                     return
                 aweme_items = data.get("aweme_list") if isinstance(data, dict) else None
-                if isinstance(aweme_items, list):
+                if isinstance(aweme_items, list) and aweme_items:
                     post_api_page_hits += 1
                     extracted: List[str] = []
                     for item in aweme_items:
@@ -830,23 +839,29 @@ class DouyinAPIClient:
                             post_api_seen.add(aweme_id)
                             post_api_ids.append(aweme_id)
 
-            def _on_response(response):
-                pending_response_tasks.append(
-                    asyncio.create_task(_handle_response(response))
-                )
-
-            page.on("response", _on_response)
+            page.on("response", _handle_response)
 
             try:
                 try:
                     await page.goto(
-                        target_url, wait_until="domcontentloaded", timeout=timeout_ms
+                        target_url, wait_until="commit", timeout=timeout_ms
                     )
+                    await page.wait_for_timeout(5000)
                 except Exception as exc:
                     logger.warning(
                         "Browser goto timeout or error, continue with current page state: %s",
                         exc,
                     )
+
+                # Check if "刷新" reload button appeared on page error
+                try:
+                    refresh_btn = page.locator('text="刷新"')
+                    if await refresh_btn.count() > 0:
+                        logger.info("Douyin data reload button found, clicking to refresh...")
+                        await refresh_btn.first.click()
+                        await page.wait_for_timeout(2500)
+                except Exception:
+                    pass
 
                 title = ""
                 try:
@@ -879,37 +894,20 @@ class DouyinAPIClient:
                             )
 
                 try:
-                    warmup_seconds = min(20, max(3, int(wait_timeout_seconds)))
-                    for _ in range(warmup_seconds):
-                        if page.is_closed():
-                            logger.warning("Browser page closed during warmup")
-                            break
-                        _merge(await self._extract_aweme_ids_from_page(page))
-                        if ids:
-                            break
-                        await page.wait_for_timeout(1000)
-
-                    stable_rounds = 0
-                    max_scroll_rounds = max(1, int(max_scrolls))
-                    idle_stop_rounds = max(1, int(idle_rounds))
+                    max_scroll_rounds = min(max(5, int(max_scrolls)), 30)
+                    idle_stop_rounds = max(2, int(idle_rounds))
 
                     for _ in range(max_scroll_rounds):
                         if page.is_closed():
-                            logger.warning("Browser page closed during scrolling")
                             break
-                        await page.mouse.wheel(0, 3800)
-                        await page.wait_for_timeout(1200)
-
-                        before = len(ids)
-                        _merge(await self._extract_aweme_ids_from_page(page))
-                        if len(ids) == before:
-                            stable_rounds += 1
-                        else:
-                            stable_rounds = 0
-
-                        if expected_count > 0 and len(ids) >= expected_count:
+                        if expected_count > 0 and len(post_api_aweme_items) >= expected_count:
                             break
-                        if expected_count <= 0 and stable_rounds >= idle_stop_rounds:
+                        await page.mouse.wheel(0, 2500)
+                        await page.wait_for_timeout(2500)
+
+                        if expected_count > 0 and len(post_api_aweme_items) >= expected_count:
+                            break
+                        if expected_count <= 0 and post_api_page_hits > 0 and _ >= idle_stop_rounds:
                             break
                 except Exception as exc:
                     logger.warning(
@@ -929,9 +927,10 @@ class DouyinAPIClient:
                 await context.close()
                 await browser.close()
 
+        source_ids = post_api_ids if post_api_ids else ids
         selected_ids: List[str] = []
         selected_seen: set[str] = set()
-        for aweme_id in post_api_ids + ids:
+        for aweme_id in source_ids:
             if aweme_id and aweme_id not in selected_seen:
                 selected_seen.add(aweme_id)
                 selected_ids.append(aweme_id)
@@ -967,13 +966,12 @@ class DouyinAPIClient:
         for name, value in self.cookies.items():
             if not name:
                 continue
-            if name in self._BROWSER_COOKIE_BLOCKLIST:
-                continue
             payload.append(
                 {
                     "name": str(name),
                     "value": str(value or ""),
-                    "url": f"{self.BASE_URL}/",
+                    "domain": ".douyin.com",
+                    "path": "/",
                 }
             )
         return payload

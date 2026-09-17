@@ -27,10 +27,11 @@ import {
   type TranslationCapability,
   type TranslationPlan
 } from './planner'
+import { isGatewayOperationDeferredError } from '../geminiGatewayOperations'
 
 export interface TranslationAdapter {
   capability: TranslationCapability
-  requestOnce(batch: PlannedTranslationBatch, signal: AbortSignal): Promise<{
+  requestOnce(batch: PlannedTranslationBatch, signal: AbortSignal, sourceLedger?: TranslationInput): Promise<{
     raw: string
     truncated: boolean
     modelIdentity: string
@@ -60,6 +61,8 @@ export interface TranslateWithAdapterOptions {
   autoRepairContentWarnings?: boolean
   /** Quality repair consumes recovery accounting even when it uses a fresh sub-plan. */
   initialRequestKind?: 'normal' | 'recovery'
+  /** Deterministic test/embedding override; production defaults to 180 seconds. */
+  requestTimeoutMs?: number
 }
 
 export interface TranslationRunResult extends TranslationBatchResult {
@@ -122,8 +125,15 @@ function uniqueValidItems(items: readonly TranslationItem[], expectedIds: readon
   return items.filter((item) => expected.has(item.id) && counts.get(item.id) === 1 && Boolean(item.text.trim()))
 }
 
-function makeRequestSignal(parent: AbortSignal, remainingMs: number): { signal: AbortSignal; timeoutSignal: AbortSignal } {
-  const timeoutSignal = AbortSignal.timeout(Math.max(1, Math.min(180_000, Math.ceil(remainingMs))))
+function makeRequestSignal(
+  parent: AbortSignal,
+  remainingMs: number,
+  timeoutOwner: 'orchestrator' | 'adapter' = 'orchestrator',
+  requestTimeoutMs = 180_000
+): { signal: AbortSignal; timeoutSignal?: AbortSignal } {
+  if (timeoutOwner === 'adapter') return { signal: parent }
+  const boundedTimeoutMs = Math.min(requestTimeoutMs, remainingMs)
+  const timeoutSignal = AbortSignal.timeout(Math.max(1, Math.ceil(boundedTimeoutMs)))
   return { signal: AbortSignal.any([parent, timeoutSignal]), timeoutSignal }
 }
 
@@ -326,19 +336,29 @@ export async function translateWithAdapter(
       }
       budget.charge(work.kind, work.originalBatchId)
       await options.beforeDispatch?.(budget.snapshot())
-      const { signal: requestSignal, timeoutSignal } = makeRequestSignal(signal, budget.remainingMs())
+      const { signal: requestSignal, timeoutSignal } = makeRequestSignal(
+        signal,
+        budget.remainingMs(),
+        adapter.capability.requestTimeoutOwner,
+        options.requestTimeoutMs
+      )
       let response: Awaited<ReturnType<TranslationAdapter['requestOnce']>>
       try {
-        response = await adapter.requestOnce(work.batch, requestSignal)
+        response = await adapter.requestOnce(work.batch, requestSignal, input)
       } catch (error) {
-        const failure = signal.aborted ? { code: 'cancelled' as const, retryable: false, message: 'Translation cancelled.' } : classifyTranslationError(timeoutSignal.aborted
+        // A durable Gateway operation has already been submitted and has an
+        // operation ID, token-backed lease and provider eligibility time. It
+        // is not a translation failure and must reach the AutoShort queue
+        // unchanged so the same operation can be polled after cooldown.
+        if (isGatewayOperationDeferredError(error)) throw error
+        const failure = signal.aborted ? { code: 'cancelled' as const, retryable: false, message: 'Translation cancelled.' } : classifyTranslationError(timeoutSignal?.aborted
           ? Object.assign(new Error('Translation request timed out.'), { name: 'TimeoutError' })
           : error)
         if (failure.code === 'cancelled') {
           terminalIssues.push(issue('cancelled', 'Dịch đã bị hủy trước khi hoàn tất.', work.requestedIds))
           break
         }
-        if (failure.retryable) {
+        if (failure.retryable && adapter.capability.transportRetryOwner !== 'gateway') {
           try {
             const requestKey = `${work.originalBatchId}|${work.requestedIds.join(',')}`
             budget.claimTransportRetry(work.originalBatchId, requestKey)
@@ -358,6 +378,14 @@ export async function translateWithAdapter(
             terminalIssues.push(issue('budget-exhausted', retryError instanceof Error ? retryError.message : 'Đã hết ngân sách retry.', work.requestedIds))
             break
           }
+        }
+        if (failure.retryable && adapter.capability.transportRetryOwner === 'gateway') {
+          terminalIssues.push(issue(
+            failure.code,
+            `${failure.message} Gateway đã hoàn tất retry nội bộ; hãy thử lại thủ công để mở một lượt gateway mới.`,
+            work.requestedIds
+          ))
+          continue
         }
         terminalIssues.push(issue(failure.code, failure.message, work.requestedIds))
         continue
@@ -444,6 +472,10 @@ export async function translateWithAdapter(
 
       terminalIssues.push(...(hardParserIssues.length > 0 ? hardParserIssues : [issue('no-progress', 'Bản dịch không tạo thêm cue hợp lệ; dừng để tránh retry lặp.', work.requestedIds)]))
     } catch (error) {
+      // The inner request catch rethrows a durable provider wait. This outer
+      // boundary must preserve it too; otherwise it becomes a fake terminal
+      // assessment after the operation ID has already been persisted.
+      if (isGatewayOperationDeferredError(error)) throw error
       if (error instanceof TranslationBudgetExhaustedError) {
         terminalIssues.push(issue('budget-exhausted', error.message, work.requestedIds))
         break

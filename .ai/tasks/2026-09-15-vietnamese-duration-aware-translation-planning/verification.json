@@ -1,0 +1,48 @@
+{
+  "schemaVersion": 1,
+  "date": "2026-09-15",
+  "task": "VI-DUB-20260915-PLANNING",
+  "scope": "Documentation planning and current baseline verification only",
+  "head": "d73db0378aabbca81969e0098cebac7ed70d2dfc",
+  "dirtyWorktree": true,
+  "userConfirmedRequirements": {
+    "geminiGatewayContext1M": true,
+    "geminiVoiceGeneration": false,
+    "keepExistingTtsProviders": true
+  },
+  "documentationValidation": {
+    "command": "node .ai/tasks/2026-09-15-vietnamese-duration-aware-translation-planning/verify-docs.mjs",
+    "exitCode": 0,
+    "files": 4,
+    "localLinks": 13,
+    "syntaxCheckedCodeBlocks": 27,
+    "requirementsCovered": 15,
+    "tasksCovered": 14,
+    "baselineSuiteNamesChecked": 13,
+    "snippetTypecheckOrRuntimeExecution": false
+  },
+  "baselineTypecheck": { "command": "npm.cmd run typecheck", "exitCode": 0 },
+  "baselineTests": {
+    "command": "node scripts/run-local-runtime-tests.mjs translation-prompts.test dubbing-grouping.test dubbing-duration-profile.test autoshort-content-quality.test gemini-gateway-prompts.test",
+    "exitCode": 0,
+    "passed": 74,
+    "failed": 0,
+    "skipped": 0
+  },
+  "baselineProbe": {
+    "command": "node .ai/tasks/2026-09-15-vietnamese-translation-design-review/probe.mjs",
+    "exitCode": 0,
+    "providerCalls": 0,
+    "ttsCalls": 0,
+    "limitationsReproduced": ["gateway-missing-duration", "fragment-vs-group-budget", "semantic-false-negatives", "uncalibrated-predictor"],
+    "sourceHashes": {
+      "src/main/dubbing/plan.ts": "d8354b90889eae7b434c1d6b3f9e2321eb960f393092993ca775bf108dc3e5b4",
+      "src/main/dubbing/translation.ts": "a9f37684f2b19370c5981aebe0ba4b4ac289bb5d73b87ae57f285c9313d939a7",
+      "src/main/geminiGatewayPrompts.ts": "6d835aae7c5a36f386982bd83162a7392269627ed5b1236425932ad249d50e3a",
+      "src/main/translation/prompts.ts": "903401e1dd5b57229d59910938db1161a86de5ad37b4af396fd820a2b34b71c1",
+      "src/main/dubbing/durationPredictor.ts": "e3875669e8b6127f9f6d1e3d3c97e4d1a15122c62051a55b5ca46e23da9a6536",
+      "src/main/autoShortContentQuality.ts": "2e6e3b396b419a8ac6e2dcd07ef4d06fc267a8fc304a7c1f3becba0a66025d9f"
+    }
+  },
+  "notPerformed": ["production-implementation", "gateway-changes", "live-1M-generation", "new-tts", "human-AB-evaluation", "packaging", "WinLocal-install", "git-commit", "push"]
+}

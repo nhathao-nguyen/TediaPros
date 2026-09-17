@@ -23,6 +23,7 @@ extraResources:
       - README.md
       - licenses/**/*
       - NotoSans.ttf
+      - Roboto.ttf
       - NotoSansArabic.ttf
       - NotoSansThai.ttf
       - NotoSansKR.ttf

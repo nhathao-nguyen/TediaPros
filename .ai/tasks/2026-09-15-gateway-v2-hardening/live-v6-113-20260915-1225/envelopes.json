@@ -1,0 +1,42 @@
+[
+  {
+    "status": 200,
+    "id": "chatcmpl-1789449906",
+    "model": "gemini-advanced",
+    "finish_reason": "stop",
+    "response_content_bytes": 7091,
+    "gateway_metadata": {
+      "gateway_contract_version": 2,
+      "requested_model": "gemini-advanced",
+      "resolved_model": "gemini-advanced",
+      "observed_model": "3.1 Pro",
+      "observed_model_id": "e6fa609c3fa255c0",
+      "model_verification": "matched",
+      "route_fingerprint": "29ed9729dbdd53e76081fc89bd7f7991b6a6e2c770e964fd8fa2ceaa0c22c646",
+      "completion_state": "complete",
+      "completion_evidence": "observed-terminal-frame-v1",
+      "logical_request_id": "3536a055-e2f5-4223-8d9a-5ecdaa66d799",
+      "upstream_attempts": 1
+    }
+  },
+  {
+    "status": 200,
+    "id": "chatcmpl-1789449946",
+    "model": "gemini-advanced",
+    "finish_reason": "stop",
+    "response_content_bytes": 6118,
+    "gateway_metadata": {
+      "gateway_contract_version": 2,
+      "requested_model": "gemini-advanced",
+      "resolved_model": "gemini-advanced",
+      "observed_model": "3.1 Pro",
+      "observed_model_id": "e6fa609c3fa255c0",
+      "model_verification": "matched",
+      "route_fingerprint": "29ed9729dbdd53e76081fc89bd7f7991b6a6e2c770e964fd8fa2ceaa0c22c646",
+      "completion_state": "complete",
+      "completion_evidence": "observed-terminal-frame-v1",
+      "logical_request_id": "6f4668b3-cd5b-4030-865b-5ccb5becfc35",
+      "upstream_attempts": 1
+    }
+  }
+]

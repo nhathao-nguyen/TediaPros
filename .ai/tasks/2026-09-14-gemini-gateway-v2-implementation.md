@@ -1,6 +1,15 @@
 # TASK-20260914-GATEWAY-V2-IMPLEMENTATION: Triển Khai Toàn Diện Gemini Gateway v2, Định Danh Model Theo Tài Khoản và Pipeline Dịch Hai Lượt Bền Vững
 
-- **Trạng thái:** Hoàn thành triển khai và kiểm thử tự động toàn diện (Offline & Contract PASS 100%; Live blocked bởi cookie Google Web upstream hết hạn).
+- **Trạng thái cập nhật 2026-09-15:** Lỗi response-version và các finding
+  retry/resume identity/evidence/model routing/JSON normalization đã được sửa
+  bằng hardening code + regression tests. Sau route Flash-Lite lịch sử, session
+  mới đã xác minh route hiện tại là `3.1 Pro`; prompt v8 đã hoàn thành hai stage
+  cho Volvo 44 cue và nguồn thật 113 cue trong đúng hai request mỗi run. Xem
+  [review và bằng chứng](2026-09-15-gateway-v2-review.md),
+  [hardening record](2026-09-15-gateway-v2-hardening.md) và
+  [semantic review](2026-09-15-gateway-v2-hardening/semantic-review.md). Các
+  bảng bên dưới giữ kết quả do tác giả báo cáo tại thời điểm 2026-09-14, không
+  thay thế nghiệm thu hiện tại.
 - **Người thực hiện:** Antigravity AI
 - **Thời gian:** 2026-09-14
 - **Kế hoạch & Thiết kế tham chiếu:**
@@ -19,11 +28,18 @@ Sửa chữa tận gốc nguyên nhân định tuyến sai model Gemini (gửi c
 
 ## 2. Tiêu Chuẩn Nghiệm Thu (Acceptance Criteria)
 
-- [x] **Task 1 (CMT):** Model catalog theo tài khoản RPC, trích xuất ID upstream (`e6fa609c3fa255c0` cho Pro), xây dựng header theo đúng model route, loại bỏ việc gửi ID ngẫu nhiên.
+- [x] **Task 1 (CMT):** Model catalog theo tài khoản RPC, exact-label route
+  `3.1 Pro`, xây dựng header theo route/account tier và loại bỏ ID ngẫu nhiên.
+  Catalog fallback capacity được khóa riêng cho exact Pro; evidence response là
+  điều kiện cuối cùng để chấp nhận.
 - [x] **Task 2 (CMT):** Thu thập bằng chứng phản hồi (`observed_model_id`, `observed_model`, `completion_state`, `completion_evidence`) từ các frame RPC `wrb.fr`, không tự gán `resolved_model` làm bằng chứng.
 - [x] **Task 3 (CMT & TP):** Chuẩn hóa structured JSON có giới hạn (bóc BOM, unwrap duy nhất 1 cặp code fence markdown hợp lệ), từ chối văn xuôi/fence dở/nhiều object/trùng key; đảm bảo độ tương đồng (parity) 100% giữa bộ chuẩn hóa Go và TS qua 12 test vectors cố định.
 - [x] **Task 4 (CMT & TP):** Ban hành Hợp đồng Gateway v2 (`gateway_requirements`, `gateway_metadata`, mã lỗi có định kiểu); quy định Gateway là nơi duy nhất sở hữu retry generation (tối đa 3 lần/stage); chặn vòng lặp retry tự động ở cấp độ queue/coordinator của TediaPros khi gặp lỗi permanent hoặc exhausted.
-- [x] **Task 5 (TP):** Xây dựng bộ prompt gọn hai lượt `gemini-gateway-two-pass-v4` với source ledger trực tiếp `{id, group_id, text}`, bảo đảm ngân sách prompt 113 cues draft <= 12 KiB (đo thực tế: ~6.2 KiB) và review <= draft + candidate + 4 KiB.
+- [x] **Task 5 (TP):** Xây dựng bộ prompt gọn hai lượt
+  `gemini-gateway-two-pass-v8` với source ledger trực tiếp `{id, group_id, text}`;
+  draft 113 cues <= 12 KiB và review <= draft + candidate + 4 KiB. V8 cấm suy
+  diễn đơn vị tiền tệ, loài/vật liệu/brand/place/claim pháp lý khi nguồn không
+  chứng minh, nhưng cho phép khôi phục homophone ASR/OCR có bằng chứng.
 - [x] **Task 6 (TP):** Lưu trữ draft checkpoint nguyên tử (`gemini-gateway-draft.json`) khi hoàn thành stage 1; khi thử lại lượt review, tự động resume draft hợp lệ (khớp digest, locale, prompt version, route fingerprint) và bỏ qua stage 1 (tiết kiệm 1 generation request).
 - [x] **Task 7 (CMT & TP):** Cung cấp API `POST /openai/v1/gateway/verify-model` với cache RAM 15 phút, coalesce probe đồng thời (10 request chỉ gọi 1 probe); mở rộng `GeminiStatus` và hiển thị trạng thái đã xác minh trên giao diện AutoShort; giới hạn kích thước audit log tối đa 16 MiB/file và 3 raw responses/stage; che chắn triệt để secret/token/cookie trong log và URL.
 - [x] **Task 8 (CMT & TP):** Đạt 100% Typecheck (Go, Node, Web), 100% tests offline/local runtime; đóng gói binary server CMT và build production web/Electron của TP.
@@ -98,19 +114,19 @@ Sửa chữa tận gốc nguyên nhân định tuyến sai model Gemini (gửi c
 
 | Hạng mục kiểm tra | Tiêu chí kỳ vọng | Kết quả thực tế | Trạng thái | Ghi chú & Bằng chứng |
 | :--- | :--- | :--- | :---: | :--- |
-| **Model Routing (Task 1)** | Request `gemini-advanced` tìm đúng `3.1 Pro`, gửi upstream ID `e6fa609c3fa255c0` trong header | Khớp hoàn toàn với account catalog | **PASS** | `TestModelHeaderUsesRouteID` pass |
+| **Model Routing (Task 1)** | Request `gemini-advanced` tìm đúng exact `3.1 Pro`, dùng account tier đúng và bắt evidence upstream | Fallback exact-Pro + preflight; current verify observed 3.1 Pro | **LIVE_CONFIRMED** | Một probe bounded, evidence response vẫn là gate cuối |
 | **Response Evidence (Task 2)** | Bắt buộc `observed_model_id` từ frame `wrb.fr`, không chép từ alias | Parser trích xuất đúng candidate ID & label | **PASS** | `gemini_response_evidence_test.go` pass |
 | **JSON Normalization Parity (Task 3)** | 12 test vectors xử lý giống hệt nhau giữa Go và TypeScript | 12/12 cases đạt cùng kết quả accept/reject | **PASS** | `structured_json_test.go` & `gemini-gateway-contract.test.ts` |
 | **Contract v2 & Retry (Task 4)** | Yêu cầu `contract_version: 2`, cap 3 retry tại gateway, client không lặp queue | Telemetry đầy đủ, coordinator chặn retry permanent | **PASS** | Unit & Contract tests pass |
-| **Prompt Budget (Task 5)** | Prompt 113 cues draft <= 12 KiB; review <= draft + candidate + 4 KiB | Draft: ~6.2 KiB (ngân sách 12 KiB) | **PASS** | `gemini-gateway-prompts.test.ts` pass |
+| **Prompt Budget (Task 5)** | Prompt 113 cues draft <= 12 KiB; review <= draft + candidate + 4 KiB | Prompt v8 pass budget, giữ số trần và source-evidence discipline | **PASS** | `gemini-gateway-prompts.test.ts` pass |
 | **Draft Resume (Task 6)** | Khi retry lượt review, tái dùng draft đã lưu và bỏ qua Stage 1 | Draft được đọc an toàn, adapter chỉ gọi 1 stage review | **PASS** | `gemini-gateway-draft-resume.test.ts` pass |
 | **Verify API & Cache (Task 7)** | `POST /verify-model` cache RAM 15 min, 10 request đồng thời = 1 probe call | 0 generation khi cache hit; 1 generation khi probe | **PASS** | `model_verification_test.go` pass |
 | **UI & Audit Redaction (Task 7)** | UI hiển thị trạng thái đã xác minh; audit log lọc sạch secret token/cookie | UI hiển thị model/time; audit log lọc regex an toàn | **PASS** | `autoshort-ui-contract.test.ts` & contract test pass |
-| **CMT Go Build (Task 8)** | Compile binary `server.exe` không lỗi | Binary sinh tại `.artifacts/gateway-v2/server.exe` (21.585.408 bytes) | **PASS** | SHA256: `188a50c687e2891decfb3e94144e9df155c5f5a40704bc10ac98cc3fff4c881c` |
+| **CMT Go Build (Task 8)** | Compile binary `server.exe` không lỗi | Current v8 binary được build, hash-verify và deploy vào root canonical | **PASS** | SHA256: `507C271E86EEDA8D59B6AB1EC4F04FF2EED36D4B6B8E89ECC2C4BF3A52802606` |
 | **TP Vite/Electron Build (Task 8)** | `npm run build` tạo đầy đủ bundle SSR main/preload và renderer web | Bundles tại `out/main`, `out/preload`, `out/renderer` | **PASS** | Không có lỗi biên dịch kiểu |
-| **Live Gate A (Capabilities & Verify)** | Server phản hồi capabilities v2; probe verify trả observed model | `capabilities` trả v2, `verify-model` trả `authentication_required` do cookie Google Web upstream hết hạn | **LIVE_BLOCKED** | Gateway và Client bắt đúng trạng thái cookie hết hạn một cách trung thực |
-| **Live Gate B (113-cue translation)** | Chạy thực tế 113 cues qua hai lượt draft + review | Chưa thể gọi upstream Google do cookie đăng nhập hết hạn | **LIVE_BLOCKED** | Sẵn sàng chạy ngay khi người dùng cập nhật cookie mới vào `.env` |
-| **Live Gate C (Volvo 44-cue translation)** | Chạy thực tế 44 cues Volvo đối chiếu ngữ nghĩa | Chưa thể gọi upstream Google do cookie đăng nhập hết hạn | **LIVE_BLOCKED** | Sẵn sàng chạy ngay khi người dùng cập nhật cookie mới vào `.env` |
+| **Live Gate A (Capabilities & Verify)** | Server phản hồi capabilities v2; probe verify trả observed model | Current probe observed 3.1 Pro | **LIVE_CONFIRMED** | One bounded generation; catalog alone remains insufficient |
+| **Live Gate B (113-cue translation)** | Chạy thực tế 113 cues qua hai lượt draft + review | V8: 2 generation, 2 attempts, matched/complete; `169` remains unitless | **LIVE_CONFIRMED** | Không chạy render/TTS từ fixture ledger |
+| **Live Gate C (Volvo 44-cue translation)** | Chạy thực tế 44 cues Volvo đối chiếu ngữ nghĩa | V8: 2 generation, 2 attempts, matched/complete; OCR image corroborates oak-branch ASR repair | **LIVE_CONFIRMED** | Không chạy render/TTS từ fixture ledger |
 
 ---
 
@@ -166,10 +182,29 @@ cmd.exe /c "npm run build"
 
 ---
 
-## 8. Hướng Dẫn Bàn Giao & Vận Hành (Handoff Notes)
+## 8. Cập nhật sau review và hardening (2026-09-15)
+
+- CMT phát hiện route dynamic có thể gắn capacity generic cho exact Pro khi
+  catalog không còn trả tier legacy. Verify live đã bắt Flash-Lite; TP không
+  nhận response đó. `capacityForModel`, evidence gate, preflight và cache
+  mismatch 2 phút đã giải quyết đường sai này trong code/test.
+- Request budget thường là hai generation (draft/review). Khi verification cache
+  hết hạn hoặc route mới, chỉ có thêm một probe bounded. Mismatch dừng trước
+  dịch thay vì chi thêm retry/generation.
+- Prompt v8 giữ số trần nguyên dạng. Điều này sửa lỗi semantic lịch sử thêm
+  `tệ` cho `169`; run 113 cue hiện tại đã xác nhận không thêm đơn vị. Volvo
+  `cành sồi` có OCR ảnh nguồn xác nhận, nên là khôi phục ASR đúng.
+- Full TP local-runtime/typecheck/build và full CMT `go test ./...` pass sau
+  hardening. Binary gateway v8 đã hash-verify, restart và capabilities đáp ứng
+  contract v2/provider ready sau session refresh.
+
+## 9. Hướng Dẫn Bàn Giao & Vận Hành (Handoff Notes)
 
 ### 1. Vận hành Gateway
-Binary mới đã được triển khai tại `F:\Son\tool\CreateMediaTool\server.exe` và đang lắng nghe trên cổng `4982`.
+Binary v8 đã được triển khai tại `F:\Son\tool\CreateMediaTool\server.exe`,
+checksum-verify và restart trên cổng `4982`. Capabilities trả contract v2 và
+provider ready; session hiện tại đã qualified route 3.1 Pro qua probe bounded
+và hai run v8, thay vì dịch trên route sai.
 Khi cần kiểm tra trạng thái hoạt động:
 ```powershell
 curl http://127.0.0.1:4982/openai/v1/gateway/capabilities
@@ -184,7 +219,9 @@ Kết quả trả về sẽ hiển thị:
 ```
 
 ### 2. Cập nhật cookie Gemini khi hết hạn
-Hiện tại cookie `__Secure-1PSID` / `__Secure-1PSIDTS` trên tài khoản Google đã hết hạn từ phía Google Web. Để thực hiện các lượt dịch trực tiếp (Live Gates B & C):
+Khi Google Web báo session bị từ chối/hết hạn, thay cả cặp cookie
+`__Secure-1PSID` / `__Secure-1PSIDTS` rồi thực hiện model check bounded trước
+khi chạy job mới:
 1. Đăng nhập vào [gemini.google.com](https://gemini.google.com) trên trình duyệt bằng tài khoản Google có quyền Pro / Advanced.
 2. Mở Developer Tools (F12) -> Application -> Cookies -> `https://google.com`.
 3. Sao chép giá trị mới của `__Secure-1PSID` và `__Secure-1PSIDTS`.

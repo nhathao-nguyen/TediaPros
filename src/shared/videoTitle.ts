@@ -5,7 +5,10 @@ import { validateVideoSeoOptions } from './videoSeo'
 export function validateVideoTitleConfig(raw: unknown): string | null {
   if (!raw || typeof raw !== 'object' || Array.isArray(raw)) return 'Cấu hình tiêu đề không hợp lệ.'
   const config = raw as Partial<VideoTitleConfig>
-  if (!['gemini', 'openai', 'local'].includes(config.provider || '')) return 'Nhà cung cấp AI tạo tiêu đề không hợp lệ.'
+  if (!['gemini', 'openai', 'local', 'gemini-gateway'].includes(config.provider || '')) return 'Nhà cung cấp AI tạo tiêu đề không hợp lệ.'
+  if (config.model !== undefined && (typeof config.model !== 'string' || !config.model.trim() || config.model.length > 128)) {
+    return 'Tên mô hình tiêu đề không hợp lệ.'
+  }
   if (typeof config.language !== 'string' || !config.language.trim() || config.language.length > 64) {
     return 'Ngôn ngữ tiêu đề không hợp lệ.'
   }

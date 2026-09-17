@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "state": "validated",
+  "stage": "restoration-draft",
+  "identity": "8f854f2ba8ee4d5f7827954742699e71e0f9fbd9b6bdee1ec9e632782b9ddc1f",
+  "routeFingerprint": "29ed9729dbdd53e76081fc89bd7f7991b6a6e2c770e964fd8fa2ceaa0c22c646",
+  "evidenceDigest": "1485072964334270f32426ef10ca6a7fe988438731fc60c69fc57c158af20a51",
+  "expectedIds": [
+    "cue-8-16160",
+    "cue-9-17520",
+    "cue-10-18800",
+    "cue-11-19620",
+    "cue-12-20740",
+    "cue-13-21640",
+    "cue-14-23120",
+    "cue-15-23640"
+  ],
+  "targetLocale": "vi",
+  "promptVersion": "gateway-restoration-media-v2",
+  "parserVersion": "gateway-restoration-parser-v1",
+  "raw": "{\"schemaVersion\":\"restoration-translation-v1\",\"evidenceDigest\":\"1485072964334270f32426ef10ca6a7fe988438731fc60c69fc57c158af20a51\",\"sourceEdits\":[{\"id\":\"cue-11-19620\",\"text\":\"敲起来还邦邦响\",\"kind\":\"homophone\",\"evidenceRefs\":[\"ocr_184\"]},{\"id\":\"cue-15-23640\",\"text\":\"而等到赛事之后，如何清洗发胶也不是一件容易的事\",\"kind\":\"ocr_alignment\",\"evidenceRefs\":[\"ocr_210\",\"ocr_231\"]}],\"sentenceEndIds\":[\"cue-9-17520\",\"cue-11-19620\",\"cue-14-23120\",\"cue-15-23640\"],\"entities\":[],\"items\":[{\"id\":\"cue-8-16160\",\"target\":\"Chờ keo xịt tóc đông đặc và khô lại,\"},{\"id\":\"cue-9-17520\",\"target\":\"thì trông sẽ bóng bẩy và đẹp mắt.\"},{\"id\":\"cue-10-18800\",\"target\":\"Nhưng lại rất cứng,\"},{\"id\":\"cue-11-19620\",\"target\":\"gõ vào còn kêu lộc cộc.\"},{\"id\":\"cue-12-20740\",\"target\":\"Thật không dám tưởng tượng,\"},{\"id\":\"cue-13-21640\",\"target\":\"nếu lúc này mà da đầu ngứa\"},{\"id\":\"cue-14-23120\",\"target\":\"thì phải làm sao.\"},{\"id\":\"cue-15-23640\",\"target\":\"Mà đợi sau khi thi đấu xong, làm thế nào để gội sạch keo xịt tóc cũng không phải là chuyện dễ dàng.\"}]}",
+  "rawSha256": "eb954d8960388bf743b906e1f1793dddabd4568d1607273623f6dc8a27c5f317",
+  "observedModelId": "e6fa609c3fa255c0",
+  "observedModel": "3.1 Pro",
+  "savedAtUtc": "2026-09-17T14:06:56.886Z"
+}

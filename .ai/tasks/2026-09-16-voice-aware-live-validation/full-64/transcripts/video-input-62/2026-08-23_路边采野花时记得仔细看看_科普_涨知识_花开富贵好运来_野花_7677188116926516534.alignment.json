@@ -1,0 +1,8376 @@
+{
+  "duration": 143.4310625,
+  "language": "zh",
+  "segments": [
+    {
+      "start": 1.46,
+      "end": 3.5,
+      "text": "路边采野花实际的仔细看看",
+      "words": [
+        {
+          "text": "路",
+          "start": 1.46,
+          "end": 1.78,
+          "probability": 0.8193359375
+        },
+        {
+          "text": "边",
+          "start": 1.78,
+          "end": 1.98,
+          "probability": 0.57470703125
+        },
+        {
+          "text": "采",
+          "start": 1.98,
+          "end": 2.14,
+          "probability": 0.772705078125
+        },
+        {
+          "text": "野",
+          "start": 2.14,
+          "end": 2.32,
+          "probability": 0.77587890625
+        },
+        {
+          "text": "花",
+          "start": 2.32,
+          "end": 2.48,
+          "probability": 0.99169921875
+        },
+        {
+          "text": "实",
+          "start": 2.48,
+          "end": 2.66,
+          "probability": 0.492919921875
+        },
+        {
+          "text": "际",
+          "start": 2.66,
+          "end": 2.8,
+          "probability": 0.999267578125
+        },
+        {
+          "text": "的",
+          "start": 2.8,
+          "end": 2.96,
+          "probability": 0.89013671875
+        },
+        {
+          "text": "仔",
+          "start": 2.96,
+          "end": 3.12,
+          "probability": 0.99658203125
+        },
+        {
+          "text": "细",
+          "start": 3.12,
+          "end": 3.24,
+          "probability": 0.998779296875
+        },
+        {
+          "text": "看看",
+          "start": 3.24,
+          "end": 3.5,
+          "probability": 0.99169921875
+        }
+      ]
+    },
+    {
+      "start": 3.5,
+      "end": 5.38,
+      "text": "这种野花能采吗?",
+      "words": [
+        {
+          "text": "这",
+          "start": 3.5,
+          "end": 4.1,
+          "probability": 0.81396484375
+        },
+        {
+          "text": "种",
+          "start": 4.1,
+          "end": 4.28,
+          "probability": 0.998046875
+        },
+        {
+          "text": "野",
+          "start": 4.28,
+          "end": 4.46,
+          "probability": 0.9931640625
+        },
+        {
+          "text": "花",
+          "start": 4.46,
+          "end": 4.66,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "能",
+          "start": 4.66,
+          "end": 4.84,
+          "probability": 0.994140625
+        },
+        {
+          "text": "采",
+          "start": 4.84,
+          "end": 5.1,
+          "probability": 0.983642578125
+        },
+        {
+          "text": "吗?",
+          "start": 5.1,
+          "end": 5.38,
+          "probability": 0.95947265625
+        }
+      ]
+    },
+    {
+      "start": 5.74,
+      "end": 7.46,
+      "text": "这是人工染色后的太阳花",
+      "words": [
+        {
+          "text": "这是",
+          "start": 5.74,
+          "end": 5.96,
+          "probability": 0.95068359375
+        },
+        {
+          "text": "人",
+          "start": 5.96,
+          "end": 6.2,
+          "probability": 0.98388671875
+        },
+        {
+          "text": "工",
+          "start": 6.2,
+          "end": 6.34,
+          "probability": 0.97216796875
+        },
+        {
+          "text": "染",
+          "start": 6.34,
+          "end": 6.5,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "色",
+          "start": 6.5,
+          "end": 6.66,
+          "probability": 0.9921875
+        },
+        {
+          "text": "后",
+          "start": 6.66,
+          "end": 6.82,
+          "probability": 0.966796875
+        },
+        {
+          "text": "的",
+          "start": 6.82,
+          "end": 6.94,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "太",
+          "start": 6.94,
+          "end": 7.1,
+          "probability": 0.98828125
+        },
+        {
+          "text": "阳",
+          "start": 7.1,
+          "end": 7.24,
+          "probability": 0.998779296875
+        },
+        {
+          "text": "花",
+          "start": 7.24,
+          "end": 7.46,
+          "probability": 0.9990234375
+        }
+      ]
+    },
+    {
+      "start": 7.46,
+      "end": 9.34,
+      "text": "可不是什么蓝色妖姬",
+      "words": [
+        {
+          "text": "可",
+          "start": 7.46,
+          "end": 8.08,
+          "probability": 0.9921875
+        },
+        {
+          "text": "不是",
+          "start": 8.08,
+          "end": 8.32,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "什么",
+          "start": 8.32,
+          "end": 8.6,
+          "probability": 0.99609375
+        },
+        {
+          "text": "蓝",
+          "start": 8.6,
+          "end": 8.8,
+          "probability": 0.980224609375
+        },
+        {
+          "text": "色",
+          "start": 8.8,
+          "end": 8.98,
+          "probability": 1.0
+        },
+        {
+          "text": "妖",
+          "start": 8.98,
+          "end": 9.14,
+          "probability": 0.89794921875
+        },
+        {
+          "text": "姬",
+          "start": 9.14,
+          "end": 9.34,
+          "probability": 0.88134765625
+        }
+      ]
+    },
+    {
+      "start": 9.34,
+      "end": 10.24,
+      "text": "可以采",
+      "words": [
+        {
+          "text": "可以",
+          "start": 9.34,
+          "end": 9.94,
+          "probability": 0.68798828125
+        },
+        {
+          "text": "采",
+          "start": 9.94,
+          "end": 10.24,
+          "probability": 0.998291015625
+        }
+      ]
+    },
+    {
+      "start": 10.24,
+      "end": 11.98,
+      "text": "这种野花能采吗?",
+      "words": [
+        {
+          "text": "这",
+          "start": 10.24,
+          "end": 10.72,
+          "probability": 0.89111328125
+        },
+        {
+          "text": "种",
+          "start": 10.72,
+          "end": 10.88,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "野",
+          "start": 10.88,
+          "end": 11.06,
+          "probability": 0.99658203125
+        },
+        {
+          "text": "花",
+          "start": 11.06,
+          "end": 11.26,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "能",
+          "start": 11.26,
+          "end": 11.44,
+          "probability": 0.99609375
+        },
+        {
+          "text": "采",
+          "start": 11.44,
+          "end": 11.7,
+          "probability": 0.999267578125
+        },
+        {
+          "text": "吗?",
+          "start": 11.7,
+          "end": 11.98,
+          "probability": 0.99267578125
+        }
+      ]
+    },
+    {
+      "start": 12.38,
+      "end": 13.2,
+      "text": "这是蒲公英",
+      "words": [
+        {
+          "text": "这是",
+          "start": 12.38,
+          "end": 12.6,
+          "probability": 0.9912109375
+        },
+        {
+          "text": "蒲",
+          "start": 12.6,
+          "end": 12.82,
+          "probability": 0.89599609375
+        },
+        {
+          "text": "公",
+          "start": 12.82,
+          "end": 12.98,
+          "probability": 0.93701171875
+        },
+        {
+          "text": "英",
+          "start": 12.98,
+          "end": 13.2,
+          "probability": 0.740234375
+        }
+      ]
+    },
+    {
+      "start": 13.2,
+      "end": 14.62,
+      "text": "别名黄花地丁",
+      "words": [
+        {
+          "text": "别",
+          "start": 13.2,
+          "end": 13.7,
+          "probability": 0.86572265625
+        },
+        {
+          "text": "名",
+          "start": 13.7,
+          "end": 13.86,
+          "probability": 0.98681640625
+        },
+        {
+          "text": "黄",
+          "start": 13.86,
+          "end": 14.06,
+          "probability": 0.8359375
+        },
+        {
+          "text": "花",
+          "start": 14.06,
+          "end": 14.26,
+          "probability": 0.9794921875
+        },
+        {
+          "text": "地",
+          "start": 14.26,
+          "end": 14.42,
+          "probability": 0.23388671875
+        },
+        {
+          "text": "丁",
+          "start": 14.42,
+          "end": 14.62,
+          "probability": 0.933837890625
+        }
+      ]
+    },
+    {
+      "start": 14.62,
+      "end": 17.04,
+      "text": "可以采回来切断后晒干成茶",
+      "words": [
+        {
+          "text": "可以",
+          "start": 14.62,
+          "end": 15.2,
+          "probability": 0.9267578125
+        },
+        {
+          "text": "采",
+          "start": 15.2,
+          "end": 15.44,
+          "probability": 0.991943359375
+        },
+        {
+          "text": "回",
+          "start": 15.44,
+          "end": 15.62,
+          "probability": 0.99560546875
+        },
+        {
+          "text": "来",
+          "start": 15.62,
+          "end": 15.76,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "切",
+          "start": 15.76,
+          "end": 15.94,
+          "probability": 0.9912109375
+        },
+        {
+          "text": "断",
+          "start": 15.94,
+          "end": 16.08,
+          "probability": 0.98388671875
+        },
+        {
+          "text": "后",
+          "start": 16.08,
+          "end": 16.3,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "晒",
+          "start": 16.3,
+          "end": 16.46,
+          "probability": 0.98486328125
+        },
+        {
+          "text": "干",
+          "start": 16.46,
+          "end": 16.62,
+          "probability": 0.9658203125
+        },
+        {
+          "text": "成",
+          "start": 16.62,
+          "end": 16.8,
+          "probability": 0.342529296875
+        },
+        {
+          "text": "茶",
+          "start": 16.8,
+          "end": 17.04,
+          "probability": 0.9609375
+        }
+      ]
+    },
+    {
+      "start": 17.04,
+      "end": 18.72,
+      "text": "这种野花能采吗?",
+      "words": [
+        {
+          "text": "这",
+          "start": 17.04,
+          "end": 17.44,
+          "probability": 0.982421875
+        },
+        {
+          "text": "种",
+          "start": 17.44,
+          "end": 17.62,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "野",
+          "start": 17.62,
+          "end": 17.8,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "花",
+          "start": 17.8,
+          "end": 17.98,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "能",
+          "start": 17.98,
+          "end": 18.16,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "采",
+          "start": 18.16,
+          "end": 18.44,
+          "probability": 0.999755859375
+        },
+        {
+          "text": "吗?",
+          "start": 18.44,
+          "end": 18.72,
+          "probability": 0.9931640625
+        }
+      ]
+    },
+    {
+      "start": 19.14,
+      "end": 19.88,
+      "text": "这是塔黄",
+      "words": [
+        {
+          "text": "这是",
+          "start": 19.14,
+          "end": 19.4,
+          "probability": 0.984375
+        },
+        {
+          "text": "塔",
+          "start": 19.4,
+          "end": 19.62,
+          "probability": 0.9306640625
+        },
+        {
+          "text": "黄",
+          "start": 19.62,
+          "end": 19.88,
+          "probability": 0.818603515625
+        }
+      ]
+    },
+    {
+      "start": 19.88,
+      "end": 21.4,
+      "text": "一生只开一次花",
+      "words": [
+        {
+          "text": "一",
+          "start": 19.88,
+          "end": 20.38,
+          "probability": 0.525390625
+        },
+        {
+          "text": "生",
+          "start": 20.38,
+          "end": 20.56,
+          "probability": 0.93798828125
+        },
+        {
+          "text": "只",
+          "start": 20.56,
+          "end": 20.72,
+          "probability": 0.9228515625
+        },
+        {
+          "text": "开",
+          "start": 20.72,
+          "end": 20.88,
+          "probability": 0.931640625
+        },
+        {
+          "text": "一次",
+          "start": 20.88,
+          "end": 21.08,
+          "probability": 0.97412109375
+        },
+        {
+          "text": "花",
+          "start": 21.08,
+          "end": 21.4,
+          "probability": 0.998046875
+        }
+      ]
+    },
+    {
+      "start": 21.4,
+      "end": 23.16,
+      "text": "国家二级保护植物",
+      "words": [
+        {
+          "text": "国",
+          "start": 21.4,
+          "end": 21.94,
+          "probability": 0.9609375
+        },
+        {
+          "text": "家",
+          "start": 21.94,
+          "end": 22.14,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "二",
+          "start": 22.14,
+          "end": 22.34,
+          "probability": 0.947265625
+        },
+        {
+          "text": "级",
+          "start": 22.34,
+          "end": 22.46,
+          "probability": 0.99169921875
+        },
+        {
+          "text": "保",
+          "start": 22.46,
+          "end": 22.64,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "护",
+          "start": 22.64,
+          "end": 22.78,
+          "probability": 0.998779296875
+        },
+        {
+          "text": "植",
+          "start": 22.78,
+          "end": 22.94,
+          "probability": 0.856689453125
+        },
+        {
+          "text": "物",
+          "start": 22.94,
+          "end": 23.16,
+          "probability": 0.99951171875
+        }
+      ]
+    },
+    {
+      "start": 23.16,
+      "end": 24.66,
+      "text": "采了药采缝认机",
+      "words": [
+        {
+          "text": "采",
+          "start": 23.16,
+          "end": 23.68,
+          "probability": 0.98095703125
+        },
+        {
+          "text": "了",
+          "start": 23.68,
+          "end": 23.84,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "药",
+          "start": 23.84,
+          "end": 23.98,
+          "probability": 0.981201171875
+        },
+        {
+          "text": "采",
+          "start": 23.98,
+          "end": 24.14,
+          "probability": 0.996337890625
+        },
+        {
+          "text": "缝",
+          "start": 24.14,
+          "end": 24.3,
+          "probability": 0.9150390625
+        },
+        {
+          "text": "认",
+          "start": 24.3,
+          "end": 24.46,
+          "probability": 0.656494140625
+        },
+        {
+          "text": "机",
+          "start": 24.46,
+          "end": 24.66,
+          "probability": 0.79931640625
+        }
+      ]
+    },
+    {
+      "start": 24.66,
+      "end": 26.32,
+      "text": "这种野花能采吗?",
+      "words": [
+        {
+          "text": "这",
+          "start": 24.66,
+          "end": 25.02,
+          "probability": 0.9482421875
+        },
+        {
+          "text": "种",
+          "start": 25.02,
+          "end": 25.22,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "野",
+          "start": 25.22,
+          "end": 25.4,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "花",
+          "start": 25.4,
+          "end": 25.58,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "能",
+          "start": 25.58,
+          "end": 25.78,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "采",
+          "start": 25.78,
+          "end": 26.02,
+          "probability": 0.999755859375
+        },
+        {
+          "text": "吗?",
+          "start": 26.02,
+          "end": 26.32,
+          "probability": 0.9931640625
+        }
+      ]
+    },
+    {
+      "start": 26.7,
+      "end": 27.68,
+      "text": "这是天山雪莲",
+      "words": [
+        {
+          "text": "这是",
+          "start": 26.7,
+          "end": 26.9,
+          "probability": 0.99072265625
+        },
+        {
+          "text": "天",
+          "start": 26.9,
+          "end": 27.14,
+          "probability": 0.99658203125
+        },
+        {
+          "text": "山",
+          "start": 27.14,
+          "end": 27.32,
+          "probability": 0.99169921875
+        },
+        {
+          "text": "雪",
+          "start": 27.32,
+          "end": 27.5,
+          "probability": 0.73828125
+        },
+        {
+          "text": "莲",
+          "start": 27.5,
+          "end": 27.68,
+          "probability": 0.826416015625
+        }
+      ]
+    },
+    {
+      "start": 27.68,
+      "end": 29.94,
+      "text": "国家二级保护野生植物",
+      "words": [
+        {
+          "text": "国",
+          "start": 27.68,
+          "end": 28.24,
+          "probability": 0.96533203125
+        },
+        {
+          "text": "家",
+          "start": 28.24,
+          "end": 28.42,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "二",
+          "start": 28.42,
+          "end": 28.64,
+          "probability": 0.99658203125
+        },
+        {
+          "text": "级",
+          "start": 28.64,
+          "end": 28.74,
+          "probability": 0.999755859375
+        },
+        {
+          "text": "保",
+          "start": 28.74,
+          "end": 28.94,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "护",
+          "start": 28.94,
+          "end": 29.1,
+          "probability": 0.999755859375
+        },
+        {
+          "text": "野",
+          "start": 29.1,
+          "end": 29.28,
+          "probability": 0.99365234375
+        },
+        {
+          "text": "生",
+          "start": 29.28,
+          "end": 29.42,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "植",
+          "start": 29.42,
+          "end": 29.58,
+          "probability": 0.998779296875
+        },
+        {
+          "text": "物",
+          "start": 29.58,
+          "end": 29.94,
+          "probability": 1.0
+        }
+      ]
+    },
+    {
+      "start": 29.94,
+      "end": 31.34,
+      "text": "采了药采缝认机",
+      "words": [
+        {
+          "text": "采",
+          "start": 29.94,
+          "end": 30.34,
+          "probability": 0.567626953125
+        },
+        {
+          "text": "了",
+          "start": 30.34,
+          "end": 30.48,
+          "probability": 0.986328125
+        },
+        {
+          "text": "药",
+          "start": 30.48,
+          "end": 30.64,
+          "probability": 0.5517578125
+        },
+        {
+          "text": "采",
+          "start": 30.64,
+          "end": 30.82,
+          "probability": 0.916015625
+        },
+        {
+          "text": "缝",
+          "start": 30.82,
+          "end": 30.96,
+          "probability": 0.63330078125
+        },
+        {
+          "text": "认",
+          "start": 30.96,
+          "end": 31.12,
+          "probability": 0.54229736328125
+        },
+        {
+          "text": "机",
+          "start": 31.12,
+          "end": 31.34,
+          "probability": 0.8125
+        }
+      ]
+    },
+    {
+      "start": 31.34,
+      "end": 33.04,
+      "text": "这种野花能采吗?",
+      "words": [
+        {
+          "text": "这",
+          "start": 31.34,
+          "end": 31.76,
+          "probability": 0.4150390625
+        },
+        {
+          "text": "种",
+          "start": 31.76,
+          "end": 31.94,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "野",
+          "start": 31.94,
+          "end": 32.12,
+          "probability": 0.763671875
+        },
+        {
+          "text": "花",
+          "start": 32.12,
+          "end": 32.32,
+          "probability": 0.99462890625
+        },
+        {
+          "text": "能",
+          "start": 32.32,
+          "end": 32.5,
+          "probability": 0.990234375
+        },
+        {
+          "text": "采",
+          "start": 32.5,
+          "end": 32.76,
+          "probability": 0.998046875
+        },
+        {
+          "text": "吗?",
+          "start": 32.76,
+          "end": 33.04,
+          "probability": 0.9404296875
+        }
+      ]
+    },
+    {
+      "start": 33.42,
+      "end": 34.22,
+      "text": "这是比暗花",
+      "words": [
+        {
+          "text": "这是",
+          "start": 33.42,
+          "end": 33.62,
+          "probability": 0.94775390625
+        },
+        {
+          "text": "比",
+          "start": 33.62,
+          "end": 33.84,
+          "probability": 0.360595703125
+        },
+        {
+          "text": "暗",
+          "start": 33.84,
+          "end": 33.98,
+          "probability": 0.758544921875
+        },
+        {
+          "text": "花",
+          "start": 33.98,
+          "end": 34.22,
+          "probability": 0.998046875
+        }
+      ]
+    },
+    {
+      "start": 34.22,
+      "end": 35.6,
+      "text": "又叫曼珠沙华",
+      "words": [
+        {
+          "text": "又",
+          "start": 34.22,
+          "end": 34.7,
+          "probability": 0.67724609375
+        },
+        {
+          "text": "叫",
+          "start": 34.7,
+          "end": 34.88,
+          "probability": 0.9912109375
+        },
+        {
+          "text": "曼",
+          "start": 34.88,
+          "end": 35.06,
+          "probability": 0.6025390625
+        },
+        {
+          "text": "珠",
+          "start": 35.06,
+          "end": 35.24,
+          "probability": 0.9013671875
+        },
+        {
+          "text": "沙",
+          "start": 35.24,
+          "end": 35.4,
+          "probability": 0.80908203125
+        },
+        {
+          "text": "华",
+          "start": 35.4,
+          "end": 35.6,
+          "probability": 0.60992431640625
+        }
+      ]
+    },
+    {
+      "start": 35.6,
+      "end": 37.3,
+      "text": "全珠有毒不能采",
+      "words": [
+        {
+          "text": "全",
+          "start": 35.6,
+          "end": 36.18,
+          "probability": 0.7236328125
+        },
+        {
+          "text": "珠",
+          "start": 36.18,
+          "end": 36.32,
+          "probability": 0.900146484375
+        },
+        {
+          "text": "有",
+          "start": 36.32,
+          "end": 36.5,
+          "probability": 0.98095703125
+        },
+        {
+          "text": "毒",
+          "start": 36.5,
+          "end": 36.64,
+          "probability": 0.9853515625
+        },
+        {
+          "text": "不能",
+          "start": 36.64,
+          "end": 36.9,
+          "probability": 0.9873046875
+        },
+        {
+          "text": "采",
+          "start": 36.9,
+          "end": 37.3,
+          "probability": 0.9990234375
+        }
+      ]
+    },
+    {
+      "start": 37.3,
+      "end": 39.06,
+      "text": "据说今天是丢病日",
+      "words": [
+        {
+          "text": "据",
+          "start": 37.3,
+          "end": 37.84,
+          "probability": 0.5770263671875
+        },
+        {
+          "text": "说",
+          "start": 37.84,
+          "end": 38.02,
+          "probability": 0.9951171875
+        },
+        {
+          "text": "今天",
+          "start": 38.02,
+          "end": 38.26,
+          "probability": 0.984375
+        },
+        {
+          "text": "是",
+          "start": 38.26,
+          "end": 38.52,
+          "probability": 0.99560546875
+        },
+        {
+          "text": "丢",
+          "start": 38.52,
+          "end": 38.66,
+          "probability": 0.99560546875
+        },
+        {
+          "text": "病",
+          "start": 38.66,
+          "end": 38.82,
+          "probability": 0.9912109375
+        },
+        {
+          "text": "日",
+          "start": 38.82,
+          "end": 39.06,
+          "probability": 0.998046875
+        }
+      ]
+    },
+    {
+      "start": 39.06,
+      "end": 40.4,
+      "text": "丢下三朵鲜花",
+      "words": [
+        {
+          "text": "丢",
+          "start": 39.06,
+          "end": 39.48,
+          "probability": 0.992431640625
+        },
+        {
+          "text": "下",
+          "start": 39.48,
+          "end": 39.66,
+          "probability": 0.99609375
+        },
+        {
+          "text": "三",
+          "start": 39.66,
+          "end": 39.82,
+          "probability": 0.94677734375
+        },
+        {
+          "text": "朵",
+          "start": 39.82,
+          "end": 39.98,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "鲜",
+          "start": 39.98,
+          "end": 40.14,
+          "probability": 0.9630533854166666
+        },
+        {
+          "text": "花",
+          "start": 40.14,
+          "end": 40.4,
+          "probability": 0.99658203125
+        }
+      ]
+    },
+    {
+      "start": 40.4,
+      "end": 41.74,
+      "text": "一朵丢掉病痛",
+      "words": [
+        {
+          "text": "一",
+          "start": 40.4,
+          "end": 40.92,
+          "probability": 0.90869140625
+        },
+        {
+          "text": "朵",
+          "start": 40.92,
+          "end": 41.06,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "丢",
+          "start": 41.06,
+          "end": 41.22,
+          "probability": 0.999267578125
+        },
+        {
+          "text": "掉",
+          "start": 41.22,
+          "end": 41.36,
+          "probability": 0.99267578125
+        },
+        {
+          "text": "病",
+          "start": 41.36,
+          "end": 41.54,
+          "probability": 0.99365234375
+        },
+        {
+          "text": "痛",
+          "start": 41.54,
+          "end": 41.74,
+          "probability": 0.9912109375
+        }
+      ]
+    },
+    {
+      "start": 41.74,
+      "end": 43.1,
+      "text": "一朵丢掉灾难",
+      "words": [
+        {
+          "text": "一",
+          "start": 41.74,
+          "end": 42.28,
+          "probability": 0.84326171875
+        },
+        {
+          "text": "朵",
+          "start": 42.28,
+          "end": 42.44,
+          "probability": 1.0
+        },
+        {
+          "text": "丢",
+          "start": 42.44,
+          "end": 42.6,
+          "probability": 0.999755859375
+        },
+        {
+          "text": "掉",
+          "start": 42.6,
+          "end": 42.78,
+          "probability": 0.99560546875
+        },
+        {
+          "text": "灾",
+          "start": 42.78,
+          "end": 42.94,
+          "probability": 0.978759765625
+        },
+        {
+          "text": "难",
+          "start": 42.94,
+          "end": 43.1,
+          "probability": 0.99658203125
+        }
+      ]
+    },
+    {
+      "start": 43.1,
+      "end": 44.52,
+      "text": "一朵丢掉烦恼",
+      "words": [
+        {
+          "text": "一",
+          "start": 43.1,
+          "end": 43.62,
+          "probability": 0.96875
+        },
+        {
+          "text": "朵",
+          "start": 43.62,
+          "end": 43.78,
+          "probability": 1.0
+        },
+        {
+          "text": "丢",
+          "start": 43.78,
+          "end": 43.96,
+          "probability": 1.0
+        },
+        {
+          "text": "掉",
+          "start": 43.96,
+          "end": 44.12,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "烦",
+          "start": 44.12,
+          "end": 44.3,
+          "probability": 0.976318359375
+        },
+        {
+          "text": "恼",
+          "start": 44.3,
+          "end": 44.52,
+          "probability": 0.99755859375
+        }
+      ]
+    },
+    {
+      "start": 44.52,
+      "end": 46.3,
+      "text": "往后全家百毒不清",
+      "words": [
+        {
+          "text": "往",
+          "start": 44.52,
+          "end": 45.04,
+          "probability": 0.93359375
+        },
+        {
+          "text": "后",
+          "start": 45.04,
+          "end": 45.24,
+          "probability": 0.9931640625
+        },
+        {
+          "text": "全",
+          "start": 45.24,
+          "end": 45.42,
+          "probability": 0.97802734375
+        },
+        {
+          "text": "家",
+          "start": 45.42,
+          "end": 45.6,
+          "probability": 0.98876953125
+        },
+        {
+          "text": "百",
+          "start": 45.6,
+          "end": 45.78,
+          "probability": 0.71923828125
+        },
+        {
+          "text": "毒",
+          "start": 45.78,
+          "end": 45.94,
+          "probability": 0.98193359375
+        },
+        {
+          "text": "不",
+          "start": 45.94,
+          "end": 46.12,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "清",
+          "start": 46.12,
+          "end": 46.3,
+          "probability": 0.794921875
+        }
+      ]
+    },
+    {
+      "start": 46.3,
+      "end": 47.4,
+      "text": "万事顺遂",
+      "words": [
+        {
+          "text": "万",
+          "start": 46.3,
+          "end": 46.8,
+          "probability": 0.93603515625
+        },
+        {
+          "text": "事",
+          "start": 46.8,
+          "end": 46.98,
+          "probability": 0.9443359375
+        },
+        {
+          "text": "顺",
+          "start": 46.98,
+          "end": 47.14,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "遂",
+          "start": 47.14,
+          "end": 47.4,
+          "probability": 0.826171875
+        }
+      ]
+    },
+    {
+      "start": 47.4,
+      "end": 49.0,
+      "text": "这种野花能采吗?",
+      "words": [
+        {
+          "text": "这",
+          "start": 47.4,
+          "end": 47.7,
+          "probability": 0.947265625
+        },
+        {
+          "text": "种",
+          "start": 47.7,
+          "end": 47.86,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "野",
+          "start": 47.86,
+          "end": 48.06,
+          "probability": 0.98828125
+        },
+        {
+          "text": "花",
+          "start": 48.06,
+          "end": 48.24,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "能",
+          "start": 48.24,
+          "end": 48.44,
+          "probability": 0.99609375
+        },
+        {
+          "text": "采",
+          "start": 48.44,
+          "end": 48.7,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "吗?",
+          "start": 48.7,
+          "end": 49.0,
+          "probability": 0.99072265625
+        }
+      ]
+    },
+    {
+      "start": 49.38,
+      "end": 50.2,
+      "text": "这是三色井",
+      "words": [
+        {
+          "text": "这是",
+          "start": 49.38,
+          "end": 49.6,
+          "probability": 0.97412109375
+        },
+        {
+          "text": "三",
+          "start": 49.6,
+          "end": 49.84,
+          "probability": 0.98046875
+        },
+        {
+          "text": "色",
+          "start": 49.84,
+          "end": 50.0,
+          "probability": 0.9921875
+        },
+        {
+          "text": "井",
+          "start": 50.0,
+          "end": 50.2,
+          "probability": 0.564453125
+        }
+      ]
+    },
+    {
+      "start": 50.2,
+      "end": 52.38,
+      "text": "是阳台常见的高颜值花卉",
+      "words": [
+        {
+          "text": "是",
+          "start": 50.2,
+          "end": 50.7,
+          "probability": 0.96044921875
+        },
+        {
+          "text": "阳",
+          "start": 50.7,
+          "end": 50.88,
+          "probability": 0.946533203125
+        },
+        {
+          "text": "台",
+          "start": 50.88,
+          "end": 51.04,
+          "probability": 0.98388671875
+        },
+        {
+          "text": "常",
+          "start": 51.04,
+          "end": 51.24,
+          "probability": 0.9814453125
+        },
+        {
+          "text": "见",
+          "start": 51.24,
+          "end": 51.4,
+          "probability": 0.931640625
+        },
+        {
+          "text": "的",
+          "start": 51.4,
+          "end": 51.54,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "高",
+          "start": 51.54,
+          "end": 51.7,
+          "probability": 0.97900390625
+        },
+        {
+          "text": "颜",
+          "start": 51.7,
+          "end": 51.84,
+          "probability": 0.674560546875
+        },
+        {
+          "text": "值",
+          "start": 51.84,
+          "end": 52.0,
+          "probability": 0.87060546875
+        },
+        {
+          "text": "花",
+          "start": 52.0,
+          "end": 52.2,
+          "probability": 0.97900390625
+        },
+        {
+          "text": "卉",
+          "start": 52.2,
+          "end": 52.38,
+          "probability": 0.7880859375
+        }
+      ]
+    },
+    {
+      "start": 52.38,
+      "end": 53.16,
+      "text": "可以采",
+      "words": [
+        {
+          "text": "可以",
+          "start": 52.38,
+          "end": 52.9,
+          "probability": 0.9384765625
+        },
+        {
+          "text": "采",
+          "start": 52.9,
+          "end": 53.16,
+          "probability": 0.999267578125
+        }
+      ]
+    },
+    {
+      "start": 53.16,
+      "end": 54.88,
+      "text": "这种野花能采吗?",
+      "words": [
+        {
+          "text": "这",
+          "start": 53.16,
+          "end": 53.6,
+          "probability": 0.958984375
+        },
+        {
+          "text": "种",
+          "start": 53.6,
+          "end": 53.78,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "野",
+          "start": 53.78,
+          "end": 53.94,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "花",
+          "start": 53.94,
+          "end": 54.16,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "能",
+          "start": 54.16,
+          "end": 54.34,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "采",
+          "start": 54.34,
+          "end": 54.6,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "吗?",
+          "start": 54.6,
+          "end": 54.88,
+          "probability": 0.99365234375
+        }
+      ]
+    },
+    {
+      "start": 55.24,
+      "end": 56.16,
+      "text": "这是野生杜珣",
+      "words": [
+        {
+          "text": "这是",
+          "start": 55.24,
+          "end": 55.44,
+          "probability": 0.98828125
+        },
+        {
+          "text": "野",
+          "start": 55.44,
+          "end": 55.68,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "生",
+          "start": 55.68,
+          "end": 55.82,
+          "probability": 0.998046875
+        },
+        {
+          "text": "杜",
+          "start": 55.82,
+          "end": 56.0,
+          "probability": 0.648193359375
+        },
+        {
+          "text": "珣",
+          "start": 56.0,
+          "end": 56.16,
+          "probability": 0.42999267578125
+        }
+      ]
+    },
+    {
+      "start": 56.16,
+      "end": 58.32,
+      "text": "国家二级保护野生植物",
+      "words": [
+        {
+          "text": "国",
+          "start": 56.16,
+          "end": 56.74,
+          "probability": 0.94970703125
+        },
+        {
+          "text": "家",
+          "start": 56.74,
+          "end": 56.92,
+          "probability": 0.99462890625
+        },
+        {
+          "text": "二",
+          "start": 56.92,
+          "end": 57.08,
+          "probability": 0.94287109375
+        },
+        {
+          "text": "级",
+          "start": 57.08,
+          "end": 57.22,
+          "probability": 0.99609375
+        },
+        {
+          "text": "保",
+          "start": 57.22,
+          "end": 57.42,
+          "probability": 0.99462890625
+        },
+        {
+          "text": "护",
+          "start": 57.42,
+          "end": 57.58,
+          "probability": 0.998779296875
+        },
+        {
+          "text": "野",
+          "start": 57.58,
+          "end": 57.78,
+          "probability": 0.99609375
+        },
+        {
+          "text": "生",
+          "start": 57.78,
+          "end": 57.92,
+          "probability": 1.0
+        },
+        {
+          "text": "植",
+          "start": 57.92,
+          "end": 58.08,
+          "probability": 0.9873046875
+        },
+        {
+          "text": "物",
+          "start": 58.08,
+          "end": 58.32,
+          "probability": 0.99951171875
+        }
+      ]
+    },
+    {
+      "start": 58.32,
+      "end": 59.78,
+      "text": "采了药采缝认机",
+      "words": [
+        {
+          "text": "采",
+          "start": 58.32,
+          "end": 58.76,
+          "probability": 0.5360107421875
+        },
+        {
+          "text": "了",
+          "start": 58.76,
+          "end": 58.92,
+          "probability": 0.978515625
+        },
+        {
+          "text": "药",
+          "start": 58.92,
+          "end": 59.06,
+          "probability": 0.6383056640625
+        },
+        {
+          "text": "采",
+          "start": 59.06,
+          "end": 59.24,
+          "probability": 0.925537109375
+        },
+        {
+          "text": "缝",
+          "start": 59.24,
+          "end": 59.38,
+          "probability": 0.7127685546875
+        },
+        {
+          "text": "认",
+          "start": 59.38,
+          "end": 59.56,
+          "probability": 0.60162353515625
+        },
+        {
+          "text": "机",
+          "start": 59.56,
+          "end": 59.78,
+          "probability": 0.468994140625
+        }
+      ]
+    },
+    {
+      "start": 59.78,
+      "end": 61.52,
+      "text": "这种野花能采吗?",
+      "words": [
+        {
+          "text": "这",
+          "start": 59.78,
+          "end": 60.22,
+          "probability": 0.2132568359375
+        },
+        {
+          "text": "种",
+          "start": 60.22,
+          "end": 60.4,
+          "probability": 0.83984375
+        },
+        {
+          "text": "野",
+          "start": 60.4,
+          "end": 60.58,
+          "probability": 0.82666015625
+        },
+        {
+          "text": "花",
+          "start": 60.58,
+          "end": 60.8,
+          "probability": 0.9912109375
+        },
+        {
+          "text": "能",
+          "start": 60.8,
+          "end": 60.98,
+          "probability": 0.9921875
+        },
+        {
+          "text": "采",
+          "start": 60.98,
+          "end": 61.22,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "吗?",
+          "start": 61.22,
+          "end": 61.52,
+          "probability": 0.93310546875
+        }
+      ]
+    },
+    {
+      "start": 61.88,
+      "end": 62.72,
+      "text": "这是剑暴春",
+      "words": [
+        {
+          "text": "这是",
+          "start": 61.88,
+          "end": 62.08,
+          "probability": 0.69580078125
+        },
+        {
+          "text": "剑",
+          "start": 62.08,
+          "end": 62.32,
+          "probability": 0.60955810546875
+        },
+        {
+          "text": "暴",
+          "start": 62.32,
+          "end": 62.48,
+          "probability": 0.670654296875
+        },
+        {
+          "text": "春",
+          "start": 62.48,
+          "end": 62.72,
+          "probability": 0.98388671875
+        }
+      ]
+    },
+    {
+      "start": 62.72,
+      "end": 65.22,
+      "text": "野生属于地方保护珍惜野花",
+      "words": [
+        {
+          "text": "野",
+          "start": 62.72,
+          "end": 63.24,
+          "probability": 0.86767578125
+        },
+        {
+          "text": "生",
+          "start": 63.24,
+          "end": 63.42,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "属",
+          "start": 63.42,
+          "end": 63.58,
+          "probability": 0.998291015625
+        },
+        {
+          "text": "于",
+          "start": 63.58,
+          "end": 63.76,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "地方",
+          "start": 63.76,
+          "end": 63.94,
+          "probability": 0.95849609375
+        },
+        {
+          "text": "保",
+          "start": 63.94,
+          "end": 64.26,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "护",
+          "start": 64.26,
+          "end": 64.42,
+          "probability": 0.99658203125
+        },
+        {
+          "text": "珍",
+          "start": 64.42,
+          "end": 64.7,
+          "probability": 0.87060546875
+        },
+        {
+          "text": "惜",
+          "start": 64.7,
+          "end": 64.84,
+          "probability": 0.88232421875
+        },
+        {
+          "text": "野",
+          "start": 64.84,
+          "end": 65.02,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "花",
+          "start": 65.02,
+          "end": 65.22,
+          "probability": 0.9990234375
+        }
+      ]
+    },
+    {
+      "start": 65.22,
+      "end": 66.12,
+      "text": "不能采",
+      "words": [
+        {
+          "text": "不能",
+          "start": 65.22,
+          "end": 65.76,
+          "probability": 0.31396484375
+        },
+        {
+          "text": "采",
+          "start": 65.76,
+          "end": 66.12,
+          "probability": 0.9990234375
+        }
+      ]
+    },
+    {
+      "start": 66.12,
+      "end": 67.8,
+      "text": "这种野花能采吗?",
+      "words": [
+        {
+          "text": "这",
+          "start": 66.12,
+          "end": 66.5,
+          "probability": 0.97021484375
+        },
+        {
+          "text": "种",
+          "start": 66.5,
+          "end": 66.68,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "野",
+          "start": 66.68,
+          "end": 66.86,
+          "probability": 0.99462890625
+        },
+        {
+          "text": "花",
+          "start": 66.86,
+          "end": 67.06,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "能",
+          "start": 67.06,
+          "end": 67.24,
+          "probability": 0.99560546875
+        },
+        {
+          "text": "采",
+          "start": 67.24,
+          "end": 67.5,
+          "probability": 0.999267578125
+        },
+        {
+          "text": "吗?",
+          "start": 67.5,
+          "end": 67.8,
+          "probability": 0.9873046875
+        }
+      ]
+    },
+    {
+      "start": 68.14,
+      "end": 69.04,
+      "text": "这是硬叶兜兰",
+      "words": [
+        {
+          "text": "这是",
+          "start": 68.14,
+          "end": 68.34,
+          "probability": 0.97216796875
+        },
+        {
+          "text": "硬",
+          "start": 68.34,
+          "end": 68.58,
+          "probability": 0.64013671875
+        },
+        {
+          "text": "叶",
+          "start": 68.58,
+          "end": 68.72,
+          "probability": 0.87109375
+        },
+        {
+          "text": "兜",
+          "start": 68.72,
+          "end": 68.86,
+          "probability": 0.7724609375
+        },
+        {
+          "text": "兰",
+          "start": 68.86,
+          "end": 69.04,
+          "probability": 0.679443359375
+        }
+      ]
+    },
+    {
+      "start": 69.04,
+      "end": 70.82,
+      "text": "国家二级保护植物",
+      "words": [
+        {
+          "text": "国",
+          "start": 69.04,
+          "end": 69.56,
+          "probability": 0.8916015625
+        },
+        {
+          "text": "家",
+          "start": 69.56,
+          "end": 69.78,
+          "probability": 0.99609375
+        },
+        {
+          "text": "二",
+          "start": 69.78,
+          "end": 69.94,
+          "probability": 0.94775390625
+        },
+        {
+          "text": "级",
+          "start": 69.94,
+          "end": 70.08,
+          "probability": 0.99462890625
+        },
+        {
+          "text": "保",
+          "start": 70.08,
+          "end": 70.28,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "护",
+          "start": 70.28,
+          "end": 70.46,
+          "probability": 1.0
+        },
+        {
+          "text": "植",
+          "start": 70.46,
+          "end": 70.62,
+          "probability": 0.862548828125
+        },
+        {
+          "text": "物",
+          "start": 70.62,
+          "end": 70.82,
+          "probability": 0.99951171875
+        }
+      ]
+    },
+    {
+      "start": 70.82,
+      "end": 72.36,
+      "text": "采了药采缝认机",
+      "words": [
+        {
+          "text": "采",
+          "start": 70.82,
+          "end": 71.32,
+          "probability": 0.984375
+        },
+        {
+          "text": "了",
+          "start": 71.32,
+          "end": 71.44,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "药",
+          "start": 71.44,
+          "end": 71.6,
+          "probability": 0.998779296875
+        },
+        {
+          "text": "采",
+          "start": 71.6,
+          "end": 71.76,
+          "probability": 0.997314453125
+        },
+        {
+          "text": "缝",
+          "start": 71.76,
+          "end": 71.92,
+          "probability": 0.997314453125
+        },
+        {
+          "text": "认",
+          "start": 71.92,
+          "end": 72.1,
+          "probability": 0.999267578125
+        },
+        {
+          "text": "机",
+          "start": 72.1,
+          "end": 72.36,
+          "probability": 0.99755859375
+        }
+      ]
+    },
+    {
+      "start": 72.36,
+      "end": 73.98,
+      "text": "这种野花能采吗?",
+      "words": [
+        {
+          "text": "这",
+          "start": 72.36,
+          "end": 72.7,
+          "probability": 0.955078125
+        },
+        {
+          "text": "种",
+          "start": 72.7,
+          "end": 72.88,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "野",
+          "start": 72.88,
+          "end": 73.06,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "花",
+          "start": 73.06,
+          "end": 73.26,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "能",
+          "start": 73.26,
+          "end": 73.44,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "采",
+          "start": 73.44,
+          "end": 73.7,
+          "probability": 0.999755859375
+        },
+        {
+          "text": "吗?",
+          "start": 73.7,
+          "end": 73.98,
+          "probability": 0.99365234375
+        }
+      ]
+    },
+    {
+      "start": 74.36,
+      "end": 75.22,
+      "text": "这是老虎虚",
+      "words": [
+        {
+          "text": "这是",
+          "start": 74.36,
+          "end": 74.58,
+          "probability": 0.97900390625
+        },
+        {
+          "text": "老",
+          "start": 74.58,
+          "end": 74.78,
+          "probability": 0.98388671875
+        },
+        {
+          "text": "虎",
+          "start": 74.78,
+          "end": 74.96,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "虚",
+          "start": 74.96,
+          "end": 75.22,
+          "probability": 0.941162109375
+        }
+      ]
+    },
+    {
+      "start": 75.22,
+      "end": 76.38,
+      "text": "原名剑根鼠",
+      "words": [
+        {
+          "text": "原",
+          "start": 75.22,
+          "end": 75.66,
+          "probability": 0.505859375
+        },
+        {
+          "text": "名",
+          "start": 75.66,
+          "end": 75.84,
+          "probability": 0.9111328125
+        },
+        {
+          "text": "剑",
+          "start": 75.84,
+          "end": 76.02,
+          "probability": 0.866455078125
+        },
+        {
+          "text": "根",
+          "start": 76.02,
+          "end": 76.16,
+          "probability": 0.916015625
+        },
+        {
+          "text": "鼠",
+          "start": 76.16,
+          "end": 76.38,
+          "probability": 0.8935546875
+        }
+      ]
+    },
+    {
+      "start": 76.38,
+      "end": 78.64,
+      "text": "属于剑微珍惜野生植物",
+      "words": [
+        {
+          "text": "属",
+          "start": 76.38,
+          "end": 77.02,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "于",
+          "start": 77.02,
+          "end": 77.2,
+          "probability": 0.998046875
+        },
+        {
+          "text": "剑",
+          "start": 77.2,
+          "end": 77.36,
+          "probability": 0.916259765625
+        },
+        {
+          "text": "微",
+          "start": 77.36,
+          "end": 77.5,
+          "probability": 0.420654296875
+        },
+        {
+          "text": "珍",
+          "start": 77.5,
+          "end": 77.72,
+          "probability": 0.9931640625
+        },
+        {
+          "text": "惜",
+          "start": 77.72,
+          "end": 77.88,
+          "probability": 0.994140625
+        },
+        {
+          "text": "野",
+          "start": 77.88,
+          "end": 78.04,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "生",
+          "start": 78.04,
+          "end": 78.18,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "植",
+          "start": 78.18,
+          "end": 78.36,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "物",
+          "start": 78.36,
+          "end": 78.64,
+          "probability": 1.0
+        }
+      ]
+    },
+    {
+      "start": 78.64,
+      "end": 80.12,
+      "text": "采了药采缝认机",
+      "words": [
+        {
+          "text": "采",
+          "start": 78.64,
+          "end": 79.08,
+          "probability": 0.99365234375
+        },
+        {
+          "text": "了",
+          "start": 79.08,
+          "end": 79.22,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "药",
+          "start": 79.22,
+          "end": 79.36,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "采",
+          "start": 79.36,
+          "end": 79.52,
+          "probability": 0.999267578125
+        },
+        {
+          "text": "缝",
+          "start": 79.52,
+          "end": 79.68,
+          "probability": 0.997314453125
+        },
+        {
+          "text": "认",
+          "start": 79.68,
+          "end": 79.86,
+          "probability": 0.999267578125
+        },
+        {
+          "text": "机",
+          "start": 79.86,
+          "end": 80.12,
+          "probability": 0.9970703125
+        }
+      ]
+    },
+    {
+      "start": 80.12,
+      "end": 81.74,
+      "text": "这种野花能采吗?",
+      "words": [
+        {
+          "text": "这",
+          "start": 80.12,
+          "end": 80.48,
+          "probability": 0.9794921875
+        },
+        {
+          "text": "种",
+          "start": 80.48,
+          "end": 80.64,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "野",
+          "start": 80.64,
+          "end": 80.82,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "花",
+          "start": 80.82,
+          "end": 81.02,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "能",
+          "start": 81.02,
+          "end": 81.2,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "采",
+          "start": 81.2,
+          "end": 81.46,
+          "probability": 0.999755859375
+        },
+        {
+          "text": "吗?",
+          "start": 81.46,
+          "end": 81.74,
+          "probability": 0.99462890625
+        }
+      ]
+    },
+    {
+      "start": 82.14,
+      "end": 82.82,
+      "text": "这是帝皇",
+      "words": [
+        {
+          "text": "这是",
+          "start": 82.14,
+          "end": 82.36,
+          "probability": 0.9345703125
+        },
+        {
+          "text": "帝",
+          "start": 82.36,
+          "end": 82.58,
+          "probability": 0.819091796875
+        },
+        {
+          "text": "皇",
+          "start": 82.58,
+          "end": 82.82,
+          "probability": 0.6416015625
+        }
+      ]
+    },
+    {
+      "start": 82.82,
+      "end": 84.52,
+      "text": "是一位重要的重要才",
+      "words": [
+        {
+          "text": "是",
+          "start": 82.82,
+          "end": 83.28,
+          "probability": 0.91357421875
+        },
+        {
+          "text": "一",
+          "start": 83.28,
+          "end": 83.44,
+          "probability": 0.98681640625
+        },
+        {
+          "text": "位",
+          "start": 83.44,
+          "end": 83.54,
+          "probability": 0.8896484375
+        },
+        {
+          "text": "重要",
+          "start": 83.54,
+          "end": 83.8,
+          "probability": 0.99658203125
+        },
+        {
+          "text": "的",
+          "start": 83.8,
+          "end": 84.0,
+          "probability": 0.99365234375
+        },
+        {
+          "text": "重要",
+          "start": 84.0,
+          "end": 84.18,
+          "probability": 0.9892578125
+        },
+        {
+          "text": "才",
+          "start": 84.18,
+          "end": 84.52,
+          "probability": 0.426513671875
+        }
+      ]
+    },
+    {
+      "start": 84.52,
+      "end": 85.32,
+      "text": "可以采",
+      "words": [
+        {
+          "text": "可以",
+          "start": 84.52,
+          "end": 85.04,
+          "probability": 0.87109375
+        },
+        {
+          "text": "采",
+          "start": 85.04,
+          "end": 85.32,
+          "probability": 0.998291015625
+        }
+      ]
+    },
+    {
+      "start": 85.32,
+      "end": 86.84,
+      "text": "这种野花能采吗?",
+      "words": [
+        {
+          "text": "这",
+          "start": 85.32,
+          "end": 85.56,
+          "probability": 0.9609375
+        },
+        {
+          "text": "种",
+          "start": 85.56,
+          "end": 85.74,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "野",
+          "start": 85.74,
+          "end": 85.92,
+          "probability": 0.99658203125
+        },
+        {
+          "text": "花",
+          "start": 85.92,
+          "end": 86.12,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "能",
+          "start": 86.12,
+          "end": 86.3,
+          "probability": 0.99609375
+        },
+        {
+          "text": "采",
+          "start": 86.3,
+          "end": 86.56,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "吗?",
+          "start": 86.56,
+          "end": 86.84,
+          "probability": 0.99462890625
+        }
+      ]
+    },
+    {
+      "start": 87.06,
+      "end": 87.86,
+      "text": "这是白头翁",
+      "words": [
+        {
+          "text": "这是",
+          "start": 87.06,
+          "end": 87.28,
+          "probability": 0.96630859375
+        },
+        {
+          "text": "白",
+          "start": 87.28,
+          "end": 87.5,
+          "probability": 0.99169921875
+        },
+        {
+          "text": "头",
+          "start": 87.5,
+          "end": 87.7,
+          "probability": 0.87841796875
+        },
+        {
+          "text": "翁",
+          "start": 87.7,
+          "end": 87.86,
+          "probability": 0.6981201171875
+        }
+      ]
+    },
+    {
+      "start": 87.86,
+      "end": 89.08,
+      "text": "别名野丈人",
+      "words": [
+        {
+          "text": "别",
+          "start": 87.86,
+          "end": 88.34,
+          "probability": 0.09600830078125
+        },
+        {
+          "text": "名",
+          "start": 88.34,
+          "end": 88.52,
+          "probability": 0.99072265625
+        },
+        {
+          "text": "野",
+          "start": 88.52,
+          "end": 88.68,
+          "probability": 0.5673828125
+        },
+        {
+          "text": "丈",
+          "start": 88.68,
+          "end": 88.84,
+          "probability": 0.18701171875
+        },
+        {
+          "text": "人",
+          "start": 88.84,
+          "end": 89.08,
+          "probability": 1.0
+        }
+      ]
+    },
+    {
+      "start": 89.08,
+      "end": 90.74,
+      "text": "蜘蛛本身带有毒性",
+      "words": [
+        {
+          "text": "蜘",
+          "start": 89.08,
+          "end": 89.6,
+          "probability": 0.6427408854166666
+        },
+        {
+          "text": "蛛",
+          "start": 89.6,
+          "end": 89.76,
+          "probability": 0.99658203125
+        },
+        {
+          "text": "本",
+          "start": 89.76,
+          "end": 89.92,
+          "probability": 0.998046875
+        },
+        {
+          "text": "身",
+          "start": 89.92,
+          "end": 90.06,
+          "probability": 0.99658203125
+        },
+        {
+          "text": "带",
+          "start": 90.06,
+          "end": 90.24,
+          "probability": 0.96142578125
+        },
+        {
+          "text": "有",
+          "start": 90.24,
+          "end": 90.38,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "毒",
+          "start": 90.38,
+          "end": 90.52,
+          "probability": 0.98046875
+        },
+        {
+          "text": "性",
+          "start": 90.52,
+          "end": 90.74,
+          "probability": 0.9990234375
+        }
+      ]
+    },
+    {
+      "start": 90.74,
+      "end": 91.58,
+      "text": "不能采",
+      "words": [
+        {
+          "text": "不能",
+          "start": 90.74,
+          "end": 91.3,
+          "probability": 0.414794921875
+        },
+        {
+          "text": "采",
+          "start": 91.3,
+          "end": 91.58,
+          "probability": 0.837646484375
+        }
+      ]
+    },
+    {
+      "start": 91.58,
+      "end": 93.28,
+      "text": "这种野花能采吗?",
+      "words": [
+        {
+          "text": "这",
+          "start": 91.58,
+          "end": 92.0,
+          "probability": 0.72900390625
+        },
+        {
+          "text": "种",
+          "start": 92.0,
+          "end": 92.18,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "野",
+          "start": 92.18,
+          "end": 92.36,
+          "probability": 0.98193359375
+        },
+        {
+          "text": "花",
+          "start": 92.36,
+          "end": 92.56,
+          "probability": 0.9951171875
+        },
+        {
+          "text": "能",
+          "start": 92.56,
+          "end": 92.74,
+          "probability": 0.99267578125
+        },
+        {
+          "text": "采",
+          "start": 92.74,
+          "end": 93.0,
+          "probability": 0.997314453125
+        },
+        {
+          "text": "吗?",
+          "start": 93.0,
+          "end": 93.28,
+          "probability": 0.94384765625
+        }
+      ]
+    },
+    {
+      "start": 93.68,
+      "end": 94.76,
+      "text": "这是魔鬼闻新兰",
+      "words": [
+        {
+          "text": "这是",
+          "start": 93.68,
+          "end": 93.86,
+          "probability": 0.9072265625
+        },
+        {
+          "text": "魔",
+          "start": 93.86,
+          "end": 94.08,
+          "probability": 0.95458984375
+        },
+        {
+          "text": "鬼",
+          "start": 94.08,
+          "end": 94.26,
+          "probability": 0.998046875
+        },
+        {
+          "text": "闻",
+          "start": 94.26,
+          "end": 94.4,
+          "probability": 0.658935546875
+        },
+        {
+          "text": "新",
+          "start": 94.4,
+          "end": 94.58,
+          "probability": 0.378173828125
+        },
+        {
+          "text": "兰",
+          "start": 94.58,
+          "end": 94.76,
+          "probability": 0.94384765625
+        }
+      ]
+    },
+    {
+      "start": 94.76,
+      "end": 96.38,
+      "text": "花型库寺孙悟空",
+      "words": [
+        {
+          "text": "花",
+          "start": 94.76,
+          "end": 95.34,
+          "probability": 0.96044921875
+        },
+        {
+          "text": "型",
+          "start": 95.34,
+          "end": 95.52,
+          "probability": 0.6181640625
+        },
+        {
+          "text": "库",
+          "start": 95.52,
+          "end": 95.7,
+          "probability": 0.75244140625
+        },
+        {
+          "text": "寺",
+          "start": 95.7,
+          "end": 95.86,
+          "probability": 0.79150390625
+        },
+        {
+          "text": "孙",
+          "start": 95.86,
+          "end": 96.02,
+          "probability": 0.90576171875
+        },
+        {
+          "text": "悟",
+          "start": 96.02,
+          "end": 96.18,
+          "probability": 0.915771484375
+        },
+        {
+          "text": "空",
+          "start": 96.18,
+          "end": 96.38,
+          "probability": 0.99951171875
+        }
+      ]
+    },
+    {
+      "start": 96.38,
+      "end": 98.04,
+      "text": "虽观赏价值极高",
+      "words": [
+        {
+          "text": "虽",
+          "start": 96.38,
+          "end": 96.94,
+          "probability": 0.94580078125
+        },
+        {
+          "text": "观",
+          "start": 96.94,
+          "end": 97.1,
+          "probability": 0.8203125
+        },
+        {
+          "text": "赏",
+          "start": 97.1,
+          "end": 97.28,
+          "probability": 0.931884765625
+        },
+        {
+          "text": "价",
+          "start": 97.28,
+          "end": 97.46,
+          "probability": 0.998779296875
+        },
+        {
+          "text": "值",
+          "start": 97.46,
+          "end": 97.64,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "极",
+          "start": 97.64,
+          "end": 97.8,
+          "probability": 0.97607421875
+        },
+        {
+          "text": "高",
+          "start": 97.8,
+          "end": 98.04,
+          "probability": 0.99951171875
+        }
+      ]
+    },
+    {
+      "start": 98.04,
+      "end": 100.1,
+      "text": "但是国家二级保护植物",
+      "words": [
+        {
+          "text": "但是",
+          "start": 98.04,
+          "end": 98.66,
+          "probability": 0.97607421875
+        },
+        {
+          "text": "国",
+          "start": 98.66,
+          "end": 98.88,
+          "probability": 0.99609375
+        },
+        {
+          "text": "家",
+          "start": 98.88,
+          "end": 99.1,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "二",
+          "start": 99.1,
+          "end": 99.28,
+          "probability": 0.96142578125
+        },
+        {
+          "text": "级",
+          "start": 99.28,
+          "end": 99.42,
+          "probability": 0.995361328125
+        },
+        {
+          "text": "保",
+          "start": 99.42,
+          "end": 99.6,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "护",
+          "start": 99.6,
+          "end": 99.72,
+          "probability": 0.999267578125
+        },
+        {
+          "text": "植",
+          "start": 99.72,
+          "end": 99.92,
+          "probability": 0.86669921875
+        },
+        {
+          "text": "物",
+          "start": 99.92,
+          "end": 100.1,
+          "probability": 0.99951171875
+        }
+      ]
+    },
+    {
+      "start": 100.1,
+      "end": 101.58,
+      "text": "采了药采缝认机",
+      "words": [
+        {
+          "text": "采",
+          "start": 100.1,
+          "end": 100.64,
+          "probability": 0.99365234375
+        },
+        {
+          "text": "了",
+          "start": 100.64,
+          "end": 100.78,
+          "probability": 0.99462890625
+        },
+        {
+          "text": "药",
+          "start": 100.78,
+          "end": 100.9,
+          "probability": 0.947265625
+        },
+        {
+          "text": "采",
+          "start": 100.9,
+          "end": 101.08,
+          "probability": 0.995849609375
+        },
+        {
+          "text": "缝",
+          "start": 101.08,
+          "end": 101.24,
+          "probability": 0.6549072265625
+        },
+        {
+          "text": "认",
+          "start": 101.24,
+          "end": 101.38,
+          "probability": 0.55657958984375
+        },
+        {
+          "text": "机",
+          "start": 101.38,
+          "end": 101.58,
+          "probability": 0.5205078125
+        }
+      ]
+    },
+    {
+      "start": 101.58,
+      "end": 103.32,
+      "text": "这种野花能采吗?",
+      "words": [
+        {
+          "text": "这",
+          "start": 101.58,
+          "end": 102.02,
+          "probability": 0.9482421875
+        },
+        {
+          "text": "种",
+          "start": 102.02,
+          "end": 102.16,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "野",
+          "start": 102.16,
+          "end": 102.36,
+          "probability": 0.998046875
+        },
+        {
+          "text": "花",
+          "start": 102.36,
+          "end": 102.56,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "能",
+          "start": 102.56,
+          "end": 102.74,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "采",
+          "start": 102.74,
+          "end": 103.0,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "吗?",
+          "start": 103.0,
+          "end": 103.32,
+          "probability": 0.99267578125
+        }
+      ]
+    },
+    {
+      "start": 103.64,
+      "end": 104.44,
+      "text": "这是木棉花",
+      "words": [
+        {
+          "text": "这是",
+          "start": 103.64,
+          "end": 103.84,
+          "probability": 0.984375
+        },
+        {
+          "text": "木",
+          "start": 103.84,
+          "end": 104.06,
+          "probability": 0.87109375
+        },
+        {
+          "text": "棉",
+          "start": 104.06,
+          "end": 104.2,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "花",
+          "start": 104.2,
+          "end": 104.44,
+          "probability": 0.99951171875
+        }
+      ]
+    },
+    {
+      "start": 104.44,
+      "end": 106.1,
+      "text": "还有生物剑等毒素",
+      "words": [
+        {
+          "text": "还有",
+          "start": 104.44,
+          "end": 105.0,
+          "probability": 0.72509765625
+        },
+        {
+          "text": "生",
+          "start": 105.0,
+          "end": 105.26,
+          "probability": 0.9931640625
+        },
+        {
+          "text": "物",
+          "start": 105.26,
+          "end": 105.4,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "剑",
+          "start": 105.4,
+          "end": 105.56,
+          "probability": 0.097747802734375
+        },
+        {
+          "text": "等",
+          "start": 105.56,
+          "end": 105.74,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "毒",
+          "start": 105.74,
+          "end": 105.92,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "素",
+          "start": 105.92,
+          "end": 106.1,
+          "probability": 0.994140625
+        }
+      ]
+    },
+    {
+      "start": 106.1,
+      "end": 107.06,
+      "text": "不能采",
+      "words": [
+        {
+          "text": "不能",
+          "start": 106.1,
+          "end": 106.74,
+          "probability": 0.92822265625
+        },
+        {
+          "text": "采",
+          "start": 106.74,
+          "end": 107.06,
+          "probability": 0.998046875
+        }
+      ]
+    },
+    {
+      "start": 107.06,
+      "end": 108.72,
+      "text": "这种野花能采吗?",
+      "words": [
+        {
+          "text": "这",
+          "start": 107.06,
+          "end": 107.44,
+          "probability": 0.96923828125
+        },
+        {
+          "text": "种",
+          "start": 107.44,
+          "end": 107.62,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "野",
+          "start": 107.62,
+          "end": 107.8,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "花",
+          "start": 107.8,
+          "end": 107.98,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "能",
+          "start": 107.98,
+          "end": 108.18,
+          "probability": 0.9951171875
+        },
+        {
+          "text": "采",
+          "start": 108.18,
+          "end": 108.44,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "吗?",
+          "start": 108.44,
+          "end": 108.72,
+          "probability": 0.994140625
+        }
+      ]
+    },
+    {
+      "start": 109.06,
+      "end": 110.14,
+      "text": "这是双色羊举梗",
+      "words": [
+        {
+          "text": "这是",
+          "start": 109.06,
+          "end": 109.24,
+          "probability": 0.95849609375
+        },
+        {
+          "text": "双",
+          "start": 109.24,
+          "end": 109.48,
+          "probability": 0.994140625
+        },
+        {
+          "text": "色",
+          "start": 109.48,
+          "end": 109.64,
+          "probability": 0.99462890625
+        },
+        {
+          "text": "羊",
+          "start": 109.64,
+          "end": 109.8,
+          "probability": 0.760498046875
+        },
+        {
+          "text": "举",
+          "start": 109.8,
+          "end": 109.98,
+          "probability": 0.557159423828125
+        },
+        {
+          "text": "梗",
+          "start": 109.98,
+          "end": 110.14,
+          "probability": 0.95751953125
+        }
+      ]
+    },
+    {
+      "start": 110.14,
+      "end": 112.58,
+      "text": "可以采回去当家庭观赏植物",
+      "words": [
+        {
+          "text": "可以",
+          "start": 110.14,
+          "end": 110.74,
+          "probability": 0.9716796875
+        },
+        {
+          "text": "采",
+          "start": 110.74,
+          "end": 110.98,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "回去",
+          "start": 110.98,
+          "end": 111.24,
+          "probability": 0.9677734375
+        },
+        {
+          "text": "当",
+          "start": 111.24,
+          "end": 111.46,
+          "probability": 0.99365234375
+        },
+        {
+          "text": "家",
+          "start": 111.46,
+          "end": 111.66,
+          "probability": 0.99267578125
+        },
+        {
+          "text": "庭",
+          "start": 111.66,
+          "end": 111.82,
+          "probability": 0.99658203125
+        },
+        {
+          "text": "观",
+          "start": 111.82,
+          "end": 111.98,
+          "probability": 0.99560546875
+        },
+        {
+          "text": "赏",
+          "start": 111.98,
+          "end": 112.14,
+          "probability": 0.99462890625
+        },
+        {
+          "text": "植",
+          "start": 112.14,
+          "end": 112.34,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "物",
+          "start": 112.34,
+          "end": 112.58,
+          "probability": 1.0
+        }
+      ]
+    },
+    {
+      "start": 112.58,
+      "end": 114.24,
+      "text": "这种野花能采吗?",
+      "words": [
+        {
+          "text": "这",
+          "start": 112.58,
+          "end": 112.96,
+          "probability": 0.984375
+        },
+        {
+          "text": "种",
+          "start": 112.96,
+          "end": 113.14,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "野",
+          "start": 113.14,
+          "end": 113.32,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "花",
+          "start": 113.32,
+          "end": 113.52,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "能",
+          "start": 113.52,
+          "end": 113.7,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "采",
+          "start": 113.7,
+          "end": 113.96,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "吗?",
+          "start": 113.96,
+          "end": 114.24,
+          "probability": 0.99560546875
+        }
+      ]
+    },
+    {
+      "start": 114.6,
+      "end": 116.86,
+      "text": "这是手工制作的访真红玫瑰百剑",
+      "words": [
+        {
+          "text": "这是",
+          "start": 114.6,
+          "end": 114.8,
+          "probability": 0.98388671875
+        },
+        {
+          "text": "手",
+          "start": 114.8,
+          "end": 115.06,
+          "probability": 0.93310546875
+        },
+        {
+          "text": "工",
+          "start": 115.06,
+          "end": 115.22,
+          "probability": 0.99609375
+        },
+        {
+          "text": "制",
+          "start": 115.22,
+          "end": 115.42,
+          "probability": 0.98193359375
+        },
+        {
+          "text": "作",
+          "start": 115.42,
+          "end": 115.56,
+          "probability": 0.99267578125
+        },
+        {
+          "text": "的",
+          "start": 115.56,
+          "end": 115.7,
+          "probability": 0.998046875
+        },
+        {
+          "text": "访",
+          "start": 115.7,
+          "end": 115.86,
+          "probability": 0.58154296875
+        },
+        {
+          "text": "真",
+          "start": 115.86,
+          "end": 116.02,
+          "probability": 0.8779296875
+        },
+        {
+          "text": "红",
+          "start": 116.02,
+          "end": 116.2,
+          "probability": 0.95458984375
+        },
+        {
+          "text": "玫",
+          "start": 116.2,
+          "end": 116.34,
+          "probability": 0.754150390625
+        },
+        {
+          "text": "瑰",
+          "start": 116.34,
+          "end": 116.5,
+          "probability": 0.962646484375
+        },
+        {
+          "text": "百",
+          "start": 116.5,
+          "end": 116.7,
+          "probability": 0.6796875
+        },
+        {
+          "text": "剑",
+          "start": 116.7,
+          "end": 116.86,
+          "probability": 0.7401123046875
+        }
+      ]
+    },
+    {
+      "start": 116.86,
+      "end": 117.98,
+      "text": "随便你采",
+      "words": [
+        {
+          "text": "随",
+          "start": 116.86,
+          "end": 117.42,
+          "probability": 0.510986328125
+        },
+        {
+          "text": "便",
+          "start": 117.42,
+          "end": 117.6,
+          "probability": 1.0
+        },
+        {
+          "text": "你",
+          "start": 117.6,
+          "end": 117.74,
+          "probability": 0.9365234375
+        },
+        {
+          "text": "采",
+          "start": 117.74,
+          "end": 117.98,
+          "probability": 0.906005859375
+        }
+      ]
+    },
+    {
+      "start": 117.98,
+      "end": 119.6,
+      "text": "这种野花能采吗?",
+      "words": [
+        {
+          "text": "这",
+          "start": 117.98,
+          "end": 118.34,
+          "probability": 0.427001953125
+        },
+        {
+          "text": "种",
+          "start": 118.34,
+          "end": 118.52,
+          "probability": 0.998046875
+        },
+        {
+          "text": "野",
+          "start": 118.52,
+          "end": 118.68,
+          "probability": 0.6875
+        },
+        {
+          "text": "花",
+          "start": 118.68,
+          "end": 118.9,
+          "probability": 0.9912109375
+        },
+        {
+          "text": "能",
+          "start": 118.9,
+          "end": 119.08,
+          "probability": 0.994140625
+        },
+        {
+          "text": "采",
+          "start": 119.08,
+          "end": 119.36,
+          "probability": 0.995361328125
+        },
+        {
+          "text": "吗?",
+          "start": 119.36,
+          "end": 119.6,
+          "probability": 0.953125
+        }
+      ]
+    },
+    {
+      "start": 119.98,
+      "end": 121.56,
+      "text": "这是深紫色虫瓣血连",
+      "words": [
+        {
+          "text": "这是",
+          "start": 119.98,
+          "end": 120.18,
+          "probability": 0.94384765625
+        },
+        {
+          "text": "深",
+          "start": 120.18,
+          "end": 120.44,
+          "probability": 0.7119140625
+        },
+        {
+          "text": "紫",
+          "start": 120.44,
+          "end": 120.6,
+          "probability": 0.9296875
+        },
+        {
+          "text": "色",
+          "start": 120.6,
+          "end": 120.76,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "虫",
+          "start": 120.76,
+          "end": 120.96,
+          "probability": 0.6378173828125
+        },
+        {
+          "text": "瓣",
+          "start": 120.96,
+          "end": 121.12,
+          "probability": 0.8873697916666666
+        },
+        {
+          "text": "血",
+          "start": 121.12,
+          "end": 121.28,
+          "probability": 0.3154296875
+        },
+        {
+          "text": "连",
+          "start": 121.28,
+          "end": 121.56,
+          "probability": 0.58734130859375
+        }
+      ]
+    },
+    {
+      "start": 121.56,
+      "end": 122.74,
+      "text": "野外的受保护",
+      "words": [
+        {
+          "text": "野",
+          "start": 121.56,
+          "end": 121.94,
+          "probability": 0.875
+        },
+        {
+          "text": "外",
+          "start": 121.94,
+          "end": 122.1,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "的",
+          "start": 122.1,
+          "end": 122.22,
+          "probability": 0.98095703125
+        },
+        {
+          "text": "受",
+          "start": 122.22,
+          "end": 122.36,
+          "probability": 0.2939453125
+        },
+        {
+          "text": "保",
+          "start": 122.36,
+          "end": 122.56,
+          "probability": 0.98583984375
+        },
+        {
+          "text": "护",
+          "start": 122.56,
+          "end": 122.74,
+          "probability": 0.9990234375
+        }
+      ]
+    },
+    {
+      "start": 122.74,
+      "end": 123.98,
+      "text": "绝对不能采",
+      "words": [
+        {
+          "text": "绝",
+          "start": 122.74,
+          "end": 123.24,
+          "probability": 0.884765625
+        },
+        {
+          "text": "对",
+          "start": 123.24,
+          "end": 123.38,
+          "probability": 0.998046875
+        },
+        {
+          "text": "不能",
+          "start": 123.38,
+          "end": 123.6,
+          "probability": 0.99365234375
+        },
+        {
+          "text": "采",
+          "start": 123.6,
+          "end": 123.98,
+          "probability": 0.997802734375
+        }
+      ]
+    },
+    {
+      "start": 123.98,
+      "end": 125.62,
+      "text": "这种野花能采吗?",
+      "words": [
+        {
+          "text": "这",
+          "start": 123.98,
+          "end": 124.34,
+          "probability": 0.97802734375
+        },
+        {
+          "text": "种",
+          "start": 124.34,
+          "end": 124.5,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "野",
+          "start": 124.5,
+          "end": 124.68,
+          "probability": 0.99365234375
+        },
+        {
+          "text": "花",
+          "start": 124.68,
+          "end": 124.88,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "能",
+          "start": 124.88,
+          "end": 125.08,
+          "probability": 0.99267578125
+        },
+        {
+          "text": "采",
+          "start": 125.08,
+          "end": 125.34,
+          "probability": 0.999267578125
+        },
+        {
+          "text": "吗?",
+          "start": 125.34,
+          "end": 125.62,
+          "probability": 0.99267578125
+        }
+      ]
+    },
+    {
+      "start": 125.92,
+      "end": 126.9,
+      "text": "这是地勇金连",
+      "words": [
+        {
+          "text": "这是",
+          "start": 125.92,
+          "end": 126.12,
+          "probability": 0.98876953125
+        },
+        {
+          "text": "地",
+          "start": 126.12,
+          "end": 126.36,
+          "probability": 0.62353515625
+        },
+        {
+          "text": "勇",
+          "start": 126.36,
+          "end": 126.5,
+          "probability": 0.6319580078125
+        },
+        {
+          "text": "金",
+          "start": 126.5,
+          "end": 126.66,
+          "probability": 0.63671875
+        },
+        {
+          "text": "连",
+          "start": 126.66,
+          "end": 126.9,
+          "probability": 0.823974609375
+        }
+      ]
+    },
+    {
+      "start": 126.9,
+      "end": 128.58,
+      "text": "国家二级保护植物",
+      "words": [
+        {
+          "text": "国",
+          "start": 126.9,
+          "end": 127.3,
+          "probability": 0.88916015625
+        },
+        {
+          "text": "家",
+          "start": 127.3,
+          "end": 127.5,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "二",
+          "start": 127.5,
+          "end": 127.7,
+          "probability": 0.95068359375
+        },
+        {
+          "text": "级",
+          "start": 127.7,
+          "end": 127.84,
+          "probability": 0.996337890625
+        },
+        {
+          "text": "保",
+          "start": 127.84,
+          "end": 128.02,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "护",
+          "start": 128.02,
+          "end": 128.18,
+          "probability": 0.999755859375
+        },
+        {
+          "text": "植",
+          "start": 128.18,
+          "end": 128.36,
+          "probability": 0.761474609375
+        },
+        {
+          "text": "物",
+          "start": 128.36,
+          "end": 128.58,
+          "probability": 1.0
+        }
+      ]
+    },
+    {
+      "start": 128.58,
+      "end": 130.02,
+      "text": "采了药采缝认机",
+      "words": [
+        {
+          "text": "采",
+          "start": 128.58,
+          "end": 129.06,
+          "probability": 0.985107421875
+        },
+        {
+          "text": "了",
+          "start": 129.06,
+          "end": 129.18,
+          "probability": 0.99169921875
+        },
+        {
+          "text": "药",
+          "start": 129.18,
+          "end": 129.3,
+          "probability": 0.9794921875
+        },
+        {
+          "text": "采",
+          "start": 129.3,
+          "end": 129.48,
+          "probability": 0.998046875
+        },
+        {
+          "text": "缝",
+          "start": 129.48,
+          "end": 129.64,
+          "probability": 0.785400390625
+        },
+        {
+          "text": "认",
+          "start": 129.64,
+          "end": 129.8,
+          "probability": 0.5811767578125
+        },
+        {
+          "text": "机",
+          "start": 129.8,
+          "end": 130.02,
+          "probability": 0.38720703125
+        }
+      ]
+    },
+    {
+      "start": 130.02,
+      "end": 131.72,
+      "text": "这种野花能采吗?",
+      "words": [
+        {
+          "text": "这",
+          "start": 130.02,
+          "end": 130.44,
+          "probability": 0.97119140625
+        },
+        {
+          "text": "种",
+          "start": 130.44,
+          "end": 130.62,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "野",
+          "start": 130.62,
+          "end": 130.8,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "花",
+          "start": 130.8,
+          "end": 131.0,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "能",
+          "start": 131.0,
+          "end": 131.16,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "采",
+          "start": 131.16,
+          "end": 131.42,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "吗?",
+          "start": 131.42,
+          "end": 131.72,
+          "probability": 0.99462890625
+        }
+      ]
+    },
+    {
+      "start": 132.08,
+      "end": 132.96,
+      "text": "这是绣球花",
+      "words": [
+        {
+          "text": "这是",
+          "start": 132.08,
+          "end": 132.3,
+          "probability": 0.98876953125
+        },
+        {
+          "text": "绣",
+          "start": 132.3,
+          "end": 132.54,
+          "probability": 0.737548828125
+        },
+        {
+          "text": "球",
+          "start": 132.54,
+          "end": 132.72,
+          "probability": 0.7861328125
+        },
+        {
+          "text": "花",
+          "start": 132.72,
+          "end": 132.96,
+          "probability": 0.99951171875
+        }
+      ]
+    },
+    {
+      "start": 132.96,
+      "end": 133.94,
+      "text": "虽然很美",
+      "words": [
+        {
+          "text": "虽",
+          "start": 132.96,
+          "end": 133.44,
+          "probability": 0.919921875
+        },
+        {
+          "text": "然",
+          "start": 133.44,
+          "end": 133.58,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "很",
+          "start": 133.58,
+          "end": 133.76,
+          "probability": 0.9951171875
+        },
+        {
+          "text": "美",
+          "start": 133.76,
+          "end": 133.94,
+          "probability": 0.99853515625
+        }
+      ]
+    },
+    {
+      "start": 133.94,
+      "end": 135.6,
+      "text": "但权诸君具有毒性",
+      "words": [
+        {
+          "text": "但",
+          "start": 133.94,
+          "end": 134.38,
+          "probability": 0.90771484375
+        },
+        {
+          "text": "权",
+          "start": 134.38,
+          "end": 134.58,
+          "probability": 0.6883544921875
+        },
+        {
+          "text": "诸",
+          "start": 134.58,
+          "end": 134.72,
+          "probability": 0.5731201171875
+        },
+        {
+          "text": "君",
+          "start": 134.72,
+          "end": 134.94,
+          "probability": 0.5400390625
+        },
+        {
+          "text": "具",
+          "start": 134.94,
+          "end": 135.1,
+          "probability": 0.9453125
+        },
+        {
+          "text": "有",
+          "start": 135.1,
+          "end": 135.24,
+          "probability": 1.0
+        },
+        {
+          "text": "毒",
+          "start": 135.24,
+          "end": 135.38,
+          "probability": 0.81787109375
+        },
+        {
+          "text": "性",
+          "start": 135.38,
+          "end": 135.6,
+          "probability": 0.99609375
+        }
+      ]
+    },
+    {
+      "start": 135.6,
+      "end": 136.6,
+      "text": "不见意采",
+      "words": [
+        {
+          "text": "不",
+          "start": 135.6,
+          "end": 136.04,
+          "probability": 0.8837890625
+        },
+        {
+          "text": "见",
+          "start": 136.04,
+          "end": 136.2,
+          "probability": 0.58740234375
+        },
+        {
+          "text": "意",
+          "start": 136.2,
+          "end": 136.34,
+          "probability": 0.3095703125
+        },
+        {
+          "text": "采",
+          "start": 136.34,
+          "end": 136.6,
+          "probability": 0.99462890625
+        }
+      ]
+    },
+    {
+      "start": 136.6,
+      "end": 138.18,
+      "text": "这种野花能采吗?",
+      "words": [
+        {
+          "text": "这",
+          "start": 136.6,
+          "end": 136.9,
+          "probability": 0.9794921875
+        },
+        {
+          "text": "种",
+          "start": 136.9,
+          "end": 137.08,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "野",
+          "start": 137.08,
+          "end": 137.26,
+          "probability": 0.998046875
+        },
+        {
+          "text": "花",
+          "start": 137.26,
+          "end": 137.46,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "能",
+          "start": 137.46,
+          "end": 137.64,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "采",
+          "start": 137.64,
+          "end": 137.88,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "吗?",
+          "start": 137.88,
+          "end": 138.18,
+          "probability": 0.994140625
+        }
+      ]
+    },
+    {
+      "start": 138.5,
+      "end": 139.86,
+      "text": "这是青花瓷牡丹菊",
+      "words": [
+        {
+          "text": "这是",
+          "start": 138.5,
+          "end": 138.72,
+          "probability": 0.98681640625
+        },
+        {
+          "text": "青",
+          "start": 138.72,
+          "end": 138.96,
+          "probability": 0.798828125
+        },
+        {
+          "text": "花",
+          "start": 138.96,
+          "end": 139.14,
+          "probability": 0.9951171875
+        },
+        {
+          "text": "瓷",
+          "start": 139.14,
+          "end": 139.3,
+          "probability": 0.7303873697916666
+        },
+        {
+          "text": "牡",
+          "start": 139.3,
+          "end": 139.5,
+          "probability": 0.792724609375
+        },
+        {
+          "text": "丹",
+          "start": 139.5,
+          "end": 139.66,
+          "probability": 0.992919921875
+        },
+        {
+          "text": "菊",
+          "start": 139.66,
+          "end": 139.86,
+          "probability": 0.859619140625
+        }
+      ]
+    },
+    {
+      "start": 139.86,
+      "end": 142.16,
+      "text": "是一种人工培育的原意品种",
+      "words": [
+        {
+          "text": "是",
+          "start": 139.86,
+          "end": 140.36,
+          "probability": 0.97802734375
+        },
+        {
+          "text": "一",
+          "start": 140.36,
+          "end": 140.52,
+          "probability": 0.99267578125
+        },
+        {
+          "text": "种",
+          "start": 140.52,
+          "end": 140.66,
+          "probability": 0.998046875
+        },
+        {
+          "text": "人",
+          "start": 140.66,
+          "end": 140.82,
+          "probability": 0.96044921875
+        },
+        {
+          "text": "工",
+          "start": 140.82,
+          "end": 140.98,
+          "probability": 0.9873046875
+        },
+        {
+          "text": "培",
+          "start": 140.98,
+          "end": 141.18,
+          "probability": 0.98681640625
+        },
+        {
+          "text": "育",
+          "start": 141.18,
+          "end": 141.32,
+          "probability": 0.99072265625
+        },
+        {
+          "text": "的",
+          "start": 141.32,
+          "end": 141.46,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "原",
+          "start": 141.46,
+          "end": 141.6,
+          "probability": 0.58154296875
+        },
+        {
+          "text": "意",
+          "start": 141.6,
+          "end": 141.76,
+          "probability": 0.70654296875
+        },
+        {
+          "text": "品",
+          "start": 141.76,
+          "end": 141.92,
+          "probability": 0.9931640625
+        },
+        {
+          "text": "种",
+          "start": 141.92,
+          "end": 142.16,
+          "probability": 0.99755859375
+        }
+      ]
+    },
+    {
+      "start": 142.16,
+      "end": 142.9,
+      "text": "可以采",
+      "words": [
+        {
+          "text": "可以",
+          "start": 142.16,
+          "end": 142.62,
+          "probability": 0.826171875
+        },
+        {
+          "text": "采",
+          "start": 142.62,
+          "end": 142.9,
+          "probability": 0.9990234375
+        }
+      ]
+    }
+  ],
+  "cues": [
+    {
+      "start": 1.46,
+      "end": 3.5,
+      "text": "路边采野花实际的仔细看看",
+      "words": [
+        {
+          "text": "路",
+          "start": 1.46,
+          "end": 1.78,
+          "probability": 0.8193359375
+        },
+        {
+          "text": "边",
+          "start": 1.78,
+          "end": 1.98,
+          "probability": 0.57470703125
+        },
+        {
+          "text": "采",
+          "start": 1.98,
+          "end": 2.14,
+          "probability": 0.772705078125
+        },
+        {
+          "text": "野",
+          "start": 2.14,
+          "end": 2.32,
+          "probability": 0.77587890625
+        },
+        {
+          "text": "花",
+          "start": 2.32,
+          "end": 2.48,
+          "probability": 0.99169921875
+        },
+        {
+          "text": "实",
+          "start": 2.48,
+          "end": 2.66,
+          "probability": 0.492919921875
+        },
+        {
+          "text": "际",
+          "start": 2.66,
+          "end": 2.8,
+          "probability": 0.999267578125
+        },
+        {
+          "text": "的",
+          "start": 2.8,
+          "end": 2.96,
+          "probability": 0.89013671875
+        },
+        {
+          "text": "仔",
+          "start": 2.96,
+          "end": 3.12,
+          "probability": 0.99658203125
+        },
+        {
+          "text": "细",
+          "start": 3.12,
+          "end": 3.24,
+          "probability": 0.998779296875
+        },
+        {
+          "text": "看看",
+          "start": 3.24,
+          "end": 3.5,
+          "probability": 0.99169921875
+        }
+      ]
+    },
+    {
+      "start": 3.5,
+      "end": 5.38,
+      "text": "这种野花能采吗?",
+      "words": [
+        {
+          "text": "这",
+          "start": 3.5,
+          "end": 4.1,
+          "probability": 0.81396484375
+        },
+        {
+          "text": "种",
+          "start": 4.1,
+          "end": 4.28,
+          "probability": 0.998046875
+        },
+        {
+          "text": "野",
+          "start": 4.28,
+          "end": 4.46,
+          "probability": 0.9931640625
+        },
+        {
+          "text": "花",
+          "start": 4.46,
+          "end": 4.66,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "能",
+          "start": 4.66,
+          "end": 4.84,
+          "probability": 0.994140625
+        },
+        {
+          "text": "采",
+          "start": 4.84,
+          "end": 5.1,
+          "probability": 0.983642578125
+        },
+        {
+          "text": "吗?",
+          "start": 5.1,
+          "end": 5.38,
+          "probability": 0.95947265625
+        }
+      ]
+    },
+    {
+      "start": 5.74,
+      "end": 7.46,
+      "text": "这是人工染色后的太阳花",
+      "words": [
+        {
+          "text": "这是",
+          "start": 5.74,
+          "end": 5.96,
+          "probability": 0.95068359375
+        },
+        {
+          "text": "人",
+          "start": 5.96,
+          "end": 6.2,
+          "probability": 0.98388671875
+        },
+        {
+          "text": "工",
+          "start": 6.2,
+          "end": 6.34,
+          "probability": 0.97216796875
+        },
+        {
+          "text": "染",
+          "start": 6.34,
+          "end": 6.5,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "色",
+          "start": 6.5,
+          "end": 6.66,
+          "probability": 0.9921875
+        },
+        {
+          "text": "后",
+          "start": 6.66,
+          "end": 6.82,
+          "probability": 0.966796875
+        },
+        {
+          "text": "的",
+          "start": 6.82,
+          "end": 6.94,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "太",
+          "start": 6.94,
+          "end": 7.1,
+          "probability": 0.98828125
+        },
+        {
+          "text": "阳",
+          "start": 7.1,
+          "end": 7.24,
+          "probability": 0.998779296875
+        },
+        {
+          "text": "花",
+          "start": 7.24,
+          "end": 7.46,
+          "probability": 0.9990234375
+        }
+      ]
+    },
+    {
+      "start": 7.46,
+      "end": 9.34,
+      "text": "可不是什么蓝色妖姬",
+      "words": [
+        {
+          "text": "可",
+          "start": 7.46,
+          "end": 8.08,
+          "probability": 0.9921875
+        },
+        {
+          "text": "不是",
+          "start": 8.08,
+          "end": 8.32,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "什么",
+          "start": 8.32,
+          "end": 8.6,
+          "probability": 0.99609375
+        },
+        {
+          "text": "蓝",
+          "start": 8.6,
+          "end": 8.8,
+          "probability": 0.980224609375
+        },
+        {
+          "text": "色",
+          "start": 8.8,
+          "end": 8.98,
+          "probability": 1.0
+        },
+        {
+          "text": "妖",
+          "start": 8.98,
+          "end": 9.14,
+          "probability": 0.89794921875
+        },
+        {
+          "text": "姬",
+          "start": 9.14,
+          "end": 9.34,
+          "probability": 0.88134765625
+        }
+      ]
+    },
+    {
+      "start": 9.34,
+      "end": 10.24,
+      "text": "可以采",
+      "words": [
+        {
+          "text": "可以",
+          "start": 9.34,
+          "end": 9.94,
+          "probability": 0.68798828125
+        },
+        {
+          "text": "采",
+          "start": 9.94,
+          "end": 10.24,
+          "probability": 0.998291015625
+        }
+      ]
+    },
+    {
+      "start": 10.24,
+      "end": 11.98,
+      "text": "这种野花能采吗?",
+      "words": [
+        {
+          "text": "这",
+          "start": 10.24,
+          "end": 10.72,
+          "probability": 0.89111328125
+        },
+        {
+          "text": "种",
+          "start": 10.72,
+          "end": 10.88,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "野",
+          "start": 10.88,
+          "end": 11.06,
+          "probability": 0.99658203125
+        },
+        {
+          "text": "花",
+          "start": 11.06,
+          "end": 11.26,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "能",
+          "start": 11.26,
+          "end": 11.44,
+          "probability": 0.99609375
+        },
+        {
+          "text": "采",
+          "start": 11.44,
+          "end": 11.7,
+          "probability": 0.999267578125
+        },
+        {
+          "text": "吗?",
+          "start": 11.7,
+          "end": 11.98,
+          "probability": 0.99267578125
+        }
+      ]
+    },
+    {
+      "start": 12.38,
+      "end": 13.2,
+      "text": "这是蒲公英",
+      "words": [
+        {
+          "text": "这是",
+          "start": 12.38,
+          "end": 12.6,
+          "probability": 0.9912109375
+        },
+        {
+          "text": "蒲",
+          "start": 12.6,
+          "end": 12.82,
+          "probability": 0.89599609375
+        },
+        {
+          "text": "公",
+          "start": 12.82,
+          "end": 12.98,
+          "probability": 0.93701171875
+        },
+        {
+          "text": "英",
+          "start": 12.98,
+          "end": 13.2,
+          "probability": 0.740234375
+        }
+      ]
+    },
+    {
+      "start": 13.2,
+      "end": 14.62,
+      "text": "别名黄花地丁",
+      "words": [
+        {
+          "text": "别",
+          "start": 13.2,
+          "end": 13.7,
+          "probability": 0.86572265625
+        },
+        {
+          "text": "名",
+          "start": 13.7,
+          "end": 13.86,
+          "probability": 0.98681640625
+        },
+        {
+          "text": "黄",
+          "start": 13.86,
+          "end": 14.06,
+          "probability": 0.8359375
+        },
+        {
+          "text": "花",
+          "start": 14.06,
+          "end": 14.26,
+          "probability": 0.9794921875
+        },
+        {
+          "text": "地",
+          "start": 14.26,
+          "end": 14.42,
+          "probability": 0.23388671875
+        },
+        {
+          "text": "丁",
+          "start": 14.42,
+          "end": 14.62,
+          "probability": 0.933837890625
+        }
+      ]
+    },
+    {
+      "start": 14.62,
+      "end": 17.04,
+      "text": "可以采回来切断后晒干成茶",
+      "words": [
+        {
+          "text": "可以",
+          "start": 14.62,
+          "end": 15.2,
+          "probability": 0.9267578125
+        },
+        {
+          "text": "采",
+          "start": 15.2,
+          "end": 15.44,
+          "probability": 0.991943359375
+        },
+        {
+          "text": "回",
+          "start": 15.44,
+          "end": 15.62,
+          "probability": 0.99560546875
+        },
+        {
+          "text": "来",
+          "start": 15.62,
+          "end": 15.76,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "切",
+          "start": 15.76,
+          "end": 15.94,
+          "probability": 0.9912109375
+        },
+        {
+          "text": "断",
+          "start": 15.94,
+          "end": 16.08,
+          "probability": 0.98388671875
+        },
+        {
+          "text": "后",
+          "start": 16.08,
+          "end": 16.3,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "晒",
+          "start": 16.3,
+          "end": 16.46,
+          "probability": 0.98486328125
+        },
+        {
+          "text": "干",
+          "start": 16.46,
+          "end": 16.62,
+          "probability": 0.9658203125
+        },
+        {
+          "text": "成",
+          "start": 16.62,
+          "end": 16.8,
+          "probability": 0.342529296875
+        },
+        {
+          "text": "茶",
+          "start": 16.8,
+          "end": 17.04,
+          "probability": 0.9609375
+        }
+      ]
+    },
+    {
+      "start": 17.04,
+      "end": 18.72,
+      "text": "这种野花能采吗?",
+      "words": [
+        {
+          "text": "这",
+          "start": 17.04,
+          "end": 17.44,
+          "probability": 0.982421875
+        },
+        {
+          "text": "种",
+          "start": 17.44,
+          "end": 17.62,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "野",
+          "start": 17.62,
+          "end": 17.8,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "花",
+          "start": 17.8,
+          "end": 17.98,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "能",
+          "start": 17.98,
+          "end": 18.16,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "采",
+          "start": 18.16,
+          "end": 18.44,
+          "probability": 0.999755859375
+        },
+        {
+          "text": "吗?",
+          "start": 18.44,
+          "end": 18.72,
+          "probability": 0.9931640625
+        }
+      ]
+    },
+    {
+      "start": 19.14,
+      "end": 19.88,
+      "text": "这是塔黄",
+      "words": [
+        {
+          "text": "这是",
+          "start": 19.14,
+          "end": 19.4,
+          "probability": 0.984375
+        },
+        {
+          "text": "塔",
+          "start": 19.4,
+          "end": 19.62,
+          "probability": 0.9306640625
+        },
+        {
+          "text": "黄",
+          "start": 19.62,
+          "end": 19.88,
+          "probability": 0.818603515625
+        }
+      ]
+    },
+    {
+      "start": 19.88,
+      "end": 21.4,
+      "text": "一生只开一次花",
+      "words": [
+        {
+          "text": "一",
+          "start": 19.88,
+          "end": 20.38,
+          "probability": 0.525390625
+        },
+        {
+          "text": "生",
+          "start": 20.38,
+          "end": 20.56,
+          "probability": 0.93798828125
+        },
+        {
+          "text": "只",
+          "start": 20.56,
+          "end": 20.72,
+          "probability": 0.9228515625
+        },
+        {
+          "text": "开",
+          "start": 20.72,
+          "end": 20.88,
+          "probability": 0.931640625
+        },
+        {
+          "text": "一次",
+          "start": 20.88,
+          "end": 21.08,
+          "probability": 0.97412109375
+        },
+        {
+          "text": "花",
+          "start": 21.08,
+          "end": 21.4,
+          "probability": 0.998046875
+        }
+      ]
+    },
+    {
+      "start": 21.4,
+      "end": 23.16,
+      "text": "国家二级保护植物",
+      "words": [
+        {
+          "text": "国",
+          "start": 21.4,
+          "end": 21.94,
+          "probability": 0.9609375
+        },
+        {
+          "text": "家",
+          "start": 21.94,
+          "end": 22.14,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "二",
+          "start": 22.14,
+          "end": 22.34,
+          "probability": 0.947265625
+        },
+        {
+          "text": "级",
+          "start": 22.34,
+          "end": 22.46,
+          "probability": 0.99169921875
+        },
+        {
+          "text": "保",
+          "start": 22.46,
+          "end": 22.64,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "护",
+          "start": 22.64,
+          "end": 22.78,
+          "probability": 0.998779296875
+        },
+        {
+          "text": "植",
+          "start": 22.78,
+          "end": 22.94,
+          "probability": 0.856689453125
+        },
+        {
+          "text": "物",
+          "start": 22.94,
+          "end": 23.16,
+          "probability": 0.99951171875
+        }
+      ]
+    },
+    {
+      "start": 23.16,
+      "end": 24.66,
+      "text": "采了药采缝认机",
+      "words": [
+        {
+          "text": "采",
+          "start": 23.16,
+          "end": 23.68,
+          "probability": 0.98095703125
+        },
+        {
+          "text": "了",
+          "start": 23.68,
+          "end": 23.84,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "药",
+          "start": 23.84,
+          "end": 23.98,
+          "probability": 0.981201171875
+        },
+        {
+          "text": "采",
+          "start": 23.98,
+          "end": 24.14,
+          "probability": 0.996337890625
+        },
+        {
+          "text": "缝",
+          "start": 24.14,
+          "end": 24.3,
+          "probability": 0.9150390625
+        },
+        {
+          "text": "认",
+          "start": 24.3,
+          "end": 24.46,
+          "probability": 0.656494140625
+        },
+        {
+          "text": "机",
+          "start": 24.46,
+          "end": 24.66,
+          "probability": 0.79931640625
+        }
+      ]
+    },
+    {
+      "start": 24.66,
+      "end": 26.32,
+      "text": "这种野花能采吗?",
+      "words": [
+        {
+          "text": "这",
+          "start": 24.66,
+          "end": 25.02,
+          "probability": 0.9482421875
+        },
+        {
+          "text": "种",
+          "start": 25.02,
+          "end": 25.22,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "野",
+          "start": 25.22,
+          "end": 25.4,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "花",
+          "start": 25.4,
+          "end": 25.58,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "能",
+          "start": 25.58,
+          "end": 25.78,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "采",
+          "start": 25.78,
+          "end": 26.02,
+          "probability": 0.999755859375
+        },
+        {
+          "text": "吗?",
+          "start": 26.02,
+          "end": 26.32,
+          "probability": 0.9931640625
+        }
+      ]
+    },
+    {
+      "start": 26.7,
+      "end": 27.68,
+      "text": "这是天山雪莲",
+      "words": [
+        {
+          "text": "这是",
+          "start": 26.7,
+          "end": 26.9,
+          "probability": 0.99072265625
+        },
+        {
+          "text": "天",
+          "start": 26.9,
+          "end": 27.14,
+          "probability": 0.99658203125
+        },
+        {
+          "text": "山",
+          "start": 27.14,
+          "end": 27.32,
+          "probability": 0.99169921875
+        },
+        {
+          "text": "雪",
+          "start": 27.32,
+          "end": 27.5,
+          "probability": 0.73828125
+        },
+        {
+          "text": "莲",
+          "start": 27.5,
+          "end": 27.68,
+          "probability": 0.826416015625
+        }
+      ]
+    },
+    {
+      "start": 27.68,
+      "end": 29.94,
+      "text": "国家二级保护野生植物",
+      "words": [
+        {
+          "text": "国",
+          "start": 27.68,
+          "end": 28.24,
+          "probability": 0.96533203125
+        },
+        {
+          "text": "家",
+          "start": 28.24,
+          "end": 28.42,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "二",
+          "start": 28.42,
+          "end": 28.64,
+          "probability": 0.99658203125
+        },
+        {
+          "text": "级",
+          "start": 28.64,
+          "end": 28.74,
+          "probability": 0.999755859375
+        },
+        {
+          "text": "保",
+          "start": 28.74,
+          "end": 28.94,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "护",
+          "start": 28.94,
+          "end": 29.1,
+          "probability": 0.999755859375
+        },
+        {
+          "text": "野",
+          "start": 29.1,
+          "end": 29.28,
+          "probability": 0.99365234375
+        },
+        {
+          "text": "生",
+          "start": 29.28,
+          "end": 29.42,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "植",
+          "start": 29.42,
+          "end": 29.58,
+          "probability": 0.998779296875
+        },
+        {
+          "text": "物",
+          "start": 29.58,
+          "end": 29.94,
+          "probability": 1.0
+        }
+      ]
+    },
+    {
+      "start": 29.94,
+      "end": 31.34,
+      "text": "采了药采缝认机",
+      "words": [
+        {
+          "text": "采",
+          "start": 29.94,
+          "end": 30.34,
+          "probability": 0.567626953125
+        },
+        {
+          "text": "了",
+          "start": 30.34,
+          "end": 30.48,
+          "probability": 0.986328125
+        },
+        {
+          "text": "药",
+          "start": 30.48,
+          "end": 30.64,
+          "probability": 0.5517578125
+        },
+        {
+          "text": "采",
+          "start": 30.64,
+          "end": 30.82,
+          "probability": 0.916015625
+        },
+        {
+          "text": "缝",
+          "start": 30.82,
+          "end": 30.96,
+          "probability": 0.63330078125
+        },
+        {
+          "text": "认",
+          "start": 30.96,
+          "end": 31.12,
+          "probability": 0.54229736328125
+        },
+        {
+          "text": "机",
+          "start": 31.12,
+          "end": 31.34,
+          "probability": 0.8125
+        }
+      ]
+    },
+    {
+      "start": 31.34,
+      "end": 33.04,
+      "text": "这种野花能采吗?",
+      "words": [
+        {
+          "text": "这",
+          "start": 31.34,
+          "end": 31.76,
+          "probability": 0.4150390625
+        },
+        {
+          "text": "种",
+          "start": 31.76,
+          "end": 31.94,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "野",
+          "start": 31.94,
+          "end": 32.12,
+          "probability": 0.763671875
+        },
+        {
+          "text": "花",
+          "start": 32.12,
+          "end": 32.32,
+          "probability": 0.99462890625
+        },
+        {
+          "text": "能",
+          "start": 32.32,
+          "end": 32.5,
+          "probability": 0.990234375
+        },
+        {
+          "text": "采",
+          "start": 32.5,
+          "end": 32.76,
+          "probability": 0.998046875
+        },
+        {
+          "text": "吗?",
+          "start": 32.76,
+          "end": 33.04,
+          "probability": 0.9404296875
+        }
+      ]
+    },
+    {
+      "start": 33.42,
+      "end": 34.22,
+      "text": "这是比暗花",
+      "words": [
+        {
+          "text": "这是",
+          "start": 33.42,
+          "end": 33.62,
+          "probability": 0.94775390625
+        },
+        {
+          "text": "比",
+          "start": 33.62,
+          "end": 33.84,
+          "probability": 0.360595703125
+        },
+        {
+          "text": "暗",
+          "start": 33.84,
+          "end": 33.98,
+          "probability": 0.758544921875
+        },
+        {
+          "text": "花",
+          "start": 33.98,
+          "end": 34.22,
+          "probability": 0.998046875
+        }
+      ]
+    },
+    {
+      "start": 34.22,
+      "end": 35.6,
+      "text": "又叫曼珠沙华",
+      "words": [
+        {
+          "text": "又",
+          "start": 34.22,
+          "end": 34.7,
+          "probability": 0.67724609375
+        },
+        {
+          "text": "叫",
+          "start": 34.7,
+          "end": 34.88,
+          "probability": 0.9912109375
+        },
+        {
+          "text": "曼",
+          "start": 34.88,
+          "end": 35.06,
+          "probability": 0.6025390625
+        },
+        {
+          "text": "珠",
+          "start": 35.06,
+          "end": 35.24,
+          "probability": 0.9013671875
+        },
+        {
+          "text": "沙",
+          "start": 35.24,
+          "end": 35.4,
+          "probability": 0.80908203125
+        },
+        {
+          "text": "华",
+          "start": 35.4,
+          "end": 35.6,
+          "probability": 0.60992431640625
+        }
+      ]
+    },
+    {
+      "start": 35.6,
+      "end": 37.3,
+      "text": "全珠有毒不能采",
+      "words": [
+        {
+          "text": "全",
+          "start": 35.6,
+          "end": 36.18,
+          "probability": 0.7236328125
+        },
+        {
+          "text": "珠",
+          "start": 36.18,
+          "end": 36.32,
+          "probability": 0.900146484375
+        },
+        {
+          "text": "有",
+          "start": 36.32,
+          "end": 36.5,
+          "probability": 0.98095703125
+        },
+        {
+          "text": "毒",
+          "start": 36.5,
+          "end": 36.64,
+          "probability": 0.9853515625
+        },
+        {
+          "text": "不能",
+          "start": 36.64,
+          "end": 36.9,
+          "probability": 0.9873046875
+        },
+        {
+          "text": "采",
+          "start": 36.9,
+          "end": 37.3,
+          "probability": 0.9990234375
+        }
+      ]
+    },
+    {
+      "start": 37.3,
+      "end": 39.06,
+      "text": "据说今天是丢病日",
+      "words": [
+        {
+          "text": "据",
+          "start": 37.3,
+          "end": 37.84,
+          "probability": 0.5770263671875
+        },
+        {
+          "text": "说",
+          "start": 37.84,
+          "end": 38.02,
+          "probability": 0.9951171875
+        },
+        {
+          "text": "今天",
+          "start": 38.02,
+          "end": 38.26,
+          "probability": 0.984375
+        },
+        {
+          "text": "是",
+          "start": 38.26,
+          "end": 38.52,
+          "probability": 0.99560546875
+        },
+        {
+          "text": "丢",
+          "start": 38.52,
+          "end": 38.66,
+          "probability": 0.99560546875
+        },
+        {
+          "text": "病",
+          "start": 38.66,
+          "end": 38.82,
+          "probability": 0.9912109375
+        },
+        {
+          "text": "日",
+          "start": 38.82,
+          "end": 39.06,
+          "probability": 0.998046875
+        }
+      ]
+    },
+    {
+      "start": 39.06,
+      "end": 40.4,
+      "text": "丢下三朵鲜花",
+      "words": [
+        {
+          "text": "丢",
+          "start": 39.06,
+          "end": 39.48,
+          "probability": 0.992431640625
+        },
+        {
+          "text": "下",
+          "start": 39.48,
+          "end": 39.66,
+          "probability": 0.99609375
+        },
+        {
+          "text": "三",
+          "start": 39.66,
+          "end": 39.82,
+          "probability": 0.94677734375
+        },
+        {
+          "text": "朵",
+          "start": 39.82,
+          "end": 39.98,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "鲜",
+          "start": 39.98,
+          "end": 40.14,
+          "probability": 0.9630533854166666
+        },
+        {
+          "text": "花",
+          "start": 40.14,
+          "end": 40.4,
+          "probability": 0.99658203125
+        }
+      ]
+    },
+    {
+      "start": 40.4,
+      "end": 41.74,
+      "text": "一朵丢掉病痛",
+      "words": [
+        {
+          "text": "一",
+          "start": 40.4,
+          "end": 40.92,
+          "probability": 0.90869140625
+        },
+        {
+          "text": "朵",
+          "start": 40.92,
+          "end": 41.06,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "丢",
+          "start": 41.06,
+          "end": 41.22,
+          "probability": 0.999267578125
+        },
+        {
+          "text": "掉",
+          "start": 41.22,
+          "end": 41.36,
+          "probability": 0.99267578125
+        },
+        {
+          "text": "病",
+          "start": 41.36,
+          "end": 41.54,
+          "probability": 0.99365234375
+        },
+        {
+          "text": "痛",
+          "start": 41.54,
+          "end": 41.74,
+          "probability": 0.9912109375
+        }
+      ]
+    },
+    {
+      "start": 41.74,
+      "end": 43.1,
+      "text": "一朵丢掉灾难",
+      "words": [
+        {
+          "text": "一",
+          "start": 41.74,
+          "end": 42.28,
+          "probability": 0.84326171875
+        },
+        {
+          "text": "朵",
+          "start": 42.28,
+          "end": 42.44,
+          "probability": 1.0
+        },
+        {
+          "text": "丢",
+          "start": 42.44,
+          "end": 42.6,
+          "probability": 0.999755859375
+        },
+        {
+          "text": "掉",
+          "start": 42.6,
+          "end": 42.78,
+          "probability": 0.99560546875
+        },
+        {
+          "text": "灾",
+          "start": 42.78,
+          "end": 42.94,
+          "probability": 0.978759765625
+        },
+        {
+          "text": "难",
+          "start": 42.94,
+          "end": 43.1,
+          "probability": 0.99658203125
+        }
+      ]
+    },
+    {
+      "start": 43.1,
+      "end": 44.52,
+      "text": "一朵丢掉烦恼",
+      "words": [
+        {
+          "text": "一",
+          "start": 43.1,
+          "end": 43.62,
+          "probability": 0.96875
+        },
+        {
+          "text": "朵",
+          "start": 43.62,
+          "end": 43.78,
+          "probability": 1.0
+        },
+        {
+          "text": "丢",
+          "start": 43.78,
+          "end": 43.96,
+          "probability": 1.0
+        },
+        {
+          "text": "掉",
+          "start": 43.96,
+          "end": 44.12,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "烦",
+          "start": 44.12,
+          "end": 44.3,
+          "probability": 0.976318359375
+        },
+        {
+          "text": "恼",
+          "start": 44.3,
+          "end": 44.52,
+          "probability": 0.99755859375
+        }
+      ]
+    },
+    {
+      "start": 44.52,
+      "end": 46.3,
+      "text": "往后全家百毒不清",
+      "words": [
+        {
+          "text": "往",
+          "start": 44.52,
+          "end": 45.04,
+          "probability": 0.93359375
+        },
+        {
+          "text": "后",
+          "start": 45.04,
+          "end": 45.24,
+          "probability": 0.9931640625
+        },
+        {
+          "text": "全",
+          "start": 45.24,
+          "end": 45.42,
+          "probability": 0.97802734375
+        },
+        {
+          "text": "家",
+          "start": 45.42,
+          "end": 45.6,
+          "probability": 0.98876953125
+        },
+        {
+          "text": "百",
+          "start": 45.6,
+          "end": 45.78,
+          "probability": 0.71923828125
+        },
+        {
+          "text": "毒",
+          "start": 45.78,
+          "end": 45.94,
+          "probability": 0.98193359375
+        },
+        {
+          "text": "不",
+          "start": 45.94,
+          "end": 46.12,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "清",
+          "start": 46.12,
+          "end": 46.3,
+          "probability": 0.794921875
+        }
+      ]
+    },
+    {
+      "start": 46.3,
+      "end": 47.4,
+      "text": "万事顺遂",
+      "words": [
+        {
+          "text": "万",
+          "start": 46.3,
+          "end": 46.8,
+          "probability": 0.93603515625
+        },
+        {
+          "text": "事",
+          "start": 46.8,
+          "end": 46.98,
+          "probability": 0.9443359375
+        },
+        {
+          "text": "顺",
+          "start": 46.98,
+          "end": 47.14,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "遂",
+          "start": 47.14,
+          "end": 47.4,
+          "probability": 0.826171875
+        }
+      ]
+    },
+    {
+      "start": 47.4,
+      "end": 49.0,
+      "text": "这种野花能采吗?",
+      "words": [
+        {
+          "text": "这",
+          "start": 47.4,
+          "end": 47.7,
+          "probability": 0.947265625
+        },
+        {
+          "text": "种",
+          "start": 47.7,
+          "end": 47.86,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "野",
+          "start": 47.86,
+          "end": 48.06,
+          "probability": 0.98828125
+        },
+        {
+          "text": "花",
+          "start": 48.06,
+          "end": 48.24,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "能",
+          "start": 48.24,
+          "end": 48.44,
+          "probability": 0.99609375
+        },
+        {
+          "text": "采",
+          "start": 48.44,
+          "end": 48.7,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "吗?",
+          "start": 48.7,
+          "end": 49.0,
+          "probability": 0.99072265625
+        }
+      ]
+    },
+    {
+      "start": 49.38,
+      "end": 50.2,
+      "text": "这是三色井",
+      "words": [
+        {
+          "text": "这是",
+          "start": 49.38,
+          "end": 49.6,
+          "probability": 0.97412109375
+        },
+        {
+          "text": "三",
+          "start": 49.6,
+          "end": 49.84,
+          "probability": 0.98046875
+        },
+        {
+          "text": "色",
+          "start": 49.84,
+          "end": 50.0,
+          "probability": 0.9921875
+        },
+        {
+          "text": "井",
+          "start": 50.0,
+          "end": 50.2,
+          "probability": 0.564453125
+        }
+      ]
+    },
+    {
+      "start": 50.2,
+      "end": 52.38,
+      "text": "是阳台常见的高颜值花卉",
+      "words": [
+        {
+          "text": "是",
+          "start": 50.2,
+          "end": 50.7,
+          "probability": 0.96044921875
+        },
+        {
+          "text": "阳",
+          "start": 50.7,
+          "end": 50.88,
+          "probability": 0.946533203125
+        },
+        {
+          "text": "台",
+          "start": 50.88,
+          "end": 51.04,
+          "probability": 0.98388671875
+        },
+        {
+          "text": "常",
+          "start": 51.04,
+          "end": 51.24,
+          "probability": 0.9814453125
+        },
+        {
+          "text": "见",
+          "start": 51.24,
+          "end": 51.4,
+          "probability": 0.931640625
+        },
+        {
+          "text": "的",
+          "start": 51.4,
+          "end": 51.54,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "高",
+          "start": 51.54,
+          "end": 51.7,
+          "probability": 0.97900390625
+        },
+        {
+          "text": "颜",
+          "start": 51.7,
+          "end": 51.84,
+          "probability": 0.674560546875
+        },
+        {
+          "text": "值",
+          "start": 51.84,
+          "end": 52.0,
+          "probability": 0.87060546875
+        },
+        {
+          "text": "花",
+          "start": 52.0,
+          "end": 52.2,
+          "probability": 0.97900390625
+        },
+        {
+          "text": "卉",
+          "start": 52.2,
+          "end": 52.38,
+          "probability": 0.7880859375
+        }
+      ]
+    },
+    {
+      "start": 52.38,
+      "end": 53.16,
+      "text": "可以采",
+      "words": [
+        {
+          "text": "可以",
+          "start": 52.38,
+          "end": 52.9,
+          "probability": 0.9384765625
+        },
+        {
+          "text": "采",
+          "start": 52.9,
+          "end": 53.16,
+          "probability": 0.999267578125
+        }
+      ]
+    },
+    {
+      "start": 53.16,
+      "end": 54.88,
+      "text": "这种野花能采吗?",
+      "words": [
+        {
+          "text": "这",
+          "start": 53.16,
+          "end": 53.6,
+          "probability": 0.958984375
+        },
+        {
+          "text": "种",
+          "start": 53.6,
+          "end": 53.78,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "野",
+          "start": 53.78,
+          "end": 53.94,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "花",
+          "start": 53.94,
+          "end": 54.16,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "能",
+          "start": 54.16,
+          "end": 54.34,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "采",
+          "start": 54.34,
+          "end": 54.6,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "吗?",
+          "start": 54.6,
+          "end": 54.88,
+          "probability": 0.99365234375
+        }
+      ]
+    },
+    {
+      "start": 55.24,
+      "end": 56.16,
+      "text": "这是野生杜珣",
+      "words": [
+        {
+          "text": "这是",
+          "start": 55.24,
+          "end": 55.44,
+          "probability": 0.98828125
+        },
+        {
+          "text": "野",
+          "start": 55.44,
+          "end": 55.68,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "生",
+          "start": 55.68,
+          "end": 55.82,
+          "probability": 0.998046875
+        },
+        {
+          "text": "杜",
+          "start": 55.82,
+          "end": 56.0,
+          "probability": 0.648193359375
+        },
+        {
+          "text": "珣",
+          "start": 56.0,
+          "end": 56.16,
+          "probability": 0.42999267578125
+        }
+      ]
+    },
+    {
+      "start": 56.16,
+      "end": 58.32,
+      "text": "国家二级保护野生植物",
+      "words": [
+        {
+          "text": "国",
+          "start": 56.16,
+          "end": 56.74,
+          "probability": 0.94970703125
+        },
+        {
+          "text": "家",
+          "start": 56.74,
+          "end": 56.92,
+          "probability": 0.99462890625
+        },
+        {
+          "text": "二",
+          "start": 56.92,
+          "end": 57.08,
+          "probability": 0.94287109375
+        },
+        {
+          "text": "级",
+          "start": 57.08,
+          "end": 57.22,
+          "probability": 0.99609375
+        },
+        {
+          "text": "保",
+          "start": 57.22,
+          "end": 57.42,
+          "probability": 0.99462890625
+        },
+        {
+          "text": "护",
+          "start": 57.42,
+          "end": 57.58,
+          "probability": 0.998779296875
+        },
+        {
+          "text": "野",
+          "start": 57.58,
+          "end": 57.78,
+          "probability": 0.99609375
+        },
+        {
+          "text": "生",
+          "start": 57.78,
+          "end": 57.92,
+          "probability": 1.0
+        },
+        {
+          "text": "植",
+          "start": 57.92,
+          "end": 58.08,
+          "probability": 0.9873046875
+        },
+        {
+          "text": "物",
+          "start": 58.08,
+          "end": 58.32,
+          "probability": 0.99951171875
+        }
+      ]
+    },
+    {
+      "start": 58.32,
+      "end": 59.78,
+      "text": "采了药采缝认机",
+      "words": [
+        {
+          "text": "采",
+          "start": 58.32,
+          "end": 58.76,
+          "probability": 0.5360107421875
+        },
+        {
+          "text": "了",
+          "start": 58.76,
+          "end": 58.92,
+          "probability": 0.978515625
+        },
+        {
+          "text": "药",
+          "start": 58.92,
+          "end": 59.06,
+          "probability": 0.6383056640625
+        },
+        {
+          "text": "采",
+          "start": 59.06,
+          "end": 59.24,
+          "probability": 0.925537109375
+        },
+        {
+          "text": "缝",
+          "start": 59.24,
+          "end": 59.38,
+          "probability": 0.7127685546875
+        },
+        {
+          "text": "认",
+          "start": 59.38,
+          "end": 59.56,
+          "probability": 0.60162353515625
+        },
+        {
+          "text": "机",
+          "start": 59.56,
+          "end": 59.78,
+          "probability": 0.468994140625
+        }
+      ]
+    },
+    {
+      "start": 59.78,
+      "end": 61.52,
+      "text": "这种野花能采吗?",
+      "words": [
+        {
+          "text": "这",
+          "start": 59.78,
+          "end": 60.22,
+          "probability": 0.2132568359375
+        },
+        {
+          "text": "种",
+          "start": 60.22,
+          "end": 60.4,
+          "probability": 0.83984375
+        },
+        {
+          "text": "野",
+          "start": 60.4,
+          "end": 60.58,
+          "probability": 0.82666015625
+        },
+        {
+          "text": "花",
+          "start": 60.58,
+          "end": 60.8,
+          "probability": 0.9912109375
+        },
+        {
+          "text": "能",
+          "start": 60.8,
+          "end": 60.98,
+          "probability": 0.9921875
+        },
+        {
+          "text": "采",
+          "start": 60.98,
+          "end": 61.22,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "吗?",
+          "start": 61.22,
+          "end": 61.52,
+          "probability": 0.93310546875
+        }
+      ]
+    },
+    {
+      "start": 61.88,
+      "end": 62.72,
+      "text": "这是剑暴春",
+      "words": [
+        {
+          "text": "这是",
+          "start": 61.88,
+          "end": 62.08,
+          "probability": 0.69580078125
+        },
+        {
+          "text": "剑",
+          "start": 62.08,
+          "end": 62.32,
+          "probability": 0.60955810546875
+        },
+        {
+          "text": "暴",
+          "start": 62.32,
+          "end": 62.48,
+          "probability": 0.670654296875
+        },
+        {
+          "text": "春",
+          "start": 62.48,
+          "end": 62.72,
+          "probability": 0.98388671875
+        }
+      ]
+    },
+    {
+      "start": 62.72,
+      "end": 65.22,
+      "text": "野生属于地方保护珍惜野花",
+      "words": [
+        {
+          "text": "野",
+          "start": 62.72,
+          "end": 63.24,
+          "probability": 0.86767578125
+        },
+        {
+          "text": "生",
+          "start": 63.24,
+          "end": 63.42,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "属",
+          "start": 63.42,
+          "end": 63.58,
+          "probability": 0.998291015625
+        },
+        {
+          "text": "于",
+          "start": 63.58,
+          "end": 63.76,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "地方",
+          "start": 63.76,
+          "end": 63.94,
+          "probability": 0.95849609375
+        },
+        {
+          "text": "保",
+          "start": 63.94,
+          "end": 64.26,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "护",
+          "start": 64.26,
+          "end": 64.42,
+          "probability": 0.99658203125
+        },
+        {
+          "text": "珍",
+          "start": 64.42,
+          "end": 64.7,
+          "probability": 0.87060546875
+        },
+        {
+          "text": "惜",
+          "start": 64.7,
+          "end": 64.84,
+          "probability": 0.88232421875
+        },
+        {
+          "text": "野",
+          "start": 64.84,
+          "end": 65.02,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "花",
+          "start": 65.02,
+          "end": 65.22,
+          "probability": 0.9990234375
+        }
+      ]
+    },
+    {
+      "start": 65.22,
+      "end": 66.12,
+      "text": "不能采",
+      "words": [
+        {
+          "text": "不能",
+          "start": 65.22,
+          "end": 65.76,
+          "probability": 0.31396484375
+        },
+        {
+          "text": "采",
+          "start": 65.76,
+          "end": 66.12,
+          "probability": 0.9990234375
+        }
+      ]
+    },
+    {
+      "start": 66.12,
+      "end": 67.8,
+      "text": "这种野花能采吗?",
+      "words": [
+        {
+          "text": "这",
+          "start": 66.12,
+          "end": 66.5,
+          "probability": 0.97021484375
+        },
+        {
+          "text": "种",
+          "start": 66.5,
+          "end": 66.68,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "野",
+          "start": 66.68,
+          "end": 66.86,
+          "probability": 0.99462890625
+        },
+        {
+          "text": "花",
+          "start": 66.86,
+          "end": 67.06,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "能",
+          "start": 67.06,
+          "end": 67.24,
+          "probability": 0.99560546875
+        },
+        {
+          "text": "采",
+          "start": 67.24,
+          "end": 67.5,
+          "probability": 0.999267578125
+        },
+        {
+          "text": "吗?",
+          "start": 67.5,
+          "end": 67.8,
+          "probability": 0.9873046875
+        }
+      ]
+    },
+    {
+      "start": 68.14,
+      "end": 69.04,
+      "text": "这是硬叶兜兰",
+      "words": [
+        {
+          "text": "这是",
+          "start": 68.14,
+          "end": 68.34,
+          "probability": 0.97216796875
+        },
+        {
+          "text": "硬",
+          "start": 68.34,
+          "end": 68.58,
+          "probability": 0.64013671875
+        },
+        {
+          "text": "叶",
+          "start": 68.58,
+          "end": 68.72,
+          "probability": 0.87109375
+        },
+        {
+          "text": "兜",
+          "start": 68.72,
+          "end": 68.86,
+          "probability": 0.7724609375
+        },
+        {
+          "text": "兰",
+          "start": 68.86,
+          "end": 69.04,
+          "probability": 0.679443359375
+        }
+      ]
+    },
+    {
+      "start": 69.04,
+      "end": 70.82,
+      "text": "国家二级保护植物",
+      "words": [
+        {
+          "text": "国",
+          "start": 69.04,
+          "end": 69.56,
+          "probability": 0.8916015625
+        },
+        {
+          "text": "家",
+          "start": 69.56,
+          "end": 69.78,
+          "probability": 0.99609375
+        },
+        {
+          "text": "二",
+          "start": 69.78,
+          "end": 69.94,
+          "probability": 0.94775390625
+        },
+        {
+          "text": "级",
+          "start": 69.94,
+          "end": 70.08,
+          "probability": 0.99462890625
+        },
+        {
+          "text": "保",
+          "start": 70.08,
+          "end": 70.28,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "护",
+          "start": 70.28,
+          "end": 70.46,
+          "probability": 1.0
+        },
+        {
+          "text": "植",
+          "start": 70.46,
+          "end": 70.62,
+          "probability": 0.862548828125
+        },
+        {
+          "text": "物",
+          "start": 70.62,
+          "end": 70.82,
+          "probability": 0.99951171875
+        }
+      ]
+    },
+    {
+      "start": 70.82,
+      "end": 72.36,
+      "text": "采了药采缝认机",
+      "words": [
+        {
+          "text": "采",
+          "start": 70.82,
+          "end": 71.32,
+          "probability": 0.984375
+        },
+        {
+          "text": "了",
+          "start": 71.32,
+          "end": 71.44,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "药",
+          "start": 71.44,
+          "end": 71.6,
+          "probability": 0.998779296875
+        },
+        {
+          "text": "采",
+          "start": 71.6,
+          "end": 71.76,
+          "probability": 0.997314453125
+        },
+        {
+          "text": "缝",
+          "start": 71.76,
+          "end": 71.92,
+          "probability": 0.997314453125
+        },
+        {
+          "text": "认",
+          "start": 71.92,
+          "end": 72.1,
+          "probability": 0.999267578125
+        },
+        {
+          "text": "机",
+          "start": 72.1,
+          "end": 72.36,
+          "probability": 0.99755859375
+        }
+      ]
+    },
+    {
+      "start": 72.36,
+      "end": 73.98,
+      "text": "这种野花能采吗?",
+      "words": [
+        {
+          "text": "这",
+          "start": 72.36,
+          "end": 72.7,
+          "probability": 0.955078125
+        },
+        {
+          "text": "种",
+          "start": 72.7,
+          "end": 72.88,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "野",
+          "start": 72.88,
+          "end": 73.06,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "花",
+          "start": 73.06,
+          "end": 73.26,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "能",
+          "start": 73.26,
+          "end": 73.44,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "采",
+          "start": 73.44,
+          "end": 73.7,
+          "probability": 0.999755859375
+        },
+        {
+          "text": "吗?",
+          "start": 73.7,
+          "end": 73.98,
+          "probability": 0.99365234375
+        }
+      ]
+    },
+    {
+      "start": 74.36,
+      "end": 75.22,
+      "text": "这是老虎虚",
+      "words": [
+        {
+          "text": "这是",
+          "start": 74.36,
+          "end": 74.58,
+          "probability": 0.97900390625
+        },
+        {
+          "text": "老",
+          "start": 74.58,
+          "end": 74.78,
+          "probability": 0.98388671875
+        },
+        {
+          "text": "虎",
+          "start": 74.78,
+          "end": 74.96,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "虚",
+          "start": 74.96,
+          "end": 75.22,
+          "probability": 0.941162109375
+        }
+      ]
+    },
+    {
+      "start": 75.22,
+      "end": 76.38,
+      "text": "原名剑根鼠",
+      "words": [
+        {
+          "text": "原",
+          "start": 75.22,
+          "end": 75.66,
+          "probability": 0.505859375
+        },
+        {
+          "text": "名",
+          "start": 75.66,
+          "end": 75.84,
+          "probability": 0.9111328125
+        },
+        {
+          "text": "剑",
+          "start": 75.84,
+          "end": 76.02,
+          "probability": 0.866455078125
+        },
+        {
+          "text": "根",
+          "start": 76.02,
+          "end": 76.16,
+          "probability": 0.916015625
+        },
+        {
+          "text": "鼠",
+          "start": 76.16,
+          "end": 76.38,
+          "probability": 0.8935546875
+        }
+      ]
+    },
+    {
+      "start": 76.38,
+      "end": 78.64,
+      "text": "属于剑微珍惜野生植物",
+      "words": [
+        {
+          "text": "属",
+          "start": 76.38,
+          "end": 77.02,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "于",
+          "start": 77.02,
+          "end": 77.2,
+          "probability": 0.998046875
+        },
+        {
+          "text": "剑",
+          "start": 77.2,
+          "end": 77.36,
+          "probability": 0.916259765625
+        },
+        {
+          "text": "微",
+          "start": 77.36,
+          "end": 77.5,
+          "probability": 0.420654296875
+        },
+        {
+          "text": "珍",
+          "start": 77.5,
+          "end": 77.72,
+          "probability": 0.9931640625
+        },
+        {
+          "text": "惜",
+          "start": 77.72,
+          "end": 77.88,
+          "probability": 0.994140625
+        },
+        {
+          "text": "野",
+          "start": 77.88,
+          "end": 78.04,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "生",
+          "start": 78.04,
+          "end": 78.18,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "植",
+          "start": 78.18,
+          "end": 78.36,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "物",
+          "start": 78.36,
+          "end": 78.64,
+          "probability": 1.0
+        }
+      ]
+    },
+    {
+      "start": 78.64,
+      "end": 80.12,
+      "text": "采了药采缝认机",
+      "words": [
+        {
+          "text": "采",
+          "start": 78.64,
+          "end": 79.08,
+          "probability": 0.99365234375
+        },
+        {
+          "text": "了",
+          "start": 79.08,
+          "end": 79.22,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "药",
+          "start": 79.22,
+          "end": 79.36,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "采",
+          "start": 79.36,
+          "end": 79.52,
+          "probability": 0.999267578125
+        },
+        {
+          "text": "缝",
+          "start": 79.52,
+          "end": 79.68,
+          "probability": 0.997314453125
+        },
+        {
+          "text": "认",
+          "start": 79.68,
+          "end": 79.86,
+          "probability": 0.999267578125
+        },
+        {
+          "text": "机",
+          "start": 79.86,
+          "end": 80.12,
+          "probability": 0.9970703125
+        }
+      ]
+    },
+    {
+      "start": 80.12,
+      "end": 81.74,
+      "text": "这种野花能采吗?",
+      "words": [
+        {
+          "text": "这",
+          "start": 80.12,
+          "end": 80.48,
+          "probability": 0.9794921875
+        },
+        {
+          "text": "种",
+          "start": 80.48,
+          "end": 80.64,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "野",
+          "start": 80.64,
+          "end": 80.82,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "花",
+          "start": 80.82,
+          "end": 81.02,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "能",
+          "start": 81.02,
+          "end": 81.2,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "采",
+          "start": 81.2,
+          "end": 81.46,
+          "probability": 0.999755859375
+        },
+        {
+          "text": "吗?",
+          "start": 81.46,
+          "end": 81.74,
+          "probability": 0.99462890625
+        }
+      ]
+    },
+    {
+      "start": 82.14,
+      "end": 82.82,
+      "text": "这是帝皇",
+      "words": [
+        {
+          "text": "这是",
+          "start": 82.14,
+          "end": 82.36,
+          "probability": 0.9345703125
+        },
+        {
+          "text": "帝",
+          "start": 82.36,
+          "end": 82.58,
+          "probability": 0.819091796875
+        },
+        {
+          "text": "皇",
+          "start": 82.58,
+          "end": 82.82,
+          "probability": 0.6416015625
+        }
+      ]
+    },
+    {
+      "start": 82.82,
+      "end": 84.52,
+      "text": "是一位重要的重要才",
+      "words": [
+        {
+          "text": "是",
+          "start": 82.82,
+          "end": 83.28,
+          "probability": 0.91357421875
+        },
+        {
+          "text": "一",
+          "start": 83.28,
+          "end": 83.44,
+          "probability": 0.98681640625
+        },
+        {
+          "text": "位",
+          "start": 83.44,
+          "end": 83.54,
+          "probability": 0.8896484375
+        },
+        {
+          "text": "重要",
+          "start": 83.54,
+          "end": 83.8,
+          "probability": 0.99658203125
+        },
+        {
+          "text": "的",
+          "start": 83.8,
+          "end": 84.0,
+          "probability": 0.99365234375
+        },
+        {
+          "text": "重要",
+          "start": 84.0,
+          "end": 84.18,
+          "probability": 0.9892578125
+        },
+        {
+          "text": "才",
+          "start": 84.18,
+          "end": 84.52,
+          "probability": 0.426513671875
+        }
+      ]
+    },
+    {
+      "start": 84.52,
+      "end": 85.32,
+      "text": "可以采",
+      "words": [
+        {
+          "text": "可以",
+          "start": 84.52,
+          "end": 85.04,
+          "probability": 0.87109375
+        },
+        {
+          "text": "采",
+          "start": 85.04,
+          "end": 85.32,
+          "probability": 0.998291015625
+        }
+      ]
+    },
+    {
+      "start": 85.32,
+      "end": 86.84,
+      "text": "这种野花能采吗?",
+      "words": [
+        {
+          "text": "这",
+          "start": 85.32,
+          "end": 85.56,
+          "probability": 0.9609375
+        },
+        {
+          "text": "种",
+          "start": 85.56,
+          "end": 85.74,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "野",
+          "start": 85.74,
+          "end": 85.92,
+          "probability": 0.99658203125
+        },
+        {
+          "text": "花",
+          "start": 85.92,
+          "end": 86.12,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "能",
+          "start": 86.12,
+          "end": 86.3,
+          "probability": 0.99609375
+        },
+        {
+          "text": "采",
+          "start": 86.3,
+          "end": 86.56,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "吗?",
+          "start": 86.56,
+          "end": 86.84,
+          "probability": 0.99462890625
+        }
+      ]
+    },
+    {
+      "start": 87.06,
+      "end": 87.86,
+      "text": "这是白头翁",
+      "words": [
+        {
+          "text": "这是",
+          "start": 87.06,
+          "end": 87.28,
+          "probability": 0.96630859375
+        },
+        {
+          "text": "白",
+          "start": 87.28,
+          "end": 87.5,
+          "probability": 0.99169921875
+        },
+        {
+          "text": "头",
+          "start": 87.5,
+          "end": 87.7,
+          "probability": 0.87841796875
+        },
+        {
+          "text": "翁",
+          "start": 87.7,
+          "end": 87.86,
+          "probability": 0.6981201171875
+        }
+      ]
+    },
+    {
+      "start": 87.86,
+      "end": 89.08,
+      "text": "别名野丈人",
+      "words": [
+        {
+          "text": "别",
+          "start": 87.86,
+          "end": 88.34,
+          "probability": 0.09600830078125
+        },
+        {
+          "text": "名",
+          "start": 88.34,
+          "end": 88.52,
+          "probability": 0.99072265625
+        },
+        {
+          "text": "野",
+          "start": 88.52,
+          "end": 88.68,
+          "probability": 0.5673828125
+        },
+        {
+          "text": "丈",
+          "start": 88.68,
+          "end": 88.84,
+          "probability": 0.18701171875
+        },
+        {
+          "text": "人",
+          "start": 88.84,
+          "end": 89.08,
+          "probability": 1.0
+        }
+      ]
+    },
+    {
+      "start": 89.08,
+      "end": 90.74,
+      "text": "蜘蛛本身带有毒性",
+      "words": [
+        {
+          "text": "蜘",
+          "start": 89.08,
+          "end": 89.6,
+          "probability": 0.6427408854166666
+        },
+        {
+          "text": "蛛",
+          "start": 89.6,
+          "end": 89.76,
+          "probability": 0.99658203125
+        },
+        {
+          "text": "本",
+          "start": 89.76,
+          "end": 89.92,
+          "probability": 0.998046875
+        },
+        {
+          "text": "身",
+          "start": 89.92,
+          "end": 90.06,
+          "probability": 0.99658203125
+        },
+        {
+          "text": "带",
+          "start": 90.06,
+          "end": 90.24,
+          "probability": 0.96142578125
+        },
+        {
+          "text": "有",
+          "start": 90.24,
+          "end": 90.38,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "毒",
+          "start": 90.38,
+          "end": 90.52,
+          "probability": 0.98046875
+        },
+        {
+          "text": "性",
+          "start": 90.52,
+          "end": 90.74,
+          "probability": 0.9990234375
+        }
+      ]
+    },
+    {
+      "start": 90.74,
+      "end": 91.58,
+      "text": "不能采",
+      "words": [
+        {
+          "text": "不能",
+          "start": 90.74,
+          "end": 91.3,
+          "probability": 0.414794921875
+        },
+        {
+          "text": "采",
+          "start": 91.3,
+          "end": 91.58,
+          "probability": 0.837646484375
+        }
+      ]
+    },
+    {
+      "start": 91.58,
+      "end": 93.28,
+      "text": "这种野花能采吗?",
+      "words": [
+        {
+          "text": "这",
+          "start": 91.58,
+          "end": 92.0,
+          "probability": 0.72900390625
+        },
+        {
+          "text": "种",
+          "start": 92.0,
+          "end": 92.18,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "野",
+          "start": 92.18,
+          "end": 92.36,
+          "probability": 0.98193359375
+        },
+        {
+          "text": "花",
+          "start": 92.36,
+          "end": 92.56,
+          "probability": 0.9951171875
+        },
+        {
+          "text": "能",
+          "start": 92.56,
+          "end": 92.74,
+          "probability": 0.99267578125
+        },
+        {
+          "text": "采",
+          "start": 92.74,
+          "end": 93.0,
+          "probability": 0.997314453125
+        },
+        {
+          "text": "吗?",
+          "start": 93.0,
+          "end": 93.28,
+          "probability": 0.94384765625
+        }
+      ]
+    },
+    {
+      "start": 93.68,
+      "end": 94.76,
+      "text": "这是魔鬼闻新兰",
+      "words": [
+        {
+          "text": "这是",
+          "start": 93.68,
+          "end": 93.86,
+          "probability": 0.9072265625
+        },
+        {
+          "text": "魔",
+          "start": 93.86,
+          "end": 94.08,
+          "probability": 0.95458984375
+        },
+        {
+          "text": "鬼",
+          "start": 94.08,
+          "end": 94.26,
+          "probability": 0.998046875
+        },
+        {
+          "text": "闻",
+          "start": 94.26,
+          "end": 94.4,
+          "probability": 0.658935546875
+        },
+        {
+          "text": "新",
+          "start": 94.4,
+          "end": 94.58,
+          "probability": 0.378173828125
+        },
+        {
+          "text": "兰",
+          "start": 94.58,
+          "end": 94.76,
+          "probability": 0.94384765625
+        }
+      ]
+    },
+    {
+      "start": 94.76,
+      "end": 96.38,
+      "text": "花型库寺孙悟空",
+      "words": [
+        {
+          "text": "花",
+          "start": 94.76,
+          "end": 95.34,
+          "probability": 0.96044921875
+        },
+        {
+          "text": "型",
+          "start": 95.34,
+          "end": 95.52,
+          "probability": 0.6181640625
+        },
+        {
+          "text": "库",
+          "start": 95.52,
+          "end": 95.7,
+          "probability": 0.75244140625
+        },
+        {
+          "text": "寺",
+          "start": 95.7,
+          "end": 95.86,
+          "probability": 0.79150390625
+        },
+        {
+          "text": "孙",
+          "start": 95.86,
+          "end": 96.02,
+          "probability": 0.90576171875
+        },
+        {
+          "text": "悟",
+          "start": 96.02,
+          "end": 96.18,
+          "probability": 0.915771484375
+        },
+        {
+          "text": "空",
+          "start": 96.18,
+          "end": 96.38,
+          "probability": 0.99951171875
+        }
+      ]
+    },
+    {
+      "start": 96.38,
+      "end": 98.04,
+      "text": "虽观赏价值极高",
+      "words": [
+        {
+          "text": "虽",
+          "start": 96.38,
+          "end": 96.94,
+          "probability": 0.94580078125
+        },
+        {
+          "text": "观",
+          "start": 96.94,
+          "end": 97.1,
+          "probability": 0.8203125
+        },
+        {
+          "text": "赏",
+          "start": 97.1,
+          "end": 97.28,
+          "probability": 0.931884765625
+        },
+        {
+          "text": "价",
+          "start": 97.28,
+          "end": 97.46,
+          "probability": 0.998779296875
+        },
+        {
+          "text": "值",
+          "start": 97.46,
+          "end": 97.64,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "极",
+          "start": 97.64,
+          "end": 97.8,
+          "probability": 0.97607421875
+        },
+        {
+          "text": "高",
+          "start": 97.8,
+          "end": 98.04,
+          "probability": 0.99951171875
+        }
+      ]
+    },
+    {
+      "start": 98.04,
+      "end": 100.1,
+      "text": "但是国家二级保护植物",
+      "words": [
+        {
+          "text": "但是",
+          "start": 98.04,
+          "end": 98.66,
+          "probability": 0.97607421875
+        },
+        {
+          "text": "国",
+          "start": 98.66,
+          "end": 98.88,
+          "probability": 0.99609375
+        },
+        {
+          "text": "家",
+          "start": 98.88,
+          "end": 99.1,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "二",
+          "start": 99.1,
+          "end": 99.28,
+          "probability": 0.96142578125
+        },
+        {
+          "text": "级",
+          "start": 99.28,
+          "end": 99.42,
+          "probability": 0.995361328125
+        },
+        {
+          "text": "保",
+          "start": 99.42,
+          "end": 99.6,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "护",
+          "start": 99.6,
+          "end": 99.72,
+          "probability": 0.999267578125
+        },
+        {
+          "text": "植",
+          "start": 99.72,
+          "end": 99.92,
+          "probability": 0.86669921875
+        },
+        {
+          "text": "物",
+          "start": 99.92,
+          "end": 100.1,
+          "probability": 0.99951171875
+        }
+      ]
+    },
+    {
+      "start": 100.1,
+      "end": 101.58,
+      "text": "采了药采缝认机",
+      "words": [
+        {
+          "text": "采",
+          "start": 100.1,
+          "end": 100.64,
+          "probability": 0.99365234375
+        },
+        {
+          "text": "了",
+          "start": 100.64,
+          "end": 100.78,
+          "probability": 0.99462890625
+        },
+        {
+          "text": "药",
+          "start": 100.78,
+          "end": 100.9,
+          "probability": 0.947265625
+        },
+        {
+          "text": "采",
+          "start": 100.9,
+          "end": 101.08,
+          "probability": 0.995849609375
+        },
+        {
+          "text": "缝",
+          "start": 101.08,
+          "end": 101.24,
+          "probability": 0.6549072265625
+        },
+        {
+          "text": "认",
+          "start": 101.24,
+          "end": 101.38,
+          "probability": 0.55657958984375
+        },
+        {
+          "text": "机",
+          "start": 101.38,
+          "end": 101.58,
+          "probability": 0.5205078125
+        }
+      ]
+    },
+    {
+      "start": 101.58,
+      "end": 103.32,
+      "text": "这种野花能采吗?",
+      "words": [
+        {
+          "text": "这",
+          "start": 101.58,
+          "end": 102.02,
+          "probability": 0.9482421875
+        },
+        {
+          "text": "种",
+          "start": 102.02,
+          "end": 102.16,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "野",
+          "start": 102.16,
+          "end": 102.36,
+          "probability": 0.998046875
+        },
+        {
+          "text": "花",
+          "start": 102.36,
+          "end": 102.56,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "能",
+          "start": 102.56,
+          "end": 102.74,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "采",
+          "start": 102.74,
+          "end": 103.0,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "吗?",
+          "start": 103.0,
+          "end": 103.32,
+          "probability": 0.99267578125
+        }
+      ]
+    },
+    {
+      "start": 103.64,
+      "end": 104.44,
+      "text": "这是木棉花",
+      "words": [
+        {
+          "text": "这是",
+          "start": 103.64,
+          "end": 103.84,
+          "probability": 0.984375
+        },
+        {
+          "text": "木",
+          "start": 103.84,
+          "end": 104.06,
+          "probability": 0.87109375
+        },
+        {
+          "text": "棉",
+          "start": 104.06,
+          "end": 104.2,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "花",
+          "start": 104.2,
+          "end": 104.44,
+          "probability": 0.99951171875
+        }
+      ]
+    },
+    {
+      "start": 104.44,
+      "end": 106.1,
+      "text": "还有生物剑等毒素",
+      "words": [
+        {
+          "text": "还有",
+          "start": 104.44,
+          "end": 105.0,
+          "probability": 0.72509765625
+        },
+        {
+          "text": "生",
+          "start": 105.0,
+          "end": 105.26,
+          "probability": 0.9931640625
+        },
+        {
+          "text": "物",
+          "start": 105.26,
+          "end": 105.4,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "剑",
+          "start": 105.4,
+          "end": 105.56,
+          "probability": 0.097747802734375
+        },
+        {
+          "text": "等",
+          "start": 105.56,
+          "end": 105.74,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "毒",
+          "start": 105.74,
+          "end": 105.92,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "素",
+          "start": 105.92,
+          "end": 106.1,
+          "probability": 0.994140625
+        }
+      ]
+    },
+    {
+      "start": 106.1,
+      "end": 107.06,
+      "text": "不能采",
+      "words": [
+        {
+          "text": "不能",
+          "start": 106.1,
+          "end": 106.74,
+          "probability": 0.92822265625
+        },
+        {
+          "text": "采",
+          "start": 106.74,
+          "end": 107.06,
+          "probability": 0.998046875
+        }
+      ]
+    },
+    {
+      "start": 107.06,
+      "end": 108.72,
+      "text": "这种野花能采吗?",
+      "words": [
+        {
+          "text": "这",
+          "start": 107.06,
+          "end": 107.44,
+          "probability": 0.96923828125
+        },
+        {
+          "text": "种",
+          "start": 107.44,
+          "end": 107.62,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "野",
+          "start": 107.62,
+          "end": 107.8,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "花",
+          "start": 107.8,
+          "end": 107.98,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "能",
+          "start": 107.98,
+          "end": 108.18,
+          "probability": 0.9951171875
+        },
+        {
+          "text": "采",
+          "start": 108.18,
+          "end": 108.44,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "吗?",
+          "start": 108.44,
+          "end": 108.72,
+          "probability": 0.994140625
+        }
+      ]
+    },
+    {
+      "start": 109.06,
+      "end": 110.14,
+      "text": "这是双色羊举梗",
+      "words": [
+        {
+          "text": "这是",
+          "start": 109.06,
+          "end": 109.24,
+          "probability": 0.95849609375
+        },
+        {
+          "text": "双",
+          "start": 109.24,
+          "end": 109.48,
+          "probability": 0.994140625
+        },
+        {
+          "text": "色",
+          "start": 109.48,
+          "end": 109.64,
+          "probability": 0.99462890625
+        },
+        {
+          "text": "羊",
+          "start": 109.64,
+          "end": 109.8,
+          "probability": 0.760498046875
+        },
+        {
+          "text": "举",
+          "start": 109.8,
+          "end": 109.98,
+          "probability": 0.557159423828125
+        },
+        {
+          "text": "梗",
+          "start": 109.98,
+          "end": 110.14,
+          "probability": 0.95751953125
+        }
+      ]
+    },
+    {
+      "start": 110.14,
+      "end": 112.58,
+      "text": "可以采回去当家庭观赏植物",
+      "words": [
+        {
+          "text": "可以",
+          "start": 110.14,
+          "end": 110.74,
+          "probability": 0.9716796875
+        },
+        {
+          "text": "采",
+          "start": 110.74,
+          "end": 110.98,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "回去",
+          "start": 110.98,
+          "end": 111.24,
+          "probability": 0.9677734375
+        },
+        {
+          "text": "当",
+          "start": 111.24,
+          "end": 111.46,
+          "probability": 0.99365234375
+        },
+        {
+          "text": "家",
+          "start": 111.46,
+          "end": 111.66,
+          "probability": 0.99267578125
+        },
+        {
+          "text": "庭",
+          "start": 111.66,
+          "end": 111.82,
+          "probability": 0.99658203125
+        },
+        {
+          "text": "观",
+          "start": 111.82,
+          "end": 111.98,
+          "probability": 0.99560546875
+        },
+        {
+          "text": "赏",
+          "start": 111.98,
+          "end": 112.14,
+          "probability": 0.99462890625
+        },
+        {
+          "text": "植",
+          "start": 112.14,
+          "end": 112.34,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "物",
+          "start": 112.34,
+          "end": 112.58,
+          "probability": 1.0
+        }
+      ]
+    },
+    {
+      "start": 112.58,
+      "end": 114.24,
+      "text": "这种野花能采吗?",
+      "words": [
+        {
+          "text": "这",
+          "start": 112.58,
+          "end": 112.96,
+          "probability": 0.984375
+        },
+        {
+          "text": "种",
+          "start": 112.96,
+          "end": 113.14,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "野",
+          "start": 113.14,
+          "end": 113.32,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "花",
+          "start": 113.32,
+          "end": 113.52,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "能",
+          "start": 113.52,
+          "end": 113.7,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "采",
+          "start": 113.7,
+          "end": 113.96,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "吗?",
+          "start": 113.96,
+          "end": 114.24,
+          "probability": 0.99560546875
+        }
+      ]
+    },
+    {
+      "start": 114.6,
+      "end": 116.86,
+      "text": "这是手工制作的访真红玫瑰百剑",
+      "words": [
+        {
+          "text": "这是",
+          "start": 114.6,
+          "end": 114.8,
+          "probability": 0.98388671875
+        },
+        {
+          "text": "手",
+          "start": 114.8,
+          "end": 115.06,
+          "probability": 0.93310546875
+        },
+        {
+          "text": "工",
+          "start": 115.06,
+          "end": 115.22,
+          "probability": 0.99609375
+        },
+        {
+          "text": "制",
+          "start": 115.22,
+          "end": 115.42,
+          "probability": 0.98193359375
+        },
+        {
+          "text": "作",
+          "start": 115.42,
+          "end": 115.56,
+          "probability": 0.99267578125
+        },
+        {
+          "text": "的",
+          "start": 115.56,
+          "end": 115.7,
+          "probability": 0.998046875
+        },
+        {
+          "text": "访",
+          "start": 115.7,
+          "end": 115.86,
+          "probability": 0.58154296875
+        },
+        {
+          "text": "真",
+          "start": 115.86,
+          "end": 116.02,
+          "probability": 0.8779296875
+        },
+        {
+          "text": "红",
+          "start": 116.02,
+          "end": 116.2,
+          "probability": 0.95458984375
+        },
+        {
+          "text": "玫",
+          "start": 116.2,
+          "end": 116.34,
+          "probability": 0.754150390625
+        },
+        {
+          "text": "瑰",
+          "start": 116.34,
+          "end": 116.5,
+          "probability": 0.962646484375
+        },
+        {
+          "text": "百",
+          "start": 116.5,
+          "end": 116.7,
+          "probability": 0.6796875
+        },
+        {
+          "text": "剑",
+          "start": 116.7,
+          "end": 116.86,
+          "probability": 0.7401123046875
+        }
+      ]
+    },
+    {
+      "start": 116.86,
+      "end": 117.98,
+      "text": "随便你采",
+      "words": [
+        {
+          "text": "随",
+          "start": 116.86,
+          "end": 117.42,
+          "probability": 0.510986328125
+        },
+        {
+          "text": "便",
+          "start": 117.42,
+          "end": 117.6,
+          "probability": 1.0
+        },
+        {
+          "text": "你",
+          "start": 117.6,
+          "end": 117.74,
+          "probability": 0.9365234375
+        },
+        {
+          "text": "采",
+          "start": 117.74,
+          "end": 117.98,
+          "probability": 0.906005859375
+        }
+      ]
+    },
+    {
+      "start": 117.98,
+      "end": 119.6,
+      "text": "这种野花能采吗?",
+      "words": [
+        {
+          "text": "这",
+          "start": 117.98,
+          "end": 118.34,
+          "probability": 0.427001953125
+        },
+        {
+          "text": "种",
+          "start": 118.34,
+          "end": 118.52,
+          "probability": 0.998046875
+        },
+        {
+          "text": "野",
+          "start": 118.52,
+          "end": 118.68,
+          "probability": 0.6875
+        },
+        {
+          "text": "花",
+          "start": 118.68,
+          "end": 118.9,
+          "probability": 0.9912109375
+        },
+        {
+          "text": "能",
+          "start": 118.9,
+          "end": 119.08,
+          "probability": 0.994140625
+        },
+        {
+          "text": "采",
+          "start": 119.08,
+          "end": 119.36,
+          "probability": 0.995361328125
+        },
+        {
+          "text": "吗?",
+          "start": 119.36,
+          "end": 119.6,
+          "probability": 0.953125
+        }
+      ]
+    },
+    {
+      "start": 119.98,
+      "end": 121.56,
+      "text": "这是深紫色虫瓣血连",
+      "words": [
+        {
+          "text": "这是",
+          "start": 119.98,
+          "end": 120.18,
+          "probability": 0.94384765625
+        },
+        {
+          "text": "深",
+          "start": 120.18,
+          "end": 120.44,
+          "probability": 0.7119140625
+        },
+        {
+          "text": "紫",
+          "start": 120.44,
+          "end": 120.6,
+          "probability": 0.9296875
+        },
+        {
+          "text": "色",
+          "start": 120.6,
+          "end": 120.76,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "虫",
+          "start": 120.76,
+          "end": 120.96,
+          "probability": 0.6378173828125
+        },
+        {
+          "text": "瓣",
+          "start": 120.96,
+          "end": 121.12,
+          "probability": 0.8873697916666666
+        },
+        {
+          "text": "血",
+          "start": 121.12,
+          "end": 121.28,
+          "probability": 0.3154296875
+        },
+        {
+          "text": "连",
+          "start": 121.28,
+          "end": 121.56,
+          "probability": 0.58734130859375
+        }
+      ]
+    },
+    {
+      "start": 121.56,
+      "end": 122.74,
+      "text": "野外的受保护",
+      "words": [
+        {
+          "text": "野",
+          "start": 121.56,
+          "end": 121.94,
+          "probability": 0.875
+        },
+        {
+          "text": "外",
+          "start": 121.94,
+          "end": 122.1,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "的",
+          "start": 122.1,
+          "end": 122.22,
+          "probability": 0.98095703125
+        },
+        {
+          "text": "受",
+          "start": 122.22,
+          "end": 122.36,
+          "probability": 0.2939453125
+        },
+        {
+          "text": "保",
+          "start": 122.36,
+          "end": 122.56,
+          "probability": 0.98583984375
+        },
+        {
+          "text": "护",
+          "start": 122.56,
+          "end": 122.74,
+          "probability": 0.9990234375
+        }
+      ]
+    },
+    {
+      "start": 122.74,
+      "end": 123.98,
+      "text": "绝对不能采",
+      "words": [
+        {
+          "text": "绝",
+          "start": 122.74,
+          "end": 123.24,
+          "probability": 0.884765625
+        },
+        {
+          "text": "对",
+          "start": 123.24,
+          "end": 123.38,
+          "probability": 0.998046875
+        },
+        {
+          "text": "不能",
+          "start": 123.38,
+          "end": 123.6,
+          "probability": 0.99365234375
+        },
+        {
+          "text": "采",
+          "start": 123.6,
+          "end": 123.98,
+          "probability": 0.997802734375
+        }
+      ]
+    },
+    {
+      "start": 123.98,
+      "end": 125.62,
+      "text": "这种野花能采吗?",
+      "words": [
+        {
+          "text": "这",
+          "start": 123.98,
+          "end": 124.34,
+          "probability": 0.97802734375
+        },
+        {
+          "text": "种",
+          "start": 124.34,
+          "end": 124.5,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "野",
+          "start": 124.5,
+          "end": 124.68,
+          "probability": 0.99365234375
+        },
+        {
+          "text": "花",
+          "start": 124.68,
+          "end": 124.88,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "能",
+          "start": 124.88,
+          "end": 125.08,
+          "probability": 0.99267578125
+        },
+        {
+          "text": "采",
+          "start": 125.08,
+          "end": 125.34,
+          "probability": 0.999267578125
+        },
+        {
+          "text": "吗?",
+          "start": 125.34,
+          "end": 125.62,
+          "probability": 0.99267578125
+        }
+      ]
+    },
+    {
+      "start": 125.92,
+      "end": 126.9,
+      "text": "这是地勇金连",
+      "words": [
+        {
+          "text": "这是",
+          "start": 125.92,
+          "end": 126.12,
+          "probability": 0.98876953125
+        },
+        {
+          "text": "地",
+          "start": 126.12,
+          "end": 126.36,
+          "probability": 0.62353515625
+        },
+        {
+          "text": "勇",
+          "start": 126.36,
+          "end": 126.5,
+          "probability": 0.6319580078125
+        },
+        {
+          "text": "金",
+          "start": 126.5,
+          "end": 126.66,
+          "probability": 0.63671875
+        },
+        {
+          "text": "连",
+          "start": 126.66,
+          "end": 126.9,
+          "probability": 0.823974609375
+        }
+      ]
+    },
+    {
+      "start": 126.9,
+      "end": 128.58,
+      "text": "国家二级保护植物",
+      "words": [
+        {
+          "text": "国",
+          "start": 126.9,
+          "end": 127.3,
+          "probability": 0.88916015625
+        },
+        {
+          "text": "家",
+          "start": 127.3,
+          "end": 127.5,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "二",
+          "start": 127.5,
+          "end": 127.7,
+          "probability": 0.95068359375
+        },
+        {
+          "text": "级",
+          "start": 127.7,
+          "end": 127.84,
+          "probability": 0.996337890625
+        },
+        {
+          "text": "保",
+          "start": 127.84,
+          "end": 128.02,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "护",
+          "start": 128.02,
+          "end": 128.18,
+          "probability": 0.999755859375
+        },
+        {
+          "text": "植",
+          "start": 128.18,
+          "end": 128.36,
+          "probability": 0.761474609375
+        },
+        {
+          "text": "物",
+          "start": 128.36,
+          "end": 128.58,
+          "probability": 1.0
+        }
+      ]
+    },
+    {
+      "start": 128.58,
+      "end": 130.02,
+      "text": "采了药采缝认机",
+      "words": [
+        {
+          "text": "采",
+          "start": 128.58,
+          "end": 129.06,
+          "probability": 0.985107421875
+        },
+        {
+          "text": "了",
+          "start": 129.06,
+          "end": 129.18,
+          "probability": 0.99169921875
+        },
+        {
+          "text": "药",
+          "start": 129.18,
+          "end": 129.3,
+          "probability": 0.9794921875
+        },
+        {
+          "text": "采",
+          "start": 129.3,
+          "end": 129.48,
+          "probability": 0.998046875
+        },
+        {
+          "text": "缝",
+          "start": 129.48,
+          "end": 129.64,
+          "probability": 0.785400390625
+        },
+        {
+          "text": "认",
+          "start": 129.64,
+          "end": 129.8,
+          "probability": 0.5811767578125
+        },
+        {
+          "text": "机",
+          "start": 129.8,
+          "end": 130.02,
+          "probability": 0.38720703125
+        }
+      ]
+    },
+    {
+      "start": 130.02,
+      "end": 131.72,
+      "text": "这种野花能采吗?",
+      "words": [
+        {
+          "text": "这",
+          "start": 130.02,
+          "end": 130.44,
+          "probability": 0.97119140625
+        },
+        {
+          "text": "种",
+          "start": 130.44,
+          "end": 130.62,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "野",
+          "start": 130.62,
+          "end": 130.8,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "花",
+          "start": 130.8,
+          "end": 131.0,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "能",
+          "start": 131.0,
+          "end": 131.16,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "采",
+          "start": 131.16,
+          "end": 131.42,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "吗?",
+          "start": 131.42,
+          "end": 131.72,
+          "probability": 0.99462890625
+        }
+      ]
+    },
+    {
+      "start": 132.08,
+      "end": 132.96,
+      "text": "这是绣球花",
+      "words": [
+        {
+          "text": "这是",
+          "start": 132.08,
+          "end": 132.3,
+          "probability": 0.98876953125
+        },
+        {
+          "text": "绣",
+          "start": 132.3,
+          "end": 132.54,
+          "probability": 0.737548828125
+        },
+        {
+          "text": "球",
+          "start": 132.54,
+          "end": 132.72,
+          "probability": 0.7861328125
+        },
+        {
+          "text": "花",
+          "start": 132.72,
+          "end": 132.96,
+          "probability": 0.99951171875
+        }
+      ]
+    },
+    {
+      "start": 132.96,
+      "end": 133.94,
+      "text": "虽然很美",
+      "words": [
+        {
+          "text": "虽",
+          "start": 132.96,
+          "end": 133.44,
+          "probability": 0.919921875
+        },
+        {
+          "text": "然",
+          "start": 133.44,
+          "end": 133.58,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "很",
+          "start": 133.58,
+          "end": 133.76,
+          "probability": 0.9951171875
+        },
+        {
+          "text": "美",
+          "start": 133.76,
+          "end": 133.94,
+          "probability": 0.99853515625
+        }
+      ]
+    },
+    {
+      "start": 133.94,
+      "end": 135.6,
+      "text": "但权诸君具有毒性",
+      "words": [
+        {
+          "text": "但",
+          "start": 133.94,
+          "end": 134.38,
+          "probability": 0.90771484375
+        },
+        {
+          "text": "权",
+          "start": 134.38,
+          "end": 134.58,
+          "probability": 0.6883544921875
+        },
+        {
+          "text": "诸",
+          "start": 134.58,
+          "end": 134.72,
+          "probability": 0.5731201171875
+        },
+        {
+          "text": "君",
+          "start": 134.72,
+          "end": 134.94,
+          "probability": 0.5400390625
+        },
+        {
+          "text": "具",
+          "start": 134.94,
+          "end": 135.1,
+          "probability": 0.9453125
+        },
+        {
+          "text": "有",
+          "start": 135.1,
+          "end": 135.24,
+          "probability": 1.0
+        },
+        {
+          "text": "毒",
+          "start": 135.24,
+          "end": 135.38,
+          "probability": 0.81787109375
+        },
+        {
+          "text": "性",
+          "start": 135.38,
+          "end": 135.6,
+          "probability": 0.99609375
+        }
+      ]
+    },
+    {
+      "start": 135.6,
+      "end": 136.6,
+      "text": "不见意采",
+      "words": [
+        {
+          "text": "不",
+          "start": 135.6,
+          "end": 136.04,
+          "probability": 0.8837890625
+        },
+        {
+          "text": "见",
+          "start": 136.04,
+          "end": 136.2,
+          "probability": 0.58740234375
+        },
+        {
+          "text": "意",
+          "start": 136.2,
+          "end": 136.34,
+          "probability": 0.3095703125
+        },
+        {
+          "text": "采",
+          "start": 136.34,
+          "end": 136.6,
+          "probability": 0.99462890625
+        }
+      ]
+    },
+    {
+      "start": 136.6,
+      "end": 138.18,
+      "text": "这种野花能采吗?",
+      "words": [
+        {
+          "text": "这",
+          "start": 136.6,
+          "end": 136.9,
+          "probability": 0.9794921875
+        },
+        {
+          "text": "种",
+          "start": 136.9,
+          "end": 137.08,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "野",
+          "start": 137.08,
+          "end": 137.26,
+          "probability": 0.998046875
+        },
+        {
+          "text": "花",
+          "start": 137.26,
+          "end": 137.46,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "能",
+          "start": 137.46,
+          "end": 137.64,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "采",
+          "start": 137.64,
+          "end": 137.88,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "吗?",
+          "start": 137.88,
+          "end": 138.18,
+          "probability": 0.994140625
+        }
+      ]
+    },
+    {
+      "start": 138.5,
+      "end": 139.86,
+      "text": "这是青花瓷牡丹菊",
+      "words": [
+        {
+          "text": "这是",
+          "start": 138.5,
+          "end": 138.72,
+          "probability": 0.98681640625
+        },
+        {
+          "text": "青",
+          "start": 138.72,
+          "end": 138.96,
+          "probability": 0.798828125
+        },
+        {
+          "text": "花",
+          "start": 138.96,
+          "end": 139.14,
+          "probability": 0.9951171875
+        },
+        {
+          "text": "瓷",
+          "start": 139.14,
+          "end": 139.3,
+          "probability": 0.7303873697916666
+        },
+        {
+          "text": "牡",
+          "start": 139.3,
+          "end": 139.5,
+          "probability": 0.792724609375
+        },
+        {
+          "text": "丹",
+          "start": 139.5,
+          "end": 139.66,
+          "probability": 0.992919921875
+        },
+        {
+          "text": "菊",
+          "start": 139.66,
+          "end": 139.86,
+          "probability": 0.859619140625
+        }
+      ]
+    },
+    {
+      "start": 139.86,
+      "end": 142.16,
+      "text": "是一种人工培育的原意品种",
+      "words": [
+        {
+          "text": "是",
+          "start": 139.86,
+          "end": 140.36,
+          "probability": 0.97802734375
+        },
+        {
+          "text": "一",
+          "start": 140.36,
+          "end": 140.52,
+          "probability": 0.99267578125
+        },
+        {
+          "text": "种",
+          "start": 140.52,
+          "end": 140.66,
+          "probability": 0.998046875
+        },
+        {
+          "text": "人",
+          "start": 140.66,
+          "end": 140.82,
+          "probability": 0.96044921875
+        },
+        {
+          "text": "工",
+          "start": 140.82,
+          "end": 140.98,
+          "probability": 0.9873046875
+        },
+        {
+          "text": "培",
+          "start": 140.98,
+          "end": 141.18,
+          "probability": 0.98681640625
+        },
+        {
+          "text": "育",
+          "start": 141.18,
+          "end": 141.32,
+          "probability": 0.99072265625
+        },
+        {
+          "text": "的",
+          "start": 141.32,
+          "end": 141.46,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "原",
+          "start": 141.46,
+          "end": 141.6,
+          "probability": 0.58154296875
+        },
+        {
+          "text": "意",
+          "start": 141.6,
+          "end": 141.76,
+          "probability": 0.70654296875
+        },
+        {
+          "text": "品",
+          "start": 141.76,
+          "end": 141.92,
+          "probability": 0.9931640625
+        },
+        {
+          "text": "种",
+          "start": 141.92,
+          "end": 142.16,
+          "probability": 0.99755859375
+        }
+      ]
+    },
+    {
+      "start": 142.16,
+      "end": 142.9,
+      "text": "可以采",
+      "words": [
+        {
+          "text": "可以",
+          "start": 142.16,
+          "end": 142.62,
+          "probability": 0.826171875
+        },
+        {
+          "text": "采",
+          "start": 142.62,
+          "end": 142.9,
+          "probability": 0.9990234375
+        }
+      ]
+    }
+  ]
+}

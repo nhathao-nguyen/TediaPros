@@ -9,6 +9,103 @@ import * as subtitleModule from '../src/main/dubbing/subtitles'
 import * as synthesisModule from '../src/main/dubbing/synthesis'
 import { planDubbingTimeMap, mapDubbingTime } from '../src/main/dubbing/timeMap'
 
+test('a shared feedback journal restores the accepted candidate without repeating original or candidate TTS', async () => {
+  const journal = synthesisModule.createDubbingFeedbackJournal()
+  const spoken: string[] = []
+  const input = (recoveryAttempt: number) => ({
+    allowVideoExtension: true,
+    recoveryAttempt,
+    plan: translationModule.applyDubbingTranslations(planModule.buildDubbingPlan({ videoDuration: 1.4, cues: [
+      { id: 'feedback-cue', start: 0, end: 1.2, text: 'nguồn không đổi' }
+    ] }), [{ id: 'feedback-cue', text: 'This original wording is deliberately too long.' }]),
+    language: 'en', model: 'fixture', voice: 'fixture-voice', options: { rate: 1, style: { pitch: 0, emphasis: 'soft' } },
+    feedbackJournal: journal, feedbackJournalItemId: 'item-one',
+    predictor: { profile: { version: 2, samples: 1, weights: [0, 0, 0, 0, 0, 0], residualP90: 0 },
+      estimate: () => ({ seconds: 1, uncertaintySeconds: 0, confidence: 1 }), addSample: () => {} },
+    tts: { synthesize: async (request: { text: string }) => { spoken.push(request.text); return { path: request.text } } },
+    audio: { trim: async (path: string) => ({ path, duration: path === 'Short candidate.' ? 0.6 : 3 }),
+      applyTempo: async (path: string, _hint: string, duration: number) => ({ path, duration }) },
+    rephraseBatch: async () => new Map([['feedback-cue', ['Short candidate.']]])
+  })
+
+  const first = await synthesisModule.synthesizeDubbingPlan({
+    ...input(1),
+    persistAcceptedCue: async (_cue, candidate) => ({
+      ...candidate,
+      rawPath: `retained:${candidate.text}`,
+      trimmedPath: `retained:${candidate.text}`
+    })
+  })
+  const second = await synthesisModule.synthesizeDubbingPlan(input(2))
+  assert.equal(first.plan.cues[0].finalSpokenText, 'Short candidate.')
+  assert.equal(second.plan.cues[0].finalSpokenText, 'Short candidate.')
+  assert.equal(journal.accepted.get('item-one')?.values().next().value?.trimmedPath, 'retained:Short candidate.')
+  assert.equal(second.clips[0]?.path, 'retained:Short candidate.')
+  assert.deepEqual(spoken, [
+    'This original wording is deliberately too long.', 'Short candidate.'
+  ])
+})
+
+test('source-repair rejects a candidate that changes an explicit source number before TTS', async () => {
+  const original = planModule.buildDubbingPlan({ videoDuration: 1.4, cues: [
+    { id: 'repair-number', start: 0, end: 1.2, text: '加入2勺盐，然后搅拌。' }
+  ] })
+  const translated = translationModule.applyDubbingTranslations(original, [
+    { id: 'repair-number', text: 'Cho 2 thìa muối vào nồi rồi khuấy đều.' }
+  ])
+  const spoken: string[] = []
+  await assert.rejects(synthesisModule.synthesizeDubbingPlan({
+    plan: translated,
+    recoveryAttempt: 2,
+    language: 'vi', model: 'fixture',
+    rephraseBatch: async () => new Map([['repair-number', ['Cho 20 thìa đường.']]]),
+    tts: { synthesize: async (request) => { spoken.push(request.text); return { path: request.text } } },
+    audio: {
+      trim: async (path) => ({ path, duration: path.includes('20') ? 0.6 : 5 }),
+      applyTempo: async (path, _hint, duration) => ({ path, duration })
+    }
+  }), /vượt trần|vượt giới hạn|không vừa/u)
+  assert.deepEqual(spoken, ['Cho 2 thìa muối vào nồi rồi khuấy đều.'])
+})
+
+test('feedback journal claims a candidate before TTS and retains a failed outcome', async () => {
+  const journal = synthesisModule.createDubbingFeedbackJournal()
+  const candidateText = 'Candidate that fails in TTS.'
+  const sourceCueIds = ['feedback-failure']
+  const candidateHash = synthesisModule.hashFeedbackCandidate({
+    sourceCueIds,
+    text: candidateText,
+    model: 'fixture',
+    voice: 'fixture-voice',
+    options: { rate: 1 }
+  })
+  let claimedBeforeDispatch = false
+  const plan = translationModule.applyDubbingTranslations(planModule.buildDubbingPlan({ videoDuration: 1.4, cues: [
+    { id: 'feedback-failure', start: 0, end: 1.2, text: 'nguồn không đổi' }
+  ] }), [{ id: 'feedback-failure', text: 'This original wording is deliberately too long.' }])
+
+  await assert.rejects(synthesisModule.synthesizeDubbingPlan({
+    plan,
+    language: 'en', model: 'fixture', voice: 'fixture-voice', options: { rate: 1 },
+    feedbackJournal: journal, feedbackJournalItemId: 'item-failure',
+    predictor: { profile: { version: 2, samples: 1, weights: [0, 0, 0, 0, 0, 0], residualP90: 0 },
+      estimate: () => ({ seconds: 1, uncertaintySeconds: 0, confidence: 1 }), addSample: () => {} },
+    tts: { synthesize: async (request: { text: string }) => {
+      if (request.text === candidateText) {
+        claimedBeforeDispatch = journal.items.get('item-failure')?.get(candidateHash) === 'dispatching'
+        throw new Error('fixture candidate TTS failure')
+      }
+      return { path: request.text }
+    } },
+    audio: { trim: async (path: string) => ({ path, duration: 3 }),
+      applyTempo: async (path: string, _hint: string, duration: number) => ({ path, duration }) },
+    rephraseBatch: async () => new Map([['feedback-failure', [candidateText]]])
+  }), /fixture candidate TTS failure/u)
+
+  assert.equal(claimedBeforeDispatch, true)
+  assert.equal(journal.items.get('item-failure')?.get(candidateHash), 'failed')
+})
+
 test('adjacent 560ms cue uses a reduced gap instead of losing the full protected gap', () => {
   const cue = { id: 'cue-91-175050', start: 175.05, end: 175.61, text: '完事' }
   const window = planModule.deriveDubbingWindow(cue, 175.61, 201.95)
@@ -25,6 +122,54 @@ test('AutoShort adjacent 560ms cue uses the same reduced-gap policy', () => {
 
   assert.ok(Math.abs(windows[0].hardEnd - 175.526) < 1e-9)
   assert.ok(Math.abs(windows[0].availableDuration - 0.476) < 1e-9)
+})
+
+test('video extension preserves the source reduced-gap decision for an adjacent 600ms cue', async () => {
+  const plan = planModule.buildDubbingPlan({
+    videoDuration: 141,
+    paceMode: 'fixed',
+    cues: [
+      { id: 'before', start: 137.82, end: 138.2, text: 'Câu trước.' },
+      { id: 'cue-70-138720', start: 138.72, end: 139.32, text: 'Giờ thái hạt lựu nhé.' },
+      { id: 'after', start: 139.32, end: 140.68, text: 'Câu sau.' }
+    ]
+  })
+  assert.ok(Math.abs(plan.cues[1].availableDuration - 0.51) < 0.001)
+  const durations = new Map([
+    ['Câu trước.', 0.753],
+    ['Giờ thái hạt lựu nhé.', 1.248],
+    ['Câu sau.', 0.5]
+  ])
+
+  const result = await synthesisModule.synthesizeDubbingPlan({
+    allowVideoExtension: true,
+    plan,
+    language: 'vi',
+    model: 'fixture',
+    fixedTempo: 1,
+    maxEarlyStartSeconds: 0.35,
+    predictor: {
+      profile: { version: 2, samples: 1, weights: [0, 0, 0, 0, 0, 0], residualP90: 0 },
+      estimate: () => ({ seconds: 1, uncertaintySeconds: 0, confidence: 1 }),
+      addSample: () => {}
+    },
+    tts: { synthesize: async (request) => ({ path: request.text }) },
+    audio: {
+      trim: async (path) => ({ path, duration: durations.get(path) || 0.5 }),
+      applyTempo: async (path, _hint, duration) => ({ path, duration })
+    },
+    rephraseBatch: async () => new Map()
+  })
+
+  const before = result.plan.cues[0]
+  const target = result.plan.cues[1]
+  const after = result.plan.cues[2]
+  assert.ok(result.timeMap, 'the measured overflow should create one bounded source-time map')
+  assert.ok(target.tempo <= 1.8)
+  assert.ok(target.voiceEnd! <= target.hardEnd + 0.005)
+  assert.ok(target.start >= before.voiceEnd! + 0.5 - 0.005)
+  assert.ok(Math.abs(after.sourceStart - target.hardEnd - 0.09) < 0.001,
+    'retiming must keep the original 90ms reduced gap instead of switching to 500ms')
 })
 
 test('local extension preserves unchanged segments and enforces 60 percent independently', () => {
@@ -208,6 +353,46 @@ test('second-pass recovery can replace a semantically misaligned translation fro
   })
   assert.deepEqual(spoken, ['It crosses a 9-kilometer abyss.', 'It can walk.'])
   assert.equal(result.plan.cues[0].finalSpokenText, 'It can walk.')
+})
+
+test('source-repair ignores a compacted version of a semantically untrusted current translation', async () => {
+  const original = planModule.buildDubbingPlan({ videoDuration: 2, cues: [
+    { id: 'repair-source', start: 0, end: 1.8, text: '能走' }
+  ] })
+  const translated = translationModule.applyDubbingTranslations(original, [
+    { id: 'repair-source', text: 'Is this an abyss?' }
+  ])
+  const spoken: string[] = []
+  const semanticEvidence: string[] = []
+  const result = await synthesisModule.synthesizeDubbingPlan({
+    plan: translated,
+    recoveryAttempt: 2,
+    language: 'en', model: 'fixture',
+    predictor: {
+      profile: { version: 2, samples: 1, weights: [0, 0, 0, 0, 0, 0], residualP90: 0 },
+      estimate: (text: string) => ({
+        seconds: text.startsWith('This an') ? 0.1 : text.startsWith('It can walk') ? 0.8 : 5,
+        uncertaintySeconds: 0,
+        confidence: 1
+      }),
+      addSample: () => {}
+    },
+    rephraseBatch: async () => new Map([['repair-source', ['It can walk.']]]),
+    tts: { synthesize: async (request) => { spoken.push(request.text); return { path: request.text } } },
+    audio: {
+      trim: async (path) => ({
+        path,
+        duration: path.startsWith('This an') ? 0.1 : path.includes('abyss') ? 5 : 0.8
+      }),
+      applyTempo: async (path, _hint, duration) => ({ path, duration })
+    },
+    onRephrase: (event) => {
+      if (event.phase === 'rescue' && event.outcome === 'accepted') semanticEvidence.push(event.semanticEvidence || '')
+    }
+  })
+  assert.deepEqual(spoken, ['Is this an abyss?', 'It can walk.'])
+  assert.equal(result.plan.cues[0].finalSpokenText, 'It can walk.')
+  assert.deepEqual(semanticEvidence, ['source-repair-unverified'])
 })
 
 test('tempo processing receives the authoritative duration measured by trim', async () => {

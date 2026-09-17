@@ -1,0 +1,7044 @@
+{
+  "duration": 126.66625,
+  "language": "zh",
+  "segments": [
+    {
+      "start": 2.44,
+      "end": 4.96,
+      "text": "野外捡到石头石,记得仔细看看",
+      "words": [
+        {
+          "text": "野",
+          "start": 2.44,
+          "end": 2.84,
+          "probability": 0.10504150390625
+        },
+        {
+          "text": "外",
+          "start": 2.84,
+          "end": 3.02,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "捡",
+          "start": 3.02,
+          "end": 3.2,
+          "probability": 0.62066650390625
+        },
+        {
+          "text": "到",
+          "start": 3.2,
+          "end": 3.36,
+          "probability": 0.9853515625
+        },
+        {
+          "text": "石",
+          "start": 3.36,
+          "end": 3.52,
+          "probability": 0.99365234375
+        },
+        {
+          "text": "头",
+          "start": 3.52,
+          "end": 3.66,
+          "probability": 0.88037109375
+        },
+        {
+          "text": "石,",
+          "start": 3.66,
+          "end": 3.86,
+          "probability": 0.75146484375
+        },
+        {
+          "text": "记",
+          "start": 4.06,
+          "end": 4.28,
+          "probability": 0.8740234375
+        },
+        {
+          "text": "得",
+          "start": 4.28,
+          "end": 4.44,
+          "probability": 0.998046875
+        },
+        {
+          "text": "仔",
+          "start": 4.44,
+          "end": 4.58,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "细",
+          "start": 4.58,
+          "end": 4.72,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "看看",
+          "start": 4.72,
+          "end": 4.96,
+          "probability": 0.9697265625
+        }
+      ]
+    },
+    {
+      "start": 4.96,
+      "end": 7.1,
+      "text": "阿县这种石头能捡吗?",
+      "words": [
+        {
+          "text": "阿",
+          "start": 4.96,
+          "end": 5.52,
+          "probability": 0.389404296875
+        },
+        {
+          "text": "县",
+          "start": 5.52,
+          "end": 5.7,
+          "probability": 0.6177978515625
+        },
+        {
+          "text": "这",
+          "start": 5.7,
+          "end": 5.9,
+          "probability": 0.8759765625
+        },
+        {
+          "text": "种",
+          "start": 5.9,
+          "end": 6.06,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "石",
+          "start": 6.06,
+          "end": 6.24,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "头",
+          "start": 6.24,
+          "end": 6.4,
+          "probability": 0.998046875
+        },
+        {
+          "text": "能",
+          "start": 6.4,
+          "end": 6.56,
+          "probability": 0.99365234375
+        },
+        {
+          "text": "捡",
+          "start": 6.56,
+          "end": 6.82,
+          "probability": 0.957763671875
+        },
+        {
+          "text": "吗?",
+          "start": 6.82,
+          "end": 7.1,
+          "probability": 0.97607421875
+        }
+      ]
+    },
+    {
+      "start": 7.58,
+      "end": 10.54,
+      "text": "可以捡,这是放纳石,也叫火焰石",
+      "words": [
+        {
+          "text": "可以",
+          "start": 7.58,
+          "end": 7.78,
+          "probability": 0.96484375
+        },
+        {
+          "text": "捡,",
+          "start": 7.78,
+          "end": 8.04,
+          "probability": 0.9892578125
+        },
+        {
+          "text": "这是",
+          "start": 8.44,
+          "end": 8.66,
+          "probability": 0.97412109375
+        },
+        {
+          "text": "放",
+          "start": 8.66,
+          "end": 8.9,
+          "probability": 0.96826171875
+        },
+        {
+          "text": "纳",
+          "start": 8.9,
+          "end": 9.08,
+          "probability": 0.825927734375
+        },
+        {
+          "text": "石,",
+          "start": 9.08,
+          "end": 9.32,
+          "probability": 0.98681640625
+        },
+        {
+          "text": "也",
+          "start": 9.62,
+          "end": 9.78,
+          "probability": 0.99609375
+        },
+        {
+          "text": "叫",
+          "start": 9.78,
+          "end": 9.96,
+          "probability": 0.9931640625
+        },
+        {
+          "text": "火",
+          "start": 9.96,
+          "end": 10.16,
+          "probability": 0.9091796875
+        },
+        {
+          "text": "焰",
+          "start": 10.16,
+          "end": 10.3,
+          "probability": 0.955078125
+        },
+        {
+          "text": "石",
+          "start": 10.3,
+          "end": 10.54,
+          "probability": 0.99609375
+        }
+      ]
+    },
+    {
+      "start": 10.54,
+      "end": 14.22,
+      "text": "在紫外灯照射下,会发出惊艳的橘黄色银光",
+      "words": [
+        {
+          "text": "在",
+          "start": 10.54,
+          "end": 11.1,
+          "probability": 0.8076171875
+        },
+        {
+          "text": "紫",
+          "start": 11.1,
+          "end": 11.28,
+          "probability": 0.94970703125
+        },
+        {
+          "text": "外",
+          "start": 11.28,
+          "end": 11.44,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "灯",
+          "start": 11.44,
+          "end": 11.6,
+          "probability": 0.986572265625
+        },
+        {
+          "text": "照",
+          "start": 11.6,
+          "end": 11.78,
+          "probability": 0.89794921875
+        },
+        {
+          "text": "射",
+          "start": 11.78,
+          "end": 11.96,
+          "probability": 0.878662109375
+        },
+        {
+          "text": "下,",
+          "start": 11.96,
+          "end": 12.16,
+          "probability": 0.99609375
+        },
+        {
+          "text": "会",
+          "start": 12.38,
+          "end": 12.54,
+          "probability": 0.9931640625
+        },
+        {
+          "text": "发",
+          "start": 12.54,
+          "end": 12.72,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "出",
+          "start": 12.72,
+          "end": 12.9,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "惊",
+          "start": 12.9,
+          "end": 13.12,
+          "probability": 0.93212890625
+        },
+        {
+          "text": "艳",
+          "start": 13.12,
+          "end": 13.22,
+          "probability": 0.991455078125
+        },
+        {
+          "text": "的",
+          "start": 13.22,
+          "end": 13.38,
+          "probability": 0.99658203125
+        },
+        {
+          "text": "橘",
+          "start": 13.38,
+          "end": 13.52,
+          "probability": 0.90087890625
+        },
+        {
+          "text": "黄",
+          "start": 13.52,
+          "end": 13.7,
+          "probability": 0.998046875
+        },
+        {
+          "text": "色",
+          "start": 13.7,
+          "end": 13.86,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "银",
+          "start": 13.86,
+          "end": 14.02,
+          "probability": 0.7797037760416666
+        },
+        {
+          "text": "光",
+          "start": 14.02,
+          "end": 14.22,
+          "probability": 0.94384765625
+        }
+      ]
+    },
+    {
+      "start": 14.22,
+      "end": 16.06,
+      "text": "可以捡来做纹丸手串",
+      "words": [
+        {
+          "text": "可以",
+          "start": 14.22,
+          "end": 14.8,
+          "probability": 0.79443359375
+        },
+        {
+          "text": "捡",
+          "start": 14.8,
+          "end": 15.04,
+          "probability": 0.997802734375
+        },
+        {
+          "text": "来",
+          "start": 15.04,
+          "end": 15.18,
+          "probability": 0.99462890625
+        },
+        {
+          "text": "做",
+          "start": 15.18,
+          "end": 15.36,
+          "probability": 0.958984375
+        },
+        {
+          "text": "纹",
+          "start": 15.36,
+          "end": 15.52,
+          "probability": 0.832275390625
+        },
+        {
+          "text": "丸",
+          "start": 15.52,
+          "end": 15.68,
+          "probability": 0.568603515625
+        },
+        {
+          "text": "手",
+          "start": 15.68,
+          "end": 15.88,
+          "probability": 0.88134765625
+        },
+        {
+          "text": "串",
+          "start": 15.88,
+          "end": 16.06,
+          "probability": 0.95458984375
+        }
+      ]
+    },
+    {
+      "start": 16.06,
+      "end": 18.12,
+      "text": "阿县这种石头能捡吗?",
+      "words": [
+        {
+          "text": "阿",
+          "start": 16.06,
+          "end": 16.5,
+          "probability": 0.6865234375
+        },
+        {
+          "text": "县",
+          "start": 16.5,
+          "end": 16.72,
+          "probability": 0.99560546875
+        },
+        {
+          "text": "这",
+          "start": 16.72,
+          "end": 16.9,
+          "probability": 0.962890625
+        },
+        {
+          "text": "种",
+          "start": 16.9,
+          "end": 17.06,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "石",
+          "start": 17.06,
+          "end": 17.24,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "头",
+          "start": 17.24,
+          "end": 17.38,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "能",
+          "start": 17.38,
+          "end": 17.54,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "捡",
+          "start": 17.54,
+          "end": 17.82,
+          "probability": 0.99462890625
+        },
+        {
+          "text": "吗?",
+          "start": 17.82,
+          "end": 18.12,
+          "probability": 0.9951171875
+        }
+      ]
+    },
+    {
+      "start": 18.5,
+      "end": 21.42,
+      "text": "可以捡,这是蓝绒金,可以当个摆件",
+      "words": [
+        {
+          "text": "可以",
+          "start": 18.5,
+          "end": 18.7,
+          "probability": 0.99462890625
+        },
+        {
+          "text": "捡,",
+          "start": 18.7,
+          "end": 18.98,
+          "probability": 0.995849609375
+        },
+        {
+          "text": "这是",
+          "start": 19.36,
+          "end": 19.6,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "蓝",
+          "start": 19.6,
+          "end": 19.78,
+          "probability": 0.924072265625
+        },
+        {
+          "text": "绒",
+          "start": 19.78,
+          "end": 19.94,
+          "probability": 0.60711669921875
+        },
+        {
+          "text": "金,",
+          "start": 19.94,
+          "end": 20.16,
+          "probability": 0.56982421875
+        },
+        {
+          "text": "可以",
+          "start": 20.44,
+          "end": 20.72,
+          "probability": 0.99609375
+        },
+        {
+          "text": "当",
+          "start": 20.72,
+          "end": 20.92,
+          "probability": 0.95068359375
+        },
+        {
+          "text": "个",
+          "start": 20.92,
+          "end": 21.06,
+          "probability": 0.984375
+        },
+        {
+          "text": "摆",
+          "start": 21.06,
+          "end": 21.24,
+          "probability": 0.7880859375
+        },
+        {
+          "text": "件",
+          "start": 21.24,
+          "end": 21.42,
+          "probability": 0.8310546875
+        }
+      ]
+    },
+    {
+      "start": 21.42,
+      "end": 22.98,
+      "text": "卖个300元左右",
+      "words": [
+        {
+          "text": "卖",
+          "start": 21.42,
+          "end": 21.92,
+          "probability": 0.9375
+        },
+        {
+          "text": "个",
+          "start": 21.92,
+          "end": 22.1,
+          "probability": 0.9755859375
+        },
+        {
+          "text": "300",
+          "start": 22.1,
+          "end": 22.34,
+          "probability": 0.67919921875
+        },
+        {
+          "text": "元",
+          "start": 22.34,
+          "end": 22.62,
+          "probability": 0.95068359375
+        },
+        {
+          "text": "左右",
+          "start": 22.62,
+          "end": 22.98,
+          "probability": 0.99951171875
+        }
+      ]
+    },
+    {
+      "start": 22.98,
+      "end": 24.96,
+      "text": "阿县这种石头能捡吗?",
+      "words": [
+        {
+          "text": "阿",
+          "start": 22.98,
+          "end": 23.38,
+          "probability": 0.9384765625
+        },
+        {
+          "text": "县",
+          "start": 23.38,
+          "end": 23.58,
+          "probability": 0.9931640625
+        },
+        {
+          "text": "这",
+          "start": 23.58,
+          "end": 23.76,
+          "probability": 0.9716796875
+        },
+        {
+          "text": "种",
+          "start": 23.76,
+          "end": 23.92,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "石",
+          "start": 23.92,
+          "end": 24.12,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "头",
+          "start": 24.12,
+          "end": 24.26,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "能",
+          "start": 24.26,
+          "end": 24.4,
+          "probability": 0.998046875
+        },
+        {
+          "text": "捡",
+          "start": 24.4,
+          "end": 24.68,
+          "probability": 0.99560546875
+        },
+        {
+          "text": "吗?",
+          "start": 24.68,
+          "end": 24.96,
+          "probability": 0.9951171875
+        }
+      ]
+    },
+    {
+      "start": 25.32,
+      "end": 26.88,
+      "text": "不能捡,这是蓝凡",
+      "words": [
+        {
+          "text": "不能",
+          "start": 25.32,
+          "end": 25.54,
+          "probability": 0.9384765625
+        },
+        {
+          "text": "捡,",
+          "start": 25.54,
+          "end": 25.86,
+          "probability": 0.99560546875
+        },
+        {
+          "text": "这是",
+          "start": 26.18,
+          "end": 26.46,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "蓝",
+          "start": 26.46,
+          "end": 26.68,
+          "probability": 0.976806640625
+        },
+        {
+          "text": "凡",
+          "start": 26.68,
+          "end": 26.88,
+          "probability": 0.57891845703125
+        }
+      ]
+    },
+    {
+      "start": 26.88,
+      "end": 30.52,
+      "text": "学名无水流酸桶,常用做农药和除草剂",
+      "words": [
+        {
+          "text": "学",
+          "start": 26.88,
+          "end": 27.42,
+          "probability": 0.625
+        },
+        {
+          "text": "名",
+          "start": 27.42,
+          "end": 27.58,
+          "probability": 0.65576171875
+        },
+        {
+          "text": "无",
+          "start": 27.58,
+          "end": 27.76,
+          "probability": 0.3369140625
+        },
+        {
+          "text": "水",
+          "start": 27.76,
+          "end": 27.94,
+          "probability": 0.99462890625
+        },
+        {
+          "text": "流",
+          "start": 27.94,
+          "end": 28.1,
+          "probability": 0.88232421875
+        },
+        {
+          "text": "酸",
+          "start": 28.1,
+          "end": 28.28,
+          "probability": 0.953369140625
+        },
+        {
+          "text": "桶,",
+          "start": 28.28,
+          "end": 28.52,
+          "probability": 0.72607421875
+        },
+        {
+          "text": "常",
+          "start": 28.82,
+          "end": 29.04,
+          "probability": 0.986328125
+        },
+        {
+          "text": "用",
+          "start": 29.04,
+          "end": 29.24,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "做",
+          "start": 29.24,
+          "end": 29.42,
+          "probability": 0.70654296875
+        },
+        {
+          "text": "农",
+          "start": 29.42,
+          "end": 29.56,
+          "probability": 0.866943359375
+        },
+        {
+          "text": "药",
+          "start": 29.56,
+          "end": 29.78,
+          "probability": 0.98681640625
+        },
+        {
+          "text": "和",
+          "start": 29.78,
+          "end": 29.96,
+          "probability": 0.998046875
+        },
+        {
+          "text": "除",
+          "start": 29.96,
+          "end": 30.16,
+          "probability": 0.51708984375
+        },
+        {
+          "text": "草",
+          "start": 30.16,
+          "end": 30.36,
+          "probability": 0.99658203125
+        },
+        {
+          "text": "剂",
+          "start": 30.36,
+          "end": 30.52,
+          "probability": 0.932373046875
+        }
+      ]
+    },
+    {
+      "start": 30.52,
+      "end": 32.56,
+      "text": "对冻植物有致命危害",
+      "words": [
+        {
+          "text": "对",
+          "start": 30.52,
+          "end": 31.08,
+          "probability": 0.1993408203125
+        },
+        {
+          "text": "冻",
+          "start": 31.08,
+          "end": 31.28,
+          "probability": 0.6478271484375
+        },
+        {
+          "text": "植",
+          "start": 31.28,
+          "end": 31.42,
+          "probability": 0.997314453125
+        },
+        {
+          "text": "物",
+          "start": 31.42,
+          "end": 31.6,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "有",
+          "start": 31.6,
+          "end": 31.78,
+          "probability": 0.98876953125
+        },
+        {
+          "text": "致",
+          "start": 31.78,
+          "end": 31.96,
+          "probability": 0.975830078125
+        },
+        {
+          "text": "命",
+          "start": 31.96,
+          "end": 32.1,
+          "probability": 0.95654296875
+        },
+        {
+          "text": "危",
+          "start": 32.1,
+          "end": 32.28,
+          "probability": 0.998046875
+        },
+        {
+          "text": "害",
+          "start": 32.28,
+          "end": 32.56,
+          "probability": 0.998046875
+        }
+      ]
+    },
+    {
+      "start": 32.56,
+      "end": 34.54,
+      "text": "荣誉水后,尤其危险",
+      "words": [
+        {
+          "text": "荣",
+          "start": 32.56,
+          "end": 33.02,
+          "probability": 0.62353515625
+        },
+        {
+          "text": "誉",
+          "start": 33.02,
+          "end": 33.16,
+          "probability": 0.74267578125
+        },
+        {
+          "text": "水",
+          "start": 33.16,
+          "end": 33.4,
+          "probability": 0.98828125
+        },
+        {
+          "text": "后,",
+          "start": 33.4,
+          "end": 33.62,
+          "probability": 0.8232421875
+        },
+        {
+          "text": "尤",
+          "start": 33.84,
+          "end": 33.94,
+          "probability": 0.7587890625
+        },
+        {
+          "text": "其",
+          "start": 33.94,
+          "end": 34.1,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "危",
+          "start": 34.1,
+          "end": 34.26,
+          "probability": 0.9580078125
+        },
+        {
+          "text": "险",
+          "start": 34.26,
+          "end": 34.54,
+          "probability": 0.998779296875
+        }
+      ]
+    },
+    {
+      "start": 34.54,
+      "end": 36.54,
+      "text": "阿县这种石头能捡吗?",
+      "words": [
+        {
+          "text": "阿",
+          "start": 34.54,
+          "end": 34.94,
+          "probability": 0.2216796875
+        },
+        {
+          "text": "县",
+          "start": 34.94,
+          "end": 35.12,
+          "probability": 0.54022216796875
+        },
+        {
+          "text": "这",
+          "start": 35.12,
+          "end": 35.32,
+          "probability": 0.72216796875
+        },
+        {
+          "text": "种",
+          "start": 35.32,
+          "end": 35.5,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "石",
+          "start": 35.5,
+          "end": 35.66,
+          "probability": 0.99560546875
+        },
+        {
+          "text": "头",
+          "start": 35.66,
+          "end": 35.82,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "能",
+          "start": 35.82,
+          "end": 36.0,
+          "probability": 0.98779296875
+        },
+        {
+          "text": "捡",
+          "start": 36.0,
+          "end": 36.24,
+          "probability": 0.519134521484375
+        },
+        {
+          "text": "吗?",
+          "start": 36.24,
+          "end": 36.54,
+          "probability": 0.97509765625
+        }
+      ]
+    },
+    {
+      "start": 36.9,
+      "end": 38.74,
+      "text": "赶紧捡,这是血磷水晶",
+      "words": [
+        {
+          "text": "赶",
+          "start": 36.9,
+          "end": 37.02,
+          "probability": 0.9638671875
+        },
+        {
+          "text": "紧",
+          "start": 37.02,
+          "end": 37.2,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "捡,",
+          "start": 37.2,
+          "end": 37.4,
+          "probability": 0.9697265625
+        },
+        {
+          "text": "这是",
+          "start": 37.72,
+          "end": 37.94,
+          "probability": 0.96875
+        },
+        {
+          "text": "血",
+          "start": 37.94,
+          "end": 38.2,
+          "probability": 0.529296875
+        },
+        {
+          "text": "磷",
+          "start": 38.2,
+          "end": 38.32,
+          "probability": 0.6344401041666666
+        },
+        {
+          "text": "水",
+          "start": 38.32,
+          "end": 38.54,
+          "probability": 0.9931640625
+        },
+        {
+          "text": "晶",
+          "start": 38.54,
+          "end": 38.74,
+          "probability": 0.9423828125
+        }
+      ]
+    },
+    {
+      "start": 38.74,
+      "end": 41.72,
+      "text": "能刷到是你七日之内好运上门的吉兆",
+      "words": [
+        {
+          "text": "能",
+          "start": 38.74,
+          "end": 39.22,
+          "probability": 0.90283203125
+        },
+        {
+          "text": "刷",
+          "start": 39.22,
+          "end": 39.42,
+          "probability": 0.994873046875
+        },
+        {
+          "text": "到",
+          "start": 39.42,
+          "end": 39.58,
+          "probability": 0.96533203125
+        },
+        {
+          "text": "是",
+          "start": 39.58,
+          "end": 39.76,
+          "probability": 0.96728515625
+        },
+        {
+          "text": "你",
+          "start": 39.76,
+          "end": 39.92,
+          "probability": 0.99072265625
+        },
+        {
+          "text": "七",
+          "start": 39.92,
+          "end": 40.1,
+          "probability": 0.476318359375
+        },
+        {
+          "text": "日",
+          "start": 40.1,
+          "end": 40.24,
+          "probability": 0.98583984375
+        },
+        {
+          "text": "之",
+          "start": 40.24,
+          "end": 40.4,
+          "probability": 0.9833984375
+        },
+        {
+          "text": "内",
+          "start": 40.4,
+          "end": 40.56,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "好",
+          "start": 40.56,
+          "end": 40.78,
+          "probability": 0.9560546875
+        },
+        {
+          "text": "运",
+          "start": 40.78,
+          "end": 40.94,
+          "probability": 0.989501953125
+        },
+        {
+          "text": "上",
+          "start": 40.94,
+          "end": 41.12,
+          "probability": 0.97900390625
+        },
+        {
+          "text": "门",
+          "start": 41.12,
+          "end": 41.28,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "的",
+          "start": 41.28,
+          "end": 41.4,
+          "probability": 0.99658203125
+        },
+        {
+          "text": "吉",
+          "start": 41.4,
+          "end": 41.54,
+          "probability": 0.1611328125
+        },
+        {
+          "text": "兆",
+          "start": 41.54,
+          "end": 41.72,
+          "probability": 0.943359375
+        }
+      ]
+    },
+    {
+      "start": 41.72,
+      "end": 43.58,
+      "text": "此时送花三朵皆运",
+      "words": [
+        {
+          "text": "此",
+          "start": 41.72,
+          "end": 42.26,
+          "probability": 0.98095703125
+        },
+        {
+          "text": "时",
+          "start": 42.26,
+          "end": 42.46,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "送",
+          "start": 42.46,
+          "end": 42.64,
+          "probability": 0.18212890625
+        },
+        {
+          "text": "花",
+          "start": 42.64,
+          "end": 42.82,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "三",
+          "start": 42.82,
+          "end": 43.02,
+          "probability": 0.9609375
+        },
+        {
+          "text": "朵",
+          "start": 43.02,
+          "end": 43.18,
+          "probability": 0.963134765625
+        },
+        {
+          "text": "皆",
+          "start": 43.18,
+          "end": 43.34,
+          "probability": 0.61865234375
+        },
+        {
+          "text": "运",
+          "start": 43.34,
+          "end": 43.58,
+          "probability": 0.995361328125
+        }
+      ]
+    },
+    {
+      "start": 43.58,
+      "end": 47.02,
+      "text": "一朵皆服运,一朵皆好运,一朵皆财运",
+      "words": [
+        {
+          "text": "一",
+          "start": 43.58,
+          "end": 44.02,
+          "probability": 0.43896484375
+        },
+        {
+          "text": "朵",
+          "start": 44.02,
+          "end": 44.18,
+          "probability": 1.0
+        },
+        {
+          "text": "皆",
+          "start": 44.18,
+          "end": 44.34,
+          "probability": 0.9951171875
+        },
+        {
+          "text": "服",
+          "start": 44.34,
+          "end": 44.52,
+          "probability": 0.431640625
+        },
+        {
+          "text": "运,",
+          "start": 44.52,
+          "end": 44.74,
+          "probability": 0.984375
+        },
+        {
+          "text": "一",
+          "start": 44.82,
+          "end": 45.14,
+          "probability": 0.98779296875
+        },
+        {
+          "text": "朵",
+          "start": 45.14,
+          "end": 45.28,
+          "probability": 1.0
+        },
+        {
+          "text": "皆",
+          "start": 45.28,
+          "end": 45.46,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "好",
+          "start": 45.46,
+          "end": 45.66,
+          "probability": 0.99609375
+        },
+        {
+          "text": "运,",
+          "start": 45.66,
+          "end": 45.86,
+          "probability": 0.999755859375
+        },
+        {
+          "text": "一",
+          "start": 46.08,
+          "end": 46.28,
+          "probability": 0.9951171875
+        },
+        {
+          "text": "朵",
+          "start": 46.28,
+          "end": 46.44,
+          "probability": 1.0
+        },
+        {
+          "text": "皆",
+          "start": 46.44,
+          "end": 46.62,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "财",
+          "start": 46.62,
+          "end": 46.8,
+          "probability": 0.829345703125
+        },
+        {
+          "text": "运",
+          "start": 46.8,
+          "end": 47.02,
+          "probability": 0.99169921875
+        }
+      ]
+    },
+    {
+      "start": 47.02,
+      "end": 48.98,
+      "text": "阿县这种石头能捡吗?",
+      "words": [
+        {
+          "text": "阿",
+          "start": 47.02,
+          "end": 47.38,
+          "probability": 0.81640625
+        },
+        {
+          "text": "县",
+          "start": 47.38,
+          "end": 47.58,
+          "probability": 0.99560546875
+        },
+        {
+          "text": "这",
+          "start": 47.58,
+          "end": 47.78,
+          "probability": 0.98388671875
+        },
+        {
+          "text": "种",
+          "start": 47.78,
+          "end": 47.92,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "石",
+          "start": 47.92,
+          "end": 48.1,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "头",
+          "start": 48.1,
+          "end": 48.24,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "能",
+          "start": 48.24,
+          "end": 48.42,
+          "probability": 0.998046875
+        },
+        {
+          "text": "捡",
+          "start": 48.42,
+          "end": 48.66,
+          "probability": 0.99560546875
+        },
+        {
+          "text": "吗?",
+          "start": 48.66,
+          "end": 48.98,
+          "probability": 0.99560546875
+        }
+      ]
+    },
+    {
+      "start": 49.36,
+      "end": 51.56,
+      "text": "千万不能捡,这是盖油云母",
+      "words": [
+        {
+          "text": "千",
+          "start": 49.36,
+          "end": 49.5,
+          "probability": 0.998046875
+        },
+        {
+          "text": "万",
+          "start": 49.5,
+          "end": 49.66,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "不能",
+          "start": 49.66,
+          "end": 49.88,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "捡,",
+          "start": 49.88,
+          "end": 50.2,
+          "probability": 0.996337890625
+        },
+        {
+          "text": "这是",
+          "start": 50.5,
+          "end": 50.74,
+          "probability": 0.442626953125
+        },
+        {
+          "text": "盖",
+          "start": 50.74,
+          "end": 50.96,
+          "probability": 0.7352294921875
+        },
+        {
+          "text": "油",
+          "start": 50.96,
+          "end": 51.12,
+          "probability": 0.53662109375
+        },
+        {
+          "text": "云",
+          "start": 51.12,
+          "end": 51.32,
+          "probability": 0.9755859375
+        },
+        {
+          "text": "母",
+          "start": 51.32,
+          "end": 51.56,
+          "probability": 0.802734375
+        }
+      ]
+    },
+    {
+      "start": 51.56,
+      "end": 54.94,
+      "text": "具有天然放射性,长期接触,十分危险",
+      "words": [
+        {
+          "text": "具",
+          "start": 51.56,
+          "end": 51.9,
+          "probability": 0.6611328125
+        },
+        {
+          "text": "有",
+          "start": 51.9,
+          "end": 52.06,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "天",
+          "start": 52.06,
+          "end": 52.24,
+          "probability": 0.990234375
+        },
+        {
+          "text": "然",
+          "start": 52.24,
+          "end": 52.4,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "放",
+          "start": 52.4,
+          "end": 52.6,
+          "probability": 0.99365234375
+        },
+        {
+          "text": "射",
+          "start": 52.6,
+          "end": 52.76,
+          "probability": 0.998779296875
+        },
+        {
+          "text": "性,",
+          "start": 52.76,
+          "end": 52.96,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "长",
+          "start": 53.26,
+          "end": 53.42,
+          "probability": 0.99609375
+        },
+        {
+          "text": "期",
+          "start": 53.42,
+          "end": 53.62,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "接",
+          "start": 53.62,
+          "end": 53.8,
+          "probability": 0.98486328125
+        },
+        {
+          "text": "触,",
+          "start": 53.8,
+          "end": 53.98,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "十",
+          "start": 54.26,
+          "end": 54.42,
+          "probability": 0.98974609375
+        },
+        {
+          "text": "分",
+          "start": 54.42,
+          "end": 54.58,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "危",
+          "start": 54.58,
+          "end": 54.74,
+          "probability": 0.99462890625
+        },
+        {
+          "text": "险",
+          "start": 54.74,
+          "end": 54.94,
+          "probability": 0.999755859375
+        }
+      ]
+    },
+    {
+      "start": 54.94,
+      "end": 56.9,
+      "text": "阿县这种石头能捡吗?",
+      "words": [
+        {
+          "text": "阿",
+          "start": 54.94,
+          "end": 55.32,
+          "probability": 0.87255859375
+        },
+        {
+          "text": "县",
+          "start": 55.32,
+          "end": 55.5,
+          "probability": 0.990966796875
+        },
+        {
+          "text": "这",
+          "start": 55.5,
+          "end": 55.7,
+          "probability": 0.994140625
+        },
+        {
+          "text": "种",
+          "start": 55.7,
+          "end": 55.86,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "石",
+          "start": 55.86,
+          "end": 56.04,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "头",
+          "start": 56.04,
+          "end": 56.18,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "能",
+          "start": 56.18,
+          "end": 56.34,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "捡",
+          "start": 56.34,
+          "end": 56.6,
+          "probability": 0.996337890625
+        },
+        {
+          "text": "吗?",
+          "start": 56.6,
+          "end": 56.9,
+          "probability": 0.99658203125
+        }
+      ]
+    },
+    {
+      "start": 57.2,
+      "end": 58.94,
+      "text": "赶紧捡,这是木纹石",
+      "words": [
+        {
+          "text": "赶",
+          "start": 57.2,
+          "end": 57.38,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "紧",
+          "start": 57.38,
+          "end": 57.56,
+          "probability": 0.999755859375
+        },
+        {
+          "text": "捡,",
+          "start": 57.56,
+          "end": 57.82,
+          "probability": 0.994140625
+        },
+        {
+          "text": "这是",
+          "start": 58.12,
+          "end": 58.32,
+          "probability": 0.99365234375
+        },
+        {
+          "text": "木",
+          "start": 58.32,
+          "end": 58.54,
+          "probability": 0.74609375
+        },
+        {
+          "text": "纹",
+          "start": 58.54,
+          "end": 58.7,
+          "probability": 0.7293701171875
+        },
+        {
+          "text": "石",
+          "start": 58.7,
+          "end": 58.94,
+          "probability": 0.93994140625
+        }
+      ]
+    },
+    {
+      "start": 58.94,
+      "end": 61.82,
+      "text": "具有收藏价值,一斤能达四百元",
+      "words": [
+        {
+          "text": "具",
+          "start": 58.94,
+          "end": 59.34,
+          "probability": 0.006191253662109375
+        },
+        {
+          "text": "有",
+          "start": 59.34,
+          "end": 59.54,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "收",
+          "start": 59.54,
+          "end": 59.72,
+          "probability": 0.9404296875
+        },
+        {
+          "text": "藏",
+          "start": 59.72,
+          "end": 59.88,
+          "probability": 1.0
+        },
+        {
+          "text": "价",
+          "start": 59.88,
+          "end": 60.08,
+          "probability": 0.5138473510742188
+        },
+        {
+          "text": "值,",
+          "start": 60.08,
+          "end": 60.34,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "一",
+          "start": 60.66,
+          "end": 60.76,
+          "probability": 0.367431640625
+        },
+        {
+          "text": "斤",
+          "start": 60.76,
+          "end": 60.9,
+          "probability": 0.984375
+        },
+        {
+          "text": "能",
+          "start": 60.9,
+          "end": 61.08,
+          "probability": 0.9921875
+        },
+        {
+          "text": "达",
+          "start": 61.08,
+          "end": 61.22,
+          "probability": 0.595703125
+        },
+        {
+          "text": "四",
+          "start": 61.22,
+          "end": 61.46,
+          "probability": 0.376708984375
+        },
+        {
+          "text": "百",
+          "start": 61.46,
+          "end": 61.64,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "元",
+          "start": 61.64,
+          "end": 61.82,
+          "probability": 0.98193359375
+        }
+      ]
+    },
+    {
+      "start": 61.82,
+      "end": 63.78,
+      "text": "阿县这种石头能捡吗?",
+      "words": [
+        {
+          "text": "阿",
+          "start": 61.82,
+          "end": 62.18,
+          "probability": 0.022186279296875
+        },
+        {
+          "text": "县",
+          "start": 62.18,
+          "end": 62.36,
+          "probability": 0.483856201171875
+        },
+        {
+          "text": "这",
+          "start": 62.36,
+          "end": 62.56,
+          "probability": 0.8251953125
+        },
+        {
+          "text": "种",
+          "start": 62.56,
+          "end": 62.72,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "石",
+          "start": 62.72,
+          "end": 62.9,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "头",
+          "start": 62.9,
+          "end": 63.06,
+          "probability": 0.99560546875
+        },
+        {
+          "text": "能",
+          "start": 63.06,
+          "end": 63.24,
+          "probability": 0.9951171875
+        },
+        {
+          "text": "捡",
+          "start": 63.24,
+          "end": 63.46,
+          "probability": 0.5039634704589844
+        },
+        {
+          "text": "吗?",
+          "start": 63.46,
+          "end": 63.78,
+          "probability": 0.9765625
+        }
+      ]
+    },
+    {
+      "start": 64.14,
+      "end": 65.96,
+      "text": "绝对不能捡,这是毒杀",
+      "words": [
+        {
+          "text": "绝",
+          "start": 64.14,
+          "end": 64.26,
+          "probability": 0.965576171875
+        },
+        {
+          "text": "对",
+          "start": 64.26,
+          "end": 64.4,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "不能",
+          "start": 64.4,
+          "end": 64.66,
+          "probability": 0.9912109375
+        },
+        {
+          "text": "捡,",
+          "start": 64.66,
+          "end": 64.92,
+          "probability": 0.992919921875
+        },
+        {
+          "text": "这是",
+          "start": 65.24,
+          "end": 65.46,
+          "probability": 0.9638671875
+        },
+        {
+          "text": "毒",
+          "start": 65.46,
+          "end": 65.68,
+          "probability": 0.95751953125
+        },
+        {
+          "text": "杀",
+          "start": 65.68,
+          "end": 65.96,
+          "probability": 0.8173828125
+        }
+      ]
+    },
+    {
+      "start": 65.96,
+      "end": 68.2,
+      "text": "是提取批双的主要矿物原料",
+      "words": [
+        {
+          "text": "是",
+          "start": 65.96,
+          "end": 66.38,
+          "probability": 0.337890625
+        },
+        {
+          "text": "提",
+          "start": 66.38,
+          "end": 66.54,
+          "probability": 0.951171875
+        },
+        {
+          "text": "取",
+          "start": 66.54,
+          "end": 66.74,
+          "probability": 0.99560546875
+        },
+        {
+          "text": "批",
+          "start": 66.74,
+          "end": 66.92,
+          "probability": 0.827880859375
+        },
+        {
+          "text": "双",
+          "start": 66.92,
+          "end": 67.06,
+          "probability": 0.7003173828125
+        },
+        {
+          "text": "的",
+          "start": 67.06,
+          "end": 67.22,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "主",
+          "start": 67.22,
+          "end": 67.38,
+          "probability": 0.99267578125
+        },
+        {
+          "text": "要",
+          "start": 67.38,
+          "end": 67.54,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "矿",
+          "start": 67.54,
+          "end": 67.7,
+          "probability": 0.76806640625
+        },
+        {
+          "text": "物",
+          "start": 67.7,
+          "end": 67.88,
+          "probability": 0.9921875
+        },
+        {
+          "text": "原",
+          "start": 67.88,
+          "end": 68.04,
+          "probability": 0.98974609375
+        },
+        {
+          "text": "料",
+          "start": 68.04,
+          "end": 68.2,
+          "probability": 0.994140625
+        }
+      ]
+    },
+    {
+      "start": 68.2,
+      "end": 70.18,
+      "text": "阿县这种石头能捡吗?",
+      "words": [
+        {
+          "text": "阿",
+          "start": 68.2,
+          "end": 68.58,
+          "probability": 0.75537109375
+        },
+        {
+          "text": "县",
+          "start": 68.58,
+          "end": 68.78,
+          "probability": 0.99560546875
+        },
+        {
+          "text": "这",
+          "start": 68.78,
+          "end": 68.96,
+          "probability": 0.9912109375
+        },
+        {
+          "text": "种",
+          "start": 68.96,
+          "end": 69.12,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "石",
+          "start": 69.12,
+          "end": 69.32,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "头",
+          "start": 69.32,
+          "end": 69.46,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "能",
+          "start": 69.46,
+          "end": 69.62,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "捡",
+          "start": 69.62,
+          "end": 69.86,
+          "probability": 0.99169921875
+        },
+        {
+          "text": "吗?",
+          "start": 69.86,
+          "end": 70.18,
+          "probability": 0.99560546875
+        }
+      ]
+    },
+    {
+      "start": 70.48,
+      "end": 72.14,
+      "text": "不能捡,这是芳千矿",
+      "words": [
+        {
+          "text": "不能",
+          "start": 70.48,
+          "end": 70.68,
+          "probability": 0.93408203125
+        },
+        {
+          "text": "捡,",
+          "start": 70.68,
+          "end": 70.98,
+          "probability": 0.99658203125
+        },
+        {
+          "text": "这是",
+          "start": 71.28,
+          "end": 71.5,
+          "probability": 0.994140625
+        },
+        {
+          "text": "芳",
+          "start": 71.5,
+          "end": 71.74,
+          "probability": 0.6890869140625
+        },
+        {
+          "text": "千",
+          "start": 71.74,
+          "end": 71.94,
+          "probability": 0.1785888671875
+        },
+        {
+          "text": "矿",
+          "start": 71.94,
+          "end": 72.14,
+          "probability": 0.936767578125
+        }
+      ]
+    },
+    {
+      "start": 72.14,
+      "end": 74.46,
+      "text": "长时间接触或吸入其粉尘",
+      "words": [
+        {
+          "text": "长",
+          "start": 72.14,
+          "end": 72.58,
+          "probability": 0.5546875
+        },
+        {
+          "text": "时间",
+          "start": 72.58,
+          "end": 72.88,
+          "probability": 0.99658203125
+        },
+        {
+          "text": "接",
+          "start": 72.88,
+          "end": 73.18,
+          "probability": 0.9951171875
+        },
+        {
+          "text": "触",
+          "start": 73.18,
+          "end": 73.34,
+          "probability": 0.999267578125
+        },
+        {
+          "text": "或",
+          "start": 73.34,
+          "end": 73.56,
+          "probability": 0.98388671875
+        },
+        {
+          "text": "吸",
+          "start": 73.56,
+          "end": 73.74,
+          "probability": 0.9921875
+        },
+        {
+          "text": "入",
+          "start": 73.74,
+          "end": 73.9,
+          "probability": 0.99560546875
+        },
+        {
+          "text": "其",
+          "start": 73.9,
+          "end": 74.06,
+          "probability": 0.48583984375
+        },
+        {
+          "text": "粉",
+          "start": 74.06,
+          "end": 74.26,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "尘",
+          "start": 74.26,
+          "end": 74.46,
+          "probability": 0.891357421875
+        }
+      ]
+    },
+    {
+      "start": 74.46,
+      "end": 75.72,
+      "text": "可能导致千重毒",
+      "words": [
+        {
+          "text": "可能",
+          "start": 74.46,
+          "end": 74.76,
+          "probability": 0.66357421875
+        },
+        {
+          "text": "导",
+          "start": 74.76,
+          "end": 74.98,
+          "probability": 0.99609375
+        },
+        {
+          "text": "致",
+          "start": 74.98,
+          "end": 75.18,
+          "probability": 0.999755859375
+        },
+        {
+          "text": "千",
+          "start": 75.18,
+          "end": 75.36,
+          "probability": 0.5859375
+        },
+        {
+          "text": "重",
+          "start": 75.36,
+          "end": 75.54,
+          "probability": 0.66064453125
+        },
+        {
+          "text": "毒",
+          "start": 75.54,
+          "end": 75.72,
+          "probability": 0.9990234375
+        }
+      ]
+    },
+    {
+      "start": 75.72,
+      "end": 77.88,
+      "text": "阿县这种石头能捡吗?",
+      "words": [
+        {
+          "text": "阿",
+          "start": 75.72,
+          "end": 76.26,
+          "probability": 0.7841796875
+        },
+        {
+          "text": "县",
+          "start": 76.26,
+          "end": 76.48,
+          "probability": 0.99560546875
+        },
+        {
+          "text": "这",
+          "start": 76.48,
+          "end": 76.68,
+          "probability": 0.99609375
+        },
+        {
+          "text": "种",
+          "start": 76.68,
+          "end": 76.82,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "石",
+          "start": 76.82,
+          "end": 77.0,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "头",
+          "start": 77.0,
+          "end": 77.14,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "能",
+          "start": 77.14,
+          "end": 77.32,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "捡",
+          "start": 77.32,
+          "end": 77.56,
+          "probability": 0.99658203125
+        },
+        {
+          "text": "吗?",
+          "start": 77.56,
+          "end": 77.88,
+          "probability": 0.99755859375
+        }
+      ]
+    },
+    {
+      "start": 78.32,
+      "end": 80.14,
+      "text": "赶紧捡,这是欧伯石",
+      "words": [
+        {
+          "text": "赶",
+          "start": 78.32,
+          "end": 78.44,
+          "probability": 0.928955078125
+        },
+        {
+          "text": "紧",
+          "start": 78.44,
+          "end": 78.62,
+          "probability": 0.997314453125
+        },
+        {
+          "text": "捡,",
+          "start": 78.62,
+          "end": 78.84,
+          "probability": 0.99462890625
+        },
+        {
+          "text": "这是",
+          "start": 79.28,
+          "end": 79.52,
+          "probability": 0.998046875
+        },
+        {
+          "text": "欧",
+          "start": 79.52,
+          "end": 79.72,
+          "probability": 0.95556640625
+        },
+        {
+          "text": "伯",
+          "start": 79.72,
+          "end": 79.92,
+          "probability": 0.849853515625
+        },
+        {
+          "text": "石",
+          "start": 79.92,
+          "end": 80.14,
+          "probability": 0.4228515625
+        }
+      ]
+    },
+    {
+      "start": 80.14,
+      "end": 83.3,
+      "text": "因独特变彩效应,被誉为宝石皇后",
+      "words": [
+        {
+          "text": "因",
+          "start": 80.14,
+          "end": 80.66,
+          "probability": 0.61962890625
+        },
+        {
+          "text": "独",
+          "start": 80.66,
+          "end": 80.86,
+          "probability": 0.84375
+        },
+        {
+          "text": "特",
+          "start": 80.86,
+          "end": 81.04,
+          "probability": 1.0
+        },
+        {
+          "text": "变",
+          "start": 81.04,
+          "end": 81.22,
+          "probability": 0.863037109375
+        },
+        {
+          "text": "彩",
+          "start": 81.22,
+          "end": 81.4,
+          "probability": 0.90966796875
+        },
+        {
+          "text": "效",
+          "start": 81.4,
+          "end": 81.56,
+          "probability": 0.994140625
+        },
+        {
+          "text": "应,",
+          "start": 81.56,
+          "end": 81.76,
+          "probability": 0.9912109375
+        },
+        {
+          "text": "被",
+          "start": 82.0,
+          "end": 82.16,
+          "probability": 0.9912109375
+        },
+        {
+          "text": "誉",
+          "start": 82.16,
+          "end": 82.3,
+          "probability": 0.71044921875
+        },
+        {
+          "text": "为",
+          "start": 82.3,
+          "end": 82.46,
+          "probability": 0.99462890625
+        },
+        {
+          "text": "宝",
+          "start": 82.46,
+          "end": 82.66,
+          "probability": 0.886962890625
+        },
+        {
+          "text": "石",
+          "start": 82.66,
+          "end": 82.82,
+          "probability": 0.9912109375
+        },
+        {
+          "text": "皇",
+          "start": 82.82,
+          "end": 83.02,
+          "probability": 0.9765625
+        },
+        {
+          "text": "后",
+          "start": 83.02,
+          "end": 83.3,
+          "probability": 1.0
+        }
+      ]
+    },
+    {
+      "start": 83.3,
+      "end": 84.74,
+      "text": "一刻能达上千元",
+      "words": [
+        {
+          "text": "一",
+          "start": 83.3,
+          "end": 83.68,
+          "probability": 0.416259765625
+        },
+        {
+          "text": "刻",
+          "start": 83.68,
+          "end": 83.84,
+          "probability": 0.974609375
+        },
+        {
+          "text": "能",
+          "start": 83.84,
+          "end": 83.98,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "达",
+          "start": 83.98,
+          "end": 84.18,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "上",
+          "start": 84.18,
+          "end": 84.36,
+          "probability": 0.99560546875
+        },
+        {
+          "text": "千",
+          "start": 84.36,
+          "end": 84.56,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "元",
+          "start": 84.56,
+          "end": 84.74,
+          "probability": 0.9853515625
+        }
+      ]
+    },
+    {
+      "start": 84.74,
+      "end": 86.74,
+      "text": "阿县这种石头能捡吗?",
+      "words": [
+        {
+          "text": "阿",
+          "start": 84.74,
+          "end": 85.12,
+          "probability": 0.7607421875
+        },
+        {
+          "text": "县",
+          "start": 85.12,
+          "end": 85.34,
+          "probability": 0.993408203125
+        },
+        {
+          "text": "这",
+          "start": 85.34,
+          "end": 85.52,
+          "probability": 0.998046875
+        },
+        {
+          "text": "种",
+          "start": 85.52,
+          "end": 85.68,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "石",
+          "start": 85.68,
+          "end": 85.88,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "头",
+          "start": 85.88,
+          "end": 86.02,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "能",
+          "start": 86.02,
+          "end": 86.18,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "捡",
+          "start": 86.18,
+          "end": 86.44,
+          "probability": 0.995849609375
+        },
+        {
+          "text": "吗?",
+          "start": 86.44,
+          "end": 86.74,
+          "probability": 0.99755859375
+        }
+      ]
+    },
+    {
+      "start": 86.74,
+      "end": 89.14,
+      "text": "赶紧捡,这是彩虹黑药石",
+      "words": [
+        {
+          "text": "赶",
+          "start": 86.74,
+          "end": 87.2,
+          "probability": 0.52996826171875
+        },
+        {
+          "text": "紧",
+          "start": 87.2,
+          "end": 87.4,
+          "probability": 0.985595703125
+        },
+        {
+          "text": "捡,",
+          "start": 87.4,
+          "end": 87.6,
+          "probability": 0.6693115234375
+        },
+        {
+          "text": "这是",
+          "start": 87.88,
+          "end": 88.18,
+          "probability": 0.93408203125
+        },
+        {
+          "text": "彩",
+          "start": 88.18,
+          "end": 88.42,
+          "probability": 0.96484375
+        },
+        {
+          "text": "虹",
+          "start": 88.42,
+          "end": 88.6,
+          "probability": 0.998291015625
+        },
+        {
+          "text": "黑",
+          "start": 88.6,
+          "end": 88.78,
+          "probability": 0.99658203125
+        },
+        {
+          "text": "药",
+          "start": 88.78,
+          "end": 88.94,
+          "probability": 0.63623046875
+        },
+        {
+          "text": "石",
+          "start": 88.94,
+          "end": 89.14,
+          "probability": 0.324462890625
+        }
+      ]
+    },
+    {
+      "start": 89.14,
+      "end": 91.2,
+      "text": "这品相不得直个上千元",
+      "words": [
+        {
+          "text": "这",
+          "start": 89.14,
+          "end": 89.64,
+          "probability": 0.43017578125
+        },
+        {
+          "text": "品",
+          "start": 89.64,
+          "end": 89.82,
+          "probability": 0.998046875
+        },
+        {
+          "text": "相",
+          "start": 89.82,
+          "end": 90.0,
+          "probability": 0.305419921875
+        },
+        {
+          "text": "不",
+          "start": 90.0,
+          "end": 90.22,
+          "probability": 0.99365234375
+        },
+        {
+          "text": "得",
+          "start": 90.22,
+          "end": 90.36,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "直",
+          "start": 90.36,
+          "end": 90.52,
+          "probability": 0.4677734375
+        },
+        {
+          "text": "个",
+          "start": 90.52,
+          "end": 90.66,
+          "probability": 0.277587890625
+        },
+        {
+          "text": "上",
+          "start": 90.66,
+          "end": 90.84,
+          "probability": 0.99609375
+        },
+        {
+          "text": "千",
+          "start": 90.84,
+          "end": 91.02,
+          "probability": 0.9736328125
+        },
+        {
+          "text": "元",
+          "start": 91.02,
+          "end": 91.2,
+          "probability": 0.97802734375
+        }
+      ]
+    },
+    {
+      "start": 91.2,
+      "end": 93.2,
+      "text": "阿县这种石头能捡吗?",
+      "words": [
+        {
+          "text": "阿",
+          "start": 91.2,
+          "end": 91.62,
+          "probability": 0.2491455078125
+        },
+        {
+          "text": "县",
+          "start": 91.62,
+          "end": 91.78,
+          "probability": 0.6104736328125
+        },
+        {
+          "text": "这",
+          "start": 91.78,
+          "end": 92.0,
+          "probability": 0.853515625
+        },
+        {
+          "text": "种",
+          "start": 92.0,
+          "end": 92.16,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "石",
+          "start": 92.16,
+          "end": 92.34,
+          "probability": 0.998046875
+        },
+        {
+          "text": "头",
+          "start": 92.34,
+          "end": 92.48,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "能",
+          "start": 92.48,
+          "end": 92.66,
+          "probability": 0.99267578125
+        },
+        {
+          "text": "捡",
+          "start": 92.66,
+          "end": 92.92,
+          "probability": 0.9326171875
+        },
+        {
+          "text": "吗?",
+          "start": 92.92,
+          "end": 93.2,
+          "probability": 0.96728515625
+        }
+      ]
+    },
+    {
+      "start": 93.54,
+      "end": 95.06,
+      "text": "赶紧捡,这是芸石",
+      "words": [
+        {
+          "text": "赶",
+          "start": 93.54,
+          "end": 93.66,
+          "probability": 0.9921875
+        },
+        {
+          "text": "紧",
+          "start": 93.66,
+          "end": 93.86,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "捡,",
+          "start": 93.86,
+          "end": 94.1,
+          "probability": 0.99658203125
+        },
+        {
+          "text": "这是",
+          "start": 94.38,
+          "end": 94.62,
+          "probability": 0.9921875
+        },
+        {
+          "text": "芸",
+          "start": 94.62,
+          "end": 94.84,
+          "probability": 0.43194580078125
+        },
+        {
+          "text": "石",
+          "start": 94.84,
+          "end": 95.06,
+          "probability": 0.3603515625
+        }
+      ]
+    },
+    {
+      "start": 95.06,
+      "end": 97.14,
+      "text": "这么大一块能直个数万元",
+      "words": [
+        {
+          "text": "这么",
+          "start": 95.06,
+          "end": 95.58,
+          "probability": 0.728515625
+        },
+        {
+          "text": "大",
+          "start": 95.58,
+          "end": 95.78,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "一",
+          "start": 95.78,
+          "end": 95.96,
+          "probability": 0.9892578125
+        },
+        {
+          "text": "块",
+          "start": 95.96,
+          "end": 96.08,
+          "probability": 0.990234375
+        },
+        {
+          "text": "能",
+          "start": 96.08,
+          "end": 96.28,
+          "probability": 0.96484375
+        },
+        {
+          "text": "直",
+          "start": 96.28,
+          "end": 96.46,
+          "probability": 0.97412109375
+        },
+        {
+          "text": "个",
+          "start": 96.46,
+          "end": 96.62,
+          "probability": 0.99365234375
+        },
+        {
+          "text": "数",
+          "start": 96.62,
+          "end": 96.76,
+          "probability": 0.99267578125
+        },
+        {
+          "text": "万",
+          "start": 96.76,
+          "end": 96.94,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "元",
+          "start": 96.94,
+          "end": 97.14,
+          "probability": 0.96875
+        }
+      ]
+    },
+    {
+      "start": 97.14,
+      "end": 99.16,
+      "text": "阿县这种石头能捡吗?",
+      "words": [
+        {
+          "text": "阿",
+          "start": 97.14,
+          "end": 97.58,
+          "probability": 0.74365234375
+        },
+        {
+          "text": "县",
+          "start": 97.58,
+          "end": 97.78,
+          "probability": 0.997314453125
+        },
+        {
+          "text": "这",
+          "start": 97.78,
+          "end": 97.96,
+          "probability": 0.99365234375
+        },
+        {
+          "text": "种",
+          "start": 97.96,
+          "end": 98.12,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "石",
+          "start": 98.12,
+          "end": 98.32,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "头",
+          "start": 98.32,
+          "end": 98.46,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "能",
+          "start": 98.46,
+          "end": 98.62,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "捡",
+          "start": 98.62,
+          "end": 98.88,
+          "probability": 0.9951171875
+        },
+        {
+          "text": "吗?",
+          "start": 98.88,
+          "end": 99.16,
+          "probability": 0.9951171875
+        }
+      ]
+    },
+    {
+      "start": 99.52,
+      "end": 101.04,
+      "text": "可以捡,这是黄铁框",
+      "words": [
+        {
+          "text": "可以",
+          "start": 99.52,
+          "end": 99.7,
+          "probability": 0.9873046875
+        },
+        {
+          "text": "捡,",
+          "start": 99.7,
+          "end": 99.96,
+          "probability": 0.994384765625
+        },
+        {
+          "text": "这是",
+          "start": 100.24,
+          "end": 100.42,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "黄",
+          "start": 100.42,
+          "end": 100.68,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "铁",
+          "start": 100.68,
+          "end": 100.86,
+          "probability": 0.9918619791666666
+        },
+        {
+          "text": "框",
+          "start": 100.86,
+          "end": 101.04,
+          "probability": 0.6673583984375
+        }
+      ]
+    },
+    {
+      "start": 101.04,
+      "end": 103.58,
+      "text": "也叫鱼人精,一个也就二十元",
+      "words": [
+        {
+          "text": "也",
+          "start": 101.04,
+          "end": 101.46,
+          "probability": 0.73095703125
+        },
+        {
+          "text": "叫",
+          "start": 101.46,
+          "end": 101.64,
+          "probability": 0.94189453125
+        },
+        {
+          "text": "鱼",
+          "start": 101.64,
+          "end": 101.8,
+          "probability": 0.8894856770833334
+        },
+        {
+          "text": "人",
+          "start": 101.8,
+          "end": 101.96,
+          "probability": 0.890625
+        },
+        {
+          "text": "精,",
+          "start": 101.96,
+          "end": 102.12,
+          "probability": 0.403076171875
+        },
+        {
+          "text": "一个",
+          "start": 102.4,
+          "end": 102.66,
+          "probability": 0.99072265625
+        },
+        {
+          "text": "也",
+          "start": 102.66,
+          "end": 102.88,
+          "probability": 0.998046875
+        },
+        {
+          "text": "就",
+          "start": 102.88,
+          "end": 103.02,
+          "probability": 0.7998046875
+        },
+        {
+          "text": "二",
+          "start": 103.02,
+          "end": 103.2,
+          "probability": 0.85009765625
+        },
+        {
+          "text": "十",
+          "start": 103.2,
+          "end": 103.38,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "元",
+          "start": 103.38,
+          "end": 103.58,
+          "probability": 0.9912109375
+        }
+      ]
+    },
+    {
+      "start": 103.58,
+      "end": 105.54,
+      "text": "阿县这种石头能捡吗?",
+      "words": [
+        {
+          "text": "阿",
+          "start": 103.58,
+          "end": 103.94,
+          "probability": 0.8212890625
+        },
+        {
+          "text": "县",
+          "start": 103.94,
+          "end": 104.14,
+          "probability": 0.996826171875
+        },
+        {
+          "text": "这",
+          "start": 104.14,
+          "end": 104.34,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "种",
+          "start": 104.34,
+          "end": 104.48,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "石",
+          "start": 104.48,
+          "end": 104.68,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "头",
+          "start": 104.68,
+          "end": 104.82,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "能",
+          "start": 104.82,
+          "end": 105.0,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "捡",
+          "start": 105.0,
+          "end": 105.24,
+          "probability": 0.996826171875
+        },
+        {
+          "text": "吗?",
+          "start": 105.24,
+          "end": 105.54,
+          "probability": 0.9970703125
+        }
+      ]
+    },
+    {
+      "start": 105.84,
+      "end": 107.54,
+      "text": "赶紧捡,这是鸡血石",
+      "words": [
+        {
+          "text": "赶",
+          "start": 105.84,
+          "end": 105.98,
+          "probability": 0.999267578125
+        },
+        {
+          "text": "紧",
+          "start": 105.98,
+          "end": 106.18,
+          "probability": 1.0
+        },
+        {
+          "text": "捡,",
+          "start": 106.18,
+          "end": 106.4,
+          "probability": 0.997802734375
+        },
+        {
+          "text": "这是",
+          "start": 106.68,
+          "end": 106.94,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "鸡",
+          "start": 106.94,
+          "end": 107.16,
+          "probability": 0.93701171875
+        },
+        {
+          "text": "血",
+          "start": 107.16,
+          "end": 107.32,
+          "probability": 0.9052734375
+        },
+        {
+          "text": "石",
+          "start": 107.32,
+          "end": 107.54,
+          "probability": 0.99609375
+        }
+      ]
+    },
+    {
+      "start": 107.54,
+      "end": 109.52,
+      "text": "有一颗鸡血三颗金之称",
+      "words": [
+        {
+          "text": "有一",
+          "start": 107.54,
+          "end": 108.06,
+          "probability": 0.81103515625
+        },
+        {
+          "text": "颗",
+          "start": 108.06,
+          "end": 108.28,
+          "probability": 0.963134765625
+        },
+        {
+          "text": "鸡",
+          "start": 108.28,
+          "end": 108.5,
+          "probability": 0.990234375
+        },
+        {
+          "text": "血",
+          "start": 108.5,
+          "end": 108.68,
+          "probability": 0.9951171875
+        },
+        {
+          "text": "三",
+          "start": 108.68,
+          "end": 108.84,
+          "probability": 0.94482421875
+        },
+        {
+          "text": "颗",
+          "start": 108.84,
+          "end": 109.02,
+          "probability": 0.971923828125
+        },
+        {
+          "text": "金",
+          "start": 109.02,
+          "end": 109.16,
+          "probability": 0.57861328125
+        },
+        {
+          "text": "之",
+          "start": 109.16,
+          "end": 109.36,
+          "probability": 0.7578125
+        },
+        {
+          "text": "称",
+          "start": 109.36,
+          "end": 109.52,
+          "probability": 0.994140625
+        }
+      ]
+    },
+    {
+      "start": 109.52,
+      "end": 111.42,
+      "text": "这么大一块不得数十万",
+      "words": [
+        {
+          "text": "这么",
+          "start": 109.52,
+          "end": 110.02,
+          "probability": 0.740234375
+        },
+        {
+          "text": "大",
+          "start": 110.02,
+          "end": 110.22,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "一",
+          "start": 110.22,
+          "end": 110.4,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "块",
+          "start": 110.4,
+          "end": 110.56,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "不",
+          "start": 110.56,
+          "end": 110.76,
+          "probability": 0.98828125
+        },
+        {
+          "text": "得",
+          "start": 110.76,
+          "end": 110.92,
+          "probability": 1.0
+        },
+        {
+          "text": "数",
+          "start": 110.92,
+          "end": 111.1,
+          "probability": 0.97705078125
+        },
+        {
+          "text": "十",
+          "start": 111.1,
+          "end": 111.26,
+          "probability": 0.9921875
+        },
+        {
+          "text": "万",
+          "start": 111.26,
+          "end": 111.42,
+          "probability": 0.9990234375
+        }
+      ]
+    },
+    {
+      "start": 111.42,
+      "end": 113.48,
+      "text": "阿县这种石头能捡吗?",
+      "words": [
+        {
+          "text": "阿",
+          "start": 111.42,
+          "end": 111.88,
+          "probability": 0.91162109375
+        },
+        {
+          "text": "县",
+          "start": 111.88,
+          "end": 112.08,
+          "probability": 0.9921875
+        },
+        {
+          "text": "这",
+          "start": 112.08,
+          "end": 112.28,
+          "probability": 0.99560546875
+        },
+        {
+          "text": "种",
+          "start": 112.28,
+          "end": 112.42,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "石",
+          "start": 112.42,
+          "end": 112.6,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "头",
+          "start": 112.6,
+          "end": 112.76,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "能",
+          "start": 112.76,
+          "end": 112.92,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "捡",
+          "start": 112.92,
+          "end": 113.18,
+          "probability": 0.994873046875
+        },
+        {
+          "text": "吗?",
+          "start": 113.18,
+          "end": 113.48,
+          "probability": 0.99658203125
+        }
+      ]
+    },
+    {
+      "start": 113.76,
+      "end": 115.62,
+      "text": "可以捡,这是天然鞋石",
+      "words": [
+        {
+          "text": "可以",
+          "start": 113.76,
+          "end": 114.0,
+          "probability": 0.9951171875
+        },
+        {
+          "text": "捡,",
+          "start": 114.0,
+          "end": 114.26,
+          "probability": 0.99560546875
+        },
+        {
+          "text": "这是",
+          "start": 114.58,
+          "end": 114.8,
+          "probability": 0.99609375
+        },
+        {
+          "text": "天",
+          "start": 114.8,
+          "end": 115.02,
+          "probability": 0.98779296875
+        },
+        {
+          "text": "然",
+          "start": 115.02,
+          "end": 115.2,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "鞋",
+          "start": 115.2,
+          "end": 115.38,
+          "probability": 0.8024088541666666
+        },
+        {
+          "text": "石",
+          "start": 115.38,
+          "end": 115.62,
+          "probability": 0.87646484375
+        }
+      ]
+    },
+    {
+      "start": 115.62,
+      "end": 117.32,
+      "text": "一只也就两百五十",
+      "words": [
+        {
+          "text": "一",
+          "start": 115.62,
+          "end": 116.06,
+          "probability": 0.8173828125
+        },
+        {
+          "text": "只",
+          "start": 116.06,
+          "end": 116.22,
+          "probability": 0.69091796875
+        },
+        {
+          "text": "也",
+          "start": 116.22,
+          "end": 116.4,
+          "probability": 0.9814453125
+        },
+        {
+          "text": "就",
+          "start": 116.4,
+          "end": 116.56,
+          "probability": 0.97314453125
+        },
+        {
+          "text": "两",
+          "start": 116.56,
+          "end": 116.72,
+          "probability": 0.0289154052734375
+        },
+        {
+          "text": "百",
+          "start": 116.72,
+          "end": 116.9,
+          "probability": 0.9951171875
+        },
+        {
+          "text": "五",
+          "start": 116.9,
+          "end": 117.08,
+          "probability": 0.9892578125
+        },
+        {
+          "text": "十",
+          "start": 117.08,
+          "end": 117.32,
+          "probability": 0.99853515625
+        }
+      ]
+    },
+    {
+      "start": 117.32,
+      "end": 118.92,
+      "text": "要是一对就值钱了",
+      "words": [
+        {
+          "text": "要",
+          "start": 117.32,
+          "end": 117.78,
+          "probability": 0.3935546875
+        },
+        {
+          "text": "是",
+          "start": 117.78,
+          "end": 117.96,
+          "probability": 0.9921875
+        },
+        {
+          "text": "一",
+          "start": 117.96,
+          "end": 118.1,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "对",
+          "start": 118.1,
+          "end": 118.24,
+          "probability": 0.9697265625
+        },
+        {
+          "text": "就",
+          "start": 118.24,
+          "end": 118.42,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "值",
+          "start": 118.42,
+          "end": 118.58,
+          "probability": 0.98974609375
+        },
+        {
+          "text": "钱",
+          "start": 118.58,
+          "end": 118.8,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "了",
+          "start": 118.8,
+          "end": 118.92,
+          "probability": 0.9580078125
+        }
+      ]
+    },
+    {
+      "start": 118.92,
+      "end": 120.88,
+      "text": "阿县这种石头能捡吗?",
+      "words": [
+        {
+          "text": "阿",
+          "start": 118.92,
+          "end": 119.26,
+          "probability": 0.01352691650390625
+        },
+        {
+          "text": "县",
+          "start": 119.26,
+          "end": 119.48,
+          "probability": 0.54376220703125
+        },
+        {
+          "text": "这",
+          "start": 119.48,
+          "end": 119.66,
+          "probability": 0.95654296875
+        },
+        {
+          "text": "种",
+          "start": 119.66,
+          "end": 119.82,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "石",
+          "start": 119.82,
+          "end": 120.0,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "头",
+          "start": 120.0,
+          "end": 120.16,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "能",
+          "start": 120.16,
+          "end": 120.32,
+          "probability": 0.99609375
+        },
+        {
+          "text": "捡",
+          "start": 120.32,
+          "end": 120.58,
+          "probability": 0.60247802734375
+        },
+        {
+          "text": "吗?",
+          "start": 120.58,
+          "end": 120.88,
+          "probability": 0.9833984375
+        }
+      ]
+    },
+    {
+      "start": 121.08,
+      "end": 122.9,
+      "text": "赶紧捡,这是魔耳石",
+      "words": [
+        {
+          "text": "赶",
+          "start": 121.08,
+          "end": 121.34,
+          "probability": 0.97607421875
+        },
+        {
+          "text": "紧",
+          "start": 121.34,
+          "end": 121.56,
+          "probability": 0.999267578125
+        },
+        {
+          "text": "捡,",
+          "start": 121.56,
+          "end": 121.74,
+          "probability": 0.97802734375
+        },
+        {
+          "text": "这是",
+          "start": 122.04,
+          "end": 122.28,
+          "probability": 0.92236328125
+        },
+        {
+          "text": "魔",
+          "start": 122.28,
+          "end": 122.52,
+          "probability": 0.030120849609375
+        },
+        {
+          "text": "耳",
+          "start": 122.52,
+          "end": 122.68,
+          "probability": 0.832763671875
+        },
+        {
+          "text": "石",
+          "start": 122.68,
+          "end": 122.9,
+          "probability": 0.320556640625
+        }
+      ]
+    },
+    {
+      "start": 122.9,
+      "end": 124.34,
+      "text": "可以当个冠赏石",
+      "words": [
+        {
+          "text": "可以",
+          "start": 122.9,
+          "end": 123.4,
+          "probability": 0.7099609375
+        },
+        {
+          "text": "当",
+          "start": 123.4,
+          "end": 123.62,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "个",
+          "start": 123.62,
+          "end": 123.78,
+          "probability": 0.98583984375
+        },
+        {
+          "text": "冠",
+          "start": 123.78,
+          "end": 123.94,
+          "probability": 0.57501220703125
+        },
+        {
+          "text": "赏",
+          "start": 123.94,
+          "end": 124.12,
+          "probability": 0.968505859375
+        },
+        {
+          "text": "石",
+          "start": 124.12,
+          "end": 124.34,
+          "probability": 0.5283203125
+        }
+      ]
+    },
+    {
+      "start": 124.34,
+      "end": 126.32,
+      "text": "这品相不得直个三千块",
+      "words": [
+        {
+          "text": "这",
+          "start": 124.34,
+          "end": 124.74,
+          "probability": 0.65087890625
+        },
+        {
+          "text": "品",
+          "start": 124.74,
+          "end": 124.94,
+          "probability": 0.98291015625
+        },
+        {
+          "text": "相",
+          "start": 124.94,
+          "end": 125.12,
+          "probability": 0.3349609375
+        },
+        {
+          "text": "不",
+          "start": 125.12,
+          "end": 125.32,
+          "probability": 0.998046875
+        },
+        {
+          "text": "得",
+          "start": 125.32,
+          "end": 125.46,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "直",
+          "start": 125.46,
+          "end": 125.62,
+          "probability": 0.026702880859375
+        },
+        {
+          "text": "个",
+          "start": 125.62,
+          "end": 125.76,
+          "probability": 0.6171875
+        },
+        {
+          "text": "三",
+          "start": 125.76,
+          "end": 125.96,
+          "probability": 0.87353515625
+        },
+        {
+          "text": "千",
+          "start": 125.96,
+          "end": 126.14,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "块",
+          "start": 126.14,
+          "end": 126.32,
+          "probability": 0.99169921875
+        }
+      ]
+    }
+  ],
+  "cues": [
+    {
+      "start": 2.44,
+      "end": 4.96,
+      "text": "野外捡到石头石,记得仔细看看",
+      "words": [
+        {
+          "text": "野",
+          "start": 2.44,
+          "end": 2.84,
+          "probability": 0.10504150390625
+        },
+        {
+          "text": "外",
+          "start": 2.84,
+          "end": 3.02,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "捡",
+          "start": 3.02,
+          "end": 3.2,
+          "probability": 0.62066650390625
+        },
+        {
+          "text": "到",
+          "start": 3.2,
+          "end": 3.36,
+          "probability": 0.9853515625
+        },
+        {
+          "text": "石",
+          "start": 3.36,
+          "end": 3.52,
+          "probability": 0.99365234375
+        },
+        {
+          "text": "头",
+          "start": 3.52,
+          "end": 3.66,
+          "probability": 0.88037109375
+        },
+        {
+          "text": "石,",
+          "start": 3.66,
+          "end": 3.86,
+          "probability": 0.75146484375
+        },
+        {
+          "text": "记",
+          "start": 4.06,
+          "end": 4.28,
+          "probability": 0.8740234375
+        },
+        {
+          "text": "得",
+          "start": 4.28,
+          "end": 4.44,
+          "probability": 0.998046875
+        },
+        {
+          "text": "仔",
+          "start": 4.44,
+          "end": 4.58,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "细",
+          "start": 4.58,
+          "end": 4.72,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "看看",
+          "start": 4.72,
+          "end": 4.96,
+          "probability": 0.9697265625
+        }
+      ]
+    },
+    {
+      "start": 4.96,
+      "end": 7.1,
+      "text": "阿县这种石头能捡吗?",
+      "words": [
+        {
+          "text": "阿",
+          "start": 4.96,
+          "end": 5.52,
+          "probability": 0.389404296875
+        },
+        {
+          "text": "县",
+          "start": 5.52,
+          "end": 5.7,
+          "probability": 0.6177978515625
+        },
+        {
+          "text": "这",
+          "start": 5.7,
+          "end": 5.9,
+          "probability": 0.8759765625
+        },
+        {
+          "text": "种",
+          "start": 5.9,
+          "end": 6.06,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "石",
+          "start": 6.06,
+          "end": 6.24,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "头",
+          "start": 6.24,
+          "end": 6.4,
+          "probability": 0.998046875
+        },
+        {
+          "text": "能",
+          "start": 6.4,
+          "end": 6.56,
+          "probability": 0.99365234375
+        },
+        {
+          "text": "捡",
+          "start": 6.56,
+          "end": 6.82,
+          "probability": 0.957763671875
+        },
+        {
+          "text": "吗?",
+          "start": 6.82,
+          "end": 7.1,
+          "probability": 0.97607421875
+        }
+      ]
+    },
+    {
+      "start": 7.58,
+      "end": 10.54,
+      "text": "可以捡,这是放纳石,也叫火焰石",
+      "words": [
+        {
+          "text": "可以",
+          "start": 7.58,
+          "end": 7.78,
+          "probability": 0.96484375
+        },
+        {
+          "text": "捡,",
+          "start": 7.78,
+          "end": 8.04,
+          "probability": 0.9892578125
+        },
+        {
+          "text": "这是",
+          "start": 8.44,
+          "end": 8.66,
+          "probability": 0.97412109375
+        },
+        {
+          "text": "放",
+          "start": 8.66,
+          "end": 8.9,
+          "probability": 0.96826171875
+        },
+        {
+          "text": "纳",
+          "start": 8.9,
+          "end": 9.08,
+          "probability": 0.825927734375
+        },
+        {
+          "text": "石,",
+          "start": 9.08,
+          "end": 9.32,
+          "probability": 0.98681640625
+        },
+        {
+          "text": "也",
+          "start": 9.62,
+          "end": 9.78,
+          "probability": 0.99609375
+        },
+        {
+          "text": "叫",
+          "start": 9.78,
+          "end": 9.96,
+          "probability": 0.9931640625
+        },
+        {
+          "text": "火",
+          "start": 9.96,
+          "end": 10.16,
+          "probability": 0.9091796875
+        },
+        {
+          "text": "焰",
+          "start": 10.16,
+          "end": 10.3,
+          "probability": 0.955078125
+        },
+        {
+          "text": "石",
+          "start": 10.3,
+          "end": 10.54,
+          "probability": 0.99609375
+        }
+      ]
+    },
+    {
+      "start": 10.54,
+      "end": 14.22,
+      "text": "在紫外灯照射下,会发出惊艳的橘黄色银光",
+      "words": [
+        {
+          "text": "在",
+          "start": 10.54,
+          "end": 11.1,
+          "probability": 0.8076171875
+        },
+        {
+          "text": "紫",
+          "start": 11.1,
+          "end": 11.28,
+          "probability": 0.94970703125
+        },
+        {
+          "text": "外",
+          "start": 11.28,
+          "end": 11.44,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "灯",
+          "start": 11.44,
+          "end": 11.6,
+          "probability": 0.986572265625
+        },
+        {
+          "text": "照",
+          "start": 11.6,
+          "end": 11.78,
+          "probability": 0.89794921875
+        },
+        {
+          "text": "射",
+          "start": 11.78,
+          "end": 11.96,
+          "probability": 0.878662109375
+        },
+        {
+          "text": "下,",
+          "start": 11.96,
+          "end": 12.16,
+          "probability": 0.99609375
+        },
+        {
+          "text": "会",
+          "start": 12.38,
+          "end": 12.54,
+          "probability": 0.9931640625
+        },
+        {
+          "text": "发",
+          "start": 12.54,
+          "end": 12.72,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "出",
+          "start": 12.72,
+          "end": 12.9,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "惊",
+          "start": 12.9,
+          "end": 13.12,
+          "probability": 0.93212890625
+        },
+        {
+          "text": "艳",
+          "start": 13.12,
+          "end": 13.22,
+          "probability": 0.991455078125
+        },
+        {
+          "text": "的",
+          "start": 13.22,
+          "end": 13.38,
+          "probability": 0.99658203125
+        },
+        {
+          "text": "橘",
+          "start": 13.38,
+          "end": 13.52,
+          "probability": 0.90087890625
+        },
+        {
+          "text": "黄",
+          "start": 13.52,
+          "end": 13.7,
+          "probability": 0.998046875
+        },
+        {
+          "text": "色",
+          "start": 13.7,
+          "end": 13.86,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "银",
+          "start": 13.86,
+          "end": 14.02,
+          "probability": 0.7797037760416666
+        },
+        {
+          "text": "光",
+          "start": 14.02,
+          "end": 14.22,
+          "probability": 0.94384765625
+        }
+      ]
+    },
+    {
+      "start": 14.22,
+      "end": 16.06,
+      "text": "可以捡来做纹丸手串",
+      "words": [
+        {
+          "text": "可以",
+          "start": 14.22,
+          "end": 14.8,
+          "probability": 0.79443359375
+        },
+        {
+          "text": "捡",
+          "start": 14.8,
+          "end": 15.04,
+          "probability": 0.997802734375
+        },
+        {
+          "text": "来",
+          "start": 15.04,
+          "end": 15.18,
+          "probability": 0.99462890625
+        },
+        {
+          "text": "做",
+          "start": 15.18,
+          "end": 15.36,
+          "probability": 0.958984375
+        },
+        {
+          "text": "纹",
+          "start": 15.36,
+          "end": 15.52,
+          "probability": 0.832275390625
+        },
+        {
+          "text": "丸",
+          "start": 15.52,
+          "end": 15.68,
+          "probability": 0.568603515625
+        },
+        {
+          "text": "手",
+          "start": 15.68,
+          "end": 15.88,
+          "probability": 0.88134765625
+        },
+        {
+          "text": "串",
+          "start": 15.88,
+          "end": 16.06,
+          "probability": 0.95458984375
+        }
+      ]
+    },
+    {
+      "start": 16.06,
+      "end": 18.12,
+      "text": "阿县这种石头能捡吗?",
+      "words": [
+        {
+          "text": "阿",
+          "start": 16.06,
+          "end": 16.5,
+          "probability": 0.6865234375
+        },
+        {
+          "text": "县",
+          "start": 16.5,
+          "end": 16.72,
+          "probability": 0.99560546875
+        },
+        {
+          "text": "这",
+          "start": 16.72,
+          "end": 16.9,
+          "probability": 0.962890625
+        },
+        {
+          "text": "种",
+          "start": 16.9,
+          "end": 17.06,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "石",
+          "start": 17.06,
+          "end": 17.24,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "头",
+          "start": 17.24,
+          "end": 17.38,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "能",
+          "start": 17.38,
+          "end": 17.54,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "捡",
+          "start": 17.54,
+          "end": 17.82,
+          "probability": 0.99462890625
+        },
+        {
+          "text": "吗?",
+          "start": 17.82,
+          "end": 18.12,
+          "probability": 0.9951171875
+        }
+      ]
+    },
+    {
+      "start": 18.5,
+      "end": 21.42,
+      "text": "可以捡,这是蓝绒金,可以当个摆件",
+      "words": [
+        {
+          "text": "可以",
+          "start": 18.5,
+          "end": 18.7,
+          "probability": 0.99462890625
+        },
+        {
+          "text": "捡,",
+          "start": 18.7,
+          "end": 18.98,
+          "probability": 0.995849609375
+        },
+        {
+          "text": "这是",
+          "start": 19.36,
+          "end": 19.6,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "蓝",
+          "start": 19.6,
+          "end": 19.78,
+          "probability": 0.924072265625
+        },
+        {
+          "text": "绒",
+          "start": 19.78,
+          "end": 19.94,
+          "probability": 0.60711669921875
+        },
+        {
+          "text": "金,",
+          "start": 19.94,
+          "end": 20.16,
+          "probability": 0.56982421875
+        },
+        {
+          "text": "可以",
+          "start": 20.44,
+          "end": 20.72,
+          "probability": 0.99609375
+        },
+        {
+          "text": "当",
+          "start": 20.72,
+          "end": 20.92,
+          "probability": 0.95068359375
+        },
+        {
+          "text": "个",
+          "start": 20.92,
+          "end": 21.06,
+          "probability": 0.984375
+        },
+        {
+          "text": "摆",
+          "start": 21.06,
+          "end": 21.24,
+          "probability": 0.7880859375
+        },
+        {
+          "text": "件",
+          "start": 21.24,
+          "end": 21.42,
+          "probability": 0.8310546875
+        }
+      ]
+    },
+    {
+      "start": 21.42,
+      "end": 22.98,
+      "text": "卖个300元左右",
+      "words": [
+        {
+          "text": "卖",
+          "start": 21.42,
+          "end": 21.92,
+          "probability": 0.9375
+        },
+        {
+          "text": "个",
+          "start": 21.92,
+          "end": 22.1,
+          "probability": 0.9755859375
+        },
+        {
+          "text": "300",
+          "start": 22.1,
+          "end": 22.34,
+          "probability": 0.67919921875
+        },
+        {
+          "text": "元",
+          "start": 22.34,
+          "end": 22.62,
+          "probability": 0.95068359375
+        },
+        {
+          "text": "左右",
+          "start": 22.62,
+          "end": 22.98,
+          "probability": 0.99951171875
+        }
+      ]
+    },
+    {
+      "start": 22.98,
+      "end": 24.96,
+      "text": "阿县这种石头能捡吗?",
+      "words": [
+        {
+          "text": "阿",
+          "start": 22.98,
+          "end": 23.38,
+          "probability": 0.9384765625
+        },
+        {
+          "text": "县",
+          "start": 23.38,
+          "end": 23.58,
+          "probability": 0.9931640625
+        },
+        {
+          "text": "这",
+          "start": 23.58,
+          "end": 23.76,
+          "probability": 0.9716796875
+        },
+        {
+          "text": "种",
+          "start": 23.76,
+          "end": 23.92,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "石",
+          "start": 23.92,
+          "end": 24.12,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "头",
+          "start": 24.12,
+          "end": 24.26,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "能",
+          "start": 24.26,
+          "end": 24.4,
+          "probability": 0.998046875
+        },
+        {
+          "text": "捡",
+          "start": 24.4,
+          "end": 24.68,
+          "probability": 0.99560546875
+        },
+        {
+          "text": "吗?",
+          "start": 24.68,
+          "end": 24.96,
+          "probability": 0.9951171875
+        }
+      ]
+    },
+    {
+      "start": 25.32,
+      "end": 26.88,
+      "text": "不能捡,这是蓝凡",
+      "words": [
+        {
+          "text": "不能",
+          "start": 25.32,
+          "end": 25.54,
+          "probability": 0.9384765625
+        },
+        {
+          "text": "捡,",
+          "start": 25.54,
+          "end": 25.86,
+          "probability": 0.99560546875
+        },
+        {
+          "text": "这是",
+          "start": 26.18,
+          "end": 26.46,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "蓝",
+          "start": 26.46,
+          "end": 26.68,
+          "probability": 0.976806640625
+        },
+        {
+          "text": "凡",
+          "start": 26.68,
+          "end": 26.88,
+          "probability": 0.57891845703125
+        }
+      ]
+    },
+    {
+      "start": 26.88,
+      "end": 30.52,
+      "text": "学名无水流酸桶,常用做农药和除草剂",
+      "words": [
+        {
+          "text": "学",
+          "start": 26.88,
+          "end": 27.42,
+          "probability": 0.625
+        },
+        {
+          "text": "名",
+          "start": 27.42,
+          "end": 27.58,
+          "probability": 0.65576171875
+        },
+        {
+          "text": "无",
+          "start": 27.58,
+          "end": 27.76,
+          "probability": 0.3369140625
+        },
+        {
+          "text": "水",
+          "start": 27.76,
+          "end": 27.94,
+          "probability": 0.99462890625
+        },
+        {
+          "text": "流",
+          "start": 27.94,
+          "end": 28.1,
+          "probability": 0.88232421875
+        },
+        {
+          "text": "酸",
+          "start": 28.1,
+          "end": 28.28,
+          "probability": 0.953369140625
+        },
+        {
+          "text": "桶,",
+          "start": 28.28,
+          "end": 28.52,
+          "probability": 0.72607421875
+        },
+        {
+          "text": "常",
+          "start": 28.82,
+          "end": 29.04,
+          "probability": 0.986328125
+        },
+        {
+          "text": "用",
+          "start": 29.04,
+          "end": 29.24,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "做",
+          "start": 29.24,
+          "end": 29.42,
+          "probability": 0.70654296875
+        },
+        {
+          "text": "农",
+          "start": 29.42,
+          "end": 29.56,
+          "probability": 0.866943359375
+        },
+        {
+          "text": "药",
+          "start": 29.56,
+          "end": 29.78,
+          "probability": 0.98681640625
+        },
+        {
+          "text": "和",
+          "start": 29.78,
+          "end": 29.96,
+          "probability": 0.998046875
+        },
+        {
+          "text": "除",
+          "start": 29.96,
+          "end": 30.16,
+          "probability": 0.51708984375
+        },
+        {
+          "text": "草",
+          "start": 30.16,
+          "end": 30.36,
+          "probability": 0.99658203125
+        },
+        {
+          "text": "剂",
+          "start": 30.36,
+          "end": 30.52,
+          "probability": 0.932373046875
+        }
+      ]
+    },
+    {
+      "start": 30.52,
+      "end": 32.56,
+      "text": "对冻植物有致命危害",
+      "words": [
+        {
+          "text": "对",
+          "start": 30.52,
+          "end": 31.08,
+          "probability": 0.1993408203125
+        },
+        {
+          "text": "冻",
+          "start": 31.08,
+          "end": 31.28,
+          "probability": 0.6478271484375
+        },
+        {
+          "text": "植",
+          "start": 31.28,
+          "end": 31.42,
+          "probability": 0.997314453125
+        },
+        {
+          "text": "物",
+          "start": 31.42,
+          "end": 31.6,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "有",
+          "start": 31.6,
+          "end": 31.78,
+          "probability": 0.98876953125
+        },
+        {
+          "text": "致",
+          "start": 31.78,
+          "end": 31.96,
+          "probability": 0.975830078125
+        },
+        {
+          "text": "命",
+          "start": 31.96,
+          "end": 32.1,
+          "probability": 0.95654296875
+        },
+        {
+          "text": "危",
+          "start": 32.1,
+          "end": 32.28,
+          "probability": 0.998046875
+        },
+        {
+          "text": "害",
+          "start": 32.28,
+          "end": 32.56,
+          "probability": 0.998046875
+        }
+      ]
+    },
+    {
+      "start": 32.56,
+      "end": 34.54,
+      "text": "荣誉水后,尤其危险",
+      "words": [
+        {
+          "text": "荣",
+          "start": 32.56,
+          "end": 33.02,
+          "probability": 0.62353515625
+        },
+        {
+          "text": "誉",
+          "start": 33.02,
+          "end": 33.16,
+          "probability": 0.74267578125
+        },
+        {
+          "text": "水",
+          "start": 33.16,
+          "end": 33.4,
+          "probability": 0.98828125
+        },
+        {
+          "text": "后,",
+          "start": 33.4,
+          "end": 33.62,
+          "probability": 0.8232421875
+        },
+        {
+          "text": "尤",
+          "start": 33.84,
+          "end": 33.94,
+          "probability": 0.7587890625
+        },
+        {
+          "text": "其",
+          "start": 33.94,
+          "end": 34.1,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "危",
+          "start": 34.1,
+          "end": 34.26,
+          "probability": 0.9580078125
+        },
+        {
+          "text": "险",
+          "start": 34.26,
+          "end": 34.54,
+          "probability": 0.998779296875
+        }
+      ]
+    },
+    {
+      "start": 34.54,
+      "end": 36.54,
+      "text": "阿县这种石头能捡吗?",
+      "words": [
+        {
+          "text": "阿",
+          "start": 34.54,
+          "end": 34.94,
+          "probability": 0.2216796875
+        },
+        {
+          "text": "县",
+          "start": 34.94,
+          "end": 35.12,
+          "probability": 0.54022216796875
+        },
+        {
+          "text": "这",
+          "start": 35.12,
+          "end": 35.32,
+          "probability": 0.72216796875
+        },
+        {
+          "text": "种",
+          "start": 35.32,
+          "end": 35.5,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "石",
+          "start": 35.5,
+          "end": 35.66,
+          "probability": 0.99560546875
+        },
+        {
+          "text": "头",
+          "start": 35.66,
+          "end": 35.82,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "能",
+          "start": 35.82,
+          "end": 36.0,
+          "probability": 0.98779296875
+        },
+        {
+          "text": "捡",
+          "start": 36.0,
+          "end": 36.24,
+          "probability": 0.519134521484375
+        },
+        {
+          "text": "吗?",
+          "start": 36.24,
+          "end": 36.54,
+          "probability": 0.97509765625
+        }
+      ]
+    },
+    {
+      "start": 36.9,
+      "end": 38.74,
+      "text": "赶紧捡,这是血磷水晶",
+      "words": [
+        {
+          "text": "赶",
+          "start": 36.9,
+          "end": 37.02,
+          "probability": 0.9638671875
+        },
+        {
+          "text": "紧",
+          "start": 37.02,
+          "end": 37.2,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "捡,",
+          "start": 37.2,
+          "end": 37.4,
+          "probability": 0.9697265625
+        },
+        {
+          "text": "这是",
+          "start": 37.72,
+          "end": 37.94,
+          "probability": 0.96875
+        },
+        {
+          "text": "血",
+          "start": 37.94,
+          "end": 38.2,
+          "probability": 0.529296875
+        },
+        {
+          "text": "磷",
+          "start": 38.2,
+          "end": 38.32,
+          "probability": 0.6344401041666666
+        },
+        {
+          "text": "水",
+          "start": 38.32,
+          "end": 38.54,
+          "probability": 0.9931640625
+        },
+        {
+          "text": "晶",
+          "start": 38.54,
+          "end": 38.74,
+          "probability": 0.9423828125
+        }
+      ]
+    },
+    {
+      "start": 38.74,
+      "end": 41.72,
+      "text": "能刷到是你七日之内好运上门的吉兆",
+      "words": [
+        {
+          "text": "能",
+          "start": 38.74,
+          "end": 39.22,
+          "probability": 0.90283203125
+        },
+        {
+          "text": "刷",
+          "start": 39.22,
+          "end": 39.42,
+          "probability": 0.994873046875
+        },
+        {
+          "text": "到",
+          "start": 39.42,
+          "end": 39.58,
+          "probability": 0.96533203125
+        },
+        {
+          "text": "是",
+          "start": 39.58,
+          "end": 39.76,
+          "probability": 0.96728515625
+        },
+        {
+          "text": "你",
+          "start": 39.76,
+          "end": 39.92,
+          "probability": 0.99072265625
+        },
+        {
+          "text": "七",
+          "start": 39.92,
+          "end": 40.1,
+          "probability": 0.476318359375
+        },
+        {
+          "text": "日",
+          "start": 40.1,
+          "end": 40.24,
+          "probability": 0.98583984375
+        },
+        {
+          "text": "之",
+          "start": 40.24,
+          "end": 40.4,
+          "probability": 0.9833984375
+        },
+        {
+          "text": "内",
+          "start": 40.4,
+          "end": 40.56,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "好",
+          "start": 40.56,
+          "end": 40.78,
+          "probability": 0.9560546875
+        },
+        {
+          "text": "运",
+          "start": 40.78,
+          "end": 40.94,
+          "probability": 0.989501953125
+        },
+        {
+          "text": "上",
+          "start": 40.94,
+          "end": 41.12,
+          "probability": 0.97900390625
+        },
+        {
+          "text": "门",
+          "start": 41.12,
+          "end": 41.28,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "的",
+          "start": 41.28,
+          "end": 41.4,
+          "probability": 0.99658203125
+        },
+        {
+          "text": "吉",
+          "start": 41.4,
+          "end": 41.54,
+          "probability": 0.1611328125
+        },
+        {
+          "text": "兆",
+          "start": 41.54,
+          "end": 41.72,
+          "probability": 0.943359375
+        }
+      ]
+    },
+    {
+      "start": 41.72,
+      "end": 43.58,
+      "text": "此时送花三朵皆运",
+      "words": [
+        {
+          "text": "此",
+          "start": 41.72,
+          "end": 42.26,
+          "probability": 0.98095703125
+        },
+        {
+          "text": "时",
+          "start": 42.26,
+          "end": 42.46,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "送",
+          "start": 42.46,
+          "end": 42.64,
+          "probability": 0.18212890625
+        },
+        {
+          "text": "花",
+          "start": 42.64,
+          "end": 42.82,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "三",
+          "start": 42.82,
+          "end": 43.02,
+          "probability": 0.9609375
+        },
+        {
+          "text": "朵",
+          "start": 43.02,
+          "end": 43.18,
+          "probability": 0.963134765625
+        },
+        {
+          "text": "皆",
+          "start": 43.18,
+          "end": 43.34,
+          "probability": 0.61865234375
+        },
+        {
+          "text": "运",
+          "start": 43.34,
+          "end": 43.58,
+          "probability": 0.995361328125
+        }
+      ]
+    },
+    {
+      "start": 43.58,
+      "end": 47.02,
+      "text": "一朵皆服运,一朵皆好运,一朵皆财运",
+      "words": [
+        {
+          "text": "一",
+          "start": 43.58,
+          "end": 44.02,
+          "probability": 0.43896484375
+        },
+        {
+          "text": "朵",
+          "start": 44.02,
+          "end": 44.18,
+          "probability": 1.0
+        },
+        {
+          "text": "皆",
+          "start": 44.18,
+          "end": 44.34,
+          "probability": 0.9951171875
+        },
+        {
+          "text": "服",
+          "start": 44.34,
+          "end": 44.52,
+          "probability": 0.431640625
+        },
+        {
+          "text": "运,",
+          "start": 44.52,
+          "end": 44.74,
+          "probability": 0.984375
+        },
+        {
+          "text": "一",
+          "start": 44.82,
+          "end": 45.14,
+          "probability": 0.98779296875
+        },
+        {
+          "text": "朵",
+          "start": 45.14,
+          "end": 45.28,
+          "probability": 1.0
+        },
+        {
+          "text": "皆",
+          "start": 45.28,
+          "end": 45.46,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "好",
+          "start": 45.46,
+          "end": 45.66,
+          "probability": 0.99609375
+        },
+        {
+          "text": "运,",
+          "start": 45.66,
+          "end": 45.86,
+          "probability": 0.999755859375
+        },
+        {
+          "text": "一",
+          "start": 46.08,
+          "end": 46.28,
+          "probability": 0.9951171875
+        },
+        {
+          "text": "朵",
+          "start": 46.28,
+          "end": 46.44,
+          "probability": 1.0
+        },
+        {
+          "text": "皆",
+          "start": 46.44,
+          "end": 46.62,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "财",
+          "start": 46.62,
+          "end": 46.8,
+          "probability": 0.829345703125
+        },
+        {
+          "text": "运",
+          "start": 46.8,
+          "end": 47.02,
+          "probability": 0.99169921875
+        }
+      ]
+    },
+    {
+      "start": 47.02,
+      "end": 48.98,
+      "text": "阿县这种石头能捡吗?",
+      "words": [
+        {
+          "text": "阿",
+          "start": 47.02,
+          "end": 47.38,
+          "probability": 0.81640625
+        },
+        {
+          "text": "县",
+          "start": 47.38,
+          "end": 47.58,
+          "probability": 0.99560546875
+        },
+        {
+          "text": "这",
+          "start": 47.58,
+          "end": 47.78,
+          "probability": 0.98388671875
+        },
+        {
+          "text": "种",
+          "start": 47.78,
+          "end": 47.92,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "石",
+          "start": 47.92,
+          "end": 48.1,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "头",
+          "start": 48.1,
+          "end": 48.24,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "能",
+          "start": 48.24,
+          "end": 48.42,
+          "probability": 0.998046875
+        },
+        {
+          "text": "捡",
+          "start": 48.42,
+          "end": 48.66,
+          "probability": 0.99560546875
+        },
+        {
+          "text": "吗?",
+          "start": 48.66,
+          "end": 48.98,
+          "probability": 0.99560546875
+        }
+      ]
+    },
+    {
+      "start": 49.36,
+      "end": 51.56,
+      "text": "千万不能捡,这是盖油云母",
+      "words": [
+        {
+          "text": "千",
+          "start": 49.36,
+          "end": 49.5,
+          "probability": 0.998046875
+        },
+        {
+          "text": "万",
+          "start": 49.5,
+          "end": 49.66,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "不能",
+          "start": 49.66,
+          "end": 49.88,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "捡,",
+          "start": 49.88,
+          "end": 50.2,
+          "probability": 0.996337890625
+        },
+        {
+          "text": "这是",
+          "start": 50.5,
+          "end": 50.74,
+          "probability": 0.442626953125
+        },
+        {
+          "text": "盖",
+          "start": 50.74,
+          "end": 50.96,
+          "probability": 0.7352294921875
+        },
+        {
+          "text": "油",
+          "start": 50.96,
+          "end": 51.12,
+          "probability": 0.53662109375
+        },
+        {
+          "text": "云",
+          "start": 51.12,
+          "end": 51.32,
+          "probability": 0.9755859375
+        },
+        {
+          "text": "母",
+          "start": 51.32,
+          "end": 51.56,
+          "probability": 0.802734375
+        }
+      ]
+    },
+    {
+      "start": 51.56,
+      "end": 54.94,
+      "text": "具有天然放射性,长期接触,十分危险",
+      "words": [
+        {
+          "text": "具",
+          "start": 51.56,
+          "end": 51.9,
+          "probability": 0.6611328125
+        },
+        {
+          "text": "有",
+          "start": 51.9,
+          "end": 52.06,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "天",
+          "start": 52.06,
+          "end": 52.24,
+          "probability": 0.990234375
+        },
+        {
+          "text": "然",
+          "start": 52.24,
+          "end": 52.4,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "放",
+          "start": 52.4,
+          "end": 52.6,
+          "probability": 0.99365234375
+        },
+        {
+          "text": "射",
+          "start": 52.6,
+          "end": 52.76,
+          "probability": 0.998779296875
+        },
+        {
+          "text": "性,",
+          "start": 52.76,
+          "end": 52.96,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "长",
+          "start": 53.26,
+          "end": 53.42,
+          "probability": 0.99609375
+        },
+        {
+          "text": "期",
+          "start": 53.42,
+          "end": 53.62,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "接",
+          "start": 53.62,
+          "end": 53.8,
+          "probability": 0.98486328125
+        },
+        {
+          "text": "触,",
+          "start": 53.8,
+          "end": 53.98,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "十",
+          "start": 54.26,
+          "end": 54.42,
+          "probability": 0.98974609375
+        },
+        {
+          "text": "分",
+          "start": 54.42,
+          "end": 54.58,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "危",
+          "start": 54.58,
+          "end": 54.74,
+          "probability": 0.99462890625
+        },
+        {
+          "text": "险",
+          "start": 54.74,
+          "end": 54.94,
+          "probability": 0.999755859375
+        }
+      ]
+    },
+    {
+      "start": 54.94,
+      "end": 56.9,
+      "text": "阿县这种石头能捡吗?",
+      "words": [
+        {
+          "text": "阿",
+          "start": 54.94,
+          "end": 55.32,
+          "probability": 0.87255859375
+        },
+        {
+          "text": "县",
+          "start": 55.32,
+          "end": 55.5,
+          "probability": 0.990966796875
+        },
+        {
+          "text": "这",
+          "start": 55.5,
+          "end": 55.7,
+          "probability": 0.994140625
+        },
+        {
+          "text": "种",
+          "start": 55.7,
+          "end": 55.86,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "石",
+          "start": 55.86,
+          "end": 56.04,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "头",
+          "start": 56.04,
+          "end": 56.18,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "能",
+          "start": 56.18,
+          "end": 56.34,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "捡",
+          "start": 56.34,
+          "end": 56.6,
+          "probability": 0.996337890625
+        },
+        {
+          "text": "吗?",
+          "start": 56.6,
+          "end": 56.9,
+          "probability": 0.99658203125
+        }
+      ]
+    },
+    {
+      "start": 57.2,
+      "end": 58.94,
+      "text": "赶紧捡,这是木纹石",
+      "words": [
+        {
+          "text": "赶",
+          "start": 57.2,
+          "end": 57.38,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "紧",
+          "start": 57.38,
+          "end": 57.56,
+          "probability": 0.999755859375
+        },
+        {
+          "text": "捡,",
+          "start": 57.56,
+          "end": 57.82,
+          "probability": 0.994140625
+        },
+        {
+          "text": "这是",
+          "start": 58.12,
+          "end": 58.32,
+          "probability": 0.99365234375
+        },
+        {
+          "text": "木",
+          "start": 58.32,
+          "end": 58.54,
+          "probability": 0.74609375
+        },
+        {
+          "text": "纹",
+          "start": 58.54,
+          "end": 58.7,
+          "probability": 0.7293701171875
+        },
+        {
+          "text": "石",
+          "start": 58.7,
+          "end": 58.94,
+          "probability": 0.93994140625
+        }
+      ]
+    },
+    {
+      "start": 58.94,
+      "end": 61.82,
+      "text": "具有收藏价值,一斤能达四百元",
+      "words": [
+        {
+          "text": "具",
+          "start": 58.94,
+          "end": 59.34,
+          "probability": 0.006191253662109375
+        },
+        {
+          "text": "有",
+          "start": 59.34,
+          "end": 59.54,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "收",
+          "start": 59.54,
+          "end": 59.72,
+          "probability": 0.9404296875
+        },
+        {
+          "text": "藏",
+          "start": 59.72,
+          "end": 59.88,
+          "probability": 1.0
+        },
+        {
+          "text": "价",
+          "start": 59.88,
+          "end": 60.08,
+          "probability": 0.5138473510742188
+        },
+        {
+          "text": "值,",
+          "start": 60.08,
+          "end": 60.34,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "一",
+          "start": 60.66,
+          "end": 60.76,
+          "probability": 0.367431640625
+        },
+        {
+          "text": "斤",
+          "start": 60.76,
+          "end": 60.9,
+          "probability": 0.984375
+        },
+        {
+          "text": "能",
+          "start": 60.9,
+          "end": 61.08,
+          "probability": 0.9921875
+        },
+        {
+          "text": "达",
+          "start": 61.08,
+          "end": 61.22,
+          "probability": 0.595703125
+        },
+        {
+          "text": "四",
+          "start": 61.22,
+          "end": 61.46,
+          "probability": 0.376708984375
+        },
+        {
+          "text": "百",
+          "start": 61.46,
+          "end": 61.64,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "元",
+          "start": 61.64,
+          "end": 61.82,
+          "probability": 0.98193359375
+        }
+      ]
+    },
+    {
+      "start": 61.82,
+      "end": 63.78,
+      "text": "阿县这种石头能捡吗?",
+      "words": [
+        {
+          "text": "阿",
+          "start": 61.82,
+          "end": 62.18,
+          "probability": 0.022186279296875
+        },
+        {
+          "text": "县",
+          "start": 62.18,
+          "end": 62.36,
+          "probability": 0.483856201171875
+        },
+        {
+          "text": "这",
+          "start": 62.36,
+          "end": 62.56,
+          "probability": 0.8251953125
+        },
+        {
+          "text": "种",
+          "start": 62.56,
+          "end": 62.72,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "石",
+          "start": 62.72,
+          "end": 62.9,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "头",
+          "start": 62.9,
+          "end": 63.06,
+          "probability": 0.99560546875
+        },
+        {
+          "text": "能",
+          "start": 63.06,
+          "end": 63.24,
+          "probability": 0.9951171875
+        },
+        {
+          "text": "捡",
+          "start": 63.24,
+          "end": 63.46,
+          "probability": 0.5039634704589844
+        },
+        {
+          "text": "吗?",
+          "start": 63.46,
+          "end": 63.78,
+          "probability": 0.9765625
+        }
+      ]
+    },
+    {
+      "start": 64.14,
+      "end": 65.96,
+      "text": "绝对不能捡,这是毒杀",
+      "words": [
+        {
+          "text": "绝",
+          "start": 64.14,
+          "end": 64.26,
+          "probability": 0.965576171875
+        },
+        {
+          "text": "对",
+          "start": 64.26,
+          "end": 64.4,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "不能",
+          "start": 64.4,
+          "end": 64.66,
+          "probability": 0.9912109375
+        },
+        {
+          "text": "捡,",
+          "start": 64.66,
+          "end": 64.92,
+          "probability": 0.992919921875
+        },
+        {
+          "text": "这是",
+          "start": 65.24,
+          "end": 65.46,
+          "probability": 0.9638671875
+        },
+        {
+          "text": "毒",
+          "start": 65.46,
+          "end": 65.68,
+          "probability": 0.95751953125
+        },
+        {
+          "text": "杀",
+          "start": 65.68,
+          "end": 65.96,
+          "probability": 0.8173828125
+        }
+      ]
+    },
+    {
+      "start": 65.96,
+      "end": 68.2,
+      "text": "是提取批双的主要矿物原料",
+      "words": [
+        {
+          "text": "是",
+          "start": 65.96,
+          "end": 66.38,
+          "probability": 0.337890625
+        },
+        {
+          "text": "提",
+          "start": 66.38,
+          "end": 66.54,
+          "probability": 0.951171875
+        },
+        {
+          "text": "取",
+          "start": 66.54,
+          "end": 66.74,
+          "probability": 0.99560546875
+        },
+        {
+          "text": "批",
+          "start": 66.74,
+          "end": 66.92,
+          "probability": 0.827880859375
+        },
+        {
+          "text": "双",
+          "start": 66.92,
+          "end": 67.06,
+          "probability": 0.7003173828125
+        },
+        {
+          "text": "的",
+          "start": 67.06,
+          "end": 67.22,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "主",
+          "start": 67.22,
+          "end": 67.38,
+          "probability": 0.99267578125
+        },
+        {
+          "text": "要",
+          "start": 67.38,
+          "end": 67.54,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "矿",
+          "start": 67.54,
+          "end": 67.7,
+          "probability": 0.76806640625
+        },
+        {
+          "text": "物",
+          "start": 67.7,
+          "end": 67.88,
+          "probability": 0.9921875
+        },
+        {
+          "text": "原",
+          "start": 67.88,
+          "end": 68.04,
+          "probability": 0.98974609375
+        },
+        {
+          "text": "料",
+          "start": 68.04,
+          "end": 68.2,
+          "probability": 0.994140625
+        }
+      ]
+    },
+    {
+      "start": 68.2,
+      "end": 70.18,
+      "text": "阿县这种石头能捡吗?",
+      "words": [
+        {
+          "text": "阿",
+          "start": 68.2,
+          "end": 68.58,
+          "probability": 0.75537109375
+        },
+        {
+          "text": "县",
+          "start": 68.58,
+          "end": 68.78,
+          "probability": 0.99560546875
+        },
+        {
+          "text": "这",
+          "start": 68.78,
+          "end": 68.96,
+          "probability": 0.9912109375
+        },
+        {
+          "text": "种",
+          "start": 68.96,
+          "end": 69.12,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "石",
+          "start": 69.12,
+          "end": 69.32,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "头",
+          "start": 69.32,
+          "end": 69.46,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "能",
+          "start": 69.46,
+          "end": 69.62,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "捡",
+          "start": 69.62,
+          "end": 69.86,
+          "probability": 0.99169921875
+        },
+        {
+          "text": "吗?",
+          "start": 69.86,
+          "end": 70.18,
+          "probability": 0.99560546875
+        }
+      ]
+    },
+    {
+      "start": 70.48,
+      "end": 72.14,
+      "text": "不能捡,这是芳千矿",
+      "words": [
+        {
+          "text": "不能",
+          "start": 70.48,
+          "end": 70.68,
+          "probability": 0.93408203125
+        },
+        {
+          "text": "捡,",
+          "start": 70.68,
+          "end": 70.98,
+          "probability": 0.99658203125
+        },
+        {
+          "text": "这是",
+          "start": 71.28,
+          "end": 71.5,
+          "probability": 0.994140625
+        },
+        {
+          "text": "芳",
+          "start": 71.5,
+          "end": 71.74,
+          "probability": 0.6890869140625
+        },
+        {
+          "text": "千",
+          "start": 71.74,
+          "end": 71.94,
+          "probability": 0.1785888671875
+        },
+        {
+          "text": "矿",
+          "start": 71.94,
+          "end": 72.14,
+          "probability": 0.936767578125
+        }
+      ]
+    },
+    {
+      "start": 72.14,
+      "end": 74.46,
+      "text": "长时间接触或吸入其粉尘",
+      "words": [
+        {
+          "text": "长",
+          "start": 72.14,
+          "end": 72.58,
+          "probability": 0.5546875
+        },
+        {
+          "text": "时间",
+          "start": 72.58,
+          "end": 72.88,
+          "probability": 0.99658203125
+        },
+        {
+          "text": "接",
+          "start": 72.88,
+          "end": 73.18,
+          "probability": 0.9951171875
+        },
+        {
+          "text": "触",
+          "start": 73.18,
+          "end": 73.34,
+          "probability": 0.999267578125
+        },
+        {
+          "text": "或",
+          "start": 73.34,
+          "end": 73.56,
+          "probability": 0.98388671875
+        },
+        {
+          "text": "吸",
+          "start": 73.56,
+          "end": 73.74,
+          "probability": 0.9921875
+        },
+        {
+          "text": "入",
+          "start": 73.74,
+          "end": 73.9,
+          "probability": 0.99560546875
+        },
+        {
+          "text": "其",
+          "start": 73.9,
+          "end": 74.06,
+          "probability": 0.48583984375
+        },
+        {
+          "text": "粉",
+          "start": 74.06,
+          "end": 74.26,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "尘",
+          "start": 74.26,
+          "end": 74.46,
+          "probability": 0.891357421875
+        }
+      ]
+    },
+    {
+      "start": 74.46,
+      "end": 75.72,
+      "text": "可能导致千重毒",
+      "words": [
+        {
+          "text": "可能",
+          "start": 74.46,
+          "end": 74.76,
+          "probability": 0.66357421875
+        },
+        {
+          "text": "导",
+          "start": 74.76,
+          "end": 74.98,
+          "probability": 0.99609375
+        },
+        {
+          "text": "致",
+          "start": 74.98,
+          "end": 75.18,
+          "probability": 0.999755859375
+        },
+        {
+          "text": "千",
+          "start": 75.18,
+          "end": 75.36,
+          "probability": 0.5859375
+        },
+        {
+          "text": "重",
+          "start": 75.36,
+          "end": 75.54,
+          "probability": 0.66064453125
+        },
+        {
+          "text": "毒",
+          "start": 75.54,
+          "end": 75.72,
+          "probability": 0.9990234375
+        }
+      ]
+    },
+    {
+      "start": 75.72,
+      "end": 77.88,
+      "text": "阿县这种石头能捡吗?",
+      "words": [
+        {
+          "text": "阿",
+          "start": 75.72,
+          "end": 76.26,
+          "probability": 0.7841796875
+        },
+        {
+          "text": "县",
+          "start": 76.26,
+          "end": 76.48,
+          "probability": 0.99560546875
+        },
+        {
+          "text": "这",
+          "start": 76.48,
+          "end": 76.68,
+          "probability": 0.99609375
+        },
+        {
+          "text": "种",
+          "start": 76.68,
+          "end": 76.82,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "石",
+          "start": 76.82,
+          "end": 77.0,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "头",
+          "start": 77.0,
+          "end": 77.14,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "能",
+          "start": 77.14,
+          "end": 77.32,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "捡",
+          "start": 77.32,
+          "end": 77.56,
+          "probability": 0.99658203125
+        },
+        {
+          "text": "吗?",
+          "start": 77.56,
+          "end": 77.88,
+          "probability": 0.99755859375
+        }
+      ]
+    },
+    {
+      "start": 78.32,
+      "end": 80.14,
+      "text": "赶紧捡,这是欧伯石",
+      "words": [
+        {
+          "text": "赶",
+          "start": 78.32,
+          "end": 78.44,
+          "probability": 0.928955078125
+        },
+        {
+          "text": "紧",
+          "start": 78.44,
+          "end": 78.62,
+          "probability": 0.997314453125
+        },
+        {
+          "text": "捡,",
+          "start": 78.62,
+          "end": 78.84,
+          "probability": 0.99462890625
+        },
+        {
+          "text": "这是",
+          "start": 79.28,
+          "end": 79.52,
+          "probability": 0.998046875
+        },
+        {
+          "text": "欧",
+          "start": 79.52,
+          "end": 79.72,
+          "probability": 0.95556640625
+        },
+        {
+          "text": "伯",
+          "start": 79.72,
+          "end": 79.92,
+          "probability": 0.849853515625
+        },
+        {
+          "text": "石",
+          "start": 79.92,
+          "end": 80.14,
+          "probability": 0.4228515625
+        }
+      ]
+    },
+    {
+      "start": 80.14,
+      "end": 83.3,
+      "text": "因独特变彩效应,被誉为宝石皇后",
+      "words": [
+        {
+          "text": "因",
+          "start": 80.14,
+          "end": 80.66,
+          "probability": 0.61962890625
+        },
+        {
+          "text": "独",
+          "start": 80.66,
+          "end": 80.86,
+          "probability": 0.84375
+        },
+        {
+          "text": "特",
+          "start": 80.86,
+          "end": 81.04,
+          "probability": 1.0
+        },
+        {
+          "text": "变",
+          "start": 81.04,
+          "end": 81.22,
+          "probability": 0.863037109375
+        },
+        {
+          "text": "彩",
+          "start": 81.22,
+          "end": 81.4,
+          "probability": 0.90966796875
+        },
+        {
+          "text": "效",
+          "start": 81.4,
+          "end": 81.56,
+          "probability": 0.994140625
+        },
+        {
+          "text": "应,",
+          "start": 81.56,
+          "end": 81.76,
+          "probability": 0.9912109375
+        },
+        {
+          "text": "被",
+          "start": 82.0,
+          "end": 82.16,
+          "probability": 0.9912109375
+        },
+        {
+          "text": "誉",
+          "start": 82.16,
+          "end": 82.3,
+          "probability": 0.71044921875
+        },
+        {
+          "text": "为",
+          "start": 82.3,
+          "end": 82.46,
+          "probability": 0.99462890625
+        },
+        {
+          "text": "宝",
+          "start": 82.46,
+          "end": 82.66,
+          "probability": 0.886962890625
+        },
+        {
+          "text": "石",
+          "start": 82.66,
+          "end": 82.82,
+          "probability": 0.9912109375
+        },
+        {
+          "text": "皇",
+          "start": 82.82,
+          "end": 83.02,
+          "probability": 0.9765625
+        },
+        {
+          "text": "后",
+          "start": 83.02,
+          "end": 83.3,
+          "probability": 1.0
+        }
+      ]
+    },
+    {
+      "start": 83.3,
+      "end": 84.74,
+      "text": "一刻能达上千元",
+      "words": [
+        {
+          "text": "一",
+          "start": 83.3,
+          "end": 83.68,
+          "probability": 0.416259765625
+        },
+        {
+          "text": "刻",
+          "start": 83.68,
+          "end": 83.84,
+          "probability": 0.974609375
+        },
+        {
+          "text": "能",
+          "start": 83.84,
+          "end": 83.98,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "达",
+          "start": 83.98,
+          "end": 84.18,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "上",
+          "start": 84.18,
+          "end": 84.36,
+          "probability": 0.99560546875
+        },
+        {
+          "text": "千",
+          "start": 84.36,
+          "end": 84.56,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "元",
+          "start": 84.56,
+          "end": 84.74,
+          "probability": 0.9853515625
+        }
+      ]
+    },
+    {
+      "start": 84.74,
+      "end": 86.74,
+      "text": "阿县这种石头能捡吗?",
+      "words": [
+        {
+          "text": "阿",
+          "start": 84.74,
+          "end": 85.12,
+          "probability": 0.7607421875
+        },
+        {
+          "text": "县",
+          "start": 85.12,
+          "end": 85.34,
+          "probability": 0.993408203125
+        },
+        {
+          "text": "这",
+          "start": 85.34,
+          "end": 85.52,
+          "probability": 0.998046875
+        },
+        {
+          "text": "种",
+          "start": 85.52,
+          "end": 85.68,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "石",
+          "start": 85.68,
+          "end": 85.88,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "头",
+          "start": 85.88,
+          "end": 86.02,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "能",
+          "start": 86.02,
+          "end": 86.18,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "捡",
+          "start": 86.18,
+          "end": 86.44,
+          "probability": 0.995849609375
+        },
+        {
+          "text": "吗?",
+          "start": 86.44,
+          "end": 86.74,
+          "probability": 0.99755859375
+        }
+      ]
+    },
+    {
+      "start": 86.74,
+      "end": 89.14,
+      "text": "赶紧捡,这是彩虹黑药石",
+      "words": [
+        {
+          "text": "赶",
+          "start": 86.74,
+          "end": 87.2,
+          "probability": 0.52996826171875
+        },
+        {
+          "text": "紧",
+          "start": 87.2,
+          "end": 87.4,
+          "probability": 0.985595703125
+        },
+        {
+          "text": "捡,",
+          "start": 87.4,
+          "end": 87.6,
+          "probability": 0.6693115234375
+        },
+        {
+          "text": "这是",
+          "start": 87.88,
+          "end": 88.18,
+          "probability": 0.93408203125
+        },
+        {
+          "text": "彩",
+          "start": 88.18,
+          "end": 88.42,
+          "probability": 0.96484375
+        },
+        {
+          "text": "虹",
+          "start": 88.42,
+          "end": 88.6,
+          "probability": 0.998291015625
+        },
+        {
+          "text": "黑",
+          "start": 88.6,
+          "end": 88.78,
+          "probability": 0.99658203125
+        },
+        {
+          "text": "药",
+          "start": 88.78,
+          "end": 88.94,
+          "probability": 0.63623046875
+        },
+        {
+          "text": "石",
+          "start": 88.94,
+          "end": 89.14,
+          "probability": 0.324462890625
+        }
+      ]
+    },
+    {
+      "start": 89.14,
+      "end": 91.2,
+      "text": "这品相不得直个上千元",
+      "words": [
+        {
+          "text": "这",
+          "start": 89.14,
+          "end": 89.64,
+          "probability": 0.43017578125
+        },
+        {
+          "text": "品",
+          "start": 89.64,
+          "end": 89.82,
+          "probability": 0.998046875
+        },
+        {
+          "text": "相",
+          "start": 89.82,
+          "end": 90.0,
+          "probability": 0.305419921875
+        },
+        {
+          "text": "不",
+          "start": 90.0,
+          "end": 90.22,
+          "probability": 0.99365234375
+        },
+        {
+          "text": "得",
+          "start": 90.22,
+          "end": 90.36,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "直",
+          "start": 90.36,
+          "end": 90.52,
+          "probability": 0.4677734375
+        },
+        {
+          "text": "个",
+          "start": 90.52,
+          "end": 90.66,
+          "probability": 0.277587890625
+        },
+        {
+          "text": "上",
+          "start": 90.66,
+          "end": 90.84,
+          "probability": 0.99609375
+        },
+        {
+          "text": "千",
+          "start": 90.84,
+          "end": 91.02,
+          "probability": 0.9736328125
+        },
+        {
+          "text": "元",
+          "start": 91.02,
+          "end": 91.2,
+          "probability": 0.97802734375
+        }
+      ]
+    },
+    {
+      "start": 91.2,
+      "end": 93.2,
+      "text": "阿县这种石头能捡吗?",
+      "words": [
+        {
+          "text": "阿",
+          "start": 91.2,
+          "end": 91.62,
+          "probability": 0.2491455078125
+        },
+        {
+          "text": "县",
+          "start": 91.62,
+          "end": 91.78,
+          "probability": 0.6104736328125
+        },
+        {
+          "text": "这",
+          "start": 91.78,
+          "end": 92.0,
+          "probability": 0.853515625
+        },
+        {
+          "text": "种",
+          "start": 92.0,
+          "end": 92.16,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "石",
+          "start": 92.16,
+          "end": 92.34,
+          "probability": 0.998046875
+        },
+        {
+          "text": "头",
+          "start": 92.34,
+          "end": 92.48,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "能",
+          "start": 92.48,
+          "end": 92.66,
+          "probability": 0.99267578125
+        },
+        {
+          "text": "捡",
+          "start": 92.66,
+          "end": 92.92,
+          "probability": 0.9326171875
+        },
+        {
+          "text": "吗?",
+          "start": 92.92,
+          "end": 93.2,
+          "probability": 0.96728515625
+        }
+      ]
+    },
+    {
+      "start": 93.54,
+      "end": 95.06,
+      "text": "赶紧捡,这是芸石",
+      "words": [
+        {
+          "text": "赶",
+          "start": 93.54,
+          "end": 93.66,
+          "probability": 0.9921875
+        },
+        {
+          "text": "紧",
+          "start": 93.66,
+          "end": 93.86,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "捡,",
+          "start": 93.86,
+          "end": 94.1,
+          "probability": 0.99658203125
+        },
+        {
+          "text": "这是",
+          "start": 94.38,
+          "end": 94.62,
+          "probability": 0.9921875
+        },
+        {
+          "text": "芸",
+          "start": 94.62,
+          "end": 94.84,
+          "probability": 0.43194580078125
+        },
+        {
+          "text": "石",
+          "start": 94.84,
+          "end": 95.06,
+          "probability": 0.3603515625
+        }
+      ]
+    },
+    {
+      "start": 95.06,
+      "end": 97.14,
+      "text": "这么大一块能直个数万元",
+      "words": [
+        {
+          "text": "这么",
+          "start": 95.06,
+          "end": 95.58,
+          "probability": 0.728515625
+        },
+        {
+          "text": "大",
+          "start": 95.58,
+          "end": 95.78,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "一",
+          "start": 95.78,
+          "end": 95.96,
+          "probability": 0.9892578125
+        },
+        {
+          "text": "块",
+          "start": 95.96,
+          "end": 96.08,
+          "probability": 0.990234375
+        },
+        {
+          "text": "能",
+          "start": 96.08,
+          "end": 96.28,
+          "probability": 0.96484375
+        },
+        {
+          "text": "直",
+          "start": 96.28,
+          "end": 96.46,
+          "probability": 0.97412109375
+        },
+        {
+          "text": "个",
+          "start": 96.46,
+          "end": 96.62,
+          "probability": 0.99365234375
+        },
+        {
+          "text": "数",
+          "start": 96.62,
+          "end": 96.76,
+          "probability": 0.99267578125
+        },
+        {
+          "text": "万",
+          "start": 96.76,
+          "end": 96.94,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "元",
+          "start": 96.94,
+          "end": 97.14,
+          "probability": 0.96875
+        }
+      ]
+    },
+    {
+      "start": 97.14,
+      "end": 99.16,
+      "text": "阿县这种石头能捡吗?",
+      "words": [
+        {
+          "text": "阿",
+          "start": 97.14,
+          "end": 97.58,
+          "probability": 0.74365234375
+        },
+        {
+          "text": "县",
+          "start": 97.58,
+          "end": 97.78,
+          "probability": 0.997314453125
+        },
+        {
+          "text": "这",
+          "start": 97.78,
+          "end": 97.96,
+          "probability": 0.99365234375
+        },
+        {
+          "text": "种",
+          "start": 97.96,
+          "end": 98.12,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "石",
+          "start": 98.12,
+          "end": 98.32,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "头",
+          "start": 98.32,
+          "end": 98.46,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "能",
+          "start": 98.46,
+          "end": 98.62,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "捡",
+          "start": 98.62,
+          "end": 98.88,
+          "probability": 0.9951171875
+        },
+        {
+          "text": "吗?",
+          "start": 98.88,
+          "end": 99.16,
+          "probability": 0.9951171875
+        }
+      ]
+    },
+    {
+      "start": 99.52,
+      "end": 101.04,
+      "text": "可以捡,这是黄铁框",
+      "words": [
+        {
+          "text": "可以",
+          "start": 99.52,
+          "end": 99.7,
+          "probability": 0.9873046875
+        },
+        {
+          "text": "捡,",
+          "start": 99.7,
+          "end": 99.96,
+          "probability": 0.994384765625
+        },
+        {
+          "text": "这是",
+          "start": 100.24,
+          "end": 100.42,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "黄",
+          "start": 100.42,
+          "end": 100.68,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "铁",
+          "start": 100.68,
+          "end": 100.86,
+          "probability": 0.9918619791666666
+        },
+        {
+          "text": "框",
+          "start": 100.86,
+          "end": 101.04,
+          "probability": 0.6673583984375
+        }
+      ]
+    },
+    {
+      "start": 101.04,
+      "end": 103.58,
+      "text": "也叫鱼人精,一个也就二十元",
+      "words": [
+        {
+          "text": "也",
+          "start": 101.04,
+          "end": 101.46,
+          "probability": 0.73095703125
+        },
+        {
+          "text": "叫",
+          "start": 101.46,
+          "end": 101.64,
+          "probability": 0.94189453125
+        },
+        {
+          "text": "鱼",
+          "start": 101.64,
+          "end": 101.8,
+          "probability": 0.8894856770833334
+        },
+        {
+          "text": "人",
+          "start": 101.8,
+          "end": 101.96,
+          "probability": 0.890625
+        },
+        {
+          "text": "精,",
+          "start": 101.96,
+          "end": 102.12,
+          "probability": 0.403076171875
+        },
+        {
+          "text": "一个",
+          "start": 102.4,
+          "end": 102.66,
+          "probability": 0.99072265625
+        },
+        {
+          "text": "也",
+          "start": 102.66,
+          "end": 102.88,
+          "probability": 0.998046875
+        },
+        {
+          "text": "就",
+          "start": 102.88,
+          "end": 103.02,
+          "probability": 0.7998046875
+        },
+        {
+          "text": "二",
+          "start": 103.02,
+          "end": 103.2,
+          "probability": 0.85009765625
+        },
+        {
+          "text": "十",
+          "start": 103.2,
+          "end": 103.38,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "元",
+          "start": 103.38,
+          "end": 103.58,
+          "probability": 0.9912109375
+        }
+      ]
+    },
+    {
+      "start": 103.58,
+      "end": 105.54,
+      "text": "阿县这种石头能捡吗?",
+      "words": [
+        {
+          "text": "阿",
+          "start": 103.58,
+          "end": 103.94,
+          "probability": 0.8212890625
+        },
+        {
+          "text": "县",
+          "start": 103.94,
+          "end": 104.14,
+          "probability": 0.996826171875
+        },
+        {
+          "text": "这",
+          "start": 104.14,
+          "end": 104.34,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "种",
+          "start": 104.34,
+          "end": 104.48,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "石",
+          "start": 104.48,
+          "end": 104.68,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "头",
+          "start": 104.68,
+          "end": 104.82,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "能",
+          "start": 104.82,
+          "end": 105.0,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "捡",
+          "start": 105.0,
+          "end": 105.24,
+          "probability": 0.996826171875
+        },
+        {
+          "text": "吗?",
+          "start": 105.24,
+          "end": 105.54,
+          "probability": 0.9970703125
+        }
+      ]
+    },
+    {
+      "start": 105.84,
+      "end": 107.54,
+      "text": "赶紧捡,这是鸡血石",
+      "words": [
+        {
+          "text": "赶",
+          "start": 105.84,
+          "end": 105.98,
+          "probability": 0.999267578125
+        },
+        {
+          "text": "紧",
+          "start": 105.98,
+          "end": 106.18,
+          "probability": 1.0
+        },
+        {
+          "text": "捡,",
+          "start": 106.18,
+          "end": 106.4,
+          "probability": 0.997802734375
+        },
+        {
+          "text": "这是",
+          "start": 106.68,
+          "end": 106.94,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "鸡",
+          "start": 106.94,
+          "end": 107.16,
+          "probability": 0.93701171875
+        },
+        {
+          "text": "血",
+          "start": 107.16,
+          "end": 107.32,
+          "probability": 0.9052734375
+        },
+        {
+          "text": "石",
+          "start": 107.32,
+          "end": 107.54,
+          "probability": 0.99609375
+        }
+      ]
+    },
+    {
+      "start": 107.54,
+      "end": 109.52,
+      "text": "有一颗鸡血三颗金之称",
+      "words": [
+        {
+          "text": "有一",
+          "start": 107.54,
+          "end": 108.06,
+          "probability": 0.81103515625
+        },
+        {
+          "text": "颗",
+          "start": 108.06,
+          "end": 108.28,
+          "probability": 0.963134765625
+        },
+        {
+          "text": "鸡",
+          "start": 108.28,
+          "end": 108.5,
+          "probability": 0.990234375
+        },
+        {
+          "text": "血",
+          "start": 108.5,
+          "end": 108.68,
+          "probability": 0.9951171875
+        },
+        {
+          "text": "三",
+          "start": 108.68,
+          "end": 108.84,
+          "probability": 0.94482421875
+        },
+        {
+          "text": "颗",
+          "start": 108.84,
+          "end": 109.02,
+          "probability": 0.971923828125
+        },
+        {
+          "text": "金",
+          "start": 109.02,
+          "end": 109.16,
+          "probability": 0.57861328125
+        },
+        {
+          "text": "之",
+          "start": 109.16,
+          "end": 109.36,
+          "probability": 0.7578125
+        },
+        {
+          "text": "称",
+          "start": 109.36,
+          "end": 109.52,
+          "probability": 0.994140625
+        }
+      ]
+    },
+    {
+      "start": 109.52,
+      "end": 111.42,
+      "text": "这么大一块不得数十万",
+      "words": [
+        {
+          "text": "这么",
+          "start": 109.52,
+          "end": 110.02,
+          "probability": 0.740234375
+        },
+        {
+          "text": "大",
+          "start": 110.02,
+          "end": 110.22,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "一",
+          "start": 110.22,
+          "end": 110.4,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "块",
+          "start": 110.4,
+          "end": 110.56,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "不",
+          "start": 110.56,
+          "end": 110.76,
+          "probability": 0.98828125
+        },
+        {
+          "text": "得",
+          "start": 110.76,
+          "end": 110.92,
+          "probability": 1.0
+        },
+        {
+          "text": "数",
+          "start": 110.92,
+          "end": 111.1,
+          "probability": 0.97705078125
+        },
+        {
+          "text": "十",
+          "start": 111.1,
+          "end": 111.26,
+          "probability": 0.9921875
+        },
+        {
+          "text": "万",
+          "start": 111.26,
+          "end": 111.42,
+          "probability": 0.9990234375
+        }
+      ]
+    },
+    {
+      "start": 111.42,
+      "end": 113.48,
+      "text": "阿县这种石头能捡吗?",
+      "words": [
+        {
+          "text": "阿",
+          "start": 111.42,
+          "end": 111.88,
+          "probability": 0.91162109375
+        },
+        {
+          "text": "县",
+          "start": 111.88,
+          "end": 112.08,
+          "probability": 0.9921875
+        },
+        {
+          "text": "这",
+          "start": 112.08,
+          "end": 112.28,
+          "probability": 0.99560546875
+        },
+        {
+          "text": "种",
+          "start": 112.28,
+          "end": 112.42,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "石",
+          "start": 112.42,
+          "end": 112.6,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "头",
+          "start": 112.6,
+          "end": 112.76,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "能",
+          "start": 112.76,
+          "end": 112.92,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "捡",
+          "start": 112.92,
+          "end": 113.18,
+          "probability": 0.994873046875
+        },
+        {
+          "text": "吗?",
+          "start": 113.18,
+          "end": 113.48,
+          "probability": 0.99658203125
+        }
+      ]
+    },
+    {
+      "start": 113.76,
+      "end": 115.62,
+      "text": "可以捡,这是天然鞋石",
+      "words": [
+        {
+          "text": "可以",
+          "start": 113.76,
+          "end": 114.0,
+          "probability": 0.9951171875
+        },
+        {
+          "text": "捡,",
+          "start": 114.0,
+          "end": 114.26,
+          "probability": 0.99560546875
+        },
+        {
+          "text": "这是",
+          "start": 114.58,
+          "end": 114.8,
+          "probability": 0.99609375
+        },
+        {
+          "text": "天",
+          "start": 114.8,
+          "end": 115.02,
+          "probability": 0.98779296875
+        },
+        {
+          "text": "然",
+          "start": 115.02,
+          "end": 115.2,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "鞋",
+          "start": 115.2,
+          "end": 115.38,
+          "probability": 0.8024088541666666
+        },
+        {
+          "text": "石",
+          "start": 115.38,
+          "end": 115.62,
+          "probability": 0.87646484375
+        }
+      ]
+    },
+    {
+      "start": 115.62,
+      "end": 117.32,
+      "text": "一只也就两百五十",
+      "words": [
+        {
+          "text": "一",
+          "start": 115.62,
+          "end": 116.06,
+          "probability": 0.8173828125
+        },
+        {
+          "text": "只",
+          "start": 116.06,
+          "end": 116.22,
+          "probability": 0.69091796875
+        },
+        {
+          "text": "也",
+          "start": 116.22,
+          "end": 116.4,
+          "probability": 0.9814453125
+        },
+        {
+          "text": "就",
+          "start": 116.4,
+          "end": 116.56,
+          "probability": 0.97314453125
+        },
+        {
+          "text": "两",
+          "start": 116.56,
+          "end": 116.72,
+          "probability": 0.0289154052734375
+        },
+        {
+          "text": "百",
+          "start": 116.72,
+          "end": 116.9,
+          "probability": 0.9951171875
+        },
+        {
+          "text": "五",
+          "start": 116.9,
+          "end": 117.08,
+          "probability": 0.9892578125
+        },
+        {
+          "text": "十",
+          "start": 117.08,
+          "end": 117.32,
+          "probability": 0.99853515625
+        }
+      ]
+    },
+    {
+      "start": 117.32,
+      "end": 118.92,
+      "text": "要是一对就值钱了",
+      "words": [
+        {
+          "text": "要",
+          "start": 117.32,
+          "end": 117.78,
+          "probability": 0.3935546875
+        },
+        {
+          "text": "是",
+          "start": 117.78,
+          "end": 117.96,
+          "probability": 0.9921875
+        },
+        {
+          "text": "一",
+          "start": 117.96,
+          "end": 118.1,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "对",
+          "start": 118.1,
+          "end": 118.24,
+          "probability": 0.9697265625
+        },
+        {
+          "text": "就",
+          "start": 118.24,
+          "end": 118.42,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "值",
+          "start": 118.42,
+          "end": 118.58,
+          "probability": 0.98974609375
+        },
+        {
+          "text": "钱",
+          "start": 118.58,
+          "end": 118.8,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "了",
+          "start": 118.8,
+          "end": 118.92,
+          "probability": 0.9580078125
+        }
+      ]
+    },
+    {
+      "start": 118.92,
+      "end": 120.88,
+      "text": "阿县这种石头能捡吗?",
+      "words": [
+        {
+          "text": "阿",
+          "start": 118.92,
+          "end": 119.26,
+          "probability": 0.01352691650390625
+        },
+        {
+          "text": "县",
+          "start": 119.26,
+          "end": 119.48,
+          "probability": 0.54376220703125
+        },
+        {
+          "text": "这",
+          "start": 119.48,
+          "end": 119.66,
+          "probability": 0.95654296875
+        },
+        {
+          "text": "种",
+          "start": 119.66,
+          "end": 119.82,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "石",
+          "start": 119.82,
+          "end": 120.0,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "头",
+          "start": 120.0,
+          "end": 120.16,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "能",
+          "start": 120.16,
+          "end": 120.32,
+          "probability": 0.99609375
+        },
+        {
+          "text": "捡",
+          "start": 120.32,
+          "end": 120.58,
+          "probability": 0.60247802734375
+        },
+        {
+          "text": "吗?",
+          "start": 120.58,
+          "end": 120.88,
+          "probability": 0.9833984375
+        }
+      ]
+    },
+    {
+      "start": 121.08,
+      "end": 122.9,
+      "text": "赶紧捡,这是魔耳石",
+      "words": [
+        {
+          "text": "赶",
+          "start": 121.08,
+          "end": 121.34,
+          "probability": 0.97607421875
+        },
+        {
+          "text": "紧",
+          "start": 121.34,
+          "end": 121.56,
+          "probability": 0.999267578125
+        },
+        {
+          "text": "捡,",
+          "start": 121.56,
+          "end": 121.74,
+          "probability": 0.97802734375
+        },
+        {
+          "text": "这是",
+          "start": 122.04,
+          "end": 122.28,
+          "probability": 0.92236328125
+        },
+        {
+          "text": "魔",
+          "start": 122.28,
+          "end": 122.52,
+          "probability": 0.030120849609375
+        },
+        {
+          "text": "耳",
+          "start": 122.52,
+          "end": 122.68,
+          "probability": 0.832763671875
+        },
+        {
+          "text": "石",
+          "start": 122.68,
+          "end": 122.9,
+          "probability": 0.320556640625
+        }
+      ]
+    },
+    {
+      "start": 122.9,
+      "end": 124.34,
+      "text": "可以当个冠赏石",
+      "words": [
+        {
+          "text": "可以",
+          "start": 122.9,
+          "end": 123.4,
+          "probability": 0.7099609375
+        },
+        {
+          "text": "当",
+          "start": 123.4,
+          "end": 123.62,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "个",
+          "start": 123.62,
+          "end": 123.78,
+          "probability": 0.98583984375
+        },
+        {
+          "text": "冠",
+          "start": 123.78,
+          "end": 123.94,
+          "probability": 0.57501220703125
+        },
+        {
+          "text": "赏",
+          "start": 123.94,
+          "end": 124.12,
+          "probability": 0.968505859375
+        },
+        {
+          "text": "石",
+          "start": 124.12,
+          "end": 124.34,
+          "probability": 0.5283203125
+        }
+      ]
+    },
+    {
+      "start": 124.34,
+      "end": 126.32,
+      "text": "这品相不得直个三千块",
+      "words": [
+        {
+          "text": "这",
+          "start": 124.34,
+          "end": 124.74,
+          "probability": 0.65087890625
+        },
+        {
+          "text": "品",
+          "start": 124.74,
+          "end": 124.94,
+          "probability": 0.98291015625
+        },
+        {
+          "text": "相",
+          "start": 124.94,
+          "end": 125.12,
+          "probability": 0.3349609375
+        },
+        {
+          "text": "不",
+          "start": 125.12,
+          "end": 125.32,
+          "probability": 0.998046875
+        },
+        {
+          "text": "得",
+          "start": 125.32,
+          "end": 125.46,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "直",
+          "start": 125.46,
+          "end": 125.62,
+          "probability": 0.026702880859375
+        },
+        {
+          "text": "个",
+          "start": 125.62,
+          "end": 125.76,
+          "probability": 0.6171875
+        },
+        {
+          "text": "三",
+          "start": 125.76,
+          "end": 125.96,
+          "probability": 0.87353515625
+        },
+        {
+          "text": "千",
+          "start": 125.96,
+          "end": 126.14,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "块",
+          "start": 126.14,
+          "end": 126.32,
+          "probability": 0.99169921875
+        }
+      ]
+    }
+  ]
+}

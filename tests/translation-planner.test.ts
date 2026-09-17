@@ -1,7 +1,13 @@
 import assert from 'node:assert/strict'
 import test from 'node:test'
 import { joinGroupText } from '../src/main/semanticGrouping'
-import { planTranslation, restoreOriginalCues, type TranslationCapability } from '../src/main/translation/planner'
+import {
+  estimateTranslationOutputTokens,
+  planTranslation,
+  restoreOriginalCues,
+  translationOutputEnvelopeReserve,
+  type TranslationCapability
+} from '../src/main/translation/planner'
 import type { TranslationInput } from '../src/shared/translation'
 import { buildTranslationBatchMessages } from '../src/main/translation/prompts'
 import { parseTranslationResponse } from '../src/main/translation/response'
@@ -194,4 +200,31 @@ test('context is deduplicated, bounded and counted in the actual serialized toke
   assert.equal(new Set(contexts.map((item) => item.id)).size, contexts.length)
   assert.ok(contexts.every((item) => item.id !== 'current' && [...item.text].length <= 512))
   assert.ok(Buffer.byteLength(JSON.stringify(buildTranslationBatchMessages(batch, capability.format))) + batch.maxOutputTokens <= 3_000)
+})
+
+test('a long-context Gateway plan partitions requested outputs under its output cap without partitioning source identity', () => {
+  const input: TranslationInput = {
+    sourceLanguage: 'zh', targetLocale: 'vi-VN', mode: 'subtitle', contextBefore: [], contextAfter: [], glossary: [],
+    cues: Array.from({ length: 18 }, (_, sourceIndex) => ({
+      id: `cue-${sourceIndex}`,
+      sourceIndex,
+      start: sourceIndex,
+      end: sourceIndex + 0.8,
+      groupId: `g-${sourceIndex}`,
+      text: '这是需要保留完整含义但要简洁表达的一段内容。'.repeat(5)
+    }))
+  }
+  const outputTokens = 128
+  const plan = planTranslation(input, {
+    provider: 'gemini-gateway', modelIdentity: 'gateway@fixture', revisionKnown: false, format: 'json-items',
+    contextTokens: 1_000_000, outputTokens, wholeDocument: true, outputAware: true
+  })
+  assert.ok(plan.batches.length > 1)
+  assert.deepEqual(
+    plan.batches.flatMap((batch) => batch.input.cues.map((cue) => cue.id)),
+    plan.mapping.map((mapping) => mapping.unitId)
+  )
+  assert.ok(plan.batches.every((batch) =>
+    estimateTranslationOutputTokens(batch.input.cues, input.targetLocale) + translationOutputEnvelopeReserve(outputTokens) <= outputTokens
+  ))
 })

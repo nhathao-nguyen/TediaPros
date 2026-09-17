@@ -41,7 +41,8 @@ export interface TranslationCheckpoint {
 }
 
 const SECRET_KEY = /(?:api[_-]?key|authorization|bearer|token|password|secret|credential)/iu
-const MAX_CHECKPOINT_BYTES = 2 * 1024 * 1024
+/** Writer and reader share this hard bound; no successful write may become an unreadable cache miss. */
+export const MAX_TRANSLATION_CHECKPOINT_BYTES = 2 * 1024 * 1024
 const MAX_CHECKPOINT_COLLECTION = 10_000
 
 function sanitizeIdentityValue(value: unknown, key = ''): unknown {
@@ -59,6 +60,7 @@ export function buildTranslationIdentity(input: TranslationInput, identity: Tran
     sourceLanguage: input.sourceLanguage,
     targetLocale: input.targetLocale,
     mode: input.mode,
+    ...(input.sourceVideoDuration === undefined ? {} : { sourceVideoDuration: input.sourceVideoDuration }),
     cues: input.cues.map((cue) => ({
       id: cue.id,
       sourceIndex: cue.sourceIndex,
@@ -118,7 +120,7 @@ function validCue(value: unknown): boolean {
 
 function validInput(value: unknown): boolean {
   if (!record(value) || !exact(value,
-    ['sourceLanguage', 'targetLocale', 'mode', 'cues', 'contextBefore', 'contextAfter', 'sourceSpeechGroups', 'glossary', 'synopsis'],
+    ['sourceLanguage', 'targetLocale', 'mode', 'sourceVideoDuration', 'cues', 'contextBefore', 'contextAfter', 'sourceSpeechGroups', 'glossary', 'synopsis'],
     ['sourceLanguage', 'targetLocale', 'mode', 'cues', 'contextBefore', 'contextAfter', 'glossary'])) return false
   const cueArray = (candidate: unknown, allowEmpty: boolean): boolean =>
     Array.isArray(candidate) && candidate.length <= MAX_CHECKPOINT_COLLECTION &&
@@ -130,7 +132,8 @@ function validInput(value: unknown): boolean {
       !Array.isArray(value.glossary) || value.glossary.length > 50 ||
       !value.glossary.every((item) => record(item) && exact(item, ['source', 'target']) &&
         typeof item.source === 'string' && item.source.trim().length > 0 && typeof item.target === 'string' && item.target.trim().length > 0) ||
-      (value.synopsis !== undefined && (typeof value.synopsis !== 'string' || value.synopsis.length > 2_000))) return false
+       (value.synopsis !== undefined && (typeof value.synopsis !== 'string' || value.synopsis.length > 2_000)) ||
+       (value.sourceVideoDuration !== undefined && (!finite(value.sourceVideoDuration) || value.sourceVideoDuration <= 0))) return false
   if (value.sourceSpeechGroups !== undefined) {
     if (!Array.isArray(value.sourceSpeechGroups) || value.sourceSpeechGroups.length > MAX_CHECKPOINT_COLLECTION ||
       !value.sourceSpeechGroups.every((group) => record(group) && exact(group, ['id', 'cues']) &&
@@ -143,7 +146,7 @@ function validIssue(value: unknown): boolean {
   if (!record(value) || !exact(value, ['code', 'severity', 'cueIds', 'confidence', 'message'])) return false
   return ['invalid-source', 'missing-id', 'duplicate-id', 'unknown-id', 'empty-text', 'unparsed-content',
     'truncated-output', 'protected-token-suspect', 'language-suspect', 'unsupported-capability',
-    'budget-exhausted', 'no-progress', 'provider-auth', 'provider-transient', 'provider-protocol', 'cancelled'].includes(String(value.code)) &&
+    'budget-exhausted', 'no-progress', 'provider-auth', 'provider-transient', 'provider-protocol', 'provider-throttled', 'cancelled'].includes(String(value.code)) &&
     ['error', 'warning'].includes(String(value.severity)) && stringArray(value.cueIds) &&
     ['certain', 'heuristic', 'unknown'].includes(String(value.confidence)) &&
     typeof value.message === 'string' && value.message.length > 0
@@ -244,15 +247,15 @@ async function readBoundedUtf8(path: string): Promise<string | null> {
   const file = await open(path, 'r')
   try {
     const info = await file.stat()
-    if (info.size > MAX_CHECKPOINT_BYTES) return null
-    const buffer = Buffer.alloc(MAX_CHECKPOINT_BYTES + 1)
+    if (info.size > MAX_TRANSLATION_CHECKPOINT_BYTES) return null
+    const buffer = Buffer.alloc(MAX_TRANSLATION_CHECKPOINT_BYTES + 1)
     let offset = 0
     while (offset < buffer.length) {
       const { bytesRead } = await file.read(buffer, offset, buffer.length - offset, offset)
       if (bytesRead === 0) break
       offset += bytesRead
     }
-    if (offset > MAX_CHECKPOINT_BYTES) return null
+    if (offset > MAX_TRANSLATION_CHECKPOINT_BYTES) return null
     return buffer.subarray(0, offset).toString('utf8')
   } finally {
     await file.close()
@@ -276,7 +279,7 @@ export async function readTranslationCheckpoint(path: string, root: string, key:
       allowFence: false,
       allowProseObject: false,
       limits: {
-        maxBytes: MAX_CHECKPOINT_BYTES,
+        maxBytes: MAX_TRANSLATION_CHECKPOINT_BYTES,
         maxDepth: 32,
         maxMembers: 100_000,
         maxCandidates: 1
@@ -296,6 +299,10 @@ export async function readTranslationCheckpoint(path: string, root: string, key:
 export async function writeTranslationCheckpoint(path: string, root: string, data: TranslationCheckpoint): Promise<void> {
   if (!isAbsolute(path) || !isAbsolute(root)) throw new Error('Translation checkpoint paths must be absolute.')
   if (!validCheckpoint(data)) throw new Error('Invalid translation checkpoint payload.')
+  const serialized = JSON.stringify(data, null, 2)
+  if (Buffer.byteLength(serialized, 'utf8') > MAX_TRANSLATION_CHECKPOINT_BYTES) {
+    throw new Error('Translation checkpoint exceeds the 2 MiB readable limit; use a sharded checkpoint before publication.')
+  }
   await mkdir(root, { recursive: true })
   await mkdir(dirname(path), { recursive: true }).catch(() => {})
   const rootRelative = relative(root, path)
@@ -305,7 +312,7 @@ export async function writeTranslationCheckpoint(path: string, root: string, dat
   let file: Awaited<ReturnType<typeof open>> | undefined
   try {
     file = await open(tempPath, 'wx')
-    await file.writeFile(JSON.stringify(data, null, 2), 'utf8')
+    await file.writeFile(serialized, 'utf8')
     await file.sync()
     await file.close()
     file = undefined

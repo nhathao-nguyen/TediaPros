@@ -1,8 +1,10 @@
 import { createHash, randomUUID } from 'node:crypto'
-import { link, mkdir, open, rm } from 'node:fs/promises'
+import { link, mkdir, open, rename, rm } from 'node:fs/promises'
 import { basename, dirname, extname, join } from 'node:path'
 import {
   DEFAULT_AI_SERVER_URL,
+  DEFAULT_GEMINI_GATEWAY_URL,
+  GEMINI_GATEWAY_MODEL,
   type ResolvedVideoSeoConfig,
   type SubtitleCue,
   type VideoSeoMetadata,
@@ -36,8 +38,17 @@ const INPUT_CHARS = 16_000
 const SUMMARY_CHARS = 2_000
 const TITLE_CHARS = 120
 const RESPONSE_CHARS = 16_000
-const REQUEST_TIMEOUT_MS = 60_000
+const REQUEST_TIMEOUT_MS = 180_000
+const LOCAL_TITLE_ERROR_BYTES = 4 * 1024
 const TITLE_PROMPT_VERSION = 'video-title-v3'
+const RECOVERABLE_LOCAL_STRUCTURED_ERROR_CODES = new Set([
+  'invalid-json',
+  'ambiguous-json',
+  'duplicate-key',
+  'wrong-root',
+  'schema-violation',
+  'unsupported-schema'
+])
 
 class VideoTitleError extends Error {}
 
@@ -119,57 +130,121 @@ function systemPrompt(language: string, summary: boolean): string {
   ].join('\n')
 }
 
+/**
+ * The local Gateway can have a bounded, structured 422 after exhausting its
+ * own JSON-normalization attempts. Read only its small declared error envelope
+ * and use only a finite allowlist of public codes; never surface its body.
+ */
+async function recoverableLocalStructuredErrorCode(response: Response, signal: AbortSignal): Promise<string | null> {
+  const rawLength = response.headers.get('content-length')
+  if (rawLength !== null && rawLength !== '') {
+    const contentLength = Number(rawLength)
+    if (!Number.isSafeInteger(contentLength) || contentLength < 0 || contentLength > LOCAL_TITLE_ERROR_BYTES) {
+      await response.body?.cancel().catch(() => {})
+      return null
+    }
+  }
+  if (!response.body) return null
+  let body: string
+  try {
+    body = await readBoundedAiResponseText(response, signal, LOCAL_TITLE_ERROR_BYTES)
+  } catch {
+    checkCancelled(signal)
+    return null
+  }
+  try {
+    const parsed = JSON.parse(body) as { error?: { code?: unknown } }
+    const code = parsed.error?.code
+    return typeof code === 'string' && RECOVERABLE_LOCAL_STRUCTURED_ERROR_CODES.has(code) ? code : null
+  } catch {
+    return null
+  }
+}
+
+function resolveLocalEndpointAndModel(config: VideoTitleConfig): { endpoint: string; model: string; isGateway: boolean } {
+  const isGateway = config.provider === 'gemini-gateway'
+  const defaultUrl = isGateway ? DEFAULT_GEMINI_GATEWAY_URL : DEFAULT_AI_SERVER_URL
+  const base = (config.serverUrl || defaultUrl).trim().replace(/\/+$/u, '')
+  const endpoint = base.endsWith('/v1')
+    ? `${base}/chat/completions`
+    : `${base}/v1/chat/completions`
+  const urlLower = base.toLowerCase()
+  const isCreateMediaTool = isGateway || urlLower.includes(':4982') || urlLower.includes('/openai')
+  const model = config.model?.trim()
+    || (isCreateMediaTool ? GEMINI_GATEWAY_MODEL : 'llm-default')
+  return { endpoint, model, isGateway: isCreateMediaTool }
+}
+
 async function localCompletion(config: VideoTitleConfig, task: AiStructuredTask, system: string, user: string, signal: AbortSignal): Promise<AiCompletionEnvelope | null> {
   const key = await loadLocalKey()
   checkCancelled(signal)
-  const base = (config.serverUrl || DEFAULT_AI_SERVER_URL).trim().replace(/\/+$/u, '')
-  const response = await fetchWithAbort(`${base}/v1/chat/completions`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      Accept: 'application/json',
-      ...(key ? { Authorization: `Bearer ${key}` } : {})
-    },
-    body: JSON.stringify({
-      model: 'llm-default',
+  const { endpoint, model, isGateway } = resolveLocalEndpointAndModel(config)
+  let schemaConstrained = true
+  while (true) {
+    const requestBody: Record<string, unknown> = {
+      model,
       messages: [{ role: 'system', content: system }, { role: 'user', content: user }],
       temperature: 0.3,
       max_tokens: 2_048,
-      response_format: openAiResponseFormat(task)
-    }),
-    signal
-  }, signal)
-  if (!response.ok) {
-    await response.body?.cancel().catch(() => {})
-    throw new VideoTitleError(`AI tạo tiêu đề phản hồi lỗi HTTP ${response.status}.`)
-  }
-  const contentLength = Number(response.headers.get('content-length'))
-  if (Number.isFinite(contentLength) && contentLength > RESPONSE_CHARS * 8) {
-    await response.body?.cancel().catch(() => {})
-    throw new VideoTitleError('AI trả về nội dung tiêu đề quá dài.')
-  }
-  if (!response.body) throw new VideoTitleError('AI không trả về nội dung tiêu đề.')
-  const body = await readBoundedAiResponseText(response, signal, RESPONSE_CHARS * 8)
-  let data: { choices?: Array<{ message?: { content?: unknown; refusal?: unknown }; finish_reason?: unknown }> }
-  try {
-    data = JSON.parse(body) as typeof data
-  } catch {
-    throw new VideoTitleError('AI server trả về envelope không đúng JSON.')
-  }
-  if (!Array.isArray(data.choices) || data.choices.length !== 1) throw new VideoTitleError('AI server trả về số candidate không hợp lệ.')
-  const choice = data.choices[0]
-  const content = choice.message?.content
-  const refusal = typeof choice.message?.refusal === 'string' && choice.message.refusal.trim().length > 0
-  if (typeof content !== 'string' && !refusal) return null
-  const finishReason = typeof choice.finish_reason === 'string' ? choice.finish_reason : undefined
-  return {
-    rawText: typeof content === 'string' ? content : '',
-    provider: 'local',
-    modelIdentity: 'llm-default',
-    formatMode: 'schema-constrained',
-    completion: classifyCompletion(finishReason, refusal),
-    transport: 'complete',
-    ...(finishReason ? { finishReason } : {})
+      ...(isGateway ? {
+        temporary: true,
+        gateway_requirements: {
+          contract_version: 2,
+          require_verified_model: false,
+          require_complete_response: true
+        }
+      } : {}),
+      ...(schemaConstrained ? { response_format: openAiResponseFormat(task) } : {})
+    }
+    const response = await fetchWithAbort(endpoint, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Accept: 'application/json',
+        ...(key ? { Authorization: `Bearer ${key}` } : {})
+      },
+      body: JSON.stringify(requestBody),
+      signal
+    }, signal)
+    if (!response.ok) {
+      const retryJsonOnly = schemaConstrained
+        && response.status === 422
+        && await recoverableLocalStructuredErrorCode(response, signal)
+      if (retryJsonOnly) {
+        schemaConstrained = false
+        continue
+      }
+      await response.body?.cancel().catch(() => {})
+      throw new VideoTitleError(`AI tạo tiêu đề phản hồi lỗi HTTP ${response.status}.`)
+    }
+    const contentLength = Number(response.headers.get('content-length'))
+    if (Number.isFinite(contentLength) && contentLength > RESPONSE_CHARS * 8) {
+      await response.body?.cancel().catch(() => {})
+      throw new VideoTitleError('AI trả về nội dung tiêu đề quá dài.')
+    }
+    if (!response.body) throw new VideoTitleError('AI không trả về nội dung tiêu đề.')
+    const body = await readBoundedAiResponseText(response, signal, RESPONSE_CHARS * 8)
+    let data: { choices?: Array<{ message?: { content?: unknown; refusal?: unknown }; finish_reason?: unknown }> }
+    try {
+      data = JSON.parse(body) as typeof data
+    } catch {
+      throw new VideoTitleError('AI server trả về envelope không đúng JSON.')
+    }
+    if (!Array.isArray(data.choices) || data.choices.length !== 1) throw new VideoTitleError('AI server trả về số candidate không hợp lệ.')
+    const choice = data.choices[0]
+    const content = choice.message?.content
+    const refusal = typeof choice.message?.refusal === 'string' && choice.message.refusal.trim().length > 0
+    if (typeof content !== 'string' && !refusal) return null
+    const finishReason = typeof choice.finish_reason === 'string' ? choice.finish_reason : undefined
+    return {
+      rawText: typeof content === 'string' ? content : '',
+      provider: config.provider === 'gemini-gateway' ? 'gemini-gateway' : 'local',
+      modelIdentity: model,
+      formatMode: schemaConstrained ? 'schema-constrained' : 'json-only',
+      completion: classifyCompletion(finishReason, refusal),
+      transport: 'complete',
+      ...(finishReason ? { finishReason } : {})
+    }
   }
 }
 
@@ -179,10 +254,11 @@ async function completion(config: VideoTitleConfig, task: AiStructuredTask, syst
   let timedOut = false
   const onAbort = (): void => controller.abort()
   signal?.addEventListener('abort', onAbort, { once: true })
+  const timeoutMs = config.provider === 'gemini-gateway' ? 360_000 : REQUEST_TIMEOUT_MS
   const timer = setTimeout(() => {
     timedOut = true
     controller.abort()
-  }, REQUEST_TIMEOUT_MS)
+  }, timeoutMs)
   let stopWaiting: (() => void) | undefined
   const interrupted = new Promise<never>((_resolve, reject) => {
     stopWaiting = () => reject(timedOut
@@ -191,7 +267,7 @@ async function completion(config: VideoTitleConfig, task: AiStructuredTask, syst
     controller.signal.addEventListener('abort', stopWaiting, { once: true })
   })
   try {
-    const request = config.provider === 'local'
+    const request = config.provider === 'local' || config.provider === 'gemini-gateway'
       ? getGlobalResourceManager().withLease(['server-inference'], controller.signal, () => localCompletion(config, task, system, user, controller.signal))
       : config.provider === 'gemini'
         ? getGlobalResourceManager().withLease(['external-title'], controller.signal, () => completeGeminiStructured(task, system, user, controller.signal))
@@ -490,7 +566,7 @@ export async function reserveVideoTitleOutputDir(outputDir: string, outputName: 
   }
 }
 
-async function publishExclusiveFile(path: string, content: string, signal?: AbortSignal): Promise<void> {
+async function publishExclusiveFile(path: string, content: string, signal?: AbortSignal, overwrite = false): Promise<void> {
   checkCancelled(signal)
   const tempPath = join(dirname(path), `.${basename(path)}.${randomUUID()}.tmp`)
   let file: Awaited<ReturnType<typeof open>> | undefined
@@ -500,10 +576,14 @@ async function publishExclusiveFile(path: string, content: string, signal?: Abor
     await file.sync()
     await file.close()
     file = undefined
-    // Cancellation before this boundary publishes nothing. Once link succeeds,
+    // Cancellation before this boundary publishes nothing. Once link/rename succeeds,
     // the complete fsynced file is the committed result and must be retained.
     checkCancelled(signal)
-    await link(tempPath, path)
+    if (overwrite) {
+      await rename(tempPath, path)
+    } else {
+      await link(tempPath, path)
+    }
   } finally {
     await file?.close().catch(() => {})
     await rm(tempPath, { force: true }).catch(() => {})
@@ -527,7 +607,8 @@ export async function writeVideoSeoMetadata(
   outputVideoPath: string,
   metadata: VideoSeoMetadata,
   allowedRoot: string,
-  signal?: AbortSignal
+  signal?: AbortSignal,
+  overwrite = false
 ): Promise<string> {
   const content = formatVideoSeoMetadata(metadata)
   let path = ''
@@ -536,7 +617,7 @@ export async function writeVideoSeoMetadata(
     const video = await assertContainedRegularFile(outputVideoPath, allowedRoot, 'Video SEO')
     path = join(dirname(video), 'tieude.txt')
     await assertContainedParentDirectory(path, allowedRoot, 'File SEO')
-    await publishExclusiveFile(path, content, signal)
+    await publishExclusiveFile(path, content, signal, overwrite)
     return path
   } catch (error) {
     if ((error as Error).name === 'AbortError') throw error

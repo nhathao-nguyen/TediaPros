@@ -1,0 +1,3734 @@
+{
+  "duration": 47.4398125,
+  "language": "zh",
+  "segments": [
+    {
+      "start": 0.0,
+      "end": 1.94,
+      "text": "这是混凝土搅拌着司机的噩梦",
+      "words": [
+        {
+          "text": "这是",
+          "start": 0.0,
+          "end": 0.26,
+          "probability": 0.351806640625
+        },
+        {
+          "text": "混",
+          "start": 0.26,
+          "end": 0.46,
+          "probability": 0.92919921875
+        },
+        {
+          "text": "凝",
+          "start": 0.46,
+          "end": 0.58,
+          "probability": 0.9853515625
+        },
+        {
+          "text": "土",
+          "start": 0.58,
+          "end": 0.7,
+          "probability": 0.96240234375
+        },
+        {
+          "text": "搅",
+          "start": 0.7,
+          "end": 0.98,
+          "probability": 0.859130859375
+        },
+        {
+          "text": "拌",
+          "start": 0.98,
+          "end": 1.14,
+          "probability": 0.9921875
+        },
+        {
+          "text": "着",
+          "start": 1.14,
+          "end": 1.28,
+          "probability": 0.54931640625
+        },
+        {
+          "text": "司",
+          "start": 1.28,
+          "end": 1.52,
+          "probability": 0.8984375
+        },
+        {
+          "text": "机",
+          "start": 1.52,
+          "end": 1.62,
+          "probability": 0.9814453125
+        },
+        {
+          "text": "的",
+          "start": 1.62,
+          "end": 1.72,
+          "probability": 0.99609375
+        },
+        {
+          "text": "噩",
+          "start": 1.72,
+          "end": 1.86,
+          "probability": 0.76708984375
+        },
+        {
+          "text": "梦",
+          "start": 1.86,
+          "end": 1.94,
+          "probability": 0.99853515625
+        }
+      ]
+    },
+    {
+      "start": 1.94,
+      "end": 3.56,
+      "text": "得从斩了离府的尽量口",
+      "words": [
+        {
+          "text": "得",
+          "start": 1.94,
+          "end": 2.28,
+          "probability": 0.70849609375
+        },
+        {
+          "text": "从",
+          "start": 2.28,
+          "end": 2.42,
+          "probability": 0.98876953125
+        },
+        {
+          "text": "斩",
+          "start": 2.42,
+          "end": 2.56,
+          "probability": 0.715087890625
+        },
+        {
+          "text": "了",
+          "start": 2.56,
+          "end": 2.68,
+          "probability": 0.78076171875
+        },
+        {
+          "text": "离",
+          "start": 2.68,
+          "end": 2.8,
+          "probability": 0.970947265625
+        },
+        {
+          "text": "府",
+          "start": 2.8,
+          "end": 2.92,
+          "probability": 0.71728515625
+        },
+        {
+          "text": "的",
+          "start": 2.92,
+          "end": 3.04,
+          "probability": 0.99658203125
+        },
+        {
+          "text": "尽",
+          "start": 3.04,
+          "end": 3.2,
+          "probability": 0.7255859375
+        },
+        {
+          "text": "量",
+          "start": 3.2,
+          "end": 3.38,
+          "probability": 0.433837890625
+        },
+        {
+          "text": "口",
+          "start": 3.38,
+          "end": 3.56,
+          "probability": 0.9765625
+        }
+      ]
+    },
+    {
+      "start": 3.56,
+      "end": 5.32,
+      "text": "运声声爬进搅拌管里",
+      "words": [
+        {
+          "text": "运",
+          "start": 3.56,
+          "end": 3.9,
+          "probability": 0.76953125
+        },
+        {
+          "text": "声",
+          "start": 3.9,
+          "end": 4.08,
+          "probability": 0.9013671875
+        },
+        {
+          "text": "声",
+          "start": 4.08,
+          "end": 4.26,
+          "probability": 0.99267578125
+        },
+        {
+          "text": "爬",
+          "start": 4.26,
+          "end": 4.46,
+          "probability": 0.955810546875
+        },
+        {
+          "text": "进",
+          "start": 4.46,
+          "end": 4.6,
+          "probability": 0.98681640625
+        },
+        {
+          "text": "搅",
+          "start": 4.6,
+          "end": 4.82,
+          "probability": 0.978271484375
+        },
+        {
+          "text": "拌",
+          "start": 4.82,
+          "end": 4.98,
+          "probability": 0.998779296875
+        },
+        {
+          "text": "管",
+          "start": 4.98,
+          "end": 5.12,
+          "probability": 0.6005859375
+        },
+        {
+          "text": "里",
+          "start": 5.12,
+          "end": 5.32,
+          "probability": 0.396484375
+        }
+      ]
+    },
+    {
+      "start": 5.32,
+      "end": 6.58,
+      "text": "在轮起沉冻的铁锤",
+      "words": [
+        {
+          "text": "在",
+          "start": 5.32,
+          "end": 5.52,
+          "probability": 0.461669921875
+        },
+        {
+          "text": "轮",
+          "start": 5.52,
+          "end": 5.68,
+          "probability": 0.99365234375
+        },
+        {
+          "text": "起",
+          "start": 5.68,
+          "end": 5.82,
+          "probability": 0.7333984375
+        },
+        {
+          "text": "沉",
+          "start": 5.82,
+          "end": 6.0,
+          "probability": 0.8359375
+        },
+        {
+          "text": "冻",
+          "start": 6.0,
+          "end": 6.12,
+          "probability": 0.7939453125
+        },
+        {
+          "text": "的",
+          "start": 6.12,
+          "end": 6.24,
+          "probability": 0.962890625
+        },
+        {
+          "text": "铁",
+          "start": 6.24,
+          "end": 6.4,
+          "probability": 0.98876953125
+        },
+        {
+          "text": "锤",
+          "start": 6.4,
+          "end": 6.58,
+          "probability": 0.965576171875
+        }
+      ]
+    },
+    {
+      "start": 6.58,
+      "end": 8.92,
+      "text": "把硬的像石头的混凝土结块砸碎",
+      "words": [
+        {
+          "text": "把",
+          "start": 6.58,
+          "end": 6.86,
+          "probability": 0.8291015625
+        },
+        {
+          "text": "硬",
+          "start": 6.86,
+          "end": 6.98,
+          "probability": 0.950439453125
+        },
+        {
+          "text": "的",
+          "start": 6.98,
+          "end": 7.1,
+          "probability": 0.6533203125
+        },
+        {
+          "text": "像",
+          "start": 7.1,
+          "end": 7.24,
+          "probability": 0.69140625
+        },
+        {
+          "text": "石",
+          "start": 7.24,
+          "end": 7.5,
+          "probability": 0.96875
+        },
+        {
+          "text": "头",
+          "start": 7.5,
+          "end": 7.62,
+          "probability": 0.8203125
+        },
+        {
+          "text": "的",
+          "start": 7.62,
+          "end": 7.7,
+          "probability": 0.99267578125
+        },
+        {
+          "text": "混",
+          "start": 7.7,
+          "end": 7.86,
+          "probability": 0.99609375
+        },
+        {
+          "text": "凝",
+          "start": 7.86,
+          "end": 7.98,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "土",
+          "start": 7.98,
+          "end": 8.16,
+          "probability": 0.998046875
+        },
+        {
+          "text": "结",
+          "start": 8.16,
+          "end": 8.34,
+          "probability": 0.46044921875
+        },
+        {
+          "text": "块",
+          "start": 8.34,
+          "end": 8.5,
+          "probability": 0.9765625
+        },
+        {
+          "text": "砸",
+          "start": 8.5,
+          "end": 8.68,
+          "probability": 0.85986328125
+        },
+        {
+          "text": "碎",
+          "start": 8.68,
+          "end": 8.92,
+          "probability": 0.99853515625
+        }
+      ]
+    },
+    {
+      "start": 8.92,
+      "end": 10.68,
+      "text": "就为了不绕这些硬块粘成一坨",
+      "words": [
+        {
+          "text": "就",
+          "start": 8.92,
+          "end": 9.14,
+          "probability": 0.9462890625
+        },
+        {
+          "text": "为",
+          "start": 9.14,
+          "end": 9.28,
+          "probability": 0.99462890625
+        },
+        {
+          "text": "了",
+          "start": 9.28,
+          "end": 9.38,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "不",
+          "start": 9.38,
+          "end": 9.48,
+          "probability": 0.60107421875
+        },
+        {
+          "text": "绕",
+          "start": 9.48,
+          "end": 9.56,
+          "probability": 0.7783203125
+        },
+        {
+          "text": "这",
+          "start": 9.56,
+          "end": 9.74,
+          "probability": 0.9345703125
+        },
+        {
+          "text": "些",
+          "start": 9.74,
+          "end": 9.82,
+          "probability": 0.99560546875
+        },
+        {
+          "text": "硬",
+          "start": 9.82,
+          "end": 9.96,
+          "probability": 0.990966796875
+        },
+        {
+          "text": "块",
+          "start": 9.96,
+          "end": 10.12,
+          "probability": 0.97021484375
+        },
+        {
+          "text": "粘",
+          "start": 10.12,
+          "end": 10.28,
+          "probability": 0.92041015625
+        },
+        {
+          "text": "成",
+          "start": 10.28,
+          "end": 10.42,
+          "probability": 0.77294921875
+        },
+        {
+          "text": "一",
+          "start": 10.42,
+          "end": 10.56,
+          "probability": 0.9814453125
+        },
+        {
+          "text": "坨",
+          "start": 10.56,
+          "end": 10.68,
+          "probability": 0.911865234375
+        }
+      ]
+    },
+    {
+      "start": 10.68,
+      "end": 11.86,
+      "text": "如丝整个罐体",
+      "words": [
+        {
+          "text": "如",
+          "start": 10.68,
+          "end": 11.02,
+          "probability": 0.282958984375
+        },
+        {
+          "text": "丝",
+          "start": 11.02,
+          "end": 11.18,
+          "probability": 0.81005859375
+        },
+        {
+          "text": "整",
+          "start": 11.18,
+          "end": 11.36,
+          "probability": 0.99658203125
+        },
+        {
+          "text": "个",
+          "start": 11.36,
+          "end": 11.48,
+          "probability": 0.998046875
+        },
+        {
+          "text": "罐",
+          "start": 11.48,
+          "end": 11.64,
+          "probability": 0.6851806640625
+        },
+        {
+          "text": "体",
+          "start": 11.64,
+          "end": 11.86,
+          "probability": 0.888671875
+        }
+      ]
+    },
+    {
+      "start": 11.86,
+      "end": 13.52,
+      "text": "罐子里全是呛人的粉尘",
+      "words": [
+        {
+          "text": "罐",
+          "start": 11.86,
+          "end": 12.18,
+          "probability": 0.7237548828125
+        },
+        {
+          "text": "子",
+          "start": 12.18,
+          "end": 12.32,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "里",
+          "start": 12.32,
+          "end": 12.44,
+          "probability": 0.99658203125
+        },
+        {
+          "text": "全",
+          "start": 12.44,
+          "end": 12.62,
+          "probability": 0.97900390625
+        },
+        {
+          "text": "是",
+          "start": 12.62,
+          "end": 12.76,
+          "probability": 0.99169921875
+        },
+        {
+          "text": "呛",
+          "start": 12.76,
+          "end": 12.94,
+          "probability": 0.7110595703125
+        },
+        {
+          "text": "人",
+          "start": 12.94,
+          "end": 13.06,
+          "probability": 0.7763671875
+        },
+        {
+          "text": "的",
+          "start": 13.06,
+          "end": 13.14,
+          "probability": 0.99267578125
+        },
+        {
+          "text": "粉",
+          "start": 13.14,
+          "end": 13.3,
+          "probability": 0.97314453125
+        },
+        {
+          "text": "尘",
+          "start": 13.3,
+          "end": 13.52,
+          "probability": 0.912353515625
+        }
+      ]
+    },
+    {
+      "start": 13.52,
+      "end": 14.82,
+      "text": "噪音大到震耳朵",
+      "words": [
+        {
+          "text": "噪",
+          "start": 13.52,
+          "end": 13.92,
+          "probability": 0.941162109375
+        },
+        {
+          "text": "音",
+          "start": 13.92,
+          "end": 14.1,
+          "probability": 0.9384765625
+        },
+        {
+          "text": "大",
+          "start": 14.1,
+          "end": 14.26,
+          "probability": 0.9931640625
+        },
+        {
+          "text": "到",
+          "start": 14.26,
+          "end": 14.38,
+          "probability": 0.99658203125
+        },
+        {
+          "text": "震",
+          "start": 14.38,
+          "end": 14.52,
+          "probability": 0.738037109375
+        },
+        {
+          "text": "耳",
+          "start": 14.52,
+          "end": 14.68,
+          "probability": 0.96533203125
+        },
+        {
+          "text": "朵",
+          "start": 14.68,
+          "end": 14.82,
+          "probability": 0.8076171875
+        }
+      ]
+    },
+    {
+      "start": 14.82,
+      "end": 16.46,
+      "text": "司机必须全程戴口罩",
+      "words": [
+        {
+          "text": "司",
+          "start": 14.82,
+          "end": 15.22,
+          "probability": 0.9853515625
+        },
+        {
+          "text": "机",
+          "start": 15.22,
+          "end": 15.34,
+          "probability": 0.998046875
+        },
+        {
+          "text": "必",
+          "start": 15.34,
+          "end": 15.52,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "须",
+          "start": 15.52,
+          "end": 15.64,
+          "probability": 0.988525390625
+        },
+        {
+          "text": "全",
+          "start": 15.64,
+          "end": 15.82,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "程",
+          "start": 15.82,
+          "end": 15.96,
+          "probability": 0.97509765625
+        },
+        {
+          "text": "戴",
+          "start": 15.96,
+          "end": 16.1,
+          "probability": 0.9697265625
+        },
+        {
+          "text": "口",
+          "start": 16.1,
+          "end": 16.3,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "罩",
+          "start": 16.3,
+          "end": 16.46,
+          "probability": 0.999755859375
+        }
+      ]
+    },
+    {
+      "start": 16.46,
+      "end": 18.32,
+      "text": "少不注意粉尘就会钻进沸里",
+      "words": [
+        {
+          "text": "少",
+          "start": 16.46,
+          "end": 16.84,
+          "probability": 0.375732421875
+        },
+        {
+          "text": "不",
+          "start": 16.84,
+          "end": 16.98,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "注意",
+          "start": 16.98,
+          "end": 17.12,
+          "probability": 0.489501953125
+        },
+        {
+          "text": "粉",
+          "start": 17.12,
+          "end": 17.32,
+          "probability": 0.9951171875
+        },
+        {
+          "text": "尘",
+          "start": 17.32,
+          "end": 17.46,
+          "probability": 0.99658203125
+        },
+        {
+          "text": "就",
+          "start": 17.46,
+          "end": 17.6,
+          "probability": 0.95849609375
+        },
+        {
+          "text": "会",
+          "start": 17.6,
+          "end": 17.72,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "钻",
+          "start": 17.72,
+          "end": 17.86,
+          "probability": 0.949462890625
+        },
+        {
+          "text": "进",
+          "start": 17.86,
+          "end": 18.0,
+          "probability": 0.65283203125
+        },
+        {
+          "text": "沸",
+          "start": 18.0,
+          "end": 18.16,
+          "probability": 0.813232421875
+        },
+        {
+          "text": "里",
+          "start": 18.16,
+          "end": 18.32,
+          "probability": 0.96533203125
+        }
+      ]
+    },
+    {
+      "start": 18.32,
+      "end": 19.22,
+      "text": "你肯定不知道",
+      "words": [
+        {
+          "text": "你",
+          "start": 18.32,
+          "end": 18.6,
+          "probability": 0.9833984375
+        },
+        {
+          "text": "肯",
+          "start": 18.6,
+          "end": 18.76,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "定",
+          "start": 18.76,
+          "end": 18.88,
+          "probability": 1.0
+        },
+        {
+          "text": "不知道",
+          "start": 18.88,
+          "end": 19.22,
+          "probability": 0.978515625
+        }
+      ]
+    },
+    {
+      "start": 19.22,
+      "end": 21.68,
+      "text": "运输时司机还得定期往管里加冰",
+      "words": [
+        {
+          "text": "运",
+          "start": 19.22,
+          "end": 19.62,
+          "probability": 0.99560546875
+        },
+        {
+          "text": "输",
+          "start": 19.62,
+          "end": 19.8,
+          "probability": 0.931640625
+        },
+        {
+          "text": "时",
+          "start": 19.8,
+          "end": 19.92,
+          "probability": 0.80419921875
+        },
+        {
+          "text": "司",
+          "start": 19.92,
+          "end": 20.08,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "机",
+          "start": 20.08,
+          "end": 20.24,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "还",
+          "start": 20.24,
+          "end": 20.38,
+          "probability": 0.9921875
+        },
+        {
+          "text": "得",
+          "start": 20.38,
+          "end": 20.5,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "定",
+          "start": 20.5,
+          "end": 20.64,
+          "probability": 0.99609375
+        },
+        {
+          "text": "期",
+          "start": 20.64,
+          "end": 20.78,
+          "probability": 0.99560546875
+        },
+        {
+          "text": "往",
+          "start": 20.78,
+          "end": 20.98,
+          "probability": 0.9296875
+        },
+        {
+          "text": "管",
+          "start": 20.98,
+          "end": 21.14,
+          "probability": 0.8681640625
+        },
+        {
+          "text": "里",
+          "start": 21.14,
+          "end": 21.24,
+          "probability": 0.9326171875
+        },
+        {
+          "text": "加",
+          "start": 21.24,
+          "end": 21.4,
+          "probability": 0.8740234375
+        },
+        {
+          "text": "冰",
+          "start": 21.4,
+          "end": 21.68,
+          "probability": 0.759033203125
+        }
+      ]
+    },
+    {
+      "start": 21.68,
+      "end": 23.16,
+      "text": "既能锁入混凝土的水分",
+      "words": [
+        {
+          "text": "既",
+          "start": 21.68,
+          "end": 21.84,
+          "probability": 0.822998046875
+        },
+        {
+          "text": "能",
+          "start": 21.84,
+          "end": 21.98,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "锁",
+          "start": 21.98,
+          "end": 22.14,
+          "probability": 0.9755859375
+        },
+        {
+          "text": "入",
+          "start": 22.14,
+          "end": 22.26,
+          "probability": 0.953125
+        },
+        {
+          "text": "混",
+          "start": 22.26,
+          "end": 22.46,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "凝",
+          "start": 22.46,
+          "end": 22.6,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "土",
+          "start": 22.6,
+          "end": 22.68,
+          "probability": 0.97998046875
+        },
+        {
+          "text": "的",
+          "start": 22.68,
+          "end": 22.78,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "水",
+          "start": 22.78,
+          "end": 22.96,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "分",
+          "start": 22.96,
+          "end": 23.16,
+          "probability": 0.65087890625
+        }
+      ]
+    },
+    {
+      "start": 23.16,
+      "end": 24.96,
+      "text": "又能防止它半路提前凝固",
+      "words": [
+        {
+          "text": "又",
+          "start": 23.16,
+          "end": 23.4,
+          "probability": 0.8916015625
+        },
+        {
+          "text": "能",
+          "start": 23.4,
+          "end": 23.52,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "防",
+          "start": 23.52,
+          "end": 23.68,
+          "probability": 0.98876953125
+        },
+        {
+          "text": "止",
+          "start": 23.68,
+          "end": 23.8,
+          "probability": 0.9619140625
+        },
+        {
+          "text": "它",
+          "start": 23.8,
+          "end": 23.9,
+          "probability": 0.68603515625
+        },
+        {
+          "text": "半",
+          "start": 23.9,
+          "end": 24.08,
+          "probability": 0.8681640625
+        },
+        {
+          "text": "路",
+          "start": 24.08,
+          "end": 24.2,
+          "probability": 0.98388671875
+        },
+        {
+          "text": "提",
+          "start": 24.2,
+          "end": 24.4,
+          "probability": 0.99609375
+        },
+        {
+          "text": "前",
+          "start": 24.4,
+          "end": 24.6,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "凝",
+          "start": 24.6,
+          "end": 24.76,
+          "probability": 0.978271484375
+        },
+        {
+          "text": "固",
+          "start": 24.76,
+          "end": 24.96,
+          "probability": 0.997802734375
+        }
+      ]
+    },
+    {
+      "start": 24.96,
+      "end": 25.72,
+      "text": "与此同时",
+      "words": [
+        {
+          "text": "与",
+          "start": 24.96,
+          "end": 25.26,
+          "probability": 0.5289459228515625
+        },
+        {
+          "text": "此",
+          "start": 25.26,
+          "end": 25.42,
+          "probability": 1.0
+        },
+        {
+          "text": "同",
+          "start": 25.42,
+          "end": 25.52,
+          "probability": 0.9951171875
+        },
+        {
+          "text": "时",
+          "start": 25.52,
+          "end": 25.72,
+          "probability": 0.98486328125
+        }
+      ]
+    },
+    {
+      "start": 25.72,
+      "end": 28.32,
+      "text": "施工工人会检测送达混凝土的流动性",
+      "words": [
+        {
+          "text": "施",
+          "start": 25.72,
+          "end": 26.12,
+          "probability": 0.53778076171875
+        },
+        {
+          "text": "工",
+          "start": 26.12,
+          "end": 26.24,
+          "probability": 0.99169921875
+        },
+        {
+          "text": "工",
+          "start": 26.24,
+          "end": 26.4,
+          "probability": 0.99609375
+        },
+        {
+          "text": "人",
+          "start": 26.4,
+          "end": 26.5,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "会",
+          "start": 26.5,
+          "end": 26.62,
+          "probability": 0.98876953125
+        },
+        {
+          "text": "检",
+          "start": 26.62,
+          "end": 26.8,
+          "probability": 0.99462890625
+        },
+        {
+          "text": "测",
+          "start": 26.8,
+          "end": 26.96,
+          "probability": 0.998779296875
+        },
+        {
+          "text": "送",
+          "start": 26.96,
+          "end": 27.12,
+          "probability": 0.4755859375
+        },
+        {
+          "text": "达",
+          "start": 27.12,
+          "end": 27.32,
+          "probability": 0.982666015625
+        },
+        {
+          "text": "混",
+          "start": 27.32,
+          "end": 27.44,
+          "probability": 0.986328125
+        },
+        {
+          "text": "凝",
+          "start": 27.44,
+          "end": 27.54,
+          "probability": 0.998291015625
+        },
+        {
+          "text": "土",
+          "start": 27.54,
+          "end": 27.7,
+          "probability": 0.513671875
+        },
+        {
+          "text": "的",
+          "start": 27.7,
+          "end": 27.82,
+          "probability": 0.994140625
+        },
+        {
+          "text": "流",
+          "start": 27.82,
+          "end": 27.98,
+          "probability": 0.9892578125
+        },
+        {
+          "text": "动",
+          "start": 27.98,
+          "end": 28.12,
+          "probability": 0.9951171875
+        },
+        {
+          "text": "性",
+          "start": 28.12,
+          "end": 28.32,
+          "probability": 1.0
+        }
+      ]
+    },
+    {
+      "start": 28.32,
+      "end": 30.44,
+      "text": "判断其是否符合规定标准",
+      "words": [
+        {
+          "text": "判",
+          "start": 28.32,
+          "end": 28.68,
+          "probability": 0.9755859375
+        },
+        {
+          "text": "断",
+          "start": 28.68,
+          "end": 28.82,
+          "probability": 0.997802734375
+        },
+        {
+          "text": "其",
+          "start": 28.82,
+          "end": 28.98,
+          "probability": 0.92578125
+        },
+        {
+          "text": "是",
+          "start": 28.98,
+          "end": 29.2,
+          "probability": 0.98974609375
+        },
+        {
+          "text": "否",
+          "start": 29.2,
+          "end": 29.32,
+          "probability": 1.0
+        },
+        {
+          "text": "符",
+          "start": 29.32,
+          "end": 29.52,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "合",
+          "start": 29.52,
+          "end": 29.68,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "规",
+          "start": 29.68,
+          "end": 29.86,
+          "probability": 0.995361328125
+        },
+        {
+          "text": "定",
+          "start": 29.86,
+          "end": 30.0,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "标",
+          "start": 30.0,
+          "end": 30.2,
+          "probability": 0.997314453125
+        },
+        {
+          "text": "准",
+          "start": 30.2,
+          "end": 30.44,
+          "probability": 0.999755859375
+        }
+      ]
+    },
+    {
+      "start": 30.44,
+      "end": 32.66,
+      "text": "这一步是为了保障健身的房屋坚固耐用",
+      "words": [
+        {
+          "text": "这",
+          "start": 30.44,
+          "end": 30.66,
+          "probability": 0.96484375
+        },
+        {
+          "text": "一",
+          "start": 30.66,
+          "end": 30.78,
+          "probability": 0.962890625
+        },
+        {
+          "text": "步",
+          "start": 30.78,
+          "end": 30.86,
+          "probability": 0.81787109375
+        },
+        {
+          "text": "是",
+          "start": 30.86,
+          "end": 30.98,
+          "probability": 0.98681640625
+        },
+        {
+          "text": "为",
+          "start": 30.98,
+          "end": 31.04,
+          "probability": 0.99462890625
+        },
+        {
+          "text": "了",
+          "start": 31.04,
+          "end": 31.14,
+          "probability": 0.99658203125
+        },
+        {
+          "text": "保",
+          "start": 31.14,
+          "end": 31.26,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "障",
+          "start": 31.26,
+          "end": 31.4,
+          "probability": 0.994384765625
+        },
+        {
+          "text": "健",
+          "start": 31.4,
+          "end": 31.58,
+          "probability": 0.1334228515625
+        },
+        {
+          "text": "身",
+          "start": 31.58,
+          "end": 31.72,
+          "probability": 0.66552734375
+        },
+        {
+          "text": "的",
+          "start": 31.72,
+          "end": 31.8,
+          "probability": 0.9912109375
+        },
+        {
+          "text": "房",
+          "start": 31.8,
+          "end": 31.92,
+          "probability": 0.58154296875
+        },
+        {
+          "text": "屋",
+          "start": 31.92,
+          "end": 32.06,
+          "probability": 0.993408203125
+        },
+        {
+          "text": "坚",
+          "start": 32.06,
+          "end": 32.2,
+          "probability": 0.59228515625
+        },
+        {
+          "text": "固",
+          "start": 32.2,
+          "end": 32.34,
+          "probability": 0.993408203125
+        },
+        {
+          "text": "耐",
+          "start": 32.34,
+          "end": 32.5,
+          "probability": 0.910400390625
+        },
+        {
+          "text": "用",
+          "start": 32.5,
+          "end": 32.66,
+          "probability": 0.99853515625
+        }
+      ]
+    },
+    {
+      "start": 32.66,
+      "end": 33.8,
+      "text": "混凝土送达后",
+      "words": [
+        {
+          "text": "混",
+          "start": 32.66,
+          "end": 33.02,
+          "probability": 0.9951171875
+        },
+        {
+          "text": "凝",
+          "start": 33.02,
+          "end": 33.18,
+          "probability": 0.999755859375
+        },
+        {
+          "text": "土",
+          "start": 33.18,
+          "end": 33.3,
+          "probability": 0.99560546875
+        },
+        {
+          "text": "送",
+          "start": 33.3,
+          "end": 33.46,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "达",
+          "start": 33.46,
+          "end": 33.66,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "后",
+          "start": 33.66,
+          "end": 33.8,
+          "probability": 0.99658203125
+        }
+      ]
+    },
+    {
+      "start": 33.8,
+      "end": 35.88,
+      "text": "司机必须彻底清洗搅拌罐",
+      "words": [
+        {
+          "text": "司",
+          "start": 33.8,
+          "end": 34.16,
+          "probability": 0.818359375
+        },
+        {
+          "text": "机",
+          "start": 34.16,
+          "end": 34.32,
+          "probability": 0.986328125
+        },
+        {
+          "text": "必",
+          "start": 34.32,
+          "end": 34.52,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "须",
+          "start": 34.52,
+          "end": 34.68,
+          "probability": 0.992431640625
+        },
+        {
+          "text": "彻",
+          "start": 34.68,
+          "end": 34.86,
+          "probability": 0.978515625
+        },
+        {
+          "text": "底",
+          "start": 34.86,
+          "end": 35.0,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "清",
+          "start": 35.0,
+          "end": 35.18,
+          "probability": 0.98974609375
+        },
+        {
+          "text": "洗",
+          "start": 35.18,
+          "end": 35.36,
+          "probability": 0.91015625
+        },
+        {
+          "text": "搅",
+          "start": 35.36,
+          "end": 35.56,
+          "probability": 0.69921875
+        },
+        {
+          "text": "拌",
+          "start": 35.56,
+          "end": 35.72,
+          "probability": 0.997314453125
+        },
+        {
+          "text": "罐",
+          "start": 35.72,
+          "end": 35.88,
+          "probability": 0.947265625
+        }
+      ]
+    },
+    {
+      "start": 35.88,
+      "end": 37.96,
+      "text": "把管内残留的混凝土冲洗干净",
+      "words": [
+        {
+          "text": "把",
+          "start": 35.88,
+          "end": 36.18,
+          "probability": 0.9853515625
+        },
+        {
+          "text": "管",
+          "start": 36.18,
+          "end": 36.32,
+          "probability": 0.0142059326171875
+        },
+        {
+          "text": "内",
+          "start": 36.32,
+          "end": 36.42,
+          "probability": 0.9931640625
+        },
+        {
+          "text": "残",
+          "start": 36.42,
+          "end": 36.6,
+          "probability": 0.984130859375
+        },
+        {
+          "text": "留",
+          "start": 36.6,
+          "end": 36.72,
+          "probability": 0.98046875
+        },
+        {
+          "text": "的",
+          "start": 36.72,
+          "end": 36.8,
+          "probability": 0.93408203125
+        },
+        {
+          "text": "混",
+          "start": 36.8,
+          "end": 36.96,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "凝",
+          "start": 36.96,
+          "end": 37.08,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "土",
+          "start": 37.08,
+          "end": 37.24,
+          "probability": 0.998046875
+        },
+        {
+          "text": "冲",
+          "start": 37.24,
+          "end": 37.4,
+          "probability": 0.746826171875
+        },
+        {
+          "text": "洗",
+          "start": 37.4,
+          "end": 37.56,
+          "probability": 0.98486328125
+        },
+        {
+          "text": "干",
+          "start": 37.56,
+          "end": 37.7,
+          "probability": 0.9873046875
+        },
+        {
+          "text": "净",
+          "start": 37.7,
+          "end": 37.96,
+          "probability": 0.99658203125
+        }
+      ]
+    },
+    {
+      "start": 37.96,
+      "end": 38.94,
+      "text": "一旦耽误了时间",
+      "words": [
+        {
+          "text": "一",
+          "start": 37.96,
+          "end": 38.22,
+          "probability": 0.97705078125
+        },
+        {
+          "text": "旦",
+          "start": 38.22,
+          "end": 38.36,
+          "probability": 0.997802734375
+        },
+        {
+          "text": "耽",
+          "start": 38.36,
+          "end": 38.5,
+          "probability": 0.996826171875
+        },
+        {
+          "text": "误",
+          "start": 38.5,
+          "end": 38.62,
+          "probability": 0.98828125
+        },
+        {
+          "text": "了",
+          "start": 38.62,
+          "end": 38.72,
+          "probability": 0.96875
+        },
+        {
+          "text": "时间",
+          "start": 38.72,
+          "end": 38.94,
+          "probability": 0.9912109375
+        }
+      ]
+    },
+    {
+      "start": 38.94,
+      "end": 41.42,
+      "text": "管内混凝土会彻底硬化成实心硬块",
+      "words": [
+        {
+          "text": "管",
+          "start": 38.94,
+          "end": 39.34,
+          "probability": 0.90576171875
+        },
+        {
+          "text": "内",
+          "start": 39.34,
+          "end": 39.48,
+          "probability": 0.99658203125
+        },
+        {
+          "text": "混",
+          "start": 39.48,
+          "end": 39.62,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "凝",
+          "start": 39.62,
+          "end": 39.76,
+          "probability": 0.999267578125
+        },
+        {
+          "text": "土",
+          "start": 39.76,
+          "end": 39.88,
+          "probability": 0.998046875
+        },
+        {
+          "text": "会",
+          "start": 39.88,
+          "end": 40.0,
+          "probability": 0.99169921875
+        },
+        {
+          "text": "彻",
+          "start": 40.0,
+          "end": 40.2,
+          "probability": 0.997802734375
+        },
+        {
+          "text": "底",
+          "start": 40.2,
+          "end": 40.36,
+          "probability": 1.0
+        },
+        {
+          "text": "硬",
+          "start": 40.36,
+          "end": 40.48,
+          "probability": 0.789306640625
+        },
+        {
+          "text": "化",
+          "start": 40.48,
+          "end": 40.62,
+          "probability": 0.98974609375
+        },
+        {
+          "text": "成",
+          "start": 40.62,
+          "end": 40.76,
+          "probability": 0.998046875
+        },
+        {
+          "text": "实",
+          "start": 40.76,
+          "end": 40.94,
+          "probability": 0.93115234375
+        },
+        {
+          "text": "心",
+          "start": 40.94,
+          "end": 41.08,
+          "probability": 0.43017578125
+        },
+        {
+          "text": "硬",
+          "start": 41.08,
+          "end": 41.24,
+          "probability": 0.993896484375
+        },
+        {
+          "text": "块",
+          "start": 41.24,
+          "end": 41.42,
+          "probability": 0.869140625
+        }
+      ]
+    },
+    {
+      "start": 41.42,
+      "end": 43.76,
+      "text": "否则整辆搅拌车斗可能因此报废",
+      "words": [
+        {
+          "text": "否",
+          "start": 41.42,
+          "end": 41.72,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "则",
+          "start": 41.72,
+          "end": 41.88,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "整",
+          "start": 41.88,
+          "end": 42.02,
+          "probability": 0.962890625
+        },
+        {
+          "text": "辆",
+          "start": 42.02,
+          "end": 42.14,
+          "probability": 0.803955078125
+        },
+        {
+          "text": "搅",
+          "start": 42.14,
+          "end": 42.32,
+          "probability": 0.999267578125
+        },
+        {
+          "text": "拌",
+          "start": 42.32,
+          "end": 42.44,
+          "probability": 0.999267578125
+        },
+        {
+          "text": "车",
+          "start": 42.44,
+          "end": 42.66,
+          "probability": 0.964599609375
+        },
+        {
+          "text": "斗",
+          "start": 42.66,
+          "end": 42.76,
+          "probability": 0.83349609375
+        },
+        {
+          "text": "可能",
+          "start": 42.76,
+          "end": 43.02,
+          "probability": 0.9892578125
+        },
+        {
+          "text": "因",
+          "start": 43.02,
+          "end": 43.22,
+          "probability": 0.9951171875
+        },
+        {
+          "text": "此",
+          "start": 43.22,
+          "end": 43.38,
+          "probability": 1.0
+        },
+        {
+          "text": "报",
+          "start": 43.38,
+          "end": 43.54,
+          "probability": 0.73193359375
+        },
+        {
+          "text": "废",
+          "start": 43.54,
+          "end": 43.76,
+          "probability": 0.929443359375
+        }
+      ]
+    },
+    {
+      "start": 43.76,
+      "end": 45.86,
+      "text": "到那时候就算逗用大型机械",
+      "words": [
+        {
+          "text": "到",
+          "start": 43.76,
+          "end": 44.0,
+          "probability": 0.86474609375
+        },
+        {
+          "text": "那",
+          "start": 44.0,
+          "end": 44.14,
+          "probability": 0.98095703125
+        },
+        {
+          "text": "时候",
+          "start": 44.14,
+          "end": 44.34,
+          "probability": 0.97509765625
+        },
+        {
+          "text": "就",
+          "start": 44.34,
+          "end": 44.54,
+          "probability": 0.99267578125
+        },
+        {
+          "text": "算",
+          "start": 44.54,
+          "end": 44.7,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "逗",
+          "start": 44.7,
+          "end": 44.86,
+          "probability": 0.6259765625
+        },
+        {
+          "text": "用",
+          "start": 44.86,
+          "end": 44.98,
+          "probability": 0.99462890625
+        },
+        {
+          "text": "大",
+          "start": 44.98,
+          "end": 45.14,
+          "probability": 0.98974609375
+        },
+        {
+          "text": "型",
+          "start": 45.14,
+          "end": 45.3,
+          "probability": 0.990234375
+        },
+        {
+          "text": "机",
+          "start": 45.3,
+          "end": 45.52,
+          "probability": 0.98095703125
+        },
+        {
+          "text": "械",
+          "start": 45.52,
+          "end": 45.86,
+          "probability": 0.999267578125
+        }
+      ]
+    },
+    {
+      "start": 45.86,
+      "end": 47.16,
+      "text": "也压根清理不干净",
+      "words": [
+        {
+          "text": "也",
+          "start": 45.86,
+          "end": 46.04,
+          "probability": 0.70703125
+        },
+        {
+          "text": "压",
+          "start": 46.04,
+          "end": 46.2,
+          "probability": 0.916259765625
+        },
+        {
+          "text": "根",
+          "start": 46.2,
+          "end": 46.34,
+          "probability": 0.98974609375
+        },
+        {
+          "text": "清",
+          "start": 46.34,
+          "end": 46.52,
+          "probability": 0.95361328125
+        },
+        {
+          "text": "理",
+          "start": 46.52,
+          "end": 46.66,
+          "probability": 0.958984375
+        },
+        {
+          "text": "不",
+          "start": 46.66,
+          "end": 46.8,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "干",
+          "start": 46.8,
+          "end": 46.96,
+          "probability": 0.998046875
+        },
+        {
+          "text": "净",
+          "start": 46.96,
+          "end": 47.16,
+          "probability": 0.9853515625
+        }
+      ]
+    }
+  ],
+  "cues": [
+    {
+      "start": 0.0,
+      "end": 1.94,
+      "text": "这是混凝土搅拌着司机的噩梦",
+      "words": [
+        {
+          "text": "这是",
+          "start": 0.0,
+          "end": 0.26,
+          "probability": 0.351806640625
+        },
+        {
+          "text": "混",
+          "start": 0.26,
+          "end": 0.46,
+          "probability": 0.92919921875
+        },
+        {
+          "text": "凝",
+          "start": 0.46,
+          "end": 0.58,
+          "probability": 0.9853515625
+        },
+        {
+          "text": "土",
+          "start": 0.58,
+          "end": 0.7,
+          "probability": 0.96240234375
+        },
+        {
+          "text": "搅",
+          "start": 0.7,
+          "end": 0.98,
+          "probability": 0.859130859375
+        },
+        {
+          "text": "拌",
+          "start": 0.98,
+          "end": 1.14,
+          "probability": 0.9921875
+        },
+        {
+          "text": "着",
+          "start": 1.14,
+          "end": 1.28,
+          "probability": 0.54931640625
+        },
+        {
+          "text": "司",
+          "start": 1.28,
+          "end": 1.52,
+          "probability": 0.8984375
+        },
+        {
+          "text": "机",
+          "start": 1.52,
+          "end": 1.62,
+          "probability": 0.9814453125
+        },
+        {
+          "text": "的",
+          "start": 1.62,
+          "end": 1.72,
+          "probability": 0.99609375
+        },
+        {
+          "text": "噩",
+          "start": 1.72,
+          "end": 1.86,
+          "probability": 0.76708984375
+        },
+        {
+          "text": "梦",
+          "start": 1.86,
+          "end": 1.94,
+          "probability": 0.99853515625
+        }
+      ]
+    },
+    {
+      "start": 1.94,
+      "end": 3.56,
+      "text": "得从斩了离府的尽量口",
+      "words": [
+        {
+          "text": "得",
+          "start": 1.94,
+          "end": 2.28,
+          "probability": 0.70849609375
+        },
+        {
+          "text": "从",
+          "start": 2.28,
+          "end": 2.42,
+          "probability": 0.98876953125
+        },
+        {
+          "text": "斩",
+          "start": 2.42,
+          "end": 2.56,
+          "probability": 0.715087890625
+        },
+        {
+          "text": "了",
+          "start": 2.56,
+          "end": 2.68,
+          "probability": 0.78076171875
+        },
+        {
+          "text": "离",
+          "start": 2.68,
+          "end": 2.8,
+          "probability": 0.970947265625
+        },
+        {
+          "text": "府",
+          "start": 2.8,
+          "end": 2.92,
+          "probability": 0.71728515625
+        },
+        {
+          "text": "的",
+          "start": 2.92,
+          "end": 3.04,
+          "probability": 0.99658203125
+        },
+        {
+          "text": "尽",
+          "start": 3.04,
+          "end": 3.2,
+          "probability": 0.7255859375
+        },
+        {
+          "text": "量",
+          "start": 3.2,
+          "end": 3.38,
+          "probability": 0.433837890625
+        },
+        {
+          "text": "口",
+          "start": 3.38,
+          "end": 3.56,
+          "probability": 0.9765625
+        }
+      ]
+    },
+    {
+      "start": 3.56,
+      "end": 5.32,
+      "text": "运声声爬进搅拌管里",
+      "words": [
+        {
+          "text": "运",
+          "start": 3.56,
+          "end": 3.9,
+          "probability": 0.76953125
+        },
+        {
+          "text": "声",
+          "start": 3.9,
+          "end": 4.08,
+          "probability": 0.9013671875
+        },
+        {
+          "text": "声",
+          "start": 4.08,
+          "end": 4.26,
+          "probability": 0.99267578125
+        },
+        {
+          "text": "爬",
+          "start": 4.26,
+          "end": 4.46,
+          "probability": 0.955810546875
+        },
+        {
+          "text": "进",
+          "start": 4.46,
+          "end": 4.6,
+          "probability": 0.98681640625
+        },
+        {
+          "text": "搅",
+          "start": 4.6,
+          "end": 4.82,
+          "probability": 0.978271484375
+        },
+        {
+          "text": "拌",
+          "start": 4.82,
+          "end": 4.98,
+          "probability": 0.998779296875
+        },
+        {
+          "text": "管",
+          "start": 4.98,
+          "end": 5.12,
+          "probability": 0.6005859375
+        },
+        {
+          "text": "里",
+          "start": 5.12,
+          "end": 5.32,
+          "probability": 0.396484375
+        }
+      ]
+    },
+    {
+      "start": 5.32,
+      "end": 6.58,
+      "text": "在轮起沉冻的铁锤",
+      "words": [
+        {
+          "text": "在",
+          "start": 5.32,
+          "end": 5.52,
+          "probability": 0.461669921875
+        },
+        {
+          "text": "轮",
+          "start": 5.52,
+          "end": 5.68,
+          "probability": 0.99365234375
+        },
+        {
+          "text": "起",
+          "start": 5.68,
+          "end": 5.82,
+          "probability": 0.7333984375
+        },
+        {
+          "text": "沉",
+          "start": 5.82,
+          "end": 6.0,
+          "probability": 0.8359375
+        },
+        {
+          "text": "冻",
+          "start": 6.0,
+          "end": 6.12,
+          "probability": 0.7939453125
+        },
+        {
+          "text": "的",
+          "start": 6.12,
+          "end": 6.24,
+          "probability": 0.962890625
+        },
+        {
+          "text": "铁",
+          "start": 6.24,
+          "end": 6.4,
+          "probability": 0.98876953125
+        },
+        {
+          "text": "锤",
+          "start": 6.4,
+          "end": 6.58,
+          "probability": 0.965576171875
+        }
+      ]
+    },
+    {
+      "start": 6.58,
+      "end": 8.92,
+      "text": "把硬的像石头的混凝土结块砸碎",
+      "words": [
+        {
+          "text": "把",
+          "start": 6.58,
+          "end": 6.86,
+          "probability": 0.8291015625
+        },
+        {
+          "text": "硬",
+          "start": 6.86,
+          "end": 6.98,
+          "probability": 0.950439453125
+        },
+        {
+          "text": "的",
+          "start": 6.98,
+          "end": 7.1,
+          "probability": 0.6533203125
+        },
+        {
+          "text": "像",
+          "start": 7.1,
+          "end": 7.24,
+          "probability": 0.69140625
+        },
+        {
+          "text": "石",
+          "start": 7.24,
+          "end": 7.5,
+          "probability": 0.96875
+        },
+        {
+          "text": "头",
+          "start": 7.5,
+          "end": 7.62,
+          "probability": 0.8203125
+        },
+        {
+          "text": "的",
+          "start": 7.62,
+          "end": 7.7,
+          "probability": 0.99267578125
+        },
+        {
+          "text": "混",
+          "start": 7.7,
+          "end": 7.86,
+          "probability": 0.99609375
+        },
+        {
+          "text": "凝",
+          "start": 7.86,
+          "end": 7.98,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "土",
+          "start": 7.98,
+          "end": 8.16,
+          "probability": 0.998046875
+        },
+        {
+          "text": "结",
+          "start": 8.16,
+          "end": 8.34,
+          "probability": 0.46044921875
+        },
+        {
+          "text": "块",
+          "start": 8.34,
+          "end": 8.5,
+          "probability": 0.9765625
+        },
+        {
+          "text": "砸",
+          "start": 8.5,
+          "end": 8.68,
+          "probability": 0.85986328125
+        },
+        {
+          "text": "碎",
+          "start": 8.68,
+          "end": 8.92,
+          "probability": 0.99853515625
+        }
+      ]
+    },
+    {
+      "start": 8.92,
+      "end": 10.68,
+      "text": "就为了不绕这些硬块粘成一坨",
+      "words": [
+        {
+          "text": "就",
+          "start": 8.92,
+          "end": 9.14,
+          "probability": 0.9462890625
+        },
+        {
+          "text": "为",
+          "start": 9.14,
+          "end": 9.28,
+          "probability": 0.99462890625
+        },
+        {
+          "text": "了",
+          "start": 9.28,
+          "end": 9.38,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "不",
+          "start": 9.38,
+          "end": 9.48,
+          "probability": 0.60107421875
+        },
+        {
+          "text": "绕",
+          "start": 9.48,
+          "end": 9.56,
+          "probability": 0.7783203125
+        },
+        {
+          "text": "这",
+          "start": 9.56,
+          "end": 9.74,
+          "probability": 0.9345703125
+        },
+        {
+          "text": "些",
+          "start": 9.74,
+          "end": 9.82,
+          "probability": 0.99560546875
+        },
+        {
+          "text": "硬",
+          "start": 9.82,
+          "end": 9.96,
+          "probability": 0.990966796875
+        },
+        {
+          "text": "块",
+          "start": 9.96,
+          "end": 10.12,
+          "probability": 0.97021484375
+        },
+        {
+          "text": "粘",
+          "start": 10.12,
+          "end": 10.28,
+          "probability": 0.92041015625
+        },
+        {
+          "text": "成",
+          "start": 10.28,
+          "end": 10.42,
+          "probability": 0.77294921875
+        },
+        {
+          "text": "一",
+          "start": 10.42,
+          "end": 10.56,
+          "probability": 0.9814453125
+        },
+        {
+          "text": "坨",
+          "start": 10.56,
+          "end": 10.68,
+          "probability": 0.911865234375
+        }
+      ]
+    },
+    {
+      "start": 10.68,
+      "end": 11.86,
+      "text": "如丝整个罐体",
+      "words": [
+        {
+          "text": "如",
+          "start": 10.68,
+          "end": 11.02,
+          "probability": 0.282958984375
+        },
+        {
+          "text": "丝",
+          "start": 11.02,
+          "end": 11.18,
+          "probability": 0.81005859375
+        },
+        {
+          "text": "整",
+          "start": 11.18,
+          "end": 11.36,
+          "probability": 0.99658203125
+        },
+        {
+          "text": "个",
+          "start": 11.36,
+          "end": 11.48,
+          "probability": 0.998046875
+        },
+        {
+          "text": "罐",
+          "start": 11.48,
+          "end": 11.64,
+          "probability": 0.6851806640625
+        },
+        {
+          "text": "体",
+          "start": 11.64,
+          "end": 11.86,
+          "probability": 0.888671875
+        }
+      ]
+    },
+    {
+      "start": 11.86,
+      "end": 13.52,
+      "text": "罐子里全是呛人的粉尘",
+      "words": [
+        {
+          "text": "罐",
+          "start": 11.86,
+          "end": 12.18,
+          "probability": 0.7237548828125
+        },
+        {
+          "text": "子",
+          "start": 12.18,
+          "end": 12.32,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "里",
+          "start": 12.32,
+          "end": 12.44,
+          "probability": 0.99658203125
+        },
+        {
+          "text": "全",
+          "start": 12.44,
+          "end": 12.62,
+          "probability": 0.97900390625
+        },
+        {
+          "text": "是",
+          "start": 12.62,
+          "end": 12.76,
+          "probability": 0.99169921875
+        },
+        {
+          "text": "呛",
+          "start": 12.76,
+          "end": 12.94,
+          "probability": 0.7110595703125
+        },
+        {
+          "text": "人",
+          "start": 12.94,
+          "end": 13.06,
+          "probability": 0.7763671875
+        },
+        {
+          "text": "的",
+          "start": 13.06,
+          "end": 13.14,
+          "probability": 0.99267578125
+        },
+        {
+          "text": "粉",
+          "start": 13.14,
+          "end": 13.3,
+          "probability": 0.97314453125
+        },
+        {
+          "text": "尘",
+          "start": 13.3,
+          "end": 13.52,
+          "probability": 0.912353515625
+        }
+      ]
+    },
+    {
+      "start": 13.52,
+      "end": 14.82,
+      "text": "噪音大到震耳朵",
+      "words": [
+        {
+          "text": "噪",
+          "start": 13.52,
+          "end": 13.92,
+          "probability": 0.941162109375
+        },
+        {
+          "text": "音",
+          "start": 13.92,
+          "end": 14.1,
+          "probability": 0.9384765625
+        },
+        {
+          "text": "大",
+          "start": 14.1,
+          "end": 14.26,
+          "probability": 0.9931640625
+        },
+        {
+          "text": "到",
+          "start": 14.26,
+          "end": 14.38,
+          "probability": 0.99658203125
+        },
+        {
+          "text": "震",
+          "start": 14.38,
+          "end": 14.52,
+          "probability": 0.738037109375
+        },
+        {
+          "text": "耳",
+          "start": 14.52,
+          "end": 14.68,
+          "probability": 0.96533203125
+        },
+        {
+          "text": "朵",
+          "start": 14.68,
+          "end": 14.82,
+          "probability": 0.8076171875
+        }
+      ]
+    },
+    {
+      "start": 14.82,
+      "end": 16.46,
+      "text": "司机必须全程戴口罩",
+      "words": [
+        {
+          "text": "司",
+          "start": 14.82,
+          "end": 15.22,
+          "probability": 0.9853515625
+        },
+        {
+          "text": "机",
+          "start": 15.22,
+          "end": 15.34,
+          "probability": 0.998046875
+        },
+        {
+          "text": "必",
+          "start": 15.34,
+          "end": 15.52,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "须",
+          "start": 15.52,
+          "end": 15.64,
+          "probability": 0.988525390625
+        },
+        {
+          "text": "全",
+          "start": 15.64,
+          "end": 15.82,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "程",
+          "start": 15.82,
+          "end": 15.96,
+          "probability": 0.97509765625
+        },
+        {
+          "text": "戴",
+          "start": 15.96,
+          "end": 16.1,
+          "probability": 0.9697265625
+        },
+        {
+          "text": "口",
+          "start": 16.1,
+          "end": 16.3,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "罩",
+          "start": 16.3,
+          "end": 16.46,
+          "probability": 0.999755859375
+        }
+      ]
+    },
+    {
+      "start": 16.46,
+      "end": 18.32,
+      "text": "少不注意粉尘就会钻进沸里",
+      "words": [
+        {
+          "text": "少",
+          "start": 16.46,
+          "end": 16.84,
+          "probability": 0.375732421875
+        },
+        {
+          "text": "不",
+          "start": 16.84,
+          "end": 16.98,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "注意",
+          "start": 16.98,
+          "end": 17.12,
+          "probability": 0.489501953125
+        },
+        {
+          "text": "粉",
+          "start": 17.12,
+          "end": 17.32,
+          "probability": 0.9951171875
+        },
+        {
+          "text": "尘",
+          "start": 17.32,
+          "end": 17.46,
+          "probability": 0.99658203125
+        },
+        {
+          "text": "就",
+          "start": 17.46,
+          "end": 17.6,
+          "probability": 0.95849609375
+        },
+        {
+          "text": "会",
+          "start": 17.6,
+          "end": 17.72,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "钻",
+          "start": 17.72,
+          "end": 17.86,
+          "probability": 0.949462890625
+        },
+        {
+          "text": "进",
+          "start": 17.86,
+          "end": 18.0,
+          "probability": 0.65283203125
+        },
+        {
+          "text": "沸",
+          "start": 18.0,
+          "end": 18.16,
+          "probability": 0.813232421875
+        },
+        {
+          "text": "里",
+          "start": 18.16,
+          "end": 18.32,
+          "probability": 0.96533203125
+        }
+      ]
+    },
+    {
+      "start": 18.32,
+      "end": 19.22,
+      "text": "你肯定不知道",
+      "words": [
+        {
+          "text": "你",
+          "start": 18.32,
+          "end": 18.6,
+          "probability": 0.9833984375
+        },
+        {
+          "text": "肯",
+          "start": 18.6,
+          "end": 18.76,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "定",
+          "start": 18.76,
+          "end": 18.88,
+          "probability": 1.0
+        },
+        {
+          "text": "不知道",
+          "start": 18.88,
+          "end": 19.22,
+          "probability": 0.978515625
+        }
+      ]
+    },
+    {
+      "start": 19.22,
+      "end": 21.68,
+      "text": "运输时司机还得定期往管里加冰",
+      "words": [
+        {
+          "text": "运",
+          "start": 19.22,
+          "end": 19.62,
+          "probability": 0.99560546875
+        },
+        {
+          "text": "输",
+          "start": 19.62,
+          "end": 19.8,
+          "probability": 0.931640625
+        },
+        {
+          "text": "时",
+          "start": 19.8,
+          "end": 19.92,
+          "probability": 0.80419921875
+        },
+        {
+          "text": "司",
+          "start": 19.92,
+          "end": 20.08,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "机",
+          "start": 20.08,
+          "end": 20.24,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "还",
+          "start": 20.24,
+          "end": 20.38,
+          "probability": 0.9921875
+        },
+        {
+          "text": "得",
+          "start": 20.38,
+          "end": 20.5,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "定",
+          "start": 20.5,
+          "end": 20.64,
+          "probability": 0.99609375
+        },
+        {
+          "text": "期",
+          "start": 20.64,
+          "end": 20.78,
+          "probability": 0.99560546875
+        },
+        {
+          "text": "往",
+          "start": 20.78,
+          "end": 20.98,
+          "probability": 0.9296875
+        },
+        {
+          "text": "管",
+          "start": 20.98,
+          "end": 21.14,
+          "probability": 0.8681640625
+        },
+        {
+          "text": "里",
+          "start": 21.14,
+          "end": 21.24,
+          "probability": 0.9326171875
+        },
+        {
+          "text": "加",
+          "start": 21.24,
+          "end": 21.4,
+          "probability": 0.8740234375
+        },
+        {
+          "text": "冰",
+          "start": 21.4,
+          "end": 21.68,
+          "probability": 0.759033203125
+        }
+      ]
+    },
+    {
+      "start": 21.68,
+      "end": 23.16,
+      "text": "既能锁入混凝土的水分",
+      "words": [
+        {
+          "text": "既",
+          "start": 21.68,
+          "end": 21.84,
+          "probability": 0.822998046875
+        },
+        {
+          "text": "能",
+          "start": 21.84,
+          "end": 21.98,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "锁",
+          "start": 21.98,
+          "end": 22.14,
+          "probability": 0.9755859375
+        },
+        {
+          "text": "入",
+          "start": 22.14,
+          "end": 22.26,
+          "probability": 0.953125
+        },
+        {
+          "text": "混",
+          "start": 22.26,
+          "end": 22.46,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "凝",
+          "start": 22.46,
+          "end": 22.6,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "土",
+          "start": 22.6,
+          "end": 22.68,
+          "probability": 0.97998046875
+        },
+        {
+          "text": "的",
+          "start": 22.68,
+          "end": 22.78,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "水",
+          "start": 22.78,
+          "end": 22.96,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "分",
+          "start": 22.96,
+          "end": 23.16,
+          "probability": 0.65087890625
+        }
+      ]
+    },
+    {
+      "start": 23.16,
+      "end": 24.96,
+      "text": "又能防止它半路提前凝固",
+      "words": [
+        {
+          "text": "又",
+          "start": 23.16,
+          "end": 23.4,
+          "probability": 0.8916015625
+        },
+        {
+          "text": "能",
+          "start": 23.4,
+          "end": 23.52,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "防",
+          "start": 23.52,
+          "end": 23.68,
+          "probability": 0.98876953125
+        },
+        {
+          "text": "止",
+          "start": 23.68,
+          "end": 23.8,
+          "probability": 0.9619140625
+        },
+        {
+          "text": "它",
+          "start": 23.8,
+          "end": 23.9,
+          "probability": 0.68603515625
+        },
+        {
+          "text": "半",
+          "start": 23.9,
+          "end": 24.08,
+          "probability": 0.8681640625
+        },
+        {
+          "text": "路",
+          "start": 24.08,
+          "end": 24.2,
+          "probability": 0.98388671875
+        },
+        {
+          "text": "提",
+          "start": 24.2,
+          "end": 24.4,
+          "probability": 0.99609375
+        },
+        {
+          "text": "前",
+          "start": 24.4,
+          "end": 24.6,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "凝",
+          "start": 24.6,
+          "end": 24.76,
+          "probability": 0.978271484375
+        },
+        {
+          "text": "固",
+          "start": 24.76,
+          "end": 24.96,
+          "probability": 0.997802734375
+        }
+      ]
+    },
+    {
+      "start": 24.96,
+      "end": 25.72,
+      "text": "与此同时",
+      "words": [
+        {
+          "text": "与",
+          "start": 24.96,
+          "end": 25.26,
+          "probability": 0.5289459228515625
+        },
+        {
+          "text": "此",
+          "start": 25.26,
+          "end": 25.42,
+          "probability": 1.0
+        },
+        {
+          "text": "同",
+          "start": 25.42,
+          "end": 25.52,
+          "probability": 0.9951171875
+        },
+        {
+          "text": "时",
+          "start": 25.52,
+          "end": 25.72,
+          "probability": 0.98486328125
+        }
+      ]
+    },
+    {
+      "start": 25.72,
+      "end": 28.32,
+      "text": "施工工人会检测送达混凝土的流动性",
+      "words": [
+        {
+          "text": "施",
+          "start": 25.72,
+          "end": 26.12,
+          "probability": 0.53778076171875
+        },
+        {
+          "text": "工",
+          "start": 26.12,
+          "end": 26.24,
+          "probability": 0.99169921875
+        },
+        {
+          "text": "工",
+          "start": 26.24,
+          "end": 26.4,
+          "probability": 0.99609375
+        },
+        {
+          "text": "人",
+          "start": 26.4,
+          "end": 26.5,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "会",
+          "start": 26.5,
+          "end": 26.62,
+          "probability": 0.98876953125
+        },
+        {
+          "text": "检",
+          "start": 26.62,
+          "end": 26.8,
+          "probability": 0.99462890625
+        },
+        {
+          "text": "测",
+          "start": 26.8,
+          "end": 26.96,
+          "probability": 0.998779296875
+        },
+        {
+          "text": "送",
+          "start": 26.96,
+          "end": 27.12,
+          "probability": 0.4755859375
+        },
+        {
+          "text": "达",
+          "start": 27.12,
+          "end": 27.32,
+          "probability": 0.982666015625
+        },
+        {
+          "text": "混",
+          "start": 27.32,
+          "end": 27.44,
+          "probability": 0.986328125
+        },
+        {
+          "text": "凝",
+          "start": 27.44,
+          "end": 27.54,
+          "probability": 0.998291015625
+        },
+        {
+          "text": "土",
+          "start": 27.54,
+          "end": 27.7,
+          "probability": 0.513671875
+        },
+        {
+          "text": "的",
+          "start": 27.7,
+          "end": 27.82,
+          "probability": 0.994140625
+        },
+        {
+          "text": "流",
+          "start": 27.82,
+          "end": 27.98,
+          "probability": 0.9892578125
+        },
+        {
+          "text": "动",
+          "start": 27.98,
+          "end": 28.12,
+          "probability": 0.9951171875
+        },
+        {
+          "text": "性",
+          "start": 28.12,
+          "end": 28.32,
+          "probability": 1.0
+        }
+      ]
+    },
+    {
+      "start": 28.32,
+      "end": 30.44,
+      "text": "判断其是否符合规定标准",
+      "words": [
+        {
+          "text": "判",
+          "start": 28.32,
+          "end": 28.68,
+          "probability": 0.9755859375
+        },
+        {
+          "text": "断",
+          "start": 28.68,
+          "end": 28.82,
+          "probability": 0.997802734375
+        },
+        {
+          "text": "其",
+          "start": 28.82,
+          "end": 28.98,
+          "probability": 0.92578125
+        },
+        {
+          "text": "是",
+          "start": 28.98,
+          "end": 29.2,
+          "probability": 0.98974609375
+        },
+        {
+          "text": "否",
+          "start": 29.2,
+          "end": 29.32,
+          "probability": 1.0
+        },
+        {
+          "text": "符",
+          "start": 29.32,
+          "end": 29.52,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "合",
+          "start": 29.52,
+          "end": 29.68,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "规",
+          "start": 29.68,
+          "end": 29.86,
+          "probability": 0.995361328125
+        },
+        {
+          "text": "定",
+          "start": 29.86,
+          "end": 30.0,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "标",
+          "start": 30.0,
+          "end": 30.2,
+          "probability": 0.997314453125
+        },
+        {
+          "text": "准",
+          "start": 30.2,
+          "end": 30.44,
+          "probability": 0.999755859375
+        }
+      ]
+    },
+    {
+      "start": 30.44,
+      "end": 32.66,
+      "text": "这一步是为了保障健身的房屋坚固耐用",
+      "words": [
+        {
+          "text": "这",
+          "start": 30.44,
+          "end": 30.66,
+          "probability": 0.96484375
+        },
+        {
+          "text": "一",
+          "start": 30.66,
+          "end": 30.78,
+          "probability": 0.962890625
+        },
+        {
+          "text": "步",
+          "start": 30.78,
+          "end": 30.86,
+          "probability": 0.81787109375
+        },
+        {
+          "text": "是",
+          "start": 30.86,
+          "end": 30.98,
+          "probability": 0.98681640625
+        },
+        {
+          "text": "为",
+          "start": 30.98,
+          "end": 31.04,
+          "probability": 0.99462890625
+        },
+        {
+          "text": "了",
+          "start": 31.04,
+          "end": 31.14,
+          "probability": 0.99658203125
+        },
+        {
+          "text": "保",
+          "start": 31.14,
+          "end": 31.26,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "障",
+          "start": 31.26,
+          "end": 31.4,
+          "probability": 0.994384765625
+        },
+        {
+          "text": "健",
+          "start": 31.4,
+          "end": 31.58,
+          "probability": 0.1334228515625
+        },
+        {
+          "text": "身",
+          "start": 31.58,
+          "end": 31.72,
+          "probability": 0.66552734375
+        },
+        {
+          "text": "的",
+          "start": 31.72,
+          "end": 31.8,
+          "probability": 0.9912109375
+        },
+        {
+          "text": "房",
+          "start": 31.8,
+          "end": 31.92,
+          "probability": 0.58154296875
+        },
+        {
+          "text": "屋",
+          "start": 31.92,
+          "end": 32.06,
+          "probability": 0.993408203125
+        },
+        {
+          "text": "坚",
+          "start": 32.06,
+          "end": 32.2,
+          "probability": 0.59228515625
+        },
+        {
+          "text": "固",
+          "start": 32.2,
+          "end": 32.34,
+          "probability": 0.993408203125
+        },
+        {
+          "text": "耐",
+          "start": 32.34,
+          "end": 32.5,
+          "probability": 0.910400390625
+        },
+        {
+          "text": "用",
+          "start": 32.5,
+          "end": 32.66,
+          "probability": 0.99853515625
+        }
+      ]
+    },
+    {
+      "start": 32.66,
+      "end": 33.8,
+      "text": "混凝土送达后",
+      "words": [
+        {
+          "text": "混",
+          "start": 32.66,
+          "end": 33.02,
+          "probability": 0.9951171875
+        },
+        {
+          "text": "凝",
+          "start": 33.02,
+          "end": 33.18,
+          "probability": 0.999755859375
+        },
+        {
+          "text": "土",
+          "start": 33.18,
+          "end": 33.3,
+          "probability": 0.99560546875
+        },
+        {
+          "text": "送",
+          "start": 33.3,
+          "end": 33.46,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "达",
+          "start": 33.46,
+          "end": 33.66,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "后",
+          "start": 33.66,
+          "end": 33.8,
+          "probability": 0.99658203125
+        }
+      ]
+    },
+    {
+      "start": 33.8,
+      "end": 35.88,
+      "text": "司机必须彻底清洗搅拌罐",
+      "words": [
+        {
+          "text": "司",
+          "start": 33.8,
+          "end": 34.16,
+          "probability": 0.818359375
+        },
+        {
+          "text": "机",
+          "start": 34.16,
+          "end": 34.32,
+          "probability": 0.986328125
+        },
+        {
+          "text": "必",
+          "start": 34.32,
+          "end": 34.52,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "须",
+          "start": 34.52,
+          "end": 34.68,
+          "probability": 0.992431640625
+        },
+        {
+          "text": "彻",
+          "start": 34.68,
+          "end": 34.86,
+          "probability": 0.978515625
+        },
+        {
+          "text": "底",
+          "start": 34.86,
+          "end": 35.0,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "清",
+          "start": 35.0,
+          "end": 35.18,
+          "probability": 0.98974609375
+        },
+        {
+          "text": "洗",
+          "start": 35.18,
+          "end": 35.36,
+          "probability": 0.91015625
+        },
+        {
+          "text": "搅",
+          "start": 35.36,
+          "end": 35.56,
+          "probability": 0.69921875
+        },
+        {
+          "text": "拌",
+          "start": 35.56,
+          "end": 35.72,
+          "probability": 0.997314453125
+        },
+        {
+          "text": "罐",
+          "start": 35.72,
+          "end": 35.88,
+          "probability": 0.947265625
+        }
+      ]
+    },
+    {
+      "start": 35.88,
+      "end": 37.96,
+      "text": "把管内残留的混凝土冲洗干净",
+      "words": [
+        {
+          "text": "把",
+          "start": 35.88,
+          "end": 36.18,
+          "probability": 0.9853515625
+        },
+        {
+          "text": "管",
+          "start": 36.18,
+          "end": 36.32,
+          "probability": 0.0142059326171875
+        },
+        {
+          "text": "内",
+          "start": 36.32,
+          "end": 36.42,
+          "probability": 0.9931640625
+        },
+        {
+          "text": "残",
+          "start": 36.42,
+          "end": 36.6,
+          "probability": 0.984130859375
+        },
+        {
+          "text": "留",
+          "start": 36.6,
+          "end": 36.72,
+          "probability": 0.98046875
+        },
+        {
+          "text": "的",
+          "start": 36.72,
+          "end": 36.8,
+          "probability": 0.93408203125
+        },
+        {
+          "text": "混",
+          "start": 36.8,
+          "end": 36.96,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "凝",
+          "start": 36.96,
+          "end": 37.08,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "土",
+          "start": 37.08,
+          "end": 37.24,
+          "probability": 0.998046875
+        },
+        {
+          "text": "冲",
+          "start": 37.24,
+          "end": 37.4,
+          "probability": 0.746826171875
+        },
+        {
+          "text": "洗",
+          "start": 37.4,
+          "end": 37.56,
+          "probability": 0.98486328125
+        },
+        {
+          "text": "干",
+          "start": 37.56,
+          "end": 37.7,
+          "probability": 0.9873046875
+        },
+        {
+          "text": "净",
+          "start": 37.7,
+          "end": 37.96,
+          "probability": 0.99658203125
+        }
+      ]
+    },
+    {
+      "start": 37.96,
+      "end": 38.94,
+      "text": "一旦耽误了时间",
+      "words": [
+        {
+          "text": "一",
+          "start": 37.96,
+          "end": 38.22,
+          "probability": 0.97705078125
+        },
+        {
+          "text": "旦",
+          "start": 38.22,
+          "end": 38.36,
+          "probability": 0.997802734375
+        },
+        {
+          "text": "耽",
+          "start": 38.36,
+          "end": 38.5,
+          "probability": 0.996826171875
+        },
+        {
+          "text": "误",
+          "start": 38.5,
+          "end": 38.62,
+          "probability": 0.98828125
+        },
+        {
+          "text": "了",
+          "start": 38.62,
+          "end": 38.72,
+          "probability": 0.96875
+        },
+        {
+          "text": "时间",
+          "start": 38.72,
+          "end": 38.94,
+          "probability": 0.9912109375
+        }
+      ]
+    },
+    {
+      "start": 38.94,
+      "end": 41.42,
+      "text": "管内混凝土会彻底硬化成实心硬块",
+      "words": [
+        {
+          "text": "管",
+          "start": 38.94,
+          "end": 39.34,
+          "probability": 0.90576171875
+        },
+        {
+          "text": "内",
+          "start": 39.34,
+          "end": 39.48,
+          "probability": 0.99658203125
+        },
+        {
+          "text": "混",
+          "start": 39.48,
+          "end": 39.62,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "凝",
+          "start": 39.62,
+          "end": 39.76,
+          "probability": 0.999267578125
+        },
+        {
+          "text": "土",
+          "start": 39.76,
+          "end": 39.88,
+          "probability": 0.998046875
+        },
+        {
+          "text": "会",
+          "start": 39.88,
+          "end": 40.0,
+          "probability": 0.99169921875
+        },
+        {
+          "text": "彻",
+          "start": 40.0,
+          "end": 40.2,
+          "probability": 0.997802734375
+        },
+        {
+          "text": "底",
+          "start": 40.2,
+          "end": 40.36,
+          "probability": 1.0
+        },
+        {
+          "text": "硬",
+          "start": 40.36,
+          "end": 40.48,
+          "probability": 0.789306640625
+        },
+        {
+          "text": "化",
+          "start": 40.48,
+          "end": 40.62,
+          "probability": 0.98974609375
+        },
+        {
+          "text": "成",
+          "start": 40.62,
+          "end": 40.76,
+          "probability": 0.998046875
+        },
+        {
+          "text": "实",
+          "start": 40.76,
+          "end": 40.94,
+          "probability": 0.93115234375
+        },
+        {
+          "text": "心",
+          "start": 40.94,
+          "end": 41.08,
+          "probability": 0.43017578125
+        },
+        {
+          "text": "硬",
+          "start": 41.08,
+          "end": 41.24,
+          "probability": 0.993896484375
+        },
+        {
+          "text": "块",
+          "start": 41.24,
+          "end": 41.42,
+          "probability": 0.869140625
+        }
+      ]
+    },
+    {
+      "start": 41.42,
+      "end": 43.76,
+      "text": "否则整辆搅拌车斗可能因此报废",
+      "words": [
+        {
+          "text": "否",
+          "start": 41.42,
+          "end": 41.72,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "则",
+          "start": 41.72,
+          "end": 41.88,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "整",
+          "start": 41.88,
+          "end": 42.02,
+          "probability": 0.962890625
+        },
+        {
+          "text": "辆",
+          "start": 42.02,
+          "end": 42.14,
+          "probability": 0.803955078125
+        },
+        {
+          "text": "搅",
+          "start": 42.14,
+          "end": 42.32,
+          "probability": 0.999267578125
+        },
+        {
+          "text": "拌",
+          "start": 42.32,
+          "end": 42.44,
+          "probability": 0.999267578125
+        },
+        {
+          "text": "车",
+          "start": 42.44,
+          "end": 42.66,
+          "probability": 0.964599609375
+        },
+        {
+          "text": "斗",
+          "start": 42.66,
+          "end": 42.76,
+          "probability": 0.83349609375
+        },
+        {
+          "text": "可能",
+          "start": 42.76,
+          "end": 43.02,
+          "probability": 0.9892578125
+        },
+        {
+          "text": "因",
+          "start": 43.02,
+          "end": 43.22,
+          "probability": 0.9951171875
+        },
+        {
+          "text": "此",
+          "start": 43.22,
+          "end": 43.38,
+          "probability": 1.0
+        },
+        {
+          "text": "报",
+          "start": 43.38,
+          "end": 43.54,
+          "probability": 0.73193359375
+        },
+        {
+          "text": "废",
+          "start": 43.54,
+          "end": 43.76,
+          "probability": 0.929443359375
+        }
+      ]
+    },
+    {
+      "start": 43.76,
+      "end": 45.86,
+      "text": "到那时候就算逗用大型机械",
+      "words": [
+        {
+          "text": "到",
+          "start": 43.76,
+          "end": 44.0,
+          "probability": 0.86474609375
+        },
+        {
+          "text": "那",
+          "start": 44.0,
+          "end": 44.14,
+          "probability": 0.98095703125
+        },
+        {
+          "text": "时候",
+          "start": 44.14,
+          "end": 44.34,
+          "probability": 0.97509765625
+        },
+        {
+          "text": "就",
+          "start": 44.34,
+          "end": 44.54,
+          "probability": 0.99267578125
+        },
+        {
+          "text": "算",
+          "start": 44.54,
+          "end": 44.7,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "逗",
+          "start": 44.7,
+          "end": 44.86,
+          "probability": 0.6259765625
+        },
+        {
+          "text": "用",
+          "start": 44.86,
+          "end": 44.98,
+          "probability": 0.99462890625
+        },
+        {
+          "text": "大",
+          "start": 44.98,
+          "end": 45.14,
+          "probability": 0.98974609375
+        },
+        {
+          "text": "型",
+          "start": 45.14,
+          "end": 45.3,
+          "probability": 0.990234375
+        },
+        {
+          "text": "机",
+          "start": 45.3,
+          "end": 45.52,
+          "probability": 0.98095703125
+        },
+        {
+          "text": "械",
+          "start": 45.52,
+          "end": 45.86,
+          "probability": 0.999267578125
+        }
+      ]
+    },
+    {
+      "start": 45.86,
+      "end": 47.16,
+      "text": "也压根清理不干净",
+      "words": [
+        {
+          "text": "也",
+          "start": 45.86,
+          "end": 46.04,
+          "probability": 0.70703125
+        },
+        {
+          "text": "压",
+          "start": 46.04,
+          "end": 46.2,
+          "probability": 0.916259765625
+        },
+        {
+          "text": "根",
+          "start": 46.2,
+          "end": 46.34,
+          "probability": 0.98974609375
+        },
+        {
+          "text": "清",
+          "start": 46.34,
+          "end": 46.52,
+          "probability": 0.95361328125
+        },
+        {
+          "text": "理",
+          "start": 46.52,
+          "end": 46.66,
+          "probability": 0.958984375
+        },
+        {
+          "text": "不",
+          "start": 46.66,
+          "end": 46.8,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "干",
+          "start": 46.8,
+          "end": 46.96,
+          "probability": 0.998046875
+        },
+        {
+          "text": "净",
+          "start": 46.96,
+          "end": 47.16,
+          "probability": 0.9853515625
+        }
+      ]
+    }
+  ]
+}

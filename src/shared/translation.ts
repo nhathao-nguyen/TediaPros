@@ -26,6 +26,7 @@ export type TranslationIssueCode =
   | 'provider-auth'
   | 'provider-transient'
   | 'provider-protocol'
+  | 'provider-throttled'
   | 'cancelled'
 
 export interface TranslationIssue {
@@ -58,6 +59,8 @@ export interface TranslationInput {
   sourceLanguage: string
   targetLocale: string
   mode: TranslationMode
+  /** Actual source-media duration when known; used only for source-anchored dubbing budgets. */
+  sourceVideoDuration?: number
   cues: TranslationCue[]
   contextBefore: TranslationCue[]
   contextAfter: TranslationCue[]
@@ -110,6 +113,17 @@ export interface TranslationCapability {
   contextTokens: number | null
   outputTokens: number | null
   countTokens?: (text: string) => number
+  /** Exactly one layer owns automatic transport retries for this provider path. */
+  transportRetryOwner?: 'orchestrator' | 'gateway'
+  /**
+   * Adapter-owned timeouts are required when one logical translation batch
+   * performs multiple sequential network requests. The adapter must then put
+   * a bounded deadline around every outbound request; the orchestrator keeps
+   * ownership of user cancellation and any enabled whole-run budget.
+   */
+  requestTimeoutOwner?: 'orchestrator' | 'adapter'
+  /** Adapter has a qualified output-cap policy and may partition requested IDs by an estimate. */
+  outputAware?: boolean
 }
 
 /** Capability is evidence for one stage; it is independent from locale labels. */

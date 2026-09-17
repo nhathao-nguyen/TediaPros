@@ -13,7 +13,7 @@ export function parseGeminiKeys(value: string): string[] {
   if (typeof value !== 'string' || value.length > 20_000) throw new Error('Danh sách khóa Gemini không hợp lệ.')
   const keys = [...new Set(value.split(/\r?\n/u).map(key => key.trim()).filter(Boolean))]
   if (keys.length > MAX_KEYS) throw new Error(`Tối đa ${MAX_KEYS} khóa Gemini.`)
-  if (keys.some(key => !/^[A-Za-z0-9_-]{6,256}$/u.test(key))) throw new Error('Mỗi dòng cần một khóa Gemini, không kèm dấu cách hoặc ký tự khác.')
+  if (keys.some(key => !/^[A-Za-z0-9_.-]{6,256}$/u.test(key))) throw new Error('Mỗi dòng cần một khóa Gemini, không kèm dấu cách hoặc ký tự khác.')
   return keys
 }
 
@@ -83,6 +83,7 @@ export interface GeminiRequestResult {
   finishReason?: string
   retryAfterMs?: number
   allKeysExhausted?: boolean
+  model?: string
 }
 
 /** Shared across Gemini translation, rephrase and title requests for this profile. */

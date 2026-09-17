@@ -1,0 +1,45 @@
+[
+  {
+    "status": 200,
+    "id": "chatcmpl-1789450914",
+    "model": "gemini-advanced",
+    "finish_reason": "stop",
+    "response_content_bytes": 6810,
+    "gateway_metadata": {
+      "gateway_contract_version": 2,
+      "requested_model": "gemini-advanced",
+      "resolved_model": "gemini-advanced",
+      "observed_model": "3.1 Pro",
+      "observed_model_id": "e6fa609c3fa255c0",
+      "model_verification": "matched",
+      "route_fingerprint": "29ed9729dbdd53e76081fc89bd7f7991b6a6e2c770e964fd8fa2ceaa0c22c646",
+      "completion_state": "complete",
+      "completion_evidence": "observed-terminal-frame-v1",
+      "normalization": [
+        "unwrap-json-fence"
+      ],
+      "logical_request_id": "3a0592d6-c008-41f5-888a-3fbe1f7b43fb",
+      "upstream_attempts": 1
+    }
+  },
+  {
+    "status": 200,
+    "id": "chatcmpl-1789450967",
+    "model": "gemini-advanced",
+    "finish_reason": "stop",
+    "response_content_bytes": 6833,
+    "gateway_metadata": {
+      "gateway_contract_version": 2,
+      "requested_model": "gemini-advanced",
+      "resolved_model": "gemini-advanced",
+      "observed_model": "3.1 Pro",
+      "observed_model_id": "e6fa609c3fa255c0",
+      "model_verification": "matched",
+      "route_fingerprint": "29ed9729dbdd53e76081fc89bd7f7991b6a6e2c770e964fd8fa2ceaa0c22c646",
+      "completion_state": "complete",
+      "completion_evidence": "observed-terminal-frame-v1",
+      "logical_request_id": "c5dc0647-db1d-4c97-8207-08928c2ff06e",
+      "upstream_attempts": 1
+    }
+  }
+]

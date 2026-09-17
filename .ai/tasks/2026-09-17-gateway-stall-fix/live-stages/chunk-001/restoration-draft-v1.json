@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "state": "validated",
+  "stage": "restoration-draft",
+  "identity": "09b0fbfc4e363b98f8b8807c8f453229bdb374ec8dfadda1797668ae9a19d720",
+  "routeFingerprint": "29ed9729dbdd53e76081fc89bd7f7991b6a6e2c770e964fd8fa2ceaa0c22c646",
+  "evidenceDigest": "581466883e36c80023c6c8dd085478bb43f3e20b41574fbf8dad9be4392026e4",
+  "expectedIds": [
+    "cue-0-0",
+    "cue-1-3480",
+    "cue-2-5160",
+    "cue-3-5940",
+    "cue-4-8600",
+    "cue-5-11380",
+    "cue-6-12640",
+    "cue-7-13840"
+  ],
+  "targetLocale": "vi",
+  "promptVersion": "gateway-restoration-media-v2",
+  "parserVersion": "gateway-restoration-parser-v1",
+  "raw": "{\n  \"schemaVersion\": \"restoration-translation-v1\",\n  \"evidenceDigest\": \"581466883e36c80023c6c8dd085478bb43f3e20b41574fbf8dad9be4392026e4\",\n  \"sourceEdits\": [\n    {\n      \"id\": \"cue-0-0\",\n      \"text\": \"你知道花样游泳运动员在比赛前后都要经历怎样的折磨吗\",\n      \"kind\": \"ocr_alignment\",\n      \"evidenceRefs\": [\n        \"ocr_13\",\n        \"ocr_28\"\n      ]\n    },\n    {\n      \"id\": \"cue-3-5940\",\n      \"text\": \"哪怕是一根头发掉在水里都有可能被扣分\",\n      \"kind\": \"ocr_alignment\",\n      \"evidenceRefs\": [\n        \"ocr_66\",\n        \"ocr_78\"\n      ]\n    },\n    {\n      \"id\": \"cue-4-8600\",\n      \"text\": \"所以每次赛事之前在头发上抹上厚厚的发胶\",\n      \"kind\": \"ocr_alignment\",\n      \"evidenceRefs\": [\n        \"ocr_83\",\n        \"ocr_91\"\n      ]\n    },\n    {\n      \"id\": \"cue-7-13840\",\n      \"text\": \"就像这样用刷子一层一层的往头上刷\",\n      \"kind\": \"ocr_alignment\",\n      \"evidenceRefs\": [\n        \"ocr_127\",\n        \"ocr_136\"\n      ]\n    }\n  ],\n  \"sentenceEndIds\": [\n    \"cue-0-0\",\n    \"cue-3-5940\",\n    \"cue-6-12640\",\n    \"cue-7-13840\"\n  ],\n  \"entities\": [\n    {\n      \"source\": \"花样游泳\",\n      \"target\": \"bơi nghệ thuật\",\n      \"sourceCueIds\": [\n        \"cue-0-0\"\n      ],\n      \"evidenceRefs\": [\n        \"ocr_13\"\n      ]\n    }\n  ],\n  \"items\": [\n    {\n      \"id\": \"cue-0-0\",\n      \"target\": \"Bạn có biết các vận động viên bơi nghệ thuật phải trải qua những nỗi khổ nào trước và sau mỗi cuộc thi không?\"\n    },\n    {\n      \"id\": \"cue-1-3480\",\n      \"target\": \"Mặc dù môn thể thao dưới nước này rất đẹp mắt,\"\n    },\n    {\n      \"id\": \"cue-2-5160\",\n      \"target\": \"nhưng theo quy định,\"\n    },\n    {\n      \"id\": \"cue-3-5940\",\n      \"target\": \"ngay cả một sợi tóc rơi xuống nước cũng có thể bị trừ điểm.\"\n    },\n    {\n      \"id\": \"cue-4-8600\",\n      \"target\": \"Vì vậy, trước mỗi giải đấu, việc bôi một lớp keo xịt tóc dày lên tóc\"\n    },\n    {\n      \"id\": \"cue-5-11380\",\n      \"target\": \"là một việc rất tốn thời gian\"\n    },\n    {\n      \"id\": \"cue-6-12640\",\n      \"target\": \"nhưng bắt buộc phải làm.\"\n    },\n    {\n      \"id\": \"cue-7-13840\",\n      \"target\": \"Giống như thế này, dùng cọ quét từng lớp một lên đầu.\"\n    }\n  ],\n  \"synopsis\": \"The video explains the arduous process artistic swimmers go through before a competition, specifically the time-consuming and mandatory task of applying thick layers of hair gel to prevent any hair from falling into the water and causing point deductions.\"\n}",
+  "rawSha256": "9e8489d2fa27660739cf4761944edcd0218c7ccdd9328ea845a63b6432ceb814",
+  "observedModelId": "e6fa609c3fa255c0",
+  "observedModel": "3.1 Pro",
+  "savedAtUtc": "2026-09-17T14:05:22.678Z"
+}

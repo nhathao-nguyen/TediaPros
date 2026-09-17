@@ -1,0 +1,4662 @@
+{
+  "duration": 78.6938125,
+  "language": "zh",
+  "segments": [
+    {
+      "start": 0.0,
+      "end": 1.08,
+      "text": "這是什麼錢花",
+      "words": [
+        {
+          "text": "這是",
+          "start": 0.0,
+          "end": 0.24,
+          "probability": 0.365478515625
+        },
+        {
+          "text": "什麼",
+          "start": 0.24,
+          "end": 0.6,
+          "probability": 0.92041015625
+        },
+        {
+          "text": "錢",
+          "start": 0.6,
+          "end": 0.84,
+          "probability": 0.154296875
+        },
+        {
+          "text": "花",
+          "start": 0.84,
+          "end": 1.08,
+          "probability": 0.61279296875
+        }
+      ]
+    },
+    {
+      "start": 1.08,
+      "end": 3.06,
+      "text": "這是北非伯伯爾山洋",
+      "words": [
+        {
+          "text": "這是",
+          "start": 1.08,
+          "end": 1.76,
+          "probability": 0.5302734375
+        },
+        {
+          "text": "北",
+          "start": 1.76,
+          "end": 2.04,
+          "probability": 0.63037109375
+        },
+        {
+          "text": "非",
+          "start": 2.04,
+          "end": 2.18,
+          "probability": 0.91015625
+        },
+        {
+          "text": "伯",
+          "start": 2.18,
+          "end": 2.38,
+          "probability": 0.751953125
+        },
+        {
+          "text": "伯",
+          "start": 2.38,
+          "end": 2.52,
+          "probability": 0.977294921875
+        },
+        {
+          "text": "爾",
+          "start": 2.52,
+          "end": 2.66,
+          "probability": 0.91748046875
+        },
+        {
+          "text": "山",
+          "start": 2.66,
+          "end": 2.82,
+          "probability": 0.958984375
+        },
+        {
+          "text": "洋",
+          "start": 2.82,
+          "end": 3.06,
+          "probability": 0.6544189453125
+        }
+      ]
+    },
+    {
+      "start": 3.06,
+      "end": 4.64,
+      "text": "因地面木草潰伐",
+      "words": [
+        {
+          "text": "因",
+          "start": 3.06,
+          "end": 3.62,
+          "probability": 0.477783203125
+        },
+        {
+          "text": "地",
+          "start": 3.62,
+          "end": 3.76,
+          "probability": 0.99609375
+        },
+        {
+          "text": "面",
+          "start": 3.76,
+          "end": 3.92,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "木",
+          "start": 3.92,
+          "end": 4.1,
+          "probability": 0.7744140625
+        },
+        {
+          "text": "草",
+          "start": 4.1,
+          "end": 4.28,
+          "probability": 0.993896484375
+        },
+        {
+          "text": "潰",
+          "start": 4.28,
+          "end": 4.42,
+          "probability": 0.8720703125
+        },
+        {
+          "text": "伐",
+          "start": 4.42,
+          "end": 4.64,
+          "probability": 0.84375
+        }
+      ]
+    },
+    {
+      "start": 4.64,
+      "end": 7.7,
+      "text": "是代演化出潘帕阿甘樹採石果實的本領",
+      "words": [
+        {
+          "text": "是",
+          "start": 4.64,
+          "end": 5.1,
+          "probability": 0.51171875
+        },
+        {
+          "text": "代",
+          "start": 5.1,
+          "end": 5.24,
+          "probability": 0.58984375
+        },
+        {
+          "text": "演",
+          "start": 5.24,
+          "end": 5.44,
+          "probability": 0.85546875
+        },
+        {
+          "text": "化",
+          "start": 5.44,
+          "end": 5.62,
+          "probability": 0.88427734375
+        },
+        {
+          "text": "出",
+          "start": 5.62,
+          "end": 5.78,
+          "probability": 0.98583984375
+        },
+        {
+          "text": "潘",
+          "start": 5.78,
+          "end": 5.98,
+          "probability": 0.6234130859375
+        },
+        {
+          "text": "帕",
+          "start": 5.98,
+          "end": 6.14,
+          "probability": 0.56121826171875
+        },
+        {
+          "text": "阿",
+          "start": 6.14,
+          "end": 6.34,
+          "probability": 0.9677734375
+        },
+        {
+          "text": "甘",
+          "start": 6.34,
+          "end": 6.44,
+          "probability": 0.672607421875
+        },
+        {
+          "text": "樹",
+          "start": 6.44,
+          "end": 6.62,
+          "probability": 0.89990234375
+        },
+        {
+          "text": "採",
+          "start": 6.62,
+          "end": 6.82,
+          "probability": 0.75537109375
+        },
+        {
+          "text": "石",
+          "start": 6.82,
+          "end": 6.98,
+          "probability": 0.55517578125
+        },
+        {
+          "text": "果",
+          "start": 6.98,
+          "end": 7.16,
+          "probability": 0.990234375
+        },
+        {
+          "text": "實",
+          "start": 7.16,
+          "end": 7.28,
+          "probability": 0.91064453125
+        },
+        {
+          "text": "的",
+          "start": 7.28,
+          "end": 7.38,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "本",
+          "start": 7.38,
+          "end": 7.52,
+          "probability": 0.98486328125
+        },
+        {
+          "text": "領",
+          "start": 7.52,
+          "end": 7.7,
+          "probability": 0.99365234375
+        }
+      ]
+    },
+    {
+      "start": 7.7,
+      "end": 9.04,
+      "text": "這是什麼錢花",
+      "words": [
+        {
+          "text": "這是",
+          "start": 7.7,
+          "end": 8.14,
+          "probability": 0.96728515625
+        },
+        {
+          "text": "什麼",
+          "start": 8.14,
+          "end": 8.5,
+          "probability": 0.9833984375
+        },
+        {
+          "text": "錢",
+          "start": 8.5,
+          "end": 8.74,
+          "probability": 0.99365234375
+        },
+        {
+          "text": "花",
+          "start": 8.74,
+          "end": 9.04,
+          "probability": 0.9892578125
+        }
+      ]
+    },
+    {
+      "start": 9.04,
+      "end": 10.88,
+      "text": "這是河馬分泌的年夜",
+      "words": [
+        {
+          "text": "這是",
+          "start": 9.04,
+          "end": 9.6,
+          "probability": 0.873046875
+        },
+        {
+          "text": "河",
+          "start": 9.6,
+          "end": 9.9,
+          "probability": 0.7109375
+        },
+        {
+          "text": "馬",
+          "start": 9.9,
+          "end": 10.06,
+          "probability": 0.97216796875
+        },
+        {
+          "text": "分",
+          "start": 10.06,
+          "end": 10.22,
+          "probability": 0.7685546875
+        },
+        {
+          "text": "泌",
+          "start": 10.22,
+          "end": 10.36,
+          "probability": 0.8271484375
+        },
+        {
+          "text": "的",
+          "start": 10.36,
+          "end": 10.48,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "年",
+          "start": 10.48,
+          "end": 10.62,
+          "probability": 0.8359375
+        },
+        {
+          "text": "夜",
+          "start": 10.62,
+          "end": 10.88,
+          "probability": 0.8916015625
+        }
+      ]
+    },
+    {
+      "start": 10.88,
+      "end": 12.62,
+      "text": "接觸空氣氧化變紅",
+      "words": [
+        {
+          "text": "接",
+          "start": 10.88,
+          "end": 11.38,
+          "probability": 0.962890625
+        },
+        {
+          "text": "觸",
+          "start": 11.38,
+          "end": 11.54,
+          "probability": 0.999755859375
+        },
+        {
+          "text": "空",
+          "start": 11.54,
+          "end": 11.7,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "氣",
+          "start": 11.7,
+          "end": 11.86,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "氧",
+          "start": 11.86,
+          "end": 12.04,
+          "probability": 0.84423828125
+        },
+        {
+          "text": "化",
+          "start": 12.04,
+          "end": 12.2,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "變",
+          "start": 12.2,
+          "end": 12.36,
+          "probability": 0.97607421875
+        },
+        {
+          "text": "紅",
+          "start": 12.36,
+          "end": 12.62,
+          "probability": 0.9462890625
+        }
+      ]
+    },
+    {
+      "start": 12.62,
+      "end": 14.42,
+      "text": "既能防曬又可以抗菌",
+      "words": [
+        {
+          "text": "既",
+          "start": 12.62,
+          "end": 13.1,
+          "probability": 0.61920166015625
+        },
+        {
+          "text": "能",
+          "start": 13.1,
+          "end": 13.24,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "防",
+          "start": 13.24,
+          "end": 13.42,
+          "probability": 0.97900390625
+        },
+        {
+          "text": "曬",
+          "start": 13.42,
+          "end": 13.6,
+          "probability": 0.9482421875
+        },
+        {
+          "text": "又",
+          "start": 13.6,
+          "end": 13.82,
+          "probability": 0.986328125
+        },
+        {
+          "text": "可以",
+          "start": 13.82,
+          "end": 14.06,
+          "probability": 0.99609375
+        },
+        {
+          "text": "抗",
+          "start": 14.06,
+          "end": 14.26,
+          "probability": 0.998779296875
+        },
+        {
+          "text": "菌",
+          "start": 14.26,
+          "end": 14.42,
+          "probability": 0.648193359375
+        }
+      ]
+    },
+    {
+      "start": 14.42,
+      "end": 15.76,
+      "text": "這是什麼錢花",
+      "words": [
+        {
+          "text": "這是",
+          "start": 14.42,
+          "end": 14.88,
+          "probability": 0.9169921875
+        },
+        {
+          "text": "什麼",
+          "start": 14.88,
+          "end": 15.26,
+          "probability": 0.99560546875
+        },
+        {
+          "text": "錢",
+          "start": 15.26,
+          "end": 15.5,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "花",
+          "start": 15.5,
+          "end": 15.76,
+          "probability": 0.9970703125
+        }
+      ]
+    },
+    {
+      "start": 15.76,
+      "end": 17.82,
+      "text": "這可是韓劍的九禪寶財",
+      "words": [
+        {
+          "text": "這",
+          "start": 15.76,
+          "end": 16.36,
+          "probability": 0.287353515625
+        },
+        {
+          "text": "可是",
+          "start": 16.36,
+          "end": 16.6,
+          "probability": 0.9404296875
+        },
+        {
+          "text": "韓",
+          "start": 16.6,
+          "end": 16.86,
+          "probability": 0.7042236328125
+        },
+        {
+          "text": "劍",
+          "start": 16.86,
+          "end": 17.0,
+          "probability": 0.685791015625
+        },
+        {
+          "text": "的",
+          "start": 17.0,
+          "end": 17.12,
+          "probability": 0.9951171875
+        },
+        {
+          "text": "九",
+          "start": 17.12,
+          "end": 17.28,
+          "probability": 0.59228515625
+        },
+        {
+          "text": "禪",
+          "start": 17.28,
+          "end": 17.42,
+          "probability": 0.5682373046875
+        },
+        {
+          "text": "寶",
+          "start": 17.42,
+          "end": 17.6,
+          "probability": 0.9736328125
+        },
+        {
+          "text": "財",
+          "start": 17.6,
+          "end": 17.82,
+          "probability": 0.967529296875
+        }
+      ]
+    },
+    {
+      "start": 17.82,
+      "end": 19.5,
+      "text": "是祥銳降臨的吉兆",
+      "words": [
+        {
+          "text": "是",
+          "start": 17.82,
+          "end": 18.36,
+          "probability": 0.9697265625
+        },
+        {
+          "text": "祥",
+          "start": 18.36,
+          "end": 18.54,
+          "probability": 0.75341796875
+        },
+        {
+          "text": "銳",
+          "start": 18.54,
+          "end": 18.7,
+          "probability": 0.7100830078125
+        },
+        {
+          "text": "降",
+          "start": 18.7,
+          "end": 18.9,
+          "probability": 0.7216796875
+        },
+        {
+          "text": "臨",
+          "start": 18.9,
+          "end": 19.02,
+          "probability": 0.9326171875
+        },
+        {
+          "text": "的",
+          "start": 19.02,
+          "end": 19.16,
+          "probability": 0.9921875
+        },
+        {
+          "text": "吉",
+          "start": 19.16,
+          "end": 19.32,
+          "probability": 0.192626953125
+        },
+        {
+          "text": "兆",
+          "start": 19.32,
+          "end": 19.5,
+          "probability": 0.946044921875
+        }
+      ]
+    },
+    {
+      "start": 19.5,
+      "end": 20.8,
+      "text": "建議送花三朵",
+      "words": [
+        {
+          "text": "建",
+          "start": 19.5,
+          "end": 19.94,
+          "probability": 0.68603515625
+        },
+        {
+          "text": "議",
+          "start": 19.94,
+          "end": 20.12,
+          "probability": 0.6533203125
+        },
+        {
+          "text": "送",
+          "start": 20.12,
+          "end": 20.26,
+          "probability": 0.85498046875
+        },
+        {
+          "text": "花",
+          "start": 20.26,
+          "end": 20.44,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "三",
+          "start": 20.44,
+          "end": 20.62,
+          "probability": 0.8916015625
+        },
+        {
+          "text": "朵",
+          "start": 20.62,
+          "end": 20.8,
+          "probability": 0.98974609375
+        }
+      ]
+    },
+    {
+      "start": 20.8,
+      "end": 23.32,
+      "text": "往後必定服氣長半才運亨通",
+      "words": [
+        {
+          "text": "往",
+          "start": 20.8,
+          "end": 21.38,
+          "probability": 0.490234375
+        },
+        {
+          "text": "後",
+          "start": 21.38,
+          "end": 21.56,
+          "probability": 0.98876953125
+        },
+        {
+          "text": "必",
+          "start": 21.56,
+          "end": 21.74,
+          "probability": 0.88134765625
+        },
+        {
+          "text": "定",
+          "start": 21.74,
+          "end": 21.88,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "服",
+          "start": 21.88,
+          "end": 22.06,
+          "probability": 0.6318359375
+        },
+        {
+          "text": "氣",
+          "start": 22.06,
+          "end": 22.26,
+          "probability": 0.8857421875
+        },
+        {
+          "text": "長",
+          "start": 22.26,
+          "end": 22.46,
+          "probability": 0.5703125
+        },
+        {
+          "text": "半",
+          "start": 22.46,
+          "end": 22.64,
+          "probability": 0.9033203125
+        },
+        {
+          "text": "才",
+          "start": 22.64,
+          "end": 22.8,
+          "probability": 0.70263671875
+        },
+        {
+          "text": "運",
+          "start": 22.8,
+          "end": 22.96,
+          "probability": 0.71923828125
+        },
+        {
+          "text": "亨",
+          "start": 22.96,
+          "end": 23.12,
+          "probability": 0.83642578125
+        },
+        {
+          "text": "通",
+          "start": 23.12,
+          "end": 23.32,
+          "probability": 0.9736328125
+        }
+      ]
+    },
+    {
+      "start": 23.32,
+      "end": 24.7,
+      "text": "這是什麼錢花",
+      "words": [
+        {
+          "text": "這是",
+          "start": 23.32,
+          "end": 23.84,
+          "probability": 0.986328125
+        },
+        {
+          "text": "什麼",
+          "start": 23.84,
+          "end": 24.18,
+          "probability": 0.99365234375
+        },
+        {
+          "text": "錢",
+          "start": 24.18,
+          "end": 24.44,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "花",
+          "start": 24.44,
+          "end": 24.7,
+          "probability": 0.994140625
+        }
+      ]
+    },
+    {
+      "start": 24.7,
+      "end": 26.36,
+      "text": "這是火煉鳥丹麗",
+      "words": [
+        {
+          "text": "這是",
+          "start": 24.7,
+          "end": 25.38,
+          "probability": 0.94677734375
+        },
+        {
+          "text": "火",
+          "start": 25.38,
+          "end": 25.68,
+          "probability": 0.99072265625
+        },
+        {
+          "text": "煉",
+          "start": 25.68,
+          "end": 25.82,
+          "probability": 0.7340087890625
+        },
+        {
+          "text": "鳥",
+          "start": 25.82,
+          "end": 26.02,
+          "probability": 0.994140625
+        },
+        {
+          "text": "丹",
+          "start": 26.02,
+          "end": 26.16,
+          "probability": 0.7489013671875
+        },
+        {
+          "text": "麗",
+          "start": 26.16,
+          "end": 26.36,
+          "probability": 0.8251953125
+        }
+      ]
+    },
+    {
+      "start": 26.36,
+      "end": 29.24,
+      "text": "是為了減小鮮體熱量損耗保存體力",
+      "words": [
+        {
+          "text": "是",
+          "start": 26.36,
+          "end": 26.9,
+          "probability": 0.96337890625
+        },
+        {
+          "text": "為",
+          "start": 26.9,
+          "end": 27.04,
+          "probability": 0.9814453125
+        },
+        {
+          "text": "了",
+          "start": 27.04,
+          "end": 27.24,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "減",
+          "start": 27.24,
+          "end": 27.34,
+          "probability": 0.99365234375
+        },
+        {
+          "text": "小",
+          "start": 27.34,
+          "end": 27.54,
+          "probability": 0.927734375
+        },
+        {
+          "text": "鮮",
+          "start": 27.54,
+          "end": 27.72,
+          "probability": 0.7900390625
+        },
+        {
+          "text": "體",
+          "start": 27.72,
+          "end": 27.86,
+          "probability": 0.7158203125
+        },
+        {
+          "text": "熱",
+          "start": 27.86,
+          "end": 28.04,
+          "probability": 0.99169921875
+        },
+        {
+          "text": "量",
+          "start": 28.04,
+          "end": 28.18,
+          "probability": 0.99365234375
+        },
+        {
+          "text": "損",
+          "start": 28.18,
+          "end": 28.34,
+          "probability": 0.82177734375
+        },
+        {
+          "text": "耗",
+          "start": 28.34,
+          "end": 28.52,
+          "probability": 0.99267578125
+        },
+        {
+          "text": "保",
+          "start": 28.52,
+          "end": 28.68,
+          "probability": 0.94482421875
+        },
+        {
+          "text": "存",
+          "start": 28.68,
+          "end": 28.86,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "體",
+          "start": 28.86,
+          "end": 29.04,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "力",
+          "start": 29.04,
+          "end": 29.24,
+          "probability": 0.99609375
+        }
+      ]
+    },
+    {
+      "start": 29.24,
+      "end": 30.46,
+      "text": "這是什麼錢花",
+      "words": [
+        {
+          "text": "這是",
+          "start": 29.24,
+          "end": 29.64,
+          "probability": 0.313232421875
+        },
+        {
+          "text": "什麼",
+          "start": 29.64,
+          "end": 29.98,
+          "probability": 0.85888671875
+        },
+        {
+          "text": "錢",
+          "start": 29.98,
+          "end": 30.22,
+          "probability": 0.0733642578125
+        },
+        {
+          "text": "花",
+          "start": 30.22,
+          "end": 30.46,
+          "probability": 0.334228515625
+        }
+      ]
+    },
+    {
+      "start": 30.84,
+      "end": 31.8,
+      "text": "這是雲島洋",
+      "words": [
+        {
+          "text": "這是",
+          "start": 30.84,
+          "end": 31.2,
+          "probability": 0.419921875
+        },
+        {
+          "text": "雲",
+          "start": 31.2,
+          "end": 31.48,
+          "probability": 0.811279296875
+        },
+        {
+          "text": "島",
+          "start": 31.48,
+          "end": 31.6,
+          "probability": 0.40234375
+        },
+        {
+          "text": "洋",
+          "start": 31.6,
+          "end": 31.8,
+          "probability": 0.7337646484375
+        }
+      ]
+    },
+    {
+      "start": 31.8,
+      "end": 33.78,
+      "text": "一受到驚嚇四肢僵硬",
+      "words": [
+        {
+          "text": "一",
+          "start": 31.8,
+          "end": 32.38,
+          "probability": 0.63232421875
+        },
+        {
+          "text": "受",
+          "start": 32.38,
+          "end": 32.52,
+          "probability": 0.86328125
+        },
+        {
+          "text": "到",
+          "start": 32.52,
+          "end": 32.7,
+          "probability": 0.9765625
+        },
+        {
+          "text": "驚",
+          "start": 32.7,
+          "end": 32.86,
+          "probability": 0.916259765625
+        },
+        {
+          "text": "嚇",
+          "start": 32.86,
+          "end": 33.04,
+          "probability": 0.975830078125
+        },
+        {
+          "text": "四",
+          "start": 33.04,
+          "end": 33.22,
+          "probability": 0.81103515625
+        },
+        {
+          "text": "肢",
+          "start": 33.22,
+          "end": 33.36,
+          "probability": 0.71728515625
+        },
+        {
+          "text": "僵",
+          "start": 33.36,
+          "end": 33.54,
+          "probability": 0.87744140625
+        },
+        {
+          "text": "硬",
+          "start": 33.54,
+          "end": 33.78,
+          "probability": 0.998046875
+        }
+      ]
+    },
+    {
+      "start": 33.78,
+      "end": 35.02,
+      "text": "直接倒地不起",
+      "words": [
+        {
+          "text": "直接",
+          "start": 33.78,
+          "end": 34.34,
+          "probability": 0.86767578125
+        },
+        {
+          "text": "倒",
+          "start": 34.34,
+          "end": 34.6,
+          "probability": 0.9775390625
+        },
+        {
+          "text": "地",
+          "start": 34.6,
+          "end": 34.76,
+          "probability": 0.96533203125
+        },
+        {
+          "text": "不起",
+          "start": 34.76,
+          "end": 35.02,
+          "probability": 0.72998046875
+        }
+      ]
+    },
+    {
+      "start": 35.02,
+      "end": 36.48,
+      "text": "這是什麼錢花",
+      "words": [
+        {
+          "text": "這是",
+          "start": 35.02,
+          "end": 35.58,
+          "probability": 0.9453125
+        },
+        {
+          "text": "什麼",
+          "start": 35.58,
+          "end": 35.94,
+          "probability": 0.990234375
+        },
+        {
+          "text": "錢",
+          "start": 35.94,
+          "end": 36.18,
+          "probability": 0.98876953125
+        },
+        {
+          "text": "花",
+          "start": 36.18,
+          "end": 36.48,
+          "probability": 0.9765625
+        }
+      ]
+    },
+    {
+      "start": 36.9,
+      "end": 38.1,
+      "text": "這是鴨子廳雷",
+      "words": [
+        {
+          "text": "這是",
+          "start": 36.9,
+          "end": 37.26,
+          "probability": 0.85107421875
+        },
+        {
+          "text": "鴨",
+          "start": 37.26,
+          "end": 37.54,
+          "probability": 0.9895833333333334
+        },
+        {
+          "text": "子",
+          "start": 37.54,
+          "end": 37.7,
+          "probability": 0.998046875
+        },
+        {
+          "text": "廳",
+          "start": 37.7,
+          "end": 37.86,
+          "probability": 0.53387451171875
+        },
+        {
+          "text": "雷",
+          "start": 37.86,
+          "end": 38.1,
+          "probability": 0.8759765625
+        }
+      ]
+    },
+    {
+      "start": 38.1,
+      "end": 39.66,
+      "text": "下雨時集體抬頭",
+      "words": [
+        {
+          "text": "下",
+          "start": 38.1,
+          "end": 38.62,
+          "probability": 0.6103515625
+        },
+        {
+          "text": "雨",
+          "start": 38.62,
+          "end": 38.78,
+          "probability": 0.998046875
+        },
+        {
+          "text": "時",
+          "start": 38.78,
+          "end": 38.94,
+          "probability": 0.9521484375
+        },
+        {
+          "text": "集",
+          "start": 38.94,
+          "end": 39.12,
+          "probability": 0.64990234375
+        },
+        {
+          "text": "體",
+          "start": 39.12,
+          "end": 39.28,
+          "probability": 0.99560546875
+        },
+        {
+          "text": "抬",
+          "start": 39.28,
+          "end": 39.44,
+          "probability": 0.99072265625
+        },
+        {
+          "text": "頭",
+          "start": 39.44,
+          "end": 39.66,
+          "probability": 0.99853515625
+        }
+      ]
+    },
+    {
+      "start": 39.66,
+      "end": 41.76,
+      "text": "是為了防止雨水灌進鼻孔",
+      "words": [
+        {
+          "text": "是",
+          "start": 39.66,
+          "end": 40.12,
+          "probability": 0.9853515625
+        },
+        {
+          "text": "為",
+          "start": 40.12,
+          "end": 40.24,
+          "probability": 0.9716796875
+        },
+        {
+          "text": "了",
+          "start": 40.24,
+          "end": 40.38,
+          "probability": 0.998046875
+        },
+        {
+          "text": "防",
+          "start": 40.38,
+          "end": 40.52,
+          "probability": 0.986328125
+        },
+        {
+          "text": "止",
+          "start": 40.52,
+          "end": 40.72,
+          "probability": 0.9951171875
+        },
+        {
+          "text": "雨",
+          "start": 40.72,
+          "end": 40.88,
+          "probability": 0.89697265625
+        },
+        {
+          "text": "水",
+          "start": 40.88,
+          "end": 41.04,
+          "probability": 0.998046875
+        },
+        {
+          "text": "灌",
+          "start": 41.04,
+          "end": 41.2,
+          "probability": 0.712158203125
+        },
+        {
+          "text": "進",
+          "start": 41.2,
+          "end": 41.38,
+          "probability": 0.890625
+        },
+        {
+          "text": "鼻",
+          "start": 41.38,
+          "end": 41.54,
+          "probability": 0.964599609375
+        },
+        {
+          "text": "孔",
+          "start": 41.54,
+          "end": 41.76,
+          "probability": 0.931884765625
+        }
+      ]
+    },
+    {
+      "start": 41.76,
+      "end": 44.18,
+      "text": "同時羽毛上的油脂還可以防水",
+      "words": [
+        {
+          "text": "同",
+          "start": 41.76,
+          "end": 42.28,
+          "probability": 0.908203125
+        },
+        {
+          "text": "時",
+          "start": 42.28,
+          "end": 42.44,
+          "probability": 0.779296875
+        },
+        {
+          "text": "羽",
+          "start": 42.44,
+          "end": 42.6,
+          "probability": 0.84130859375
+        },
+        {
+          "text": "毛",
+          "start": 42.6,
+          "end": 42.74,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "上",
+          "start": 42.74,
+          "end": 42.92,
+          "probability": 0.99365234375
+        },
+        {
+          "text": "的",
+          "start": 42.92,
+          "end": 43.04,
+          "probability": 0.998046875
+        },
+        {
+          "text": "油",
+          "start": 43.04,
+          "end": 43.18,
+          "probability": 0.98193359375
+        },
+        {
+          "text": "脂",
+          "start": 43.18,
+          "end": 43.32,
+          "probability": 0.987548828125
+        },
+        {
+          "text": "還",
+          "start": 43.32,
+          "end": 43.5,
+          "probability": 0.9873046875
+        },
+        {
+          "text": "可以",
+          "start": 43.5,
+          "end": 43.74,
+          "probability": 0.998046875
+        },
+        {
+          "text": "防",
+          "start": 43.74,
+          "end": 43.9,
+          "probability": 0.9921875
+        },
+        {
+          "text": "水",
+          "start": 43.9,
+          "end": 44.18,
+          "probability": 0.9970703125
+        }
+      ]
+    },
+    {
+      "start": 44.18,
+      "end": 45.44,
+      "text": "這是什麼錢花",
+      "words": [
+        {
+          "text": "這是",
+          "start": 44.18,
+          "end": 44.58,
+          "probability": 0.97412109375
+        },
+        {
+          "text": "什麼",
+          "start": 44.58,
+          "end": 44.92,
+          "probability": 0.986328125
+        },
+        {
+          "text": "錢",
+          "start": 44.92,
+          "end": 45.18,
+          "probability": 0.99658203125
+        },
+        {
+          "text": "花",
+          "start": 45.18,
+          "end": 45.44,
+          "probability": 0.990234375
+        }
+      ]
+    },
+    {
+      "start": 45.44,
+      "end": 46.48,
+      "text": "這是海馬",
+      "words": [
+        {
+          "text": "這是",
+          "start": 45.44,
+          "end": 46.0,
+          "probability": 0.9228515625
+        },
+        {
+          "text": "海",
+          "start": 46.0,
+          "end": 46.28,
+          "probability": 0.9677734375
+        },
+        {
+          "text": "馬",
+          "start": 46.28,
+          "end": 46.48,
+          "probability": 0.9765625
+        }
+      ]
+    },
+    {
+      "start": 46.48,
+      "end": 47.16,
+      "text": "哦不對",
+      "words": [
+        {
+          "text": "哦",
+          "start": 46.48,
+          "end": 46.88,
+          "probability": 0.34375
+        },
+        {
+          "text": "不對",
+          "start": 46.88,
+          "end": 47.16,
+          "probability": 0.93115234375
+        }
+      ]
+    },
+    {
+      "start": 47.16,
+      "end": 48.02,
+      "text": "這是鱷魚",
+      "words": [
+        {
+          "text": "這是",
+          "start": 47.16,
+          "end": 47.62,
+          "probability": 0.9169921875
+        },
+        {
+          "text": "鱷",
+          "start": 47.62,
+          "end": 47.84,
+          "probability": 0.9396158854166666
+        },
+        {
+          "text": "魚",
+          "start": 47.84,
+          "end": 48.02,
+          "probability": 0.99755859375
+        }
+      ]
+    },
+    {
+      "start": 48.02,
+      "end": 50.04,
+      "text": "應該是太累了想睡會兒",
+      "words": [
+        {
+          "text": "應該",
+          "start": 48.02,
+          "end": 48.54,
+          "probability": 0.9765625
+        },
+        {
+          "text": "是",
+          "start": 48.54,
+          "end": 48.76,
+          "probability": 0.99169921875
+        },
+        {
+          "text": "太",
+          "start": 48.76,
+          "end": 48.9,
+          "probability": 0.97705078125
+        },
+        {
+          "text": "累",
+          "start": 48.9,
+          "end": 49.06,
+          "probability": 0.99462890625
+        },
+        {
+          "text": "了",
+          "start": 49.06,
+          "end": 49.2,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "想",
+          "start": 49.2,
+          "end": 49.36,
+          "probability": 0.548828125
+        },
+        {
+          "text": "睡",
+          "start": 49.36,
+          "end": 49.54,
+          "probability": 0.9775390625
+        },
+        {
+          "text": "會",
+          "start": 49.54,
+          "end": 49.72,
+          "probability": 0.880859375
+        },
+        {
+          "text": "兒",
+          "start": 49.72,
+          "end": 50.04,
+          "probability": 0.55078125
+        }
+      ]
+    },
+    {
+      "start": 50.04,
+      "end": 51.06,
+      "text": "這是什麼錢花",
+      "words": [
+        {
+          "text": "這是",
+          "start": 50.04,
+          "end": 50.22,
+          "probability": 0.96533203125
+        },
+        {
+          "text": "什麼",
+          "start": 50.22,
+          "end": 50.56,
+          "probability": 0.9921875
+        },
+        {
+          "text": "錢",
+          "start": 50.56,
+          "end": 50.84,
+          "probability": 0.99365234375
+        },
+        {
+          "text": "花",
+          "start": 50.84,
+          "end": 51.06,
+          "probability": 0.98046875
+        }
+      ]
+    },
+    {
+      "start": 51.06,
+      "end": 52.62,
+      "text": "這是蜜蜂正確",
+      "words": [
+        {
+          "text": "這是",
+          "start": 51.06,
+          "end": 51.78,
+          "probability": 0.943359375
+        },
+        {
+          "text": "蜜",
+          "start": 51.78,
+          "end": 52.02,
+          "probability": 0.9300130208333334
+        },
+        {
+          "text": "蜂",
+          "start": 52.02,
+          "end": 52.18,
+          "probability": 0.978515625
+        },
+        {
+          "text": "正",
+          "start": 52.18,
+          "end": 52.38,
+          "probability": 0.33447265625
+        },
+        {
+          "text": "確",
+          "start": 52.38,
+          "end": 52.62,
+          "probability": 0.37939453125
+        }
+      ]
+    },
+    {
+      "start": 52.62,
+      "end": 54.68,
+      "text": "是為了產生高溫燒死胡蜂",
+      "words": [
+        {
+          "text": "是",
+          "start": 52.62,
+          "end": 53.12,
+          "probability": 0.97705078125
+        },
+        {
+          "text": "為",
+          "start": 53.12,
+          "end": 53.24,
+          "probability": 0.99365234375
+        },
+        {
+          "text": "了",
+          "start": 53.24,
+          "end": 53.38,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "產",
+          "start": 53.38,
+          "end": 53.52,
+          "probability": 0.990234375
+        },
+        {
+          "text": "生",
+          "start": 53.52,
+          "end": 53.68,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "高",
+          "start": 53.68,
+          "end": 53.84,
+          "probability": 0.994140625
+        },
+        {
+          "text": "溫",
+          "start": 53.84,
+          "end": 54.0,
+          "probability": 0.992919921875
+        },
+        {
+          "text": "燒",
+          "start": 54.0,
+          "end": 54.18,
+          "probability": 0.554473876953125
+        },
+        {
+          "text": "死",
+          "start": 54.18,
+          "end": 54.34,
+          "probability": 0.99365234375
+        },
+        {
+          "text": "胡",
+          "start": 54.34,
+          "end": 54.52,
+          "probability": 0.708984375
+        },
+        {
+          "text": "蜂",
+          "start": 54.52,
+          "end": 54.68,
+          "probability": 0.88427734375
+        }
+      ]
+    },
+    {
+      "start": 54.68,
+      "end": 56.08,
+      "text": "這是什麼錢花",
+      "words": [
+        {
+          "text": "這是",
+          "start": 54.68,
+          "end": 55.22,
+          "probability": 0.9814453125
+        },
+        {
+          "text": "什麼",
+          "start": 55.22,
+          "end": 55.56,
+          "probability": 0.98876953125
+        },
+        {
+          "text": "錢",
+          "start": 55.56,
+          "end": 55.84,
+          "probability": 0.994140625
+        },
+        {
+          "text": "花",
+          "start": 55.84,
+          "end": 56.08,
+          "probability": 0.99267578125
+        }
+      ]
+    },
+    {
+      "start": 56.08,
+      "end": 57.84,
+      "text": "這是蹄壺守珠帶魚",
+      "words": [
+        {
+          "text": "這是",
+          "start": 56.08,
+          "end": 56.78,
+          "probability": 0.908203125
+        },
+        {
+          "text": "蹄",
+          "start": 56.78,
+          "end": 57.02,
+          "probability": 0.710205078125
+        },
+        {
+          "text": "壺",
+          "start": 57.02,
+          "end": 57.18,
+          "probability": 0.7161865234375
+        },
+        {
+          "text": "守",
+          "start": 57.18,
+          "end": 57.34,
+          "probability": 0.88037109375
+        },
+        {
+          "text": "珠",
+          "start": 57.34,
+          "end": 57.5,
+          "probability": 0.5692138671875
+        },
+        {
+          "text": "帶",
+          "start": 57.5,
+          "end": 57.66,
+          "probability": 0.366943359375
+        },
+        {
+          "text": "魚",
+          "start": 57.66,
+          "end": 57.84,
+          "probability": 0.9775390625
+        }
+      ]
+    },
+    {
+      "start": 57.84,
+      "end": 59.8,
+      "text": "等待魚兒主動游入喉囊",
+      "words": [
+        {
+          "text": "等",
+          "start": 57.84,
+          "end": 58.38,
+          "probability": 0.6650390625
+        },
+        {
+          "text": "待",
+          "start": 58.38,
+          "end": 58.58,
+          "probability": 0.99609375
+        },
+        {
+          "text": "魚",
+          "start": 58.58,
+          "end": 58.7,
+          "probability": 0.6806640625
+        },
+        {
+          "text": "兒",
+          "start": 58.7,
+          "end": 58.84,
+          "probability": 0.9208984375
+        },
+        {
+          "text": "主",
+          "start": 58.84,
+          "end": 59.0,
+          "probability": 0.99365234375
+        },
+        {
+          "text": "動",
+          "start": 59.0,
+          "end": 59.16,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "游",
+          "start": 59.16,
+          "end": 59.32,
+          "probability": 0.78173828125
+        },
+        {
+          "text": "入",
+          "start": 59.32,
+          "end": 59.48,
+          "probability": 0.96923828125
+        },
+        {
+          "text": "喉",
+          "start": 59.48,
+          "end": 59.62,
+          "probability": 0.86962890625
+        },
+        {
+          "text": "囊",
+          "start": 59.62,
+          "end": 59.8,
+          "probability": 0.787109375
+        }
+      ]
+    },
+    {
+      "start": 59.8,
+      "end": 61.76,
+      "text": "隨後將魚兒吞咽下渡",
+      "words": [
+        {
+          "text": "隨",
+          "start": 59.8,
+          "end": 60.32,
+          "probability": 0.9033203125
+        },
+        {
+          "text": "後",
+          "start": 60.32,
+          "end": 60.54,
+          "probability": 0.9951171875
+        },
+        {
+          "text": "將",
+          "start": 60.54,
+          "end": 60.7,
+          "probability": 0.9833984375
+        },
+        {
+          "text": "魚",
+          "start": 60.7,
+          "end": 60.88,
+          "probability": 0.98974609375
+        },
+        {
+          "text": "兒",
+          "start": 60.88,
+          "end": 61.02,
+          "probability": 0.99560546875
+        },
+        {
+          "text": "吞",
+          "start": 61.02,
+          "end": 61.18,
+          "probability": 0.98828125
+        },
+        {
+          "text": "咽",
+          "start": 61.18,
+          "end": 61.34,
+          "probability": 0.5965576171875
+        },
+        {
+          "text": "下",
+          "start": 61.34,
+          "end": 61.52,
+          "probability": 0.67822265625
+        },
+        {
+          "text": "渡",
+          "start": 61.52,
+          "end": 61.76,
+          "probability": 0.895751953125
+        }
+      ]
+    },
+    {
+      "start": 61.76,
+      "end": 63.02,
+      "text": "這是什麼錢花",
+      "words": [
+        {
+          "text": "這是",
+          "start": 61.76,
+          "end": 62.2,
+          "probability": 0.8916015625
+        },
+        {
+          "text": "什麼",
+          "start": 62.2,
+          "end": 62.52,
+          "probability": 0.8525390625
+        },
+        {
+          "text": "錢",
+          "start": 62.52,
+          "end": 62.76,
+          "probability": 0.09185791015625
+        },
+        {
+          "text": "花",
+          "start": 62.76,
+          "end": 63.02,
+          "probability": 0.170166015625
+        }
+      ]
+    },
+    {
+      "start": 63.02,
+      "end": 64.54,
+      "text": "這是灌鳥展翼",
+      "words": [
+        {
+          "text": "這是",
+          "start": 63.02,
+          "end": 63.7,
+          "probability": 0.68505859375
+        },
+        {
+          "text": "灌",
+          "start": 63.7,
+          "end": 63.96,
+          "probability": 0.6876220703125
+        },
+        {
+          "text": "鳥",
+          "start": 63.96,
+          "end": 64.14,
+          "probability": 0.99169921875
+        },
+        {
+          "text": "展",
+          "start": 64.14,
+          "end": 64.3,
+          "probability": 0.587890625
+        },
+        {
+          "text": "翼",
+          "start": 64.3,
+          "end": 64.54,
+          "probability": 0.867431640625
+        }
+      ]
+    },
+    {
+      "start": 64.54,
+      "end": 67.16,
+      "text": "張開翅膀是為了亮曬沾水的羽毛",
+      "words": [
+        {
+          "text": "張",
+          "start": 64.54,
+          "end": 65.02,
+          "probability": 0.8564453125
+        },
+        {
+          "text": "開",
+          "start": 65.02,
+          "end": 65.22,
+          "probability": 0.998046875
+        },
+        {
+          "text": "翅",
+          "start": 65.22,
+          "end": 65.4,
+          "probability": 0.9814453125
+        },
+        {
+          "text": "膀",
+          "start": 65.4,
+          "end": 65.58,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "是",
+          "start": 65.58,
+          "end": 65.74,
+          "probability": 0.9794921875
+        },
+        {
+          "text": "為",
+          "start": 65.74,
+          "end": 65.9,
+          "probability": 0.96337890625
+        },
+        {
+          "text": "了",
+          "start": 65.9,
+          "end": 66.02,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "亮",
+          "start": 66.02,
+          "end": 66.16,
+          "probability": 0.55615234375
+        },
+        {
+          "text": "曬",
+          "start": 66.16,
+          "end": 66.38,
+          "probability": 0.966552734375
+        },
+        {
+          "text": "沾",
+          "start": 66.38,
+          "end": 66.52,
+          "probability": 0.77197265625
+        },
+        {
+          "text": "水",
+          "start": 66.52,
+          "end": 66.68,
+          "probability": 0.6552734375
+        },
+        {
+          "text": "的",
+          "start": 66.68,
+          "end": 66.8,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "羽",
+          "start": 66.8,
+          "end": 66.96,
+          "probability": 0.988525390625
+        },
+        {
+          "text": "毛",
+          "start": 66.96,
+          "end": 67.16,
+          "probability": 0.99755859375
+        }
+      ]
+    },
+    {
+      "start": 67.16,
+      "end": 68.5,
+      "text": "這是什麼錢花",
+      "words": [
+        {
+          "text": "這是",
+          "start": 67.16,
+          "end": 67.62,
+          "probability": 0.98095703125
+        },
+        {
+          "text": "什麼",
+          "start": 67.62,
+          "end": 67.98,
+          "probability": 0.9921875
+        },
+        {
+          "text": "錢",
+          "start": 67.98,
+          "end": 68.18,
+          "probability": 0.99267578125
+        },
+        {
+          "text": "花",
+          "start": 68.18,
+          "end": 68.5,
+          "probability": 0.97412109375
+        }
+      ]
+    },
+    {
+      "start": 68.5,
+      "end": 70.62,
+      "text": "這是小海塔在海面熟睡",
+      "words": [
+        {
+          "text": "這是",
+          "start": 68.5,
+          "end": 69.18,
+          "probability": 0.82421875
+        },
+        {
+          "text": "小",
+          "start": 69.18,
+          "end": 69.46,
+          "probability": 0.9951171875
+        },
+        {
+          "text": "海",
+          "start": 69.46,
+          "end": 69.6,
+          "probability": 0.30810546875
+        },
+        {
+          "text": "塔",
+          "start": 69.6,
+          "end": 69.76,
+          "probability": 0.630859375
+        },
+        {
+          "text": "在",
+          "start": 69.76,
+          "end": 69.92,
+          "probability": 0.994140625
+        },
+        {
+          "text": "海",
+          "start": 69.92,
+          "end": 70.08,
+          "probability": 0.998046875
+        },
+        {
+          "text": "面",
+          "start": 70.08,
+          "end": 70.26,
+          "probability": 0.9609375
+        },
+        {
+          "text": "熟",
+          "start": 70.26,
+          "end": 70.44,
+          "probability": 0.92578125
+        },
+        {
+          "text": "睡",
+          "start": 70.44,
+          "end": 70.62,
+          "probability": 0.98046875
+        }
+      ]
+    },
+    {
+      "start": 70.62,
+      "end": 72.04,
+      "text": "媽媽怕它被沖走",
+      "words": [
+        {
+          "text": "媽",
+          "start": 70.62,
+          "end": 71.06,
+          "probability": 0.9716796875
+        },
+        {
+          "text": "媽",
+          "start": 71.06,
+          "end": 71.22,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "怕",
+          "start": 71.22,
+          "end": 71.36,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "它",
+          "start": 71.36,
+          "end": 71.5,
+          "probability": 0.2335205078125
+        },
+        {
+          "text": "被",
+          "start": 71.5,
+          "end": 71.64,
+          "probability": 0.9921875
+        },
+        {
+          "text": "沖",
+          "start": 71.64,
+          "end": 71.86,
+          "probability": 0.9326171875
+        },
+        {
+          "text": "走",
+          "start": 71.86,
+          "end": 72.04,
+          "probability": 0.98681640625
+        }
+      ]
+    },
+    {
+      "start": 72.04,
+      "end": 73.86,
+      "text": "輕輕將它擄進懷裡",
+      "words": [
+        {
+          "text": "輕",
+          "start": 72.04,
+          "end": 72.62,
+          "probability": 0.7109375
+        },
+        {
+          "text": "輕",
+          "start": 72.62,
+          "end": 72.8,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "將",
+          "start": 72.8,
+          "end": 72.98,
+          "probability": 0.6845703125
+        },
+        {
+          "text": "它",
+          "start": 72.98,
+          "end": 73.14,
+          "probability": 0.81005859375
+        },
+        {
+          "text": "擄",
+          "start": 73.14,
+          "end": 73.3,
+          "probability": 0.2950439453125
+        },
+        {
+          "text": "進",
+          "start": 73.3,
+          "end": 73.46,
+          "probability": 0.95849609375
+        },
+        {
+          "text": "懷",
+          "start": 73.46,
+          "end": 73.64,
+          "probability": 0.9765625
+        },
+        {
+          "text": "裡",
+          "start": 73.64,
+          "end": 73.86,
+          "probability": 0.88232421875
+        }
+      ]
+    },
+    {
+      "start": 73.86,
+      "end": 75.82,
+      "text": "原來母愛從來不分物種",
+      "words": [
+        {
+          "text": "原",
+          "start": 73.86,
+          "end": 74.34,
+          "probability": 0.9638671875
+        },
+        {
+          "text": "來",
+          "start": 74.34,
+          "end": 74.52,
+          "probability": 0.99658203125
+        },
+        {
+          "text": "母",
+          "start": 74.52,
+          "end": 74.7,
+          "probability": 0.9921875
+        },
+        {
+          "text": "愛",
+          "start": 74.7,
+          "end": 74.82,
+          "probability": 0.921875
+        },
+        {
+          "text": "從",
+          "start": 74.82,
+          "end": 75.02,
+          "probability": 0.99609375
+        },
+        {
+          "text": "來",
+          "start": 75.02,
+          "end": 75.16,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "不",
+          "start": 75.16,
+          "end": 75.34,
+          "probability": 0.98974609375
+        },
+        {
+          "text": "分",
+          "start": 75.34,
+          "end": 75.46,
+          "probability": 0.9892578125
+        },
+        {
+          "text": "物",
+          "start": 75.46,
+          "end": 75.62,
+          "probability": 0.28759765625
+        },
+        {
+          "text": "種",
+          "start": 75.62,
+          "end": 75.82,
+          "probability": 0.95703125
+        }
+      ]
+    },
+    {
+      "start": 75.82,
+      "end": 77.44,
+      "text": "這份申請在這一刻",
+      "words": [
+        {
+          "text": "這",
+          "start": 75.82,
+          "end": 76.3,
+          "probability": 0.9755859375
+        },
+        {
+          "text": "份",
+          "start": 76.3,
+          "end": 76.48,
+          "probability": 0.9921875
+        },
+        {
+          "text": "申",
+          "start": 76.48,
+          "end": 76.66,
+          "probability": 0.785888671875
+        },
+        {
+          "text": "請",
+          "start": 76.66,
+          "end": 76.82,
+          "probability": 0.69384765625
+        },
+        {
+          "text": "在",
+          "start": 76.82,
+          "end": 77.04,
+          "probability": 0.9951171875
+        },
+        {
+          "text": "這一",
+          "start": 77.04,
+          "end": 77.3,
+          "probability": 0.96240234375
+        },
+        {
+          "text": "刻",
+          "start": 77.3,
+          "end": 77.44,
+          "probability": 0.99755859375
+        }
+      ]
+    },
+    {
+      "start": 77.44,
+      "end": 78.42,
+      "text": "徹底跡象化了",
+      "words": [
+        {
+          "text": "徹",
+          "start": 77.44,
+          "end": 77.62,
+          "probability": 0.99169921875
+        },
+        {
+          "text": "底",
+          "start": 77.62,
+          "end": 77.78,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "跡",
+          "start": 77.78,
+          "end": 77.94,
+          "probability": 0.782958984375
+        },
+        {
+          "text": "象",
+          "start": 77.94,
+          "end": 78.08,
+          "probability": 0.89990234375
+        },
+        {
+          "text": "化",
+          "start": 78.08,
+          "end": 78.26,
+          "probability": 0.98681640625
+        },
+        {
+          "text": "了",
+          "start": 78.26,
+          "end": 78.42,
+          "probability": 0.85205078125
+        }
+      ]
+    }
+  ],
+  "cues": [
+    {
+      "start": 0.0,
+      "end": 1.08,
+      "text": "這是什麼錢花",
+      "words": [
+        {
+          "text": "這是",
+          "start": 0.0,
+          "end": 0.24,
+          "probability": 0.365478515625
+        },
+        {
+          "text": "什麼",
+          "start": 0.24,
+          "end": 0.6,
+          "probability": 0.92041015625
+        },
+        {
+          "text": "錢",
+          "start": 0.6,
+          "end": 0.84,
+          "probability": 0.154296875
+        },
+        {
+          "text": "花",
+          "start": 0.84,
+          "end": 1.08,
+          "probability": 0.61279296875
+        }
+      ]
+    },
+    {
+      "start": 1.08,
+      "end": 3.06,
+      "text": "這是北非伯伯爾山洋",
+      "words": [
+        {
+          "text": "這是",
+          "start": 1.08,
+          "end": 1.76,
+          "probability": 0.5302734375
+        },
+        {
+          "text": "北",
+          "start": 1.76,
+          "end": 2.04,
+          "probability": 0.63037109375
+        },
+        {
+          "text": "非",
+          "start": 2.04,
+          "end": 2.18,
+          "probability": 0.91015625
+        },
+        {
+          "text": "伯",
+          "start": 2.18,
+          "end": 2.38,
+          "probability": 0.751953125
+        },
+        {
+          "text": "伯",
+          "start": 2.38,
+          "end": 2.52,
+          "probability": 0.977294921875
+        },
+        {
+          "text": "爾",
+          "start": 2.52,
+          "end": 2.66,
+          "probability": 0.91748046875
+        },
+        {
+          "text": "山",
+          "start": 2.66,
+          "end": 2.82,
+          "probability": 0.958984375
+        },
+        {
+          "text": "洋",
+          "start": 2.82,
+          "end": 3.06,
+          "probability": 0.6544189453125
+        }
+      ]
+    },
+    {
+      "start": 3.06,
+      "end": 4.64,
+      "text": "因地面木草潰伐",
+      "words": [
+        {
+          "text": "因",
+          "start": 3.06,
+          "end": 3.62,
+          "probability": 0.477783203125
+        },
+        {
+          "text": "地",
+          "start": 3.62,
+          "end": 3.76,
+          "probability": 0.99609375
+        },
+        {
+          "text": "面",
+          "start": 3.76,
+          "end": 3.92,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "木",
+          "start": 3.92,
+          "end": 4.1,
+          "probability": 0.7744140625
+        },
+        {
+          "text": "草",
+          "start": 4.1,
+          "end": 4.28,
+          "probability": 0.993896484375
+        },
+        {
+          "text": "潰",
+          "start": 4.28,
+          "end": 4.42,
+          "probability": 0.8720703125
+        },
+        {
+          "text": "伐",
+          "start": 4.42,
+          "end": 4.64,
+          "probability": 0.84375
+        }
+      ]
+    },
+    {
+      "start": 4.64,
+      "end": 7.7,
+      "text": "是代演化出潘帕阿甘樹採石果實的本領",
+      "words": [
+        {
+          "text": "是",
+          "start": 4.64,
+          "end": 5.1,
+          "probability": 0.51171875
+        },
+        {
+          "text": "代",
+          "start": 5.1,
+          "end": 5.24,
+          "probability": 0.58984375
+        },
+        {
+          "text": "演",
+          "start": 5.24,
+          "end": 5.44,
+          "probability": 0.85546875
+        },
+        {
+          "text": "化",
+          "start": 5.44,
+          "end": 5.62,
+          "probability": 0.88427734375
+        },
+        {
+          "text": "出",
+          "start": 5.62,
+          "end": 5.78,
+          "probability": 0.98583984375
+        },
+        {
+          "text": "潘",
+          "start": 5.78,
+          "end": 5.98,
+          "probability": 0.6234130859375
+        },
+        {
+          "text": "帕",
+          "start": 5.98,
+          "end": 6.14,
+          "probability": 0.56121826171875
+        },
+        {
+          "text": "阿",
+          "start": 6.14,
+          "end": 6.34,
+          "probability": 0.9677734375
+        },
+        {
+          "text": "甘",
+          "start": 6.34,
+          "end": 6.44,
+          "probability": 0.672607421875
+        },
+        {
+          "text": "樹",
+          "start": 6.44,
+          "end": 6.62,
+          "probability": 0.89990234375
+        },
+        {
+          "text": "採",
+          "start": 6.62,
+          "end": 6.82,
+          "probability": 0.75537109375
+        },
+        {
+          "text": "石",
+          "start": 6.82,
+          "end": 6.98,
+          "probability": 0.55517578125
+        },
+        {
+          "text": "果",
+          "start": 6.98,
+          "end": 7.16,
+          "probability": 0.990234375
+        },
+        {
+          "text": "實",
+          "start": 7.16,
+          "end": 7.28,
+          "probability": 0.91064453125
+        },
+        {
+          "text": "的",
+          "start": 7.28,
+          "end": 7.38,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "本",
+          "start": 7.38,
+          "end": 7.52,
+          "probability": 0.98486328125
+        },
+        {
+          "text": "領",
+          "start": 7.52,
+          "end": 7.7,
+          "probability": 0.99365234375
+        }
+      ]
+    },
+    {
+      "start": 7.7,
+      "end": 9.04,
+      "text": "這是什麼錢花",
+      "words": [
+        {
+          "text": "這是",
+          "start": 7.7,
+          "end": 8.14,
+          "probability": 0.96728515625
+        },
+        {
+          "text": "什麼",
+          "start": 8.14,
+          "end": 8.5,
+          "probability": 0.9833984375
+        },
+        {
+          "text": "錢",
+          "start": 8.5,
+          "end": 8.74,
+          "probability": 0.99365234375
+        },
+        {
+          "text": "花",
+          "start": 8.74,
+          "end": 9.04,
+          "probability": 0.9892578125
+        }
+      ]
+    },
+    {
+      "start": 9.04,
+      "end": 10.88,
+      "text": "這是河馬分泌的年夜",
+      "words": [
+        {
+          "text": "這是",
+          "start": 9.04,
+          "end": 9.6,
+          "probability": 0.873046875
+        },
+        {
+          "text": "河",
+          "start": 9.6,
+          "end": 9.9,
+          "probability": 0.7109375
+        },
+        {
+          "text": "馬",
+          "start": 9.9,
+          "end": 10.06,
+          "probability": 0.97216796875
+        },
+        {
+          "text": "分",
+          "start": 10.06,
+          "end": 10.22,
+          "probability": 0.7685546875
+        },
+        {
+          "text": "泌",
+          "start": 10.22,
+          "end": 10.36,
+          "probability": 0.8271484375
+        },
+        {
+          "text": "的",
+          "start": 10.36,
+          "end": 10.48,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "年",
+          "start": 10.48,
+          "end": 10.62,
+          "probability": 0.8359375
+        },
+        {
+          "text": "夜",
+          "start": 10.62,
+          "end": 10.88,
+          "probability": 0.8916015625
+        }
+      ]
+    },
+    {
+      "start": 10.88,
+      "end": 12.62,
+      "text": "接觸空氣氧化變紅",
+      "words": [
+        {
+          "text": "接",
+          "start": 10.88,
+          "end": 11.38,
+          "probability": 0.962890625
+        },
+        {
+          "text": "觸",
+          "start": 11.38,
+          "end": 11.54,
+          "probability": 0.999755859375
+        },
+        {
+          "text": "空",
+          "start": 11.54,
+          "end": 11.7,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "氣",
+          "start": 11.7,
+          "end": 11.86,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "氧",
+          "start": 11.86,
+          "end": 12.04,
+          "probability": 0.84423828125
+        },
+        {
+          "text": "化",
+          "start": 12.04,
+          "end": 12.2,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "變",
+          "start": 12.2,
+          "end": 12.36,
+          "probability": 0.97607421875
+        },
+        {
+          "text": "紅",
+          "start": 12.36,
+          "end": 12.62,
+          "probability": 0.9462890625
+        }
+      ]
+    },
+    {
+      "start": 12.62,
+      "end": 14.42,
+      "text": "既能防曬又可以抗菌",
+      "words": [
+        {
+          "text": "既",
+          "start": 12.62,
+          "end": 13.1,
+          "probability": 0.61920166015625
+        },
+        {
+          "text": "能",
+          "start": 13.1,
+          "end": 13.24,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "防",
+          "start": 13.24,
+          "end": 13.42,
+          "probability": 0.97900390625
+        },
+        {
+          "text": "曬",
+          "start": 13.42,
+          "end": 13.6,
+          "probability": 0.9482421875
+        },
+        {
+          "text": "又",
+          "start": 13.6,
+          "end": 13.82,
+          "probability": 0.986328125
+        },
+        {
+          "text": "可以",
+          "start": 13.82,
+          "end": 14.06,
+          "probability": 0.99609375
+        },
+        {
+          "text": "抗",
+          "start": 14.06,
+          "end": 14.26,
+          "probability": 0.998779296875
+        },
+        {
+          "text": "菌",
+          "start": 14.26,
+          "end": 14.42,
+          "probability": 0.648193359375
+        }
+      ]
+    },
+    {
+      "start": 14.42,
+      "end": 15.76,
+      "text": "這是什麼錢花",
+      "words": [
+        {
+          "text": "這是",
+          "start": 14.42,
+          "end": 14.88,
+          "probability": 0.9169921875
+        },
+        {
+          "text": "什麼",
+          "start": 14.88,
+          "end": 15.26,
+          "probability": 0.99560546875
+        },
+        {
+          "text": "錢",
+          "start": 15.26,
+          "end": 15.5,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "花",
+          "start": 15.5,
+          "end": 15.76,
+          "probability": 0.9970703125
+        }
+      ]
+    },
+    {
+      "start": 15.76,
+      "end": 17.82,
+      "text": "這可是韓劍的九禪寶財",
+      "words": [
+        {
+          "text": "這",
+          "start": 15.76,
+          "end": 16.36,
+          "probability": 0.287353515625
+        },
+        {
+          "text": "可是",
+          "start": 16.36,
+          "end": 16.6,
+          "probability": 0.9404296875
+        },
+        {
+          "text": "韓",
+          "start": 16.6,
+          "end": 16.86,
+          "probability": 0.7042236328125
+        },
+        {
+          "text": "劍",
+          "start": 16.86,
+          "end": 17.0,
+          "probability": 0.685791015625
+        },
+        {
+          "text": "的",
+          "start": 17.0,
+          "end": 17.12,
+          "probability": 0.9951171875
+        },
+        {
+          "text": "九",
+          "start": 17.12,
+          "end": 17.28,
+          "probability": 0.59228515625
+        },
+        {
+          "text": "禪",
+          "start": 17.28,
+          "end": 17.42,
+          "probability": 0.5682373046875
+        },
+        {
+          "text": "寶",
+          "start": 17.42,
+          "end": 17.6,
+          "probability": 0.9736328125
+        },
+        {
+          "text": "財",
+          "start": 17.6,
+          "end": 17.82,
+          "probability": 0.967529296875
+        }
+      ]
+    },
+    {
+      "start": 17.82,
+      "end": 19.5,
+      "text": "是祥銳降臨的吉兆",
+      "words": [
+        {
+          "text": "是",
+          "start": 17.82,
+          "end": 18.36,
+          "probability": 0.9697265625
+        },
+        {
+          "text": "祥",
+          "start": 18.36,
+          "end": 18.54,
+          "probability": 0.75341796875
+        },
+        {
+          "text": "銳",
+          "start": 18.54,
+          "end": 18.7,
+          "probability": 0.7100830078125
+        },
+        {
+          "text": "降",
+          "start": 18.7,
+          "end": 18.9,
+          "probability": 0.7216796875
+        },
+        {
+          "text": "臨",
+          "start": 18.9,
+          "end": 19.02,
+          "probability": 0.9326171875
+        },
+        {
+          "text": "的",
+          "start": 19.02,
+          "end": 19.16,
+          "probability": 0.9921875
+        },
+        {
+          "text": "吉",
+          "start": 19.16,
+          "end": 19.32,
+          "probability": 0.192626953125
+        },
+        {
+          "text": "兆",
+          "start": 19.32,
+          "end": 19.5,
+          "probability": 0.946044921875
+        }
+      ]
+    },
+    {
+      "start": 19.5,
+      "end": 20.8,
+      "text": "建議送花三朵",
+      "words": [
+        {
+          "text": "建",
+          "start": 19.5,
+          "end": 19.94,
+          "probability": 0.68603515625
+        },
+        {
+          "text": "議",
+          "start": 19.94,
+          "end": 20.12,
+          "probability": 0.6533203125
+        },
+        {
+          "text": "送",
+          "start": 20.12,
+          "end": 20.26,
+          "probability": 0.85498046875
+        },
+        {
+          "text": "花",
+          "start": 20.26,
+          "end": 20.44,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "三",
+          "start": 20.44,
+          "end": 20.62,
+          "probability": 0.8916015625
+        },
+        {
+          "text": "朵",
+          "start": 20.62,
+          "end": 20.8,
+          "probability": 0.98974609375
+        }
+      ]
+    },
+    {
+      "start": 20.8,
+      "end": 23.32,
+      "text": "往後必定服氣長半才運亨通",
+      "words": [
+        {
+          "text": "往",
+          "start": 20.8,
+          "end": 21.38,
+          "probability": 0.490234375
+        },
+        {
+          "text": "後",
+          "start": 21.38,
+          "end": 21.56,
+          "probability": 0.98876953125
+        },
+        {
+          "text": "必",
+          "start": 21.56,
+          "end": 21.74,
+          "probability": 0.88134765625
+        },
+        {
+          "text": "定",
+          "start": 21.74,
+          "end": 21.88,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "服",
+          "start": 21.88,
+          "end": 22.06,
+          "probability": 0.6318359375
+        },
+        {
+          "text": "氣",
+          "start": 22.06,
+          "end": 22.26,
+          "probability": 0.8857421875
+        },
+        {
+          "text": "長",
+          "start": 22.26,
+          "end": 22.46,
+          "probability": 0.5703125
+        },
+        {
+          "text": "半",
+          "start": 22.46,
+          "end": 22.64,
+          "probability": 0.9033203125
+        },
+        {
+          "text": "才",
+          "start": 22.64,
+          "end": 22.8,
+          "probability": 0.70263671875
+        },
+        {
+          "text": "運",
+          "start": 22.8,
+          "end": 22.96,
+          "probability": 0.71923828125
+        },
+        {
+          "text": "亨",
+          "start": 22.96,
+          "end": 23.12,
+          "probability": 0.83642578125
+        },
+        {
+          "text": "通",
+          "start": 23.12,
+          "end": 23.32,
+          "probability": 0.9736328125
+        }
+      ]
+    },
+    {
+      "start": 23.32,
+      "end": 24.7,
+      "text": "這是什麼錢花",
+      "words": [
+        {
+          "text": "這是",
+          "start": 23.32,
+          "end": 23.84,
+          "probability": 0.986328125
+        },
+        {
+          "text": "什麼",
+          "start": 23.84,
+          "end": 24.18,
+          "probability": 0.99365234375
+        },
+        {
+          "text": "錢",
+          "start": 24.18,
+          "end": 24.44,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "花",
+          "start": 24.44,
+          "end": 24.7,
+          "probability": 0.994140625
+        }
+      ]
+    },
+    {
+      "start": 24.7,
+      "end": 26.36,
+      "text": "這是火煉鳥丹麗",
+      "words": [
+        {
+          "text": "這是",
+          "start": 24.7,
+          "end": 25.38,
+          "probability": 0.94677734375
+        },
+        {
+          "text": "火",
+          "start": 25.38,
+          "end": 25.68,
+          "probability": 0.99072265625
+        },
+        {
+          "text": "煉",
+          "start": 25.68,
+          "end": 25.82,
+          "probability": 0.7340087890625
+        },
+        {
+          "text": "鳥",
+          "start": 25.82,
+          "end": 26.02,
+          "probability": 0.994140625
+        },
+        {
+          "text": "丹",
+          "start": 26.02,
+          "end": 26.16,
+          "probability": 0.7489013671875
+        },
+        {
+          "text": "麗",
+          "start": 26.16,
+          "end": 26.36,
+          "probability": 0.8251953125
+        }
+      ]
+    },
+    {
+      "start": 26.36,
+      "end": 29.24,
+      "text": "是為了減小鮮體熱量損耗保存體力",
+      "words": [
+        {
+          "text": "是",
+          "start": 26.36,
+          "end": 26.9,
+          "probability": 0.96337890625
+        },
+        {
+          "text": "為",
+          "start": 26.9,
+          "end": 27.04,
+          "probability": 0.9814453125
+        },
+        {
+          "text": "了",
+          "start": 27.04,
+          "end": 27.24,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "減",
+          "start": 27.24,
+          "end": 27.34,
+          "probability": 0.99365234375
+        },
+        {
+          "text": "小",
+          "start": 27.34,
+          "end": 27.54,
+          "probability": 0.927734375
+        },
+        {
+          "text": "鮮",
+          "start": 27.54,
+          "end": 27.72,
+          "probability": 0.7900390625
+        },
+        {
+          "text": "體",
+          "start": 27.72,
+          "end": 27.86,
+          "probability": 0.7158203125
+        },
+        {
+          "text": "熱",
+          "start": 27.86,
+          "end": 28.04,
+          "probability": 0.99169921875
+        },
+        {
+          "text": "量",
+          "start": 28.04,
+          "end": 28.18,
+          "probability": 0.99365234375
+        },
+        {
+          "text": "損",
+          "start": 28.18,
+          "end": 28.34,
+          "probability": 0.82177734375
+        },
+        {
+          "text": "耗",
+          "start": 28.34,
+          "end": 28.52,
+          "probability": 0.99267578125
+        },
+        {
+          "text": "保",
+          "start": 28.52,
+          "end": 28.68,
+          "probability": 0.94482421875
+        },
+        {
+          "text": "存",
+          "start": 28.68,
+          "end": 28.86,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "體",
+          "start": 28.86,
+          "end": 29.04,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "力",
+          "start": 29.04,
+          "end": 29.24,
+          "probability": 0.99609375
+        }
+      ]
+    },
+    {
+      "start": 29.24,
+      "end": 30.46,
+      "text": "這是什麼錢花",
+      "words": [
+        {
+          "text": "這是",
+          "start": 29.24,
+          "end": 29.64,
+          "probability": 0.313232421875
+        },
+        {
+          "text": "什麼",
+          "start": 29.64,
+          "end": 29.98,
+          "probability": 0.85888671875
+        },
+        {
+          "text": "錢",
+          "start": 29.98,
+          "end": 30.22,
+          "probability": 0.0733642578125
+        },
+        {
+          "text": "花",
+          "start": 30.22,
+          "end": 30.46,
+          "probability": 0.334228515625
+        }
+      ]
+    },
+    {
+      "start": 30.84,
+      "end": 31.8,
+      "text": "這是雲島洋",
+      "words": [
+        {
+          "text": "這是",
+          "start": 30.84,
+          "end": 31.2,
+          "probability": 0.419921875
+        },
+        {
+          "text": "雲",
+          "start": 31.2,
+          "end": 31.48,
+          "probability": 0.811279296875
+        },
+        {
+          "text": "島",
+          "start": 31.48,
+          "end": 31.6,
+          "probability": 0.40234375
+        },
+        {
+          "text": "洋",
+          "start": 31.6,
+          "end": 31.8,
+          "probability": 0.7337646484375
+        }
+      ]
+    },
+    {
+      "start": 31.8,
+      "end": 33.78,
+      "text": "一受到驚嚇四肢僵硬",
+      "words": [
+        {
+          "text": "一",
+          "start": 31.8,
+          "end": 32.38,
+          "probability": 0.63232421875
+        },
+        {
+          "text": "受",
+          "start": 32.38,
+          "end": 32.52,
+          "probability": 0.86328125
+        },
+        {
+          "text": "到",
+          "start": 32.52,
+          "end": 32.7,
+          "probability": 0.9765625
+        },
+        {
+          "text": "驚",
+          "start": 32.7,
+          "end": 32.86,
+          "probability": 0.916259765625
+        },
+        {
+          "text": "嚇",
+          "start": 32.86,
+          "end": 33.04,
+          "probability": 0.975830078125
+        },
+        {
+          "text": "四",
+          "start": 33.04,
+          "end": 33.22,
+          "probability": 0.81103515625
+        },
+        {
+          "text": "肢",
+          "start": 33.22,
+          "end": 33.36,
+          "probability": 0.71728515625
+        },
+        {
+          "text": "僵",
+          "start": 33.36,
+          "end": 33.54,
+          "probability": 0.87744140625
+        },
+        {
+          "text": "硬",
+          "start": 33.54,
+          "end": 33.78,
+          "probability": 0.998046875
+        }
+      ]
+    },
+    {
+      "start": 33.78,
+      "end": 35.02,
+      "text": "直接倒地不起",
+      "words": [
+        {
+          "text": "直接",
+          "start": 33.78,
+          "end": 34.34,
+          "probability": 0.86767578125
+        },
+        {
+          "text": "倒",
+          "start": 34.34,
+          "end": 34.6,
+          "probability": 0.9775390625
+        },
+        {
+          "text": "地",
+          "start": 34.6,
+          "end": 34.76,
+          "probability": 0.96533203125
+        },
+        {
+          "text": "不起",
+          "start": 34.76,
+          "end": 35.02,
+          "probability": 0.72998046875
+        }
+      ]
+    },
+    {
+      "start": 35.02,
+      "end": 36.48,
+      "text": "這是什麼錢花",
+      "words": [
+        {
+          "text": "這是",
+          "start": 35.02,
+          "end": 35.58,
+          "probability": 0.9453125
+        },
+        {
+          "text": "什麼",
+          "start": 35.58,
+          "end": 35.94,
+          "probability": 0.990234375
+        },
+        {
+          "text": "錢",
+          "start": 35.94,
+          "end": 36.18,
+          "probability": 0.98876953125
+        },
+        {
+          "text": "花",
+          "start": 36.18,
+          "end": 36.48,
+          "probability": 0.9765625
+        }
+      ]
+    },
+    {
+      "start": 36.9,
+      "end": 38.1,
+      "text": "這是鴨子廳雷",
+      "words": [
+        {
+          "text": "這是",
+          "start": 36.9,
+          "end": 37.26,
+          "probability": 0.85107421875
+        },
+        {
+          "text": "鴨",
+          "start": 37.26,
+          "end": 37.54,
+          "probability": 0.9895833333333334
+        },
+        {
+          "text": "子",
+          "start": 37.54,
+          "end": 37.7,
+          "probability": 0.998046875
+        },
+        {
+          "text": "廳",
+          "start": 37.7,
+          "end": 37.86,
+          "probability": 0.53387451171875
+        },
+        {
+          "text": "雷",
+          "start": 37.86,
+          "end": 38.1,
+          "probability": 0.8759765625
+        }
+      ]
+    },
+    {
+      "start": 38.1,
+      "end": 39.66,
+      "text": "下雨時集體抬頭",
+      "words": [
+        {
+          "text": "下",
+          "start": 38.1,
+          "end": 38.62,
+          "probability": 0.6103515625
+        },
+        {
+          "text": "雨",
+          "start": 38.62,
+          "end": 38.78,
+          "probability": 0.998046875
+        },
+        {
+          "text": "時",
+          "start": 38.78,
+          "end": 38.94,
+          "probability": 0.9521484375
+        },
+        {
+          "text": "集",
+          "start": 38.94,
+          "end": 39.12,
+          "probability": 0.64990234375
+        },
+        {
+          "text": "體",
+          "start": 39.12,
+          "end": 39.28,
+          "probability": 0.99560546875
+        },
+        {
+          "text": "抬",
+          "start": 39.28,
+          "end": 39.44,
+          "probability": 0.99072265625
+        },
+        {
+          "text": "頭",
+          "start": 39.44,
+          "end": 39.66,
+          "probability": 0.99853515625
+        }
+      ]
+    },
+    {
+      "start": 39.66,
+      "end": 41.76,
+      "text": "是為了防止雨水灌進鼻孔",
+      "words": [
+        {
+          "text": "是",
+          "start": 39.66,
+          "end": 40.12,
+          "probability": 0.9853515625
+        },
+        {
+          "text": "為",
+          "start": 40.12,
+          "end": 40.24,
+          "probability": 0.9716796875
+        },
+        {
+          "text": "了",
+          "start": 40.24,
+          "end": 40.38,
+          "probability": 0.998046875
+        },
+        {
+          "text": "防",
+          "start": 40.38,
+          "end": 40.52,
+          "probability": 0.986328125
+        },
+        {
+          "text": "止",
+          "start": 40.52,
+          "end": 40.72,
+          "probability": 0.9951171875
+        },
+        {
+          "text": "雨",
+          "start": 40.72,
+          "end": 40.88,
+          "probability": 0.89697265625
+        },
+        {
+          "text": "水",
+          "start": 40.88,
+          "end": 41.04,
+          "probability": 0.998046875
+        },
+        {
+          "text": "灌",
+          "start": 41.04,
+          "end": 41.2,
+          "probability": 0.712158203125
+        },
+        {
+          "text": "進",
+          "start": 41.2,
+          "end": 41.38,
+          "probability": 0.890625
+        },
+        {
+          "text": "鼻",
+          "start": 41.38,
+          "end": 41.54,
+          "probability": 0.964599609375
+        },
+        {
+          "text": "孔",
+          "start": 41.54,
+          "end": 41.76,
+          "probability": 0.931884765625
+        }
+      ]
+    },
+    {
+      "start": 41.76,
+      "end": 44.18,
+      "text": "同時羽毛上的油脂還可以防水",
+      "words": [
+        {
+          "text": "同",
+          "start": 41.76,
+          "end": 42.28,
+          "probability": 0.908203125
+        },
+        {
+          "text": "時",
+          "start": 42.28,
+          "end": 42.44,
+          "probability": 0.779296875
+        },
+        {
+          "text": "羽",
+          "start": 42.44,
+          "end": 42.6,
+          "probability": 0.84130859375
+        },
+        {
+          "text": "毛",
+          "start": 42.6,
+          "end": 42.74,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "上",
+          "start": 42.74,
+          "end": 42.92,
+          "probability": 0.99365234375
+        },
+        {
+          "text": "的",
+          "start": 42.92,
+          "end": 43.04,
+          "probability": 0.998046875
+        },
+        {
+          "text": "油",
+          "start": 43.04,
+          "end": 43.18,
+          "probability": 0.98193359375
+        },
+        {
+          "text": "脂",
+          "start": 43.18,
+          "end": 43.32,
+          "probability": 0.987548828125
+        },
+        {
+          "text": "還",
+          "start": 43.32,
+          "end": 43.5,
+          "probability": 0.9873046875
+        },
+        {
+          "text": "可以",
+          "start": 43.5,
+          "end": 43.74,
+          "probability": 0.998046875
+        },
+        {
+          "text": "防",
+          "start": 43.74,
+          "end": 43.9,
+          "probability": 0.9921875
+        },
+        {
+          "text": "水",
+          "start": 43.9,
+          "end": 44.18,
+          "probability": 0.9970703125
+        }
+      ]
+    },
+    {
+      "start": 44.18,
+      "end": 45.44,
+      "text": "這是什麼錢花",
+      "words": [
+        {
+          "text": "這是",
+          "start": 44.18,
+          "end": 44.58,
+          "probability": 0.97412109375
+        },
+        {
+          "text": "什麼",
+          "start": 44.58,
+          "end": 44.92,
+          "probability": 0.986328125
+        },
+        {
+          "text": "錢",
+          "start": 44.92,
+          "end": 45.18,
+          "probability": 0.99658203125
+        },
+        {
+          "text": "花",
+          "start": 45.18,
+          "end": 45.44,
+          "probability": 0.990234375
+        }
+      ]
+    },
+    {
+      "start": 45.44,
+      "end": 46.48,
+      "text": "這是海馬",
+      "words": [
+        {
+          "text": "這是",
+          "start": 45.44,
+          "end": 46.0,
+          "probability": 0.9228515625
+        },
+        {
+          "text": "海",
+          "start": 46.0,
+          "end": 46.28,
+          "probability": 0.9677734375
+        },
+        {
+          "text": "馬",
+          "start": 46.28,
+          "end": 46.48,
+          "probability": 0.9765625
+        }
+      ]
+    },
+    {
+      "start": 46.48,
+      "end": 47.16,
+      "text": "哦不對",
+      "words": [
+        {
+          "text": "哦",
+          "start": 46.48,
+          "end": 46.88,
+          "probability": 0.34375
+        },
+        {
+          "text": "不對",
+          "start": 46.88,
+          "end": 47.16,
+          "probability": 0.93115234375
+        }
+      ]
+    },
+    {
+      "start": 47.16,
+      "end": 48.02,
+      "text": "這是鱷魚",
+      "words": [
+        {
+          "text": "這是",
+          "start": 47.16,
+          "end": 47.62,
+          "probability": 0.9169921875
+        },
+        {
+          "text": "鱷",
+          "start": 47.62,
+          "end": 47.84,
+          "probability": 0.9396158854166666
+        },
+        {
+          "text": "魚",
+          "start": 47.84,
+          "end": 48.02,
+          "probability": 0.99755859375
+        }
+      ]
+    },
+    {
+      "start": 48.02,
+      "end": 50.04,
+      "text": "應該是太累了想睡會兒",
+      "words": [
+        {
+          "text": "應該",
+          "start": 48.02,
+          "end": 48.54,
+          "probability": 0.9765625
+        },
+        {
+          "text": "是",
+          "start": 48.54,
+          "end": 48.76,
+          "probability": 0.99169921875
+        },
+        {
+          "text": "太",
+          "start": 48.76,
+          "end": 48.9,
+          "probability": 0.97705078125
+        },
+        {
+          "text": "累",
+          "start": 48.9,
+          "end": 49.06,
+          "probability": 0.99462890625
+        },
+        {
+          "text": "了",
+          "start": 49.06,
+          "end": 49.2,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "想",
+          "start": 49.2,
+          "end": 49.36,
+          "probability": 0.548828125
+        },
+        {
+          "text": "睡",
+          "start": 49.36,
+          "end": 49.54,
+          "probability": 0.9775390625
+        },
+        {
+          "text": "會",
+          "start": 49.54,
+          "end": 49.72,
+          "probability": 0.880859375
+        },
+        {
+          "text": "兒",
+          "start": 49.72,
+          "end": 50.04,
+          "probability": 0.55078125
+        }
+      ]
+    },
+    {
+      "start": 50.04,
+      "end": 51.06,
+      "text": "這是什麼錢花",
+      "words": [
+        {
+          "text": "這是",
+          "start": 50.04,
+          "end": 50.22,
+          "probability": 0.96533203125
+        },
+        {
+          "text": "什麼",
+          "start": 50.22,
+          "end": 50.56,
+          "probability": 0.9921875
+        },
+        {
+          "text": "錢",
+          "start": 50.56,
+          "end": 50.84,
+          "probability": 0.99365234375
+        },
+        {
+          "text": "花",
+          "start": 50.84,
+          "end": 51.06,
+          "probability": 0.98046875
+        }
+      ]
+    },
+    {
+      "start": 51.06,
+      "end": 52.62,
+      "text": "這是蜜蜂正確",
+      "words": [
+        {
+          "text": "這是",
+          "start": 51.06,
+          "end": 51.78,
+          "probability": 0.943359375
+        },
+        {
+          "text": "蜜",
+          "start": 51.78,
+          "end": 52.02,
+          "probability": 0.9300130208333334
+        },
+        {
+          "text": "蜂",
+          "start": 52.02,
+          "end": 52.18,
+          "probability": 0.978515625
+        },
+        {
+          "text": "正",
+          "start": 52.18,
+          "end": 52.38,
+          "probability": 0.33447265625
+        },
+        {
+          "text": "確",
+          "start": 52.38,
+          "end": 52.62,
+          "probability": 0.37939453125
+        }
+      ]
+    },
+    {
+      "start": 52.62,
+      "end": 54.68,
+      "text": "是為了產生高溫燒死胡蜂",
+      "words": [
+        {
+          "text": "是",
+          "start": 52.62,
+          "end": 53.12,
+          "probability": 0.97705078125
+        },
+        {
+          "text": "為",
+          "start": 53.12,
+          "end": 53.24,
+          "probability": 0.99365234375
+        },
+        {
+          "text": "了",
+          "start": 53.24,
+          "end": 53.38,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "產",
+          "start": 53.38,
+          "end": 53.52,
+          "probability": 0.990234375
+        },
+        {
+          "text": "生",
+          "start": 53.52,
+          "end": 53.68,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "高",
+          "start": 53.68,
+          "end": 53.84,
+          "probability": 0.994140625
+        },
+        {
+          "text": "溫",
+          "start": 53.84,
+          "end": 54.0,
+          "probability": 0.992919921875
+        },
+        {
+          "text": "燒",
+          "start": 54.0,
+          "end": 54.18,
+          "probability": 0.554473876953125
+        },
+        {
+          "text": "死",
+          "start": 54.18,
+          "end": 54.34,
+          "probability": 0.99365234375
+        },
+        {
+          "text": "胡",
+          "start": 54.34,
+          "end": 54.52,
+          "probability": 0.708984375
+        },
+        {
+          "text": "蜂",
+          "start": 54.52,
+          "end": 54.68,
+          "probability": 0.88427734375
+        }
+      ]
+    },
+    {
+      "start": 54.68,
+      "end": 56.08,
+      "text": "這是什麼錢花",
+      "words": [
+        {
+          "text": "這是",
+          "start": 54.68,
+          "end": 55.22,
+          "probability": 0.9814453125
+        },
+        {
+          "text": "什麼",
+          "start": 55.22,
+          "end": 55.56,
+          "probability": 0.98876953125
+        },
+        {
+          "text": "錢",
+          "start": 55.56,
+          "end": 55.84,
+          "probability": 0.994140625
+        },
+        {
+          "text": "花",
+          "start": 55.84,
+          "end": 56.08,
+          "probability": 0.99267578125
+        }
+      ]
+    },
+    {
+      "start": 56.08,
+      "end": 57.84,
+      "text": "這是蹄壺守珠帶魚",
+      "words": [
+        {
+          "text": "這是",
+          "start": 56.08,
+          "end": 56.78,
+          "probability": 0.908203125
+        },
+        {
+          "text": "蹄",
+          "start": 56.78,
+          "end": 57.02,
+          "probability": 0.710205078125
+        },
+        {
+          "text": "壺",
+          "start": 57.02,
+          "end": 57.18,
+          "probability": 0.7161865234375
+        },
+        {
+          "text": "守",
+          "start": 57.18,
+          "end": 57.34,
+          "probability": 0.88037109375
+        },
+        {
+          "text": "珠",
+          "start": 57.34,
+          "end": 57.5,
+          "probability": 0.5692138671875
+        },
+        {
+          "text": "帶",
+          "start": 57.5,
+          "end": 57.66,
+          "probability": 0.366943359375
+        },
+        {
+          "text": "魚",
+          "start": 57.66,
+          "end": 57.84,
+          "probability": 0.9775390625
+        }
+      ]
+    },
+    {
+      "start": 57.84,
+      "end": 59.8,
+      "text": "等待魚兒主動游入喉囊",
+      "words": [
+        {
+          "text": "等",
+          "start": 57.84,
+          "end": 58.38,
+          "probability": 0.6650390625
+        },
+        {
+          "text": "待",
+          "start": 58.38,
+          "end": 58.58,
+          "probability": 0.99609375
+        },
+        {
+          "text": "魚",
+          "start": 58.58,
+          "end": 58.7,
+          "probability": 0.6806640625
+        },
+        {
+          "text": "兒",
+          "start": 58.7,
+          "end": 58.84,
+          "probability": 0.9208984375
+        },
+        {
+          "text": "主",
+          "start": 58.84,
+          "end": 59.0,
+          "probability": 0.99365234375
+        },
+        {
+          "text": "動",
+          "start": 59.0,
+          "end": 59.16,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "游",
+          "start": 59.16,
+          "end": 59.32,
+          "probability": 0.78173828125
+        },
+        {
+          "text": "入",
+          "start": 59.32,
+          "end": 59.48,
+          "probability": 0.96923828125
+        },
+        {
+          "text": "喉",
+          "start": 59.48,
+          "end": 59.62,
+          "probability": 0.86962890625
+        },
+        {
+          "text": "囊",
+          "start": 59.62,
+          "end": 59.8,
+          "probability": 0.787109375
+        }
+      ]
+    },
+    {
+      "start": 59.8,
+      "end": 61.76,
+      "text": "隨後將魚兒吞咽下渡",
+      "words": [
+        {
+          "text": "隨",
+          "start": 59.8,
+          "end": 60.32,
+          "probability": 0.9033203125
+        },
+        {
+          "text": "後",
+          "start": 60.32,
+          "end": 60.54,
+          "probability": 0.9951171875
+        },
+        {
+          "text": "將",
+          "start": 60.54,
+          "end": 60.7,
+          "probability": 0.9833984375
+        },
+        {
+          "text": "魚",
+          "start": 60.7,
+          "end": 60.88,
+          "probability": 0.98974609375
+        },
+        {
+          "text": "兒",
+          "start": 60.88,
+          "end": 61.02,
+          "probability": 0.99560546875
+        },
+        {
+          "text": "吞",
+          "start": 61.02,
+          "end": 61.18,
+          "probability": 0.98828125
+        },
+        {
+          "text": "咽",
+          "start": 61.18,
+          "end": 61.34,
+          "probability": 0.5965576171875
+        },
+        {
+          "text": "下",
+          "start": 61.34,
+          "end": 61.52,
+          "probability": 0.67822265625
+        },
+        {
+          "text": "渡",
+          "start": 61.52,
+          "end": 61.76,
+          "probability": 0.895751953125
+        }
+      ]
+    },
+    {
+      "start": 61.76,
+      "end": 63.02,
+      "text": "這是什麼錢花",
+      "words": [
+        {
+          "text": "這是",
+          "start": 61.76,
+          "end": 62.2,
+          "probability": 0.8916015625
+        },
+        {
+          "text": "什麼",
+          "start": 62.2,
+          "end": 62.52,
+          "probability": 0.8525390625
+        },
+        {
+          "text": "錢",
+          "start": 62.52,
+          "end": 62.76,
+          "probability": 0.09185791015625
+        },
+        {
+          "text": "花",
+          "start": 62.76,
+          "end": 63.02,
+          "probability": 0.170166015625
+        }
+      ]
+    },
+    {
+      "start": 63.02,
+      "end": 64.54,
+      "text": "這是灌鳥展翼",
+      "words": [
+        {
+          "text": "這是",
+          "start": 63.02,
+          "end": 63.7,
+          "probability": 0.68505859375
+        },
+        {
+          "text": "灌",
+          "start": 63.7,
+          "end": 63.96,
+          "probability": 0.6876220703125
+        },
+        {
+          "text": "鳥",
+          "start": 63.96,
+          "end": 64.14,
+          "probability": 0.99169921875
+        },
+        {
+          "text": "展",
+          "start": 64.14,
+          "end": 64.3,
+          "probability": 0.587890625
+        },
+        {
+          "text": "翼",
+          "start": 64.3,
+          "end": 64.54,
+          "probability": 0.867431640625
+        }
+      ]
+    },
+    {
+      "start": 64.54,
+      "end": 67.16,
+      "text": "張開翅膀是為了亮曬沾水的羽毛",
+      "words": [
+        {
+          "text": "張",
+          "start": 64.54,
+          "end": 65.02,
+          "probability": 0.8564453125
+        },
+        {
+          "text": "開",
+          "start": 65.02,
+          "end": 65.22,
+          "probability": 0.998046875
+        },
+        {
+          "text": "翅",
+          "start": 65.22,
+          "end": 65.4,
+          "probability": 0.9814453125
+        },
+        {
+          "text": "膀",
+          "start": 65.4,
+          "end": 65.58,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "是",
+          "start": 65.58,
+          "end": 65.74,
+          "probability": 0.9794921875
+        },
+        {
+          "text": "為",
+          "start": 65.74,
+          "end": 65.9,
+          "probability": 0.96337890625
+        },
+        {
+          "text": "了",
+          "start": 65.9,
+          "end": 66.02,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "亮",
+          "start": 66.02,
+          "end": 66.16,
+          "probability": 0.55615234375
+        },
+        {
+          "text": "曬",
+          "start": 66.16,
+          "end": 66.38,
+          "probability": 0.966552734375
+        },
+        {
+          "text": "沾",
+          "start": 66.38,
+          "end": 66.52,
+          "probability": 0.77197265625
+        },
+        {
+          "text": "水",
+          "start": 66.52,
+          "end": 66.68,
+          "probability": 0.6552734375
+        },
+        {
+          "text": "的",
+          "start": 66.68,
+          "end": 66.8,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "羽",
+          "start": 66.8,
+          "end": 66.96,
+          "probability": 0.988525390625
+        },
+        {
+          "text": "毛",
+          "start": 66.96,
+          "end": 67.16,
+          "probability": 0.99755859375
+        }
+      ]
+    },
+    {
+      "start": 67.16,
+      "end": 68.5,
+      "text": "這是什麼錢花",
+      "words": [
+        {
+          "text": "這是",
+          "start": 67.16,
+          "end": 67.62,
+          "probability": 0.98095703125
+        },
+        {
+          "text": "什麼",
+          "start": 67.62,
+          "end": 67.98,
+          "probability": 0.9921875
+        },
+        {
+          "text": "錢",
+          "start": 67.98,
+          "end": 68.18,
+          "probability": 0.99267578125
+        },
+        {
+          "text": "花",
+          "start": 68.18,
+          "end": 68.5,
+          "probability": 0.97412109375
+        }
+      ]
+    },
+    {
+      "start": 68.5,
+      "end": 70.62,
+      "text": "這是小海塔在海面熟睡",
+      "words": [
+        {
+          "text": "這是",
+          "start": 68.5,
+          "end": 69.18,
+          "probability": 0.82421875
+        },
+        {
+          "text": "小",
+          "start": 69.18,
+          "end": 69.46,
+          "probability": 0.9951171875
+        },
+        {
+          "text": "海",
+          "start": 69.46,
+          "end": 69.6,
+          "probability": 0.30810546875
+        },
+        {
+          "text": "塔",
+          "start": 69.6,
+          "end": 69.76,
+          "probability": 0.630859375
+        },
+        {
+          "text": "在",
+          "start": 69.76,
+          "end": 69.92,
+          "probability": 0.994140625
+        },
+        {
+          "text": "海",
+          "start": 69.92,
+          "end": 70.08,
+          "probability": 0.998046875
+        },
+        {
+          "text": "面",
+          "start": 70.08,
+          "end": 70.26,
+          "probability": 0.9609375
+        },
+        {
+          "text": "熟",
+          "start": 70.26,
+          "end": 70.44,
+          "probability": 0.92578125
+        },
+        {
+          "text": "睡",
+          "start": 70.44,
+          "end": 70.62,
+          "probability": 0.98046875
+        }
+      ]
+    },
+    {
+      "start": 70.62,
+      "end": 72.04,
+      "text": "媽媽怕它被沖走",
+      "words": [
+        {
+          "text": "媽",
+          "start": 70.62,
+          "end": 71.06,
+          "probability": 0.9716796875
+        },
+        {
+          "text": "媽",
+          "start": 71.06,
+          "end": 71.22,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "怕",
+          "start": 71.22,
+          "end": 71.36,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "它",
+          "start": 71.36,
+          "end": 71.5,
+          "probability": 0.2335205078125
+        },
+        {
+          "text": "被",
+          "start": 71.5,
+          "end": 71.64,
+          "probability": 0.9921875
+        },
+        {
+          "text": "沖",
+          "start": 71.64,
+          "end": 71.86,
+          "probability": 0.9326171875
+        },
+        {
+          "text": "走",
+          "start": 71.86,
+          "end": 72.04,
+          "probability": 0.98681640625
+        }
+      ]
+    },
+    {
+      "start": 72.04,
+      "end": 73.86,
+      "text": "輕輕將它擄進懷裡",
+      "words": [
+        {
+          "text": "輕",
+          "start": 72.04,
+          "end": 72.62,
+          "probability": 0.7109375
+        },
+        {
+          "text": "輕",
+          "start": 72.62,
+          "end": 72.8,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "將",
+          "start": 72.8,
+          "end": 72.98,
+          "probability": 0.6845703125
+        },
+        {
+          "text": "它",
+          "start": 72.98,
+          "end": 73.14,
+          "probability": 0.81005859375
+        },
+        {
+          "text": "擄",
+          "start": 73.14,
+          "end": 73.3,
+          "probability": 0.2950439453125
+        },
+        {
+          "text": "進",
+          "start": 73.3,
+          "end": 73.46,
+          "probability": 0.95849609375
+        },
+        {
+          "text": "懷",
+          "start": 73.46,
+          "end": 73.64,
+          "probability": 0.9765625
+        },
+        {
+          "text": "裡",
+          "start": 73.64,
+          "end": 73.86,
+          "probability": 0.88232421875
+        }
+      ]
+    },
+    {
+      "start": 73.86,
+      "end": 75.82,
+      "text": "原來母愛從來不分物種",
+      "words": [
+        {
+          "text": "原",
+          "start": 73.86,
+          "end": 74.34,
+          "probability": 0.9638671875
+        },
+        {
+          "text": "來",
+          "start": 74.34,
+          "end": 74.52,
+          "probability": 0.99658203125
+        },
+        {
+          "text": "母",
+          "start": 74.52,
+          "end": 74.7,
+          "probability": 0.9921875
+        },
+        {
+          "text": "愛",
+          "start": 74.7,
+          "end": 74.82,
+          "probability": 0.921875
+        },
+        {
+          "text": "從",
+          "start": 74.82,
+          "end": 75.02,
+          "probability": 0.99609375
+        },
+        {
+          "text": "來",
+          "start": 75.02,
+          "end": 75.16,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "不",
+          "start": 75.16,
+          "end": 75.34,
+          "probability": 0.98974609375
+        },
+        {
+          "text": "分",
+          "start": 75.34,
+          "end": 75.46,
+          "probability": 0.9892578125
+        },
+        {
+          "text": "物",
+          "start": 75.46,
+          "end": 75.62,
+          "probability": 0.28759765625
+        },
+        {
+          "text": "種",
+          "start": 75.62,
+          "end": 75.82,
+          "probability": 0.95703125
+        }
+      ]
+    },
+    {
+      "start": 75.82,
+      "end": 77.44,
+      "text": "這份申請在這一刻",
+      "words": [
+        {
+          "text": "這",
+          "start": 75.82,
+          "end": 76.3,
+          "probability": 0.9755859375
+        },
+        {
+          "text": "份",
+          "start": 76.3,
+          "end": 76.48,
+          "probability": 0.9921875
+        },
+        {
+          "text": "申",
+          "start": 76.48,
+          "end": 76.66,
+          "probability": 0.785888671875
+        },
+        {
+          "text": "請",
+          "start": 76.66,
+          "end": 76.82,
+          "probability": 0.69384765625
+        },
+        {
+          "text": "在",
+          "start": 76.82,
+          "end": 77.04,
+          "probability": 0.9951171875
+        },
+        {
+          "text": "這一",
+          "start": 77.04,
+          "end": 77.3,
+          "probability": 0.96240234375
+        },
+        {
+          "text": "刻",
+          "start": 77.3,
+          "end": 77.44,
+          "probability": 0.99755859375
+        }
+      ]
+    },
+    {
+      "start": 77.44,
+      "end": 78.42,
+      "text": "徹底跡象化了",
+      "words": [
+        {
+          "text": "徹",
+          "start": 77.44,
+          "end": 77.62,
+          "probability": 0.99169921875
+        },
+        {
+          "text": "底",
+          "start": 77.62,
+          "end": 77.78,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "跡",
+          "start": 77.78,
+          "end": 77.94,
+          "probability": 0.782958984375
+        },
+        {
+          "text": "象",
+          "start": 77.94,
+          "end": 78.08,
+          "probability": 0.89990234375
+        },
+        {
+          "text": "化",
+          "start": 78.08,
+          "end": 78.26,
+          "probability": 0.98681640625
+        },
+        {
+          "text": "了",
+          "start": 78.26,
+          "end": 78.42,
+          "probability": 0.85205078125
+        }
+      ]
+    }
+  ]
+}

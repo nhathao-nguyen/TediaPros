@@ -109,3 +109,33 @@ test('checkpoint writer rejects invalid nested state before publication', async 
   } as TranslationCheckpoint
   await assert.rejects(writeTranslationCheckpoint(join(root, 'item', 'translation.json'), root, invalid), /Invalid translation checkpoint/u)
 }))
+
+test('checkpoint writer refuses an oversized valid payload before it replaces a readable checkpoint', async () => fixture(async (root) => {
+  const plan = planTranslation(input, capability)
+  const key = 'f'.repeat(64)
+  const valid: TranslationCheckpoint = {
+    schemaVersion: 2, key, generation: 0, plan, batches: {},
+    budget: createTranslationBudget(plan.batches.length, () => 0).snapshot(), failures: {}, disposition: 'running'
+  }
+  const path = join(root, 'item', 'translation.json')
+  await writeTranslationCheckpoint(path, root, valid)
+  const oversized: TranslationCheckpoint = {
+    ...valid,
+    assessment: {
+      version: 'translation-assessment-v2',
+      disposition: 'needs-review',
+      languageEvidence: 'unknown',
+      issues: [{
+        code: 'provider-protocol', severity: 'error', confidence: 'certain', cueIds: [],
+        message: 'x'.repeat(2 * 1024 * 1024)
+      }]
+    }
+  }
+  await assert.rejects(
+    writeTranslationCheckpoint(path, root, oversized),
+    /Translation checkpoint exceeds the 2 MiB readable limit/u
+  )
+  const loaded = await readTranslationCheckpoint(path, root, key)
+  assert.equal(loaded?.assessment, undefined)
+  assert.equal(loaded?.generation, 0)
+}))

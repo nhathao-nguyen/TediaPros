@@ -1,0 +1,30 @@
+Diagnostic probes: PASS reproduces a defect; it does not assert production correctness.
+Scratch: C:\Users\PC\AppData\Local\Temp\tedia-review-20260916-plFRov
+[tblao] [GeminiGateway] request=1/2 stage=restore-translate cues=4 model=gemini-advanced
+[tblao] [GeminiGateway] request=1/2 outcome=complete upstreamAttempts=1 retryReasons=none
+✔ F01: the active coordinator omits feedbackJournal, so repeated synthesis dispatches the candidate again (98.0573ms)
+ℹ {"jobAdapterFields":["id","controller","emit","ttsCapabilities","ttsCapabilitiesUrl","resourceManager"],"repeatedCandidateDispatches":2}
+✔ F02: a shared journal forgets an accepted result; the second invocation fails on the original long cue (1.8408ms)
+ℹ {"acceptedFirst":"Short candidate.","secondFailure":"DubbingVideoExtensionLimitError: Cue cue vẫn không vừa ở 1.80x: cần kéo dài đoạn hình 126.1%, vượt giới hạn 60%; không cắt lời.","spoken":["This original wording is deliberately too long.","Short candidate.","This original wording is deliberately too long."]}
+✔ F03: source-repair accepts a changed number and emits it in final audio/subtitles (5.2747ms)
+ℹ {"source":"加入2勺盐，然后搅拌。","acceptedText":"Cho 20 thìa đường.","ordinaryGuardReasons":["protected-token","quantified-object"]}
+✔ F04: internal split IDs have no corresponding text or offset mapping in the full-ledger Gateway prompt (6.1334ms)
+ℹ {"requestedIds":["long/part-1","long/part-2","long/part-3","long/part-4","long/part-5"],"ledgerIds":["long"],"mappingExistsOnlyInCode":[{"unitId":"long/part-1","originalId":"long","partIndex":1,"startOffset":0,"endOffset":3999},{"unitId":"long/part-2","originalId":"long","partIndex":2,"startOffset":3999,"endOffset":7999},{"unitId":"long/part-3","originalId":"long","partIndex":3,"startOffset":7999,"endOffset":11999},{"unitId":"long/part-4","originalId":"long","partIndex":4,"startOffset":11999,"endOffset":12249},{"unitId":"long/part-5","originalId":"long","partIndex":5,"startOffset":12249,"endOffset":12250}]}
+✔ F05: truncated Gateway draft terminates instead of reaching scheduler output splitting (24.0288ms)
+ℹ {"calls":1,"disposition":"needs-review","items":[],"issues":[{"code":"provider-protocol","severity":"error","cueIds":["one","two","three","four"],"confidence":"certain","message":"Lượt khôi phục và dịch không đúng contract: Phản hồi model bị cắt trước khi hoàn tất."},{"code":"missing-id","severity":"error","cueIds":["one","two","three","four"],"confidence":"certain","message":"Bản dịch chưa đủ mọi cue nguồn; không xuất bản kết quả một phần."}]}
+✔ F06: source prompt budget and reviewed-target TTS grouping reserve different total speaking time (1.8836ms)
+ℹ {"sourceGroups":[["cue-0","cue-1","cue-2","cue-3","cue-4","cue-5"]],"targetGroups":[["cue-0"],["cue-1"],["cue-2"],["cue-3"],["cue-4"],["cue-5"]],"promptSeconds":5.88,"ttsSeconds":3.38}
+✔ F07: quantified-object Map overwrites repeated units and rejects a meaning-preserving list reorder (0.412ms)
+ℹ {"ok":false,"reasons":["quantified-object"]}
+✔ F08: a valid long-context plan writes a checkpoint that its own 2 MiB reader discards (421.1088ms)
+ℹ {"sourceBytes":2386206,"batches":72,"writtenBytes":2953983,"restored":null,"checkpointPath":"C:\\Users\\PC\\AppData\\Local\\Temp\\tedia-review-checkpoint-20260916-pvWQ8e\\checkpoint.json"}
+ℹ tests 8
+ℹ suites 0
+ℹ pass 8
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 813.3088
+
+Exit: 0

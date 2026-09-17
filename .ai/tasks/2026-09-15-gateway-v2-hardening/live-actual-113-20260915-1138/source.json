@@ -1,0 +1,914 @@
+{
+  "sourceLanguage": "zh",
+  "targetLocale": "vi-VN",
+  "mode": "dubbing",
+  "cues": [
+    {
+      "id": "cue-0-0",
+      "sourceIndex": 0,
+      "start": 0,
+      "end": 1.3599999999999999,
+      "groupId": "checkpoint-0",
+      "text": "把这个蔬菜往里一放"
+    },
+    {
+      "id": "cue-1-1360",
+      "sourceIndex": 1,
+      "start": 1.3599999999999999,
+      "end": 2.9,
+      "groupId": "checkpoint-1",
+      "text": "不用再换任何刀片"
+    },
+    {
+      "id": "cue-2-2900",
+      "sourceIndex": 2,
+      "start": 2.9,
+      "end": 5.16,
+      "groupId": "checkpoint-2",
+      "text": "就可以切片切条切丝切丁"
+    },
+    {
+      "id": "cue-3-5160",
+      "sourceIndex": 3,
+      "start": 5.16,
+      "end": 6.22,
+      "groupId": "checkpoint-3",
+      "text": "真的假的"
+    },
+    {
+      "id": "cue-4-6220",
+      "sourceIndex": 4,
+      "start": 6.22,
+      "end": 7.14,
+      "groupId": "checkpoint-4",
+      "text": "先看宣传视频"
+    },
+    {
+      "id": "cue-5-7140",
+      "sourceIndex": 5,
+      "start": 7.14,
+      "end": 8.8,
+      "groupId": "checkpoint-5",
+      "text": "以前煮的饭一个小时"
+    },
+    {
+      "id": "cue-6-8800",
+      "sourceIndex": 6,
+      "start": 8.8,
+      "end": 10.54,
+      "groupId": "checkpoint-6",
+      "text": "接菜就得在我半个小时"
+    },
+    {
+      "id": "cue-7-10540",
+      "sourceIndex": 7,
+      "start": 10.54,
+      "end": 11.3,
+      "groupId": "checkpoint-7",
+      "text": "现在有了它"
+    },
+    {
+      "id": "cue-8-11300",
+      "sourceIndex": 8,
+      "start": 11.3,
+      "end": 13.94,
+      "groupId": "checkpoint-8",
+      "text": "就算鸡排吐豆吃也能十秒钟就搞定"
+    },
+    {
+      "id": "cue-9-13940",
+      "sourceIndex": 9,
+      "start": 13.94,
+      "end": 15.78,
+      "groupId": "checkpoint-9",
+      "text": "而且不用换刀片咯"
+    },
+    {
+      "id": "cue-10-15780",
+      "sourceIndex": 10,
+      "start": 15.78,
+      "end": 19.2,
+      "groupId": "checkpoint-10",
+      "text": "转动三个旋钮就可以切换不同的形状和厚度"
+    },
+    {
+      "id": "cue-11-19200",
+      "sourceIndex": 11,
+      "start": 19.2,
+      "end": 21.78,
+      "groupId": "checkpoint-11",
+      "text": "接片接条接丝接丁都不再划下"
+    },
+    {
+      "id": "cue-12-21780",
+      "sourceIndex": 12,
+      "start": 21.78,
+      "end": 24.96,
+      "groupId": "checkpoint-12",
+      "text": "视频同款买了花了我169啊"
+    },
+    {
+      "id": "cue-13-24960",
+      "sourceIndex": 13,
+      "start": 24.96,
+      "end": 27.38,
+      "groupId": "checkpoint-13",
+      "text": "那欢迎的空我们来采免费的赞和关注"
+    },
+    {
+      "id": "cue-14-27380",
+      "sourceIndex": 14,
+      "start": 27.38,
+      "end": 28.7,
+      "groupId": "checkpoint-14",
+      "text": "麻烦您给支持一个"
+    },
+    {
+      "id": "cue-15-28700",
+      "sourceIndex": 15,
+      "start": 28.7,
+      "end": 30.74,
+      "groupId": "checkpoint-15",
+      "text": "一个机器不用来回换刀片"
+    },
+    {
+      "id": "cue-16-30740",
+      "sourceIndex": 16,
+      "start": 30.74,
+      "end": 33.26,
+      "groupId": "checkpoint-16",
+      "text": "就能切片切条切丝切丁"
+    },
+    {
+      "id": "cue-17-33260",
+      "sourceIndex": 17,
+      "start": 33.26,
+      "end": 34.4,
+      "groupId": "checkpoint-17",
+      "text": "真的假的"
+    },
+    {
+      "id": "cue-18-34400",
+      "sourceIndex": 18,
+      "start": 34.4,
+      "end": 35.16,
+      "groupId": "checkpoint-18",
+      "text": "咱打开看看"
+    },
+    {
+      "id": "cue-19-36340",
+      "sourceIndex": 19,
+      "start": 36.34,
+      "end": 38.3,
+      "groupId": "checkpoint-19",
+      "text": "打开安装后它就是这样式的"
+    },
+    {
+      "id": "cue-20-38300",
+      "sourceIndex": 20,
+      "start": 38.3,
+      "end": 39.3,
+      "groupId": "checkpoint-20",
+      "text": "把这个打开"
+    },
+    {
+      "id": "cue-21-39300",
+      "sourceIndex": 21,
+      "start": 39.3,
+      "end": 40.54,
+      "groupId": "checkpoint-21",
+      "text": "这个就弹着了"
+    },
+    {
+      "id": "cue-22-40540",
+      "sourceIndex": 22,
+      "start": 40.54,
+      "end": 43.16,
+      "groupId": "checkpoint-22",
+      "text": "这样就可以切片切条切丝切丁了"
+    },
+    {
+      "id": "cue-23-43160",
+      "sourceIndex": 23,
+      "start": 43.16,
+      "end": 45.02,
+      "groupId": "checkpoint-23",
+      "text": "这块是眼里放食材的"
+    },
+    {
+      "id": "cue-24-45020",
+      "sourceIndex": 24,
+      "start": 45.02,
+      "end": 47.06,
+      "groupId": "checkpoint-24",
+      "text": "它是负责把这个食材给它碎进去的"
+    },
+    {
+      "id": "cue-25-47060",
+      "sourceIndex": 25,
+      "start": 47.06,
+      "end": 47.86,
+      "groupId": "checkpoint-25",
+      "text": "防止伤到手"
+    },
+    {
+      "id": "cue-26-47860",
+      "sourceIndex": 26,
+      "start": 47.86,
+      "end": 49.32,
+      "groupId": "checkpoint-26",
+      "text": "还带了一个小刷子"
+    },
+    {
+      "id": "cue-27-49320",
+      "sourceIndex": 27,
+      "start": 49.32,
+      "end": 50.58,
+      "groupId": "checkpoint-27",
+      "text": "一本厚厚的说明书"
+    },
+    {
+      "id": "cue-28-50580",
+      "sourceIndex": 28,
+      "start": 50.58,
+      "end": 51.26,
+      "groupId": "checkpoint-28",
+      "text": "那话不多说"
+    },
+    {
+      "id": "cue-29-51260",
+      "sourceIndex": 29,
+      "start": 51.26,
+      "end": 52.46,
+      "groupId": "checkpoint-29",
+      "text": "我演一演的是早用"
+    },
+    {
+      "id": "cue-30-52460",
+      "sourceIndex": 30,
+      "start": 52.46,
+      "end": 53.64,
+      "groupId": "checkpoint-30",
+      "text": "顺便准备点食材"
+    },
+    {
+      "id": "cue-31-53640",
+      "sourceIndex": 31,
+      "start": 53.64,
+      "end": 55.08,
+      "groupId": "checkpoint-31",
+      "text": "你们点赞支持咱们测"
+    },
+    {
+      "id": "cue-32-55080",
+      "sourceIndex": 32,
+      "start": 55.08,
+      "end": 56.62,
+      "groupId": "checkpoint-32",
+      "text": "看一下在后边这个大圆盘"
+    },
+    {
+      "id": "cue-33-56620",
+      "sourceIndex": 33,
+      "start": 56.62,
+      "end": 58.62,
+      "groupId": "checkpoint-33",
+      "text": "这有012345678"
+    },
+    {
+      "id": "cue-34-58620",
+      "sourceIndex": 34,
+      "start": 58.62,
+      "end": 61.24,
+      "groupId": "checkpoint-34",
+      "text": "它这个是控制你切片的薄厚的"
+    },
+    {
+      "id": "cue-35-61240",
+      "sourceIndex": 35,
+      "start": 61.24,
+      "end": 62.14,
+      "groupId": "checkpoint-35",
+      "text": "我拧一下你看看"
+    },
+    {
+      "id": "cue-36-62140",
+      "sourceIndex": 36,
+      "start": 62.14,
+      "end": 64.4,
+      "groupId": "checkpoint-36",
+      "text": "拧的时候这个就往后退了"
+    },
+    {
+      "id": "cue-37-64400",
+      "sourceIndex": 37,
+      "start": 64.4,
+      "end": 65.72,
+      "groupId": "checkpoint-37",
+      "text": "就证明片越来越厚"
+    },
+    {
+      "id": "cue-38-65720",
+      "sourceIndex": 38,
+      "start": 65.72,
+      "end": 67.64,
+      "groupId": "checkpoint-38",
+      "text": "往回拧它就越来越薄"
+    },
+    {
+      "id": "cue-39-67640",
+      "sourceIndex": 39,
+      "start": 67.64,
+      "end": 69.5,
+      "groupId": "checkpoint-39",
+      "text": "这两个是控制切条的"
+    },
+    {
+      "id": "cue-40-69940",
+      "sourceIndex": 40,
+      "start": 69.94,
+      "end": 71.48,
+      "groupId": "checkpoint-40",
+      "text": "你看我单独给你拧它"
+    },
+    {
+      "id": "cue-41-71480",
+      "sourceIndex": 41,
+      "start": 71.48,
+      "end": 73.24,
+      "groupId": "checkpoint-41",
+      "text": "这边这个切条的道片就出来了"
+    },
+    {
+      "id": "cue-42-73240",
+      "sourceIndex": 42,
+      "start": 73.24,
+      "end": 74.62,
+      "groupId": "checkpoint-42",
+      "text": "咱们先切一个萝卜"
+    },
+    {
+      "id": "cue-43-74620",
+      "sourceIndex": 43,
+      "start": 74.62,
+      "end": 75.14,
+      "groupId": "checkpoint-43",
+      "text": "试试"
+    },
+    {
+      "id": "cue-44-75140",
+      "sourceIndex": 44,
+      "start": 75.14,
+      "end": 77.4,
+      "groupId": "checkpoint-44",
+      "text": "切给它调成一"
+    },
+    {
+      "id": "cue-45-77400",
+      "sourceIndex": 45,
+      "start": 77.4,
+      "end": 78.64,
+      "groupId": "checkpoint-45",
+      "text": "切一个小薄片"
+    },
+    {
+      "id": "cue-46-79400",
+      "sourceIndex": 46,
+      "start": 79.4,
+      "end": 79.76,
+      "groupId": "checkpoint-46",
+      "text": "开始"
+    },
+    {
+      "id": "cue-47-82180",
+      "sourceIndex": 47,
+      "start": 82.18,
+      "end": 84.86,
+      "groupId": "checkpoint-47",
+      "text": "挺有意思"
+    },
+    {
+      "id": "cue-48-87460",
+      "sourceIndex": 48,
+      "start": 87.46,
+      "end": 88.36,
+      "groupId": "checkpoint-48",
+      "text": "看看这小薄片"
+    },
+    {
+      "id": "cue-49-90440",
+      "sourceIndex": 49,
+      "start": 90.44,
+      "end": 91.16,
+      "groupId": "checkpoint-49",
+      "text": "很薄"
+    },
+    {
+      "id": "cue-50-92420",
+      "sourceIndex": 50,
+      "start": 92.42,
+      "end": 93.9,
+      "groupId": "checkpoint-50",
+      "text": "而且均匀都这么大"
+    },
+    {
+      "id": "cue-51-93900",
+      "sourceIndex": 51,
+      "start": 93.9,
+      "end": 96,
+      "groupId": "checkpoint-51",
+      "text": "先给它调成四把"
+    },
+    {
+      "id": "cue-52-96000",
+      "sourceIndex": 52,
+      "start": 96,
+      "end": 96.64,
+      "groupId": "checkpoint-52",
+      "text": "中厚度"
+    },
+    {
+      "id": "cue-53-100800",
+      "sourceIndex": 53,
+      "start": 100.8,
+      "end": 101.68,
+      "groupId": "checkpoint-53",
+      "text": "很丝滑"
+    },
+    {
+      "id": "cue-54-102220",
+      "sourceIndex": 54,
+      "start": 102.22,
+      "end": 105.42,
+      "groupId": "checkpoint-54",
+      "text": "得这么厚"
+    },
+    {
+      "id": "cue-55-107080",
+      "sourceIndex": 55,
+      "start": 107.08,
+      "end": 107.94,
+      "groupId": "checkpoint-55",
+      "text": "确实可以"
+    },
+    {
+      "id": "cue-56-107940",
+      "sourceIndex": 56,
+      "start": 107.94,
+      "end": 109.72,
+      "groupId": "checkpoint-56",
+      "text": "剩着点就把它按上"
+    },
+    {
+      "id": "cue-57-113860",
+      "sourceIndex": 57,
+      "start": 113.86,
+      "end": 114.66,
+      "groupId": "checkpoint-57",
+      "text": "没了"
+    },
+    {
+      "id": "cue-58-114660",
+      "sourceIndex": 58,
+      "start": 114.66,
+      "end": 115.92,
+      "groupId": "checkpoint-58",
+      "text": "菜叶都没有"
+    },
+    {
+      "id": "cue-59-115920",
+      "sourceIndex": 59,
+      "start": 115.92,
+      "end": 117.62,
+      "groupId": "checkpoint-59",
+      "text": "这菜叶都削下来了"
+    },
+    {
+      "id": "cue-60-117620",
+      "sourceIndex": 60,
+      "start": 117.62,
+      "end": 119.48,
+      "groupId": "checkpoint-60",
+      "text": "这里边很干净"
+    },
+    {
+      "id": "cue-61-119480",
+      "sourceIndex": 61,
+      "start": 119.48,
+      "end": 120.76,
+      "groupId": "checkpoint-61",
+      "text": "咱们再来切个土豆丝"
+    },
+    {
+      "id": "cue-62-120760",
+      "sourceIndex": 62,
+      "start": 120.76,
+      "end": 121.28,
+      "groupId": "checkpoint-62",
+      "text": "试试"
+    },
+    {
+      "id": "cue-63-121280",
+      "sourceIndex": 63,
+      "start": 121.28,
+      "end": 122.56,
+      "groupId": "checkpoint-63",
+      "text": "也是先给它调成"
+    },
+    {
+      "id": "cue-64-122560",
+      "sourceIndex": 64,
+      "start": 122.56,
+      "end": 124.06,
+      "groupId": "checkpoint-64",
+      "text": "蝌蚪一厚度的丝"
+    },
+    {
+      "id": "cue-65-127160",
+      "sourceIndex": 65,
+      "start": 127.16,
+      "end": 128.18,
+      "groupId": "checkpoint-65",
+      "text": "很丝滑"
+    },
+    {
+      "id": "cue-66-128620",
+      "sourceIndex": 66,
+      "start": 128.62,
+      "end": 130.28,
+      "groupId": "checkpoint-66",
+      "text": "看这丝后边往下钓着点"
+    },
+    {
+      "id": "cue-67-133780",
+      "sourceIndex": 67,
+      "start": 133.78,
+      "end": 134.78,
+      "groupId": "checkpoint-67",
+      "text": "再拿出这点"
+    },
+    {
+      "id": "cue-68-136320",
+      "sourceIndex": 68,
+      "start": 136.32,
+      "end": 137.12,
+      "groupId": "checkpoint-68",
+      "text": "看这些丝"
+    },
+    {
+      "id": "cue-69-137820",
+      "sourceIndex": 69,
+      "start": 137.82,
+      "end": 138.2,
+      "groupId": "checkpoint-69",
+      "text": "可以"
+    },
+    {
+      "id": "cue-70-138720",
+      "sourceIndex": 70,
+      "start": 138.72,
+      "end": 139.32,
+      "groupId": "checkpoint-70",
+      "text": "切丁"
+    },
+    {
+      "id": "cue-71-139320",
+      "sourceIndex": 71,
+      "start": 139.32,
+      "end": 140.68,
+      "groupId": "checkpoint-71",
+      "text": "一定要把大片萝卜"
+    },
+    {
+      "id": "cue-72-140680",
+      "sourceIndex": 72,
+      "start": 140.68,
+      "end": 142.01,
+      "groupId": "checkpoint-72",
+      "text": "横着这样放进去"
+    },
+    {
+      "id": "cue-73-145720",
+      "sourceIndex": 73,
+      "start": 145.72,
+      "end": 146.68,
+      "groupId": "checkpoint-73",
+      "text": "看看这丁"
+    },
+    {
+      "id": "cue-74-148120",
+      "sourceIndex": 74,
+      "start": 148.12,
+      "end": 148.88,
+      "groupId": "checkpoint-74",
+      "text": "看看吧"
+    },
+    {
+      "id": "cue-75-149500",
+      "sourceIndex": 75,
+      "start": 149.5,
+      "end": 151.24,
+      "groupId": "checkpoint-75",
+      "text": "非常均匀的小灵形块"
+    },
+    {
+      "id": "cue-76-152000",
+      "sourceIndex": 76,
+      "start": 152,
+      "end": 154.08,
+      "groupId": "checkpoint-76",
+      "text": "接下来咱们看看它好不好清洗"
+    },
+    {
+      "id": "cue-77-154080",
+      "sourceIndex": 77,
+      "start": 154.08,
+      "end": 155.28,
+      "groupId": "checkpoint-77",
+      "text": "它这个有一个好处"
+    },
+    {
+      "id": "cue-78-155280",
+      "sourceIndex": 78,
+      "start": 155.28,
+      "end": 155.72,
+      "groupId": "checkpoint-78",
+      "text": "就是你看"
+    },
+    {
+      "id": "cue-79-155720",
+      "sourceIndex": 79,
+      "start": 155.72,
+      "end": 156.8,
+      "groupId": "checkpoint-79",
+      "text": "这块有两个卡扣"
+    },
+    {
+      "id": "cue-80-156800",
+      "sourceIndex": 80,
+      "start": 156.8,
+      "end": 157.54,
+      "groupId": "checkpoint-80",
+      "text": "你一按"
+    },
+    {
+      "id": "cue-81-158380",
+      "sourceIndex": 81,
+      "start": 158.38,
+      "end": 159.8,
+      "groupId": "checkpoint-81",
+      "text": "上面这个就能窄起来了"
+    },
+    {
+      "id": "cue-82-159800",
+      "sourceIndex": 82,
+      "start": 159.8,
+      "end": 161.49,
+      "groupId": "checkpoint-82",
+      "text": "然后直接用水一冲就可以了"
+    },
+    {
+      "id": "cue-83-162090",
+      "sourceIndex": 83,
+      "start": 162.09,
+      "end": 163.37,
+      "groupId": "checkpoint-83",
+      "text": "这毕竟是蔬菜"
+    },
+    {
+      "id": "cue-84-163370",
+      "sourceIndex": 84,
+      "start": 163.37,
+      "end": 163.81,
+      "groupId": "checkpoint-84",
+      "text": "是吧"
+    },
+    {
+      "id": "cue-85-163810",
+      "sourceIndex": 85,
+      "start": 163.81,
+      "end": 164.97,
+      "groupId": "checkpoint-85",
+      "text": "它肯定有一脏"
+    },
+    {
+      "id": "cue-86-164970",
+      "sourceIndex": 86,
+      "start": 164.97,
+      "end": 165.67,
+      "groupId": "checkpoint-86",
+      "text": "脏到哪去"
+    },
+    {
+      "id": "cue-87-165670",
+      "sourceIndex": 87,
+      "start": 165.67,
+      "end": 167.09,
+      "groupId": "checkpoint-87",
+      "text": "它给咱带了这个小刷子"
+    },
+    {
+      "id": "cue-88-167090",
+      "sourceIndex": 88,
+      "start": 167.09,
+      "end": 168.25,
+      "groupId": "checkpoint-88",
+      "text": "简单那么一刷"
+    },
+    {
+      "id": "cue-89-170230",
+      "sourceIndex": 89,
+      "start": 170.23,
+      "end": 171.11,
+      "groupId": "checkpoint-89",
+      "text": "干净了"
+    },
+    {
+      "id": "cue-90-171110",
+      "sourceIndex": 90,
+      "start": 171.11,
+      "end": 172.47,
+      "groupId": "checkpoint-90",
+      "text": "再来这个"
+    },
+    {
+      "id": "cue-91-175050",
+      "sourceIndex": 91,
+      "start": 175.05,
+      "end": 175.61,
+      "groupId": "checkpoint-91",
+      "text": "完事"
+    },
+    {
+      "id": "cue-92-175610",
+      "sourceIndex": 92,
+      "start": 175.61,
+      "end": 176.39,
+      "groupId": "checkpoint-92",
+      "text": "也干净了"
+    },
+    {
+      "id": "cue-93-176390",
+      "sourceIndex": 93,
+      "start": 176.39,
+      "end": 177.99,
+      "groupId": "checkpoint-93",
+      "text": "毕竟是切蔬菜的"
+    },
+    {
+      "id": "cue-94-177990",
+      "sourceIndex": 94,
+      "start": 177.99,
+      "end": 179.39,
+      "groupId": "checkpoint-94",
+      "text": "本身就埋它不到哪去"
+    },
+    {
+      "id": "cue-95-179390",
+      "sourceIndex": 95,
+      "start": 179.39,
+      "end": 180.57,
+      "groupId": "checkpoint-95",
+      "text": "水一冲就干净了"
+    },
+    {
+      "id": "cue-96-180570",
+      "sourceIndex": 96,
+      "start": 180.57,
+      "end": 181.71,
+      "groupId": "checkpoint-96",
+      "text": "确实是这一个机器"
+    },
+    {
+      "id": "cue-97-181710",
+      "sourceIndex": 97,
+      "start": 181.71,
+      "end": 183.17,
+      "groupId": "checkpoint-97",
+      "text": "不用再额外换道片了"
+    },
+    {
+      "id": "cue-98-183170",
+      "sourceIndex": 98,
+      "start": 183.17,
+      "end": 184.15,
+      "groupId": "checkpoint-98",
+      "text": "就能完成切片"
+    },
+    {
+      "id": "cue-99-184150",
+      "sourceIndex": 99,
+      "start": 184.15,
+      "end": 185.51,
+      "groupId": "checkpoint-99",
+      "text": "切丝切条切丁"
+    },
+    {
+      "id": "cue-100-185510",
+      "sourceIndex": 100,
+      "start": 185.51,
+      "end": 186.93,
+      "groupId": "checkpoint-100",
+      "text": "确实挺不错的"
+    },
+    {
+      "id": "cue-101-186930",
+      "sourceIndex": 101,
+      "start": 186.93,
+      "end": 188.05,
+      "groupId": "checkpoint-101",
+      "text": "而且人家折叠之后"
+    },
+    {
+      "id": "cue-102-188050",
+      "sourceIndex": 102,
+      "start": 188.05,
+      "end": 189.25,
+      "groupId": "checkpoint-102",
+      "text": "收纳也很方便"
+    },
+    {
+      "id": "cue-103-189250",
+      "sourceIndex": 103,
+      "start": 189.25,
+      "end": 190.09,
+      "groupId": "checkpoint-103",
+      "text": "往哪会挂"
+    },
+    {
+      "id": "cue-104-190090",
+      "sourceIndex": 104,
+      "start": 190.09,
+      "end": 192.15,
+      "groupId": "checkpoint-104",
+      "text": "这个材质咱们已经测了"
+    },
+    {
+      "id": "cue-105-192150",
+      "sourceIndex": 105,
+      "start": 192.15,
+      "end": 193.05,
+      "groupId": "checkpoint-105",
+      "text": "也是合格的"
+    },
+    {
+      "id": "cue-106-193050",
+      "sourceIndex": 106,
+      "start": 193.05,
+      "end": 195.25,
+      "groupId": "checkpoint-106",
+      "text": "整体来说确实挺不错的"
+    },
+    {
+      "id": "cue-107-195250",
+      "sourceIndex": 107,
+      "start": 195.25,
+      "end": 197.15,
+      "groupId": "checkpoint-107",
+      "text": "能大大增加咱们的备菜速度"
+    },
+    {
+      "id": "cue-108-197150",
+      "sourceIndex": 108,
+      "start": 197.15,
+      "end": 198.91,
+      "groupId": "checkpoint-108",
+      "text": "切出来的增加又好看又规整"
+    },
+    {
+      "id": "cue-109-198910",
+      "sourceIndex": 109,
+      "start": 198.91,
+      "end": 199.83,
+      "groupId": "checkpoint-109",
+      "text": "确实挺好的"
+    },
+    {
+      "id": "cue-110-199830",
+      "sourceIndex": 110,
+      "start": 199.83,
+      "end": 200.67,
+      "groupId": "checkpoint-110",
+      "text": "只需要的"
+    },
+    {
+      "id": "cue-111-200670",
+      "sourceIndex": 111,
+      "start": 200.67,
+      "end": 201.39,
+      "groupId": "checkpoint-111",
+      "text": "你赞运入口"
+    },
+    {
+      "id": "cue-112-201390",
+      "sourceIndex": 112,
+      "start": 201.39,
+      "end": 202.19,
+      "groupId": "checkpoint-112",
+      "text": "尬尬客户"
+    }
+  ],
+  "contextBefore": [],
+  "contextAfter": [],
+  "glossary": []
+}

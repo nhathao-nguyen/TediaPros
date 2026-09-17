@@ -71,6 +71,38 @@ function safeTokenCount(capability: TranslationCapability, value: string): numbe
   return new TextEncoder().encode(value).length
 }
 
+/** Reserve the keyed-JSON wrapper, finish punctuation, and output variance. */
+export function translationOutputEnvelopeReserve(outputTokenLimit: number): number {
+  if (!Number.isSafeInteger(outputTokenLimit) || outputTokenLimit <= 0) throw new Error('Invalid translation output token limit.')
+  return Math.min(512, Math.max(0, Math.min(outputTokenLimit - 1, Math.max(16, Math.floor(outputTokenLimit * 0.02)))))
+}
+
+function targetOutputExpansion(targetLocale: string): number {
+  const language = targetLocale.trim().toLowerCase().split(/[-_]/u)[0]
+  // This is a labelled planning estimate, not a tokenizer or a duration claim.
+  // Vietnamese often spells a source concept with several words, so keep a
+  // modest extra reserve while measured TTS remains the final timing gate.
+  return language === 'vi' ? 1.35 : ['zh', 'ja', 'ko'].includes(language) ? 1.1 : 1.25
+}
+
+/**
+ * Conservative schema-aware output estimate for partitioning. It deliberately
+ * uses a byte-derived approximation only to keep an output below the known
+ * provider cap; audit/preflight labels it separately from an exact tokenizer.
+ */
+export function estimateTranslationOutputTokens(
+  cues: readonly Pick<TranslationCue, 'id' | 'text'>[],
+  targetLocale: string
+): number {
+  const encoder = new TextEncoder()
+  const expansion = targetOutputExpansion(targetLocale)
+  return 12 + cues.reduce((total, cue) => {
+    const sourceTokenEstimate = Math.ceil(encoder.encode(cue.text).length / 3)
+    const idTokenEstimate = Math.ceil(encoder.encode(cue.id).length / 3)
+    return total + Math.max(8, Math.ceil(sourceTokenEstimate * expansion) + idTokenEstimate + 4)
+  }, 0)
+}
+
 function safeBoundary(text: string, candidate: number): number {
   let end = Math.max(1, Math.min(text.length, candidate))
   const code = text.charCodeAt(end)
@@ -121,6 +153,9 @@ function cloneCue(cue: TranslationCue): TranslationCue {
 
 function normalizedInput(input: TranslationInput): TranslationInput {
   validateLocale(input.targetLocale)
+  if (input.sourceVideoDuration !== undefined && (!Number.isFinite(input.sourceVideoDuration) || input.sourceVideoDuration <= 0)) {
+    throw new Error('Invalid source video duration.')
+  }
   if (!Array.isArray(input.cues) || input.cues.length === 0) throw new Error('Translation source has no cues.')
   const seen = new Set<string>()
   const cues = input.cues.map((cue) => {
@@ -133,6 +168,7 @@ function normalizedInput(input: TranslationInput): TranslationInput {
     ...input,
     targetLocale: input.targetLocale.trim(),
     sourceLanguage: input.sourceLanguage.trim() || 'auto',
+    ...(input.sourceVideoDuration === undefined ? {} : { sourceVideoDuration: input.sourceVideoDuration }),
     cues,
     contextBefore: input.contextBefore.map(cloneCue),
     contextAfter: input.contextAfter.map(cloneCue),
@@ -148,7 +184,14 @@ export function planTranslation(input: TranslationInput, capability: Translation
   const outputTokens = capability.outputTokens == null
     ? 2_048
     : Math.max(1, Math.min(outputTokenCeiling, Math.floor(capability.outputTokens)))
-  const maxChars = Math.max(256, Math.min(4_000, Math.floor(outputTokens * 3)))
+  const outputEnvelopeReserve = capability.outputAware ? translationOutputEnvelopeReserve(outputTokens) : 0
+  const outputForItems = Math.max(1, outputTokens - outputEnvelopeReserve)
+  // Bound a singleton before grouping. The factor leaves room for key/value
+  // JSON and source-to-Vietnamese expansion; this is a planner estimate, not a
+  // character limit sent to the model.
+  const maxChars = capability.outputAware
+    ? Math.max(16, Math.min(4_000, Math.floor(Math.max(1, outputForItems - 20) / 1.5)))
+    : Math.max(256, Math.min(4_000, Math.floor(outputTokens * 3)))
   const units = source.cues.flatMap((cue) => splitCue(cue, maxChars))
   const mapping = units.map((item) => item.mapping)
 
@@ -179,6 +222,8 @@ export function planTranslation(input: TranslationInput, capability: Translation
 
   const fitsContext = (items: typeof units): boolean =>
     capability.contextTokens === null || exactInputCost(items) + outputTokens <= capability.contextTokens
+  const fitsOutput = (items: typeof units): boolean =>
+    !capability.outputAware || estimateTranslationOutputTokens(items.map((item) => item.cue), source.targetLocale) + outputEnvelopeReserve <= outputTokens
 
   const flush = (): void => {
     if (pending.length === 0) return
@@ -191,6 +236,10 @@ export function planTranslation(input: TranslationInput, capability: Translation
     const reservedOutput = outputTokens
     if (capability.contextTokens !== null && inputCost + reservedOutput > capability.contextTokens) {
       warnings.push(`Batch ${batches.length + 1} vượt ngân sách context ước lượng (${inputCost + reservedOutput} > ${capability.contextTokens}).`)
+    }
+    const estimatedOutput = estimateTranslationOutputTokens(pending.map((item) => item.cue), source.targetLocale) + outputEnvelopeReserve
+    if (capability.outputAware && estimatedOutput > outputTokens) {
+      warnings.push(`Batch ${batches.length + 1} vượt ngân sách output ước lượng (${estimatedOutput} > ${outputTokens}).`)
     }
     batches.push({
       id: `translation-batch-${batches.length + 1}`,
@@ -210,12 +259,13 @@ export function planTranslation(input: TranslationInput, capability: Translation
     // does not make otherwise valid cues unsupported.
     const candidate = pending.length > 0 ? [...pending, ...group] : group
     const exceedsContext = !fitsContext(candidate)
+    const exceedsOutput = !fitsOutput(candidate)
     const exceedsLegacy = !capability.wholeDocument && (currentCost + groupCost > 20_000 || pending.length + group.length > 24)
-    if (pending.length > 0 && (exceedsContext || exceedsLegacy)) flush()
-    if (group.length > 1 && (!fitsContext(group) || (!capability.wholeDocument && (group.length > 24 || groupCost > 20_000)))) {
+    if (pending.length > 0 && (exceedsContext || exceedsOutput || exceedsLegacy)) flush()
+    if (group.length > 1 && (!fitsContext(group) || !fitsOutput(group) || (!capability.wholeDocument && (group.length > 24 || groupCost > 20_000)))) {
       for (const item of group) {
         const nextCost = pending.reduce((sum, entry) => sum + entry.cue.text.length + 64, 0) + item.cue.text.length + 64
-        if (pending.length > 0 && (!fitsContext([...pending, item]) || (!capability.wholeDocument && (pending.length >= 24 || nextCost > 20_000)))) flush()
+        if (pending.length > 0 && (!fitsContext([...pending, item]) || !fitsOutput([...pending, item]) || (!capability.wholeDocument && (pending.length >= 24 || nextCost > 20_000)))) flush()
         pending.push(item)
       }
     } else {
@@ -224,7 +274,7 @@ export function planTranslation(input: TranslationInput, capability: Translation
   }
   flush()
   if (batches.length === 0) throw new Error('Translation planner produced no batches.')
-  const unsupported = capability.contextTokens !== null && warnings.some((warning) => warning.includes('vượt ngân sách context'))
+  const unsupported = warnings.some((warning) => warning.includes('vượt ngân sách context') || (capability.outputAware && warning.includes('vượt ngân sách output')))
   if (capability.contextTokens === null || capability.outputTokens === null) warnings.push('Provider token limits are unknown; using a bounded compatibility estimate.')
   return { planVersion: TRANSLATION_PLAN_VERSION, batches, mapping, warnings, unsupported }
 }

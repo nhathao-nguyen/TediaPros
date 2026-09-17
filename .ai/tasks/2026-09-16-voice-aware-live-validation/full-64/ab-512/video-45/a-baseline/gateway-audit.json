@@ -1,0 +1,42 @@
+{
+  "schemaVersion": 1,
+  "promptVersion": "gemini-gateway-two-pass-v10",
+  "model": "gemini-advanced",
+  "records": [
+    {
+      "stage": "restore-translate",
+      "outputMode": "cue-lines-v1",
+      "startedAtUtc": "2026-09-16T17:19:31.316Z",
+      "endedAtUtc": "2026-09-16T17:19:31.465Z",
+      "expectedIds": [
+        "cue-0-0",
+        "cue-1-4000",
+        "cue-2-6340",
+        "cue-3-8360",
+        "cue-4-11060",
+        "cue-5-12540",
+        "cue-6-15240",
+        "cue-7-16620",
+        "cue-8-20040",
+        "cue-9-21740",
+        "cue-10-24520",
+        "cue-11-26080",
+        "cue-12-27460",
+        "cue-13-29340"
+      ],
+      "outcome": "failed",
+      "inputHash": "3ecfb01fe1ffa84a030f4d4c56e521b20fb4b175f85c2fced13b471de06a3711",
+      "inputBytes": 8575,
+      "inputTokenEstimate": 2859,
+      "inputTokenProvenance": "utf8-byte-estimate",
+      "outputTokenReserve": 512,
+      "requestBudget": "fit",
+      "contextTokens": 1000000,
+      "outputTokens": 16384,
+      "contextLimitKind": "combined",
+      "capacityProvenance": "user-confirmed",
+      "requestedModel": "gemini-advanced",
+      "error": "Gemini Gateway lỗi upstream: after 1 attempts: upstream error: Google Gemini Web returned an error (BardErrorInfo code [8 1095]). This usually indicates session expiration, rate limits, context window limits, or bot protection/CAPTCHA block."
+    }
+  ]
+}

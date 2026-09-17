@@ -1,0 +1,67 @@
+{
+  "scheduler_capabilities": {
+    "scheduler_contract_version": 1,
+    "request_status": true,
+    "request_jobs": true,
+    "max_request_body_bytes": 4194304,
+    "max_pending_requests": 16,
+    "egress_group": "default"
+  },
+  "scheduler_status_example": {
+    "state": "cooldown",
+    "egress_group": "default",
+    "active_permits": 0,
+    "queued_requests": 2,
+    "next_eligible_at_utc": "2026-09-17T10:15:00.000Z",
+    "retry_after_seconds": 120,
+    "reason": "provider-throttled",
+    "revision": 42
+  },
+  "operation_receipt_example": {
+    "id": "op-7f2a1b9c-5e4d-4b8a-9f1c-2d3e4f5a6b7c",
+    "client_request_id": "9848538a-a1af-4f86-bddd-772f081c3253",
+    "status": "waiting-provider",
+    "dispatch_state": "not-dispatched",
+    "upstream_attempts": 0,
+    "created_at_utc": "2026-09-17T10:00:00.000Z",
+    "next_eligible_at_utc": "2026-09-17T10:02:00.000Z",
+    "reason": "provider-throttled"
+  },
+  "failure_classification_cases": [
+    {
+      "name": "429 with delta seconds retry after",
+      "evidence": { "http_status": 429, "retry_after": "120" },
+      "expected": { "code": "provider-throttled", "retryable": true, "block": true, "delta_seconds": 120 }
+    },
+    {
+      "name": "429 without retry after header",
+      "evidence": { "http_status": 429 },
+      "expected": { "code": "provider-throttled", "retryable": true, "block": true }
+    },
+    {
+      "name": "405 without challenge evidence is restriction unknown",
+      "evidence": { "http_status": 405 },
+      "expected": { "code": "provider-restriction-unknown", "retryable": false, "block": true }
+    },
+    {
+      "name": "403 without auth evidence is restriction unknown",
+      "evidence": { "http_status": 403 },
+      "expected": { "code": "provider-restriction-unknown", "retryable": false, "block": true }
+    },
+    {
+      "name": "explicit auth required stops retry and blocks",
+      "evidence": { "auth_required": true },
+      "expected": { "code": "provider-auth-required", "retryable": false, "block": true }
+    },
+    {
+      "name": "explicit challenge required stops retry and blocks",
+      "evidence": { "challenge": true },
+      "expected": { "code": "provider-challenge", "retryable": false, "block": true }
+    },
+    {
+      "name": "outcome unknown must not be auto-replayed",
+      "evidence": { "outcome_unknown": true },
+      "expected": { "code": "outcome-unknown", "retryable": false, "block": true }
+    }
+  ]
+}

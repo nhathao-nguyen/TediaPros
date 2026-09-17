@@ -1,0 +1,33 @@
+{
+  "schemaVersion": 2,
+  "state": "draft-validated",
+  "identity": "gemini-gateway:gemini-advanced:gemini-gateway-two-pass-v10:ai-output-parser-v1:gateway-draft-v2:cue-lines-v1:vi:15",
+  "raw": "{\"translations\":{\"cue-0-0\":\"Ai có thể nói cho tôi biết cái phần gừng băm ra này rốt cuộc dùng để làm gì không?\",\"cue-1-3740\":\"Tỏi băm thì tôi còn hiểu được, người Đông Bắc chúng tôi dùng để ăn kèm bánh chẻo.\",\"cue-2-6900\":\"Nhưng họ cứ quảng cáo là còn dùng để mài gừng băm.\",\"cue-3-9260\":\"Quan trọng là chẳng có mấy cái dùng cho ra hồn.\",\"cue-4-11580\":\"Cũng không biết cái phần gừng băm này rốt cuộc để làm gì.\",\"cue-5-13640\":\"Vẫn đang mài gừng kiểu này à? Người thông minh đều đang dùng dụng cụ mài rồi.\",\"cue-6-16560\":\"Mài nhẹ nhàng không đau tay.\",\"cue-7-20280\":\"Mài ra dạng nhuyễn mịn không bã.\",\"cue-8-22180\":\"Mài tỏi nhuyễn còn có thể dùng làm đĩa nước chấm.\",\"cue-9-24760\":\"Rau củ quả trong nhà mài dùng ngay lúc đó.\",\"cue-10-26720\":\"Bảo quản lạnh khoảng chừng giữ nguyên vị.\",\"cue-11-28820\":\"Theo video hướng dẫn, chúng tôi cũng mua về rồi.\",\"cue-12-30520\":\"Hiệu quả thực tế của chúng ta rốt cuộc ra sao?\",\"cue-13-31880\":\"Cứ để chúng tôi chịu trận mấy cái bẫy khen ngợi này nhé.\",\"cue-14-33340\":\"Đã tốn công theo dõi, phiền bạn ủng hộ một lượt nhé.\"}}",
+  "rawSha256": "fef1879e4fba6986b8a9e2fe699a16c434abeb78be74021df40985efd7a25d4c",
+  "observedModelId": "8c46e95b1a07cecc",
+  "observedModel": "3.5 Flash-Lite",
+  "routeFingerprint": "29ed9729dbdd53e76081fc89bd7f7991b6a6e2c770e964fd8fa2ceaa0c22c646",
+  "sourceDigest": "2a1dad75f23dce99cbebab3c24123349f4ab2a6c9143e0db56be698c84ec7082",
+  "expectedIds": [
+    "cue-0-0",
+    "cue-1-3740",
+    "cue-2-6900",
+    "cue-3-9260",
+    "cue-4-11580",
+    "cue-5-13640",
+    "cue-6-16560",
+    "cue-7-20280",
+    "cue-8-22180",
+    "cue-9-24760",
+    "cue-10-26720",
+    "cue-11-28820",
+    "cue-12-30520",
+    "cue-13-31880",
+    "cue-14-33340"
+  ],
+  "targetLocale": "vi",
+  "draftPromptVersion": "gemini-gateway-two-pass-v10",
+  "reviewPromptVersion": "gemini-gateway-two-pass-v10",
+  "parserVersion": "ai-output-parser-v1:gateway-draft-v2",
+  "savedAtUtc": "2026-09-16T17:18:44.971Z"
+}

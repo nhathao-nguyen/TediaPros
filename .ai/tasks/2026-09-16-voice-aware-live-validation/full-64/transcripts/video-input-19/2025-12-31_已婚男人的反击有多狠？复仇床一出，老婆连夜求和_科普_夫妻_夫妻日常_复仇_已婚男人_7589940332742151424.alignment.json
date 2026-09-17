@@ -1,0 +1,3172 @@
+{
+  "duration": 40.613125,
+  "language": "zh",
+  "segments": [
+    {
+      "start": 0.0,
+      "end": 1.04,
+      "text": "每次跟老婆吵架",
+      "words": [
+        {
+          "text": "每",
+          "start": 0.0,
+          "end": 0.18,
+          "probability": 0.9072265625
+        },
+        {
+          "text": "次",
+          "start": 0.18,
+          "end": 0.36,
+          "probability": 0.98828125
+        },
+        {
+          "text": "跟",
+          "start": 0.36,
+          "end": 0.48,
+          "probability": 0.9873046875
+        },
+        {
+          "text": "老",
+          "start": 0.48,
+          "end": 0.62,
+          "probability": 0.9921875
+        },
+        {
+          "text": "婆",
+          "start": 0.62,
+          "end": 0.72,
+          "probability": 1.0
+        },
+        {
+          "text": "吵",
+          "start": 0.72,
+          "end": 0.86,
+          "probability": 0.997314453125
+        },
+        {
+          "text": "架",
+          "start": 0.86,
+          "end": 1.04,
+          "probability": 1.0
+        }
+      ]
+    },
+    {
+      "start": 1.04,
+      "end": 2.88,
+      "text": "咱們南東包是不是都一個待遇",
+      "words": [
+        {
+          "text": "咱",
+          "start": 1.04,
+          "end": 1.36,
+          "probability": 0.852783203125
+        },
+        {
+          "text": "們",
+          "start": 1.36,
+          "end": 1.46,
+          "probability": 0.81591796875
+        },
+        {
+          "text": "南",
+          "start": 1.46,
+          "end": 1.62,
+          "probability": 0.70654296875
+        },
+        {
+          "text": "東",
+          "start": 1.62,
+          "end": 1.7,
+          "probability": 0.80322265625
+        },
+        {
+          "text": "包",
+          "start": 1.7,
+          "end": 1.84,
+          "probability": 0.93994140625
+        },
+        {
+          "text": "是不是",
+          "start": 1.84,
+          "end": 2.06,
+          "probability": 0.9052734375
+        },
+        {
+          "text": "都",
+          "start": 2.06,
+          "end": 2.34,
+          "probability": 0.90869140625
+        },
+        {
+          "text": "一個",
+          "start": 2.34,
+          "end": 2.52,
+          "probability": 0.89208984375
+        },
+        {
+          "text": "待",
+          "start": 2.52,
+          "end": 2.7,
+          "probability": 0.98583984375
+        },
+        {
+          "text": "遇",
+          "start": 2.7,
+          "end": 2.88,
+          "probability": 0.99951171875
+        }
+      ]
+    },
+    {
+      "start": 2.88,
+      "end": 3.88,
+      "text": "直接被串下床",
+      "words": [
+        {
+          "text": "直接",
+          "start": 2.88,
+          "end": 3.22,
+          "probability": 0.9150390625
+        },
+        {
+          "text": "被",
+          "start": 3.22,
+          "end": 3.38,
+          "probability": 0.99609375
+        },
+        {
+          "text": "串",
+          "start": 3.38,
+          "end": 3.52,
+          "probability": 0.8076171875
+        },
+        {
+          "text": "下",
+          "start": 3.52,
+          "end": 3.72,
+          "probability": 0.88671875
+        },
+        {
+          "text": "床",
+          "start": 3.72,
+          "end": 3.88,
+          "probability": 0.991943359375
+        }
+      ]
+    },
+    {
+      "start": 3.88,
+      "end": 4.96,
+      "text": "被逼著睡地板",
+      "words": [
+        {
+          "text": "被",
+          "start": 3.88,
+          "end": 4.18,
+          "probability": 0.84521484375
+        },
+        {
+          "text": "逼",
+          "start": 4.18,
+          "end": 4.32,
+          "probability": 0.98974609375
+        },
+        {
+          "text": "著",
+          "start": 4.32,
+          "end": 4.48,
+          "probability": 0.900390625
+        },
+        {
+          "text": "睡",
+          "start": 4.48,
+          "end": 4.62,
+          "probability": 0.953125
+        },
+        {
+          "text": "地",
+          "start": 4.62,
+          "end": 4.8,
+          "probability": 0.9892578125
+        },
+        {
+          "text": "板",
+          "start": 4.8,
+          "end": 4.96,
+          "probability": 0.98779296875
+        }
+      ]
+    },
+    {
+      "start": 4.96,
+      "end": 5.82,
+      "text": "人家倒好",
+      "words": [
+        {
+          "text": "人",
+          "start": 4.96,
+          "end": 5.28,
+          "probability": 0.9765625
+        },
+        {
+          "text": "家",
+          "start": 5.28,
+          "end": 5.42,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "倒",
+          "start": 5.42,
+          "end": 5.54,
+          "probability": 0.94091796875
+        },
+        {
+          "text": "好",
+          "start": 5.54,
+          "end": 5.82,
+          "probability": 0.9921875
+        }
+      ]
+    },
+    {
+      "start": 5.82,
+      "end": 7.14,
+      "text": "叔叔服服躺床上",
+      "words": [
+        {
+          "text": "叔",
+          "start": 5.82,
+          "end": 6.1,
+          "probability": 0.435791015625
+        },
+        {
+          "text": "叔",
+          "start": 6.1,
+          "end": 6.28,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "服",
+          "start": 6.28,
+          "end": 6.4,
+          "probability": 0.75341796875
+        },
+        {
+          "text": "服",
+          "start": 6.4,
+          "end": 6.56,
+          "probability": 0.99462890625
+        },
+        {
+          "text": "躺",
+          "start": 6.56,
+          "end": 6.76,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "床",
+          "start": 6.76,
+          "end": 6.92,
+          "probability": 0.999267578125
+        },
+        {
+          "text": "上",
+          "start": 6.92,
+          "end": 7.14,
+          "probability": 0.99609375
+        }
+      ]
+    },
+    {
+      "start": 7.14,
+      "end": 8.32,
+      "text": "這也太不公平了吧",
+      "words": [
+        {
+          "text": "這",
+          "start": 7.14,
+          "end": 7.44,
+          "probability": 0.9736328125
+        },
+        {
+          "text": "也",
+          "start": 7.44,
+          "end": 7.52,
+          "probability": 0.994140625
+        },
+        {
+          "text": "太",
+          "start": 7.52,
+          "end": 7.7,
+          "probability": 0.99072265625
+        },
+        {
+          "text": "不",
+          "start": 7.7,
+          "end": 7.84,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "公",
+          "start": 7.84,
+          "end": 8.0,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "平",
+          "start": 8.0,
+          "end": 8.18,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "了吧",
+          "start": 8.18,
+          "end": 8.32,
+          "probability": 0.97900390625
+        }
+      ]
+    },
+    {
+      "start": 8.32,
+      "end": 9.6,
+      "text": "所以我發明了這個",
+      "words": [
+        {
+          "text": "所以",
+          "start": 8.32,
+          "end": 8.82,
+          "probability": 0.97412109375
+        },
+        {
+          "text": "我",
+          "start": 8.82,
+          "end": 9.02,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "發",
+          "start": 9.02,
+          "end": 9.2,
+          "probability": 0.98828125
+        },
+        {
+          "text": "明",
+          "start": 9.2,
+          "end": 9.32,
+          "probability": 0.990234375
+        },
+        {
+          "text": "了",
+          "start": 9.32,
+          "end": 9.44,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "這個",
+          "start": 9.44,
+          "end": 9.6,
+          "probability": 0.982421875
+        }
+      ]
+    },
+    {
+      "start": 9.6,
+      "end": 10.68,
+      "text": "誰也別想睡",
+      "words": [
+        {
+          "text": "誰",
+          "start": 9.6,
+          "end": 10.02,
+          "probability": 0.75927734375
+        },
+        {
+          "text": "也",
+          "start": 10.02,
+          "end": 10.16,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "別",
+          "start": 10.16,
+          "end": 10.3,
+          "probability": 0.98583984375
+        },
+        {
+          "text": "想",
+          "start": 10.3,
+          "end": 10.48,
+          "probability": 0.98583984375
+        },
+        {
+          "text": "睡",
+          "start": 10.48,
+          "end": 10.68,
+          "probability": 0.99560546875
+        }
+      ]
+    },
+    {
+      "start": 10.68,
+      "end": 11.44,
+      "text": "復仇床",
+      "words": [
+        {
+          "text": "復",
+          "start": 10.68,
+          "end": 11.06,
+          "probability": 0.700927734375
+        },
+        {
+          "text": "仇",
+          "start": 11.06,
+          "end": 11.22,
+          "probability": 0.998046875
+        },
+        {
+          "text": "床",
+          "start": 11.22,
+          "end": 11.44,
+          "probability": 0.997314453125
+        }
+      ]
+    },
+    {
+      "start": 11.44,
+      "end": 13.82,
+      "text": "現在讓我好兄弟給你們演示下怎麼用",
+      "words": [
+        {
+          "text": "現在",
+          "start": 11.44,
+          "end": 11.88,
+          "probability": 0.96875
+        },
+        {
+          "text": "讓",
+          "start": 11.88,
+          "end": 12.12,
+          "probability": 0.98583984375
+        },
+        {
+          "text": "我",
+          "start": 12.12,
+          "end": 12.22,
+          "probability": 0.96728515625
+        },
+        {
+          "text": "好",
+          "start": 12.22,
+          "end": 12.32,
+          "probability": 0.8798828125
+        },
+        {
+          "text": "兄",
+          "start": 12.32,
+          "end": 12.5,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "弟",
+          "start": 12.5,
+          "end": 12.6,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "給",
+          "start": 12.6,
+          "end": 12.72,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "你們",
+          "start": 12.72,
+          "end": 12.96,
+          "probability": 0.9326171875
+        },
+        {
+          "text": "演",
+          "start": 12.96,
+          "end": 13.12,
+          "probability": 0.7841796875
+        },
+        {
+          "text": "示",
+          "start": 13.12,
+          "end": 13.26,
+          "probability": 0.93505859375
+        },
+        {
+          "text": "下",
+          "start": 13.26,
+          "end": 13.42,
+          "probability": 0.96044921875
+        },
+        {
+          "text": "怎麼",
+          "start": 13.42,
+          "end": 13.6,
+          "probability": 0.8203125
+        },
+        {
+          "text": "用",
+          "start": 13.6,
+          "end": 13.82,
+          "probability": 0.99951171875
+        }
+      ]
+    },
+    {
+      "start": 13.82,
+      "end": 14.84,
+      "text": "你正躺床上呢",
+      "words": [
+        {
+          "text": "你",
+          "start": 13.82,
+          "end": 14.04,
+          "probability": 0.94482421875
+        },
+        {
+          "text": "正",
+          "start": 14.04,
+          "end": 14.2,
+          "probability": 0.97265625
+        },
+        {
+          "text": "躺",
+          "start": 14.2,
+          "end": 14.32,
+          "probability": 0.985107421875
+        },
+        {
+          "text": "床",
+          "start": 14.32,
+          "end": 14.48,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "上",
+          "start": 14.48,
+          "end": 14.72,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "呢",
+          "start": 14.72,
+          "end": 14.84,
+          "probability": 0.87451171875
+        }
+      ]
+    },
+    {
+      "start": 14.84,
+      "end": 16.74,
+      "text": "只要老婆敢動手串你這裝置",
+      "words": [
+        {
+          "text": "只",
+          "start": 14.84,
+          "end": 15.12,
+          "probability": 0.98193359375
+        },
+        {
+          "text": "要",
+          "start": 15.12,
+          "end": 15.22,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "老",
+          "start": 15.22,
+          "end": 15.38,
+          "probability": 0.998046875
+        },
+        {
+          "text": "婆",
+          "start": 15.38,
+          "end": 15.54,
+          "probability": 1.0
+        },
+        {
+          "text": "敢",
+          "start": 15.54,
+          "end": 15.68,
+          "probability": 0.446533203125
+        },
+        {
+          "text": "動",
+          "start": 15.68,
+          "end": 15.8,
+          "probability": 0.998046875
+        },
+        {
+          "text": "手",
+          "start": 15.8,
+          "end": 15.96,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "串",
+          "start": 15.96,
+          "end": 16.14,
+          "probability": 0.960205078125
+        },
+        {
+          "text": "你",
+          "start": 16.14,
+          "end": 16.3,
+          "probability": 0.8984375
+        },
+        {
+          "text": "這",
+          "start": 16.3,
+          "end": 16.44,
+          "probability": 0.984375
+        },
+        {
+          "text": "裝",
+          "start": 16.44,
+          "end": 16.6,
+          "probability": 0.96875
+        },
+        {
+          "text": "置",
+          "start": 16.6,
+          "end": 16.74,
+          "probability": 0.99072265625
+        }
+      ]
+    },
+    {
+      "start": 16.74,
+      "end": 17.7,
+      "text": "直接自動啟動",
+      "words": [
+        {
+          "text": "直接",
+          "start": 16.74,
+          "end": 17.02,
+          "probability": 0.97607421875
+        },
+        {
+          "text": "自",
+          "start": 17.02,
+          "end": 17.24,
+          "probability": 0.998046875
+        },
+        {
+          "text": "動",
+          "start": 17.24,
+          "end": 17.36,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "啟",
+          "start": 17.36,
+          "end": 17.56,
+          "probability": 0.88427734375
+        },
+        {
+          "text": "動",
+          "start": 17.56,
+          "end": 17.7,
+          "probability": 0.99951171875
+        }
+      ]
+    },
+    {
+      "start": 17.7,
+      "end": 18.44,
+      "text": "看到沒",
+      "words": [
+        {
+          "text": "看到",
+          "start": 17.7,
+          "end": 18.08,
+          "probability": 0.97265625
+        },
+        {
+          "text": "沒",
+          "start": 18.08,
+          "end": 18.44,
+          "probability": 0.9853515625
+        }
+      ]
+    },
+    {
+      "start": 18.44,
+      "end": 19.02,
+      "text": "我睡不了",
+      "words": [
+        {
+          "text": "我",
+          "start": 18.44,
+          "end": 18.62,
+          "probability": 0.9326171875
+        },
+        {
+          "text": "睡",
+          "start": 18.62,
+          "end": 18.8,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "不了",
+          "start": 18.8,
+          "end": 19.02,
+          "probability": 0.98193359375
+        }
+      ]
+    },
+    {
+      "start": 19.02,
+      "end": 20.06,
+      "text": "誰也別想睡",
+      "words": [
+        {
+          "text": "誰",
+          "start": 19.02,
+          "end": 19.4,
+          "probability": 0.9716796875
+        },
+        {
+          "text": "也",
+          "start": 19.4,
+          "end": 19.54,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "別",
+          "start": 19.54,
+          "end": 19.64,
+          "probability": 0.98828125
+        },
+        {
+          "text": "想",
+          "start": 19.64,
+          "end": 19.84,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "睡",
+          "start": 19.84,
+          "end": 20.06,
+          "probability": 0.99462890625
+        }
+      ]
+    },
+    {
+      "start": 20.06,
+      "end": 21.36,
+      "text": "簡直不要太實用",
+      "words": [
+        {
+          "text": "簡",
+          "start": 20.06,
+          "end": 20.38,
+          "probability": 0.98974609375
+        },
+        {
+          "text": "直",
+          "start": 20.38,
+          "end": 20.54,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "不要",
+          "start": 20.54,
+          "end": 20.74,
+          "probability": 0.99560546875
+        },
+        {
+          "text": "太",
+          "start": 20.74,
+          "end": 20.98,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "實",
+          "start": 20.98,
+          "end": 21.18,
+          "probability": 0.97314453125
+        },
+        {
+          "text": "用",
+          "start": 21.18,
+          "end": 21.36,
+          "probability": 0.99951171875
+        }
+      ]
+    },
+    {
+      "start": 21.36,
+      "end": 21.84,
+      "text": "還有啊",
+      "words": [
+        {
+          "text": "還有",
+          "start": 21.36,
+          "end": 21.64,
+          "probability": 0.990234375
+        },
+        {
+          "text": "啊",
+          "start": 21.64,
+          "end": 21.84,
+          "probability": 0.61279296875
+        }
+      ]
+    },
+    {
+      "start": 21.84,
+      "end": 22.86,
+      "text": "跟老婆睡覺的時候",
+      "words": [
+        {
+          "text": "跟",
+          "start": 21.84,
+          "end": 22.08,
+          "probability": 0.97412109375
+        },
+        {
+          "text": "老",
+          "start": 22.08,
+          "end": 22.24,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "婆",
+          "start": 22.24,
+          "end": 22.36,
+          "probability": 1.0
+        },
+        {
+          "text": "睡",
+          "start": 22.36,
+          "end": 22.5,
+          "probability": 0.998046875
+        },
+        {
+          "text": "覺",
+          "start": 22.5,
+          "end": 22.64,
+          "probability": 0.98486328125
+        },
+        {
+          "text": "的時候",
+          "start": 22.64,
+          "end": 22.86,
+          "probability": 0.98974609375
+        }
+      ]
+    },
+    {
+      "start": 22.86,
+      "end": 24.4,
+      "text": "他們總像個小寶寶似的",
+      "words": [
+        {
+          "text": "他們",
+          "start": 22.86,
+          "end": 23.12,
+          "probability": 0.8505859375
+        },
+        {
+          "text": "總",
+          "start": 23.12,
+          "end": 23.32,
+          "probability": 0.994140625
+        },
+        {
+          "text": "像",
+          "start": 23.32,
+          "end": 23.48,
+          "probability": 0.6298828125
+        },
+        {
+          "text": "個",
+          "start": 23.48,
+          "end": 23.58,
+          "probability": 0.90185546875
+        },
+        {
+          "text": "小",
+          "start": 23.58,
+          "end": 23.7,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "寶",
+          "start": 23.7,
+          "end": 23.84,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "寶",
+          "start": 23.84,
+          "end": 23.98,
+          "probability": 0.999267578125
+        },
+        {
+          "text": "似",
+          "start": 23.98,
+          "end": 24.14,
+          "probability": 0.7958984375
+        },
+        {
+          "text": "的",
+          "start": 24.14,
+          "end": 24.4,
+          "probability": 0.9990234375
+        }
+      ]
+    },
+    {
+      "start": 24.4,
+      "end": 25.36,
+      "text": "要咱們輕輕拍著",
+      "words": [
+        {
+          "text": "要",
+          "start": 24.4,
+          "end": 24.56,
+          "probability": 0.98828125
+        },
+        {
+          "text": "咱",
+          "start": 24.56,
+          "end": 24.7,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "們",
+          "start": 24.7,
+          "end": 24.84,
+          "probability": 0.98046875
+        },
+        {
+          "text": "輕",
+          "start": 24.84,
+          "end": 24.96,
+          "probability": 0.87841796875
+        },
+        {
+          "text": "輕",
+          "start": 24.96,
+          "end": 25.1,
+          "probability": 0.99658203125
+        },
+        {
+          "text": "拍",
+          "start": 25.1,
+          "end": 25.24,
+          "probability": 0.67529296875
+        },
+        {
+          "text": "著",
+          "start": 25.24,
+          "end": 25.36,
+          "probability": 0.9462890625
+        }
+      ]
+    },
+    {
+      "start": 25.36,
+      "end": 26.88,
+      "text": "才肯睡拍得主酸胳膜嗎",
+      "words": [
+        {
+          "text": "才",
+          "start": 25.36,
+          "end": 25.5,
+          "probability": 0.93896484375
+        },
+        {
+          "text": "肯",
+          "start": 25.5,
+          "end": 25.66,
+          "probability": 0.997314453125
+        },
+        {
+          "text": "睡",
+          "start": 25.66,
+          "end": 25.82,
+          "probability": 0.97314453125
+        },
+        {
+          "text": "拍",
+          "start": 25.82,
+          "end": 26.02,
+          "probability": 0.8125
+        },
+        {
+          "text": "得",
+          "start": 26.02,
+          "end": 26.14,
+          "probability": 0.93896484375
+        },
+        {
+          "text": "主",
+          "start": 26.14,
+          "end": 26.28,
+          "probability": 0.6171875
+        },
+        {
+          "text": "酸",
+          "start": 26.28,
+          "end": 26.44,
+          "probability": 0.95654296875
+        },
+        {
+          "text": "胳",
+          "start": 26.44,
+          "end": 26.6,
+          "probability": 0.7105712890625
+        },
+        {
+          "text": "膜",
+          "start": 26.6,
+          "end": 26.62,
+          "probability": 0.630615234375
+        },
+        {
+          "text": "嗎",
+          "start": 26.62,
+          "end": 26.88,
+          "probability": 0.414794921875
+        }
+      ]
+    },
+    {
+      "start": 26.88,
+      "end": 27.58,
+      "text": "累得要死",
+      "words": [
+        {
+          "text": "累",
+          "start": 26.88,
+          "end": 27.16,
+          "probability": 0.95068359375
+        },
+        {
+          "text": "得",
+          "start": 27.16,
+          "end": 27.26,
+          "probability": 0.85693359375
+        },
+        {
+          "text": "要",
+          "start": 27.26,
+          "end": 27.38,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "死",
+          "start": 27.38,
+          "end": 27.58,
+          "probability": 0.99658203125
+        }
+      ]
+    },
+    {
+      "start": 27.58,
+      "end": 28.64,
+      "text": "純屬好體力",
+      "words": [
+        {
+          "text": "純",
+          "start": 27.58,
+          "end": 27.92,
+          "probability": 0.6668701171875
+        },
+        {
+          "text": "屬",
+          "start": 27.92,
+          "end": 28.08,
+          "probability": 0.6802978515625
+        },
+        {
+          "text": "好",
+          "start": 28.08,
+          "end": 28.26,
+          "probability": 0.56884765625
+        },
+        {
+          "text": "體",
+          "start": 28.26,
+          "end": 28.46,
+          "probability": 0.8251953125
+        },
+        {
+          "text": "力",
+          "start": 28.46,
+          "end": 28.64,
+          "probability": 0.99658203125
+        }
+      ]
+    },
+    {
+      "start": 28.64,
+      "end": 29.94,
+      "text": "所以我又發明了這段",
+      "words": [
+        {
+          "text": "所以",
+          "start": 28.64,
+          "end": 28.98,
+          "probability": 0.83447265625
+        },
+        {
+          "text": "我",
+          "start": 28.98,
+          "end": 29.14,
+          "probability": 0.97314453125
+        },
+        {
+          "text": "又",
+          "start": 29.14,
+          "end": 29.26,
+          "probability": 0.99267578125
+        },
+        {
+          "text": "發",
+          "start": 29.26,
+          "end": 29.44,
+          "probability": 0.97119140625
+        },
+        {
+          "text": "明",
+          "start": 29.44,
+          "end": 29.6,
+          "probability": 0.9931640625
+        },
+        {
+          "text": "了",
+          "start": 29.6,
+          "end": 29.68,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "這",
+          "start": 29.68,
+          "end": 29.78,
+          "probability": 0.8818359375
+        },
+        {
+          "text": "段",
+          "start": 29.78,
+          "end": 29.94,
+          "probability": 0.98193359375
+        }
+      ]
+    },
+    {
+      "start": 29.94,
+      "end": 31.24,
+      "text": "自動拍睡神器床",
+      "words": [
+        {
+          "text": "自",
+          "start": 29.94,
+          "end": 30.2,
+          "probability": 0.9892578125
+        },
+        {
+          "text": "動",
+          "start": 30.2,
+          "end": 30.32,
+          "probability": 0.9921875
+        },
+        {
+          "text": "拍",
+          "start": 30.32,
+          "end": 30.48,
+          "probability": 0.9384765625
+        },
+        {
+          "text": "睡",
+          "start": 30.48,
+          "end": 30.64,
+          "probability": 0.20654296875
+        },
+        {
+          "text": "神",
+          "start": 30.64,
+          "end": 30.84,
+          "probability": 0.9951171875
+        },
+        {
+          "text": "器",
+          "start": 30.84,
+          "end": 30.98,
+          "probability": 0.5234375
+        },
+        {
+          "text": "床",
+          "start": 30.98,
+          "end": 31.24,
+          "probability": 0.9931640625
+        }
+      ]
+    },
+    {
+      "start": 31.24,
+      "end": 32.94,
+      "text": "再讓我好兄弟演示一遍",
+      "words": [
+        {
+          "text": "再",
+          "start": 31.24,
+          "end": 31.54,
+          "probability": 0.82275390625
+        },
+        {
+          "text": "讓",
+          "start": 31.54,
+          "end": 31.66,
+          "probability": 0.9873046875
+        },
+        {
+          "text": "我",
+          "start": 31.66,
+          "end": 31.76,
+          "probability": 0.98095703125
+        },
+        {
+          "text": "好",
+          "start": 31.76,
+          "end": 31.92,
+          "probability": 0.99560546875
+        },
+        {
+          "text": "兄",
+          "start": 31.92,
+          "end": 32.06,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "弟",
+          "start": 32.06,
+          "end": 32.2,
+          "probability": 0.99658203125
+        },
+        {
+          "text": "演",
+          "start": 32.2,
+          "end": 32.36,
+          "probability": 0.89306640625
+        },
+        {
+          "text": "示",
+          "start": 32.36,
+          "end": 32.52,
+          "probability": 0.97607421875
+        },
+        {
+          "text": "一",
+          "start": 32.52,
+          "end": 32.64,
+          "probability": 0.9111328125
+        },
+        {
+          "text": "遍",
+          "start": 32.64,
+          "end": 32.94,
+          "probability": 0.99951171875
+        }
+      ]
+    },
+    {
+      "start": 32.94,
+      "end": 34.1,
+      "text": "只要老婆開始撒嬌",
+      "words": [
+        {
+          "text": "只",
+          "start": 32.94,
+          "end": 33.06,
+          "probability": 0.73291015625
+        },
+        {
+          "text": "要",
+          "start": 33.06,
+          "end": 33.18,
+          "probability": 0.99462890625
+        },
+        {
+          "text": "老",
+          "start": 33.18,
+          "end": 33.3,
+          "probability": 0.98779296875
+        },
+        {
+          "text": "婆",
+          "start": 33.3,
+          "end": 33.44,
+          "probability": 0.97802734375
+        },
+        {
+          "text": "開始",
+          "start": 33.44,
+          "end": 33.62,
+          "probability": 0.99267578125
+        },
+        {
+          "text": "撒",
+          "start": 33.62,
+          "end": 33.86,
+          "probability": 0.97216796875
+        },
+        {
+          "text": "嬌",
+          "start": 33.86,
+          "end": 34.1,
+          "probability": 0.9794921875
+        }
+      ]
+    },
+    {
+      "start": 34.1,
+      "end": 35.44,
+      "text": "說老公拍我睡覺嗎",
+      "words": [
+        {
+          "text": "說",
+          "start": 34.1,
+          "end": 34.4,
+          "probability": 0.9150390625
+        },
+        {
+          "text": "老",
+          "start": 34.4,
+          "end": 34.56,
+          "probability": 0.99169921875
+        },
+        {
+          "text": "公",
+          "start": 34.56,
+          "end": 34.68,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "拍",
+          "start": 34.68,
+          "end": 34.88,
+          "probability": 0.80078125
+        },
+        {
+          "text": "我",
+          "start": 34.88,
+          "end": 34.98,
+          "probability": 0.9931640625
+        },
+        {
+          "text": "睡",
+          "start": 34.98,
+          "end": 35.14,
+          "probability": 0.99658203125
+        },
+        {
+          "text": "覺",
+          "start": 35.14,
+          "end": 35.32,
+          "probability": 0.9619140625
+        },
+        {
+          "text": "嗎",
+          "start": 35.32,
+          "end": 35.44,
+          "probability": 0.3349609375
+        }
+      ]
+    },
+    {
+      "start": 35.44,
+      "end": 36.46,
+      "text": "咱們偷偷按一下",
+      "words": [
+        {
+          "text": "咱",
+          "start": 35.44,
+          "end": 35.72,
+          "probability": 0.960205078125
+        },
+        {
+          "text": "們",
+          "start": 35.72,
+          "end": 35.84,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "偷",
+          "start": 35.84,
+          "end": 36.0,
+          "probability": 0.980224609375
+        },
+        {
+          "text": "偷",
+          "start": 36.0,
+          "end": 36.12,
+          "probability": 0.998291015625
+        },
+        {
+          "text": "按",
+          "start": 36.12,
+          "end": 36.26,
+          "probability": 0.98876953125
+        },
+        {
+          "text": "一下",
+          "start": 36.26,
+          "end": 36.46,
+          "probability": 0.947265625
+        }
+      ]
+    },
+    {
+      "start": 36.46,
+      "end": 37.66,
+      "text": "遙控器就行看到沒",
+      "words": [
+        {
+          "text": "遙",
+          "start": 36.46,
+          "end": 36.66,
+          "probability": 0.69873046875
+        },
+        {
+          "text": "控",
+          "start": 36.66,
+          "end": 36.84,
+          "probability": 1.0
+        },
+        {
+          "text": "器",
+          "start": 36.84,
+          "end": 36.98,
+          "probability": 0.99462890625
+        },
+        {
+          "text": "就",
+          "start": 36.98,
+          "end": 37.1,
+          "probability": 0.89404296875
+        },
+        {
+          "text": "行",
+          "start": 37.1,
+          "end": 37.24,
+          "probability": 0.896484375
+        },
+        {
+          "text": "看到",
+          "start": 37.24,
+          "end": 37.42,
+          "probability": 0.98779296875
+        },
+        {
+          "text": "沒",
+          "start": 37.42,
+          "end": 37.66,
+          "probability": 0.9609375
+        }
+      ]
+    },
+    {
+      "start": 37.66,
+      "end": 39.18,
+      "text": "只要老婆立馬就能睡著",
+      "words": [
+        {
+          "text": "只",
+          "start": 37.66,
+          "end": 37.94,
+          "probability": 0.417724609375
+        },
+        {
+          "text": "要",
+          "start": 37.94,
+          "end": 38.04,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "老",
+          "start": 38.04,
+          "end": 38.16,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "婆",
+          "start": 38.16,
+          "end": 38.32,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "立",
+          "start": 38.32,
+          "end": 38.46,
+          "probability": 0.99658203125
+        },
+        {
+          "text": "馬",
+          "start": 38.46,
+          "end": 38.6,
+          "probability": 0.9716796875
+        },
+        {
+          "text": "就",
+          "start": 38.6,
+          "end": 38.76,
+          "probability": 0.98095703125
+        },
+        {
+          "text": "能",
+          "start": 38.76,
+          "end": 38.86,
+          "probability": 0.98876953125
+        },
+        {
+          "text": "睡",
+          "start": 38.86,
+          "end": 39.0,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "著",
+          "start": 39.0,
+          "end": 39.18,
+          "probability": 0.97900390625
+        }
+      ]
+    },
+    {
+      "start": 39.18,
+      "end": 40.38,
+      "text": "簡直解放雙手",
+      "words": [
+        {
+          "text": "簡",
+          "start": 39.18,
+          "end": 39.52,
+          "probability": 0.89599609375
+        },
+        {
+          "text": "直",
+          "start": 39.52,
+          "end": 39.72,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "解",
+          "start": 39.72,
+          "end": 39.9,
+          "probability": 0.98388671875
+        },
+        {
+          "text": "放",
+          "start": 39.9,
+          "end": 40.04,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "雙",
+          "start": 40.04,
+          "end": 40.22,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "手",
+          "start": 40.22,
+          "end": 40.38,
+          "probability": 0.99951171875
+        }
+      ]
+    }
+  ],
+  "cues": [
+    {
+      "start": 0.0,
+      "end": 1.04,
+      "text": "每次跟老婆吵架",
+      "words": [
+        {
+          "text": "每",
+          "start": 0.0,
+          "end": 0.18,
+          "probability": 0.9072265625
+        },
+        {
+          "text": "次",
+          "start": 0.18,
+          "end": 0.36,
+          "probability": 0.98828125
+        },
+        {
+          "text": "跟",
+          "start": 0.36,
+          "end": 0.48,
+          "probability": 0.9873046875
+        },
+        {
+          "text": "老",
+          "start": 0.48,
+          "end": 0.62,
+          "probability": 0.9921875
+        },
+        {
+          "text": "婆",
+          "start": 0.62,
+          "end": 0.72,
+          "probability": 1.0
+        },
+        {
+          "text": "吵",
+          "start": 0.72,
+          "end": 0.86,
+          "probability": 0.997314453125
+        },
+        {
+          "text": "架",
+          "start": 0.86,
+          "end": 1.04,
+          "probability": 1.0
+        }
+      ]
+    },
+    {
+      "start": 1.04,
+      "end": 2.88,
+      "text": "咱們南東包是不是都一個待遇",
+      "words": [
+        {
+          "text": "咱",
+          "start": 1.04,
+          "end": 1.36,
+          "probability": 0.852783203125
+        },
+        {
+          "text": "們",
+          "start": 1.36,
+          "end": 1.46,
+          "probability": 0.81591796875
+        },
+        {
+          "text": "南",
+          "start": 1.46,
+          "end": 1.62,
+          "probability": 0.70654296875
+        },
+        {
+          "text": "東",
+          "start": 1.62,
+          "end": 1.7,
+          "probability": 0.80322265625
+        },
+        {
+          "text": "包",
+          "start": 1.7,
+          "end": 1.84,
+          "probability": 0.93994140625
+        },
+        {
+          "text": "是不是",
+          "start": 1.84,
+          "end": 2.06,
+          "probability": 0.9052734375
+        },
+        {
+          "text": "都",
+          "start": 2.06,
+          "end": 2.34,
+          "probability": 0.90869140625
+        },
+        {
+          "text": "一個",
+          "start": 2.34,
+          "end": 2.52,
+          "probability": 0.89208984375
+        },
+        {
+          "text": "待",
+          "start": 2.52,
+          "end": 2.7,
+          "probability": 0.98583984375
+        },
+        {
+          "text": "遇",
+          "start": 2.7,
+          "end": 2.88,
+          "probability": 0.99951171875
+        }
+      ]
+    },
+    {
+      "start": 2.88,
+      "end": 3.88,
+      "text": "直接被串下床",
+      "words": [
+        {
+          "text": "直接",
+          "start": 2.88,
+          "end": 3.22,
+          "probability": 0.9150390625
+        },
+        {
+          "text": "被",
+          "start": 3.22,
+          "end": 3.38,
+          "probability": 0.99609375
+        },
+        {
+          "text": "串",
+          "start": 3.38,
+          "end": 3.52,
+          "probability": 0.8076171875
+        },
+        {
+          "text": "下",
+          "start": 3.52,
+          "end": 3.72,
+          "probability": 0.88671875
+        },
+        {
+          "text": "床",
+          "start": 3.72,
+          "end": 3.88,
+          "probability": 0.991943359375
+        }
+      ]
+    },
+    {
+      "start": 3.88,
+      "end": 4.96,
+      "text": "被逼著睡地板",
+      "words": [
+        {
+          "text": "被",
+          "start": 3.88,
+          "end": 4.18,
+          "probability": 0.84521484375
+        },
+        {
+          "text": "逼",
+          "start": 4.18,
+          "end": 4.32,
+          "probability": 0.98974609375
+        },
+        {
+          "text": "著",
+          "start": 4.32,
+          "end": 4.48,
+          "probability": 0.900390625
+        },
+        {
+          "text": "睡",
+          "start": 4.48,
+          "end": 4.62,
+          "probability": 0.953125
+        },
+        {
+          "text": "地",
+          "start": 4.62,
+          "end": 4.8,
+          "probability": 0.9892578125
+        },
+        {
+          "text": "板",
+          "start": 4.8,
+          "end": 4.96,
+          "probability": 0.98779296875
+        }
+      ]
+    },
+    {
+      "start": 4.96,
+      "end": 5.82,
+      "text": "人家倒好",
+      "words": [
+        {
+          "text": "人",
+          "start": 4.96,
+          "end": 5.28,
+          "probability": 0.9765625
+        },
+        {
+          "text": "家",
+          "start": 5.28,
+          "end": 5.42,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "倒",
+          "start": 5.42,
+          "end": 5.54,
+          "probability": 0.94091796875
+        },
+        {
+          "text": "好",
+          "start": 5.54,
+          "end": 5.82,
+          "probability": 0.9921875
+        }
+      ]
+    },
+    {
+      "start": 5.82,
+      "end": 7.14,
+      "text": "叔叔服服躺床上",
+      "words": [
+        {
+          "text": "叔",
+          "start": 5.82,
+          "end": 6.1,
+          "probability": 0.435791015625
+        },
+        {
+          "text": "叔",
+          "start": 6.1,
+          "end": 6.28,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "服",
+          "start": 6.28,
+          "end": 6.4,
+          "probability": 0.75341796875
+        },
+        {
+          "text": "服",
+          "start": 6.4,
+          "end": 6.56,
+          "probability": 0.99462890625
+        },
+        {
+          "text": "躺",
+          "start": 6.56,
+          "end": 6.76,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "床",
+          "start": 6.76,
+          "end": 6.92,
+          "probability": 0.999267578125
+        },
+        {
+          "text": "上",
+          "start": 6.92,
+          "end": 7.14,
+          "probability": 0.99609375
+        }
+      ]
+    },
+    {
+      "start": 7.14,
+      "end": 8.32,
+      "text": "這也太不公平了吧",
+      "words": [
+        {
+          "text": "這",
+          "start": 7.14,
+          "end": 7.44,
+          "probability": 0.9736328125
+        },
+        {
+          "text": "也",
+          "start": 7.44,
+          "end": 7.52,
+          "probability": 0.994140625
+        },
+        {
+          "text": "太",
+          "start": 7.52,
+          "end": 7.7,
+          "probability": 0.99072265625
+        },
+        {
+          "text": "不",
+          "start": 7.7,
+          "end": 7.84,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "公",
+          "start": 7.84,
+          "end": 8.0,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "平",
+          "start": 8.0,
+          "end": 8.18,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "了吧",
+          "start": 8.18,
+          "end": 8.32,
+          "probability": 0.97900390625
+        }
+      ]
+    },
+    {
+      "start": 8.32,
+      "end": 9.6,
+      "text": "所以我發明了這個",
+      "words": [
+        {
+          "text": "所以",
+          "start": 8.32,
+          "end": 8.82,
+          "probability": 0.97412109375
+        },
+        {
+          "text": "我",
+          "start": 8.82,
+          "end": 9.02,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "發",
+          "start": 9.02,
+          "end": 9.2,
+          "probability": 0.98828125
+        },
+        {
+          "text": "明",
+          "start": 9.2,
+          "end": 9.32,
+          "probability": 0.990234375
+        },
+        {
+          "text": "了",
+          "start": 9.32,
+          "end": 9.44,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "這個",
+          "start": 9.44,
+          "end": 9.6,
+          "probability": 0.982421875
+        }
+      ]
+    },
+    {
+      "start": 9.6,
+      "end": 10.68,
+      "text": "誰也別想睡",
+      "words": [
+        {
+          "text": "誰",
+          "start": 9.6,
+          "end": 10.02,
+          "probability": 0.75927734375
+        },
+        {
+          "text": "也",
+          "start": 10.02,
+          "end": 10.16,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "別",
+          "start": 10.16,
+          "end": 10.3,
+          "probability": 0.98583984375
+        },
+        {
+          "text": "想",
+          "start": 10.3,
+          "end": 10.48,
+          "probability": 0.98583984375
+        },
+        {
+          "text": "睡",
+          "start": 10.48,
+          "end": 10.68,
+          "probability": 0.99560546875
+        }
+      ]
+    },
+    {
+      "start": 10.68,
+      "end": 11.44,
+      "text": "復仇床",
+      "words": [
+        {
+          "text": "復",
+          "start": 10.68,
+          "end": 11.06,
+          "probability": 0.700927734375
+        },
+        {
+          "text": "仇",
+          "start": 11.06,
+          "end": 11.22,
+          "probability": 0.998046875
+        },
+        {
+          "text": "床",
+          "start": 11.22,
+          "end": 11.44,
+          "probability": 0.997314453125
+        }
+      ]
+    },
+    {
+      "start": 11.44,
+      "end": 13.82,
+      "text": "現在讓我好兄弟給你們演示下怎麼用",
+      "words": [
+        {
+          "text": "現在",
+          "start": 11.44,
+          "end": 11.88,
+          "probability": 0.96875
+        },
+        {
+          "text": "讓",
+          "start": 11.88,
+          "end": 12.12,
+          "probability": 0.98583984375
+        },
+        {
+          "text": "我",
+          "start": 12.12,
+          "end": 12.22,
+          "probability": 0.96728515625
+        },
+        {
+          "text": "好",
+          "start": 12.22,
+          "end": 12.32,
+          "probability": 0.8798828125
+        },
+        {
+          "text": "兄",
+          "start": 12.32,
+          "end": 12.5,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "弟",
+          "start": 12.5,
+          "end": 12.6,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "給",
+          "start": 12.6,
+          "end": 12.72,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "你們",
+          "start": 12.72,
+          "end": 12.96,
+          "probability": 0.9326171875
+        },
+        {
+          "text": "演",
+          "start": 12.96,
+          "end": 13.12,
+          "probability": 0.7841796875
+        },
+        {
+          "text": "示",
+          "start": 13.12,
+          "end": 13.26,
+          "probability": 0.93505859375
+        },
+        {
+          "text": "下",
+          "start": 13.26,
+          "end": 13.42,
+          "probability": 0.96044921875
+        },
+        {
+          "text": "怎麼",
+          "start": 13.42,
+          "end": 13.6,
+          "probability": 0.8203125
+        },
+        {
+          "text": "用",
+          "start": 13.6,
+          "end": 13.82,
+          "probability": 0.99951171875
+        }
+      ]
+    },
+    {
+      "start": 13.82,
+      "end": 14.84,
+      "text": "你正躺床上呢",
+      "words": [
+        {
+          "text": "你",
+          "start": 13.82,
+          "end": 14.04,
+          "probability": 0.94482421875
+        },
+        {
+          "text": "正",
+          "start": 14.04,
+          "end": 14.2,
+          "probability": 0.97265625
+        },
+        {
+          "text": "躺",
+          "start": 14.2,
+          "end": 14.32,
+          "probability": 0.985107421875
+        },
+        {
+          "text": "床",
+          "start": 14.32,
+          "end": 14.48,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "上",
+          "start": 14.48,
+          "end": 14.72,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "呢",
+          "start": 14.72,
+          "end": 14.84,
+          "probability": 0.87451171875
+        }
+      ]
+    },
+    {
+      "start": 14.84,
+      "end": 16.74,
+      "text": "只要老婆敢動手串你這裝置",
+      "words": [
+        {
+          "text": "只",
+          "start": 14.84,
+          "end": 15.12,
+          "probability": 0.98193359375
+        },
+        {
+          "text": "要",
+          "start": 15.12,
+          "end": 15.22,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "老",
+          "start": 15.22,
+          "end": 15.38,
+          "probability": 0.998046875
+        },
+        {
+          "text": "婆",
+          "start": 15.38,
+          "end": 15.54,
+          "probability": 1.0
+        },
+        {
+          "text": "敢",
+          "start": 15.54,
+          "end": 15.68,
+          "probability": 0.446533203125
+        },
+        {
+          "text": "動",
+          "start": 15.68,
+          "end": 15.8,
+          "probability": 0.998046875
+        },
+        {
+          "text": "手",
+          "start": 15.8,
+          "end": 15.96,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "串",
+          "start": 15.96,
+          "end": 16.14,
+          "probability": 0.960205078125
+        },
+        {
+          "text": "你",
+          "start": 16.14,
+          "end": 16.3,
+          "probability": 0.8984375
+        },
+        {
+          "text": "這",
+          "start": 16.3,
+          "end": 16.44,
+          "probability": 0.984375
+        },
+        {
+          "text": "裝",
+          "start": 16.44,
+          "end": 16.6,
+          "probability": 0.96875
+        },
+        {
+          "text": "置",
+          "start": 16.6,
+          "end": 16.74,
+          "probability": 0.99072265625
+        }
+      ]
+    },
+    {
+      "start": 16.74,
+      "end": 17.7,
+      "text": "直接自動啟動",
+      "words": [
+        {
+          "text": "直接",
+          "start": 16.74,
+          "end": 17.02,
+          "probability": 0.97607421875
+        },
+        {
+          "text": "自",
+          "start": 17.02,
+          "end": 17.24,
+          "probability": 0.998046875
+        },
+        {
+          "text": "動",
+          "start": 17.24,
+          "end": 17.36,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "啟",
+          "start": 17.36,
+          "end": 17.56,
+          "probability": 0.88427734375
+        },
+        {
+          "text": "動",
+          "start": 17.56,
+          "end": 17.7,
+          "probability": 0.99951171875
+        }
+      ]
+    },
+    {
+      "start": 17.7,
+      "end": 18.44,
+      "text": "看到沒",
+      "words": [
+        {
+          "text": "看到",
+          "start": 17.7,
+          "end": 18.08,
+          "probability": 0.97265625
+        },
+        {
+          "text": "沒",
+          "start": 18.08,
+          "end": 18.44,
+          "probability": 0.9853515625
+        }
+      ]
+    },
+    {
+      "start": 18.44,
+      "end": 19.02,
+      "text": "我睡不了",
+      "words": [
+        {
+          "text": "我",
+          "start": 18.44,
+          "end": 18.62,
+          "probability": 0.9326171875
+        },
+        {
+          "text": "睡",
+          "start": 18.62,
+          "end": 18.8,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "不了",
+          "start": 18.8,
+          "end": 19.02,
+          "probability": 0.98193359375
+        }
+      ]
+    },
+    {
+      "start": 19.02,
+      "end": 20.06,
+      "text": "誰也別想睡",
+      "words": [
+        {
+          "text": "誰",
+          "start": 19.02,
+          "end": 19.4,
+          "probability": 0.9716796875
+        },
+        {
+          "text": "也",
+          "start": 19.4,
+          "end": 19.54,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "別",
+          "start": 19.54,
+          "end": 19.64,
+          "probability": 0.98828125
+        },
+        {
+          "text": "想",
+          "start": 19.64,
+          "end": 19.84,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "睡",
+          "start": 19.84,
+          "end": 20.06,
+          "probability": 0.99462890625
+        }
+      ]
+    },
+    {
+      "start": 20.06,
+      "end": 21.36,
+      "text": "簡直不要太實用",
+      "words": [
+        {
+          "text": "簡",
+          "start": 20.06,
+          "end": 20.38,
+          "probability": 0.98974609375
+        },
+        {
+          "text": "直",
+          "start": 20.38,
+          "end": 20.54,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "不要",
+          "start": 20.54,
+          "end": 20.74,
+          "probability": 0.99560546875
+        },
+        {
+          "text": "太",
+          "start": 20.74,
+          "end": 20.98,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "實",
+          "start": 20.98,
+          "end": 21.18,
+          "probability": 0.97314453125
+        },
+        {
+          "text": "用",
+          "start": 21.18,
+          "end": 21.36,
+          "probability": 0.99951171875
+        }
+      ]
+    },
+    {
+      "start": 21.36,
+      "end": 21.84,
+      "text": "還有啊",
+      "words": [
+        {
+          "text": "還有",
+          "start": 21.36,
+          "end": 21.64,
+          "probability": 0.990234375
+        },
+        {
+          "text": "啊",
+          "start": 21.64,
+          "end": 21.84,
+          "probability": 0.61279296875
+        }
+      ]
+    },
+    {
+      "start": 21.84,
+      "end": 22.86,
+      "text": "跟老婆睡覺的時候",
+      "words": [
+        {
+          "text": "跟",
+          "start": 21.84,
+          "end": 22.08,
+          "probability": 0.97412109375
+        },
+        {
+          "text": "老",
+          "start": 22.08,
+          "end": 22.24,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "婆",
+          "start": 22.24,
+          "end": 22.36,
+          "probability": 1.0
+        },
+        {
+          "text": "睡",
+          "start": 22.36,
+          "end": 22.5,
+          "probability": 0.998046875
+        },
+        {
+          "text": "覺",
+          "start": 22.5,
+          "end": 22.64,
+          "probability": 0.98486328125
+        },
+        {
+          "text": "的時候",
+          "start": 22.64,
+          "end": 22.86,
+          "probability": 0.98974609375
+        }
+      ]
+    },
+    {
+      "start": 22.86,
+      "end": 24.4,
+      "text": "他們總像個小寶寶似的",
+      "words": [
+        {
+          "text": "他們",
+          "start": 22.86,
+          "end": 23.12,
+          "probability": 0.8505859375
+        },
+        {
+          "text": "總",
+          "start": 23.12,
+          "end": 23.32,
+          "probability": 0.994140625
+        },
+        {
+          "text": "像",
+          "start": 23.32,
+          "end": 23.48,
+          "probability": 0.6298828125
+        },
+        {
+          "text": "個",
+          "start": 23.48,
+          "end": 23.58,
+          "probability": 0.90185546875
+        },
+        {
+          "text": "小",
+          "start": 23.58,
+          "end": 23.7,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "寶",
+          "start": 23.7,
+          "end": 23.84,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "寶",
+          "start": 23.84,
+          "end": 23.98,
+          "probability": 0.999267578125
+        },
+        {
+          "text": "似",
+          "start": 23.98,
+          "end": 24.14,
+          "probability": 0.7958984375
+        },
+        {
+          "text": "的",
+          "start": 24.14,
+          "end": 24.4,
+          "probability": 0.9990234375
+        }
+      ]
+    },
+    {
+      "start": 24.4,
+      "end": 25.36,
+      "text": "要咱們輕輕拍著",
+      "words": [
+        {
+          "text": "要",
+          "start": 24.4,
+          "end": 24.56,
+          "probability": 0.98828125
+        },
+        {
+          "text": "咱",
+          "start": 24.56,
+          "end": 24.7,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "們",
+          "start": 24.7,
+          "end": 24.84,
+          "probability": 0.98046875
+        },
+        {
+          "text": "輕",
+          "start": 24.84,
+          "end": 24.96,
+          "probability": 0.87841796875
+        },
+        {
+          "text": "輕",
+          "start": 24.96,
+          "end": 25.1,
+          "probability": 0.99658203125
+        },
+        {
+          "text": "拍",
+          "start": 25.1,
+          "end": 25.24,
+          "probability": 0.67529296875
+        },
+        {
+          "text": "著",
+          "start": 25.24,
+          "end": 25.36,
+          "probability": 0.9462890625
+        }
+      ]
+    },
+    {
+      "start": 25.36,
+      "end": 26.88,
+      "text": "才肯睡拍得主酸胳膜嗎",
+      "words": [
+        {
+          "text": "才",
+          "start": 25.36,
+          "end": 25.5,
+          "probability": 0.93896484375
+        },
+        {
+          "text": "肯",
+          "start": 25.5,
+          "end": 25.66,
+          "probability": 0.997314453125
+        },
+        {
+          "text": "睡",
+          "start": 25.66,
+          "end": 25.82,
+          "probability": 0.97314453125
+        },
+        {
+          "text": "拍",
+          "start": 25.82,
+          "end": 26.02,
+          "probability": 0.8125
+        },
+        {
+          "text": "得",
+          "start": 26.02,
+          "end": 26.14,
+          "probability": 0.93896484375
+        },
+        {
+          "text": "主",
+          "start": 26.14,
+          "end": 26.28,
+          "probability": 0.6171875
+        },
+        {
+          "text": "酸",
+          "start": 26.28,
+          "end": 26.44,
+          "probability": 0.95654296875
+        },
+        {
+          "text": "胳",
+          "start": 26.44,
+          "end": 26.6,
+          "probability": 0.7105712890625
+        },
+        {
+          "text": "膜",
+          "start": 26.6,
+          "end": 26.62,
+          "probability": 0.630615234375
+        },
+        {
+          "text": "嗎",
+          "start": 26.62,
+          "end": 26.88,
+          "probability": 0.414794921875
+        }
+      ]
+    },
+    {
+      "start": 26.88,
+      "end": 27.58,
+      "text": "累得要死",
+      "words": [
+        {
+          "text": "累",
+          "start": 26.88,
+          "end": 27.16,
+          "probability": 0.95068359375
+        },
+        {
+          "text": "得",
+          "start": 27.16,
+          "end": 27.26,
+          "probability": 0.85693359375
+        },
+        {
+          "text": "要",
+          "start": 27.26,
+          "end": 27.38,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "死",
+          "start": 27.38,
+          "end": 27.58,
+          "probability": 0.99658203125
+        }
+      ]
+    },
+    {
+      "start": 27.58,
+      "end": 28.64,
+      "text": "純屬好體力",
+      "words": [
+        {
+          "text": "純",
+          "start": 27.58,
+          "end": 27.92,
+          "probability": 0.6668701171875
+        },
+        {
+          "text": "屬",
+          "start": 27.92,
+          "end": 28.08,
+          "probability": 0.6802978515625
+        },
+        {
+          "text": "好",
+          "start": 28.08,
+          "end": 28.26,
+          "probability": 0.56884765625
+        },
+        {
+          "text": "體",
+          "start": 28.26,
+          "end": 28.46,
+          "probability": 0.8251953125
+        },
+        {
+          "text": "力",
+          "start": 28.46,
+          "end": 28.64,
+          "probability": 0.99658203125
+        }
+      ]
+    },
+    {
+      "start": 28.64,
+      "end": 29.94,
+      "text": "所以我又發明了這段",
+      "words": [
+        {
+          "text": "所以",
+          "start": 28.64,
+          "end": 28.98,
+          "probability": 0.83447265625
+        },
+        {
+          "text": "我",
+          "start": 28.98,
+          "end": 29.14,
+          "probability": 0.97314453125
+        },
+        {
+          "text": "又",
+          "start": 29.14,
+          "end": 29.26,
+          "probability": 0.99267578125
+        },
+        {
+          "text": "發",
+          "start": 29.26,
+          "end": 29.44,
+          "probability": 0.97119140625
+        },
+        {
+          "text": "明",
+          "start": 29.44,
+          "end": 29.6,
+          "probability": 0.9931640625
+        },
+        {
+          "text": "了",
+          "start": 29.6,
+          "end": 29.68,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "這",
+          "start": 29.68,
+          "end": 29.78,
+          "probability": 0.8818359375
+        },
+        {
+          "text": "段",
+          "start": 29.78,
+          "end": 29.94,
+          "probability": 0.98193359375
+        }
+      ]
+    },
+    {
+      "start": 29.94,
+      "end": 31.24,
+      "text": "自動拍睡神器床",
+      "words": [
+        {
+          "text": "自",
+          "start": 29.94,
+          "end": 30.2,
+          "probability": 0.9892578125
+        },
+        {
+          "text": "動",
+          "start": 30.2,
+          "end": 30.32,
+          "probability": 0.9921875
+        },
+        {
+          "text": "拍",
+          "start": 30.32,
+          "end": 30.48,
+          "probability": 0.9384765625
+        },
+        {
+          "text": "睡",
+          "start": 30.48,
+          "end": 30.64,
+          "probability": 0.20654296875
+        },
+        {
+          "text": "神",
+          "start": 30.64,
+          "end": 30.84,
+          "probability": 0.9951171875
+        },
+        {
+          "text": "器",
+          "start": 30.84,
+          "end": 30.98,
+          "probability": 0.5234375
+        },
+        {
+          "text": "床",
+          "start": 30.98,
+          "end": 31.24,
+          "probability": 0.9931640625
+        }
+      ]
+    },
+    {
+      "start": 31.24,
+      "end": 32.94,
+      "text": "再讓我好兄弟演示一遍",
+      "words": [
+        {
+          "text": "再",
+          "start": 31.24,
+          "end": 31.54,
+          "probability": 0.82275390625
+        },
+        {
+          "text": "讓",
+          "start": 31.54,
+          "end": 31.66,
+          "probability": 0.9873046875
+        },
+        {
+          "text": "我",
+          "start": 31.66,
+          "end": 31.76,
+          "probability": 0.98095703125
+        },
+        {
+          "text": "好",
+          "start": 31.76,
+          "end": 31.92,
+          "probability": 0.99560546875
+        },
+        {
+          "text": "兄",
+          "start": 31.92,
+          "end": 32.06,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "弟",
+          "start": 32.06,
+          "end": 32.2,
+          "probability": 0.99658203125
+        },
+        {
+          "text": "演",
+          "start": 32.2,
+          "end": 32.36,
+          "probability": 0.89306640625
+        },
+        {
+          "text": "示",
+          "start": 32.36,
+          "end": 32.52,
+          "probability": 0.97607421875
+        },
+        {
+          "text": "一",
+          "start": 32.52,
+          "end": 32.64,
+          "probability": 0.9111328125
+        },
+        {
+          "text": "遍",
+          "start": 32.64,
+          "end": 32.94,
+          "probability": 0.99951171875
+        }
+      ]
+    },
+    {
+      "start": 32.94,
+      "end": 34.1,
+      "text": "只要老婆開始撒嬌",
+      "words": [
+        {
+          "text": "只",
+          "start": 32.94,
+          "end": 33.06,
+          "probability": 0.73291015625
+        },
+        {
+          "text": "要",
+          "start": 33.06,
+          "end": 33.18,
+          "probability": 0.99462890625
+        },
+        {
+          "text": "老",
+          "start": 33.18,
+          "end": 33.3,
+          "probability": 0.98779296875
+        },
+        {
+          "text": "婆",
+          "start": 33.3,
+          "end": 33.44,
+          "probability": 0.97802734375
+        },
+        {
+          "text": "開始",
+          "start": 33.44,
+          "end": 33.62,
+          "probability": 0.99267578125
+        },
+        {
+          "text": "撒",
+          "start": 33.62,
+          "end": 33.86,
+          "probability": 0.97216796875
+        },
+        {
+          "text": "嬌",
+          "start": 33.86,
+          "end": 34.1,
+          "probability": 0.9794921875
+        }
+      ]
+    },
+    {
+      "start": 34.1,
+      "end": 35.44,
+      "text": "說老公拍我睡覺嗎",
+      "words": [
+        {
+          "text": "說",
+          "start": 34.1,
+          "end": 34.4,
+          "probability": 0.9150390625
+        },
+        {
+          "text": "老",
+          "start": 34.4,
+          "end": 34.56,
+          "probability": 0.99169921875
+        },
+        {
+          "text": "公",
+          "start": 34.56,
+          "end": 34.68,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "拍",
+          "start": 34.68,
+          "end": 34.88,
+          "probability": 0.80078125
+        },
+        {
+          "text": "我",
+          "start": 34.88,
+          "end": 34.98,
+          "probability": 0.9931640625
+        },
+        {
+          "text": "睡",
+          "start": 34.98,
+          "end": 35.14,
+          "probability": 0.99658203125
+        },
+        {
+          "text": "覺",
+          "start": 35.14,
+          "end": 35.32,
+          "probability": 0.9619140625
+        },
+        {
+          "text": "嗎",
+          "start": 35.32,
+          "end": 35.44,
+          "probability": 0.3349609375
+        }
+      ]
+    },
+    {
+      "start": 35.44,
+      "end": 36.46,
+      "text": "咱們偷偷按一下",
+      "words": [
+        {
+          "text": "咱",
+          "start": 35.44,
+          "end": 35.72,
+          "probability": 0.960205078125
+        },
+        {
+          "text": "們",
+          "start": 35.72,
+          "end": 35.84,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "偷",
+          "start": 35.84,
+          "end": 36.0,
+          "probability": 0.980224609375
+        },
+        {
+          "text": "偷",
+          "start": 36.0,
+          "end": 36.12,
+          "probability": 0.998291015625
+        },
+        {
+          "text": "按",
+          "start": 36.12,
+          "end": 36.26,
+          "probability": 0.98876953125
+        },
+        {
+          "text": "一下",
+          "start": 36.26,
+          "end": 36.46,
+          "probability": 0.947265625
+        }
+      ]
+    },
+    {
+      "start": 36.46,
+      "end": 37.66,
+      "text": "遙控器就行看到沒",
+      "words": [
+        {
+          "text": "遙",
+          "start": 36.46,
+          "end": 36.66,
+          "probability": 0.69873046875
+        },
+        {
+          "text": "控",
+          "start": 36.66,
+          "end": 36.84,
+          "probability": 1.0
+        },
+        {
+          "text": "器",
+          "start": 36.84,
+          "end": 36.98,
+          "probability": 0.99462890625
+        },
+        {
+          "text": "就",
+          "start": 36.98,
+          "end": 37.1,
+          "probability": 0.89404296875
+        },
+        {
+          "text": "行",
+          "start": 37.1,
+          "end": 37.24,
+          "probability": 0.896484375
+        },
+        {
+          "text": "看到",
+          "start": 37.24,
+          "end": 37.42,
+          "probability": 0.98779296875
+        },
+        {
+          "text": "沒",
+          "start": 37.42,
+          "end": 37.66,
+          "probability": 0.9609375
+        }
+      ]
+    },
+    {
+      "start": 37.66,
+      "end": 39.18,
+      "text": "只要老婆立馬就能睡著",
+      "words": [
+        {
+          "text": "只",
+          "start": 37.66,
+          "end": 37.94,
+          "probability": 0.417724609375
+        },
+        {
+          "text": "要",
+          "start": 37.94,
+          "end": 38.04,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "老",
+          "start": 38.04,
+          "end": 38.16,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "婆",
+          "start": 38.16,
+          "end": 38.32,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "立",
+          "start": 38.32,
+          "end": 38.46,
+          "probability": 0.99658203125
+        },
+        {
+          "text": "馬",
+          "start": 38.46,
+          "end": 38.6,
+          "probability": 0.9716796875
+        },
+        {
+          "text": "就",
+          "start": 38.6,
+          "end": 38.76,
+          "probability": 0.98095703125
+        },
+        {
+          "text": "能",
+          "start": 38.76,
+          "end": 38.86,
+          "probability": 0.98876953125
+        },
+        {
+          "text": "睡",
+          "start": 38.86,
+          "end": 39.0,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "著",
+          "start": 39.0,
+          "end": 39.18,
+          "probability": 0.97900390625
+        }
+      ]
+    },
+    {
+      "start": 39.18,
+      "end": 40.38,
+      "text": "簡直解放雙手",
+      "words": [
+        {
+          "text": "簡",
+          "start": 39.18,
+          "end": 39.52,
+          "probability": 0.89599609375
+        },
+        {
+          "text": "直",
+          "start": 39.52,
+          "end": 39.72,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "解",
+          "start": 39.72,
+          "end": 39.9,
+          "probability": 0.98388671875
+        },
+        {
+          "text": "放",
+          "start": 39.9,
+          "end": 40.04,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "雙",
+          "start": 40.04,
+          "end": 40.22,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "手",
+          "start": 40.22,
+          "end": 40.38,
+          "probability": 0.99951171875
+        }
+      ]
+    }
+  ]
+}

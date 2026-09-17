@@ -1,0 +1,55 @@
+{
+  "schemaVersion": 1,
+  "promptVersion": "gemini-gateway-two-pass-v10",
+  "model": "gemini-advanced",
+  "records": [
+    {
+      "stage": "restore-translate",
+      "outputMode": "cue-lines-v1",
+      "startedAtUtc": "2026-09-16T17:18:56.377Z",
+      "endedAtUtc": "2026-09-16T17:18:56.390Z",
+      "expectedIds": [
+        "cue-0-140"
+      ],
+      "outcome": "complete",
+      "observedModelId": "8c46e95b1a07cecc",
+      "observedModel": "3.5 Flash-Lite",
+      "routeFingerprint": "29ed9729dbdd53e76081fc89bd7f7991b6a6e2c770e964fd8fa2ceaa0c22c646",
+      "completionState": "complete",
+      "completionEvidence": "resumed-validated-draft-v2",
+      "upstreamAttempts": 0,
+      "upstreamRetryReasons": [],
+      "response": {
+        "id": "resumed-from-draft",
+        "raw": "{\"translations\":{\"cue-0-140\":\"Phụ đề bởi Solanya\"}}",
+        "sha256": "3d28198058426023102ed252c3e932b8a3b7dee2b6f88908f0e60aa2b59a62fc",
+        "finishReason": "stop",
+        "truncated": false,
+        "upstreamAttempts": 0,
+        "upstreamRetryReasons": []
+      }
+    },
+    {
+      "stage": "independent-review",
+      "outputMode": "cue-lines-v1",
+      "startedAtUtc": "2026-09-16T17:18:56.392Z",
+      "endedAtUtc": "2026-09-16T17:18:56.535Z",
+      "expectedIds": [
+        "cue-0-140"
+      ],
+      "outcome": "failed",
+      "inputHash": "b2c19fa9e73d067ec3f6992f5fe2a4ea40127bfca3207ccc28c11c9fd9ac999f",
+      "inputBytes": 5144,
+      "inputTokenEstimate": 1715,
+      "inputTokenProvenance": "utf8-byte-estimate",
+      "outputTokenReserve": 512,
+      "requestBudget": "fit",
+      "contextTokens": 1000000,
+      "outputTokens": 16384,
+      "contextLimitKind": "combined",
+      "capacityProvenance": "user-confirmed",
+      "requestedModel": "gemini-advanced",
+      "error": "Gemini Gateway lỗi upstream: after 1 attempts: upstream error: Google Gemini Web returned an error (BardErrorInfo code [8 1095]). This usually indicates session expiration, rate limits, context window limits, or bot protection/CAPTCHA block."
+    }
+  ]
+}

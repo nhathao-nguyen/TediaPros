@@ -256,6 +256,41 @@ const wordTimedAss = taoAss([
 })
 assert.equal((standardAss.match(/^Dialogue:/gm) ?? []).length, 2)
 assert.match(standardAss, /WrapStyle: 2/)
+
+const boldAss = taoAss(burnCues, meta, layout, 'Roboto', {
+  textColor: '#ffffff',
+  outlineColor: '#000000',
+  outlinePx: 2,
+  bgEnabled: true,
+  bgColor: '#000000',
+  bgOpacity: 60,
+  fontWeight: 700
+})
+assert.match(boldAss, /Style: D,Roboto,[^,\n]+,[^,\n]+,[^,\n]+,[^,\n]+,[^,\n]+,-1,/)
+assert.match(boldAss, /Style: Box,Roboto,[^,\n]+,[^,\n]+,[^,\n]+,[^,\n]+,[^,\n]+,-1,/)
+
+const semiboldAss = taoAss(burnCues, meta, layout, 'Roboto', {
+  textColor: '#ffffff',
+  outlineColor: '#000000',
+  outlinePx: 2,
+  bgEnabled: true,
+  bgColor: '#000000',
+  bgOpacity: 60,
+  fontWeight: 600
+})
+assert.match(semiboldAss, /Style: D,Roboto,[^,\n]+,[^,\n]+,[^,\n]+,[^,\n]+,[^,\n]+,600,/)
+assert.match(semiboldAss, /Style: Box,Roboto,[^,\n]+,[^,\n]+,[^,\n]+,[^,\n]+,[^,\n]+,600,/)
+
+const normalAss = taoAss(burnCues, meta, layout, 'Roboto', {
+  textColor: '#ffffff',
+  outlineColor: '#000000',
+  outlinePx: 2,
+  bgEnabled: false,
+  bgColor: '#000000',
+  bgOpacity: 60,
+  fontWeight: 400
+})
+assert.match(normalAss, /Style: D,Roboto,[^,\n]+,[^,\n]+,[^,\n]+,[^,\n]+,[^,\n]+,0,/)
 assert.match(revealAss, /\{\\ko\d+\}/)
 assert.match(wordTimedAss, /Dialogue: 0,0:00:00\.25,0:00:01\.20,D/)
 assert.match(revealAss, /Style: D,[^\n]*,&HFF[0-9A-F]{6}&,/)
