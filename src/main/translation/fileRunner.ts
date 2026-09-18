@@ -96,7 +96,9 @@ export async function translateFileWithAdapter(
       contextBefore: [],
       contextAfter: [],
       glossary: options.translationGuidance?.glossary.map(entry => ({ ...entry })) || [],
-      synopsis: options.translationGuidance?.synopsis
+      synopsis: options.translationGuidance?.synopsis,
+      tone: options.translationGuidance?.tone,
+      customToneInstruction: options.translationGuidance?.customToneInstruction
     }
     if (pending.length === 0) {
       options.onProgress?.(source.length, source.length)

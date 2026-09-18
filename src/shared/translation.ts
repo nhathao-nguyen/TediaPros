@@ -68,11 +68,22 @@ export interface TranslationInput {
   sourceSpeechGroups?: ReadonlyArray<{ id: string; cues: readonly TranslationCue[] }>
   glossary: Array<{ source: string; target: string }>
   synopsis?: string
+  tone?: TranslationTone
+  customToneInstruction?: string
 }
+
+export type TranslationTone =
+  | 'neutral'
+  | 'storytelling'
+  | 'humorous'
+  | 'documentary'
+  | 'custom'
 
 export interface TranslationGuidance {
   synopsis?: string
   glossary: Array<{ source: string; target: string }>
+  tone?: TranslationTone
+  customToneInstruction?: string
 }
 
 /** Validate optional, user-authored context before it crosses the IPC boundary. */
@@ -81,6 +92,12 @@ export function translationGuidanceError(value: unknown): string | null {
   if (typeof value !== 'object' || Array.isArray(value)) return 'Ngữ cảnh dịch không hợp lệ.'
   const raw = value as Record<string, unknown>
   if (raw.synopsis != null && (typeof raw.synopsis !== 'string' || raw.synopsis.length > 2000)) return 'Mô tả nội dung tối đa 2000 ký tự.'
+  if (raw.tone != null && !['neutral', 'storytelling', 'humorous', 'documentary', 'custom'].includes(String(raw.tone))) {
+    return 'Văn phong dịch thuật không hợp lệ.'
+  }
+  if (raw.customToneInstruction != null && (typeof raw.customToneInstruction !== 'string' || raw.customToneInstruction.length > 500)) {
+    return 'Chỉ dẫn văn phong tùy chỉnh tối đa 500 ký tự.'
+  }
   if (!Array.isArray(raw.glossary) || raw.glossary.length > 50) return 'Glossary tối đa 50 thuật ngữ.'
   const seen = new Set<string>()
   for (const item of raw.glossary) {

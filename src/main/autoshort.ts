@@ -1365,7 +1365,9 @@ async function requestTranslation(
     contextBefore: [],
     contextAfter: [],
     glossary: config.translationGuidance?.glossary.map(entry => ({ ...entry })) || [],
-    synopsis: config.translationGuidance?.synopsis
+    synopsis: config.translationGuidance?.synopsis,
+    tone: config.translationGuidance?.tone,
+    customToneInstruction: config.translationGuidance?.customToneInstruction
   }
 
   const publish = async (items: readonly TranslationItem[], budget?: TranslationBudgetSnapshot): Promise<SubtitleCue[]> => {

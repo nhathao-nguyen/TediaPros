@@ -1160,6 +1160,8 @@ export function createAutoShortItemProcessor(
         const translationInput = buildTranslationInput(sourceCues, sourceLanguage, targetLocale, translationMode, processingMeta.giay)
         translationInput.glossary = config.translationGuidance?.glossary.map(entry => ({ ...entry })) || []
         translationInput.synopsis = config.translationGuidance?.synopsis
+        translationInput.tone = config.translationGuidance?.tone
+        translationInput.customToneInstruction = config.translationGuidance?.customToneInstruction
         const model = translationModelIdentity(config)
         const translationKey = buildTranslationIdentity(translationInput, {
           provider: config.translateProvider,
