@@ -14,11 +14,12 @@ import {
   type ResolvedBurnFont
 } from './fonts'
 import { createTextMeasurer } from './fontMeasure'
-import { debugRaw, errLabel, logInfo } from './logger'
+import { debugRaw, errLabel, logInfo, logWarn } from './logger'
 import {
   type CanonicalDisplayGeometry,
   canonicalBurnDisplayFilter,
-  parseCanonicalMediaMetadata
+  parseCanonicalMediaMetadata,
+  parseFrameRate
 } from './canonicalDisplayGeometry'
 import type {
   BlurRegion,
@@ -114,6 +115,7 @@ interface SubStyle {
   bgEnabled: boolean
   bgColor: string
   bgOpacity: number
+  fontWeight: number
 }
 
 function styleFromReq(req: BurnReq, fallbackVien: number): SubStyle {
@@ -126,13 +128,19 @@ function styleFromReq(req: BurnReq, fallbackVien: number): SubStyle {
         : Math.min(8, fallbackVien)
     )
   )
+  const rawWeight = req.subtitleFontWeight
+  const fontWeight =
+    typeof rawWeight === 'number' && Number.isFinite(rawWeight) && rawWeight >= 100 && rawWeight <= 900
+      ? Math.round(rawWeight)
+      : 400
   return {
     textColor: parseHexColor(req.textColor) ? req.textColor! : '#ffffff',
     outlineColor: parseHexColor(req.outlineColor) ? req.outlineColor! : '#000000',
     outlinePx,
     bgEnabled: Boolean(req.bgEnabled),
     bgColor: parseHexColor(req.bgColor) ? req.bgColor! : '#000000',
-    bgOpacity: Math.max(0, Math.min(100, req.bgOpacity ?? 60))
+    bgOpacity: Math.max(0, Math.min(100, req.bgOpacity ?? 60)),
+    fontWeight
   }
 }
 
@@ -174,7 +182,12 @@ export interface Meta {
   /** Actual per-stream durations; giay remains the container duration. */
   videoDuration?: number
   audioDuration?: number
+  /** Nominal/container rate from FFprobe `r_frame_rate`. */
   frameRate?: number
+  /** Measured stream average from FFprobe `avg_frame_rate`; authoritative for VFR. */
+  averageFrameRate?: number
+  /** True when nominal and average rates differ materially. */
+  isVariableFrameRate?: boolean
   rotation?: number
   sampleAspectRatio?: string
   videoStart?: number
@@ -222,7 +235,7 @@ async function doVideo(ffprobe: string, video: string): Promise<Meta> {
       ffprobe,
       [
         '-v', 'error',
-        '-show_entries', 'stream=index,codec_type,width,height,start_time,duration,r_frame_rate,sample_aspect_ratio:stream_tags=rotate:stream_side_data=rotation',
+        '-show_entries', 'stream=index,codec_type,width,height,start_time,duration,r_frame_rate,avg_frame_rate,sample_aspect_ratio:stream_tags=rotate:stream_side_data=rotation',
         '-show_entries', 'format=duration,start_time',
         '-of', 'json',
         video
@@ -544,14 +557,21 @@ export function taoAss(
   // blur nhe de mem goc hop (ASS khong co border-radius that)
   const boxBlur = Math.max(2, Math.min(5, bc.fontSize * 0.055))
 
+  const boldValue =
+    style?.fontWeight && style.fontWeight !== 400
+      ? style.fontWeight === 700
+        ? -1
+        : style.fontWeight
+      : 0
+
   // D = chu + vien; Box = chi hop nen (chu trong suot), ôm sát khi xuống dòng
   const styleText =
     `Style: D,${fontName},${bc.fontSize},${primary},${secondary},${outline},&H00000000&,` +
-    `0,0,0,0,100,100,0,0,1,${outlineW},0,${bc.tamY != null ? 5 : 2},${marginL},${marginR},${marginV},1`
+    `${boldValue},0,0,0,100,100,0,0,1,${outlineW},0,${bc.tamY != null ? 5 : 2},${marginL},${marginR},${marginV},1`
   // BorderStyle=3: mau hop = OutlineColour (khong phai BackColour)
   const styleBox =
     `Style: Box,${fontName},${bc.fontSize},&HFF000000&,&H00000000&,${back},&H00000000&,` +
-    `0,0,0,0,100,100,0,0,3,${boxPad},0,${bc.tamY != null ? 5 : 2},${marginL},${marginR},${marginV},1`
+    `${boldValue},0,0,0,100,100,0,0,3,${boxPad},0,${bc.tamY != null ? 5 : 2},${marginL},${marginR},${marginV},1`
 
   const assNumber = (value: number): string =>
     (Math.round(value * 100) / 100).toString()
@@ -1341,11 +1361,63 @@ async function runBurnSubtitle(
   )
 }
 
+export interface ExpectedFrameRateMeasurement {
+  /** Nominal/container rate from the source (`r_frame_rate`). */
+  frameRate?: number
+  /** Average stream rate from the source (`avg_frame_rate`). */
+  averageFrameRate?: number
+  /** Whether the source has materially different nominal and average rates. */
+  isVariableFrameRate?: boolean
+}
+
+export interface ActualFrameRateMeasurement {
+  nominalFrameRate?: number
+  averageFrameRate?: number
+}
+
+/**
+ * Validate frame timing without treating a valid VFR stream as a broken CFR
+ * stream. For VFR, average-to-average is the only meaningful comparison;
+ * nominal FPS is retained for diagnostics and legacy fallback only.
+ */
+export function validateFrameRateMeasurement(
+  expected: ExpectedFrameRateMeasurement,
+  actual: ActualFrameRateMeasurement,
+  tolerance = 0.1
+): void {
+  const expectedNominal = expected.frameRate && expected.frameRate > 0 ? expected.frameRate : undefined
+  const expectedAverage = expected.averageFrameRate && expected.averageFrameRate > 0
+    ? expected.averageFrameRate
+    : undefined
+  const useAverage = expected.isVariableFrameRate === true || expectedAverage != null
+  const expectedRate = useAverage ? (expectedAverage ?? expectedNominal) : (expectedNominal ?? expectedAverage)
+  if (expectedRate == null) return
+
+  // A VFR source cannot be judged from nominal FPS when an older/limited
+  // ffprobe omits avg_frame_rate. Decode and duration checks still protect the
+  // output, so skip only this one unavailable measurement.
+  if (useAverage && expected.isVariableFrameRate === true && actual.averageFrameRate == null) return
+
+  const actualRate = useAverage
+    ? (actual.averageFrameRate ?? (expected.isVariableFrameRate === true ? undefined : actual.nominalFrameRate))
+    : (actual.nominalFrameRate ?? actual.averageFrameRate)
+  if (actualRate == null) return
+
+  if (Math.abs(actualRate - expectedRate) > tolerance) {
+    const label = useAverage && actual.averageFrameRate != null
+      ? 'Tốc độ khung hình trung bình'
+      : 'Tốc độ khung hình'
+    throw new Error(`${label} (${actualRate.toFixed(2)} fps) lệch quá mức so với dự kiến (${expectedRate.toFixed(2)} fps).`)
+  }
+}
+
 export async function validateRenderedMedia(
   filePath: string,
   expected: {
     durationSeconds: number
     frameRate?: number
+    averageFrameRate?: number
+    isVariableFrameRate?: boolean
     requireAudio: boolean
     durationToleranceFrames: number
   },
@@ -1402,7 +1474,7 @@ export async function validateRenderedMedia(
         ffprobePath,
         [
           '-v', 'error',
-          '-show_entries', 'stream=index,codec_type,duration,r_frame_rate',
+          '-show_entries', 'stream=index,codec_type,duration,r_frame_rate,avg_frame_rate',
           '-show_entries', 'format=duration',
           '-of', 'json',
           filePath
@@ -1463,23 +1535,29 @@ export async function validateRenderedMedia(
     throw new Error('Không thể xác định thời lượng video xuất.')
   }
 
-  const durationTolerance = expected.frameRate && expected.frameRate > 0
-    ? expected.durationToleranceFrames / expected.frameRate
+  const durationFrameRate = expected.averageFrameRate && expected.averageFrameRate > 0
+    ? expected.averageFrameRate
+    : expected.frameRate
+  const durationTolerance = durationFrameRate && durationFrameRate > 0
+    ? expected.durationToleranceFrames / durationFrameRate
     : 0.10
   if (Math.abs(probedDuration - expected.durationSeconds) > durationTolerance) {
     throw new Error(`Thời lượng video xuất (${probedDuration.toFixed(3)}s) lệch quá mức so với dự kiến (${expected.durationSeconds.toFixed(3)}s).`)
   }
 
-  // Frame rate check
-  if (expected.frameRate && expected.frameRate > 0 && vStream.r_frame_rate) {
-    const [num, den] = vStream.r_frame_rate.split('/').map(Number)
-    if (num && den && den > 0) {
-      const actualFps = num / den
-      if (Math.abs(actualFps - expected.frameRate) > 0.1) {
-        throw new Error(`Tốc độ khung hình (${actualFps.toFixed(2)} fps) lệch quá mức so với dự kiến (${expected.frameRate.toFixed(2)} fps).`)
-      }
+  // Frame rate check: average-to-average for VFR, nominal fallback for legacy
+  // callers and probes that do not expose an average rate.
+  validateFrameRateMeasurement(
+    {
+      frameRate: expected.frameRate,
+      averageFrameRate: expected.averageFrameRate,
+      isVariableFrameRate: expected.isVariableFrameRate
+    },
+    {
+      nominalFrameRate: parseFrameRate(vStream.r_frame_rate),
+      averageFrameRate: parseFrameRate(vStream.avg_frame_rate)
     }
-  }
+  )
 }
 
 export interface AutoShortBurnExecutionOptions {
@@ -1492,6 +1570,8 @@ export interface AutoShortBurnExecutionOptions {
   expectedMedia: {
     durationSeconds: number
     frameRate?: number
+    averageFrameRate?: number
+    isVariableFrameRate?: boolean
     requireAudio: boolean
     durationToleranceFrames: number
   }
@@ -1591,10 +1671,11 @@ export async function burnAutoShort(
     // optional title in parallel, but only commit it after the MP4 passes the
     // existing decode/probe gate below. If the render fails, the scope aborts
     // this request and the promise is drained in finally.
-    if (renderReq.videoTitle && renderReq.srt) {
+    const srtForTitle = renderReq.titleSrt || renderReq.srt
+    if (renderReq.videoTitle && srtForTitle) {
       try {
         const titleCues = trimSubtitleCues(
-          docSrt(docFileSrt(renderReq.srt)),
+          docSrt(docFileSrt(srtForTitle)),
           options.expectedMedia.durationSeconds
         )
         if (titleCues.length > 0) {
@@ -1747,14 +1828,32 @@ export async function validateBurnRequest(raw: unknown): Promise<BurnValidation>
     }
   }
 
+  let titleSubtitlePath = subtitlePath
+  if (raw.titleSrt != null && typeof raw.titleSrt !== 'string') {
+    return { ok: false, error: 'Đường dẫn phụ đề cho tiêu đề không hợp lệ.' }
+  }
+  if (typeof raw.titleSrt === 'string' && raw.titleSrt.trim()) {
+    const candidateTitleSrt = raw.titleSrt.trim()
+    if (!validAbsolutePath(candidateTitleSrt)) return { ok: false, error: 'Đường dẫn phụ đề cho tiêu đề không hợp lệ.' }
+    try {
+      const info = await stat(candidateTitleSrt)
+      if (!info.isFile() || info.size <= 0 || info.size > 20 * 1024 * 1024) {
+        return { ok: false, error: 'File phụ đề cho tiêu đề không hợp lệ hoặc lớn hơn 20 MB.' }
+      }
+      titleSubtitlePath = candidateTitleSrt
+    } catch {
+      return { ok: false, error: 'File phụ đề cho tiêu đề không còn tồn tại.' }
+    }
+  }
+
   if (raw.videoTitle != null) {
     const titleConfigError = validateVideoTitleConfig(raw.videoTitle)
     if (titleConfigError) return { ok: false, error: titleConfigError }
-    if (!subtitlePath) {
+    if (!titleSubtitlePath) {
       return { ok: false, error: 'Cần chọn file SRT để AI tạo tiêu đề cho video.' }
     }
     try {
-      if (docSrt(docFileSrt(subtitlePath)).length === 0) {
+      if (docSrt(docFileSrt(titleSubtitlePath)).length === 0) {
         return { ok: false, error: 'File SRT chưa có nội dung hợp lệ để AI tạo tiêu đề.' }
       }
     } catch {
@@ -1852,6 +1951,12 @@ export async function validateBurnRequest(raw: unknown): Promise<BurnValidation>
   if (raw.fontId != null && (typeof raw.fontId !== 'string' || raw.fontId.length > 100)) {
     return { ok: false, error: 'Font phụ đề không hợp lệ.' }
   }
+  if (raw.subtitleFontWeight != null &&
+    (!Number.isFinite(raw.subtitleFontWeight) ||
+      Number(raw.subtitleFontWeight) < 100 ||
+      Number(raw.subtitleFontWeight) > 900)) {
+    return { ok: false, error: 'Độ đậm chữ phụ đề không hợp lệ.' }
+  }
   if (raw.wordTimings != null) {
     if (!Array.isArray(raw.wordTimings) || raw.wordTimings.length > 20_000) {
       return { ok: false, error: 'Word timing phụ đề không hợp lệ.' }
@@ -1877,6 +1982,7 @@ export async function validateBurnRequest(raw: unknown): Promise<BurnValidation>
   const req: BurnReq = {
     video: raw.video as string,
     srt: subtitlePath || null,
+    ...(titleSubtitlePath ? { titleSrt: titleSubtitlePath } : {}),
     outputDir: raw.outputDir as string,
     mode: raw.mode as 'burn' | 'soft',
     ...(raw.outputName != null ? { outputName: raw.outputName as string } : {}),
@@ -1906,6 +2012,7 @@ export async function validateBurnRequest(raw: unknown): Promise<BurnValidation>
     ...(raw.subtitleLayoutProfile != null ? { subtitleLayoutProfile: raw.subtitleLayoutProfile as SubtitleLayoutProfile } : {}),
     ...(raw.subtitleAutoOptimize != null ? { subtitleAutoOptimize: raw.subtitleAutoOptimize as boolean } : {}),
     ...(raw.subtitleFontSize != null ? { subtitleFontSize: raw.subtitleFontSize as number } : {}),
+    ...(raw.subtitleFontWeight != null ? { subtitleFontWeight: Number(raw.subtitleFontWeight) } : {}),
     ...(raw.wordTimings != null ? { wordTimings: raw.wordTimings as any } : {}),
     ...(raw.requireWordTimings != null ? { requireWordTimings: raw.requireWordTimings as boolean } : {}),
     ...(raw.subtitleFontScale != null ? { subtitleFontScale: raw.subtitleFontScale as number } : {}),
@@ -1952,10 +2059,11 @@ export async function completeBurnVideoTitle(
     // Soft subtitles can extend container duration beyond the actual video stream.
     const duration = [outputMeta.videoDurationSeconds, outputMeta.videoDuration, outputMeta.giay]
       .find((value): value is number => typeof value === 'number' && Number.isFinite(value) && value > 0)
-    if (duration == null || !req.srt) {
+    const srtForTitle = req.titleSrt || req.srt
+    if (duration == null || !srtForTitle) {
       return { ...result, titleError: 'Video đã xuất thành công nhưng chưa xác định được nội dung SRT theo thời lượng video để tạo tiêu đề.' }
     }
-    const cues = trimSubtitleCues(docSrt(io.readSubtitle(req.srt)), duration)
+    const cues = trimSubtitleCues(docSrt(io.readSubtitle(srtForTitle)), duration)
     if (cues.length === 0) {
       return { ...result, titleError: 'Video đã xuất thành công nhưng SRT không có nội dung trong thời lượng video để tạo tiêu đề.' }
     }
@@ -1966,6 +2074,7 @@ export async function completeBurnVideoTitle(
     let metadata
     if (prepared?.inputDigest === actualDigest && prepared.metadata) {
       metadata = prepared.metadata
+      stage = 'generate'
     } else if (prepared?.inputDigest === actualDigest && prepared.error) {
       return { ...result, titleError: prepared.error }
     } else {
@@ -1978,16 +2087,17 @@ export async function completeBurnVideoTitle(
     formatVideoSeoMetadata(metadata)
     stage = 'write'
     const titlePath = await io.write(result.output, metadata, req.outputDir)
-    return { ...result, title: metadata.title, titlePath, seoMetadata: metadata }
-  } catch {
+    return { ...result, title: metadata.title, thumbnailText: metadata.thumbnailText || undefined, titlePath, seoMetadata: metadata }
+  } catch (err) {
     if (signal.aborted) {
       return { ...result, titleError: 'Video đã xuất thành công. Đã dừng tạo tiêu đề; chưa lưu tieude.txt.' }
     }
+    logWarn(`[completeBurnVideoTitle] Lỗi khi tạo tiêu đề (stage=${stage}): ${errLabel(err)}`)
     const titleError = stage === 'write'
       ? 'Video đã xuất thành công nhưng không lưu được tieude.txt. Hãy kiểm tra quyền ghi và file tiêu đề đã có trong thư mục video.'
       : stage === 'generate'
         ? 'Video đã xuất thành công nhưng AI chưa tạo được tiêu đề. Hãy kiểm tra cấu hình AI và kết nối rồi thử lại.'
-        : 'Video đã xuất thành công nhưng không đọc được SRT hoặc thời lượng video để tạo tiêu đề.'
+        : `Video đã xuất thành công nhưng không đọc được SRT hoặc thời lượng video để tạo tiêu đề: ${errLabel(err)}`
     return { ...result, titleError }
   }
 }

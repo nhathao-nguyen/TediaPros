@@ -1,0 +1,450 @@
+node scripts/run-local-runtime-tests.mjs translation-capability-snapshot.test translation-request-budget.test speech-unit-plan.test speech-unit-planner.test speech-budget.test vietnamese-style-profile.test translation-semantic-evidence.test dubbing-feedback-decision.test vietnamese-evaluation.test gemini-gateway-long-context.test gemini-gateway-prompts.test gemini-gateway-contract.test gemini-gateway-draft-resume.test translation-planner.test translation-orchestrator.test translation-rephrase.test autoshort-content-quality.test dubbing-plan.test translation-resume.test translation-identity.test autoshort-tts-pipeline.test
+✔ Gateway keeps the user-confirmed 1M context floor until its contract advertises an exact higher value (1.1977ms)
+✔ Gateway rejects a contradictory or malformed advertised capacity rather than silently falling back (0.421ms)
+ℹ tests 2
+ℹ suites 0
+ℹ pass 2
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 78.4375
+✔ combined Gateway budget reserves review output separately from its input ledger (1.0496ms)
+✔ output partition preserves source-group order and rejects ambiguous IDs (0.9477ms)
+ℹ tests 2
+ℹ suites 0
+ℹ pass 2
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 80.3548
+✔ a frozen speech plan preserves source order, coverage and source hard boundaries (1.4524ms)
+ℹ tests 1
+ℹ suites 0
+ℹ pass 1
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 84.2288
+✔ source speech units reserve the inter-group gap exactly once and retain their cue coverage (3.4459ms)
+✔ source speech planning refuses timeline or identity mutations before a prompt can use the plan (0.456ms)
+ℹ tests 2
+ℹ suites 0
+ℹ pass 2
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 117.8003
+✔ speech budget uses one already-derived group window and the policy tempo bounds (1.9529ms)
+✔ speech budget refuses invalid revisions and a tempo beyond the current hard policy (0.7113ms)
+ℹ tests 2
+ℹ suites 0
+ℹ pass 2
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 101.4163
+✔ Vietnamese style profile only selects approved development examples and keeps a bounded domain preference (9.8449ms)
+✔ Vietnamese style instruction is versioned and asks for concise natural phrasing without allowing omissions (0.2392ms)
+ℹ tests 2
+ℹ suites 0
+ℹ pass 2
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 91.9457
+✔ verified semantic evidence rejects a changed object despite fluency benefits (0.7802ms)
+✔ suspect semantic evidence requires review (0.1281ms)
+✔ style suspicion and advisory semantic evidence remain eligible (0.1092ms)
+✔ provider evidence is capped at suspect while deterministic evidence stays verified (0.6609ms)
+✔ structural evidence rejects regardless of its evidence label (0.1333ms)
+✔ structural and verified semantic findings override suspect semantic review (0.7798ms)
+ℹ tests 6
+ℹ suites 0
+ℹ pass 6
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 85.414
+✔ feedback decision skips tried candidates and cancellation wins (1.2298ms)
+✔ feedback candidate hash is stable for reordered options and sensitive to speech identity (0.8035ms)
+ℹ tests 2
+ℹ suites 0
+ℹ pass 2
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 83.3566
+✔ first-pass fit keeps failed audio in the denominator (1.4742ms)
+✔ paired bootstrap resamples complete videos deterministically without dropping failed units (4.3384ms)
+ℹ tests 2
+ℹ suites 0
+ℹ pass 2
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 78.5787
+[tblao] [GeminiGateway] request=1/2 stage=restore-translate cues=1 model=gemini-advanced
+[tblao] [GeminiGateway] request=1/2 outcome=complete upstreamAttempts=1 retryReasons=none
+[tblao] [GeminiGateway] request=2/2 stage=independent-review cues=1 model=gemini-advanced
+[tblao] [GeminiGateway] request=2/2 outcome=complete upstreamAttempts=1 retryReasons=none
+✔ Gateway uses the 1M capacity and retains the full immutable source ledger when only one output cue is requested (29.9159ms)
+ℹ tests 1
+ℹ suites 0
+ℹ pass 1
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 114.9699
+✔ Gemini Gateway Prompts v9: version and contract definitions (0.8057ms)
+✔ Gemini Gateway Prompts v9: 113-cue prompt byte budget and required instructions (12.2138ms)
+✔ Gemini Gateway Prompts v9: 44-cue Volvo fixture prompt verification (3.2566ms)
+✔ Gemini Gateway prompts delimit source text as data even when it resembles an instruction (0.8431ms)
+ℹ tests 4
+ℹ suites 0
+ℹ pass 4
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 101.9514
+[tblao] [GeminiGateway] request=1/2 stage=restore-translate cues=44 model=gemini-advanced
+[tblao] [GeminiGateway] request=1/2 outcome=complete upstreamAttempts=2 retryReasons=invalid-json-object
+[tblao] [GeminiGateway] request=2/2 stage=independent-review cues=44 model=gemini-advanced
+[tblao] [GeminiGateway] request=2/2 outcome=complete upstreamAttempts=2 retryReasons=invalid-json-object
+[tblao] [GeminiGateway] request=1/2 stage=restore-translate cues=113 model=gemini-advanced
+[tblao] [GeminiGateway] request=1/2 outcome=complete upstreamAttempts=2 retryReasons=invalid-json-object
+[tblao] [GeminiGateway] request=2/2 stage=independent-review cues=113 model=gemini-advanced
+[tblao] [GeminiGateway] request=2/2 outcome=complete upstreamAttempts=2 retryReasons=invalid-json-object
+[tblao] [GeminiGateway] request=1/2 stage=restore-translate cues=12 model=gemini-advanced
+[tblao] [GeminiGateway] request=1/2 outcome=complete upstreamAttempts=2 retryReasons=invalid-json-object
+[tblao] [GeminiGateway] request=2/2 stage=independent-review cues=12 model=gemini-advanced
+[tblao] [GeminiGateway] request=2/2 outcome=complete upstreamAttempts=2 retryReasons=invalid-json-object
+[tblao] [GeminiGateway] request=1/2 stage=restore-translate cues=1 model=gemini-advanced
+[tblao] [GeminiGateway] request=1/2 stage=restore-translate cues=1 model=gemini-advanced
+[tblao] [GeminiGateway] request=1/2 stage=restore-translate cues=1 model=gemini-advanced
+[tblao] [GeminiGateway] request=1/2 outcome=complete upstreamAttempts=2 retryReasons=invalid-json-object
+[tblao] [GeminiGateway] request=2/2 stage=independent-review cues=1 model=gemini-advanced
+[tblao] [GeminiGateway] request=2/2 outcome=complete upstreamAttempts=2 retryReasons=invalid-json-object
+[tblao] [GeminiGateway] request=1/2 stage=restore-translate cues=1 model=gemini-advanced
+[tblao] [GeminiGateway] request=1/2 stage=restore-translate cues=1 model=gemini-advanced
+[tblao] [GeminiGateway] request=1/2 stage=restore-translate cues=1 model=gemini-advanced
+[tblao] [GeminiGateway] request=1/2 stage=restore-translate cues=1 model=gemini-advanced
+[tblao] [GeminiGateway] request=1/2 stage=restore-translate cues=1 model=gemini-advanced
+[tblao] [GeminiGateway] request=1/2 stage=restore-translate cues=1 model=gemini-advanced
+[tblao] [GeminiGateway] request=1/2 stage=restore-translate cues=1 model=gemini-advanced
+[tblao] [GeminiGateway] request=1/2 stage=restore-translate cues=1 model=gemini-advanced
+[tblao] [GeminiGateway] request=extra stage=tts-overflow-rephrase model=gemini-advanced
+✔ Gemini Gateway keeps a 44-cue short in one batch and performs exactly draft plus review (75.6027ms)
+✔ Gemini Gateway uses compact keyed output for a 113-cue video while returning canonical items (39.8777ms)
+✔ Gemini Gateway rejects an unpunctuated dubbing review before publication (3.4886ms)
+✔ Gemini Gateway connection check discovers gemini-advanced without a generation request (0.6088ms)
+✔ Gemini Gateway connection check reports expired gateway cookies before model availability (0.4557ms)
+✔ Gemini Gateway connection check requires contract version 2 (0.3673ms)
+✔ Gemini Gateway rejects a model fallback reported by the gateway (0.9676ms)
+✔ Gemini Gateway requires contract version 2 and accepts a different observed text model (2.4915ms)
+✔ Gemini Gateway requires route, completion evidence and a bounded attempt count (2.04ms)
+✔ Gemini Gateway rejects legacy or incorrectly named response versions (2.2343ms)
+✔ Gemini Gateway reports clear message for model-unavailable error (1.0566ms)
+✔ isPermanentGatewayError classifies permanent vs transient errors (0.6287ms)
+✔ Gemini Gateway rephrase keeps the existing labelled-candidate grammar (0.4036ms)
+✔ Gemini Gateway structured JSON vectors parity with Go gateway normalizer (5.9198ms)
+✔ checkGeminiGateway passes through cached verification from capabilities (0.4748ms)
+✔ checkGeminiGateway with verifyModel calls POST /gateway/verify-model and handles verified and mismatch states (0.6982ms)
+[tblao] [GeminiGateway] request=1/2 stage=restore-translate cues=1 model=gemini-advanced
+✔ audit log redacts sensitive query parameters, tokens, and cookies (4.6837ms)
+ℹ tests 17
+ℹ suites 0
+ℹ pass 17
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 231.7319
+✔ Gateway draft checkpoint: atomic write and exact read (13.2536ms)
+✔ Gateway draft checkpoint: corrupt, stale, changed route and wrong cue identity are safe misses (13.6517ms)
+✔ Gateway draft checkpoint: writer rejects incomplete draft rather than persisting it (1.2934ms)
+[tblao] [GeminiGateway] request=1/2 stage=restore-translate cues=3 model=gemini-advanced
+[tblao] [GeminiGateway] request=1/2 outcome=complete upstreamAttempts=1 retryReasons=none
+[tblao] [GeminiGateway] request=2/2 stage=independent-review cues=3 model=gemini-advanced
+[tblao] [GeminiGateway] request=2/2 outcome=complete upstreamAttempts=1 retryReasons=none
+[tblao] [GeminiGateway] request=1/2 stage=restore-translate status=resumed-from-draft sha256=7a3d4b02 cues=3
+[tblao] [GeminiGateway] request=2/2 stage=independent-review cues=3 model=gemini-advanced
+[tblao] [GeminiGateway] request=2/2 outcome=complete upstreamAttempts=1 retryReasons=none
+[tblao] [GeminiGateway] request=1/2 stage=restore-translate cues=3 model=gemini-advanced
+[tblao] [GeminiGateway] request=1/2 outcome=complete upstreamAttempts=1 retryReasons=none
+[tblao] [GeminiGateway] request=2/2 stage=independent-review cues=3 model=gemini-advanced
+[tblao] [GeminiGateway] request=2/2 outcome=complete upstreamAttempts=1 retryReasons=none
+[tblao] [GeminiGateway] request=1/2 stage=restore-translate cues=3 model=gemini-advanced
+[tblao] [GeminiGateway] request=1/2 outcome=complete upstreamAttempts=1 retryReasons=none
+[tblao] [GeminiGateway] request=2/2 stage=independent-review cues=3 model=gemini-advanced
+[tblao] [GeminiGateway] request=2/2 outcome=complete upstreamAttempts=1 retryReasons=none
+✔ Gateway draft checkpoint: adapter reuses only a current route-matched draft (57.5688ms)
+ℹ tests 4
+ℹ suites 0
+ℹ pass 4
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 165.4006
+✔ dubbing establishes shared source speech groups before provider batching (5.8676ms)
+✔ Korean context keeps word spacing while CJK remains compact (0.1709ms)
+✔ all source spans survive internal long-cue planning and restore (3.0847ms)
+✔ a long dubbing speech group keeps its identity across bounded internal requests (3.7731ms)
+✔ repairing an internal part still receives its complete bounded source group (0.8877ms)
+✔ sparse internal parts of an oversized singleton are not joined into a fabricated source sentence (0.3839ms)
+✔ planner preserves a short cue ID and source timing (0.5912ms)
+✔ planner splits a semantic group when the exact serialized prompt would exceed context (0.5534ms)
+✔ batch boundary pronoun receives two immutable source neighbors without requesting context IDs (5.2424ms)
+✔ split parts use neighboring source offsets as context and still restore one original output (1.4627ms)
+✔ context is deduplicated, bounded and counted in the actual serialized token budget (1.0613ms)
+✔ a long-context Gateway plan partitions requested outputs under its output cap without partitioning source identity (9.6793ms)
+ℹ tests 12
+ℹ suites 0
+ℹ pass 12
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 115.5509
+✔ dubbing resume and missing-ID recovery retain the original source speech group (16.0284ms)
+✔ sparse dubbing resume keeps the accepted middle negation in complete read-only group context (1.8534ms)
+✔ malformed singleton receives a repair task with parser feedback (1.9848ms)
+✔ content warnings trigger one focused repair before publishing (2.1642ms)
+✔ content warning repair stops after one no-progress response (1.614ms)
+✔ unknown provider token limits do not surface as a user-action warning after success (0.565ms)
+✔ natural translation of a Chinese A-not-A question needs no quality repair (1.5816ms)
+✔ transient retries without Retry-After use bounded increasing jitter backoff (1.4563ms)
+✔ oversized Retry-After is capped before reaching the sleep implementation (0.9614ms)
+✔ repair payload is rechecked against known context capacity before dispatch (0.7325ms)
+✔ custom cancellation during backoff stops dispatch and reports cancellation (0.5528ms)
+✔ only missing work is retried and total requests is finite (1.652ms)
+✔ a response with an unknown ID never contributes accepted or checkpointed items (1.0842ms)
+✔ persistent malformed responses terminate with needs-review instead of looping (1.2143ms)
+✔ progressive missing-ID recovery completes after the former per-batch quota (3.6659ms)
+✔ structured provider auth failure does not retry (0.5823ms)
+✔ cancellation never dispatches a sibling request (1.0129ms)
+✔ expired active budget stops before dispatching another provider request (0.5811ms)
+✔ transient provider failure honors bounded Retry-After before one recovery request (0.9714ms)
+✔ gateway-owned retry never creates a second outer provider request (0.5597ms)
+✔ a charged batch resumes as recovery work instead of bypassing the quota (1.431ms)
+✔ resume plans the full source and filters completed IDs without renumbering batch quota (14.6387ms)
+✔ resume keeps completed neighboring cues as read-only context for pending work (0.9588ms)
+✔ rejects truncated response even when every cue ID is present (0.9127ms)
+✔ rejects unparsed continuation even when every cue ID is present (0.9304ms)
+✔ all branches isolate malformed batches down to single cues (7.1045ms)
+ℹ tests 26
+ℹ suites 0
+ℹ pass 26
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 157.156
+✔ rephrase parser accepts at most three grounded candidates (2.21ms)
+✔ partial batch recovery keeps exact IDs and quarantines ambiguous or incomplete cues (1.0414ms)
+[tblao] [AutoShort:rephrase] phase=batch-rephrase repair=false cues=2 outcome=partial-response issues=unknown-id,duplicate-id badLabels=wrong-id_1,c2_1 usableCandidates=1
+[tblao] [AutoShort:rephrase] phase=batch-rephrase outcome=repair-missing cues=1 kept=1
+✔ local batch repairs only missing cues once and preserves valid candidates from the first response (25.0243ms)
+[tblao] [GeminiGateway] request=extra stage=tts-overflow-rephrase model=gemini-advanced
+✔ local measured-overflow batches are capped at eight cues and carry measured timing fields (3.048ms)
+✔ Gemini Gateway sends one measured-overflow batch instead of one request per cue (4.4812ms)
+✔ local batch rephrase retains the inference lease until every response body is consumed (4.2872ms)
+[tblao] [AutoShort] Batch rephrase 1 cue không thành công: api_503 — dịch vụ đang quá tải
+✔ local batch rephrase cancels an HTTP error body before releasing its lease (1.9441ms)
+✔ measured rescue prompt carries the observed voice duration and feasible word budget (0.3714ms)
+✔ compact English questions keep the demonstrative, subject, negation and question (0.4063ms)
+✔ measured 0.9s question rescue handles duplicate unhelpful LLM output within the existing audio budget (14.6668ms)
+✔ compact question shares the three-audio limit with LLM candidates and cannot force an impossible fit (3.3001ms)
+[tblao] [AutoShort:rephrase] phase=preflight repair=false cues=24 outcome=partial-response issues=unknown-id badLabels=foreign_1 usableCandidates=1
+[tblao] [AutoShort:rephrase] phase=preflight outcome=repair-missing cues=23 kept=1
+[tblao] [AutoShort:rephrase] phase=preflight repair=true cues=8 outcome=invalid-response issues=unknown-id badLabels=foreign_1 usableCandidates=0
+[tblao] [AutoShort:rephrase] phase=preflight repair=true cues=8 outcome=invalid-response issues=unknown-id badLabels=foreign_1 usableCandidates=0
+[tblao] [AutoShort:rephrase] phase=preflight repair=true cues=7 outcome=invalid-response issues=unknown-id badLabels=foreign_1 usableCandidates=0
+[tblao] [AutoShort:rephrase] phase=preflight repair=false cues=24 outcome=partial-response issues=unknown-id badLabels=foreign_1 usableCandidates=1
+[tblao] [AutoShort:rephrase] phase=preflight outcome=repair-missing cues=23 kept=1
+[tblao] [AutoShort] Batch rephrase 24 cue không thành công: api_503 — dịch vụ đang quá tải
+✔ batch recovery has a bounded missing-only repair pass and keeps results if a repair fails (15.7938ms)
+[tblao] [AutoShort:rephrase] cue=c1 outcome=invalid-response issues=truncated-output
+[tblao] [AutoShort:rephrase] cue=c1 outcome=no-content
+[tblao] [AutoShort:rephrase] cue=c1 outcome=invalid-response issues=duplicate-id
+[tblao] [AutoShort:rephrase] cue=c1 outcome=invalid-response issues=unknown-id
+[tblao] [AutoShort:rephrase] cue=c1 outcome=invalid-response issues=unknown-id
+[tblao] [AutoShort:rephrase] cue=c1 outcome=invalid-response issues=unparsed-content
+[tblao] [AutoShort:rephrase] cue=c1 outcome=invalid-response issues=unparsed-content
+[tblao] [AutoShort:rephrase] cue=c1 outcome=invalid-response issues=unparsed-content
+✔ single rescue rejects a truncated provider response before any partial candidate can be spoken (2.0582ms)
+✔ inline rephrase alternatives are separate candidates, never spoken metadata (0.4241ms)
+✔ inline normalization still rejects duplicate, unknown, invalid, or bare candidate labels (0.4653ms)
+✔ inline rescue alternatives send exactly one clean choice to TTS (1.5512ms)
+✔ rephrase parser rejects continuation and free-form prose (0.1979ms)
+✔ rephrase prompt carries source evidence and no translation cardinality contract (0.4267ms)
+✔ rephrase consumer rejects candidate text when the provider response has an unparsed continuation (0.2006ms)
+✔ batch rephrase accepts requested cues and rejects unknown IDs or trailing prose (0.098ms)
+✔ AutoShort sends video-aware timing to the local translator and preserves source cue timing (23.5688ms)
+ℹ tests 21
+ℹ suites 0
+ℹ pass 21
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 286.0412
+✔ rephrase gate rejects candidates that lose protected meaning (5.9322ms)
+✔ rephrase gate accepts a shorter candidate that keeps anchors and conditions (0.2911ms)
+✔ rephrase gate rejects a dropped object and swapped people (1.0197ms)
+✔ rephrase gate rejects a quantified object swap and a reversed temporal action order (2.5099ms)
+✔ content QA rejects duplicate/missing/unexpected cue mappings and protected number changes (1.0528ms)
+✔ content QA passes faithful cue mapping and reports semantic review as a separate optional finding (0.4115ms)
+✔ content QA accepts translated unit spelling and equivalent negation (0.3224ms)
+✔ content QA protects signed numeric values (0.3993ms)
+✔ negation across scripts is review evidence, not a structural failure (0.5104ms)
+✔ number words and Unicode digits are warnings until language evidence is qualified (0.5249ms)
+✔ empty and missing target cues remain hard structural failures (0.3116ms)
+✔ interrogative question particles across languages do not trigger false negation mismatch warnings (1.1081ms)
+✔ Chinese A-not-A questions do not look like dropped negation after translation (0.4037ms)
+✔ polarity evidence: 你为什么不去学校？ -> Tại sao bạn đi học? (0.2457ms)
+✔ polarity evidence: 不要看星星。 -> Hãy nhìn các vì sao. (0.1386ms)
+✔ polarity evidence: 你明天去学校吗？ -> Ngày mai bạn có đi học không? (0.1561ms)
+✔ polarity evidence: 你吃饭了吗？ -> Bạn đã ăn cơm chưa? (0.2989ms)
+✔ polarity evidence: 我们可以走吗？ -> Chúng ta có thể đi được không? (0.1363ms)
+✔ polarity evidence: 不要摸这只狗。 -> Đừng chạm vào con chó này. (0.13ms)
+✔ polarity evidence: 你为什么不去学校？ -> Tại sao bạn không đi học? (0.1232ms)
+✔ polarity evidence: 可以走了。 -> Không được đi. (0.1148ms)
+✔ polarity evidence: 你吃饭了吗？不要喝酒。 -> Bạn đã ăn cơm chưa? Hãy uống rượu. (0.1381ms)
+✔ CJK numerals match corresponding Arabic digits without warnings (0.5692ms)
+✔ French number words and negation expressions preserve Chinese protected meaning (0.2637ms)
+✔ Chinese sentence labels are treated as cue markers rather than protected quantities (0.1817ms)
+✔ embedded cue markers in translated text are structural protocol errors (0.2433ms)
+✔ contextual number evidence: 十二个苹果。 -> Có 12 quả táo. (0.1822ms)
+✔ contextual number evidence: 十二个苹果。 -> Có 13 quả táo. (0.118ms)
+✔ contextual number evidence: 我们一起走吧。 -> Chúng ta cùng đi. (0.0928ms)
+✔ contextual number evidence: 这是第三次。 -> Đây là lần thứ ba. (0.1511ms)
+✔ contextual number evidence: 这是第三次。 -> Đây là lần thứ tư. (0.1209ms)
+✔ contextual number evidence: 这是第3次。 -> This is the third time. (0.1108ms)
+ℹ tests 32
+ℹ suites 0
+ℹ pass 32
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 114.7682
+✔ a shared feedback journal blocks a repeated overflow candidate before its second TTS dispatch (23.5081ms)
+✔ feedback journal claims a candidate before TTS and retains a failed outcome (1.2788ms)
+✔ adjacent 560ms cue uses a reduced gap instead of losing the full protected gap (0.1888ms)
+✔ AutoShort adjacent 560ms cue uses the same reduced-gap policy (0.2563ms)
+✔ video extension preserves the source reduced-gap decision for an adjacent 600ms cue (1.3025ms)
+✔ local extension preserves unchanged segments and enforces 60 percent independently (0.3368ms)
+✔ visual extension slows at most 20 percent then replays source inside the owning cue interval (0.165ms)
+✔ bounded extension keeps a feasible semantic group before introducing extra split gaps (3.6053ms)
+✔ measured rescue can extend video locally with original source ledger untouched (1.7653ms)
+✔ tempo 1.460x from the reported DSP output is accepted under the new 1.8x ceiling (0.7494ms)
+✔ audio requiring 1.8x fits without rephrase and fixed pace clamps at 1.8x (0.715ms)
+✔ rejects a looping overlong TTS clip for a short interjection (0.2256ms)
+✔ accepts measured natural duration for a Chinese phrase without whitespace (1.0805ms)
+✔ refreshes an overlong TTS cache entry before planning video extension (0.6955ms)
+✔ second-pass duration recovery bypasses the previously measured TTS cache (0.5983ms)
+✔ second-pass recovery can replace a semantically misaligned translation from source evidence (1.1418ms)
+✔ source-repair ignores a compacted version of a semantically untrusted current translation (1.533ms)
+✔ tempo processing receives the authoritative duration measured by trim (0.6852ms)
+✔ speaking budgets reserve the next-cue gap once and use the EOF guard for the last cue (0.7685ms)
+✔ the last cue uses its EOF window without unnecessary rephrase or excessive tempo (0.5793ms)
+✔ measured-first synthesis never rewrites a predictor outlier before TTS (0.4433ms)
+✔ a fitting measured plan skips batch rephrase and reports zero rescue metrics (0.8589ms)
+✔ measured pass completes before one batch adapter and rescue audio begins (3.0053ms)
+✔ predecessor rescue preserves a grouped cue that fits with released lead (1.0481ms)
+✔ finalization reflows a fitting predecessor when a rescued cue needs the protected gap (1.2835ms)
+✔ cue-0-1490 rescues measured overflow once and rejects a still-too-long replacement (1.3275ms)
+✔ cue-0-2320 rescues measured overflow once and rejects a still-too-long replacement (0.8474ms)
+✔ cancellation before measured synthesis never starts TTS (0.4061ms)
+✔ cue-0-2320 tries another distinct candidate when the first shorter audio still overflows (0.8014ms)
+✔ cue-0-1490 tries another distinct candidate when the first shorter audio still overflows (1.7352ms)
+✔ cue-0-0 tries another distinct candidate when the first shorter audio still overflows (0.5468ms)
+✔ measured audio inside the hard ceiling is not rephrased merely to lower local pace (0.3665ms)
+✔ embedded candidate labels are rejected even when a rephrase adapter bypasses the parser (0.3787ms)
+✔ a resumed plan with leaked labels is stopped before TTS or cache access (0.3442ms)
+✔ a worse rescue preserves the original overflow diagnostic and never applies excessive tempo (0.5418ms)
+✔ rescue never synthesizes more than three distinct alternatives or recalibrates from worse clips (0.7901ms)
+✔ measured DSP output cannot silently exceed the hard tempo ceiling (0.435ms)
+✔ builds source-anchored plan windows without cumulative start drift (0.135ms)
+✔ keeps every start anchored while allowing a cue to use its permitted gap (0.3388ms)
+✔ rejects a cue that needs more than the permitted local pace adjustment (0.1078ms)
+✔ fixed dubbing pace never exceeds the hard tempo ceiling (0.0552ms)
+✔ validates source identity, hard-end, overlap, and final subtitle text (0.1538ms)
+✔ fingerprints the complete effective TTS profile and remains order-stable (0.3244ms)
+✔ selects at most three real job cues with useful length diversity for bootstrap (0.3049ms)
+✔ does not reuse TTS cache across effective voice configuration changes (0.4938ms)
+✔ selects a language-compatible TTS capability when persisted model is stale (0.2149ms)
+✔ does not reject every rephrase when the predictor overestimates all candidates (0.1198ms)
+✔ updates predictor error from measured reusable clips with non-negative ridge weights (0.7657ms)
+✔ translation request preserves source ids and applies final spoken text without moving anchors (0.491ms)
+✔ subtitle builder uses final spoken text and accepted audio window at cue quality (0.0863ms)
+✔ synthesis keeps source starts, measures final audio, and never asks Whisper for TTS subtitles (0.8789ms)
+✔ measured short overflow borrows only verified leading silence before asking to rephrase (0.8998ms)
+✔ synthesis performs at most one rephrase and updates both plan text and subtitle text (0.6192ms)
+✔ long single cue rejects when fitting would exceed the hard tempo ceiling (1.4678ms)
+✔ measured tempo overshoot retries original audio once and rejects persistent overlap (0.5239ms)
+✔ DSP duration undershoot is corrected from the original WAV without exceeding measured tempo (0.4626ms)
+ℹ tests 56
+ℹ suites 0
+ℹ pass 56
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 159.4476
+✔ downstream retry reuses an accepted translation with warnings without another provider request (1.9307ms)
+✔ checkpoint persists a charged budget and valid batches atomically (21.6765ms)
+✔ manual retry generation retains recovery budget and valid batches (1.3803ms)
+✔ checkpoint reader treats corrupt, future, and invalid nested state as a cache miss (11.2868ms)
+✔ checkpoint writer rejects invalid nested state before publication (1.4714ms)
+ℹ tests 5
+ℹ suites 0
+ℹ pass 5
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 164.4686
+✔ corrected source text changes the reusable translation identity (1.575ms)
+✔ synopsis changes invalidate reusable translations (0.1968ms)
+✔ identity is stable across object property order and excludes secrets (0.244ms)
+✔ current prompt cannot reuse translation identity from older prompt contracts (0.3363ms)
+✔ different dubbing speaking windows invalidate reuse (0.9566ms)
+ℹ tests 5
+ℹ suites 0
+ℹ pass 5
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 80.0498
+[tblao] [TTS] Requesting voice clone from http://127.0.0.1:56701/v1/audio/voice-clone with reference.wav (model=tts-multilingual)
+[tblao] [TTS] Chatterbox generation failed; refreshing the same voice-clone request once.
+✔ voice clone refreshes only the explicit Chatterbox generation failure once (326.0711ms)
+✔ TTS request pipelining (prefetchTts: true) overlaps next cue synthesis with current cue DSP while keeping server in-flight <= 1 (173.1097ms)
+✔ TTS request pipelining (prefetchTts: false by default) strictly serializes synthesis and DSP (122.637ms)
+✔ TTS prefetch regression: DSP failure aborts in-flight next cue request and drains before synthesizeDubbingPlan rejects (30.7498ms)
+✔ TTS prefetch regression: prefetch HTTP 403 passes through original error without redundant second retry (1.3325ms)
+✔ TTS prefetch determinism: output plan, clip order, timing match exactly between prefetch=true and prefetch=false (1.2034ms)
+ℹ tests 6
+ℹ suites 0
+ℹ pass 6
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 784.5404
+
+Exit: 0

@@ -1,0 +1,4152 @@
+{
+  "duration": 56.0311875,
+  "language": "zh",
+  "segments": [
+    {
+      "start": 0.0,
+      "end": 1.24,
+      "text": "你敢相信在芬蘭",
+      "words": [
+        {
+          "text": "你",
+          "start": 0.0,
+          "end": 0.16,
+          "probability": 0.84765625
+        },
+        {
+          "text": "敢",
+          "start": 0.16,
+          "end": 0.28,
+          "probability": 0.95361328125
+        },
+        {
+          "text": "相信",
+          "start": 0.28,
+          "end": 0.58,
+          "probability": 0.99609375
+        },
+        {
+          "text": "在",
+          "start": 0.58,
+          "end": 0.88,
+          "probability": 0.41064453125
+        },
+        {
+          "text": "芬",
+          "start": 0.88,
+          "end": 1.04,
+          "probability": 0.98291015625
+        },
+        {
+          "text": "蘭",
+          "start": 1.04,
+          "end": 1.24,
+          "probability": 0.8994140625
+        }
+      ]
+    },
+    {
+      "start": 1.24,
+      "end": 4.42,
+      "text": "父母居然會選擇讓自己的小孩在冰田雪地裡睡覺",
+      "words": [
+        {
+          "text": "父",
+          "start": 1.24,
+          "end": 1.56,
+          "probability": 0.91357421875
+        },
+        {
+          "text": "母",
+          "start": 1.56,
+          "end": 1.7,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "居",
+          "start": 1.7,
+          "end": 1.82,
+          "probability": 0.940185546875
+        },
+        {
+          "text": "然",
+          "start": 1.82,
+          "end": 1.92,
+          "probability": 1.0
+        },
+        {
+          "text": "會",
+          "start": 1.92,
+          "end": 2.06,
+          "probability": 0.96826171875
+        },
+        {
+          "text": "選",
+          "start": 2.06,
+          "end": 2.2,
+          "probability": 0.9931640625
+        },
+        {
+          "text": "擇",
+          "start": 2.2,
+          "end": 2.38,
+          "probability": 0.999755859375
+        },
+        {
+          "text": "讓",
+          "start": 2.38,
+          "end": 2.48,
+          "probability": 0.98583984375
+        },
+        {
+          "text": "自己",
+          "start": 2.48,
+          "end": 2.66,
+          "probability": 0.98828125
+        },
+        {
+          "text": "的",
+          "start": 2.66,
+          "end": 2.8,
+          "probability": 0.9931640625
+        },
+        {
+          "text": "小",
+          "start": 2.8,
+          "end": 2.98,
+          "probability": 0.9853515625
+        },
+        {
+          "text": "孩",
+          "start": 2.98,
+          "end": 3.14,
+          "probability": 0.9912109375
+        },
+        {
+          "text": "在",
+          "start": 3.14,
+          "end": 3.28,
+          "probability": 0.9716796875
+        },
+        {
+          "text": "冰",
+          "start": 3.28,
+          "end": 3.44,
+          "probability": 0.998779296875
+        },
+        {
+          "text": "田",
+          "start": 3.44,
+          "end": 3.56,
+          "probability": 0.425537109375
+        },
+        {
+          "text": "雪",
+          "start": 3.56,
+          "end": 3.74,
+          "probability": 0.869140625
+        },
+        {
+          "text": "地",
+          "start": 3.74,
+          "end": 3.9,
+          "probability": 0.99072265625
+        },
+        {
+          "text": "裡",
+          "start": 3.9,
+          "end": 4.04,
+          "probability": 0.52490234375
+        },
+        {
+          "text": "睡",
+          "start": 4.04,
+          "end": 4.16,
+          "probability": 0.994140625
+        },
+        {
+          "text": "覺",
+          "start": 4.16,
+          "end": 4.42,
+          "probability": 0.9912109375
+        }
+      ]
+    },
+    {
+      "start": 4.42,
+      "end": 6.0,
+      "text": "相對於外面的冰田雪地",
+      "words": [
+        {
+          "text": "相",
+          "start": 4.42,
+          "end": 4.74,
+          "probability": 0.955078125
+        },
+        {
+          "text": "對",
+          "start": 4.74,
+          "end": 4.88,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "於",
+          "start": 4.88,
+          "end": 4.98,
+          "probability": 0.947265625
+        },
+        {
+          "text": "外",
+          "start": 4.98,
+          "end": 5.16,
+          "probability": 0.99560546875
+        },
+        {
+          "text": "面",
+          "start": 5.16,
+          "end": 5.28,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "的",
+          "start": 5.28,
+          "end": 5.36,
+          "probability": 0.99169921875
+        },
+        {
+          "text": "冰",
+          "start": 5.36,
+          "end": 5.48,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "田",
+          "start": 5.48,
+          "end": 5.62,
+          "probability": 0.7705078125
+        },
+        {
+          "text": "雪",
+          "start": 5.62,
+          "end": 5.78,
+          "probability": 0.9931640625
+        },
+        {
+          "text": "地",
+          "start": 5.78,
+          "end": 6.0,
+          "probability": 0.99853515625
+        }
+      ]
+    },
+    {
+      "start": 6.0,
+      "end": 8.04,
+      "text": "嬰兒車裡面的溫度相對溫暖一些",
+      "words": [
+        {
+          "text": "嬰",
+          "start": 6.0,
+          "end": 6.3,
+          "probability": 0.7794596354166666
+        },
+        {
+          "text": "兒",
+          "start": 6.3,
+          "end": 6.4,
+          "probability": 0.99658203125
+        },
+        {
+          "text": "車",
+          "start": 6.4,
+          "end": 6.52,
+          "probability": 0.99609375
+        },
+        {
+          "text": "裡面",
+          "start": 6.52,
+          "end": 6.72,
+          "probability": 0.82177734375
+        },
+        {
+          "text": "的",
+          "start": 6.72,
+          "end": 6.88,
+          "probability": 0.99267578125
+        },
+        {
+          "text": "溫",
+          "start": 6.88,
+          "end": 7.0,
+          "probability": 0.997314453125
+        },
+        {
+          "text": "度",
+          "start": 7.0,
+          "end": 7.16,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "相",
+          "start": 7.16,
+          "end": 7.3,
+          "probability": 0.9921875
+        },
+        {
+          "text": "對",
+          "start": 7.3,
+          "end": 7.44,
+          "probability": 0.998046875
+        },
+        {
+          "text": "溫",
+          "start": 7.44,
+          "end": 7.6,
+          "probability": 0.981201171875
+        },
+        {
+          "text": "暖",
+          "start": 7.6,
+          "end": 7.76,
+          "probability": 0.999755859375
+        },
+        {
+          "text": "一些",
+          "start": 7.76,
+          "end": 8.04,
+          "probability": 0.9853515625
+        }
+      ]
+    },
+    {
+      "start": 8.04,
+      "end": 10.24,
+      "text": "這聽起來可能讓很多人感動驚訝",
+      "words": [
+        {
+          "text": "這",
+          "start": 8.04,
+          "end": 8.38,
+          "probability": 0.97265625
+        },
+        {
+          "text": "聽",
+          "start": 8.38,
+          "end": 8.58,
+          "probability": 0.99560546875
+        },
+        {
+          "text": "起來",
+          "start": 8.58,
+          "end": 8.8,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "可能",
+          "start": 8.8,
+          "end": 8.98,
+          "probability": 0.99169921875
+        },
+        {
+          "text": "讓",
+          "start": 8.98,
+          "end": 9.12,
+          "probability": 0.98876953125
+        },
+        {
+          "text": "很多",
+          "start": 9.12,
+          "end": 9.36,
+          "probability": 0.9912109375
+        },
+        {
+          "text": "人",
+          "start": 9.36,
+          "end": 9.56,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "感",
+          "start": 9.56,
+          "end": 9.76,
+          "probability": 0.99658203125
+        },
+        {
+          "text": "動",
+          "start": 9.76,
+          "end": 9.88,
+          "probability": 0.308349609375
+        },
+        {
+          "text": "驚",
+          "start": 9.88,
+          "end": 10.06,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "訝",
+          "start": 10.06,
+          "end": 10.24,
+          "probability": 0.994384765625
+        }
+      ]
+    },
+    {
+      "start": 10.24,
+      "end": 11.66,
+      "text": "這不是在虐待孩子嗎",
+      "words": [
+        {
+          "text": "這",
+          "start": 10.24,
+          "end": 10.54,
+          "probability": 0.9462890625
+        },
+        {
+          "text": "不是",
+          "start": 10.54,
+          "end": 10.68,
+          "probability": 0.99560546875
+        },
+        {
+          "text": "在",
+          "start": 10.68,
+          "end": 10.86,
+          "probability": 0.89599609375
+        },
+        {
+          "text": "虐",
+          "start": 10.86,
+          "end": 11.0,
+          "probability": 0.989013671875
+        },
+        {
+          "text": "待",
+          "start": 11.0,
+          "end": 11.1,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "孩子",
+          "start": 11.1,
+          "end": 11.42,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "嗎",
+          "start": 11.42,
+          "end": 11.66,
+          "probability": 0.6767578125
+        }
+      ]
+    },
+    {
+      "start": 11.66,
+      "end": 13.04,
+      "text": "但是這對芬蘭人來說",
+      "words": [
+        {
+          "text": "但是",
+          "start": 11.66,
+          "end": 11.98,
+          "probability": 0.85888671875
+        },
+        {
+          "text": "這",
+          "start": 11.98,
+          "end": 12.16,
+          "probability": 0.95703125
+        },
+        {
+          "text": "對",
+          "start": 12.16,
+          "end": 12.32,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "芬",
+          "start": 12.32,
+          "end": 12.46,
+          "probability": 0.992919921875
+        },
+        {
+          "text": "蘭",
+          "start": 12.46,
+          "end": 12.58,
+          "probability": 0.999755859375
+        },
+        {
+          "text": "人",
+          "start": 12.58,
+          "end": 12.7,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "來說",
+          "start": 12.7,
+          "end": 13.04,
+          "probability": 0.99609375
+        }
+      ]
+    },
+    {
+      "start": 13.04,
+      "end": 14.42,
+      "text": "是完全正常的",
+      "words": [
+        {
+          "text": "是",
+          "start": 13.04,
+          "end": 13.44,
+          "probability": 0.9638671875
+        },
+        {
+          "text": "完全",
+          "start": 13.44,
+          "end": 13.7,
+          "probability": 0.99609375
+        },
+        {
+          "text": "正",
+          "start": 13.7,
+          "end": 13.94,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "常",
+          "start": 13.94,
+          "end": 14.14,
+          "probability": 1.0
+        },
+        {
+          "text": "的",
+          "start": 14.14,
+          "end": 14.42,
+          "probability": 0.99853515625
+        }
+      ]
+    },
+    {
+      "start": 14.42,
+      "end": 16.3,
+      "text": "冬天走在芬蘭的任何一條街上",
+      "words": [
+        {
+          "text": "冬",
+          "start": 14.42,
+          "end": 14.58,
+          "probability": 0.94140625
+        },
+        {
+          "text": "天",
+          "start": 14.58,
+          "end": 14.72,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "走",
+          "start": 14.72,
+          "end": 14.88,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "在",
+          "start": 14.88,
+          "end": 15.02,
+          "probability": 0.99658203125
+        },
+        {
+          "text": "芬",
+          "start": 15.02,
+          "end": 15.18,
+          "probability": 0.99609375
+        },
+        {
+          "text": "蘭",
+          "start": 15.18,
+          "end": 15.3,
+          "probability": 0.999755859375
+        },
+        {
+          "text": "的",
+          "start": 15.3,
+          "end": 15.4,
+          "probability": 0.99365234375
+        },
+        {
+          "text": "任",
+          "start": 15.4,
+          "end": 15.52,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "何",
+          "start": 15.52,
+          "end": 15.68,
+          "probability": 1.0
+        },
+        {
+          "text": "一",
+          "start": 15.68,
+          "end": 15.78,
+          "probability": 0.958984375
+        },
+        {
+          "text": "條",
+          "start": 15.78,
+          "end": 15.9,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "街",
+          "start": 15.9,
+          "end": 16.06,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "上",
+          "start": 16.06,
+          "end": 16.3,
+          "probability": 0.998046875
+        }
+      ]
+    },
+    {
+      "start": 16.3,
+      "end": 18.58,
+      "text": "你都會看見嬰兒車停在外面或者家裡",
+      "words": [
+        {
+          "text": "你",
+          "start": 16.3,
+          "end": 16.52,
+          "probability": 0.96533203125
+        },
+        {
+          "text": "都",
+          "start": 16.52,
+          "end": 16.62,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "會",
+          "start": 16.62,
+          "end": 16.74,
+          "probability": 0.994140625
+        },
+        {
+          "text": "看",
+          "start": 16.74,
+          "end": 16.88,
+          "probability": 0.9609375
+        },
+        {
+          "text": "見",
+          "start": 16.88,
+          "end": 17.02,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "嬰",
+          "start": 17.02,
+          "end": 17.16,
+          "probability": 0.998046875
+        },
+        {
+          "text": "兒",
+          "start": 17.16,
+          "end": 17.24,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "車",
+          "start": 17.24,
+          "end": 17.38,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "停",
+          "start": 17.38,
+          "end": 17.54,
+          "probability": 0.98876953125
+        },
+        {
+          "text": "在",
+          "start": 17.54,
+          "end": 17.7,
+          "probability": 0.998046875
+        },
+        {
+          "text": "外",
+          "start": 17.7,
+          "end": 17.86,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "面",
+          "start": 17.86,
+          "end": 18.02,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "或者",
+          "start": 18.02,
+          "end": 18.16,
+          "probability": 0.98291015625
+        },
+        {
+          "text": "家",
+          "start": 18.16,
+          "end": 18.42,
+          "probability": 0.9814453125
+        },
+        {
+          "text": "裡",
+          "start": 18.42,
+          "end": 18.58,
+          "probability": 0.9482421875
+        }
+      ]
+    },
+    {
+      "start": 18.58,
+      "end": 20.42,
+      "text": "果的被子向一個大大的卷壁",
+      "words": [
+        {
+          "text": "果",
+          "start": 18.58,
+          "end": 18.88,
+          "probability": 0.5625
+        },
+        {
+          "text": "的",
+          "start": 18.88,
+          "end": 18.98,
+          "probability": 0.348876953125
+        },
+        {
+          "text": "被",
+          "start": 18.98,
+          "end": 19.12,
+          "probability": 0.9501953125
+        },
+        {
+          "text": "子",
+          "start": 19.12,
+          "end": 19.24,
+          "probability": 0.9892578125
+        },
+        {
+          "text": "向",
+          "start": 19.24,
+          "end": 19.4,
+          "probability": 0.457763671875
+        },
+        {
+          "text": "一個",
+          "start": 19.4,
+          "end": 19.62,
+          "probability": 0.95556640625
+        },
+        {
+          "text": "大",
+          "start": 19.62,
+          "end": 19.82,
+          "probability": 0.970703125
+        },
+        {
+          "text": "大的",
+          "start": 19.82,
+          "end": 20.0,
+          "probability": 0.99658203125
+        },
+        {
+          "text": "卷",
+          "start": 20.0,
+          "end": 20.18,
+          "probability": 0.68212890625
+        },
+        {
+          "text": "壁",
+          "start": 20.18,
+          "end": 20.42,
+          "probability": 0.61065673828125
+        }
+      ]
+    },
+    {
+      "start": 20.42,
+      "end": 21.82,
+      "text": "而他們這樣做的原因是",
+      "words": [
+        {
+          "text": "而",
+          "start": 20.42,
+          "end": 20.68,
+          "probability": 0.9931640625
+        },
+        {
+          "text": "他們",
+          "start": 20.68,
+          "end": 20.86,
+          "probability": 0.8857421875
+        },
+        {
+          "text": "這樣",
+          "start": 20.86,
+          "end": 21.06,
+          "probability": 0.9921875
+        },
+        {
+          "text": "做",
+          "start": 21.06,
+          "end": 21.24,
+          "probability": 0.98681640625
+        },
+        {
+          "text": "的",
+          "start": 21.24,
+          "end": 21.34,
+          "probability": 0.998046875
+        },
+        {
+          "text": "原因",
+          "start": 21.34,
+          "end": 21.52,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "是",
+          "start": 21.52,
+          "end": 21.82,
+          "probability": 0.99658203125
+        }
+      ]
+    },
+    {
+      "start": 21.82,
+      "end": 23.96,
+      "text": "他們稱這是一個高質量的戶外小稅",
+      "words": [
+        {
+          "text": "他們",
+          "start": 21.82,
+          "end": 22.12,
+          "probability": 0.8994140625
+        },
+        {
+          "text": "稱",
+          "start": 22.12,
+          "end": 22.3,
+          "probability": 0.98193359375
+        },
+        {
+          "text": "這是",
+          "start": 22.3,
+          "end": 22.46,
+          "probability": 0.7783203125
+        },
+        {
+          "text": "一個",
+          "start": 22.46,
+          "end": 22.68,
+          "probability": 0.98828125
+        },
+        {
+          "text": "高",
+          "start": 22.68,
+          "end": 22.92,
+          "probability": 0.9833984375
+        },
+        {
+          "text": "質",
+          "start": 22.92,
+          "end": 23.06,
+          "probability": 0.9814453125
+        },
+        {
+          "text": "量",
+          "start": 23.06,
+          "end": 23.2,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "的",
+          "start": 23.2,
+          "end": 23.3,
+          "probability": 0.99658203125
+        },
+        {
+          "text": "戶",
+          "start": 23.3,
+          "end": 23.44,
+          "probability": 0.992431640625
+        },
+        {
+          "text": "外",
+          "start": 23.44,
+          "end": 23.56,
+          "probability": 1.0
+        },
+        {
+          "text": "小",
+          "start": 23.56,
+          "end": 23.76,
+          "probability": 0.9931640625
+        },
+        {
+          "text": "稅",
+          "start": 23.76,
+          "end": 23.96,
+          "probability": 0.801025390625
+        }
+      ]
+    },
+    {
+      "start": 23.96,
+      "end": 26.0,
+      "text": "芬蘭父母認為戶外空氣涼爽",
+      "words": [
+        {
+          "text": "芬",
+          "start": 23.96,
+          "end": 24.3,
+          "probability": 0.6259765625
+        },
+        {
+          "text": "蘭",
+          "start": 24.3,
+          "end": 24.42,
+          "probability": 1.0
+        },
+        {
+          "text": "父",
+          "start": 24.42,
+          "end": 24.58,
+          "probability": 0.994140625
+        },
+        {
+          "text": "母",
+          "start": 24.58,
+          "end": 24.72,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "認為",
+          "start": 24.72,
+          "end": 24.88,
+          "probability": 0.9912109375
+        },
+        {
+          "text": "戶",
+          "start": 24.88,
+          "end": 25.14,
+          "probability": 0.986328125
+        },
+        {
+          "text": "外",
+          "start": 25.14,
+          "end": 25.32,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "空",
+          "start": 25.32,
+          "end": 25.5,
+          "probability": 0.98876953125
+        },
+        {
+          "text": "氣",
+          "start": 25.5,
+          "end": 25.64,
+          "probability": 0.98583984375
+        },
+        {
+          "text": "涼",
+          "start": 25.64,
+          "end": 25.78,
+          "probability": 0.851806640625
+        },
+        {
+          "text": "爽",
+          "start": 25.78,
+          "end": 26.0,
+          "probability": 0.99951171875
+        }
+      ]
+    },
+    {
+      "start": 26.0,
+      "end": 27.72,
+      "text": "有助於嬰兒稅的更久更深",
+      "words": [
+        {
+          "text": "有",
+          "start": 26.0,
+          "end": 26.28,
+          "probability": 0.26953125
+        },
+        {
+          "text": "助",
+          "start": 26.28,
+          "end": 26.42,
+          "probability": 0.99560546875
+        },
+        {
+          "text": "於",
+          "start": 26.42,
+          "end": 26.52,
+          "probability": 0.9638671875
+        },
+        {
+          "text": "嬰",
+          "start": 26.52,
+          "end": 26.66,
+          "probability": 0.9983723958333334
+        },
+        {
+          "text": "兒",
+          "start": 26.66,
+          "end": 26.78,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "稅",
+          "start": 26.78,
+          "end": 26.92,
+          "probability": 0.746337890625
+        },
+        {
+          "text": "的",
+          "start": 26.92,
+          "end": 27.04,
+          "probability": 0.73291015625
+        },
+        {
+          "text": "更",
+          "start": 27.04,
+          "end": 27.16,
+          "probability": 0.990234375
+        },
+        {
+          "text": "久",
+          "start": 27.16,
+          "end": 27.32,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "更",
+          "start": 27.32,
+          "end": 27.5,
+          "probability": 0.99169921875
+        },
+        {
+          "text": "深",
+          "start": 27.5,
+          "end": 27.72,
+          "probability": 0.994140625
+        }
+      ]
+    },
+    {
+      "start": 27.72,
+      "end": 29.56,
+      "text": "甚至可以增強棉系統",
+      "words": [
+        {
+          "text": "甚",
+          "start": 27.72,
+          "end": 28.1,
+          "probability": 0.4228515625
+        },
+        {
+          "text": "至",
+          "start": 28.1,
+          "end": 28.28,
+          "probability": 0.87109375
+        },
+        {
+          "text": "可以",
+          "start": 28.28,
+          "end": 28.56,
+          "probability": 0.619140625
+        },
+        {
+          "text": "增",
+          "start": 28.56,
+          "end": 28.8,
+          "probability": 0.998779296875
+        },
+        {
+          "text": "強",
+          "start": 28.8,
+          "end": 28.96,
+          "probability": 0.2021484375
+        },
+        {
+          "text": "棉",
+          "start": 28.96,
+          "end": 29.1,
+          "probability": 0.9365234375
+        },
+        {
+          "text": "系",
+          "start": 29.1,
+          "end": 29.36,
+          "probability": 0.9453125
+        },
+        {
+          "text": "統",
+          "start": 29.36,
+          "end": 29.56,
+          "probability": 0.99658203125
+        }
+      ]
+    },
+    {
+      "start": 29.56,
+      "end": 30.34,
+      "text": "在托兒所",
+      "words": [
+        {
+          "text": "在",
+          "start": 29.56,
+          "end": 29.86,
+          "probability": 0.638671875
+        },
+        {
+          "text": "托",
+          "start": 29.86,
+          "end": 30.02,
+          "probability": 0.656494140625
+        },
+        {
+          "text": "兒",
+          "start": 30.02,
+          "end": 30.16,
+          "probability": 0.9091796875
+        },
+        {
+          "text": "所",
+          "start": 30.16,
+          "end": 30.34,
+          "probability": 0.93408203125
+        }
+      ]
+    },
+    {
+      "start": 30.34,
+      "end": 32.3,
+      "text": "老師們會把嬰兒車排成一排",
+      "words": [
+        {
+          "text": "老師",
+          "start": 30.34,
+          "end": 30.72,
+          "probability": 0.497314453125
+        },
+        {
+          "text": "們",
+          "start": 30.72,
+          "end": 30.94,
+          "probability": 0.98974609375
+        },
+        {
+          "text": "會",
+          "start": 30.94,
+          "end": 31.04,
+          "probability": 0.994140625
+        },
+        {
+          "text": "把",
+          "start": 31.04,
+          "end": 31.18,
+          "probability": 0.99462890625
+        },
+        {
+          "text": "嬰",
+          "start": 31.18,
+          "end": 31.32,
+          "probability": 0.994140625
+        },
+        {
+          "text": "兒",
+          "start": 31.32,
+          "end": 31.42,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "車",
+          "start": 31.42,
+          "end": 31.58,
+          "probability": 0.99365234375
+        },
+        {
+          "text": "排",
+          "start": 31.58,
+          "end": 31.74,
+          "probability": 0.97265625
+        },
+        {
+          "text": "成",
+          "start": 31.74,
+          "end": 31.92,
+          "probability": 0.98828125
+        },
+        {
+          "text": "一",
+          "start": 31.92,
+          "end": 32.04,
+          "probability": 0.98095703125
+        },
+        {
+          "text": "排",
+          "start": 32.04,
+          "end": 32.3,
+          "probability": 0.98681640625
+        }
+      ]
+    },
+    {
+      "start": 32.3,
+      "end": 33.66,
+      "text": "蒸氣的在戶外入睡",
+      "words": [
+        {
+          "text": "蒸",
+          "start": 32.3,
+          "end": 32.58,
+          "probability": 0.694091796875
+        },
+        {
+          "text": "氣",
+          "start": 32.58,
+          "end": 32.72,
+          "probability": 0.6796875
+        },
+        {
+          "text": "的",
+          "start": 32.72,
+          "end": 32.84,
+          "probability": 0.74267578125
+        },
+        {
+          "text": "在",
+          "start": 32.84,
+          "end": 33.0,
+          "probability": 0.92041015625
+        },
+        {
+          "text": "戶",
+          "start": 33.0,
+          "end": 33.16,
+          "probability": 0.994140625
+        },
+        {
+          "text": "外",
+          "start": 33.16,
+          "end": 33.32,
+          "probability": 1.0
+        },
+        {
+          "text": "入",
+          "start": 33.32,
+          "end": 33.48,
+          "probability": 0.99658203125
+        },
+        {
+          "text": "睡",
+          "start": 33.48,
+          "end": 33.66,
+          "probability": 0.98486328125
+        }
+      ]
+    },
+    {
+      "start": 33.66,
+      "end": 35.66,
+      "text": "即使溫度下降到零下六七度",
+      "words": [
+        {
+          "text": "即",
+          "start": 33.66,
+          "end": 34.0,
+          "probability": 0.95751953125
+        },
+        {
+          "text": "使",
+          "start": 34.0,
+          "end": 34.16,
+          "probability": 0.98583984375
+        },
+        {
+          "text": "溫",
+          "start": 34.16,
+          "end": 34.3,
+          "probability": 0.992919921875
+        },
+        {
+          "text": "度",
+          "start": 34.3,
+          "end": 34.44,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "下",
+          "start": 34.44,
+          "end": 34.6,
+          "probability": 0.998046875
+        },
+        {
+          "text": "降",
+          "start": 34.6,
+          "end": 34.76,
+          "probability": 0.99560546875
+        },
+        {
+          "text": "到",
+          "start": 34.76,
+          "end": 34.9,
+          "probability": 0.98681640625
+        },
+        {
+          "text": "零",
+          "start": 34.9,
+          "end": 35.02,
+          "probability": 0.9052734375
+        },
+        {
+          "text": "下",
+          "start": 35.02,
+          "end": 35.18,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "六",
+          "start": 35.18,
+          "end": 35.28,
+          "probability": 0.7978515625
+        },
+        {
+          "text": "七",
+          "start": 35.28,
+          "end": 35.48,
+          "probability": 0.94482421875
+        },
+        {
+          "text": "度",
+          "start": 35.48,
+          "end": 35.66,
+          "probability": 0.99853515625
+        }
+      ]
+    },
+    {
+      "start": 35.66,
+      "end": 36.5,
+      "text": "只要沒有大風",
+      "words": [
+        {
+          "text": "只",
+          "start": 35.66,
+          "end": 35.9,
+          "probability": 0.99365234375
+        },
+        {
+          "text": "要",
+          "start": 35.9,
+          "end": 36.02,
+          "probability": 1.0
+        },
+        {
+          "text": "沒有",
+          "start": 36.02,
+          "end": 36.14,
+          "probability": 0.99365234375
+        },
+        {
+          "text": "大",
+          "start": 36.14,
+          "end": 36.36,
+          "probability": 0.99560546875
+        },
+        {
+          "text": "風",
+          "start": 36.36,
+          "end": 36.5,
+          "probability": 0.9736328125
+        }
+      ]
+    },
+    {
+      "start": 36.5,
+      "end": 38.06,
+      "text": "就會認為這十分安全",
+      "words": [
+        {
+          "text": "就會",
+          "start": 36.5,
+          "end": 36.86,
+          "probability": 0.94384765625
+        },
+        {
+          "text": "認為",
+          "start": 36.86,
+          "end": 37.18,
+          "probability": 0.98291015625
+        },
+        {
+          "text": "這",
+          "start": 37.18,
+          "end": 37.36,
+          "probability": 0.8955078125
+        },
+        {
+          "text": "十",
+          "start": 37.36,
+          "end": 37.6,
+          "probability": 0.9931640625
+        },
+        {
+          "text": "分",
+          "start": 37.6,
+          "end": 37.72,
+          "probability": 0.98046875
+        },
+        {
+          "text": "安全",
+          "start": 37.72,
+          "end": 38.06,
+          "probability": 0.99755859375
+        }
+      ]
+    },
+    {
+      "start": 38.06,
+      "end": 41.2,
+      "text": "芬蘭和瑞典的研究所表明十分支持這種做法",
+      "words": [
+        {
+          "text": "芬",
+          "start": 38.06,
+          "end": 38.44,
+          "probability": 0.749755859375
+        },
+        {
+          "text": "蘭",
+          "start": 38.44,
+          "end": 38.56,
+          "probability": 0.995361328125
+        },
+        {
+          "text": "和",
+          "start": 38.56,
+          "end": 38.7,
+          "probability": 0.9326171875
+        },
+        {
+          "text": "瑞",
+          "start": 38.7,
+          "end": 38.84,
+          "probability": 0.979736328125
+        },
+        {
+          "text": "典",
+          "start": 38.84,
+          "end": 38.96,
+          "probability": 0.996337890625
+        },
+        {
+          "text": "的",
+          "start": 38.96,
+          "end": 39.08,
+          "probability": 0.982421875
+        },
+        {
+          "text": "研",
+          "start": 39.08,
+          "end": 39.22,
+          "probability": 0.998779296875
+        },
+        {
+          "text": "究",
+          "start": 39.22,
+          "end": 39.34,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "所",
+          "start": 39.34,
+          "end": 39.5,
+          "probability": 1.0
+        },
+        {
+          "text": "表",
+          "start": 39.5,
+          "end": 39.68,
+          "probability": 0.99267578125
+        },
+        {
+          "text": "明",
+          "start": 39.68,
+          "end": 39.84,
+          "probability": 0.9853515625
+        },
+        {
+          "text": "十",
+          "start": 39.84,
+          "end": 40.04,
+          "probability": 0.98876953125
+        },
+        {
+          "text": "分",
+          "start": 40.04,
+          "end": 40.18,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "支持",
+          "start": 40.18,
+          "end": 40.46,
+          "probability": 0.9921875
+        },
+        {
+          "text": "這種",
+          "start": 40.46,
+          "end": 40.76,
+          "probability": 0.97509765625
+        },
+        {
+          "text": "做",
+          "start": 40.76,
+          "end": 40.98,
+          "probability": 0.9404296875
+        },
+        {
+          "text": "法",
+          "start": 40.98,
+          "end": 41.2,
+          "probability": 1.0
+        }
+      ]
+    },
+    {
+      "start": 41.2,
+      "end": 43.52,
+      "text": "在戶外睡覺的小孩往往會睡得更好",
+      "words": [
+        {
+          "text": "在",
+          "start": 41.2,
+          "end": 41.46,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "戶",
+          "start": 41.46,
+          "end": 41.6,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "外",
+          "start": 41.6,
+          "end": 41.74,
+          "probability": 1.0
+        },
+        {
+          "text": "睡",
+          "start": 41.74,
+          "end": 41.92,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "覺",
+          "start": 41.92,
+          "end": 42.06,
+          "probability": 0.98583984375
+        },
+        {
+          "text": "的",
+          "start": 42.06,
+          "end": 42.16,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "小",
+          "start": 42.16,
+          "end": 42.3,
+          "probability": 0.99658203125
+        },
+        {
+          "text": "孩",
+          "start": 42.3,
+          "end": 42.44,
+          "probability": 0.998046875
+        },
+        {
+          "text": "往",
+          "start": 42.44,
+          "end": 42.6,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "往",
+          "start": 42.6,
+          "end": 42.74,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "會",
+          "start": 42.74,
+          "end": 42.88,
+          "probability": 0.998046875
+        },
+        {
+          "text": "睡",
+          "start": 42.88,
+          "end": 43.02,
+          "probability": 0.99658203125
+        },
+        {
+          "text": "得",
+          "start": 43.02,
+          "end": 43.12,
+          "probability": 0.76513671875
+        },
+        {
+          "text": "更",
+          "start": 43.12,
+          "end": 43.26,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "好",
+          "start": 43.26,
+          "end": 43.52,
+          "probability": 0.99853515625
+        }
+      ]
+    },
+    {
+      "start": 43.52,
+      "end": 44.68,
+      "text": "並且很少生病",
+      "words": [
+        {
+          "text": "並",
+          "start": 43.52,
+          "end": 43.78,
+          "probability": 0.9580078125
+        },
+        {
+          "text": "且",
+          "start": 43.78,
+          "end": 43.96,
+          "probability": 1.0
+        },
+        {
+          "text": "很",
+          "start": 43.96,
+          "end": 44.12,
+          "probability": 0.9755859375
+        },
+        {
+          "text": "少",
+          "start": 44.12,
+          "end": 44.32,
+          "probability": 0.99609375
+        },
+        {
+          "text": "生",
+          "start": 44.32,
+          "end": 44.48,
+          "probability": 0.998046875
+        },
+        {
+          "text": "病",
+          "start": 44.48,
+          "end": 44.68,
+          "probability": 1.0
+        }
+      ]
+    },
+    {
+      "start": 44.68,
+      "end": 45.94,
+      "text": "這和孩子體質無關",
+      "words": [
+        {
+          "text": "這",
+          "start": 44.68,
+          "end": 44.96,
+          "probability": 0.98095703125
+        },
+        {
+          "text": "和",
+          "start": 44.96,
+          "end": 45.1,
+          "probability": 0.9892578125
+        },
+        {
+          "text": "孩子",
+          "start": 45.1,
+          "end": 45.28,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "體",
+          "start": 45.28,
+          "end": 45.5,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "質",
+          "start": 45.5,
+          "end": 45.6,
+          "probability": 0.646484375
+        },
+        {
+          "text": "無",
+          "start": 45.6,
+          "end": 45.74,
+          "probability": 0.9931640625
+        },
+        {
+          "text": "關",
+          "start": 45.74,
+          "end": 45.94,
+          "probability": 0.9765625
+        }
+      ]
+    },
+    {
+      "start": 45.94,
+      "end": 48.1,
+      "text": "而是從一開始就建立了健康的習慣",
+      "words": [
+        {
+          "text": "而",
+          "start": 45.94,
+          "end": 46.22,
+          "probability": 0.97119140625
+        },
+        {
+          "text": "是",
+          "start": 46.22,
+          "end": 46.34,
+          "probability": 0.98046875
+        },
+        {
+          "text": "從",
+          "start": 46.34,
+          "end": 46.48,
+          "probability": 0.99365234375
+        },
+        {
+          "text": "一",
+          "start": 46.48,
+          "end": 46.6,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "開始",
+          "start": 46.6,
+          "end": 46.8,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "就",
+          "start": 46.8,
+          "end": 47.02,
+          "probability": 0.98193359375
+        },
+        {
+          "text": "建",
+          "start": 47.02,
+          "end": 47.18,
+          "probability": 0.91943359375
+        },
+        {
+          "text": "立",
+          "start": 47.18,
+          "end": 47.3,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "了",
+          "start": 47.3,
+          "end": 47.38,
+          "probability": 0.931640625
+        },
+        {
+          "text": "健",
+          "start": 47.38,
+          "end": 47.5,
+          "probability": 0.99609375
+        },
+        {
+          "text": "康",
+          "start": 47.5,
+          "end": 47.68,
+          "probability": 1.0
+        },
+        {
+          "text": "的",
+          "start": 47.68,
+          "end": 47.78,
+          "probability": 0.96044921875
+        },
+        {
+          "text": "習",
+          "start": 47.78,
+          "end": 47.92,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "慣",
+          "start": 47.92,
+          "end": 48.1,
+          "probability": 0.999755859375
+        }
+      ]
+    },
+    {
+      "start": 48.1,
+      "end": 49.92,
+      "text": "所以下次你在芬蘭的街頭",
+      "words": [
+        {
+          "text": "所以",
+          "start": 48.1,
+          "end": 48.52,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "下次",
+          "start": 48.52,
+          "end": 48.78,
+          "probability": 0.9521484375
+        },
+        {
+          "text": "你在",
+          "start": 48.78,
+          "end": 49.14,
+          "probability": 0.7646484375
+        },
+        {
+          "text": "芬",
+          "start": 49.14,
+          "end": 49.34,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "蘭",
+          "start": 49.34,
+          "end": 49.46,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "的",
+          "start": 49.46,
+          "end": 49.58,
+          "probability": 0.99169921875
+        },
+        {
+          "text": "街",
+          "start": 49.58,
+          "end": 49.68,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "頭",
+          "start": 49.68,
+          "end": 49.92,
+          "probability": 0.99951171875
+        }
+      ]
+    },
+    {
+      "start": 49.92,
+      "end": 51.84,
+      "text": "看到外面有一輛孤獨的嬰兒車",
+      "words": [
+        {
+          "text": "看到",
+          "start": 49.92,
+          "end": 50.26,
+          "probability": 0.98583984375
+        },
+        {
+          "text": "外",
+          "start": 50.26,
+          "end": 50.48,
+          "probability": 0.998046875
+        },
+        {
+          "text": "面",
+          "start": 50.48,
+          "end": 50.6,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "有一",
+          "start": 50.6,
+          "end": 50.82,
+          "probability": 0.90478515625
+        },
+        {
+          "text": "輛",
+          "start": 50.82,
+          "end": 50.96,
+          "probability": 0.970458984375
+        },
+        {
+          "text": "孤",
+          "start": 50.96,
+          "end": 51.14,
+          "probability": 0.997314453125
+        },
+        {
+          "text": "獨",
+          "start": 51.14,
+          "end": 51.26,
+          "probability": 0.9892578125
+        },
+        {
+          "text": "的",
+          "start": 51.26,
+          "end": 51.36,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "嬰",
+          "start": 51.36,
+          "end": 51.5,
+          "probability": 0.9977213541666666
+        },
+        {
+          "text": "兒",
+          "start": 51.5,
+          "end": 51.64,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "車",
+          "start": 51.64,
+          "end": 51.84,
+          "probability": 0.9794921875
+        }
+      ]
+    },
+    {
+      "start": 51.84,
+      "end": 52.58,
+      "text": "不要驚慌",
+      "words": [
+        {
+          "text": "不要",
+          "start": 51.84,
+          "end": 52.12,
+          "probability": 0.9326171875
+        },
+        {
+          "text": "驚",
+          "start": 52.12,
+          "end": 52.36,
+          "probability": 0.76220703125
+        },
+        {
+          "text": "慌",
+          "start": 52.36,
+          "end": 52.58,
+          "probability": 0.979248046875
+        }
+      ]
+    },
+    {
+      "start": 52.58,
+      "end": 54.0,
+      "text": "它不是一個背一氣的孩子",
+      "words": [
+        {
+          "text": "它",
+          "start": 52.58,
+          "end": 52.8,
+          "probability": 0.716796875
+        },
+        {
+          "text": "不是",
+          "start": 52.8,
+          "end": 53.0,
+          "probability": 0.98388671875
+        },
+        {
+          "text": "一個",
+          "start": 53.0,
+          "end": 53.24,
+          "probability": 0.970703125
+        },
+        {
+          "text": "背",
+          "start": 53.24,
+          "end": 53.4,
+          "probability": 0.642578125
+        },
+        {
+          "text": "一",
+          "start": 53.4,
+          "end": 53.54,
+          "probability": 0.4775390625
+        },
+        {
+          "text": "氣",
+          "start": 53.54,
+          "end": 53.64,
+          "probability": 0.479736328125
+        },
+        {
+          "text": "的",
+          "start": 53.64,
+          "end": 53.74,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "孩子",
+          "start": 53.74,
+          "end": 54.0,
+          "probability": 0.998046875
+        }
+      ]
+    },
+    {
+      "start": 54.0,
+      "end": 55.7,
+      "text": "它只是在戶外睡覺而已",
+      "words": [
+        {
+          "text": "它",
+          "start": 54.0,
+          "end": 54.4,
+          "probability": 0.95263671875
+        },
+        {
+          "text": "只是",
+          "start": 54.4,
+          "end": 54.62,
+          "probability": 0.998046875
+        },
+        {
+          "text": "在",
+          "start": 54.62,
+          "end": 54.8,
+          "probability": 0.998046875
+        },
+        {
+          "text": "戶",
+          "start": 54.8,
+          "end": 54.96,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "外",
+          "start": 54.96,
+          "end": 55.12,
+          "probability": 1.0
+        },
+        {
+          "text": "睡",
+          "start": 55.12,
+          "end": 55.28,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "覺",
+          "start": 55.28,
+          "end": 55.5,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "而已",
+          "start": 55.5,
+          "end": 55.7,
+          "probability": 0.99951171875
+        }
+      ]
+    }
+  ],
+  "cues": [
+    {
+      "start": 0.0,
+      "end": 1.24,
+      "text": "你敢相信在芬蘭",
+      "words": [
+        {
+          "text": "你",
+          "start": 0.0,
+          "end": 0.16,
+          "probability": 0.84765625
+        },
+        {
+          "text": "敢",
+          "start": 0.16,
+          "end": 0.28,
+          "probability": 0.95361328125
+        },
+        {
+          "text": "相信",
+          "start": 0.28,
+          "end": 0.58,
+          "probability": 0.99609375
+        },
+        {
+          "text": "在",
+          "start": 0.58,
+          "end": 0.88,
+          "probability": 0.41064453125
+        },
+        {
+          "text": "芬",
+          "start": 0.88,
+          "end": 1.04,
+          "probability": 0.98291015625
+        },
+        {
+          "text": "蘭",
+          "start": 1.04,
+          "end": 1.24,
+          "probability": 0.8994140625
+        }
+      ]
+    },
+    {
+      "start": 1.24,
+      "end": 4.42,
+      "text": "父母居然會選擇讓自己的小孩在冰田雪地裡睡覺",
+      "words": [
+        {
+          "text": "父",
+          "start": 1.24,
+          "end": 1.56,
+          "probability": 0.91357421875
+        },
+        {
+          "text": "母",
+          "start": 1.56,
+          "end": 1.7,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "居",
+          "start": 1.7,
+          "end": 1.82,
+          "probability": 0.940185546875
+        },
+        {
+          "text": "然",
+          "start": 1.82,
+          "end": 1.92,
+          "probability": 1.0
+        },
+        {
+          "text": "會",
+          "start": 1.92,
+          "end": 2.06,
+          "probability": 0.96826171875
+        },
+        {
+          "text": "選",
+          "start": 2.06,
+          "end": 2.2,
+          "probability": 0.9931640625
+        },
+        {
+          "text": "擇",
+          "start": 2.2,
+          "end": 2.38,
+          "probability": 0.999755859375
+        },
+        {
+          "text": "讓",
+          "start": 2.38,
+          "end": 2.48,
+          "probability": 0.98583984375
+        },
+        {
+          "text": "自己",
+          "start": 2.48,
+          "end": 2.66,
+          "probability": 0.98828125
+        },
+        {
+          "text": "的",
+          "start": 2.66,
+          "end": 2.8,
+          "probability": 0.9931640625
+        },
+        {
+          "text": "小",
+          "start": 2.8,
+          "end": 2.98,
+          "probability": 0.9853515625
+        },
+        {
+          "text": "孩",
+          "start": 2.98,
+          "end": 3.14,
+          "probability": 0.9912109375
+        },
+        {
+          "text": "在",
+          "start": 3.14,
+          "end": 3.28,
+          "probability": 0.9716796875
+        },
+        {
+          "text": "冰",
+          "start": 3.28,
+          "end": 3.44,
+          "probability": 0.998779296875
+        },
+        {
+          "text": "田",
+          "start": 3.44,
+          "end": 3.56,
+          "probability": 0.425537109375
+        },
+        {
+          "text": "雪",
+          "start": 3.56,
+          "end": 3.74,
+          "probability": 0.869140625
+        },
+        {
+          "text": "地",
+          "start": 3.74,
+          "end": 3.9,
+          "probability": 0.99072265625
+        },
+        {
+          "text": "裡",
+          "start": 3.9,
+          "end": 4.04,
+          "probability": 0.52490234375
+        },
+        {
+          "text": "睡",
+          "start": 4.04,
+          "end": 4.16,
+          "probability": 0.994140625
+        },
+        {
+          "text": "覺",
+          "start": 4.16,
+          "end": 4.42,
+          "probability": 0.9912109375
+        }
+      ]
+    },
+    {
+      "start": 4.42,
+      "end": 6.0,
+      "text": "相對於外面的冰田雪地",
+      "words": [
+        {
+          "text": "相",
+          "start": 4.42,
+          "end": 4.74,
+          "probability": 0.955078125
+        },
+        {
+          "text": "對",
+          "start": 4.74,
+          "end": 4.88,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "於",
+          "start": 4.88,
+          "end": 4.98,
+          "probability": 0.947265625
+        },
+        {
+          "text": "外",
+          "start": 4.98,
+          "end": 5.16,
+          "probability": 0.99560546875
+        },
+        {
+          "text": "面",
+          "start": 5.16,
+          "end": 5.28,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "的",
+          "start": 5.28,
+          "end": 5.36,
+          "probability": 0.99169921875
+        },
+        {
+          "text": "冰",
+          "start": 5.36,
+          "end": 5.48,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "田",
+          "start": 5.48,
+          "end": 5.62,
+          "probability": 0.7705078125
+        },
+        {
+          "text": "雪",
+          "start": 5.62,
+          "end": 5.78,
+          "probability": 0.9931640625
+        },
+        {
+          "text": "地",
+          "start": 5.78,
+          "end": 6.0,
+          "probability": 0.99853515625
+        }
+      ]
+    },
+    {
+      "start": 6.0,
+      "end": 8.04,
+      "text": "嬰兒車裡面的溫度相對溫暖一些",
+      "words": [
+        {
+          "text": "嬰",
+          "start": 6.0,
+          "end": 6.3,
+          "probability": 0.7794596354166666
+        },
+        {
+          "text": "兒",
+          "start": 6.3,
+          "end": 6.4,
+          "probability": 0.99658203125
+        },
+        {
+          "text": "車",
+          "start": 6.4,
+          "end": 6.52,
+          "probability": 0.99609375
+        },
+        {
+          "text": "裡面",
+          "start": 6.52,
+          "end": 6.72,
+          "probability": 0.82177734375
+        },
+        {
+          "text": "的",
+          "start": 6.72,
+          "end": 6.88,
+          "probability": 0.99267578125
+        },
+        {
+          "text": "溫",
+          "start": 6.88,
+          "end": 7.0,
+          "probability": 0.997314453125
+        },
+        {
+          "text": "度",
+          "start": 7.0,
+          "end": 7.16,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "相",
+          "start": 7.16,
+          "end": 7.3,
+          "probability": 0.9921875
+        },
+        {
+          "text": "對",
+          "start": 7.3,
+          "end": 7.44,
+          "probability": 0.998046875
+        },
+        {
+          "text": "溫",
+          "start": 7.44,
+          "end": 7.6,
+          "probability": 0.981201171875
+        },
+        {
+          "text": "暖",
+          "start": 7.6,
+          "end": 7.76,
+          "probability": 0.999755859375
+        },
+        {
+          "text": "一些",
+          "start": 7.76,
+          "end": 8.04,
+          "probability": 0.9853515625
+        }
+      ]
+    },
+    {
+      "start": 8.04,
+      "end": 10.24,
+      "text": "這聽起來可能讓很多人感動驚訝",
+      "words": [
+        {
+          "text": "這",
+          "start": 8.04,
+          "end": 8.38,
+          "probability": 0.97265625
+        },
+        {
+          "text": "聽",
+          "start": 8.38,
+          "end": 8.58,
+          "probability": 0.99560546875
+        },
+        {
+          "text": "起來",
+          "start": 8.58,
+          "end": 8.8,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "可能",
+          "start": 8.8,
+          "end": 8.98,
+          "probability": 0.99169921875
+        },
+        {
+          "text": "讓",
+          "start": 8.98,
+          "end": 9.12,
+          "probability": 0.98876953125
+        },
+        {
+          "text": "很多",
+          "start": 9.12,
+          "end": 9.36,
+          "probability": 0.9912109375
+        },
+        {
+          "text": "人",
+          "start": 9.36,
+          "end": 9.56,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "感",
+          "start": 9.56,
+          "end": 9.76,
+          "probability": 0.99658203125
+        },
+        {
+          "text": "動",
+          "start": 9.76,
+          "end": 9.88,
+          "probability": 0.308349609375
+        },
+        {
+          "text": "驚",
+          "start": 9.88,
+          "end": 10.06,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "訝",
+          "start": 10.06,
+          "end": 10.24,
+          "probability": 0.994384765625
+        }
+      ]
+    },
+    {
+      "start": 10.24,
+      "end": 11.66,
+      "text": "這不是在虐待孩子嗎",
+      "words": [
+        {
+          "text": "這",
+          "start": 10.24,
+          "end": 10.54,
+          "probability": 0.9462890625
+        },
+        {
+          "text": "不是",
+          "start": 10.54,
+          "end": 10.68,
+          "probability": 0.99560546875
+        },
+        {
+          "text": "在",
+          "start": 10.68,
+          "end": 10.86,
+          "probability": 0.89599609375
+        },
+        {
+          "text": "虐",
+          "start": 10.86,
+          "end": 11.0,
+          "probability": 0.989013671875
+        },
+        {
+          "text": "待",
+          "start": 11.0,
+          "end": 11.1,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "孩子",
+          "start": 11.1,
+          "end": 11.42,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "嗎",
+          "start": 11.42,
+          "end": 11.66,
+          "probability": 0.6767578125
+        }
+      ]
+    },
+    {
+      "start": 11.66,
+      "end": 13.04,
+      "text": "但是這對芬蘭人來說",
+      "words": [
+        {
+          "text": "但是",
+          "start": 11.66,
+          "end": 11.98,
+          "probability": 0.85888671875
+        },
+        {
+          "text": "這",
+          "start": 11.98,
+          "end": 12.16,
+          "probability": 0.95703125
+        },
+        {
+          "text": "對",
+          "start": 12.16,
+          "end": 12.32,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "芬",
+          "start": 12.32,
+          "end": 12.46,
+          "probability": 0.992919921875
+        },
+        {
+          "text": "蘭",
+          "start": 12.46,
+          "end": 12.58,
+          "probability": 0.999755859375
+        },
+        {
+          "text": "人",
+          "start": 12.58,
+          "end": 12.7,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "來說",
+          "start": 12.7,
+          "end": 13.04,
+          "probability": 0.99609375
+        }
+      ]
+    },
+    {
+      "start": 13.04,
+      "end": 14.42,
+      "text": "是完全正常的",
+      "words": [
+        {
+          "text": "是",
+          "start": 13.04,
+          "end": 13.44,
+          "probability": 0.9638671875
+        },
+        {
+          "text": "完全",
+          "start": 13.44,
+          "end": 13.7,
+          "probability": 0.99609375
+        },
+        {
+          "text": "正",
+          "start": 13.7,
+          "end": 13.94,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "常",
+          "start": 13.94,
+          "end": 14.14,
+          "probability": 1.0
+        },
+        {
+          "text": "的",
+          "start": 14.14,
+          "end": 14.42,
+          "probability": 0.99853515625
+        }
+      ]
+    },
+    {
+      "start": 14.42,
+      "end": 16.3,
+      "text": "冬天走在芬蘭的任何一條街上",
+      "words": [
+        {
+          "text": "冬",
+          "start": 14.42,
+          "end": 14.58,
+          "probability": 0.94140625
+        },
+        {
+          "text": "天",
+          "start": 14.58,
+          "end": 14.72,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "走",
+          "start": 14.72,
+          "end": 14.88,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "在",
+          "start": 14.88,
+          "end": 15.02,
+          "probability": 0.99658203125
+        },
+        {
+          "text": "芬",
+          "start": 15.02,
+          "end": 15.18,
+          "probability": 0.99609375
+        },
+        {
+          "text": "蘭",
+          "start": 15.18,
+          "end": 15.3,
+          "probability": 0.999755859375
+        },
+        {
+          "text": "的",
+          "start": 15.3,
+          "end": 15.4,
+          "probability": 0.99365234375
+        },
+        {
+          "text": "任",
+          "start": 15.4,
+          "end": 15.52,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "何",
+          "start": 15.52,
+          "end": 15.68,
+          "probability": 1.0
+        },
+        {
+          "text": "一",
+          "start": 15.68,
+          "end": 15.78,
+          "probability": 0.958984375
+        },
+        {
+          "text": "條",
+          "start": 15.78,
+          "end": 15.9,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "街",
+          "start": 15.9,
+          "end": 16.06,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "上",
+          "start": 16.06,
+          "end": 16.3,
+          "probability": 0.998046875
+        }
+      ]
+    },
+    {
+      "start": 16.3,
+      "end": 18.58,
+      "text": "你都會看見嬰兒車停在外面或者家裡",
+      "words": [
+        {
+          "text": "你",
+          "start": 16.3,
+          "end": 16.52,
+          "probability": 0.96533203125
+        },
+        {
+          "text": "都",
+          "start": 16.52,
+          "end": 16.62,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "會",
+          "start": 16.62,
+          "end": 16.74,
+          "probability": 0.994140625
+        },
+        {
+          "text": "看",
+          "start": 16.74,
+          "end": 16.88,
+          "probability": 0.9609375
+        },
+        {
+          "text": "見",
+          "start": 16.88,
+          "end": 17.02,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "嬰",
+          "start": 17.02,
+          "end": 17.16,
+          "probability": 0.998046875
+        },
+        {
+          "text": "兒",
+          "start": 17.16,
+          "end": 17.24,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "車",
+          "start": 17.24,
+          "end": 17.38,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "停",
+          "start": 17.38,
+          "end": 17.54,
+          "probability": 0.98876953125
+        },
+        {
+          "text": "在",
+          "start": 17.54,
+          "end": 17.7,
+          "probability": 0.998046875
+        },
+        {
+          "text": "外",
+          "start": 17.7,
+          "end": 17.86,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "面",
+          "start": 17.86,
+          "end": 18.02,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "或者",
+          "start": 18.02,
+          "end": 18.16,
+          "probability": 0.98291015625
+        },
+        {
+          "text": "家",
+          "start": 18.16,
+          "end": 18.42,
+          "probability": 0.9814453125
+        },
+        {
+          "text": "裡",
+          "start": 18.42,
+          "end": 18.58,
+          "probability": 0.9482421875
+        }
+      ]
+    },
+    {
+      "start": 18.58,
+      "end": 20.42,
+      "text": "果的被子向一個大大的卷壁",
+      "words": [
+        {
+          "text": "果",
+          "start": 18.58,
+          "end": 18.88,
+          "probability": 0.5625
+        },
+        {
+          "text": "的",
+          "start": 18.88,
+          "end": 18.98,
+          "probability": 0.348876953125
+        },
+        {
+          "text": "被",
+          "start": 18.98,
+          "end": 19.12,
+          "probability": 0.9501953125
+        },
+        {
+          "text": "子",
+          "start": 19.12,
+          "end": 19.24,
+          "probability": 0.9892578125
+        },
+        {
+          "text": "向",
+          "start": 19.24,
+          "end": 19.4,
+          "probability": 0.457763671875
+        },
+        {
+          "text": "一個",
+          "start": 19.4,
+          "end": 19.62,
+          "probability": 0.95556640625
+        },
+        {
+          "text": "大",
+          "start": 19.62,
+          "end": 19.82,
+          "probability": 0.970703125
+        },
+        {
+          "text": "大的",
+          "start": 19.82,
+          "end": 20.0,
+          "probability": 0.99658203125
+        },
+        {
+          "text": "卷",
+          "start": 20.0,
+          "end": 20.18,
+          "probability": 0.68212890625
+        },
+        {
+          "text": "壁",
+          "start": 20.18,
+          "end": 20.42,
+          "probability": 0.61065673828125
+        }
+      ]
+    },
+    {
+      "start": 20.42,
+      "end": 21.82,
+      "text": "而他們這樣做的原因是",
+      "words": [
+        {
+          "text": "而",
+          "start": 20.42,
+          "end": 20.68,
+          "probability": 0.9931640625
+        },
+        {
+          "text": "他們",
+          "start": 20.68,
+          "end": 20.86,
+          "probability": 0.8857421875
+        },
+        {
+          "text": "這樣",
+          "start": 20.86,
+          "end": 21.06,
+          "probability": 0.9921875
+        },
+        {
+          "text": "做",
+          "start": 21.06,
+          "end": 21.24,
+          "probability": 0.98681640625
+        },
+        {
+          "text": "的",
+          "start": 21.24,
+          "end": 21.34,
+          "probability": 0.998046875
+        },
+        {
+          "text": "原因",
+          "start": 21.34,
+          "end": 21.52,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "是",
+          "start": 21.52,
+          "end": 21.82,
+          "probability": 0.99658203125
+        }
+      ]
+    },
+    {
+      "start": 21.82,
+      "end": 23.96,
+      "text": "他們稱這是一個高質量的戶外小稅",
+      "words": [
+        {
+          "text": "他們",
+          "start": 21.82,
+          "end": 22.12,
+          "probability": 0.8994140625
+        },
+        {
+          "text": "稱",
+          "start": 22.12,
+          "end": 22.3,
+          "probability": 0.98193359375
+        },
+        {
+          "text": "這是",
+          "start": 22.3,
+          "end": 22.46,
+          "probability": 0.7783203125
+        },
+        {
+          "text": "一個",
+          "start": 22.46,
+          "end": 22.68,
+          "probability": 0.98828125
+        },
+        {
+          "text": "高",
+          "start": 22.68,
+          "end": 22.92,
+          "probability": 0.9833984375
+        },
+        {
+          "text": "質",
+          "start": 22.92,
+          "end": 23.06,
+          "probability": 0.9814453125
+        },
+        {
+          "text": "量",
+          "start": 23.06,
+          "end": 23.2,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "的",
+          "start": 23.2,
+          "end": 23.3,
+          "probability": 0.99658203125
+        },
+        {
+          "text": "戶",
+          "start": 23.3,
+          "end": 23.44,
+          "probability": 0.992431640625
+        },
+        {
+          "text": "外",
+          "start": 23.44,
+          "end": 23.56,
+          "probability": 1.0
+        },
+        {
+          "text": "小",
+          "start": 23.56,
+          "end": 23.76,
+          "probability": 0.9931640625
+        },
+        {
+          "text": "稅",
+          "start": 23.76,
+          "end": 23.96,
+          "probability": 0.801025390625
+        }
+      ]
+    },
+    {
+      "start": 23.96,
+      "end": 26.0,
+      "text": "芬蘭父母認為戶外空氣涼爽",
+      "words": [
+        {
+          "text": "芬",
+          "start": 23.96,
+          "end": 24.3,
+          "probability": 0.6259765625
+        },
+        {
+          "text": "蘭",
+          "start": 24.3,
+          "end": 24.42,
+          "probability": 1.0
+        },
+        {
+          "text": "父",
+          "start": 24.42,
+          "end": 24.58,
+          "probability": 0.994140625
+        },
+        {
+          "text": "母",
+          "start": 24.58,
+          "end": 24.72,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "認為",
+          "start": 24.72,
+          "end": 24.88,
+          "probability": 0.9912109375
+        },
+        {
+          "text": "戶",
+          "start": 24.88,
+          "end": 25.14,
+          "probability": 0.986328125
+        },
+        {
+          "text": "外",
+          "start": 25.14,
+          "end": 25.32,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "空",
+          "start": 25.32,
+          "end": 25.5,
+          "probability": 0.98876953125
+        },
+        {
+          "text": "氣",
+          "start": 25.5,
+          "end": 25.64,
+          "probability": 0.98583984375
+        },
+        {
+          "text": "涼",
+          "start": 25.64,
+          "end": 25.78,
+          "probability": 0.851806640625
+        },
+        {
+          "text": "爽",
+          "start": 25.78,
+          "end": 26.0,
+          "probability": 0.99951171875
+        }
+      ]
+    },
+    {
+      "start": 26.0,
+      "end": 27.72,
+      "text": "有助於嬰兒稅的更久更深",
+      "words": [
+        {
+          "text": "有",
+          "start": 26.0,
+          "end": 26.28,
+          "probability": 0.26953125
+        },
+        {
+          "text": "助",
+          "start": 26.28,
+          "end": 26.42,
+          "probability": 0.99560546875
+        },
+        {
+          "text": "於",
+          "start": 26.42,
+          "end": 26.52,
+          "probability": 0.9638671875
+        },
+        {
+          "text": "嬰",
+          "start": 26.52,
+          "end": 26.66,
+          "probability": 0.9983723958333334
+        },
+        {
+          "text": "兒",
+          "start": 26.66,
+          "end": 26.78,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "稅",
+          "start": 26.78,
+          "end": 26.92,
+          "probability": 0.746337890625
+        },
+        {
+          "text": "的",
+          "start": 26.92,
+          "end": 27.04,
+          "probability": 0.73291015625
+        },
+        {
+          "text": "更",
+          "start": 27.04,
+          "end": 27.16,
+          "probability": 0.990234375
+        },
+        {
+          "text": "久",
+          "start": 27.16,
+          "end": 27.32,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "更",
+          "start": 27.32,
+          "end": 27.5,
+          "probability": 0.99169921875
+        },
+        {
+          "text": "深",
+          "start": 27.5,
+          "end": 27.72,
+          "probability": 0.994140625
+        }
+      ]
+    },
+    {
+      "start": 27.72,
+      "end": 29.56,
+      "text": "甚至可以增強棉系統",
+      "words": [
+        {
+          "text": "甚",
+          "start": 27.72,
+          "end": 28.1,
+          "probability": 0.4228515625
+        },
+        {
+          "text": "至",
+          "start": 28.1,
+          "end": 28.28,
+          "probability": 0.87109375
+        },
+        {
+          "text": "可以",
+          "start": 28.28,
+          "end": 28.56,
+          "probability": 0.619140625
+        },
+        {
+          "text": "增",
+          "start": 28.56,
+          "end": 28.8,
+          "probability": 0.998779296875
+        },
+        {
+          "text": "強",
+          "start": 28.8,
+          "end": 28.96,
+          "probability": 0.2021484375
+        },
+        {
+          "text": "棉",
+          "start": 28.96,
+          "end": 29.1,
+          "probability": 0.9365234375
+        },
+        {
+          "text": "系",
+          "start": 29.1,
+          "end": 29.36,
+          "probability": 0.9453125
+        },
+        {
+          "text": "統",
+          "start": 29.36,
+          "end": 29.56,
+          "probability": 0.99658203125
+        }
+      ]
+    },
+    {
+      "start": 29.56,
+      "end": 30.34,
+      "text": "在托兒所",
+      "words": [
+        {
+          "text": "在",
+          "start": 29.56,
+          "end": 29.86,
+          "probability": 0.638671875
+        },
+        {
+          "text": "托",
+          "start": 29.86,
+          "end": 30.02,
+          "probability": 0.656494140625
+        },
+        {
+          "text": "兒",
+          "start": 30.02,
+          "end": 30.16,
+          "probability": 0.9091796875
+        },
+        {
+          "text": "所",
+          "start": 30.16,
+          "end": 30.34,
+          "probability": 0.93408203125
+        }
+      ]
+    },
+    {
+      "start": 30.34,
+      "end": 32.3,
+      "text": "老師們會把嬰兒車排成一排",
+      "words": [
+        {
+          "text": "老師",
+          "start": 30.34,
+          "end": 30.72,
+          "probability": 0.497314453125
+        },
+        {
+          "text": "們",
+          "start": 30.72,
+          "end": 30.94,
+          "probability": 0.98974609375
+        },
+        {
+          "text": "會",
+          "start": 30.94,
+          "end": 31.04,
+          "probability": 0.994140625
+        },
+        {
+          "text": "把",
+          "start": 31.04,
+          "end": 31.18,
+          "probability": 0.99462890625
+        },
+        {
+          "text": "嬰",
+          "start": 31.18,
+          "end": 31.32,
+          "probability": 0.994140625
+        },
+        {
+          "text": "兒",
+          "start": 31.32,
+          "end": 31.42,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "車",
+          "start": 31.42,
+          "end": 31.58,
+          "probability": 0.99365234375
+        },
+        {
+          "text": "排",
+          "start": 31.58,
+          "end": 31.74,
+          "probability": 0.97265625
+        },
+        {
+          "text": "成",
+          "start": 31.74,
+          "end": 31.92,
+          "probability": 0.98828125
+        },
+        {
+          "text": "一",
+          "start": 31.92,
+          "end": 32.04,
+          "probability": 0.98095703125
+        },
+        {
+          "text": "排",
+          "start": 32.04,
+          "end": 32.3,
+          "probability": 0.98681640625
+        }
+      ]
+    },
+    {
+      "start": 32.3,
+      "end": 33.66,
+      "text": "蒸氣的在戶外入睡",
+      "words": [
+        {
+          "text": "蒸",
+          "start": 32.3,
+          "end": 32.58,
+          "probability": 0.694091796875
+        },
+        {
+          "text": "氣",
+          "start": 32.58,
+          "end": 32.72,
+          "probability": 0.6796875
+        },
+        {
+          "text": "的",
+          "start": 32.72,
+          "end": 32.84,
+          "probability": 0.74267578125
+        },
+        {
+          "text": "在",
+          "start": 32.84,
+          "end": 33.0,
+          "probability": 0.92041015625
+        },
+        {
+          "text": "戶",
+          "start": 33.0,
+          "end": 33.16,
+          "probability": 0.994140625
+        },
+        {
+          "text": "外",
+          "start": 33.16,
+          "end": 33.32,
+          "probability": 1.0
+        },
+        {
+          "text": "入",
+          "start": 33.32,
+          "end": 33.48,
+          "probability": 0.99658203125
+        },
+        {
+          "text": "睡",
+          "start": 33.48,
+          "end": 33.66,
+          "probability": 0.98486328125
+        }
+      ]
+    },
+    {
+      "start": 33.66,
+      "end": 35.66,
+      "text": "即使溫度下降到零下六七度",
+      "words": [
+        {
+          "text": "即",
+          "start": 33.66,
+          "end": 34.0,
+          "probability": 0.95751953125
+        },
+        {
+          "text": "使",
+          "start": 34.0,
+          "end": 34.16,
+          "probability": 0.98583984375
+        },
+        {
+          "text": "溫",
+          "start": 34.16,
+          "end": 34.3,
+          "probability": 0.992919921875
+        },
+        {
+          "text": "度",
+          "start": 34.3,
+          "end": 34.44,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "下",
+          "start": 34.44,
+          "end": 34.6,
+          "probability": 0.998046875
+        },
+        {
+          "text": "降",
+          "start": 34.6,
+          "end": 34.76,
+          "probability": 0.99560546875
+        },
+        {
+          "text": "到",
+          "start": 34.76,
+          "end": 34.9,
+          "probability": 0.98681640625
+        },
+        {
+          "text": "零",
+          "start": 34.9,
+          "end": 35.02,
+          "probability": 0.9052734375
+        },
+        {
+          "text": "下",
+          "start": 35.02,
+          "end": 35.18,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "六",
+          "start": 35.18,
+          "end": 35.28,
+          "probability": 0.7978515625
+        },
+        {
+          "text": "七",
+          "start": 35.28,
+          "end": 35.48,
+          "probability": 0.94482421875
+        },
+        {
+          "text": "度",
+          "start": 35.48,
+          "end": 35.66,
+          "probability": 0.99853515625
+        }
+      ]
+    },
+    {
+      "start": 35.66,
+      "end": 36.5,
+      "text": "只要沒有大風",
+      "words": [
+        {
+          "text": "只",
+          "start": 35.66,
+          "end": 35.9,
+          "probability": 0.99365234375
+        },
+        {
+          "text": "要",
+          "start": 35.9,
+          "end": 36.02,
+          "probability": 1.0
+        },
+        {
+          "text": "沒有",
+          "start": 36.02,
+          "end": 36.14,
+          "probability": 0.99365234375
+        },
+        {
+          "text": "大",
+          "start": 36.14,
+          "end": 36.36,
+          "probability": 0.99560546875
+        },
+        {
+          "text": "風",
+          "start": 36.36,
+          "end": 36.5,
+          "probability": 0.9736328125
+        }
+      ]
+    },
+    {
+      "start": 36.5,
+      "end": 38.06,
+      "text": "就會認為這十分安全",
+      "words": [
+        {
+          "text": "就會",
+          "start": 36.5,
+          "end": 36.86,
+          "probability": 0.94384765625
+        },
+        {
+          "text": "認為",
+          "start": 36.86,
+          "end": 37.18,
+          "probability": 0.98291015625
+        },
+        {
+          "text": "這",
+          "start": 37.18,
+          "end": 37.36,
+          "probability": 0.8955078125
+        },
+        {
+          "text": "十",
+          "start": 37.36,
+          "end": 37.6,
+          "probability": 0.9931640625
+        },
+        {
+          "text": "分",
+          "start": 37.6,
+          "end": 37.72,
+          "probability": 0.98046875
+        },
+        {
+          "text": "安全",
+          "start": 37.72,
+          "end": 38.06,
+          "probability": 0.99755859375
+        }
+      ]
+    },
+    {
+      "start": 38.06,
+      "end": 41.2,
+      "text": "芬蘭和瑞典的研究所表明十分支持這種做法",
+      "words": [
+        {
+          "text": "芬",
+          "start": 38.06,
+          "end": 38.44,
+          "probability": 0.749755859375
+        },
+        {
+          "text": "蘭",
+          "start": 38.44,
+          "end": 38.56,
+          "probability": 0.995361328125
+        },
+        {
+          "text": "和",
+          "start": 38.56,
+          "end": 38.7,
+          "probability": 0.9326171875
+        },
+        {
+          "text": "瑞",
+          "start": 38.7,
+          "end": 38.84,
+          "probability": 0.979736328125
+        },
+        {
+          "text": "典",
+          "start": 38.84,
+          "end": 38.96,
+          "probability": 0.996337890625
+        },
+        {
+          "text": "的",
+          "start": 38.96,
+          "end": 39.08,
+          "probability": 0.982421875
+        },
+        {
+          "text": "研",
+          "start": 39.08,
+          "end": 39.22,
+          "probability": 0.998779296875
+        },
+        {
+          "text": "究",
+          "start": 39.22,
+          "end": 39.34,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "所",
+          "start": 39.34,
+          "end": 39.5,
+          "probability": 1.0
+        },
+        {
+          "text": "表",
+          "start": 39.5,
+          "end": 39.68,
+          "probability": 0.99267578125
+        },
+        {
+          "text": "明",
+          "start": 39.68,
+          "end": 39.84,
+          "probability": 0.9853515625
+        },
+        {
+          "text": "十",
+          "start": 39.84,
+          "end": 40.04,
+          "probability": 0.98876953125
+        },
+        {
+          "text": "分",
+          "start": 40.04,
+          "end": 40.18,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "支持",
+          "start": 40.18,
+          "end": 40.46,
+          "probability": 0.9921875
+        },
+        {
+          "text": "這種",
+          "start": 40.46,
+          "end": 40.76,
+          "probability": 0.97509765625
+        },
+        {
+          "text": "做",
+          "start": 40.76,
+          "end": 40.98,
+          "probability": 0.9404296875
+        },
+        {
+          "text": "法",
+          "start": 40.98,
+          "end": 41.2,
+          "probability": 1.0
+        }
+      ]
+    },
+    {
+      "start": 41.2,
+      "end": 43.52,
+      "text": "在戶外睡覺的小孩往往會睡得更好",
+      "words": [
+        {
+          "text": "在",
+          "start": 41.2,
+          "end": 41.46,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "戶",
+          "start": 41.46,
+          "end": 41.6,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "外",
+          "start": 41.6,
+          "end": 41.74,
+          "probability": 1.0
+        },
+        {
+          "text": "睡",
+          "start": 41.74,
+          "end": 41.92,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "覺",
+          "start": 41.92,
+          "end": 42.06,
+          "probability": 0.98583984375
+        },
+        {
+          "text": "的",
+          "start": 42.06,
+          "end": 42.16,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "小",
+          "start": 42.16,
+          "end": 42.3,
+          "probability": 0.99658203125
+        },
+        {
+          "text": "孩",
+          "start": 42.3,
+          "end": 42.44,
+          "probability": 0.998046875
+        },
+        {
+          "text": "往",
+          "start": 42.44,
+          "end": 42.6,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "往",
+          "start": 42.6,
+          "end": 42.74,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "會",
+          "start": 42.74,
+          "end": 42.88,
+          "probability": 0.998046875
+        },
+        {
+          "text": "睡",
+          "start": 42.88,
+          "end": 43.02,
+          "probability": 0.99658203125
+        },
+        {
+          "text": "得",
+          "start": 43.02,
+          "end": 43.12,
+          "probability": 0.76513671875
+        },
+        {
+          "text": "更",
+          "start": 43.12,
+          "end": 43.26,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "好",
+          "start": 43.26,
+          "end": 43.52,
+          "probability": 0.99853515625
+        }
+      ]
+    },
+    {
+      "start": 43.52,
+      "end": 44.68,
+      "text": "並且很少生病",
+      "words": [
+        {
+          "text": "並",
+          "start": 43.52,
+          "end": 43.78,
+          "probability": 0.9580078125
+        },
+        {
+          "text": "且",
+          "start": 43.78,
+          "end": 43.96,
+          "probability": 1.0
+        },
+        {
+          "text": "很",
+          "start": 43.96,
+          "end": 44.12,
+          "probability": 0.9755859375
+        },
+        {
+          "text": "少",
+          "start": 44.12,
+          "end": 44.32,
+          "probability": 0.99609375
+        },
+        {
+          "text": "生",
+          "start": 44.32,
+          "end": 44.48,
+          "probability": 0.998046875
+        },
+        {
+          "text": "病",
+          "start": 44.48,
+          "end": 44.68,
+          "probability": 1.0
+        }
+      ]
+    },
+    {
+      "start": 44.68,
+      "end": 45.94,
+      "text": "這和孩子體質無關",
+      "words": [
+        {
+          "text": "這",
+          "start": 44.68,
+          "end": 44.96,
+          "probability": 0.98095703125
+        },
+        {
+          "text": "和",
+          "start": 44.96,
+          "end": 45.1,
+          "probability": 0.9892578125
+        },
+        {
+          "text": "孩子",
+          "start": 45.1,
+          "end": 45.28,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "體",
+          "start": 45.28,
+          "end": 45.5,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "質",
+          "start": 45.5,
+          "end": 45.6,
+          "probability": 0.646484375
+        },
+        {
+          "text": "無",
+          "start": 45.6,
+          "end": 45.74,
+          "probability": 0.9931640625
+        },
+        {
+          "text": "關",
+          "start": 45.74,
+          "end": 45.94,
+          "probability": 0.9765625
+        }
+      ]
+    },
+    {
+      "start": 45.94,
+      "end": 48.1,
+      "text": "而是從一開始就建立了健康的習慣",
+      "words": [
+        {
+          "text": "而",
+          "start": 45.94,
+          "end": 46.22,
+          "probability": 0.97119140625
+        },
+        {
+          "text": "是",
+          "start": 46.22,
+          "end": 46.34,
+          "probability": 0.98046875
+        },
+        {
+          "text": "從",
+          "start": 46.34,
+          "end": 46.48,
+          "probability": 0.99365234375
+        },
+        {
+          "text": "一",
+          "start": 46.48,
+          "end": 46.6,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "開始",
+          "start": 46.6,
+          "end": 46.8,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "就",
+          "start": 46.8,
+          "end": 47.02,
+          "probability": 0.98193359375
+        },
+        {
+          "text": "建",
+          "start": 47.02,
+          "end": 47.18,
+          "probability": 0.91943359375
+        },
+        {
+          "text": "立",
+          "start": 47.18,
+          "end": 47.3,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "了",
+          "start": 47.3,
+          "end": 47.38,
+          "probability": 0.931640625
+        },
+        {
+          "text": "健",
+          "start": 47.38,
+          "end": 47.5,
+          "probability": 0.99609375
+        },
+        {
+          "text": "康",
+          "start": 47.5,
+          "end": 47.68,
+          "probability": 1.0
+        },
+        {
+          "text": "的",
+          "start": 47.68,
+          "end": 47.78,
+          "probability": 0.96044921875
+        },
+        {
+          "text": "習",
+          "start": 47.78,
+          "end": 47.92,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "慣",
+          "start": 47.92,
+          "end": 48.1,
+          "probability": 0.999755859375
+        }
+      ]
+    },
+    {
+      "start": 48.1,
+      "end": 49.92,
+      "text": "所以下次你在芬蘭的街頭",
+      "words": [
+        {
+          "text": "所以",
+          "start": 48.1,
+          "end": 48.52,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "下次",
+          "start": 48.52,
+          "end": 48.78,
+          "probability": 0.9521484375
+        },
+        {
+          "text": "你在",
+          "start": 48.78,
+          "end": 49.14,
+          "probability": 0.7646484375
+        },
+        {
+          "text": "芬",
+          "start": 49.14,
+          "end": 49.34,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "蘭",
+          "start": 49.34,
+          "end": 49.46,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "的",
+          "start": 49.46,
+          "end": 49.58,
+          "probability": 0.99169921875
+        },
+        {
+          "text": "街",
+          "start": 49.58,
+          "end": 49.68,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "頭",
+          "start": 49.68,
+          "end": 49.92,
+          "probability": 0.99951171875
+        }
+      ]
+    },
+    {
+      "start": 49.92,
+      "end": 51.84,
+      "text": "看到外面有一輛孤獨的嬰兒車",
+      "words": [
+        {
+          "text": "看到",
+          "start": 49.92,
+          "end": 50.26,
+          "probability": 0.98583984375
+        },
+        {
+          "text": "外",
+          "start": 50.26,
+          "end": 50.48,
+          "probability": 0.998046875
+        },
+        {
+          "text": "面",
+          "start": 50.48,
+          "end": 50.6,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "有一",
+          "start": 50.6,
+          "end": 50.82,
+          "probability": 0.90478515625
+        },
+        {
+          "text": "輛",
+          "start": 50.82,
+          "end": 50.96,
+          "probability": 0.970458984375
+        },
+        {
+          "text": "孤",
+          "start": 50.96,
+          "end": 51.14,
+          "probability": 0.997314453125
+        },
+        {
+          "text": "獨",
+          "start": 51.14,
+          "end": 51.26,
+          "probability": 0.9892578125
+        },
+        {
+          "text": "的",
+          "start": 51.26,
+          "end": 51.36,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "嬰",
+          "start": 51.36,
+          "end": 51.5,
+          "probability": 0.9977213541666666
+        },
+        {
+          "text": "兒",
+          "start": 51.5,
+          "end": 51.64,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "車",
+          "start": 51.64,
+          "end": 51.84,
+          "probability": 0.9794921875
+        }
+      ]
+    },
+    {
+      "start": 51.84,
+      "end": 52.58,
+      "text": "不要驚慌",
+      "words": [
+        {
+          "text": "不要",
+          "start": 51.84,
+          "end": 52.12,
+          "probability": 0.9326171875
+        },
+        {
+          "text": "驚",
+          "start": 52.12,
+          "end": 52.36,
+          "probability": 0.76220703125
+        },
+        {
+          "text": "慌",
+          "start": 52.36,
+          "end": 52.58,
+          "probability": 0.979248046875
+        }
+      ]
+    },
+    {
+      "start": 52.58,
+      "end": 54.0,
+      "text": "它不是一個背一氣的孩子",
+      "words": [
+        {
+          "text": "它",
+          "start": 52.58,
+          "end": 52.8,
+          "probability": 0.716796875
+        },
+        {
+          "text": "不是",
+          "start": 52.8,
+          "end": 53.0,
+          "probability": 0.98388671875
+        },
+        {
+          "text": "一個",
+          "start": 53.0,
+          "end": 53.24,
+          "probability": 0.970703125
+        },
+        {
+          "text": "背",
+          "start": 53.24,
+          "end": 53.4,
+          "probability": 0.642578125
+        },
+        {
+          "text": "一",
+          "start": 53.4,
+          "end": 53.54,
+          "probability": 0.4775390625
+        },
+        {
+          "text": "氣",
+          "start": 53.54,
+          "end": 53.64,
+          "probability": 0.479736328125
+        },
+        {
+          "text": "的",
+          "start": 53.64,
+          "end": 53.74,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "孩子",
+          "start": 53.74,
+          "end": 54.0,
+          "probability": 0.998046875
+        }
+      ]
+    },
+    {
+      "start": 54.0,
+      "end": 55.7,
+      "text": "它只是在戶外睡覺而已",
+      "words": [
+        {
+          "text": "它",
+          "start": 54.0,
+          "end": 54.4,
+          "probability": 0.95263671875
+        },
+        {
+          "text": "只是",
+          "start": 54.4,
+          "end": 54.62,
+          "probability": 0.998046875
+        },
+        {
+          "text": "在",
+          "start": 54.62,
+          "end": 54.8,
+          "probability": 0.998046875
+        },
+        {
+          "text": "戶",
+          "start": 54.8,
+          "end": 54.96,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "外",
+          "start": 54.96,
+          "end": 55.12,
+          "probability": 1.0
+        },
+        {
+          "text": "睡",
+          "start": 55.12,
+          "end": 55.28,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "覺",
+          "start": 55.28,
+          "end": 55.5,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "而已",
+          "start": 55.5,
+          "end": 55.7,
+          "probability": 0.99951171875
+        }
+      ]
+    }
+  ]
+}

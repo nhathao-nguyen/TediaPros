@@ -1,0 +1,429 @@
+{
+  "scope": "offline code probe; text-only; no measured TTS; video duration inferred from SRT end plus 120ms for grouping only",
+  "documentSha256": "f0ae0f108eb84c222b3ae99ef77a4ffcb7f933094f8b501eecf3d1a06504f00d",
+  "sourceCount": 80,
+  "targetCount": 80,
+  "sourceUniqueIds": 80,
+  "targetUniqueIds": 80,
+  "exactIdAndTimestampMatches": 80,
+  "nonemptyTargetCount": 80,
+  "sourceEndSeconds": 191.15,
+  "speechUnitCount": 25,
+  "inspectedCues": [
+    {
+      "id": "11",
+      "source": "红灯代表酒精含量达到最价",
+      "target": "Đèn đỏ: cồn mức phạt nặng,",
+      "spanSeconds": 2.1,
+      "whitespaceUnits": 6,
+      "speechUnitMembers": [
+        "7",
+        "8",
+        "9",
+        "10",
+        "11",
+        "12"
+      ]
+    },
+    {
+      "id": "12",
+      "source": "黄灯代表酒价",
+      "target": "đèn vàng: có nồng độ cồn,",
+      "spanSeconds": 1.22,
+      "whitespaceUnits": 6,
+      "speechUnitMembers": [
+        "7",
+        "8",
+        "9",
+        "10",
+        "11",
+        "12"
+      ]
+    },
+    {
+      "id": "19",
+      "source": "花言的坑还是我们来猜",
+      "target": "Quảng cáo có bịp không, để mình dẫm hố thay anh em.",
+      "spanSeconds": 1.4,
+      "whitespaceUnits": 12,
+      "speechUnitMembers": [
+        "19",
+        "20",
+        "21",
+        "22",
+        "23",
+        "24"
+      ]
+    },
+    {
+      "id": "20",
+      "source": "真的好用",
+      "target": "Có thật sự tốt không?",
+      "spanSeconds": 0.66,
+      "whitespaceUnits": 5,
+      "speechUnitMembers": [
+        "19",
+        "20",
+        "21",
+        "22",
+        "23",
+        "24"
+      ]
+    },
+    {
+      "id": "21",
+      "source": "大伙在",
+      "target": "Chào cả nhà!",
+      "spanSeconds": 0.54,
+      "whitespaceUnits": 3,
+      "speechUnitMembers": [
+        "19",
+        "20",
+        "21",
+        "22",
+        "23",
+        "24"
+      ]
+    },
+    {
+      "id": "24",
+      "source": "第二天早晨到底还能不能吹出树枝了",
+      "target": "sáng hôm sau thổi có lên cồn không?",
+      "spanSeconds": 2.5,
+      "whitespaceUnits": 8,
+      "speechUnitMembers": [
+        "19",
+        "20",
+        "21",
+        "22",
+        "23",
+        "24"
+      ]
+    },
+    {
+      "id": "39",
+      "source": "鞋带也是比较方便的",
+      "target": "mang theo rất tiện.",
+      "spanSeconds": 1.96,
+      "whitespaceUnits": 4,
+      "speechUnitMembers": [
+        "37",
+        "38",
+        "39",
+        "40"
+      ]
+    },
+    {
+      "id": "54",
+      "source": "赶了",
+      "target": "Cạn ly!",
+      "spanSeconds": 0.94,
+      "whitespaceUnits": 2,
+      "speechUnitMembers": [
+        "54"
+      ]
+    },
+    {
+      "id": "63",
+      "source": "56毫克",
+      "target": "56 mg.",
+      "spanSeconds": 1.36,
+      "whitespaceUnits": 2,
+      "speechUnitMembers": [
+        "63",
+        "64"
+      ]
+    },
+    {
+      "id": "68",
+      "source": "不甜的",
+      "target": "Đúng là đồ vô dụng!",
+      "spanSeconds": 1.1,
+      "whitespaceUnits": 5,
+      "speechUnitMembers": [
+        "68",
+        "69",
+        "70",
+        "71"
+      ]
+    }
+  ],
+  "sampleQuality": {
+    "ok": true,
+    "findings": [
+      {
+        "severity": "warning",
+        "code": "protected-token-mismatch",
+        "cueId": "1",
+        "message": "Cue 1 thay đổi số, đơn vị hoặc phủ định quan trọng (num:1 -> )."
+      },
+      {
+        "severity": "warning",
+        "code": "protected-token-mismatch",
+        "cueId": "2",
+        "message": "Cue 2 thay đổi số, đơn vị hoặc phủ định quan trọng (num:2 -> )."
+      },
+      {
+        "severity": "warning",
+        "code": "protected-token-mismatch",
+        "cueId": "8",
+        "message": "Cue 8 thay đổi số, đơn vị hoặc phủ định quan trọng (num:1 -> )."
+      },
+      {
+        "severity": "warning",
+        "code": "protected-token-mismatch",
+        "cueId": "9",
+        "message": "Cue 9 thay đổi số, đơn vị hoặc phủ định quan trọng (neg:statement -> )."
+      },
+      {
+        "severity": "warning",
+        "code": "protected-token-mismatch",
+        "cueId": "15",
+        "message": "Cue 15 thay đổi số, đơn vị hoặc phủ định quan trọng (neg:statement, num:1 -> )."
+      },
+      {
+        "severity": "warning",
+        "code": "protected-token-mismatch",
+        "cueId": "19",
+        "message": "Cue 19 thay đổi số, đơn vị hoặc phủ định quan trọng ( -> neg:statement)."
+      },
+      {
+        "severity": "warning",
+        "code": "protected-token-mismatch",
+        "cueId": "20",
+        "message": "Cue 20 thay đổi số, đơn vị hoặc phủ định quan trọng ( -> neg:question)."
+      },
+      {
+        "severity": "warning",
+        "code": "protected-token-mismatch",
+        "cueId": "22",
+        "message": "Cue 22 thay đổi số, đơn vị hoặc phủ định quan trọng (num:2 -> )."
+      },
+      {
+        "severity": "warning",
+        "code": "protected-token-mismatch",
+        "cueId": "23",
+        "message": "Cue 23 thay đổi số, đơn vị hoặc phủ định quan trọng (num:1, num:1 -> )."
+      },
+      {
+        "severity": "warning",
+        "code": "protected-token-mismatch",
+        "cueId": "24",
+        "message": "Cue 24 thay đổi số, đơn vị hoặc phủ định quan trọng (neg:statement, num:2 -> neg:question)."
+      },
+      {
+        "severity": "warning",
+        "code": "protected-token-mismatch",
+        "cueId": "27",
+        "message": "Cue 27 thay đổi số, đơn vị hoặc phủ định quan trọng (num:2 -> )."
+      },
+      {
+        "severity": "warning",
+        "code": "protected-token-mismatch",
+        "cueId": "28",
+        "message": "Cue 28 thay đổi số, đơn vị hoặc phủ định quan trọng ( -> neg:question)."
+      },
+      {
+        "severity": "warning",
+        "code": "protected-token-mismatch",
+        "cueId": "31",
+        "message": "Cue 31 thay đổi số, đơn vị hoặc phủ định quan trọng (neg:statement -> )."
+      },
+      {
+        "severity": "warning",
+        "code": "protected-token-mismatch",
+        "cueId": "32",
+        "message": "Cue 32 thay đổi số, đơn vị hoặc phủ định quan trọng (neg:statement, num:1 -> )."
+      },
+      {
+        "severity": "warning",
+        "code": "protected-token-mismatch",
+        "cueId": "35",
+        "message": "Cue 35 thay đổi số, đơn vị hoặc phủ định quan trọng ( -> num:3, unit:m)."
+      },
+      {
+        "severity": "warning",
+        "code": "protected-token-mismatch",
+        "cueId": "36",
+        "message": "Cue 36 thay đổi số, đơn vị hoặc phủ định quan trọng (num:1, num:1 -> )."
+      },
+      {
+        "severity": "warning",
+        "code": "protected-token-mismatch",
+        "cueId": "42",
+        "message": "Cue 42 thay đổi số, đơn vị hoặc phủ định quan trọng (num:-3, num:2 -> num:2, num:3, unit:cm)."
+      },
+      {
+        "severity": "warning",
+        "code": "protected-token-mismatch",
+        "cueId": "43",
+        "message": "Cue 43 thay đổi số, đơn vị hoặc phủ định quan trọng (num:3 -> num:3, unit:g)."
+      },
+      {
+        "severity": "warning",
+        "code": "protected-token-mismatch",
+        "cueId": "48",
+        "message": "Cue 48 thay đổi số, đơn vị hoặc phủ định quan trọng (num:0 -> neg:statement, num:0)."
+      },
+      {
+        "severity": "warning",
+        "code": "protected-token-mismatch",
+        "cueId": "53",
+        "message": "Cue 53 thay đổi số, đơn vị hoặc phủ định quan trọng (neg:statement -> )."
+      },
+      {
+        "severity": "warning",
+        "code": "protected-token-mismatch",
+        "cueId": "57",
+        "message": "Cue 57 thay đổi số, đơn vị hoặc phủ định quan trọng (num:10 -> num:10, unit:min)."
+      },
+      {
+        "severity": "warning",
+        "code": "protected-token-mismatch",
+        "cueId": "58",
+        "message": "Cue 58 thay đổi số, đơn vị hoặc phủ định quan trọng (num:10 -> num:10, unit:min)."
+      },
+      {
+        "severity": "warning",
+        "code": "protected-token-mismatch",
+        "cueId": "59",
+        "message": "Cue 59 thay đổi số, đơn vị hoặc phủ định quan trọng ( -> num:10, unit:min)."
+      },
+      {
+        "severity": "warning",
+        "code": "protected-token-mismatch",
+        "cueId": "63",
+        "message": "Cue 63 thay đổi số, đơn vị hoặc phủ định quan trọng (num:56 -> num:56, unit:mg)."
+      },
+      {
+        "severity": "warning",
+        "code": "protected-token-mismatch",
+        "cueId": "68",
+        "message": "Cue 68 thay đổi số, đơn vị hoặc phủ định quan trọng (neg:statement -> )."
+      },
+      {
+        "severity": "warning",
+        "code": "protected-token-mismatch",
+        "cueId": "76",
+        "message": "Cue 76 thay đổi số, đơn vị hoặc phủ định quan trọng (num:1 -> )."
+      }
+    ]
+  },
+  "targetedProbes": [
+    {
+      "sourceText": "它能承受10斤。",
+      "targetText": "Nó chịu được 10 cân.",
+      "quality": {
+        "ok": true,
+        "findings": []
+      },
+      "sourceRepairNumericGate": {
+        "ok": false,
+        "reasons": [
+          "protected-token"
+        ],
+        "checkedNumbers": true
+      }
+    },
+    {
+      "sourceText": "它能承受10斤。",
+      "targetText": "Nó chịu được 5 kg.",
+      "quality": {
+        "ok": true,
+        "findings": [
+          {
+            "severity": "warning",
+            "code": "protected-token-mismatch",
+            "cueId": "probe",
+            "message": "Cue probe thay đổi số, đơn vị hoặc phủ định quan trọng (num:10 -> num:5, unit:kg)."
+          }
+        ]
+      },
+      "sourceRepairNumericGate": {
+        "ok": false,
+        "reasons": [
+          "protected-token"
+        ],
+        "checkedNumbers": true
+      }
+    },
+    {
+      "sourceText": "加入2勺盐。",
+      "targetText": "Thêm 2 thìa đường.",
+      "quality": {
+        "ok": true,
+        "findings": []
+      },
+      "sourceRepairNumericGate": {
+        "ok": false,
+        "reasons": [
+          "protected-token"
+        ],
+        "checkedNumbers": true
+      }
+    },
+    {
+      "sourceText": "加入2勺盐。",
+      "targetText": "Thêm 2 thìa muối.",
+      "quality": {
+        "ok": true,
+        "findings": []
+      },
+      "sourceRepairNumericGate": {
+        "ok": false,
+        "reasons": [
+          "protected-token"
+        ],
+        "checkedNumbers": true
+      }
+    },
+    {
+      "sourceText": "加入2勺盐。",
+      "targetText": "Thêm hai thìa muối.",
+      "quality": {
+        "ok": true,
+        "findings": [
+          {
+            "severity": "warning",
+            "code": "protected-token-mismatch",
+            "cueId": "probe",
+            "message": "Cue probe thay đổi số, đơn vị hoặc phủ định quan trọng (num:2 -> )."
+          }
+        ]
+      },
+      "sourceRepairNumericGate": {
+        "ok": true,
+        "reasons": [],
+        "checkedNumbers": true
+      }
+    },
+    {
+      "sourceText": "加入 2 勺盐。",
+      "targetText": "Thêm 2 thìa muối.",
+      "quality": {
+        "ok": true,
+        "findings": []
+      },
+      "sourceRepairNumericGate": {
+        "ok": true,
+        "reasons": [],
+        "checkedNumbers": true
+      }
+    },
+    {
+      "sourceText": "价格39.6。",
+      "targetText": "Giá 39,6 tệ.",
+      "quality": {
+        "ok": true,
+        "findings": []
+      },
+      "sourceRepairNumericGate": {
+        "ok": false,
+        "reasons": [
+          "protected-token"
+        ],
+        "checkedNumbers": true
+      }
+    }
+  ]
+}

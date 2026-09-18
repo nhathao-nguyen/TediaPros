@@ -224,6 +224,10 @@ function validateConfigRecord(raw: Record<string, unknown>): AutoShortConfig | s
     const error = numberIn(raw.subtitleFontSize, 'Cỡ chữ', 1, 1000)
     if (error) return error
   }
+  if (raw.subtitleFontWeight != null) {
+    const error = numberIn(raw.subtitleFontWeight, 'Độ đậm chữ', 100, 900)
+    if (error) return error
+  }
   for (const [key, label] of [
     ['subtitleFontScale', 'Tỷ lệ cỡ chữ'],
     ['outlineScale', 'Tỷ lệ viền chữ']

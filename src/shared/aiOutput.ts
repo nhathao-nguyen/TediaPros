@@ -28,6 +28,10 @@ export interface ParsedAiJsonObject {
   value: Record<string, unknown>
   outcome: AiJsonOutcome
   bytes: number
+  /** Exact text accepted after the small allowlisted normalizations. */
+  normalizedText: string
+  /** Mirrors the Gateway normalizer; never represents a guessed repair. */
+  normalization: string[]
 }
 
 const DEFAULT_LIMITS: AiJsonLimits = {
@@ -54,7 +58,8 @@ const TASK_PROPERTIES: Record<AiStructuredTask, Record<string, unknown>> = {
     title: { type: 'string' },
     description: { type: 'string' },
     tags: { type: 'array', items: { type: 'string' }, maxItems: 8 },
-    hashtags: { type: 'array', items: { type: 'string' }, maxItems: 3 }
+    hashtags: { type: 'array', items: { type: 'string' }, maxItems: 3 },
+    thumbnailText: { type: 'string' }
   }
 }
 
@@ -115,7 +120,7 @@ class StrictJsonParser {
     this.skipWhitespace()
     const value = this.parseValue(0)
     this.skipWhitespace()
-    if (this.index !== this.text.length) this.fail('multiple-root', 'Phản hồi chứa dữ liệu ngoài JSON root.')
+    if (this.index !== this.text.length) this.fail('ambiguous-json', 'Phản hồi chứa dữ liệu ngoài JSON root.')
     return value
   }
 
@@ -259,9 +264,30 @@ function limitsWith(overrides?: Partial<AiJsonLimits>): AiJsonLimits {
   return limits
 }
 
+function trimJsonWhitespace(raw: string): string {
+  return raw.replace(/^[ \t\r\n]+|[ \t\r\n]+$/gu, '')
+}
+
+/** Return the payload of exactly one outer JSON fence. Literal backticks inside
+ * valid JSON are handled by the strict direct parser before this function. */
 function completeFence(raw: string): string | null {
-  const match = /^```(?:json)?[\t ]*\r?\n([\s\S]*?)\r?\n```[\t ]*$/iu.exec(raw.trim())
-  return match ? match[1] || '' : null
+  if (!raw.startsWith('```')) return null
+  const openingEnd = raw.indexOf('\n')
+  if (openingEnd < 0) return null
+  const opening = raw.slice(0, openingEnd).replace(/\r$/u, '')
+  if (!/^```(?:json)?[\t ]*$/iu.test(opening)) return null
+  const contentStart = openingEnd + 1
+  const closings: number[] = []
+  const matcher = /(?:^|\n)```[\t \r]*(?=\n|$)/gu
+  matcher.lastIndex = contentStart
+  for (let match = matcher.exec(raw); match; match = matcher.exec(raw)) {
+    const start = match.index + (match[0].startsWith('\n') ? 1 : 0)
+    if (start >= contentStart) closings.push(start)
+  }
+  if (closings.length !== 1) return null
+  const closing = closings[0]
+  if (trimJsonWhitespace(raw.slice(closing + 3)) !== '') return null
+  return raw.slice(contentStart, closing)
 }
 
 function topLevelObjectStarts(raw: string): number[] {
@@ -292,12 +318,20 @@ export function parseAiJsonObject(raw: string, options: {
   limits?: Partial<AiJsonLimits>
 } = {}): ParsedAiJsonObject {
   const limits = limitsWith(options.limits)
-  const text = raw.replace(/^\ufeff/u, '').replace(/^[ \t\r\n]+|[ \t\r\n]+$/gu, '')
+  const hadBom = raw.startsWith('\ufeff')
+  const text = trimJsonWhitespace(hadBom ? raw.slice(1) : raw)
   const bytes = utf8Bytes(text)
   if (bytes > limits.maxBytes) throw new AiOutputParseError('byte-limit', 'Phản hồi AI vượt giới hạn kích thước.')
+  const directNormalization = hadBom ? ['strip-bom'] : []
   let strictError: AiOutputParseError | undefined
   try {
-    return { value: exactObject(new StrictJsonParser(text, limits).parseDocument()), outcome: 'clean', bytes }
+    return {
+      value: exactObject(new StrictJsonParser(text, limits).parseDocument()),
+      outcome: 'clean',
+      bytes,
+      normalizedText: text,
+      normalization: directNormalization
+    }
   } catch (error) {
     if (!(error instanceof AiOutputParseError)) throw error
     strictError = error
@@ -305,9 +339,16 @@ export function parseAiJsonObject(raw: string, options: {
   if (options.allowFence) {
     const fenced = completeFence(text)
     if (fenced !== null) {
-      return { value: exactObject(new StrictJsonParser(fenced, limits).parseDocument()), outcome: 'unwrapped', bytes }
+      const normalizedText = trimJsonWhitespace(fenced)
+      return {
+        value: exactObject(new StrictJsonParser(normalizedText, limits).parseDocument()),
+        outcome: 'unwrapped',
+        bytes,
+        normalizedText,
+        normalization: [...directNormalization, 'unwrap-json-fence']
+      }
     }
-    if (text.startsWith('```')) throw new AiOutputParseError('malformed-fence', 'Phản hồi có code fence chưa hoàn chỉnh.')
+    if (text.includes('```')) throw new AiOutputParseError('ambiguous-json', 'Phản hồi có code fence không hoàn chỉnh hoặc mơ hồ.')
   }
   if (!options.allowProseObject) throw strictError
 
@@ -325,7 +366,7 @@ export function parseAiJsonObject(raw: string, options: {
   if (malformed || candidates.length !== 1) {
     throw new AiOutputParseError('ambiguous-json', 'AI trả về JSON mơ hồ hoặc không hoàn chỉnh.')
   }
-  return { value: candidates[0], outcome: 'extracted', bytes }
+  return { value: candidates[0], outcome: 'extracted', bytes, normalizedText: text, normalization: directNormalization }
 }
 
 export function assertExactKeys(record: Record<string, unknown>, expected: readonly string[]): void {

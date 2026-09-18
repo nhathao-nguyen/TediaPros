@@ -1,0 +1,189 @@
+{
+  "schemaVersion": 1,
+  "promptVersion": "gemini-gateway-two-pass-v4",
+  "model": "gemini-advanced",
+  "records": [
+    {
+      "stage": "restore-translate",
+      "startedAtUtc": "2026-09-15T03:13:15.861Z",
+      "endedAtUtc": "2026-09-15T03:13:43.005Z",
+      "expectedIds": [
+        "cue-0-0",
+        "cue-1-1480",
+        "cue-2-3680",
+        "cue-3-5600",
+        "cue-4-7660",
+        "cue-5-9600",
+        "cue-6-11080",
+        "cue-7-13860",
+        "cue-8-14940",
+        "cue-9-16440",
+        "cue-10-18880",
+        "cue-11-19980",
+        "cue-12-21660",
+        "cue-13-22940",
+        "cue-14-24780",
+        "cue-15-26740",
+        "cue-16-28260",
+        "cue-17-29480",
+        "cue-18-31500"
+      ],
+      "outcome": "complete",
+      "logicalRequestId": "c797f600-065d-4eba-96ad-cd1bb6c99889",
+      "inputHash": "c002de50ee18b18eb80ed34cc309269e74eacf596b713454e4bca5e03a7d71fa",
+      "inputBytes": 4609,
+      "requestedModel": "gemini-advanced",
+      "observedModelId": "e6fa609c3fa255c0",
+      "observedModel": "3.1 Pro",
+      "routeFingerprint": "29ed9729dbdd53e76081fc89bd7f7991b6a6e2c770e964fd8fa2ceaa0c22c646",
+      "completionState": "complete",
+      "completionEvidence": "observed-terminal-frame-v1",
+      "normalizationOps": [],
+      "upstreamAttempts": 1,
+      "upstreamRetryReasons": [],
+      "request": {
+        "model": "gemini-advanced",
+        "messages": [
+          {
+            "role": "system",
+            "content": "gateway_prompt_version=gemini-gateway-two-pass-v4\ntask=translate-draft; source_language=zh; target_locale=vi-VN; mode=dubbing\nReturn format=compact-keyed-json; output exactly one JSON object {\"translations\":{\"<cue-id>\":\"<translation>\"}} with every expected cue ID exactly once and no prose.\nUse natural, neutral spoken Vietnamese used in Vietnam. Prefer familiar Vietnamese collocations and direct sentence order over translated Chinese syntax. Translate meaning in context: for example, an insight is usually \"nghĩ ra/hiểu ra\", funeral work may require \"đào huyệt/chôn cất\", and 相对来说 should become a direct consequence such as \"nhờ vậy\" when supported. Do not insert regional slang, generic pronouns, hype, hooks, praise or calls to action absent from the source.\nSource fragments provide nearby context hints, not target sentence boundaries.\nRead the complete source ledger before translating any fragment.\nSilently restore obvious ASR/OCR homophone errors only when the complete source context makes the correction well grounded. In particular, keep one subject, brand, object, number and unit consistent across the whole video.\nNever replace an unfamiliar proper name with a familiar brand. Never add an action, location, ownership claim, fact, hook or explanation absent from the source.\nResolve object terminology from the complete domain context. For vehicle controls, use established automotive wording in the target locale; do not turn a stalk, switch, button or directional control into a computer keyboard key unless the source explicitly discusses a keyboard.\nRender descriptive uniqueness as distinctive or signature wording when appropriate. Do not turn it into a legal exclusivity, ownership or patent claim unless the source explicitly supports that claim.\nTranslate idioms and sound words by contextual meaning, not mechanical transliteration.\nRestore natural target-language punctuation across the complete story. A text field may be an unfinished fragment; end it with sentence punctuation only when that sentence ends in this cue. Every complete sentence and the final cue must have explicit terminal punctuation.\nFor dubbing, do not leave a dangling setup, reporting verb, question lead-in, cause or condition at the end of a speech unit. Use the full ledger to place sentence boundaries at cue edges that preserve complete clauses.\nBefore returning, audit every requested ID for omissions, additions, names, numbers, units, negation and locale-natural wording.\nReturn only the canonical JSON object requested by the contract."
+          },
+          {
+            "role": "user",
+            "content": "[SOURCE_PAYLOAD]\n{\"id\":\"cue-0-0\",\"group_id\":\"source-speech-v1:cue-0-0\",\"text\":\"一年只给你180万\"}\n{\"id\":\"cue-1-1480\",\"group_id\":\"source-speech-v1:cue-0-0\",\"text\":\"然而陪伴你的只有孤独和无数的鱼儿\"}\n{\"id\":\"cue-2-3680\",\"group_id\":\"source-speech-v1:cue-0-0\",\"text\":\"在这里任何东西只要敢丢下去\"}\n{\"id\":\"cue-3-5600\",\"group_id\":\"source-speech-v1:cue-0-0\",\"text\":\"都会被巨龙的鱼群瞬间抢光\"}\n{\"id\":\"cue-4-7660\",\"group_id\":\"source-speech-v1:cue-4-7660\",\"text\":\"在这与世格觉得钻景平台上\"}\n{\"id\":\"cue-5-9600\",\"group_id\":\"source-speech-v1:cue-4-7660\",\"text\":\"钓鱼将是你唯一的乐趣\"}\n{\"id\":\"cue-6-11080\",\"group_id\":\"source-speech-v1:cue-4-7660\",\"text\":\"或者是能和同事们一起扔着烂白菜看鱼儿发呆\"}\n{\"id\":\"cue-7-13860\",\"group_id\":\"source-speech-v1:cue-4-7660\",\"text\":\"特别是到了晚上\"}\n{\"id\":\"cue-8-14940\",\"group_id\":\"source-speech-v1:cue-4-7660\",\"text\":\"无尽的寂寞包裹着你\"}\n{\"id\":\"cue-9-16440\",\"group_id\":\"source-speech-v1:cue-9-16440\",\"text\":\"就连扔出去的苹果都被黑暗瞬间吞没\"}\n{\"id\":\"cue-10-18880\",\"group_id\":\"source-speech-v1:cue-9-16440\",\"text\":\"孤独感预加强烈\"}\n{\"id\":\"cue-11-19980\",\"group_id\":\"source-speech-v1:cue-9-16440\",\"text\":\"好歹伙是每天四顿供应\"}\n{\"id\":\"cue-12-21660\",\"group_id\":\"source-speech-v1:cue-9-16440\",\"text\":\"健身娱乐样要集权\"}\n{\"id\":\"cue-13-22940\",\"group_id\":\"source-speech-v1:cue-13-22940\",\"text\":\"还有网吧游戏和迷你小酒吧\"}\n{\"id\":\"cue-14-24780\",\"group_id\":\"source-speech-v1:cue-13-22940\",\"text\":\"而一个月才来一次的直升飞机\"}\n{\"id\":\"cue-15-26740\",\"group_id\":\"source-speech-v1:cue-13-22940\",\"text\":\"结局按上指休息四天\"}\n{\"id\":\"cue-16-28260\",\"group_id\":\"source-speech-v1:cue-13-22940\",\"text\":\"很多人都坚持不了\"}\n{\"id\":\"cue-17-29480\",\"group_id\":\"source-speech-v1:cue-13-22940\",\"text\":\"也只有每个月准时到账的十来万\"}\n{\"id\":\"cue-18-31500\",\"group_id\":\"source-speech-v1:cue-13-22940\",\"text\":\"才会稍微开心一点\"}\n[/SOURCE_PAYLOAD]"
+          }
+        ],
+        "temperature": 0.2,
+        "max_tokens": 16384,
+        "temporary": true,
+        "gateway_requirements": {
+          "contract_version": 2,
+          "require_verified_model": true,
+          "require_complete_response": true
+        },
+        "response_format": {
+          "type": "json_schema",
+          "json_schema": {
+            "name": "srt_translation",
+            "strict": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "translations": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "string"
+                  }
+                }
+              },
+              "required": [
+                "translations"
+              ],
+              "additionalProperties": false
+            }
+          }
+        }
+      },
+      "response": {
+        "id": "chatcmpl-1789442022",
+        "raw": "{\n  \"translations\": {\n    \"cue-0-0\": \"Một năm được trả 1,8 triệu tệ,\",\n    \"cue-1-1480\": \"nhưng đồng hành cùng bạn chỉ có sự cô đơn và vô số cá dưới biển.\",\n    \"cue-2-3680\": \"Ở đây, bất cứ thứ gì ném xuống,\",\n    \"cue-3-5600\": \"cũng sẽ bị bầy cá xúm lại tranh giành sạch sẽ trong tích tắc.\",\n    \"cue-4-7660\": \"Trên giàn khoan biệt lập với thế giới bên ngoài này,\",\n    \"cue-5-9600\": \"câu cá sẽ là thú vui duy nhất của bạn.\",\n    \"cue-6-11080\": \"Hoặc là cùng đồng nghiệp ném bắp cải hỏng xuống rồi ngẩn ngơ ngắm cá.\",\n    \"cue-7-13860\": \"Đặc biệt là khi đêm xuống,\",\n    \"cue-8-14940\": \"sự cô đơn vô tận sẽ bao trùm lấy bạn.\",\n    \"cue-9-16440\": \"Ngay cả quả táo ném đi cũng bị bóng tối nuốt chửng trong nháy mắt,\",\n    \"cue-10-18880\": \"khiến cảm giác cô đơn càng trở nên mãnh liệt.\",\n    \"cue-11-19980\": \"Nhưng bù lại thì mỗi ngày được phục vụ đến bốn bữa ăn,\",\n    \"cue-12-21660\": \"phòng gym và tiện ích giải trí không thiếu thứ gì.\",\n    \"cue-13-22940\": \"Thậm chí còn có phòng máy tính và quán bar mini.\",\n    \"cue-14-24780\": \"Trực thăng mỗi tháng chỉ đến một lần,\",\n    \"cue-15-26740\": \"đón bạn vào bờ nghỉ ngơi đúng bốn ngày.\",\n    \"cue-16-28260\": \"Rất nhiều người đã không thể trụ lại được.\",\n    \"cue-17-29480\": \"Chỉ khi thấy mười mấy vạn tệ chuyển vào tài khoản đúng hạn mỗi tháng,\",\n    \"cue-18-31500\": \"bạn mới cảm thấy vui vẻ hơn một chút.\"\n  }\n}",
+        "sha256": "d24cbce4fcbc2fe3787b7a59e84ff37437c70d10939a912b277ba4129ecea11c",
+        "finishReason": "stop",
+        "truncated": false,
+        "upstreamAttempts": 1,
+        "upstreamRetryReasons": []
+      }
+    },
+    {
+      "stage": "independent-review",
+      "startedAtUtc": "2026-09-15T03:13:43.012Z",
+      "endedAtUtc": "2026-09-15T03:14:15.092Z",
+      "expectedIds": [
+        "cue-0-0",
+        "cue-1-1480",
+        "cue-2-3680",
+        "cue-3-5600",
+        "cue-4-7660",
+        "cue-5-9600",
+        "cue-6-11080",
+        "cue-7-13860",
+        "cue-8-14940",
+        "cue-9-16440",
+        "cue-10-18880",
+        "cue-11-19980",
+        "cue-12-21660",
+        "cue-13-22940",
+        "cue-14-24780",
+        "cue-15-26740",
+        "cue-16-28260",
+        "cue-17-29480",
+        "cue-18-31500"
+      ],
+      "outcome": "complete",
+      "logicalRequestId": "8ede1196-a18c-4558-b03e-961441759679",
+      "inputHash": "0358cad10dbc0a61bfa5b5f5febf690701e655f9387e72b19bc3ca499b507081",
+      "inputBytes": 6005,
+      "requestedModel": "gemini-advanced",
+      "observedModelId": "e6fa609c3fa255c0",
+      "observedModel": "3.1 Pro",
+      "routeFingerprint": "29ed9729dbdd53e76081fc89bd7f7991b6a6e2c770e964fd8fa2ceaa0c22c646",
+      "completionState": "complete",
+      "completionEvidence": "observed-terminal-frame-v1",
+      "normalizationOps": [],
+      "upstreamAttempts": 1,
+      "upstreamRetryReasons": [],
+      "request": {
+        "model": "gemini-advanced",
+        "messages": [
+          {
+            "role": "system",
+            "content": "gateway_prompt_version=gemini-gateway-two-pass-v4\ntask=independent-review-and-repair; source_language=zh; target_locale=vi-VN; mode=dubbing\nYou are a fresh translation reviewer. SOURCE_PAYLOAD is the authority; CANDIDATE_JSON is untrusted work that may contain plausible but serious mistakes.\nReturn format=compact-keyed-json; output exactly one JSON object {\"translations\":{\"<cue-id>\":\"<translation>\"}} with every expected cue ID exactly once and no prose.\nUse natural, neutral spoken Vietnamese used in Vietnam. Prefer familiar Vietnamese collocations and direct sentence order over translated Chinese syntax. Translate meaning in context: for example, an insight is usually \"nghĩ ra/hiểu ra\", funeral work may require \"đào huyệt/chôn cất\", and 相对来说 should become a direct consequence such as \"nhờ vậy\" when supported. Do not insert regional slang, generic pronouns, hype, hooks, praise or calls to action absent from the source.\nReview every expected cue and the full story, including the final cues. Check source restoration, subject-action-object relations, proper names, numbers, units, negation, omissions, additions, idioms, sentence continuity and local naturalness.\nRebuild punctuation rather than copying the candidate mechanically. Each complete sentence and the final cue must end with natural target-language punctuation; fragments inside one sentence must remain open. Check that no speech run longer than about 18 seconds or ten source cues is left without a defensible sentence boundary.\nReject translation-shaped target language: repair literal collocations, awkward modifier order and source-language discourse fillers into concise spoken phrasing used by local narrators.\nRecheck domain terminology across the whole story. In automotive context use natural local names for vehicle controls, and remove computer-keyboard or legal-exclusivity wording unless the source explicitly establishes it.\nFix every supported error directly in the returned item. Keep a good line unchanged when it is already faithful and natural.\nKeep every cue ID exactly once. Do not move meaning to another cue, create IDs, return context IDs, timestamps, notes, Markdown or alternatives.\nReturn format=compact-keyed-json; output exactly one JSON object {\"translations\":{\"<cue-id>\":\"<translation>\"}} with every expected cue ID exactly once and no prose."
+          },
+          {
+            "role": "user",
+            "content": "[SOURCE_PAYLOAD]\n{\"id\":\"cue-0-0\",\"group_id\":\"source-speech-v1:cue-0-0\",\"text\":\"一年只给你180万\"}\n{\"id\":\"cue-1-1480\",\"group_id\":\"source-speech-v1:cue-0-0\",\"text\":\"然而陪伴你的只有孤独和无数的鱼儿\"}\n{\"id\":\"cue-2-3680\",\"group_id\":\"source-speech-v1:cue-0-0\",\"text\":\"在这里任何东西只要敢丢下去\"}\n{\"id\":\"cue-3-5600\",\"group_id\":\"source-speech-v1:cue-0-0\",\"text\":\"都会被巨龙的鱼群瞬间抢光\"}\n{\"id\":\"cue-4-7660\",\"group_id\":\"source-speech-v1:cue-4-7660\",\"text\":\"在这与世格觉得钻景平台上\"}\n{\"id\":\"cue-5-9600\",\"group_id\":\"source-speech-v1:cue-4-7660\",\"text\":\"钓鱼将是你唯一的乐趣\"}\n{\"id\":\"cue-6-11080\",\"group_id\":\"source-speech-v1:cue-4-7660\",\"text\":\"或者是能和同事们一起扔着烂白菜看鱼儿发呆\"}\n{\"id\":\"cue-7-13860\",\"group_id\":\"source-speech-v1:cue-4-7660\",\"text\":\"特别是到了晚上\"}\n{\"id\":\"cue-8-14940\",\"group_id\":\"source-speech-v1:cue-4-7660\",\"text\":\"无尽的寂寞包裹着你\"}\n{\"id\":\"cue-9-16440\",\"group_id\":\"source-speech-v1:cue-9-16440\",\"text\":\"就连扔出去的苹果都被黑暗瞬间吞没\"}\n{\"id\":\"cue-10-18880\",\"group_id\":\"source-speech-v1:cue-9-16440\",\"text\":\"孤独感预加强烈\"}\n{\"id\":\"cue-11-19980\",\"group_id\":\"source-speech-v1:cue-9-16440\",\"text\":\"好歹伙是每天四顿供应\"}\n{\"id\":\"cue-12-21660\",\"group_id\":\"source-speech-v1:cue-9-16440\",\"text\":\"健身娱乐样要集权\"}\n{\"id\":\"cue-13-22940\",\"group_id\":\"source-speech-v1:cue-13-22940\",\"text\":\"还有网吧游戏和迷你小酒吧\"}\n{\"id\":\"cue-14-24780\",\"group_id\":\"source-speech-v1:cue-13-22940\",\"text\":\"而一个月才来一次的直升飞机\"}\n{\"id\":\"cue-15-26740\",\"group_id\":\"source-speech-v1:cue-13-22940\",\"text\":\"结局按上指休息四天\"}\n{\"id\":\"cue-16-28260\",\"group_id\":\"source-speech-v1:cue-13-22940\",\"text\":\"很多人都坚持不了\"}\n{\"id\":\"cue-17-29480\",\"group_id\":\"source-speech-v1:cue-13-22940\",\"text\":\"也只有每个月准时到账的十来万\"}\n{\"id\":\"cue-18-31500\",\"group_id\":\"source-speech-v1:cue-13-22940\",\"text\":\"才会稍微开心一点\"}\n[/SOURCE_PAYLOAD]\n[CANDIDATE_JSON]\n{\"translations\":{\"cue-0-0\":\"Một năm được trả 1,8 triệu tệ,\",\"cue-1-1480\":\"nhưng đồng hành cùng bạn chỉ có sự cô đơn và vô số cá dưới biển.\",\"cue-2-3680\":\"Ở đây, bất cứ thứ gì ném xuống,\",\"cue-3-5600\":\"cũng sẽ bị bầy cá xúm lại tranh giành sạch sẽ trong tích tắc.\",\"cue-4-7660\":\"Trên giàn khoan biệt lập với thế giới bên ngoài này,\",\"cue-5-9600\":\"câu cá sẽ là thú vui duy nhất của bạn.\",\"cue-6-11080\":\"Hoặc là cùng đồng nghiệp ném bắp cải hỏng xuống rồi ngẩn ngơ ngắm cá.\",\"cue-7-13860\":\"Đặc biệt là khi đêm xuống,\",\"cue-8-14940\":\"sự cô đơn vô tận sẽ bao trùm lấy bạn.\",\"cue-9-16440\":\"Ngay cả quả táo ném đi cũng bị bóng tối nuốt chửng trong nháy mắt,\",\"cue-10-18880\":\"khiến cảm giác cô đơn càng trở nên mãnh liệt.\",\"cue-11-19980\":\"Nhưng bù lại thì mỗi ngày được phục vụ đến bốn bữa ăn,\",\"cue-12-21660\":\"phòng gym và tiện ích giải trí không thiếu thứ gì.\",\"cue-13-22940\":\"Thậm chí còn có phòng máy tính và quán bar mini.\",\"cue-14-24780\":\"Trực thăng mỗi tháng chỉ đến một lần,\",\"cue-15-26740\":\"đón bạn vào bờ nghỉ ngơi đúng bốn ngày.\",\"cue-16-28260\":\"Rất nhiều người đã không thể trụ lại được.\",\"cue-17-29480\":\"Chỉ khi thấy mười mấy vạn tệ chuyển vào tài khoản đúng hạn mỗi tháng,\",\"cue-18-31500\":\"bạn mới cảm thấy vui vẻ hơn một chút.\"}}\n[/CANDIDATE_JSON]"
+          }
+        ],
+        "temperature": 0.2,
+        "max_tokens": 16384,
+        "temporary": true,
+        "gateway_requirements": {
+          "contract_version": 2,
+          "require_verified_model": true,
+          "require_complete_response": true
+        },
+        "response_format": {
+          "type": "json_schema",
+          "json_schema": {
+            "name": "srt_translation",
+            "strict": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "translations": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "string"
+                  }
+                }
+              },
+              "required": [
+                "translations"
+              ],
+              "additionalProperties": false
+            }
+          }
+        }
+      },
+      "response": {
+        "id": "chatcmpl-1789442055",
+        "raw": "{\"translations\":{\"cue-0-0\":\"Một năm chỉ trả bạn 1,8 triệu tệ,\",\"cue-1-1480\":\"nhưng đồng hành cùng bạn chỉ có sự cô đơn và vô số cá.\",\"cue-2-3680\":\"Ở đây bất cứ thứ gì ném xuống,\",\"cue-3-5600\":\"cũng sẽ bị bầy cá xúm lại tranh giành sạch sẽ trong tích tắc.\",\"cue-4-7660\":\"Trên giàn khoan biệt lập với thế giới này,\",\"cue-5-9600\":\"câu cá sẽ là thú vui duy nhất của bạn.\",\"cue-6-11080\":\"Hoặc là cùng đồng nghiệp ném bắp cải hỏng xuống rồi ngẩn ngơ ngắm cá.\",\"cue-7-13860\":\"Đặc biệt là khi đêm xuống,\",\"cue-8-14940\":\"sự cô đơn vô tận sẽ bao trùm lấy bạn.\",\"cue-9-16440\":\"Ngay cả quả táo ném đi cũng bị bóng tối nuốt chửng trong nháy mắt,\",\"cue-10-18880\":\"khiến cảm giác cô đơn càng thêm mãnh liệt.\",\"cue-11-19980\":\"Được cái mỗi ngày đều phục vụ bốn bữa ăn,\",\"cue-12-21660\":\"thể thao giải trí không thiếu thứ gì.\",\"cue-13-22940\":\"Còn có cả phòng net và quán bar mini.\",\"cue-14-24780\":\"Trực thăng mỗi tháng chỉ đến một lần,\",\"cue-15-26740\":\"đón bạn vào bờ nghỉ ngơi đúng bốn ngày.\",\"cue-16-28260\":\"Rất nhiều người đã không thể trụ lại được.\",\"cue-17-29480\":\"Chỉ có mười mấy vạn tệ chuyển vào tài khoản đúng hạn mỗi tháng,\",\"cue-18-31500\":\"mới giúp bạn vui vẻ hơn đôi chút.\"}}",
+        "sha256": "73a5d37fd42f64c74bb25aa54013f0e901461effac42e0d644f9e2e023d306ea",
+        "finishReason": "stop",
+        "truncated": false,
+        "upstreamAttempts": 1,
+        "upstreamRetryReasons": []
+      }
+    }
+  ]
+}

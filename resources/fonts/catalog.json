@@ -9,6 +9,15 @@
     "available": true
   },
   {
+    "id": "roboto",
+    "label": "Roboto",
+    "file": "Roboto.ttf",
+    "family": "Roboto",
+    "group": "Mặc định",
+    "source": "bundled",
+    "available": true
+  },
+  {
     "id": "noto-sans-arabic",
     "label": "Noto Sans Arabic",
     "file": "NotoSansArabic.ttf",

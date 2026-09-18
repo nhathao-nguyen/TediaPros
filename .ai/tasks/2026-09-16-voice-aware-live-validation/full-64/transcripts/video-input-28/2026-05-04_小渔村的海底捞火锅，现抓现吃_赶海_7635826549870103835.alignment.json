@@ -1,0 +1,4926 @@
+{
+  "duration": 172.27025,
+  "language": "zh",
+  "segments": [
+    {
+      "start": 0.37,
+      "end": 1.45,
+      "text": "大海退潮",
+      "words": [
+        {
+          "text": "大",
+          "start": 0.37,
+          "end": 0.65,
+          "probability": 0.57275390625
+        },
+        {
+          "text": "海",
+          "start": 0.65,
+          "end": 0.95,
+          "probability": 0.99609375
+        },
+        {
+          "text": "退",
+          "start": 0.95,
+          "end": 1.15,
+          "probability": 0.98779296875
+        },
+        {
+          "text": "潮",
+          "start": 1.15,
+          "end": 1.45,
+          "probability": 0.868896484375
+        }
+      ]
+    },
+    {
+      "start": 2.07,
+      "end": 5.75,
+      "text": "今天吃點小漁村的自助海鮮火鍋",
+      "words": [
+        {
+          "text": "今天",
+          "start": 2.07,
+          "end": 2.31,
+          "probability": 0.73779296875
+        },
+        {
+          "text": "吃",
+          "start": 2.31,
+          "end": 2.89,
+          "probability": 0.97607421875
+        },
+        {
+          "text": "點",
+          "start": 2.89,
+          "end": 3.11,
+          "probability": 0.367431640625
+        },
+        {
+          "text": "小",
+          "start": 3.11,
+          "end": 3.33,
+          "probability": 0.9873046875
+        },
+        {
+          "text": "漁",
+          "start": 3.33,
+          "end": 3.45,
+          "probability": 0.660888671875
+        },
+        {
+          "text": "村",
+          "start": 3.45,
+          "end": 3.57,
+          "probability": 0.998046875
+        },
+        {
+          "text": "的",
+          "start": 3.57,
+          "end": 3.77,
+          "probability": 0.94091796875
+        },
+        {
+          "text": "自",
+          "start": 3.77,
+          "end": 4.15,
+          "probability": 0.91552734375
+        },
+        {
+          "text": "助",
+          "start": 4.15,
+          "end": 4.45,
+          "probability": 0.80126953125
+        },
+        {
+          "text": "海",
+          "start": 4.45,
+          "end": 4.81,
+          "probability": 0.99609375
+        },
+        {
+          "text": "鮮",
+          "start": 4.81,
+          "end": 5.03,
+          "probability": 0.99365234375
+        },
+        {
+          "text": "火",
+          "start": 5.03,
+          "end": 5.27,
+          "probability": 0.97802734375
+        },
+        {
+          "text": "鍋",
+          "start": 5.27,
+          "end": 5.75,
+          "probability": 0.984130859375
+        }
+      ]
+    },
+    {
+      "start": 6.45,
+      "end": 9.19,
+      "text": "咱們先下海去找點免費的菜",
+      "words": [
+        {
+          "text": "咱",
+          "start": 6.45,
+          "end": 6.93,
+          "probability": 0.98095703125
+        },
+        {
+          "text": "們",
+          "start": 6.93,
+          "end": 7.03,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "先",
+          "start": 7.03,
+          "end": 7.25,
+          "probability": 0.984375
+        },
+        {
+          "text": "下",
+          "start": 7.25,
+          "end": 7.47,
+          "probability": 0.98388671875
+        },
+        {
+          "text": "海",
+          "start": 7.47,
+          "end": 7.59,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "去",
+          "start": 7.59,
+          "end": 7.93,
+          "probability": 0.99609375
+        },
+        {
+          "text": "找",
+          "start": 7.93,
+          "end": 8.21,
+          "probability": 0.95947265625
+        },
+        {
+          "text": "點",
+          "start": 8.21,
+          "end": 8.43,
+          "probability": 0.98828125
+        },
+        {
+          "text": "免",
+          "start": 8.43,
+          "end": 8.69,
+          "probability": 0.88037109375
+        },
+        {
+          "text": "費",
+          "start": 8.69,
+          "end": 8.85,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "的",
+          "start": 8.85,
+          "end": 8.95,
+          "probability": 0.9921875
+        },
+        {
+          "text": "菜",
+          "start": 8.95,
+          "end": 9.19,
+          "probability": 0.99853515625
+        }
+      ]
+    },
+    {
+      "start": 9.79,
+      "end": 12.59,
+      "text": "抓這種割錢的魚一定要聞尊恨",
+      "words": [
+        {
+          "text": "抓",
+          "start": 9.79,
+          "end": 10.27,
+          "probability": 0.94921875
+        },
+        {
+          "text": "這種",
+          "start": 10.27,
+          "end": 10.45,
+          "probability": 0.9560546875
+        },
+        {
+          "text": "割",
+          "start": 10.45,
+          "end": 10.69,
+          "probability": 0.748046875
+        },
+        {
+          "text": "錢",
+          "start": 10.69,
+          "end": 10.83,
+          "probability": 0.68798828125
+        },
+        {
+          "text": "的",
+          "start": 10.83,
+          "end": 10.97,
+          "probability": 0.94580078125
+        },
+        {
+          "text": "魚",
+          "start": 10.97,
+          "end": 11.41,
+          "probability": 0.96337890625
+        },
+        {
+          "text": "一定要",
+          "start": 11.41,
+          "end": 11.79,
+          "probability": 0.90966796875
+        },
+        {
+          "text": "聞",
+          "start": 11.79,
+          "end": 12.03,
+          "probability": 0.578125
+        },
+        {
+          "text": "尊",
+          "start": 12.03,
+          "end": 12.19,
+          "probability": 0.657470703125
+        },
+        {
+          "text": "恨",
+          "start": 12.19,
+          "end": 12.59,
+          "probability": 0.5526123046875
+        }
+      ]
+    },
+    {
+      "start": 12.59,
+      "end": 13.55,
+      "text": "看不見水",
+      "words": [
+        {
+          "text": "看",
+          "start": 12.59,
+          "end": 12.95,
+          "probability": 0.306396484375
+        },
+        {
+          "text": "不",
+          "start": 12.95,
+          "end": 13.09,
+          "probability": 0.98974609375
+        },
+        {
+          "text": "見",
+          "start": 13.09,
+          "end": 13.27,
+          "probability": 0.9248046875
+        },
+        {
+          "text": "水",
+          "start": 13.27,
+          "end": 13.55,
+          "probability": 0.30615234375
+        }
+      ]
+    },
+    {
+      "start": 14.21,
+      "end": 14.95,
+      "text": "wee",
+      "words": [
+        {
+          "text": "we",
+          "start": 14.21,
+          "end": 14.69,
+          "probability": 0.005283355712890625
+        },
+        {
+          "text": "e",
+          "start": 14.69,
+          "end": 14.95,
+          "probability": 0.27197265625
+        }
+      ]
+    },
+    {
+      "start": 14.95,
+      "end": 17.73,
+      "text": "兄弟們一定要喊",
+      "words": [
+        {
+          "text": "兄",
+          "start": 14.95,
+          "end": 15.17,
+          "probability": 0.00027871131896972656
+        },
+        {
+          "text": "弟",
+          "start": 15.17,
+          "end": 16.45,
+          "probability": 0.99658203125
+        },
+        {
+          "text": "們",
+          "start": 16.45,
+          "end": 16.57,
+          "probability": 0.875
+        },
+        {
+          "text": "一定要",
+          "start": 16.57,
+          "end": 17.11,
+          "probability": 0.90576171875
+        },
+        {
+          "text": "喊",
+          "start": 17.11,
+          "end": 17.73,
+          "probability": 0.595703125
+        }
+      ]
+    },
+    {
+      "start": 25.39,
+      "end": 27.45,
+      "text": "這好大啊這條魚啊",
+      "words": [
+        {
+          "text": "這",
+          "start": 25.39,
+          "end": 25.87,
+          "probability": 0.27099609375
+        },
+        {
+          "text": "好",
+          "start": 25.87,
+          "end": 26.19,
+          "probability": 0.409423828125
+        },
+        {
+          "text": "大",
+          "start": 26.19,
+          "end": 26.49,
+          "probability": 0.98974609375
+        },
+        {
+          "text": "啊",
+          "start": 26.49,
+          "end": 26.65,
+          "probability": 0.42041015625
+        },
+        {
+          "text": "這",
+          "start": 26.65,
+          "end": 26.71,
+          "probability": 0.75927734375
+        },
+        {
+          "text": "條",
+          "start": 26.71,
+          "end": 26.83,
+          "probability": 0.93994140625
+        },
+        {
+          "text": "魚",
+          "start": 26.83,
+          "end": 27.03,
+          "probability": 0.98828125
+        },
+        {
+          "text": "啊",
+          "start": 27.03,
+          "end": 27.45,
+          "probability": 0.59765625
+        }
+      ]
+    },
+    {
+      "start": 31.13,
+      "end": 33.25,
+      "text": "別打別打別打",
+      "words": [
+        {
+          "text": "別",
+          "start": 31.13,
+          "end": 31.61,
+          "probability": 0.82666015625
+        },
+        {
+          "text": "打",
+          "start": 31.61,
+          "end": 31.73,
+          "probability": 0.9921875
+        },
+        {
+          "text": "別",
+          "start": 31.73,
+          "end": 31.85,
+          "probability": 0.58642578125
+        },
+        {
+          "text": "打",
+          "start": 31.85,
+          "end": 32.19,
+          "probability": 0.98974609375
+        },
+        {
+          "text": "別",
+          "start": 32.19,
+          "end": 32.41,
+          "probability": 0.81689453125
+        },
+        {
+          "text": "打",
+          "start": 32.41,
+          "end": 33.25,
+          "probability": 0.986328125
+        }
+      ]
+    },
+    {
+      "start": 33.25,
+      "end": 33.49,
+      "text": "你",
+      "words": [
+        {
+          "text": "你",
+          "start": 33.25,
+          "end": 33.49,
+          "probability": 0.80029296875
+        }
+      ]
+    },
+    {
+      "start": 35.09,
+      "end": 36.11,
+      "text": "你讓人家小",
+      "words": [
+        {
+          "text": "你",
+          "start": 35.09,
+          "end": 35.49,
+          "probability": 0.55712890625
+        },
+        {
+          "text": "讓",
+          "start": 35.49,
+          "end": 35.63,
+          "probability": 0.1846923828125
+        },
+        {
+          "text": "人",
+          "start": 35.63,
+          "end": 35.77,
+          "probability": 0.994140625
+        },
+        {
+          "text": "家",
+          "start": 35.77,
+          "end": 35.89,
+          "probability": 0.08709716796875
+        },
+        {
+          "text": "小",
+          "start": 35.89,
+          "end": 36.11,
+          "probability": 0.8583984375
+        }
+      ]
+    },
+    {
+      "start": 36.11,
+      "end": 37.59,
+      "text": "你讓人家小刺鑽走吧",
+      "words": [
+        {
+          "text": "你",
+          "start": 36.11,
+          "end": 36.53,
+          "probability": 0.033111572265625
+        },
+        {
+          "text": "讓",
+          "start": 36.53,
+          "end": 36.69,
+          "probability": 0.98828125
+        },
+        {
+          "text": "人",
+          "start": 36.69,
+          "end": 36.81,
+          "probability": 0.98974609375
+        },
+        {
+          "text": "家",
+          "start": 36.81,
+          "end": 36.85,
+          "probability": 0.349853515625
+        },
+        {
+          "text": "小",
+          "start": 36.85,
+          "end": 36.99,
+          "probability": 0.98681640625
+        },
+        {
+          "text": "刺",
+          "start": 36.99,
+          "end": 37.13,
+          "probability": 0.876953125
+        },
+        {
+          "text": "鑽",
+          "start": 37.13,
+          "end": 37.25,
+          "probability": 0.52001953125
+        },
+        {
+          "text": "走吧",
+          "start": 37.25,
+          "end": 37.59,
+          "probability": 0.83740234375
+        }
+      ]
+    },
+    {
+      "start": 38.39,
+      "end": 39.73,
+      "text": "這老六真是",
+      "words": [
+        {
+          "text": "這",
+          "start": 38.39,
+          "end": 38.79,
+          "probability": 0.73486328125
+        },
+        {
+          "text": "老",
+          "start": 38.79,
+          "end": 39.01,
+          "probability": 0.98828125
+        },
+        {
+          "text": "六",
+          "start": 39.01,
+          "end": 39.21,
+          "probability": 0.88134765625
+        },
+        {
+          "text": "真",
+          "start": 39.21,
+          "end": 39.53,
+          "probability": 0.90673828125
+        },
+        {
+          "text": "是",
+          "start": 39.53,
+          "end": 39.73,
+          "probability": 0.90087890625
+        }
+      ]
+    },
+    {
+      "start": 39.73,
+      "end": 41.17,
+      "text": "這隻是小刺鑽",
+      "words": [
+        {
+          "text": "這",
+          "start": 39.73,
+          "end": 40.37,
+          "probability": 0.71044921875
+        },
+        {
+          "text": "隻",
+          "start": 40.37,
+          "end": 40.51,
+          "probability": 0.91162109375
+        },
+        {
+          "text": "是",
+          "start": 40.51,
+          "end": 40.63,
+          "probability": 0.546875
+        },
+        {
+          "text": "小",
+          "start": 40.63,
+          "end": 40.79,
+          "probability": 0.998046875
+        },
+        {
+          "text": "刺",
+          "start": 40.79,
+          "end": 40.97,
+          "probability": 0.996337890625
+        },
+        {
+          "text": "鑽",
+          "start": 40.97,
+          "end": 41.17,
+          "probability": 0.9915364583333334
+        }
+      ]
+    },
+    {
+      "start": 41.17,
+      "end": 43.65,
+      "text": "他是非常溫柔的一種小動物",
+      "words": [
+        {
+          "text": "他是",
+          "start": 41.17,
+          "end": 41.85,
+          "probability": 0.431396484375
+        },
+        {
+          "text": "非常",
+          "start": 41.85,
+          "end": 42.17,
+          "probability": 0.99609375
+        },
+        {
+          "text": "溫",
+          "start": 42.17,
+          "end": 42.43,
+          "probability": 0.9775390625
+        },
+        {
+          "text": "柔",
+          "start": 42.43,
+          "end": 42.61,
+          "probability": 1.0
+        },
+        {
+          "text": "的",
+          "start": 42.61,
+          "end": 42.75,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "一",
+          "start": 42.75,
+          "end": 42.85,
+          "probability": 0.970703125
+        },
+        {
+          "text": "種",
+          "start": 42.85,
+          "end": 42.93,
+          "probability": 0.97265625
+        },
+        {
+          "text": "小",
+          "start": 42.93,
+          "end": 43.13,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "動",
+          "start": 43.13,
+          "end": 43.29,
+          "probability": 0.990234375
+        },
+        {
+          "text": "物",
+          "start": 43.29,
+          "end": 43.65,
+          "probability": 0.9990234375
+        }
+      ]
+    },
+    {
+      "start": 45.21,
+      "end": 46.15,
+      "text": "怎麼回事",
+      "words": [
+        {
+          "text": "怎麼",
+          "start": 45.21,
+          "end": 45.61,
+          "probability": 0.5673828125
+        },
+        {
+          "text": "回",
+          "start": 45.61,
+          "end": 46.01,
+          "probability": 0.802734375
+        },
+        {
+          "text": "事",
+          "start": 46.01,
+          "end": 46.15,
+          "probability": 1.0
+        }
+      ]
+    },
+    {
+      "start": 46.15,
+      "end": 47.85,
+      "text": "活生生都是尖尖的刺",
+      "words": [
+        {
+          "text": "活",
+          "start": 46.15,
+          "end": 46.53,
+          "probability": 0.09136962890625
+        },
+        {
+          "text": "生",
+          "start": 46.53,
+          "end": 46.67,
+          "probability": 0.7666015625
+        },
+        {
+          "text": "生",
+          "start": 46.67,
+          "end": 46.83,
+          "probability": 0.9755859375
+        },
+        {
+          "text": "都是",
+          "start": 46.83,
+          "end": 47.05,
+          "probability": 0.99462890625
+        },
+        {
+          "text": "尖",
+          "start": 47.05,
+          "end": 47.29,
+          "probability": 0.955078125
+        },
+        {
+          "text": "尖",
+          "start": 47.29,
+          "end": 47.47,
+          "probability": 0.99462890625
+        },
+        {
+          "text": "的",
+          "start": 47.47,
+          "end": 47.59,
+          "probability": 0.96875
+        },
+        {
+          "text": "刺",
+          "start": 47.59,
+          "end": 47.85,
+          "probability": 0.99853515625
+        }
+      ]
+    },
+    {
+      "start": 51.87,
+      "end": 53.29,
+      "text": "你看長得可不可愛",
+      "words": [
+        {
+          "text": "你看",
+          "start": 51.87,
+          "end": 52.27,
+          "probability": 0.353271484375
+        },
+        {
+          "text": "長",
+          "start": 52.27,
+          "end": 52.67,
+          "probability": 0.9755859375
+        },
+        {
+          "text": "得",
+          "start": 52.67,
+          "end": 52.79,
+          "probability": 0.70654296875
+        },
+        {
+          "text": "可",
+          "start": 52.79,
+          "end": 52.95,
+          "probability": 0.99462890625
+        },
+        {
+          "text": "不",
+          "start": 52.95,
+          "end": 53.05,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "可愛",
+          "start": 53.05,
+          "end": 53.29,
+          "probability": 0.89111328125
+        }
+      ]
+    },
+    {
+      "start": 53.29,
+      "end": 55.07,
+      "text": "這晚上不能刷鞋",
+      "words": [
+        {
+          "text": "這",
+          "start": 53.29,
+          "end": 54.09,
+          "probability": 0.9443359375
+        },
+        {
+          "text": "晚上",
+          "start": 54.09,
+          "end": 54.45,
+          "probability": 0.281494140625
+        },
+        {
+          "text": "不能",
+          "start": 54.45,
+          "end": 54.67,
+          "probability": 0.99658203125
+        },
+        {
+          "text": "刷",
+          "start": 54.67,
+          "end": 54.87,
+          "probability": 0.995361328125
+        },
+        {
+          "text": "鞋",
+          "start": 54.87,
+          "end": 55.07,
+          "probability": 0.9501953125
+        }
+      ]
+    },
+    {
+      "start": 57.37,
+      "end": 59.41,
+      "text": "兄弟們這晚上也不性吃",
+      "words": [
+        {
+          "text": "兄",
+          "start": 57.37,
+          "end": 57.77,
+          "probability": 0.50341796875
+        },
+        {
+          "text": "弟",
+          "start": 57.77,
+          "end": 58.17,
+          "probability": 0.95556640625
+        },
+        {
+          "text": "們",
+          "start": 58.17,
+          "end": 58.27,
+          "probability": 0.97802734375
+        },
+        {
+          "text": "這",
+          "start": 58.27,
+          "end": 58.57,
+          "probability": 0.798828125
+        },
+        {
+          "text": "晚上",
+          "start": 58.57,
+          "end": 58.71,
+          "probability": 0.6796875
+        },
+        {
+          "text": "也",
+          "start": 58.71,
+          "end": 58.87,
+          "probability": 0.99169921875
+        },
+        {
+          "text": "不",
+          "start": 58.87,
+          "end": 59.01,
+          "probability": 0.6650390625
+        },
+        {
+          "text": "性",
+          "start": 59.01,
+          "end": 59.19,
+          "probability": 0.1395263671875
+        },
+        {
+          "text": "吃",
+          "start": 59.19,
+          "end": 59.41,
+          "probability": 0.86083984375
+        }
+      ]
+    },
+    {
+      "start": 59.41,
+      "end": 61.81,
+      "text": "處理不好正容易出事",
+      "words": [
+        {
+          "text": "處",
+          "start": 59.41,
+          "end": 60.05,
+          "probability": 0.469482421875
+        },
+        {
+          "text": "理",
+          "start": 60.05,
+          "end": 60.87,
+          "probability": 0.9873046875
+        },
+        {
+          "text": "不好",
+          "start": 60.87,
+          "end": 61.07,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "正",
+          "start": 61.07,
+          "end": 61.29,
+          "probability": 0.35205078125
+        },
+        {
+          "text": "容易",
+          "start": 61.29,
+          "end": 61.45,
+          "probability": 0.84228515625
+        },
+        {
+          "text": "出",
+          "start": 61.45,
+          "end": 61.63,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "事",
+          "start": 61.63,
+          "end": 61.81,
+          "probability": 0.99560546875
+        }
+      ]
+    },
+    {
+      "start": 62.73,
+      "end": 63.91,
+      "text": "來你還是走吧",
+      "words": [
+        {
+          "text": "來",
+          "start": 62.73,
+          "end": 63.13,
+          "probability": 0.0034084320068359375
+        },
+        {
+          "text": "你",
+          "start": 63.13,
+          "end": 63.53,
+          "probability": 0.449462890625
+        },
+        {
+          "text": "還是",
+          "start": 63.53,
+          "end": 63.69,
+          "probability": 0.93896484375
+        },
+        {
+          "text": "走吧",
+          "start": 63.69,
+          "end": 63.91,
+          "probability": 0.93896484375
+        }
+      ]
+    },
+    {
+      "start": 64.87,
+      "end": 66.07,
+      "text": "這個老六就不行了",
+      "words": [
+        {
+          "text": "這個",
+          "start": 64.87,
+          "end": 65.27,
+          "probability": 0.9130859375
+        },
+        {
+          "text": "老",
+          "start": 65.27,
+          "end": 65.43,
+          "probability": 0.8955078125
+        },
+        {
+          "text": "六",
+          "start": 65.43,
+          "end": 65.55,
+          "probability": 0.72998046875
+        },
+        {
+          "text": "就",
+          "start": 65.55,
+          "end": 65.65,
+          "probability": 0.990234375
+        },
+        {
+          "text": "不行",
+          "start": 65.65,
+          "end": 65.87,
+          "probability": 0.9912109375
+        },
+        {
+          "text": "了",
+          "start": 65.87,
+          "end": 66.07,
+          "probability": 0.912109375
+        }
+      ]
+    },
+    {
+      "start": 66.07,
+      "end": 68.29,
+      "text": "來你跟著我我給你點教訓",
+      "words": [
+        {
+          "text": "來",
+          "start": 66.07,
+          "end": 66.67,
+          "probability": 0.8876953125
+        },
+        {
+          "text": "你",
+          "start": 66.67,
+          "end": 67.03,
+          "probability": 0.94482421875
+        },
+        {
+          "text": "跟",
+          "start": 67.03,
+          "end": 67.19,
+          "probability": 0.9765625
+        },
+        {
+          "text": "著",
+          "start": 67.19,
+          "end": 67.27,
+          "probability": 0.9736328125
+        },
+        {
+          "text": "我",
+          "start": 67.27,
+          "end": 67.41,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "我",
+          "start": 67.41,
+          "end": 67.59,
+          "probability": 0.71240234375
+        },
+        {
+          "text": "給",
+          "start": 67.59,
+          "end": 67.69,
+          "probability": 0.994140625
+        },
+        {
+          "text": "你",
+          "start": 67.69,
+          "end": 67.75,
+          "probability": 0.9716796875
+        },
+        {
+          "text": "點",
+          "start": 67.75,
+          "end": 67.87,
+          "probability": 0.9814453125
+        },
+        {
+          "text": "教",
+          "start": 67.87,
+          "end": 68.11,
+          "probability": 0.748046875
+        },
+        {
+          "text": "訓",
+          "start": 68.11,
+          "end": 68.29,
+          "probability": 0.914794921875
+        }
+      ]
+    },
+    {
+      "start": 68.29,
+      "end": 69.79,
+      "text": "剛才什麼東西鑽裡邊",
+      "words": [
+        {
+          "text": "剛",
+          "start": 68.29,
+          "end": 68.67,
+          "probability": 0.86376953125
+        },
+        {
+          "text": "才",
+          "start": 68.67,
+          "end": 68.81,
+          "probability": 0.62646484375
+        },
+        {
+          "text": "什麼",
+          "start": 68.81,
+          "end": 69.05,
+          "probability": 0.5166015625
+        },
+        {
+          "text": "東西",
+          "start": 69.05,
+          "end": 69.27,
+          "probability": 0.99267578125
+        },
+        {
+          "text": "鑽",
+          "start": 69.27,
+          "end": 69.45,
+          "probability": 0.68841552734375
+        },
+        {
+          "text": "裡",
+          "start": 69.45,
+          "end": 69.59,
+          "probability": 0.1871337890625
+        },
+        {
+          "text": "邊",
+          "start": 69.59,
+          "end": 69.79,
+          "probability": 0.9423828125
+        }
+      ]
+    },
+    {
+      "start": 70.95,
+      "end": 71.89,
+      "text": "這就啥",
+      "words": [
+        {
+          "text": "這",
+          "start": 70.95,
+          "end": 71.35,
+          "probability": 0.37060546875
+        },
+        {
+          "text": "就",
+          "start": 71.35,
+          "end": 71.75,
+          "probability": 0.382080078125
+        },
+        {
+          "text": "啥",
+          "start": 71.75,
+          "end": 71.89,
+          "probability": 0.594482421875
+        }
+      ]
+    },
+    {
+      "start": 75.16,
+      "end": 76.46,
+      "text": "是不是這皮皮響",
+      "words": [
+        {
+          "text": "是不是",
+          "start": 75.16,
+          "end": 75.56,
+          "probability": 0.024139404296875
+        },
+        {
+          "text": "這",
+          "start": 75.56,
+          "end": 75.96,
+          "probability": 0.375
+        },
+        {
+          "text": "皮",
+          "start": 75.96,
+          "end": 76.14,
+          "probability": 0.394775390625
+        },
+        {
+          "text": "皮",
+          "start": 76.14,
+          "end": 76.28,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "響",
+          "start": 76.28,
+          "end": 76.46,
+          "probability": 0.657470703125
+        }
+      ]
+    },
+    {
+      "start": 76.46,
+      "end": 77.7,
+      "text": "你看脆綠脆綠的",
+      "words": [
+        {
+          "text": "你看",
+          "start": 76.46,
+          "end": 76.7,
+          "probability": 0.51953125
+        },
+        {
+          "text": "脆",
+          "start": 76.7,
+          "end": 77.1,
+          "probability": 0.64208984375
+        },
+        {
+          "text": "綠",
+          "start": 77.1,
+          "end": 77.22,
+          "probability": 0.743408203125
+        },
+        {
+          "text": "脆",
+          "start": 77.22,
+          "end": 77.4,
+          "probability": 0.929443359375
+        },
+        {
+          "text": "綠",
+          "start": 77.4,
+          "end": 77.56,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "的",
+          "start": 77.56,
+          "end": 77.7,
+          "probability": 0.982421875
+        }
+      ]
+    },
+    {
+      "start": 77.7,
+      "end": 82.37,
+      "text": "你怎麼這麼兇",
+      "words": [
+        {
+          "text": "你",
+          "start": 77.7,
+          "end": 78.26,
+          "probability": 0.335693359375
+        },
+        {
+          "text": "怎麼",
+          "start": 78.26,
+          "end": 78.8,
+          "probability": 0.97509765625
+        },
+        {
+          "text": "這麼",
+          "start": 81.81,
+          "end": 82.05,
+          "probability": 0.98876953125
+        },
+        {
+          "text": "兇",
+          "start": 82.05,
+          "end": 82.37,
+          "probability": 0.892822265625
+        }
+      ]
+    },
+    {
+      "start": 82.37,
+      "end": 84.81,
+      "text": "我可不敢惹你了",
+      "words": [
+        {
+          "text": "我",
+          "start": 82.37,
+          "end": 83.13,
+          "probability": 0.4111328125
+        },
+        {
+          "text": "可",
+          "start": 83.13,
+          "end": 84.11,
+          "probability": 0.9794921875
+        },
+        {
+          "text": "不",
+          "start": 84.11,
+          "end": 84.19,
+          "probability": 0.998046875
+        },
+        {
+          "text": "敢",
+          "start": 84.19,
+          "end": 84.29,
+          "probability": 0.91259765625
+        },
+        {
+          "text": "惹",
+          "start": 84.29,
+          "end": 84.45,
+          "probability": 0.98193359375
+        },
+        {
+          "text": "你",
+          "start": 84.45,
+          "end": 84.61,
+          "probability": 0.99267578125
+        },
+        {
+          "text": "了",
+          "start": 84.61,
+          "end": 84.81,
+          "probability": 0.9775390625
+        }
+      ]
+    },
+    {
+      "start": 86.49,
+      "end": 88.25,
+      "text": "走吧再見太小了",
+      "words": [
+        {
+          "text": "走吧",
+          "start": 86.49,
+          "end": 86.89,
+          "probability": 0.962890625
+        },
+        {
+          "text": "再見",
+          "start": 86.89,
+          "end": 87.29,
+          "probability": 0.97900390625
+        },
+        {
+          "text": "太",
+          "start": 87.29,
+          "end": 87.91,
+          "probability": 0.88671875
+        },
+        {
+          "text": "小",
+          "start": 87.91,
+          "end": 88.11,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "了",
+          "start": 88.11,
+          "end": 88.25,
+          "probability": 0.9619140625
+        }
+      ]
+    },
+    {
+      "start": 89.21,
+      "end": 90.77,
+      "text": "咱們去找點其他的東西",
+      "words": [
+        {
+          "text": "咱",
+          "start": 89.21,
+          "end": 89.61,
+          "probability": 0.894775390625
+        },
+        {
+          "text": "們",
+          "start": 89.61,
+          "end": 89.69,
+          "probability": 0.990234375
+        },
+        {
+          "text": "去",
+          "start": 89.69,
+          "end": 89.77,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "找",
+          "start": 89.77,
+          "end": 89.93,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "點",
+          "start": 89.93,
+          "end": 90.09,
+          "probability": 0.9873046875
+        },
+        {
+          "text": "其",
+          "start": 90.09,
+          "end": 90.31,
+          "probability": 0.95556640625
+        },
+        {
+          "text": "他的",
+          "start": 90.31,
+          "end": 90.47,
+          "probability": 0.87255859375
+        },
+        {
+          "text": "東西",
+          "start": 90.47,
+          "end": 90.77,
+          "probability": 0.99853515625
+        }
+      ]
+    },
+    {
+      "start": 90.77,
+      "end": 92.59,
+      "text": "你別走啊",
+      "words": [
+        {
+          "text": "你",
+          "start": 90.77,
+          "end": 91.41,
+          "probability": 0.5703125
+        },
+        {
+          "text": "別",
+          "start": 91.41,
+          "end": 91.87,
+          "probability": 0.98095703125
+        },
+        {
+          "text": "走",
+          "start": 91.87,
+          "end": 92.07,
+          "probability": 0.9931640625
+        },
+        {
+          "text": "啊",
+          "start": 92.07,
+          "end": 92.59,
+          "probability": 0.8583984375
+        }
+      ]
+    },
+    {
+      "start": 93.37,
+      "end": 93.77,
+      "text": "哇",
+      "words": [
+        {
+          "text": "哇",
+          "start": 93.37,
+          "end": 93.77,
+          "probability": 0.060577392578125
+        }
+      ]
+    },
+    {
+      "start": 94.97,
+      "end": 97.15,
+      "text": "這是寄一寫好漂亮啊",
+      "words": [
+        {
+          "text": "這是",
+          "start": 94.97,
+          "end": 95.37,
+          "probability": 0.007293701171875
+        },
+        {
+          "text": "寄",
+          "start": 95.37,
+          "end": 95.69,
+          "probability": 0.47894287109375
+        },
+        {
+          "text": "一",
+          "start": 95.69,
+          "end": 95.79,
+          "probability": 0.374755859375
+        },
+        {
+          "text": "寫",
+          "start": 95.79,
+          "end": 95.93,
+          "probability": 0.439849853515625
+        },
+        {
+          "text": "好",
+          "start": 95.93,
+          "end": 96.19,
+          "probability": 0.94677734375
+        },
+        {
+          "text": "漂亮",
+          "start": 96.19,
+          "end": 96.61,
+          "probability": 0.99609375
+        },
+        {
+          "text": "啊",
+          "start": 96.61,
+          "end": 97.15,
+          "probability": 0.79541015625
+        }
+      ]
+    },
+    {
+      "start": 97.15,
+      "end": 99.65,
+      "text": "你嚇我嚇我一跳",
+      "words": [
+        {
+          "text": "你",
+          "start": 97.15,
+          "end": 97.93,
+          "probability": 0.0189208984375
+        },
+        {
+          "text": "嚇",
+          "start": 97.93,
+          "end": 98.61,
+          "probability": 0.98095703125
+        },
+        {
+          "text": "我",
+          "start": 98.61,
+          "end": 98.79,
+          "probability": 0.8427734375
+        },
+        {
+          "text": "嚇",
+          "start": 98.79,
+          "end": 99.19,
+          "probability": 0.689453125
+        },
+        {
+          "text": "我",
+          "start": 99.19,
+          "end": 99.33,
+          "probability": 0.9296875
+        },
+        {
+          "text": "一",
+          "start": 99.33,
+          "end": 99.43,
+          "probability": 0.98095703125
+        },
+        {
+          "text": "跳",
+          "start": 99.43,
+          "end": 99.65,
+          "probability": 0.99658203125
+        }
+      ]
+    },
+    {
+      "start": 101.93,
+      "end": 102.95,
+      "text": "出來出來出來",
+      "words": [
+        {
+          "text": "出來",
+          "start": 101.93,
+          "end": 102.33,
+          "probability": 0.37060546875
+        },
+        {
+          "text": "出來",
+          "start": 102.33,
+          "end": 102.73,
+          "probability": 0.6796875
+        },
+        {
+          "text": "出來",
+          "start": 102.73,
+          "end": 102.95,
+          "probability": 0.685546875
+        }
+      ]
+    },
+    {
+      "start": 102.95,
+      "end": 104.21,
+      "text": "老鄉開開門",
+      "words": [
+        {
+          "text": "老",
+          "start": 102.95,
+          "end": 103.45,
+          "probability": 0.50439453125
+        },
+        {
+          "text": "鄉",
+          "start": 103.45,
+          "end": 103.61,
+          "probability": 0.572998046875
+        },
+        {
+          "text": "開",
+          "start": 103.61,
+          "end": 103.93,
+          "probability": 0.73193359375
+        },
+        {
+          "text": "開",
+          "start": 103.93,
+          "end": 104.05,
+          "probability": 0.6337890625
+        },
+        {
+          "text": "門",
+          "start": 104.05,
+          "end": 104.21,
+          "probability": 0.99560546875
+        }
+      ]
+    },
+    {
+      "start": 104.21,
+      "end": 106.61,
+      "text": "我都跟你說了我是拆遷大隊的嘛",
+      "words": [
+        {
+          "text": "我",
+          "start": 104.21,
+          "end": 104.77,
+          "probability": 0.8173828125
+        },
+        {
+          "text": "都",
+          "start": 104.77,
+          "end": 104.87,
+          "probability": 0.9951171875
+        },
+        {
+          "text": "跟你",
+          "start": 104.87,
+          "end": 105.01,
+          "probability": 0.9453125
+        },
+        {
+          "text": "說",
+          "start": 105.01,
+          "end": 105.27,
+          "probability": 0.99609375
+        },
+        {
+          "text": "了",
+          "start": 105.27,
+          "end": 105.37,
+          "probability": 0.99267578125
+        },
+        {
+          "text": "我是",
+          "start": 105.37,
+          "end": 105.55,
+          "probability": 0.9873046875
+        },
+        {
+          "text": "拆",
+          "start": 105.55,
+          "end": 105.75,
+          "probability": 0.9677734375
+        },
+        {
+          "text": "遷",
+          "start": 105.75,
+          "end": 105.91,
+          "probability": 0.93505859375
+        },
+        {
+          "text": "大",
+          "start": 105.91,
+          "end": 106.07,
+          "probability": 0.880859375
+        },
+        {
+          "text": "隊",
+          "start": 106.07,
+          "end": 106.21,
+          "probability": 0.94287109375
+        },
+        {
+          "text": "的",
+          "start": 106.21,
+          "end": 106.39,
+          "probability": 0.8818359375
+        },
+        {
+          "text": "嘛",
+          "start": 106.39,
+          "end": 106.61,
+          "probability": 0.5126953125
+        }
+      ]
+    },
+    {
+      "start": 106.61,
+      "end": 107.29,
+      "text": "走一路",
+      "words": [
+        {
+          "text": "走",
+          "start": 106.61,
+          "end": 106.93,
+          "probability": 0.0118255615234375
+        },
+        {
+          "text": "一",
+          "start": 106.93,
+          "end": 107.05,
+          "probability": 0.322021484375
+        },
+        {
+          "text": "路",
+          "start": 107.05,
+          "end": 107.29,
+          "probability": 0.4736328125
+        }
+      ]
+    },
+    {
+      "start": 114.46,
+      "end": 116.1,
+      "text": "西排魚兄弟們",
+      "words": [
+        {
+          "text": "西",
+          "start": 114.46,
+          "end": 114.86,
+          "probability": 0.6943359375
+        },
+        {
+          "text": "排",
+          "start": 114.86,
+          "end": 115.26,
+          "probability": 0.10076904296875
+        },
+        {
+          "text": "魚",
+          "start": 115.26,
+          "end": 115.4,
+          "probability": 0.82080078125
+        },
+        {
+          "text": "兄",
+          "start": 115.4,
+          "end": 115.6,
+          "probability": 0.97705078125
+        },
+        {
+          "text": "弟",
+          "start": 115.6,
+          "end": 115.7,
+          "probability": 0.810546875
+        },
+        {
+          "text": "們",
+          "start": 115.7,
+          "end": 116.1,
+          "probability": 0.9033203125
+        }
+      ]
+    },
+    {
+      "start": 116.58,
+      "end": 117.46,
+      "text": "你堵這兒",
+      "words": [
+        {
+          "text": "你",
+          "start": 116.58,
+          "end": 116.78,
+          "probability": 0.352783203125
+        },
+        {
+          "text": "堵",
+          "start": 116.78,
+          "end": 116.96,
+          "probability": 0.921142578125
+        },
+        {
+          "text": "這",
+          "start": 116.96,
+          "end": 117.14,
+          "probability": 0.78515625
+        },
+        {
+          "text": "兒",
+          "start": 117.14,
+          "end": 117.46,
+          "probability": 0.471435546875
+        }
+      ]
+    },
+    {
+      "start": 118.6,
+      "end": 120.02,
+      "text": "這魚長得特別有意思",
+      "words": [
+        {
+          "text": "這",
+          "start": 118.6,
+          "end": 119.0,
+          "probability": 0.326171875
+        },
+        {
+          "text": "魚",
+          "start": 119.0,
+          "end": 119.16,
+          "probability": 0.986328125
+        },
+        {
+          "text": "長",
+          "start": 119.16,
+          "end": 119.32,
+          "probability": 0.93017578125
+        },
+        {
+          "text": "得",
+          "start": 119.32,
+          "end": 119.42,
+          "probability": 0.77001953125
+        },
+        {
+          "text": "特別",
+          "start": 119.42,
+          "end": 119.6,
+          "probability": 0.982421875
+        },
+        {
+          "text": "有",
+          "start": 119.6,
+          "end": 119.84,
+          "probability": 0.99609375
+        },
+        {
+          "text": "意思",
+          "start": 119.84,
+          "end": 120.02,
+          "probability": 0.99658203125
+        }
+      ]
+    },
+    {
+      "start": 120.02,
+      "end": 121.04,
+      "text": "給他看一下",
+      "words": [
+        {
+          "text": "給",
+          "start": 120.02,
+          "end": 120.64,
+          "probability": 0.974609375
+        },
+        {
+          "text": "他",
+          "start": 120.64,
+          "end": 120.74,
+          "probability": 0.345703125
+        },
+        {
+          "text": "看一下",
+          "start": 120.74,
+          "end": 121.04,
+          "probability": 0.84228515625
+        }
+      ]
+    },
+    {
+      "start": 122.9,
+      "end": 125.08,
+      "text": "這魚我感覺長髮了你知道嗎",
+      "words": [
+        {
+          "text": "這",
+          "start": 122.9,
+          "end": 123.3,
+          "probability": 0.4658203125
+        },
+        {
+          "text": "魚",
+          "start": 123.3,
+          "end": 123.7,
+          "probability": 0.9658203125
+        },
+        {
+          "text": "我",
+          "start": 123.7,
+          "end": 123.82,
+          "probability": 0.64013671875
+        },
+        {
+          "text": "感覺",
+          "start": 123.82,
+          "end": 123.94,
+          "probability": 0.99267578125
+        },
+        {
+          "text": "長",
+          "start": 123.94,
+          "end": 124.16,
+          "probability": 0.9853515625
+        },
+        {
+          "text": "髮",
+          "start": 124.16,
+          "end": 124.42,
+          "probability": 0.80224609375
+        },
+        {
+          "text": "了",
+          "start": 124.42,
+          "end": 124.54,
+          "probability": 0.6513671875
+        },
+        {
+          "text": "你知道",
+          "start": 124.54,
+          "end": 124.72,
+          "probability": 0.8603515625
+        },
+        {
+          "text": "嗎",
+          "start": 124.72,
+          "end": 125.08,
+          "probability": 0.7197265625
+        }
+      ]
+    },
+    {
+      "start": 125.94,
+      "end": 127.52,
+      "text": "正常我感覺這應該是底下",
+      "words": [
+        {
+          "text": "正",
+          "start": 125.94,
+          "end": 126.34,
+          "probability": 0.81103515625
+        },
+        {
+          "text": "常",
+          "start": 126.34,
+          "end": 126.46,
+          "probability": 0.9931640625
+        },
+        {
+          "text": "我",
+          "start": 126.46,
+          "end": 126.54,
+          "probability": 0.97705078125
+        },
+        {
+          "text": "感覺",
+          "start": 126.54,
+          "end": 126.7,
+          "probability": 0.99658203125
+        },
+        {
+          "text": "這",
+          "start": 126.7,
+          "end": 126.86,
+          "probability": 0.447509765625
+        },
+        {
+          "text": "應該",
+          "start": 126.86,
+          "end": 126.96,
+          "probability": 0.9453125
+        },
+        {
+          "text": "是",
+          "start": 126.96,
+          "end": 127.12,
+          "probability": 0.99658203125
+        },
+        {
+          "text": "底",
+          "start": 127.12,
+          "end": 127.32,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "下",
+          "start": 127.32,
+          "end": 127.52,
+          "probability": 0.99853515625
+        }
+      ]
+    },
+    {
+      "start": 128.06,
+      "end": 128.92,
+      "text": "但是並不是",
+      "words": [
+        {
+          "text": "但是",
+          "start": 128.06,
+          "end": 128.52,
+          "probability": 0.408203125
+        },
+        {
+          "text": "並",
+          "start": 128.52,
+          "end": 128.7,
+          "probability": 0.11395263671875
+        },
+        {
+          "text": "不是",
+          "start": 128.7,
+          "end": 128.92,
+          "probability": 0.99072265625
+        }
+      ]
+    },
+    {
+      "start": 128.92,
+      "end": 130.44,
+      "text": "這是他的頭一部",
+      "words": [
+        {
+          "text": "這是",
+          "start": 128.92,
+          "end": 129.24,
+          "probability": 0.428466796875
+        },
+        {
+          "text": "他的",
+          "start": 129.24,
+          "end": 129.52,
+          "probability": 0.2734375
+        },
+        {
+          "text": "頭",
+          "start": 129.52,
+          "end": 129.76,
+          "probability": 0.9873046875
+        },
+        {
+          "text": "一",
+          "start": 129.76,
+          "end": 129.92,
+          "probability": 0.12469482421875
+        },
+        {
+          "text": "部",
+          "start": 129.92,
+          "end": 130.44,
+          "probability": 0.36376953125
+        }
+      ]
+    },
+    {
+      "start": 134.37,
+      "end": 136.12,
+      "text": "兄弟們犧牲了",
+      "words": [
+        {
+          "text": "兄",
+          "start": 134.37,
+          "end": 134.83,
+          "probability": 0.10491943359375
+        },
+        {
+          "text": "弟",
+          "start": 134.83,
+          "end": 135.29,
+          "probability": 0.966796875
+        },
+        {
+          "text": "們",
+          "start": 135.29,
+          "end": 135.45,
+          "probability": 0.97509765625
+        },
+        {
+          "text": "犧",
+          "start": 135.45,
+          "end": 135.73,
+          "probability": 0.46044921875
+        },
+        {
+          "text": "牲",
+          "start": 135.73,
+          "end": 135.89,
+          "probability": 0.989501953125
+        },
+        {
+          "text": "了",
+          "start": 135.89,
+          "end": 136.12,
+          "probability": 0.93359375
+        }
+      ]
+    },
+    {
+      "start": 139.96,
+      "end": 140.42,
+      "text": "怎麼樣",
+      "words": [
+        {
+          "text": "怎麼樣",
+          "start": 139.96,
+          "end": 140.42,
+          "probability": 0.30029296875
+        }
+      ]
+    },
+    {
+      "start": 140.92,
+      "end": 142.12,
+      "text": "這魚有意思嗎",
+      "words": [
+        {
+          "text": "這",
+          "start": 140.92,
+          "end": 141.18,
+          "probability": 0.509765625
+        },
+        {
+          "text": "魚",
+          "start": 141.18,
+          "end": 141.3,
+          "probability": 0.9228515625
+        },
+        {
+          "text": "有",
+          "start": 141.3,
+          "end": 141.42,
+          "probability": 0.9775390625
+        },
+        {
+          "text": "意思",
+          "start": 141.42,
+          "end": 141.6,
+          "probability": 0.9794921875
+        },
+        {
+          "text": "嗎",
+          "start": 141.6,
+          "end": 142.12,
+          "probability": 0.5830078125
+        }
+      ]
+    },
+    {
+      "start": 142.12,
+      "end": 143.2,
+      "text": "你還是進去吧",
+      "words": [
+        {
+          "text": "你",
+          "start": 142.12,
+          "end": 142.54,
+          "probability": 0.6767578125
+        },
+        {
+          "text": "還是",
+          "start": 142.54,
+          "end": 142.68,
+          "probability": 0.99560546875
+        },
+        {
+          "text": "進",
+          "start": 142.68,
+          "end": 142.86,
+          "probability": 0.990234375
+        },
+        {
+          "text": "去",
+          "start": 142.86,
+          "end": 143.0,
+          "probability": 0.87890625
+        },
+        {
+          "text": "吧",
+          "start": 143.0,
+          "end": 143.2,
+          "probability": 0.8505859375
+        }
+      ]
+    },
+    {
+      "start": 143.2,
+      "end": 144.1,
+      "text": "太小了這個小魚",
+      "words": [
+        {
+          "text": "太",
+          "start": 143.2,
+          "end": 143.36,
+          "probability": 0.9462890625
+        },
+        {
+          "text": "小",
+          "start": 143.36,
+          "end": 143.52,
+          "probability": 0.99658203125
+        },
+        {
+          "text": "了",
+          "start": 143.52,
+          "end": 143.64,
+          "probability": 0.95703125
+        },
+        {
+          "text": "這個",
+          "start": 143.64,
+          "end": 143.76,
+          "probability": 0.83642578125
+        },
+        {
+          "text": "小",
+          "start": 143.76,
+          "end": 143.9,
+          "probability": 0.994140625
+        },
+        {
+          "text": "魚",
+          "start": 143.9,
+          "end": 144.1,
+          "probability": 0.99169921875
+        }
+      ]
+    },
+    {
+      "start": 145.24,
+      "end": 147.0,
+      "text": "先來一口大魚七七八",
+      "words": [
+        {
+          "text": "先",
+          "start": 145.24,
+          "end": 145.7,
+          "probability": 0.67724609375
+        },
+        {
+          "text": "來",
+          "start": 145.7,
+          "end": 145.88,
+          "probability": 0.978515625
+        },
+        {
+          "text": "一",
+          "start": 145.88,
+          "end": 145.94,
+          "probability": 0.87158203125
+        },
+        {
+          "text": "口",
+          "start": 145.94,
+          "end": 146.02,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "大",
+          "start": 146.02,
+          "end": 146.3,
+          "probability": 0.99462890625
+        },
+        {
+          "text": "魚",
+          "start": 146.3,
+          "end": 146.48,
+          "probability": 0.98828125
+        },
+        {
+          "text": "七",
+          "start": 146.48,
+          "end": 146.66,
+          "probability": 0.44189453125
+        },
+        {
+          "text": "七",
+          "start": 146.66,
+          "end": 146.82,
+          "probability": 0.97802734375
+        },
+        {
+          "text": "八",
+          "start": 146.82,
+          "end": 147.0,
+          "probability": 0.95703125
+        }
+      ]
+    },
+    {
+      "start": 150.64,
+      "end": 151.79,
+      "text": "這肉質",
+      "words": [
+        {
+          "text": "這",
+          "start": 150.64,
+          "end": 151.1,
+          "probability": 0.06280517578125
+        },
+        {
+          "text": "肉",
+          "start": 151.1,
+          "end": 151.56,
+          "probability": 0.99560546875
+        },
+        {
+          "text": "質",
+          "start": 151.56,
+          "end": 151.79,
+          "probability": 0.8525390625
+        }
+      ]
+    },
+    {
+      "start": 153.3,
+      "end": 154.06,
+      "text": "剛剛好",
+      "words": [
+        {
+          "text": "剛剛",
+          "start": 153.3,
+          "end": 153.76,
+          "probability": 0.179443359375
+        },
+        {
+          "text": "好",
+          "start": 153.76,
+          "end": 154.06,
+          "probability": 0.487548828125
+        }
+      ]
+    },
+    {
+      "start": 156.7,
+      "end": 158.84,
+      "text": "哇這魚絲挺大的",
+      "words": [
+        {
+          "text": "哇",
+          "start": 156.7,
+          "end": 157.16,
+          "probability": 0.09173583984375
+        },
+        {
+          "text": "這",
+          "start": 157.16,
+          "end": 157.44,
+          "probability": 0.578125
+        },
+        {
+          "text": "魚",
+          "start": 157.44,
+          "end": 157.58,
+          "probability": 0.27734375
+        },
+        {
+          "text": "絲",
+          "start": 157.58,
+          "end": 157.82,
+          "probability": 0.489349365234375
+        },
+        {
+          "text": "挺",
+          "start": 157.82,
+          "end": 158.58,
+          "probability": 0.50830078125
+        },
+        {
+          "text": "大的",
+          "start": 158.58,
+          "end": 158.84,
+          "probability": 0.93603515625
+        }
+      ]
+    },
+    {
+      "start": 166.75,
+      "end": 168.37,
+      "text": "這裡面是有糕的",
+      "words": [
+        {
+          "text": "這裡",
+          "start": 166.75,
+          "end": 167.21,
+          "probability": 0.365966796875
+        },
+        {
+          "text": "面",
+          "start": 167.21,
+          "end": 167.37,
+          "probability": 0.67578125
+        },
+        {
+          "text": "是",
+          "start": 167.37,
+          "end": 167.49,
+          "probability": 0.9736328125
+        },
+        {
+          "text": "有",
+          "start": 167.49,
+          "end": 167.63,
+          "probability": 0.99609375
+        },
+        {
+          "text": "糕",
+          "start": 167.63,
+          "end": 167.91,
+          "probability": 0.60113525390625
+        },
+        {
+          "text": "的",
+          "start": 167.91,
+          "end": 168.37,
+          "probability": 0.85986328125
+        }
+      ]
+    },
+    {
+      "start": 169.21,
+      "end": 169.67,
+      "text": "好吃",
+      "words": [
+        {
+          "text": "好吃",
+          "start": 169.21,
+          "end": 169.67,
+          "probability": 0.98388671875
+        }
+      ]
+    }
+  ],
+  "cues": [
+    {
+      "start": 0.37,
+      "end": 1.45,
+      "text": "大海退潮",
+      "words": [
+        {
+          "text": "大",
+          "start": 0.37,
+          "end": 0.65,
+          "probability": 0.57275390625
+        },
+        {
+          "text": "海",
+          "start": 0.65,
+          "end": 0.95,
+          "probability": 0.99609375
+        },
+        {
+          "text": "退",
+          "start": 0.95,
+          "end": 1.15,
+          "probability": 0.98779296875
+        },
+        {
+          "text": "潮",
+          "start": 1.15,
+          "end": 1.45,
+          "probability": 0.868896484375
+        }
+      ]
+    },
+    {
+      "start": 2.07,
+      "end": 5.75,
+      "text": "今天吃點小漁村的自助海鮮火鍋",
+      "words": [
+        {
+          "text": "今天",
+          "start": 2.07,
+          "end": 2.31,
+          "probability": 0.73779296875
+        },
+        {
+          "text": "吃",
+          "start": 2.31,
+          "end": 2.89,
+          "probability": 0.97607421875
+        },
+        {
+          "text": "點",
+          "start": 2.89,
+          "end": 3.11,
+          "probability": 0.367431640625
+        },
+        {
+          "text": "小",
+          "start": 3.11,
+          "end": 3.33,
+          "probability": 0.9873046875
+        },
+        {
+          "text": "漁",
+          "start": 3.33,
+          "end": 3.45,
+          "probability": 0.660888671875
+        },
+        {
+          "text": "村",
+          "start": 3.45,
+          "end": 3.57,
+          "probability": 0.998046875
+        },
+        {
+          "text": "的",
+          "start": 3.57,
+          "end": 3.77,
+          "probability": 0.94091796875
+        },
+        {
+          "text": "自",
+          "start": 3.77,
+          "end": 4.15,
+          "probability": 0.91552734375
+        },
+        {
+          "text": "助",
+          "start": 4.15,
+          "end": 4.45,
+          "probability": 0.80126953125
+        },
+        {
+          "text": "海",
+          "start": 4.45,
+          "end": 4.81,
+          "probability": 0.99609375
+        },
+        {
+          "text": "鮮",
+          "start": 4.81,
+          "end": 5.03,
+          "probability": 0.99365234375
+        },
+        {
+          "text": "火",
+          "start": 5.03,
+          "end": 5.27,
+          "probability": 0.97802734375
+        },
+        {
+          "text": "鍋",
+          "start": 5.27,
+          "end": 5.75,
+          "probability": 0.984130859375
+        }
+      ]
+    },
+    {
+      "start": 6.45,
+      "end": 9.19,
+      "text": "咱們先下海去找點免費的菜",
+      "words": [
+        {
+          "text": "咱",
+          "start": 6.45,
+          "end": 6.93,
+          "probability": 0.98095703125
+        },
+        {
+          "text": "們",
+          "start": 6.93,
+          "end": 7.03,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "先",
+          "start": 7.03,
+          "end": 7.25,
+          "probability": 0.984375
+        },
+        {
+          "text": "下",
+          "start": 7.25,
+          "end": 7.47,
+          "probability": 0.98388671875
+        },
+        {
+          "text": "海",
+          "start": 7.47,
+          "end": 7.59,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "去",
+          "start": 7.59,
+          "end": 7.93,
+          "probability": 0.99609375
+        },
+        {
+          "text": "找",
+          "start": 7.93,
+          "end": 8.21,
+          "probability": 0.95947265625
+        },
+        {
+          "text": "點",
+          "start": 8.21,
+          "end": 8.43,
+          "probability": 0.98828125
+        },
+        {
+          "text": "免",
+          "start": 8.43,
+          "end": 8.69,
+          "probability": 0.88037109375
+        },
+        {
+          "text": "費",
+          "start": 8.69,
+          "end": 8.85,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "的",
+          "start": 8.85,
+          "end": 8.95,
+          "probability": 0.9921875
+        },
+        {
+          "text": "菜",
+          "start": 8.95,
+          "end": 9.19,
+          "probability": 0.99853515625
+        }
+      ]
+    },
+    {
+      "start": 9.79,
+      "end": 12.59,
+      "text": "抓這種割錢的魚一定要聞尊恨",
+      "words": [
+        {
+          "text": "抓",
+          "start": 9.79,
+          "end": 10.27,
+          "probability": 0.94921875
+        },
+        {
+          "text": "這種",
+          "start": 10.27,
+          "end": 10.45,
+          "probability": 0.9560546875
+        },
+        {
+          "text": "割",
+          "start": 10.45,
+          "end": 10.69,
+          "probability": 0.748046875
+        },
+        {
+          "text": "錢",
+          "start": 10.69,
+          "end": 10.83,
+          "probability": 0.68798828125
+        },
+        {
+          "text": "的",
+          "start": 10.83,
+          "end": 10.97,
+          "probability": 0.94580078125
+        },
+        {
+          "text": "魚",
+          "start": 10.97,
+          "end": 11.41,
+          "probability": 0.96337890625
+        },
+        {
+          "text": "一定要",
+          "start": 11.41,
+          "end": 11.79,
+          "probability": 0.90966796875
+        },
+        {
+          "text": "聞",
+          "start": 11.79,
+          "end": 12.03,
+          "probability": 0.578125
+        },
+        {
+          "text": "尊",
+          "start": 12.03,
+          "end": 12.19,
+          "probability": 0.657470703125
+        },
+        {
+          "text": "恨",
+          "start": 12.19,
+          "end": 12.59,
+          "probability": 0.5526123046875
+        }
+      ]
+    },
+    {
+      "start": 12.59,
+      "end": 13.55,
+      "text": "看不見水",
+      "words": [
+        {
+          "text": "看",
+          "start": 12.59,
+          "end": 12.95,
+          "probability": 0.306396484375
+        },
+        {
+          "text": "不",
+          "start": 12.95,
+          "end": 13.09,
+          "probability": 0.98974609375
+        },
+        {
+          "text": "見",
+          "start": 13.09,
+          "end": 13.27,
+          "probability": 0.9248046875
+        },
+        {
+          "text": "水",
+          "start": 13.27,
+          "end": 13.55,
+          "probability": 0.30615234375
+        }
+      ]
+    },
+    {
+      "start": 14.21,
+      "end": 14.95,
+      "text": "wee",
+      "words": [
+        {
+          "text": "we",
+          "start": 14.21,
+          "end": 14.69,
+          "probability": 0.005283355712890625
+        },
+        {
+          "text": "e",
+          "start": 14.69,
+          "end": 14.95,
+          "probability": 0.27197265625
+        }
+      ]
+    },
+    {
+      "start": 14.95,
+      "end": 17.73,
+      "text": "兄弟們一定要喊",
+      "words": [
+        {
+          "text": "兄",
+          "start": 14.95,
+          "end": 15.17,
+          "probability": 0.00027871131896972656
+        },
+        {
+          "text": "弟",
+          "start": 15.17,
+          "end": 16.45,
+          "probability": 0.99658203125
+        },
+        {
+          "text": "們",
+          "start": 16.45,
+          "end": 16.57,
+          "probability": 0.875
+        },
+        {
+          "text": "一定要",
+          "start": 16.57,
+          "end": 17.11,
+          "probability": 0.90576171875
+        },
+        {
+          "text": "喊",
+          "start": 17.11,
+          "end": 17.73,
+          "probability": 0.595703125
+        }
+      ]
+    },
+    {
+      "start": 25.39,
+      "end": 27.45,
+      "text": "這好大啊這條魚啊",
+      "words": [
+        {
+          "text": "這",
+          "start": 25.39,
+          "end": 25.87,
+          "probability": 0.27099609375
+        },
+        {
+          "text": "好",
+          "start": 25.87,
+          "end": 26.19,
+          "probability": 0.409423828125
+        },
+        {
+          "text": "大",
+          "start": 26.19,
+          "end": 26.49,
+          "probability": 0.98974609375
+        },
+        {
+          "text": "啊",
+          "start": 26.49,
+          "end": 26.65,
+          "probability": 0.42041015625
+        },
+        {
+          "text": "這",
+          "start": 26.65,
+          "end": 26.71,
+          "probability": 0.75927734375
+        },
+        {
+          "text": "條",
+          "start": 26.71,
+          "end": 26.83,
+          "probability": 0.93994140625
+        },
+        {
+          "text": "魚",
+          "start": 26.83,
+          "end": 27.03,
+          "probability": 0.98828125
+        },
+        {
+          "text": "啊",
+          "start": 27.03,
+          "end": 27.45,
+          "probability": 0.59765625
+        }
+      ]
+    },
+    {
+      "start": 31.13,
+      "end": 33.25,
+      "text": "別打別打別打",
+      "words": [
+        {
+          "text": "別",
+          "start": 31.13,
+          "end": 31.61,
+          "probability": 0.82666015625
+        },
+        {
+          "text": "打",
+          "start": 31.61,
+          "end": 31.73,
+          "probability": 0.9921875
+        },
+        {
+          "text": "別",
+          "start": 31.73,
+          "end": 31.85,
+          "probability": 0.58642578125
+        },
+        {
+          "text": "打",
+          "start": 31.85,
+          "end": 32.19,
+          "probability": 0.98974609375
+        },
+        {
+          "text": "別",
+          "start": 32.19,
+          "end": 32.41,
+          "probability": 0.81689453125
+        },
+        {
+          "text": "打",
+          "start": 32.41,
+          "end": 33.25,
+          "probability": 0.986328125
+        }
+      ]
+    },
+    {
+      "start": 33.25,
+      "end": 33.49,
+      "text": "你",
+      "words": [
+        {
+          "text": "你",
+          "start": 33.25,
+          "end": 33.49,
+          "probability": 0.80029296875
+        }
+      ]
+    },
+    {
+      "start": 35.09,
+      "end": 36.11,
+      "text": "你讓人家小",
+      "words": [
+        {
+          "text": "你",
+          "start": 35.09,
+          "end": 35.49,
+          "probability": 0.55712890625
+        },
+        {
+          "text": "讓",
+          "start": 35.49,
+          "end": 35.63,
+          "probability": 0.1846923828125
+        },
+        {
+          "text": "人",
+          "start": 35.63,
+          "end": 35.77,
+          "probability": 0.994140625
+        },
+        {
+          "text": "家",
+          "start": 35.77,
+          "end": 35.89,
+          "probability": 0.08709716796875
+        },
+        {
+          "text": "小",
+          "start": 35.89,
+          "end": 36.11,
+          "probability": 0.8583984375
+        }
+      ]
+    },
+    {
+      "start": 36.11,
+      "end": 37.59,
+      "text": "你讓人家小刺鑽走吧",
+      "words": [
+        {
+          "text": "你",
+          "start": 36.11,
+          "end": 36.53,
+          "probability": 0.033111572265625
+        },
+        {
+          "text": "讓",
+          "start": 36.53,
+          "end": 36.69,
+          "probability": 0.98828125
+        },
+        {
+          "text": "人",
+          "start": 36.69,
+          "end": 36.81,
+          "probability": 0.98974609375
+        },
+        {
+          "text": "家",
+          "start": 36.81,
+          "end": 36.85,
+          "probability": 0.349853515625
+        },
+        {
+          "text": "小",
+          "start": 36.85,
+          "end": 36.99,
+          "probability": 0.98681640625
+        },
+        {
+          "text": "刺",
+          "start": 36.99,
+          "end": 37.13,
+          "probability": 0.876953125
+        },
+        {
+          "text": "鑽",
+          "start": 37.13,
+          "end": 37.25,
+          "probability": 0.52001953125
+        },
+        {
+          "text": "走吧",
+          "start": 37.25,
+          "end": 37.59,
+          "probability": 0.83740234375
+        }
+      ]
+    },
+    {
+      "start": 38.39,
+      "end": 39.73,
+      "text": "這老六真是",
+      "words": [
+        {
+          "text": "這",
+          "start": 38.39,
+          "end": 38.79,
+          "probability": 0.73486328125
+        },
+        {
+          "text": "老",
+          "start": 38.79,
+          "end": 39.01,
+          "probability": 0.98828125
+        },
+        {
+          "text": "六",
+          "start": 39.01,
+          "end": 39.21,
+          "probability": 0.88134765625
+        },
+        {
+          "text": "真",
+          "start": 39.21,
+          "end": 39.53,
+          "probability": 0.90673828125
+        },
+        {
+          "text": "是",
+          "start": 39.53,
+          "end": 39.73,
+          "probability": 0.90087890625
+        }
+      ]
+    },
+    {
+      "start": 39.73,
+      "end": 41.17,
+      "text": "這隻是小刺鑽",
+      "words": [
+        {
+          "text": "這",
+          "start": 39.73,
+          "end": 40.37,
+          "probability": 0.71044921875
+        },
+        {
+          "text": "隻",
+          "start": 40.37,
+          "end": 40.51,
+          "probability": 0.91162109375
+        },
+        {
+          "text": "是",
+          "start": 40.51,
+          "end": 40.63,
+          "probability": 0.546875
+        },
+        {
+          "text": "小",
+          "start": 40.63,
+          "end": 40.79,
+          "probability": 0.998046875
+        },
+        {
+          "text": "刺",
+          "start": 40.79,
+          "end": 40.97,
+          "probability": 0.996337890625
+        },
+        {
+          "text": "鑽",
+          "start": 40.97,
+          "end": 41.17,
+          "probability": 0.9915364583333334
+        }
+      ]
+    },
+    {
+      "start": 41.17,
+      "end": 43.65,
+      "text": "他是非常溫柔的一種小動物",
+      "words": [
+        {
+          "text": "他是",
+          "start": 41.17,
+          "end": 41.85,
+          "probability": 0.431396484375
+        },
+        {
+          "text": "非常",
+          "start": 41.85,
+          "end": 42.17,
+          "probability": 0.99609375
+        },
+        {
+          "text": "溫",
+          "start": 42.17,
+          "end": 42.43,
+          "probability": 0.9775390625
+        },
+        {
+          "text": "柔",
+          "start": 42.43,
+          "end": 42.61,
+          "probability": 1.0
+        },
+        {
+          "text": "的",
+          "start": 42.61,
+          "end": 42.75,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "一",
+          "start": 42.75,
+          "end": 42.85,
+          "probability": 0.970703125
+        },
+        {
+          "text": "種",
+          "start": 42.85,
+          "end": 42.93,
+          "probability": 0.97265625
+        },
+        {
+          "text": "小",
+          "start": 42.93,
+          "end": 43.13,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "動",
+          "start": 43.13,
+          "end": 43.29,
+          "probability": 0.990234375
+        },
+        {
+          "text": "物",
+          "start": 43.29,
+          "end": 43.65,
+          "probability": 0.9990234375
+        }
+      ]
+    },
+    {
+      "start": 45.21,
+      "end": 46.15,
+      "text": "怎麼回事",
+      "words": [
+        {
+          "text": "怎麼",
+          "start": 45.21,
+          "end": 45.61,
+          "probability": 0.5673828125
+        },
+        {
+          "text": "回",
+          "start": 45.61,
+          "end": 46.01,
+          "probability": 0.802734375
+        },
+        {
+          "text": "事",
+          "start": 46.01,
+          "end": 46.15,
+          "probability": 1.0
+        }
+      ]
+    },
+    {
+      "start": 46.15,
+      "end": 47.85,
+      "text": "活生生都是尖尖的刺",
+      "words": [
+        {
+          "text": "活",
+          "start": 46.15,
+          "end": 46.53,
+          "probability": 0.09136962890625
+        },
+        {
+          "text": "生",
+          "start": 46.53,
+          "end": 46.67,
+          "probability": 0.7666015625
+        },
+        {
+          "text": "生",
+          "start": 46.67,
+          "end": 46.83,
+          "probability": 0.9755859375
+        },
+        {
+          "text": "都是",
+          "start": 46.83,
+          "end": 47.05,
+          "probability": 0.99462890625
+        },
+        {
+          "text": "尖",
+          "start": 47.05,
+          "end": 47.29,
+          "probability": 0.955078125
+        },
+        {
+          "text": "尖",
+          "start": 47.29,
+          "end": 47.47,
+          "probability": 0.99462890625
+        },
+        {
+          "text": "的",
+          "start": 47.47,
+          "end": 47.59,
+          "probability": 0.96875
+        },
+        {
+          "text": "刺",
+          "start": 47.59,
+          "end": 47.85,
+          "probability": 0.99853515625
+        }
+      ]
+    },
+    {
+      "start": 51.87,
+      "end": 53.29,
+      "text": "你看長得可不可愛",
+      "words": [
+        {
+          "text": "你看",
+          "start": 51.87,
+          "end": 52.27,
+          "probability": 0.353271484375
+        },
+        {
+          "text": "長",
+          "start": 52.27,
+          "end": 52.67,
+          "probability": 0.9755859375
+        },
+        {
+          "text": "得",
+          "start": 52.67,
+          "end": 52.79,
+          "probability": 0.70654296875
+        },
+        {
+          "text": "可",
+          "start": 52.79,
+          "end": 52.95,
+          "probability": 0.99462890625
+        },
+        {
+          "text": "不",
+          "start": 52.95,
+          "end": 53.05,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "可愛",
+          "start": 53.05,
+          "end": 53.29,
+          "probability": 0.89111328125
+        }
+      ]
+    },
+    {
+      "start": 53.29,
+      "end": 55.07,
+      "text": "這晚上不能刷鞋",
+      "words": [
+        {
+          "text": "這",
+          "start": 53.29,
+          "end": 54.09,
+          "probability": 0.9443359375
+        },
+        {
+          "text": "晚上",
+          "start": 54.09,
+          "end": 54.45,
+          "probability": 0.281494140625
+        },
+        {
+          "text": "不能",
+          "start": 54.45,
+          "end": 54.67,
+          "probability": 0.99658203125
+        },
+        {
+          "text": "刷",
+          "start": 54.67,
+          "end": 54.87,
+          "probability": 0.995361328125
+        },
+        {
+          "text": "鞋",
+          "start": 54.87,
+          "end": 55.07,
+          "probability": 0.9501953125
+        }
+      ]
+    },
+    {
+      "start": 57.37,
+      "end": 59.41,
+      "text": "兄弟們這晚上也不性吃",
+      "words": [
+        {
+          "text": "兄",
+          "start": 57.37,
+          "end": 57.77,
+          "probability": 0.50341796875
+        },
+        {
+          "text": "弟",
+          "start": 57.77,
+          "end": 58.17,
+          "probability": 0.95556640625
+        },
+        {
+          "text": "們",
+          "start": 58.17,
+          "end": 58.27,
+          "probability": 0.97802734375
+        },
+        {
+          "text": "這",
+          "start": 58.27,
+          "end": 58.57,
+          "probability": 0.798828125
+        },
+        {
+          "text": "晚上",
+          "start": 58.57,
+          "end": 58.71,
+          "probability": 0.6796875
+        },
+        {
+          "text": "也",
+          "start": 58.71,
+          "end": 58.87,
+          "probability": 0.99169921875
+        },
+        {
+          "text": "不",
+          "start": 58.87,
+          "end": 59.01,
+          "probability": 0.6650390625
+        },
+        {
+          "text": "性",
+          "start": 59.01,
+          "end": 59.19,
+          "probability": 0.1395263671875
+        },
+        {
+          "text": "吃",
+          "start": 59.19,
+          "end": 59.41,
+          "probability": 0.86083984375
+        }
+      ]
+    },
+    {
+      "start": 59.41,
+      "end": 61.81,
+      "text": "處理不好正容易出事",
+      "words": [
+        {
+          "text": "處",
+          "start": 59.41,
+          "end": 60.05,
+          "probability": 0.469482421875
+        },
+        {
+          "text": "理",
+          "start": 60.05,
+          "end": 60.87,
+          "probability": 0.9873046875
+        },
+        {
+          "text": "不好",
+          "start": 60.87,
+          "end": 61.07,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "正",
+          "start": 61.07,
+          "end": 61.29,
+          "probability": 0.35205078125
+        },
+        {
+          "text": "容易",
+          "start": 61.29,
+          "end": 61.45,
+          "probability": 0.84228515625
+        },
+        {
+          "text": "出",
+          "start": 61.45,
+          "end": 61.63,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "事",
+          "start": 61.63,
+          "end": 61.81,
+          "probability": 0.99560546875
+        }
+      ]
+    },
+    {
+      "start": 62.73,
+      "end": 63.91,
+      "text": "來你還是走吧",
+      "words": [
+        {
+          "text": "來",
+          "start": 62.73,
+          "end": 63.13,
+          "probability": 0.0034084320068359375
+        },
+        {
+          "text": "你",
+          "start": 63.13,
+          "end": 63.53,
+          "probability": 0.449462890625
+        },
+        {
+          "text": "還是",
+          "start": 63.53,
+          "end": 63.69,
+          "probability": 0.93896484375
+        },
+        {
+          "text": "走吧",
+          "start": 63.69,
+          "end": 63.91,
+          "probability": 0.93896484375
+        }
+      ]
+    },
+    {
+      "start": 64.87,
+      "end": 66.07,
+      "text": "這個老六就不行了",
+      "words": [
+        {
+          "text": "這個",
+          "start": 64.87,
+          "end": 65.27,
+          "probability": 0.9130859375
+        },
+        {
+          "text": "老",
+          "start": 65.27,
+          "end": 65.43,
+          "probability": 0.8955078125
+        },
+        {
+          "text": "六",
+          "start": 65.43,
+          "end": 65.55,
+          "probability": 0.72998046875
+        },
+        {
+          "text": "就",
+          "start": 65.55,
+          "end": 65.65,
+          "probability": 0.990234375
+        },
+        {
+          "text": "不行",
+          "start": 65.65,
+          "end": 65.87,
+          "probability": 0.9912109375
+        },
+        {
+          "text": "了",
+          "start": 65.87,
+          "end": 66.07,
+          "probability": 0.912109375
+        }
+      ]
+    },
+    {
+      "start": 66.07,
+      "end": 68.29,
+      "text": "來你跟著我我給你點教訓",
+      "words": [
+        {
+          "text": "來",
+          "start": 66.07,
+          "end": 66.67,
+          "probability": 0.8876953125
+        },
+        {
+          "text": "你",
+          "start": 66.67,
+          "end": 67.03,
+          "probability": 0.94482421875
+        },
+        {
+          "text": "跟",
+          "start": 67.03,
+          "end": 67.19,
+          "probability": 0.9765625
+        },
+        {
+          "text": "著",
+          "start": 67.19,
+          "end": 67.27,
+          "probability": 0.9736328125
+        },
+        {
+          "text": "我",
+          "start": 67.27,
+          "end": 67.41,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "我",
+          "start": 67.41,
+          "end": 67.59,
+          "probability": 0.71240234375
+        },
+        {
+          "text": "給",
+          "start": 67.59,
+          "end": 67.69,
+          "probability": 0.994140625
+        },
+        {
+          "text": "你",
+          "start": 67.69,
+          "end": 67.75,
+          "probability": 0.9716796875
+        },
+        {
+          "text": "點",
+          "start": 67.75,
+          "end": 67.87,
+          "probability": 0.9814453125
+        },
+        {
+          "text": "教",
+          "start": 67.87,
+          "end": 68.11,
+          "probability": 0.748046875
+        },
+        {
+          "text": "訓",
+          "start": 68.11,
+          "end": 68.29,
+          "probability": 0.914794921875
+        }
+      ]
+    },
+    {
+      "start": 68.29,
+      "end": 69.79,
+      "text": "剛才什麼東西鑽裡邊",
+      "words": [
+        {
+          "text": "剛",
+          "start": 68.29,
+          "end": 68.67,
+          "probability": 0.86376953125
+        },
+        {
+          "text": "才",
+          "start": 68.67,
+          "end": 68.81,
+          "probability": 0.62646484375
+        },
+        {
+          "text": "什麼",
+          "start": 68.81,
+          "end": 69.05,
+          "probability": 0.5166015625
+        },
+        {
+          "text": "東西",
+          "start": 69.05,
+          "end": 69.27,
+          "probability": 0.99267578125
+        },
+        {
+          "text": "鑽",
+          "start": 69.27,
+          "end": 69.45,
+          "probability": 0.68841552734375
+        },
+        {
+          "text": "裡",
+          "start": 69.45,
+          "end": 69.59,
+          "probability": 0.1871337890625
+        },
+        {
+          "text": "邊",
+          "start": 69.59,
+          "end": 69.79,
+          "probability": 0.9423828125
+        }
+      ]
+    },
+    {
+      "start": 70.95,
+      "end": 71.89,
+      "text": "這就啥",
+      "words": [
+        {
+          "text": "這",
+          "start": 70.95,
+          "end": 71.35,
+          "probability": 0.37060546875
+        },
+        {
+          "text": "就",
+          "start": 71.35,
+          "end": 71.75,
+          "probability": 0.382080078125
+        },
+        {
+          "text": "啥",
+          "start": 71.75,
+          "end": 71.89,
+          "probability": 0.594482421875
+        }
+      ]
+    },
+    {
+      "start": 75.16,
+      "end": 76.46,
+      "text": "是不是這皮皮響",
+      "words": [
+        {
+          "text": "是不是",
+          "start": 75.16,
+          "end": 75.56,
+          "probability": 0.024139404296875
+        },
+        {
+          "text": "這",
+          "start": 75.56,
+          "end": 75.96,
+          "probability": 0.375
+        },
+        {
+          "text": "皮",
+          "start": 75.96,
+          "end": 76.14,
+          "probability": 0.394775390625
+        },
+        {
+          "text": "皮",
+          "start": 76.14,
+          "end": 76.28,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "響",
+          "start": 76.28,
+          "end": 76.46,
+          "probability": 0.657470703125
+        }
+      ]
+    },
+    {
+      "start": 76.46,
+      "end": 77.7,
+      "text": "你看脆綠脆綠的",
+      "words": [
+        {
+          "text": "你看",
+          "start": 76.46,
+          "end": 76.7,
+          "probability": 0.51953125
+        },
+        {
+          "text": "脆",
+          "start": 76.7,
+          "end": 77.1,
+          "probability": 0.64208984375
+        },
+        {
+          "text": "綠",
+          "start": 77.1,
+          "end": 77.22,
+          "probability": 0.743408203125
+        },
+        {
+          "text": "脆",
+          "start": 77.22,
+          "end": 77.4,
+          "probability": 0.929443359375
+        },
+        {
+          "text": "綠",
+          "start": 77.4,
+          "end": 77.56,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "的",
+          "start": 77.56,
+          "end": 77.7,
+          "probability": 0.982421875
+        }
+      ]
+    },
+    {
+      "start": 77.7,
+      "end": 82.37,
+      "text": "你怎麼這麼兇",
+      "words": [
+        {
+          "text": "你",
+          "start": 77.7,
+          "end": 78.26,
+          "probability": 0.335693359375
+        },
+        {
+          "text": "怎麼",
+          "start": 78.26,
+          "end": 78.8,
+          "probability": 0.97509765625
+        },
+        {
+          "text": "這麼",
+          "start": 81.81,
+          "end": 82.05,
+          "probability": 0.98876953125
+        },
+        {
+          "text": "兇",
+          "start": 82.05,
+          "end": 82.37,
+          "probability": 0.892822265625
+        }
+      ]
+    },
+    {
+      "start": 82.37,
+      "end": 84.81,
+      "text": "我可不敢惹你了",
+      "words": [
+        {
+          "text": "我",
+          "start": 82.37,
+          "end": 83.13,
+          "probability": 0.4111328125
+        },
+        {
+          "text": "可",
+          "start": 83.13,
+          "end": 84.11,
+          "probability": 0.9794921875
+        },
+        {
+          "text": "不",
+          "start": 84.11,
+          "end": 84.19,
+          "probability": 0.998046875
+        },
+        {
+          "text": "敢",
+          "start": 84.19,
+          "end": 84.29,
+          "probability": 0.91259765625
+        },
+        {
+          "text": "惹",
+          "start": 84.29,
+          "end": 84.45,
+          "probability": 0.98193359375
+        },
+        {
+          "text": "你",
+          "start": 84.45,
+          "end": 84.61,
+          "probability": 0.99267578125
+        },
+        {
+          "text": "了",
+          "start": 84.61,
+          "end": 84.81,
+          "probability": 0.9775390625
+        }
+      ]
+    },
+    {
+      "start": 86.49,
+      "end": 88.25,
+      "text": "走吧再見太小了",
+      "words": [
+        {
+          "text": "走吧",
+          "start": 86.49,
+          "end": 86.89,
+          "probability": 0.962890625
+        },
+        {
+          "text": "再見",
+          "start": 86.89,
+          "end": 87.29,
+          "probability": 0.97900390625
+        },
+        {
+          "text": "太",
+          "start": 87.29,
+          "end": 87.91,
+          "probability": 0.88671875
+        },
+        {
+          "text": "小",
+          "start": 87.91,
+          "end": 88.11,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "了",
+          "start": 88.11,
+          "end": 88.25,
+          "probability": 0.9619140625
+        }
+      ]
+    },
+    {
+      "start": 89.21,
+      "end": 90.77,
+      "text": "咱們去找點其他的東西",
+      "words": [
+        {
+          "text": "咱",
+          "start": 89.21,
+          "end": 89.61,
+          "probability": 0.894775390625
+        },
+        {
+          "text": "們",
+          "start": 89.61,
+          "end": 89.69,
+          "probability": 0.990234375
+        },
+        {
+          "text": "去",
+          "start": 89.69,
+          "end": 89.77,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "找",
+          "start": 89.77,
+          "end": 89.93,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "點",
+          "start": 89.93,
+          "end": 90.09,
+          "probability": 0.9873046875
+        },
+        {
+          "text": "其",
+          "start": 90.09,
+          "end": 90.31,
+          "probability": 0.95556640625
+        },
+        {
+          "text": "他的",
+          "start": 90.31,
+          "end": 90.47,
+          "probability": 0.87255859375
+        },
+        {
+          "text": "東西",
+          "start": 90.47,
+          "end": 90.77,
+          "probability": 0.99853515625
+        }
+      ]
+    },
+    {
+      "start": 90.77,
+      "end": 92.59,
+      "text": "你別走啊",
+      "words": [
+        {
+          "text": "你",
+          "start": 90.77,
+          "end": 91.41,
+          "probability": 0.5703125
+        },
+        {
+          "text": "別",
+          "start": 91.41,
+          "end": 91.87,
+          "probability": 0.98095703125
+        },
+        {
+          "text": "走",
+          "start": 91.87,
+          "end": 92.07,
+          "probability": 0.9931640625
+        },
+        {
+          "text": "啊",
+          "start": 92.07,
+          "end": 92.59,
+          "probability": 0.8583984375
+        }
+      ]
+    },
+    {
+      "start": 93.37,
+      "end": 93.77,
+      "text": "哇",
+      "words": [
+        {
+          "text": "哇",
+          "start": 93.37,
+          "end": 93.77,
+          "probability": 0.060577392578125
+        }
+      ]
+    },
+    {
+      "start": 94.97,
+      "end": 97.15,
+      "text": "這是寄一寫好漂亮啊",
+      "words": [
+        {
+          "text": "這是",
+          "start": 94.97,
+          "end": 95.37,
+          "probability": 0.007293701171875
+        },
+        {
+          "text": "寄",
+          "start": 95.37,
+          "end": 95.69,
+          "probability": 0.47894287109375
+        },
+        {
+          "text": "一",
+          "start": 95.69,
+          "end": 95.79,
+          "probability": 0.374755859375
+        },
+        {
+          "text": "寫",
+          "start": 95.79,
+          "end": 95.93,
+          "probability": 0.439849853515625
+        },
+        {
+          "text": "好",
+          "start": 95.93,
+          "end": 96.19,
+          "probability": 0.94677734375
+        },
+        {
+          "text": "漂亮",
+          "start": 96.19,
+          "end": 96.61,
+          "probability": 0.99609375
+        },
+        {
+          "text": "啊",
+          "start": 96.61,
+          "end": 97.15,
+          "probability": 0.79541015625
+        }
+      ]
+    },
+    {
+      "start": 97.15,
+      "end": 99.65,
+      "text": "你嚇我嚇我一跳",
+      "words": [
+        {
+          "text": "你",
+          "start": 97.15,
+          "end": 97.93,
+          "probability": 0.0189208984375
+        },
+        {
+          "text": "嚇",
+          "start": 97.93,
+          "end": 98.61,
+          "probability": 0.98095703125
+        },
+        {
+          "text": "我",
+          "start": 98.61,
+          "end": 98.79,
+          "probability": 0.8427734375
+        },
+        {
+          "text": "嚇",
+          "start": 98.79,
+          "end": 99.19,
+          "probability": 0.689453125
+        },
+        {
+          "text": "我",
+          "start": 99.19,
+          "end": 99.33,
+          "probability": 0.9296875
+        },
+        {
+          "text": "一",
+          "start": 99.33,
+          "end": 99.43,
+          "probability": 0.98095703125
+        },
+        {
+          "text": "跳",
+          "start": 99.43,
+          "end": 99.65,
+          "probability": 0.99658203125
+        }
+      ]
+    },
+    {
+      "start": 101.93,
+      "end": 102.95,
+      "text": "出來出來出來",
+      "words": [
+        {
+          "text": "出來",
+          "start": 101.93,
+          "end": 102.33,
+          "probability": 0.37060546875
+        },
+        {
+          "text": "出來",
+          "start": 102.33,
+          "end": 102.73,
+          "probability": 0.6796875
+        },
+        {
+          "text": "出來",
+          "start": 102.73,
+          "end": 102.95,
+          "probability": 0.685546875
+        }
+      ]
+    },
+    {
+      "start": 102.95,
+      "end": 104.21,
+      "text": "老鄉開開門",
+      "words": [
+        {
+          "text": "老",
+          "start": 102.95,
+          "end": 103.45,
+          "probability": 0.50439453125
+        },
+        {
+          "text": "鄉",
+          "start": 103.45,
+          "end": 103.61,
+          "probability": 0.572998046875
+        },
+        {
+          "text": "開",
+          "start": 103.61,
+          "end": 103.93,
+          "probability": 0.73193359375
+        },
+        {
+          "text": "開",
+          "start": 103.93,
+          "end": 104.05,
+          "probability": 0.6337890625
+        },
+        {
+          "text": "門",
+          "start": 104.05,
+          "end": 104.21,
+          "probability": 0.99560546875
+        }
+      ]
+    },
+    {
+      "start": 104.21,
+      "end": 106.61,
+      "text": "我都跟你說了我是拆遷大隊的嘛",
+      "words": [
+        {
+          "text": "我",
+          "start": 104.21,
+          "end": 104.77,
+          "probability": 0.8173828125
+        },
+        {
+          "text": "都",
+          "start": 104.77,
+          "end": 104.87,
+          "probability": 0.9951171875
+        },
+        {
+          "text": "跟你",
+          "start": 104.87,
+          "end": 105.01,
+          "probability": 0.9453125
+        },
+        {
+          "text": "說",
+          "start": 105.01,
+          "end": 105.27,
+          "probability": 0.99609375
+        },
+        {
+          "text": "了",
+          "start": 105.27,
+          "end": 105.37,
+          "probability": 0.99267578125
+        },
+        {
+          "text": "我是",
+          "start": 105.37,
+          "end": 105.55,
+          "probability": 0.9873046875
+        },
+        {
+          "text": "拆",
+          "start": 105.55,
+          "end": 105.75,
+          "probability": 0.9677734375
+        },
+        {
+          "text": "遷",
+          "start": 105.75,
+          "end": 105.91,
+          "probability": 0.93505859375
+        },
+        {
+          "text": "大",
+          "start": 105.91,
+          "end": 106.07,
+          "probability": 0.880859375
+        },
+        {
+          "text": "隊",
+          "start": 106.07,
+          "end": 106.21,
+          "probability": 0.94287109375
+        },
+        {
+          "text": "的",
+          "start": 106.21,
+          "end": 106.39,
+          "probability": 0.8818359375
+        },
+        {
+          "text": "嘛",
+          "start": 106.39,
+          "end": 106.61,
+          "probability": 0.5126953125
+        }
+      ]
+    },
+    {
+      "start": 106.61,
+      "end": 107.29,
+      "text": "走一路",
+      "words": [
+        {
+          "text": "走",
+          "start": 106.61,
+          "end": 106.93,
+          "probability": 0.0118255615234375
+        },
+        {
+          "text": "一",
+          "start": 106.93,
+          "end": 107.05,
+          "probability": 0.322021484375
+        },
+        {
+          "text": "路",
+          "start": 107.05,
+          "end": 107.29,
+          "probability": 0.4736328125
+        }
+      ]
+    },
+    {
+      "start": 114.46,
+      "end": 116.1,
+      "text": "西排魚兄弟們",
+      "words": [
+        {
+          "text": "西",
+          "start": 114.46,
+          "end": 114.86,
+          "probability": 0.6943359375
+        },
+        {
+          "text": "排",
+          "start": 114.86,
+          "end": 115.26,
+          "probability": 0.10076904296875
+        },
+        {
+          "text": "魚",
+          "start": 115.26,
+          "end": 115.4,
+          "probability": 0.82080078125
+        },
+        {
+          "text": "兄",
+          "start": 115.4,
+          "end": 115.6,
+          "probability": 0.97705078125
+        },
+        {
+          "text": "弟",
+          "start": 115.6,
+          "end": 115.7,
+          "probability": 0.810546875
+        },
+        {
+          "text": "們",
+          "start": 115.7,
+          "end": 116.1,
+          "probability": 0.9033203125
+        }
+      ]
+    },
+    {
+      "start": 116.58,
+      "end": 117.46,
+      "text": "你堵這兒",
+      "words": [
+        {
+          "text": "你",
+          "start": 116.58,
+          "end": 116.78,
+          "probability": 0.352783203125
+        },
+        {
+          "text": "堵",
+          "start": 116.78,
+          "end": 116.96,
+          "probability": 0.921142578125
+        },
+        {
+          "text": "這",
+          "start": 116.96,
+          "end": 117.14,
+          "probability": 0.78515625
+        },
+        {
+          "text": "兒",
+          "start": 117.14,
+          "end": 117.46,
+          "probability": 0.471435546875
+        }
+      ]
+    },
+    {
+      "start": 118.6,
+      "end": 120.02,
+      "text": "這魚長得特別有意思",
+      "words": [
+        {
+          "text": "這",
+          "start": 118.6,
+          "end": 119.0,
+          "probability": 0.326171875
+        },
+        {
+          "text": "魚",
+          "start": 119.0,
+          "end": 119.16,
+          "probability": 0.986328125
+        },
+        {
+          "text": "長",
+          "start": 119.16,
+          "end": 119.32,
+          "probability": 0.93017578125
+        },
+        {
+          "text": "得",
+          "start": 119.32,
+          "end": 119.42,
+          "probability": 0.77001953125
+        },
+        {
+          "text": "特別",
+          "start": 119.42,
+          "end": 119.6,
+          "probability": 0.982421875
+        },
+        {
+          "text": "有",
+          "start": 119.6,
+          "end": 119.84,
+          "probability": 0.99609375
+        },
+        {
+          "text": "意思",
+          "start": 119.84,
+          "end": 120.02,
+          "probability": 0.99658203125
+        }
+      ]
+    },
+    {
+      "start": 120.02,
+      "end": 121.04,
+      "text": "給他看一下",
+      "words": [
+        {
+          "text": "給",
+          "start": 120.02,
+          "end": 120.64,
+          "probability": 0.974609375
+        },
+        {
+          "text": "他",
+          "start": 120.64,
+          "end": 120.74,
+          "probability": 0.345703125
+        },
+        {
+          "text": "看一下",
+          "start": 120.74,
+          "end": 121.04,
+          "probability": 0.84228515625
+        }
+      ]
+    },
+    {
+      "start": 122.9,
+      "end": 125.08,
+      "text": "這魚我感覺長髮了你知道嗎",
+      "words": [
+        {
+          "text": "這",
+          "start": 122.9,
+          "end": 123.3,
+          "probability": 0.4658203125
+        },
+        {
+          "text": "魚",
+          "start": 123.3,
+          "end": 123.7,
+          "probability": 0.9658203125
+        },
+        {
+          "text": "我",
+          "start": 123.7,
+          "end": 123.82,
+          "probability": 0.64013671875
+        },
+        {
+          "text": "感覺",
+          "start": 123.82,
+          "end": 123.94,
+          "probability": 0.99267578125
+        },
+        {
+          "text": "長",
+          "start": 123.94,
+          "end": 124.16,
+          "probability": 0.9853515625
+        },
+        {
+          "text": "髮",
+          "start": 124.16,
+          "end": 124.42,
+          "probability": 0.80224609375
+        },
+        {
+          "text": "了",
+          "start": 124.42,
+          "end": 124.54,
+          "probability": 0.6513671875
+        },
+        {
+          "text": "你知道",
+          "start": 124.54,
+          "end": 124.72,
+          "probability": 0.8603515625
+        },
+        {
+          "text": "嗎",
+          "start": 124.72,
+          "end": 125.08,
+          "probability": 0.7197265625
+        }
+      ]
+    },
+    {
+      "start": 125.94,
+      "end": 127.52,
+      "text": "正常我感覺這應該是底下",
+      "words": [
+        {
+          "text": "正",
+          "start": 125.94,
+          "end": 126.34,
+          "probability": 0.81103515625
+        },
+        {
+          "text": "常",
+          "start": 126.34,
+          "end": 126.46,
+          "probability": 0.9931640625
+        },
+        {
+          "text": "我",
+          "start": 126.46,
+          "end": 126.54,
+          "probability": 0.97705078125
+        },
+        {
+          "text": "感覺",
+          "start": 126.54,
+          "end": 126.7,
+          "probability": 0.99658203125
+        },
+        {
+          "text": "這",
+          "start": 126.7,
+          "end": 126.86,
+          "probability": 0.447509765625
+        },
+        {
+          "text": "應該",
+          "start": 126.86,
+          "end": 126.96,
+          "probability": 0.9453125
+        },
+        {
+          "text": "是",
+          "start": 126.96,
+          "end": 127.12,
+          "probability": 0.99658203125
+        },
+        {
+          "text": "底",
+          "start": 127.12,
+          "end": 127.32,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "下",
+          "start": 127.32,
+          "end": 127.52,
+          "probability": 0.99853515625
+        }
+      ]
+    },
+    {
+      "start": 128.06,
+      "end": 128.92,
+      "text": "但是並不是",
+      "words": [
+        {
+          "text": "但是",
+          "start": 128.06,
+          "end": 128.52,
+          "probability": 0.408203125
+        },
+        {
+          "text": "並",
+          "start": 128.52,
+          "end": 128.7,
+          "probability": 0.11395263671875
+        },
+        {
+          "text": "不是",
+          "start": 128.7,
+          "end": 128.92,
+          "probability": 0.99072265625
+        }
+      ]
+    },
+    {
+      "start": 128.92,
+      "end": 130.44,
+      "text": "這是他的頭一部",
+      "words": [
+        {
+          "text": "這是",
+          "start": 128.92,
+          "end": 129.24,
+          "probability": 0.428466796875
+        },
+        {
+          "text": "他的",
+          "start": 129.24,
+          "end": 129.52,
+          "probability": 0.2734375
+        },
+        {
+          "text": "頭",
+          "start": 129.52,
+          "end": 129.76,
+          "probability": 0.9873046875
+        },
+        {
+          "text": "一",
+          "start": 129.76,
+          "end": 129.92,
+          "probability": 0.12469482421875
+        },
+        {
+          "text": "部",
+          "start": 129.92,
+          "end": 130.44,
+          "probability": 0.36376953125
+        }
+      ]
+    },
+    {
+      "start": 134.37,
+      "end": 136.12,
+      "text": "兄弟們犧牲了",
+      "words": [
+        {
+          "text": "兄",
+          "start": 134.37,
+          "end": 134.83,
+          "probability": 0.10491943359375
+        },
+        {
+          "text": "弟",
+          "start": 134.83,
+          "end": 135.29,
+          "probability": 0.966796875
+        },
+        {
+          "text": "們",
+          "start": 135.29,
+          "end": 135.45,
+          "probability": 0.97509765625
+        },
+        {
+          "text": "犧",
+          "start": 135.45,
+          "end": 135.73,
+          "probability": 0.46044921875
+        },
+        {
+          "text": "牲",
+          "start": 135.73,
+          "end": 135.89,
+          "probability": 0.989501953125
+        },
+        {
+          "text": "了",
+          "start": 135.89,
+          "end": 136.12,
+          "probability": 0.93359375
+        }
+      ]
+    },
+    {
+      "start": 139.96,
+      "end": 140.42,
+      "text": "怎麼樣",
+      "words": [
+        {
+          "text": "怎麼樣",
+          "start": 139.96,
+          "end": 140.42,
+          "probability": 0.30029296875
+        }
+      ]
+    },
+    {
+      "start": 140.92,
+      "end": 142.12,
+      "text": "這魚有意思嗎",
+      "words": [
+        {
+          "text": "這",
+          "start": 140.92,
+          "end": 141.18,
+          "probability": 0.509765625
+        },
+        {
+          "text": "魚",
+          "start": 141.18,
+          "end": 141.3,
+          "probability": 0.9228515625
+        },
+        {
+          "text": "有",
+          "start": 141.3,
+          "end": 141.42,
+          "probability": 0.9775390625
+        },
+        {
+          "text": "意思",
+          "start": 141.42,
+          "end": 141.6,
+          "probability": 0.9794921875
+        },
+        {
+          "text": "嗎",
+          "start": 141.6,
+          "end": 142.12,
+          "probability": 0.5830078125
+        }
+      ]
+    },
+    {
+      "start": 142.12,
+      "end": 143.2,
+      "text": "你還是進去吧",
+      "words": [
+        {
+          "text": "你",
+          "start": 142.12,
+          "end": 142.54,
+          "probability": 0.6767578125
+        },
+        {
+          "text": "還是",
+          "start": 142.54,
+          "end": 142.68,
+          "probability": 0.99560546875
+        },
+        {
+          "text": "進",
+          "start": 142.68,
+          "end": 142.86,
+          "probability": 0.990234375
+        },
+        {
+          "text": "去",
+          "start": 142.86,
+          "end": 143.0,
+          "probability": 0.87890625
+        },
+        {
+          "text": "吧",
+          "start": 143.0,
+          "end": 143.2,
+          "probability": 0.8505859375
+        }
+      ]
+    },
+    {
+      "start": 143.2,
+      "end": 144.1,
+      "text": "太小了這個小魚",
+      "words": [
+        {
+          "text": "太",
+          "start": 143.2,
+          "end": 143.36,
+          "probability": 0.9462890625
+        },
+        {
+          "text": "小",
+          "start": 143.36,
+          "end": 143.52,
+          "probability": 0.99658203125
+        },
+        {
+          "text": "了",
+          "start": 143.52,
+          "end": 143.64,
+          "probability": 0.95703125
+        },
+        {
+          "text": "這個",
+          "start": 143.64,
+          "end": 143.76,
+          "probability": 0.83642578125
+        },
+        {
+          "text": "小",
+          "start": 143.76,
+          "end": 143.9,
+          "probability": 0.994140625
+        },
+        {
+          "text": "魚",
+          "start": 143.9,
+          "end": 144.1,
+          "probability": 0.99169921875
+        }
+      ]
+    },
+    {
+      "start": 145.24,
+      "end": 147.0,
+      "text": "先來一口大魚七七八",
+      "words": [
+        {
+          "text": "先",
+          "start": 145.24,
+          "end": 145.7,
+          "probability": 0.67724609375
+        },
+        {
+          "text": "來",
+          "start": 145.7,
+          "end": 145.88,
+          "probability": 0.978515625
+        },
+        {
+          "text": "一",
+          "start": 145.88,
+          "end": 145.94,
+          "probability": 0.87158203125
+        },
+        {
+          "text": "口",
+          "start": 145.94,
+          "end": 146.02,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "大",
+          "start": 146.02,
+          "end": 146.3,
+          "probability": 0.99462890625
+        },
+        {
+          "text": "魚",
+          "start": 146.3,
+          "end": 146.48,
+          "probability": 0.98828125
+        },
+        {
+          "text": "七",
+          "start": 146.48,
+          "end": 146.66,
+          "probability": 0.44189453125
+        },
+        {
+          "text": "七",
+          "start": 146.66,
+          "end": 146.82,
+          "probability": 0.97802734375
+        },
+        {
+          "text": "八",
+          "start": 146.82,
+          "end": 147.0,
+          "probability": 0.95703125
+        }
+      ]
+    },
+    {
+      "start": 150.64,
+      "end": 151.79,
+      "text": "這肉質",
+      "words": [
+        {
+          "text": "這",
+          "start": 150.64,
+          "end": 151.1,
+          "probability": 0.06280517578125
+        },
+        {
+          "text": "肉",
+          "start": 151.1,
+          "end": 151.56,
+          "probability": 0.99560546875
+        },
+        {
+          "text": "質",
+          "start": 151.56,
+          "end": 151.79,
+          "probability": 0.8525390625
+        }
+      ]
+    },
+    {
+      "start": 153.3,
+      "end": 154.06,
+      "text": "剛剛好",
+      "words": [
+        {
+          "text": "剛剛",
+          "start": 153.3,
+          "end": 153.76,
+          "probability": 0.179443359375
+        },
+        {
+          "text": "好",
+          "start": 153.76,
+          "end": 154.06,
+          "probability": 0.487548828125
+        }
+      ]
+    },
+    {
+      "start": 156.7,
+      "end": 158.84,
+      "text": "哇這魚絲挺大的",
+      "words": [
+        {
+          "text": "哇",
+          "start": 156.7,
+          "end": 157.16,
+          "probability": 0.09173583984375
+        },
+        {
+          "text": "這",
+          "start": 157.16,
+          "end": 157.44,
+          "probability": 0.578125
+        },
+        {
+          "text": "魚",
+          "start": 157.44,
+          "end": 157.58,
+          "probability": 0.27734375
+        },
+        {
+          "text": "絲",
+          "start": 157.58,
+          "end": 157.82,
+          "probability": 0.489349365234375
+        },
+        {
+          "text": "挺",
+          "start": 157.82,
+          "end": 158.58,
+          "probability": 0.50830078125
+        },
+        {
+          "text": "大的",
+          "start": 158.58,
+          "end": 158.84,
+          "probability": 0.93603515625
+        }
+      ]
+    },
+    {
+      "start": 166.75,
+      "end": 168.37,
+      "text": "這裡面是有糕的",
+      "words": [
+        {
+          "text": "這裡",
+          "start": 166.75,
+          "end": 167.21,
+          "probability": 0.365966796875
+        },
+        {
+          "text": "面",
+          "start": 167.21,
+          "end": 167.37,
+          "probability": 0.67578125
+        },
+        {
+          "text": "是",
+          "start": 167.37,
+          "end": 167.49,
+          "probability": 0.9736328125
+        },
+        {
+          "text": "有",
+          "start": 167.49,
+          "end": 167.63,
+          "probability": 0.99609375
+        },
+        {
+          "text": "糕",
+          "start": 167.63,
+          "end": 167.91,
+          "probability": 0.60113525390625
+        },
+        {
+          "text": "的",
+          "start": 167.91,
+          "end": 168.37,
+          "probability": 0.85986328125
+        }
+      ]
+    },
+    {
+      "start": 169.21,
+      "end": 169.67,
+      "text": "好吃",
+      "words": [
+        {
+          "text": "好吃",
+          "start": 169.21,
+          "end": 169.67,
+          "probability": 0.98388671875
+        }
+      ]
+    }
+  ]
+}

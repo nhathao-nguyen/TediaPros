@@ -1,0 +1,3940 @@
+{
+  "duration": 61.836125,
+  "language": "zh",
+  "segments": [
+    {
+      "start": 0.0,
+      "end": 1.64,
+      "text": "这是你在骨带种下的大树",
+      "words": [
+        {
+          "text": "这是",
+          "start": 0.0,
+          "end": 0.24,
+          "probability": 0.525390625
+        },
+        {
+          "text": "你在",
+          "start": 0.24,
+          "end": 0.52,
+          "probability": 0.92431640625
+        },
+        {
+          "text": "骨",
+          "start": 0.52,
+          "end": 0.74,
+          "probability": 0.6893310546875
+        },
+        {
+          "text": "带",
+          "start": 0.74,
+          "end": 0.88,
+          "probability": 0.6539306640625
+        },
+        {
+          "text": "种",
+          "start": 0.88,
+          "end": 1.08,
+          "probability": 0.3994140625
+        },
+        {
+          "text": "下",
+          "start": 1.08,
+          "end": 1.22,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "的",
+          "start": 1.22,
+          "end": 1.34,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "大",
+          "start": 1.34,
+          "end": 1.5,
+          "probability": 0.99658203125
+        },
+        {
+          "text": "树",
+          "start": 1.5,
+          "end": 1.64,
+          "probability": 0.9931640625
+        }
+      ]
+    },
+    {
+      "start": 1.64,
+      "end": 4.2,
+      "text": "假若你拿骨子将其砍断 就剿膝",
+      "words": [
+        {
+          "text": "假",
+          "start": 1.64,
+          "end": 2.14,
+          "probability": 0.9921875
+        },
+        {
+          "text": "若",
+          "start": 2.14,
+          "end": 2.28,
+          "probability": 0.935546875
+        },
+        {
+          "text": "你",
+          "start": 2.28,
+          "end": 2.38,
+          "probability": 0.98486328125
+        },
+        {
+          "text": "拿",
+          "start": 2.38,
+          "end": 2.5,
+          "probability": 0.98681640625
+        },
+        {
+          "text": "骨",
+          "start": 2.5,
+          "end": 2.68,
+          "probability": 0.812744140625
+        },
+        {
+          "text": "子",
+          "start": 2.68,
+          "end": 2.8,
+          "probability": 0.99609375
+        },
+        {
+          "text": "将",
+          "start": 2.8,
+          "end": 2.92,
+          "probability": 0.92919921875
+        },
+        {
+          "text": "其",
+          "start": 2.92,
+          "end": 3.06,
+          "probability": 0.9892578125
+        },
+        {
+          "text": "砍",
+          "start": 3.06,
+          "end": 3.24,
+          "probability": 0.93310546875
+        },
+        {
+          "text": "断",
+          "start": 3.24,
+          "end": 3.48,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "就",
+          "start": 3.48,
+          "end": 3.88,
+          "probability": 0.2379150390625
+        },
+        {
+          "text": "剿",
+          "start": 3.88,
+          "end": 4.02,
+          "probability": 0.60198974609375
+        },
+        {
+          "text": "膝",
+          "start": 4.02,
+          "end": 4.2,
+          "probability": 0.747802734375
+        }
+      ]
+    },
+    {
+      "start": 4.2,
+      "end": 7.36,
+      "text": "假若把树骨劈成零碎几段 彻底散开",
+      "words": [
+        {
+          "text": "假",
+          "start": 4.2,
+          "end": 4.8,
+          "probability": 0.94775390625
+        },
+        {
+          "text": "若",
+          "start": 4.8,
+          "end": 4.96,
+          "probability": 0.998779296875
+        },
+        {
+          "text": "把",
+          "start": 4.96,
+          "end": 5.1,
+          "probability": 0.99609375
+        },
+        {
+          "text": "树",
+          "start": 5.1,
+          "end": 5.26,
+          "probability": 0.992431640625
+        },
+        {
+          "text": "骨",
+          "start": 5.26,
+          "end": 5.48,
+          "probability": 0.58856201171875
+        },
+        {
+          "text": "劈",
+          "start": 5.48,
+          "end": 5.58,
+          "probability": 0.7410888671875
+        },
+        {
+          "text": "成",
+          "start": 5.58,
+          "end": 5.74,
+          "probability": 0.99365234375
+        },
+        {
+          "text": "零",
+          "start": 5.74,
+          "end": 5.9,
+          "probability": 0.90478515625
+        },
+        {
+          "text": "碎",
+          "start": 5.9,
+          "end": 6.06,
+          "probability": 0.9658203125
+        },
+        {
+          "text": "几",
+          "start": 6.06,
+          "end": 6.24,
+          "probability": 0.771728515625
+        },
+        {
+          "text": "段",
+          "start": 6.24,
+          "end": 6.38,
+          "probability": 0.97021484375
+        },
+        {
+          "text": "彻",
+          "start": 6.68,
+          "end": 6.8,
+          "probability": 0.993408203125
+        },
+        {
+          "text": "底",
+          "start": 6.8,
+          "end": 7.0,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "散",
+          "start": 7.0,
+          "end": 7.16,
+          "probability": 0.998291015625
+        },
+        {
+          "text": "开",
+          "start": 7.16,
+          "end": 7.36,
+          "probability": 0.9990234375
+        }
+      ]
+    },
+    {
+      "start": 7.36,
+      "end": 9.04,
+      "text": "便是成与分崩离析",
+      "words": [
+        {
+          "text": "便",
+          "start": 7.36,
+          "end": 7.88,
+          "probability": 0.9658203125
+        },
+        {
+          "text": "是",
+          "start": 7.88,
+          "end": 8.04,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "成",
+          "start": 8.04,
+          "end": 8.2,
+          "probability": 0.6953125
+        },
+        {
+          "text": "与",
+          "start": 8.2,
+          "end": 8.34,
+          "probability": 0.91455078125
+        },
+        {
+          "text": "分",
+          "start": 8.34,
+          "end": 8.54,
+          "probability": 0.61474609375
+        },
+        {
+          "text": "崩",
+          "start": 8.54,
+          "end": 8.72,
+          "probability": 0.979736328125
+        },
+        {
+          "text": "离",
+          "start": 8.72,
+          "end": 8.86,
+          "probability": 0.981201171875
+        },
+        {
+          "text": "析",
+          "start": 8.86,
+          "end": 9.04,
+          "probability": 0.6273193359375
+        }
+      ]
+    },
+    {
+      "start": 9.04,
+      "end": 11.58,
+      "text": "我们现在把复杂难题拆解成小问题",
+      "words": [
+        {
+          "text": "我们",
+          "start": 9.04,
+          "end": 9.6,
+          "probability": 0.98046875
+        },
+        {
+          "text": "现在",
+          "start": 9.6,
+          "end": 9.74,
+          "probability": 0.94287109375
+        },
+        {
+          "text": "把",
+          "start": 9.74,
+          "end": 9.96,
+          "probability": 0.99462890625
+        },
+        {
+          "text": "复",
+          "start": 9.96,
+          "end": 10.1,
+          "probability": 0.9892578125
+        },
+        {
+          "text": "杂",
+          "start": 10.1,
+          "end": 10.22,
+          "probability": 0.999267578125
+        },
+        {
+          "text": "难",
+          "start": 10.22,
+          "end": 10.34,
+          "probability": 0.97802734375
+        },
+        {
+          "text": "题",
+          "start": 10.34,
+          "end": 10.52,
+          "probability": 0.99169921875
+        },
+        {
+          "text": "拆",
+          "start": 10.52,
+          "end": 10.82,
+          "probability": 0.9921875
+        },
+        {
+          "text": "解",
+          "start": 10.82,
+          "end": 10.96,
+          "probability": 0.99609375
+        },
+        {
+          "text": "成",
+          "start": 10.96,
+          "end": 11.12,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "小",
+          "start": 11.12,
+          "end": 11.28,
+          "probability": 0.9931640625
+        },
+        {
+          "text": "问题",
+          "start": 11.28,
+          "end": 11.58,
+          "probability": 0.99560546875
+        }
+      ]
+    },
+    {
+      "start": 11.58,
+      "end": 13.5,
+      "text": "细细研究 也就是分析",
+      "words": [
+        {
+          "text": "细",
+          "start": 11.58,
+          "end": 12.04,
+          "probability": 0.725830078125
+        },
+        {
+          "text": "细",
+          "start": 12.04,
+          "end": 12.16,
+          "probability": 0.9404296875
+        },
+        {
+          "text": "研",
+          "start": 12.16,
+          "end": 12.32,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "究",
+          "start": 12.32,
+          "end": 12.5,
+          "probability": 0.998046875
+        },
+        {
+          "text": "也",
+          "start": 12.7,
+          "end": 12.84,
+          "probability": 0.998046875
+        },
+        {
+          "text": "就是",
+          "start": 12.84,
+          "end": 13.04,
+          "probability": 0.99365234375
+        },
+        {
+          "text": "分",
+          "start": 13.04,
+          "end": 13.32,
+          "probability": 0.98876953125
+        },
+        {
+          "text": "析",
+          "start": 13.32,
+          "end": 13.5,
+          "probability": 0.998779296875
+        }
+      ]
+    },
+    {
+      "start": 13.5,
+      "end": 15.8,
+      "text": "砍完树剩下的树蹲角桌",
+      "words": [
+        {
+          "text": "砍",
+          "start": 13.5,
+          "end": 14.08,
+          "probability": 0.939453125
+        },
+        {
+          "text": "完",
+          "start": 14.08,
+          "end": 14.24,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "树",
+          "start": 14.24,
+          "end": 14.44,
+          "probability": 0.99169921875
+        },
+        {
+          "text": "剩",
+          "start": 14.44,
+          "end": 14.6,
+          "probability": 0.996337890625
+        },
+        {
+          "text": "下",
+          "start": 14.6,
+          "end": 14.8,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "的",
+          "start": 14.8,
+          "end": 14.92,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "树",
+          "start": 14.92,
+          "end": 15.1,
+          "probability": 0.9931640625
+        },
+        {
+          "text": "蹲",
+          "start": 15.1,
+          "end": 15.22,
+          "probability": 0.5843505859375
+        },
+        {
+          "text": "角",
+          "start": 15.22,
+          "end": 15.4,
+          "probability": 0.69873046875
+        },
+        {
+          "text": "桌",
+          "start": 15.4,
+          "end": 15.8,
+          "probability": 0.5968017578125
+        }
+      ]
+    },
+    {
+      "start": 15.8,
+      "end": 18.34,
+      "text": "懒人死手树蹲 做等肚子撞上来",
+      "words": [
+        {
+          "text": "懒",
+          "start": 15.8,
+          "end": 16.2,
+          "probability": 0.893798828125
+        },
+        {
+          "text": "人",
+          "start": 16.2,
+          "end": 16.34,
+          "probability": 0.98486328125
+        },
+        {
+          "text": "死",
+          "start": 16.34,
+          "end": 16.54,
+          "probability": 0.8359375
+        },
+        {
+          "text": "手",
+          "start": 16.54,
+          "end": 16.68,
+          "probability": 0.52734375
+        },
+        {
+          "text": "树",
+          "start": 16.68,
+          "end": 16.82,
+          "probability": 0.9931640625
+        },
+        {
+          "text": "蹲",
+          "start": 16.82,
+          "end": 17.0,
+          "probability": 0.99658203125
+        },
+        {
+          "text": "做",
+          "start": 17.26,
+          "end": 17.34,
+          "probability": 0.60302734375
+        },
+        {
+          "text": "等",
+          "start": 17.34,
+          "end": 17.48,
+          "probability": 0.912109375
+        },
+        {
+          "text": "肚",
+          "start": 17.48,
+          "end": 17.66,
+          "probability": 0.834228515625
+        },
+        {
+          "text": "子",
+          "start": 17.66,
+          "end": 17.82,
+          "probability": 1.0
+        },
+        {
+          "text": "撞",
+          "start": 17.82,
+          "end": 17.94,
+          "probability": 0.8525390625
+        },
+        {
+          "text": "上",
+          "start": 17.94,
+          "end": 18.1,
+          "probability": 0.97705078125
+        },
+        {
+          "text": "来",
+          "start": 18.1,
+          "end": 18.34,
+          "probability": 0.9970703125
+        }
+      ]
+    },
+    {
+      "start": 18.34,
+      "end": 19.9,
+      "text": "这不就是手朱带兔吗",
+      "words": [
+        {
+          "text": "这",
+          "start": 18.34,
+          "end": 18.56,
+          "probability": 0.98828125
+        },
+        {
+          "text": "不",
+          "start": 18.56,
+          "end": 18.68,
+          "probability": 0.99609375
+        },
+        {
+          "text": "就是",
+          "start": 18.68,
+          "end": 18.9,
+          "probability": 0.99169921875
+        },
+        {
+          "text": "手",
+          "start": 18.9,
+          "end": 19.1,
+          "probability": 0.9638671875
+        },
+        {
+          "text": "朱",
+          "start": 19.1,
+          "end": 19.3,
+          "probability": 0.6444091796875
+        },
+        {
+          "text": "带",
+          "start": 19.3,
+          "end": 19.48,
+          "probability": 0.90087890625
+        },
+        {
+          "text": "兔",
+          "start": 19.48,
+          "end": 19.66,
+          "probability": 0.952880859375
+        },
+        {
+          "text": "吗",
+          "start": 19.66,
+          "end": 19.9,
+          "probability": 0.81103515625
+        }
+      ]
+    },
+    {
+      "start": 19.9,
+      "end": 22.86,
+      "text": "刚看下来 眉打磨加工的原木 就是朴",
+      "words": [
+        {
+          "text": "刚",
+          "start": 19.9,
+          "end": 20.4,
+          "probability": 0.84912109375
+        },
+        {
+          "text": "看",
+          "start": 20.4,
+          "end": 20.56,
+          "probability": 0.44091796875
+        },
+        {
+          "text": "下",
+          "start": 20.56,
+          "end": 20.72,
+          "probability": 0.994140625
+        },
+        {
+          "text": "来",
+          "start": 20.72,
+          "end": 21.0,
+          "probability": 0.99365234375
+        },
+        {
+          "text": "眉",
+          "start": 21.1,
+          "end": 21.22,
+          "probability": 0.59588623046875
+        },
+        {
+          "text": "打",
+          "start": 21.22,
+          "end": 21.36,
+          "probability": 0.98779296875
+        },
+        {
+          "text": "磨",
+          "start": 21.36,
+          "end": 21.52,
+          "probability": 0.885498046875
+        },
+        {
+          "text": "加",
+          "start": 21.52,
+          "end": 21.7,
+          "probability": 0.8916015625
+        },
+        {
+          "text": "工",
+          "start": 21.7,
+          "end": 21.86,
+          "probability": 0.9912109375
+        },
+        {
+          "text": "的",
+          "start": 21.86,
+          "end": 21.96,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "原",
+          "start": 21.96,
+          "end": 22.1,
+          "probability": 0.424560546875
+        },
+        {
+          "text": "木",
+          "start": 22.1,
+          "end": 22.26,
+          "probability": 0.92919921875
+        },
+        {
+          "text": "就是",
+          "start": 22.26,
+          "end": 22.62,
+          "probability": 0.408203125
+        },
+        {
+          "text": "朴",
+          "start": 22.62,
+          "end": 22.86,
+          "probability": 0.6605224609375
+        }
+      ]
+    },
+    {
+      "start": 23.24,
+      "end": 25.2,
+      "text": "眉染色制造的丝枝皮 饰素",
+      "words": [
+        {
+          "text": "眉",
+          "start": 23.24,
+          "end": 23.56,
+          "probability": 0.6849365234375
+        },
+        {
+          "text": "染",
+          "start": 23.56,
+          "end": 23.7,
+          "probability": 0.97802734375
+        },
+        {
+          "text": "色",
+          "start": 23.7,
+          "end": 23.84,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "制",
+          "start": 23.84,
+          "end": 24.0,
+          "probability": 0.51513671875
+        },
+        {
+          "text": "造",
+          "start": 24.0,
+          "end": 24.14,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "的",
+          "start": 24.14,
+          "end": 24.24,
+          "probability": 0.99609375
+        },
+        {
+          "text": "丝",
+          "start": 24.24,
+          "end": 24.38,
+          "probability": 0.6881103515625
+        },
+        {
+          "text": "枝",
+          "start": 24.38,
+          "end": 24.48,
+          "probability": 0.6435546875
+        },
+        {
+          "text": "皮",
+          "start": 24.48,
+          "end": 24.66,
+          "probability": 0.3779296875
+        },
+        {
+          "text": "饰",
+          "start": 24.98,
+          "end": 25.0,
+          "probability": 0.537841796875
+        },
+        {
+          "text": "素",
+          "start": 25.0,
+          "end": 25.2,
+          "probability": 0.64013671875
+        }
+      ]
+    },
+    {
+      "start": 25.2,
+      "end": 26.64,
+      "text": "组合起来就是朴素",
+      "words": [
+        {
+          "text": "组",
+          "start": 25.2,
+          "end": 25.6,
+          "probability": 0.812744140625
+        },
+        {
+          "text": "合",
+          "start": 25.6,
+          "end": 25.74,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "起",
+          "start": 25.74,
+          "end": 25.86,
+          "probability": 0.99609375
+        },
+        {
+          "text": "来",
+          "start": 25.86,
+          "end": 26.0,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "就是",
+          "start": 26.0,
+          "end": 26.18,
+          "probability": 0.92431640625
+        },
+        {
+          "text": "朴",
+          "start": 26.18,
+          "end": 26.46,
+          "probability": 0.92529296875
+        },
+        {
+          "text": "素",
+          "start": 26.46,
+          "end": 26.64,
+          "probability": 0.97119140625
+        }
+      ]
+    },
+    {
+      "start": 26.64,
+      "end": 28.8,
+      "text": "烂掉暴飞的木头 古称的小",
+      "words": [
+        {
+          "text": "烂",
+          "start": 26.64,
+          "end": 27.16,
+          "probability": 0.6812744140625
+        },
+        {
+          "text": "掉",
+          "start": 27.16,
+          "end": 27.34,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "暴",
+          "start": 27.34,
+          "end": 27.52,
+          "probability": 0.6527099609375
+        },
+        {
+          "text": "飞",
+          "start": 27.52,
+          "end": 27.7,
+          "probability": 0.95751953125
+        },
+        {
+          "text": "的",
+          "start": 27.7,
+          "end": 27.78,
+          "probability": 0.98583984375
+        },
+        {
+          "text": "木",
+          "start": 27.78,
+          "end": 27.9,
+          "probability": 0.96533203125
+        },
+        {
+          "text": "头",
+          "start": 27.9,
+          "end": 28.08,
+          "probability": 0.8154296875
+        },
+        {
+          "text": "古",
+          "start": 28.24,
+          "end": 28.34,
+          "probability": 0.67333984375
+        },
+        {
+          "text": "称",
+          "start": 28.34,
+          "end": 28.5,
+          "probability": 0.934326171875
+        },
+        {
+          "text": "的",
+          "start": 28.5,
+          "end": 28.66,
+          "probability": 0.79150390625
+        },
+        {
+          "text": "小",
+          "start": 28.66,
+          "end": 28.8,
+          "probability": 0.6591796875
+        }
+      ]
+    },
+    {
+      "start": 28.8,
+      "end": 29.92,
+      "text": "也就有了浮小",
+      "words": [
+        {
+          "text": "也",
+          "start": 28.8,
+          "end": 29.18,
+          "probability": 0.67919921875
+        },
+        {
+          "text": "就",
+          "start": 29.18,
+          "end": 29.32,
+          "probability": 0.9951171875
+        },
+        {
+          "text": "有",
+          "start": 29.32,
+          "end": 29.46,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "了",
+          "start": 29.46,
+          "end": 29.56,
+          "probability": 0.99560546875
+        },
+        {
+          "text": "浮",
+          "start": 29.56,
+          "end": 29.72,
+          "probability": 0.59234619140625
+        },
+        {
+          "text": "小",
+          "start": 29.72,
+          "end": 29.92,
+          "probability": 0.89794921875
+        }
+      ]
+    },
+    {
+      "start": 29.92,
+      "end": 31.74,
+      "text": "古人自潮 年迈衰敗",
+      "words": [
+        {
+          "text": "古",
+          "start": 29.92,
+          "end": 30.44,
+          "probability": 0.94775390625
+        },
+        {
+          "text": "人",
+          "start": 30.44,
+          "end": 30.54,
+          "probability": 0.99658203125
+        },
+        {
+          "text": "自",
+          "start": 30.54,
+          "end": 30.68,
+          "probability": 0.97265625
+        },
+        {
+          "text": "潮",
+          "start": 30.68,
+          "end": 30.92,
+          "probability": 0.665283203125
+        },
+        {
+          "text": "年",
+          "start": 31.16,
+          "end": 31.24,
+          "probability": 0.97216796875
+        },
+        {
+          "text": "迈",
+          "start": 31.24,
+          "end": 31.38,
+          "probability": 0.6689453125
+        },
+        {
+          "text": "衰",
+          "start": 31.38,
+          "end": 31.56,
+          "probability": 0.9755859375
+        },
+        {
+          "text": "敗",
+          "start": 31.56,
+          "end": 31.74,
+          "probability": 0.777587890625
+        }
+      ]
+    },
+    {
+      "start": 31.74,
+      "end": 34.12,
+      "text": "想枯烂木头 便签称老小",
+      "words": [
+        {
+          "text": "想",
+          "start": 31.74,
+          "end": 32.1,
+          "probability": 0.40771484375
+        },
+        {
+          "text": "枯",
+          "start": 32.1,
+          "end": 32.32,
+          "probability": 0.6285400390625
+        },
+        {
+          "text": "烂",
+          "start": 32.32,
+          "end": 32.42,
+          "probability": 0.889892578125
+        },
+        {
+          "text": "木",
+          "start": 32.42,
+          "end": 32.56,
+          "probability": 0.9951171875
+        },
+        {
+          "text": "头",
+          "start": 32.56,
+          "end": 32.82,
+          "probability": 0.99169921875
+        },
+        {
+          "text": "便",
+          "start": 32.98,
+          "end": 33.08,
+          "probability": 0.97509765625
+        },
+        {
+          "text": "签",
+          "start": 33.08,
+          "end": 33.3,
+          "probability": 0.55450439453125
+        },
+        {
+          "text": "称",
+          "start": 33.3,
+          "end": 33.52,
+          "probability": 0.990234375
+        },
+        {
+          "text": "老",
+          "start": 33.52,
+          "end": 33.9,
+          "probability": 0.8603515625
+        },
+        {
+          "text": "小",
+          "start": 33.9,
+          "end": 34.12,
+          "probability": 0.9912109375
+        }
+      ]
+    },
+    {
+      "start": 34.12,
+      "end": 36.68,
+      "text": "房屋承重的粗木大粮 是洞雨粮",
+      "words": [
+        {
+          "text": "房",
+          "start": 34.12,
+          "end": 34.7,
+          "probability": 0.88330078125
+        },
+        {
+          "text": "屋",
+          "start": 34.7,
+          "end": 34.86,
+          "probability": 0.985107421875
+        },
+        {
+          "text": "承",
+          "start": 34.86,
+          "end": 35.0,
+          "probability": 0.57073974609375
+        },
+        {
+          "text": "重",
+          "start": 35.0,
+          "end": 35.16,
+          "probability": 0.9853515625
+        },
+        {
+          "text": "的",
+          "start": 35.16,
+          "end": 35.3,
+          "probability": 0.91650390625
+        },
+        {
+          "text": "粗",
+          "start": 35.3,
+          "end": 35.44,
+          "probability": 0.6876220703125
+        },
+        {
+          "text": "木",
+          "start": 35.44,
+          "end": 35.56,
+          "probability": 0.77685546875
+        },
+        {
+          "text": "大",
+          "start": 35.56,
+          "end": 35.72,
+          "probability": 0.99072265625
+        },
+        {
+          "text": "粮",
+          "start": 35.72,
+          "end": 35.86,
+          "probability": 0.807373046875
+        },
+        {
+          "text": "是",
+          "start": 35.86,
+          "end": 36.2,
+          "probability": 0.259521484375
+        },
+        {
+          "text": "洞",
+          "start": 36.2,
+          "end": 36.36,
+          "probability": 0.7301025390625
+        },
+        {
+          "text": "雨",
+          "start": 36.36,
+          "end": 36.54,
+          "probability": 0.428466796875
+        },
+        {
+          "text": "粮",
+          "start": 36.54,
+          "end": 36.68,
+          "probability": 0.982177734375
+        }
+      ]
+    },
+    {
+      "start": 36.68,
+      "end": 39.78,
+      "text": "能扛大师的顶尖人才 便叫洞粮制裁",
+      "words": [
+        {
+          "text": "能",
+          "start": 36.68,
+          "end": 37.08,
+          "probability": 0.90625
+        },
+        {
+          "text": "扛",
+          "start": 37.08,
+          "end": 37.24,
+          "probability": 0.989501953125
+        },
+        {
+          "text": "大",
+          "start": 37.24,
+          "end": 37.4,
+          "probability": 0.9912109375
+        },
+        {
+          "text": "师",
+          "start": 37.4,
+          "end": 37.54,
+          "probability": 0.333251953125
+        },
+        {
+          "text": "的",
+          "start": 37.54,
+          "end": 37.66,
+          "probability": 0.99365234375
+        },
+        {
+          "text": "顶",
+          "start": 37.66,
+          "end": 37.84,
+          "probability": 0.939208984375
+        },
+        {
+          "text": "尖",
+          "start": 37.84,
+          "end": 38.0,
+          "probability": 0.967041015625
+        },
+        {
+          "text": "人",
+          "start": 38.0,
+          "end": 38.14,
+          "probability": 0.9775390625
+        },
+        {
+          "text": "才",
+          "start": 38.14,
+          "end": 38.32,
+          "probability": 0.822265625
+        },
+        {
+          "text": "便",
+          "start": 38.56,
+          "end": 38.66,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "叫",
+          "start": 38.66,
+          "end": 38.82,
+          "probability": 0.9013671875
+        },
+        {
+          "text": "洞",
+          "start": 38.82,
+          "end": 39.0,
+          "probability": 0.958984375
+        },
+        {
+          "text": "粮",
+          "start": 39.0,
+          "end": 39.18,
+          "probability": 0.85546875
+        },
+        {
+          "text": "制",
+          "start": 39.18,
+          "end": 39.34,
+          "probability": 0.287353515625
+        },
+        {
+          "text": "裁",
+          "start": 39.34,
+          "end": 39.78,
+          "probability": 0.94140625
+        }
+      ]
+    },
+    {
+      "start": 39.78,
+      "end": 41.98,
+      "text": "弯曲变形的木头 较枉",
+      "words": [
+        {
+          "text": "弯",
+          "start": 39.78,
+          "end": 40.14,
+          "probability": 0.738037109375
+        },
+        {
+          "text": "曲",
+          "start": 40.14,
+          "end": 40.3,
+          "probability": 0.86767578125
+        },
+        {
+          "text": "变",
+          "start": 40.3,
+          "end": 40.46,
+          "probability": 0.862060546875
+        },
+        {
+          "text": "形",
+          "start": 40.46,
+          "end": 40.62,
+          "probability": 0.99169921875
+        },
+        {
+          "text": "的",
+          "start": 40.62,
+          "end": 40.76,
+          "probability": 0.9951171875
+        },
+        {
+          "text": "木",
+          "start": 40.76,
+          "end": 40.9,
+          "probability": 0.99658203125
+        },
+        {
+          "text": "头",
+          "start": 40.9,
+          "end": 41.12,
+          "probability": 0.99560546875
+        },
+        {
+          "text": "较",
+          "start": 41.34,
+          "end": 41.42,
+          "probability": 0.6470947265625
+        },
+        {
+          "text": "枉",
+          "start": 41.42,
+          "end": 41.98,
+          "probability": 0.66943359375
+        }
+      ]
+    },
+    {
+      "start": 41.98,
+      "end": 43.34,
+      "text": "矫正弯木用力过猛",
+      "words": [
+        {
+          "text": "矫",
+          "start": 41.98,
+          "end": 42.28,
+          "probability": 0.56005859375
+        },
+        {
+          "text": "正",
+          "start": 42.28,
+          "end": 42.48,
+          "probability": 0.87060546875
+        },
+        {
+          "text": "弯",
+          "start": 42.48,
+          "end": 42.6,
+          "probability": 0.961181640625
+        },
+        {
+          "text": "木",
+          "start": 42.6,
+          "end": 42.76,
+          "probability": 0.492919921875
+        },
+        {
+          "text": "用",
+          "start": 42.76,
+          "end": 42.92,
+          "probability": 0.9443359375
+        },
+        {
+          "text": "力",
+          "start": 42.92,
+          "end": 43.04,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "过",
+          "start": 43.04,
+          "end": 43.22,
+          "probability": 0.97314453125
+        },
+        {
+          "text": "猛",
+          "start": 43.22,
+          "end": 43.34,
+          "probability": 0.778076171875
+        }
+      ]
+    },
+    {
+      "start": 43.34,
+      "end": 45.84,
+      "text": "歪向另一边 就是矫往过正",
+      "words": [
+        {
+          "text": "歪",
+          "start": 43.34,
+          "end": 43.74,
+          "probability": 0.77490234375
+        },
+        {
+          "text": "向",
+          "start": 43.74,
+          "end": 43.9,
+          "probability": 0.08514404296875
+        },
+        {
+          "text": "另",
+          "start": 43.9,
+          "end": 44.04,
+          "probability": 0.96240234375
+        },
+        {
+          "text": "一",
+          "start": 44.04,
+          "end": 44.2,
+          "probability": 0.99560546875
+        },
+        {
+          "text": "边",
+          "start": 44.2,
+          "end": 44.34,
+          "probability": 0.96826171875
+        },
+        {
+          "text": "就是",
+          "start": 44.34,
+          "end": 44.78,
+          "probability": 0.7783203125
+        },
+        {
+          "text": "矫",
+          "start": 44.78,
+          "end": 45.28,
+          "probability": 0.7646484375
+        },
+        {
+          "text": "往",
+          "start": 45.28,
+          "end": 45.5,
+          "probability": 0.6962890625
+        },
+        {
+          "text": "过",
+          "start": 45.5,
+          "end": 45.7,
+          "probability": 0.97802734375
+        },
+        {
+          "text": "正",
+          "start": 45.7,
+          "end": 45.84,
+          "probability": 0.9365234375
+        }
+      ]
+    },
+    {
+      "start": 45.84,
+      "end": 48.6,
+      "text": "凭空背锅 被抹黑歪曲 便是冤枉",
+      "words": [
+        {
+          "text": "凭",
+          "start": 45.84,
+          "end": 46.38,
+          "probability": 0.6817626953125
+        },
+        {
+          "text": "空",
+          "start": 46.38,
+          "end": 46.56,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "背",
+          "start": 46.56,
+          "end": 46.72,
+          "probability": 0.6806640625
+        },
+        {
+          "text": "锅",
+          "start": 46.72,
+          "end": 46.88,
+          "probability": 0.981201171875
+        },
+        {
+          "text": "被",
+          "start": 47.1,
+          "end": 47.16,
+          "probability": 0.98583984375
+        },
+        {
+          "text": "抹",
+          "start": 47.16,
+          "end": 47.32,
+          "probability": 0.9931640625
+        },
+        {
+          "text": "黑",
+          "start": 47.32,
+          "end": 47.48,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "歪",
+          "start": 47.48,
+          "end": 47.6,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "曲",
+          "start": 47.6,
+          "end": 47.82,
+          "probability": 0.984375
+        },
+        {
+          "text": "便",
+          "start": 48.02,
+          "end": 48.1,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "是",
+          "start": 48.1,
+          "end": 48.26,
+          "probability": 0.99609375
+        },
+        {
+          "text": "冤",
+          "start": 48.26,
+          "end": 48.46,
+          "probability": 0.60302734375
+        },
+        {
+          "text": "枉",
+          "start": 48.46,
+          "end": 48.6,
+          "probability": 0.936279296875
+        }
+      ]
+    },
+    {
+      "start": 48.6,
+      "end": 50.72,
+      "text": "假若你走错路白忙回一场",
+      "words": [
+        {
+          "text": "假",
+          "start": 48.6,
+          "end": 49.14,
+          "probability": 0.982421875
+        },
+        {
+          "text": "若",
+          "start": 49.14,
+          "end": 49.32,
+          "probability": 0.987060546875
+        },
+        {
+          "text": "你",
+          "start": 49.32,
+          "end": 49.58,
+          "probability": 0.53857421875
+        },
+        {
+          "text": "走",
+          "start": 49.58,
+          "end": 49.72,
+          "probability": 0.99267578125
+        },
+        {
+          "text": "错",
+          "start": 49.72,
+          "end": 49.9,
+          "probability": 0.97998046875
+        },
+        {
+          "text": "路",
+          "start": 49.9,
+          "end": 50.02,
+          "probability": 0.9931640625
+        },
+        {
+          "text": "白",
+          "start": 50.02,
+          "end": 50.16,
+          "probability": 0.98193359375
+        },
+        {
+          "text": "忙",
+          "start": 50.16,
+          "end": 50.3,
+          "probability": 0.454345703125
+        },
+        {
+          "text": "回",
+          "start": 50.3,
+          "end": 50.48,
+          "probability": 0.80419921875
+        },
+        {
+          "text": "一",
+          "start": 50.48,
+          "end": 50.62,
+          "probability": 0.947265625
+        },
+        {
+          "text": "场",
+          "start": 50.62,
+          "end": 50.72,
+          "probability": 0.98583984375
+        }
+      ]
+    },
+    {
+      "start": 50.72,
+      "end": 52.4,
+      "text": "便是枉费力气",
+      "words": [
+        {
+          "text": "便",
+          "start": 50.72,
+          "end": 51.14,
+          "probability": 0.72998046875
+        },
+        {
+          "text": "是",
+          "start": 51.14,
+          "end": 51.36,
+          "probability": 0.998046875
+        },
+        {
+          "text": "枉",
+          "start": 51.36,
+          "end": 51.66,
+          "probability": 0.58642578125
+        },
+        {
+          "text": "费",
+          "start": 51.66,
+          "end": 51.86,
+          "probability": 0.936767578125
+        },
+        {
+          "text": "力",
+          "start": 51.86,
+          "end": 52.02,
+          "probability": 0.8369140625
+        },
+        {
+          "text": "气",
+          "start": 52.02,
+          "end": 52.4,
+          "probability": 0.962890625
+        }
+      ]
+    },
+    {
+      "start": 52.4,
+      "end": 55.3,
+      "text": "一众原子木头的汉字 生动讲解其本意",
+      "words": [
+        {
+          "text": "一",
+          "start": 52.4,
+          "end": 52.8,
+          "probability": 0.921875
+        },
+        {
+          "text": "众",
+          "start": 52.8,
+          "end": 52.9,
+          "probability": 0.883056640625
+        },
+        {
+          "text": "原",
+          "start": 52.9,
+          "end": 53.06,
+          "probability": 0.356201171875
+        },
+        {
+          "text": "子",
+          "start": 53.06,
+          "end": 53.22,
+          "probability": 0.548828125
+        },
+        {
+          "text": "木",
+          "start": 53.22,
+          "end": 53.38,
+          "probability": 0.9921875
+        },
+        {
+          "text": "头",
+          "start": 53.38,
+          "end": 53.54,
+          "probability": 0.99658203125
+        },
+        {
+          "text": "的",
+          "start": 53.54,
+          "end": 53.64,
+          "probability": 0.9951171875
+        },
+        {
+          "text": "汉",
+          "start": 53.64,
+          "end": 53.8,
+          "probability": 0.946044921875
+        },
+        {
+          "text": "字",
+          "start": 53.8,
+          "end": 53.98,
+          "probability": 0.96337890625
+        },
+        {
+          "text": "生",
+          "start": 54.2,
+          "end": 54.28,
+          "probability": 0.75390625
+        },
+        {
+          "text": "动",
+          "start": 54.28,
+          "end": 54.42,
+          "probability": 0.99169921875
+        },
+        {
+          "text": "讲",
+          "start": 54.42,
+          "end": 54.62,
+          "probability": 0.392578125
+        },
+        {
+          "text": "解",
+          "start": 54.62,
+          "end": 54.8,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "其",
+          "start": 54.8,
+          "end": 54.94,
+          "probability": 0.7861328125
+        },
+        {
+          "text": "本",
+          "start": 54.94,
+          "end": 55.08,
+          "probability": 0.998046875
+        },
+        {
+          "text": "意",
+          "start": 55.08,
+          "end": 55.3,
+          "probability": 0.95166015625
+        }
+      ]
+    },
+    {
+      "start": 55.3,
+      "end": 57.34,
+      "text": "对应日常成语和词语",
+      "words": [
+        {
+          "text": "对",
+          "start": 55.3,
+          "end": 55.68,
+          "probability": 0.708984375
+        },
+        {
+          "text": "应",
+          "start": 55.68,
+          "end": 55.82,
+          "probability": 0.96533203125
+        },
+        {
+          "text": "日",
+          "start": 55.82,
+          "end": 55.96,
+          "probability": 0.284912109375
+        },
+        {
+          "text": "常",
+          "start": 55.96,
+          "end": 56.14,
+          "probability": 0.9873046875
+        },
+        {
+          "text": "成",
+          "start": 56.14,
+          "end": 56.32,
+          "probability": 0.90576171875
+        },
+        {
+          "text": "语",
+          "start": 56.32,
+          "end": 56.5,
+          "probability": 0.90087890625
+        },
+        {
+          "text": "和",
+          "start": 56.5,
+          "end": 56.66,
+          "probability": 0.214599609375
+        },
+        {
+          "text": "词",
+          "start": 56.66,
+          "end": 56.84,
+          "probability": 0.92431640625
+        },
+        {
+          "text": "语",
+          "start": 56.84,
+          "end": 57.34,
+          "probability": 0.955078125
+        }
+      ]
+    },
+    {
+      "start": 57.34,
+      "end": 59.02,
+      "text": "展现出老祖宗从树木",
+      "words": [
+        {
+          "text": "展",
+          "start": 57.34,
+          "end": 57.52,
+          "probability": 0.8681640625
+        },
+        {
+          "text": "现",
+          "start": 57.52,
+          "end": 57.68,
+          "probability": 0.994140625
+        },
+        {
+          "text": "出",
+          "start": 57.68,
+          "end": 57.86,
+          "probability": 0.99560546875
+        },
+        {
+          "text": "老",
+          "start": 57.86,
+          "end": 58.1,
+          "probability": 0.89697265625
+        },
+        {
+          "text": "祖",
+          "start": 58.1,
+          "end": 58.28,
+          "probability": 0.99658203125
+        },
+        {
+          "text": "宗",
+          "start": 58.28,
+          "end": 58.46,
+          "probability": 0.997314453125
+        },
+        {
+          "text": "从",
+          "start": 58.46,
+          "end": 58.62,
+          "probability": 0.7431640625
+        },
+        {
+          "text": "树",
+          "start": 58.62,
+          "end": 58.82,
+          "probability": 0.561248779296875
+        },
+        {
+          "text": "木",
+          "start": 58.82,
+          "end": 59.02,
+          "probability": 0.3828125
+        }
+      ]
+    },
+    {
+      "start": 59.02,
+      "end": 61.42,
+      "text": "木料形态中 造字造词的生活智慧",
+      "words": [
+        {
+          "text": "木",
+          "start": 59.02,
+          "end": 59.3,
+          "probability": 0.1806640625
+        },
+        {
+          "text": "料",
+          "start": 59.3,
+          "end": 59.44,
+          "probability": 0.71435546875
+        },
+        {
+          "text": "形",
+          "start": 59.44,
+          "end": 59.6,
+          "probability": 0.96484375
+        },
+        {
+          "text": "态",
+          "start": 59.6,
+          "end": 59.78,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "中",
+          "start": 59.78,
+          "end": 59.94,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "造",
+          "start": 60.14,
+          "end": 60.22,
+          "probability": 0.9541015625
+        },
+        {
+          "text": "字",
+          "start": 60.22,
+          "end": 60.4,
+          "probability": 0.10321044921875
+        },
+        {
+          "text": "造",
+          "start": 60.4,
+          "end": 60.56,
+          "probability": 0.94921875
+        },
+        {
+          "text": "词",
+          "start": 60.56,
+          "end": 60.78,
+          "probability": 0.95458984375
+        },
+        {
+          "text": "的",
+          "start": 60.78,
+          "end": 60.86,
+          "probability": 0.982421875
+        },
+        {
+          "text": "生活",
+          "start": 60.86,
+          "end": 61.14,
+          "probability": 0.9873046875
+        },
+        {
+          "text": "智",
+          "start": 61.14,
+          "end": 61.32,
+          "probability": 0.641845703125
+        },
+        {
+          "text": "慧",
+          "start": 61.32,
+          "end": 61.42,
+          "probability": 0.7247314453125
+        }
+      ]
+    }
+  ],
+  "cues": [
+    {
+      "start": 0.0,
+      "end": 1.64,
+      "text": "这是你在骨带种下的大树",
+      "words": [
+        {
+          "text": "这是",
+          "start": 0.0,
+          "end": 0.24,
+          "probability": 0.525390625
+        },
+        {
+          "text": "你在",
+          "start": 0.24,
+          "end": 0.52,
+          "probability": 0.92431640625
+        },
+        {
+          "text": "骨",
+          "start": 0.52,
+          "end": 0.74,
+          "probability": 0.6893310546875
+        },
+        {
+          "text": "带",
+          "start": 0.74,
+          "end": 0.88,
+          "probability": 0.6539306640625
+        },
+        {
+          "text": "种",
+          "start": 0.88,
+          "end": 1.08,
+          "probability": 0.3994140625
+        },
+        {
+          "text": "下",
+          "start": 1.08,
+          "end": 1.22,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "的",
+          "start": 1.22,
+          "end": 1.34,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "大",
+          "start": 1.34,
+          "end": 1.5,
+          "probability": 0.99658203125
+        },
+        {
+          "text": "树",
+          "start": 1.5,
+          "end": 1.64,
+          "probability": 0.9931640625
+        }
+      ]
+    },
+    {
+      "start": 1.64,
+      "end": 4.2,
+      "text": "假若你拿骨子将其砍断 就剿膝",
+      "words": [
+        {
+          "text": "假",
+          "start": 1.64,
+          "end": 2.14,
+          "probability": 0.9921875
+        },
+        {
+          "text": "若",
+          "start": 2.14,
+          "end": 2.28,
+          "probability": 0.935546875
+        },
+        {
+          "text": "你",
+          "start": 2.28,
+          "end": 2.38,
+          "probability": 0.98486328125
+        },
+        {
+          "text": "拿",
+          "start": 2.38,
+          "end": 2.5,
+          "probability": 0.98681640625
+        },
+        {
+          "text": "骨",
+          "start": 2.5,
+          "end": 2.68,
+          "probability": 0.812744140625
+        },
+        {
+          "text": "子",
+          "start": 2.68,
+          "end": 2.8,
+          "probability": 0.99609375
+        },
+        {
+          "text": "将",
+          "start": 2.8,
+          "end": 2.92,
+          "probability": 0.92919921875
+        },
+        {
+          "text": "其",
+          "start": 2.92,
+          "end": 3.06,
+          "probability": 0.9892578125
+        },
+        {
+          "text": "砍",
+          "start": 3.06,
+          "end": 3.24,
+          "probability": 0.93310546875
+        },
+        {
+          "text": "断",
+          "start": 3.24,
+          "end": 3.48,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "就",
+          "start": 3.48,
+          "end": 3.88,
+          "probability": 0.2379150390625
+        },
+        {
+          "text": "剿",
+          "start": 3.88,
+          "end": 4.02,
+          "probability": 0.60198974609375
+        },
+        {
+          "text": "膝",
+          "start": 4.02,
+          "end": 4.2,
+          "probability": 0.747802734375
+        }
+      ]
+    },
+    {
+      "start": 4.2,
+      "end": 7.36,
+      "text": "假若把树骨劈成零碎几段 彻底散开",
+      "words": [
+        {
+          "text": "假",
+          "start": 4.2,
+          "end": 4.8,
+          "probability": 0.94775390625
+        },
+        {
+          "text": "若",
+          "start": 4.8,
+          "end": 4.96,
+          "probability": 0.998779296875
+        },
+        {
+          "text": "把",
+          "start": 4.96,
+          "end": 5.1,
+          "probability": 0.99609375
+        },
+        {
+          "text": "树",
+          "start": 5.1,
+          "end": 5.26,
+          "probability": 0.992431640625
+        },
+        {
+          "text": "骨",
+          "start": 5.26,
+          "end": 5.48,
+          "probability": 0.58856201171875
+        },
+        {
+          "text": "劈",
+          "start": 5.48,
+          "end": 5.58,
+          "probability": 0.7410888671875
+        },
+        {
+          "text": "成",
+          "start": 5.58,
+          "end": 5.74,
+          "probability": 0.99365234375
+        },
+        {
+          "text": "零",
+          "start": 5.74,
+          "end": 5.9,
+          "probability": 0.90478515625
+        },
+        {
+          "text": "碎",
+          "start": 5.9,
+          "end": 6.06,
+          "probability": 0.9658203125
+        },
+        {
+          "text": "几",
+          "start": 6.06,
+          "end": 6.24,
+          "probability": 0.771728515625
+        },
+        {
+          "text": "段",
+          "start": 6.24,
+          "end": 6.38,
+          "probability": 0.97021484375
+        },
+        {
+          "text": "彻",
+          "start": 6.68,
+          "end": 6.8,
+          "probability": 0.993408203125
+        },
+        {
+          "text": "底",
+          "start": 6.8,
+          "end": 7.0,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "散",
+          "start": 7.0,
+          "end": 7.16,
+          "probability": 0.998291015625
+        },
+        {
+          "text": "开",
+          "start": 7.16,
+          "end": 7.36,
+          "probability": 0.9990234375
+        }
+      ]
+    },
+    {
+      "start": 7.36,
+      "end": 9.04,
+      "text": "便是成与分崩离析",
+      "words": [
+        {
+          "text": "便",
+          "start": 7.36,
+          "end": 7.88,
+          "probability": 0.9658203125
+        },
+        {
+          "text": "是",
+          "start": 7.88,
+          "end": 8.04,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "成",
+          "start": 8.04,
+          "end": 8.2,
+          "probability": 0.6953125
+        },
+        {
+          "text": "与",
+          "start": 8.2,
+          "end": 8.34,
+          "probability": 0.91455078125
+        },
+        {
+          "text": "分",
+          "start": 8.34,
+          "end": 8.54,
+          "probability": 0.61474609375
+        },
+        {
+          "text": "崩",
+          "start": 8.54,
+          "end": 8.72,
+          "probability": 0.979736328125
+        },
+        {
+          "text": "离",
+          "start": 8.72,
+          "end": 8.86,
+          "probability": 0.981201171875
+        },
+        {
+          "text": "析",
+          "start": 8.86,
+          "end": 9.04,
+          "probability": 0.6273193359375
+        }
+      ]
+    },
+    {
+      "start": 9.04,
+      "end": 11.58,
+      "text": "我们现在把复杂难题拆解成小问题",
+      "words": [
+        {
+          "text": "我们",
+          "start": 9.04,
+          "end": 9.6,
+          "probability": 0.98046875
+        },
+        {
+          "text": "现在",
+          "start": 9.6,
+          "end": 9.74,
+          "probability": 0.94287109375
+        },
+        {
+          "text": "把",
+          "start": 9.74,
+          "end": 9.96,
+          "probability": 0.99462890625
+        },
+        {
+          "text": "复",
+          "start": 9.96,
+          "end": 10.1,
+          "probability": 0.9892578125
+        },
+        {
+          "text": "杂",
+          "start": 10.1,
+          "end": 10.22,
+          "probability": 0.999267578125
+        },
+        {
+          "text": "难",
+          "start": 10.22,
+          "end": 10.34,
+          "probability": 0.97802734375
+        },
+        {
+          "text": "题",
+          "start": 10.34,
+          "end": 10.52,
+          "probability": 0.99169921875
+        },
+        {
+          "text": "拆",
+          "start": 10.52,
+          "end": 10.82,
+          "probability": 0.9921875
+        },
+        {
+          "text": "解",
+          "start": 10.82,
+          "end": 10.96,
+          "probability": 0.99609375
+        },
+        {
+          "text": "成",
+          "start": 10.96,
+          "end": 11.12,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "小",
+          "start": 11.12,
+          "end": 11.28,
+          "probability": 0.9931640625
+        },
+        {
+          "text": "问题",
+          "start": 11.28,
+          "end": 11.58,
+          "probability": 0.99560546875
+        }
+      ]
+    },
+    {
+      "start": 11.58,
+      "end": 13.5,
+      "text": "细细研究 也就是分析",
+      "words": [
+        {
+          "text": "细",
+          "start": 11.58,
+          "end": 12.04,
+          "probability": 0.725830078125
+        },
+        {
+          "text": "细",
+          "start": 12.04,
+          "end": 12.16,
+          "probability": 0.9404296875
+        },
+        {
+          "text": "研",
+          "start": 12.16,
+          "end": 12.32,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "究",
+          "start": 12.32,
+          "end": 12.5,
+          "probability": 0.998046875
+        },
+        {
+          "text": "也",
+          "start": 12.7,
+          "end": 12.84,
+          "probability": 0.998046875
+        },
+        {
+          "text": "就是",
+          "start": 12.84,
+          "end": 13.04,
+          "probability": 0.99365234375
+        },
+        {
+          "text": "分",
+          "start": 13.04,
+          "end": 13.32,
+          "probability": 0.98876953125
+        },
+        {
+          "text": "析",
+          "start": 13.32,
+          "end": 13.5,
+          "probability": 0.998779296875
+        }
+      ]
+    },
+    {
+      "start": 13.5,
+      "end": 15.8,
+      "text": "砍完树剩下的树蹲角桌",
+      "words": [
+        {
+          "text": "砍",
+          "start": 13.5,
+          "end": 14.08,
+          "probability": 0.939453125
+        },
+        {
+          "text": "完",
+          "start": 14.08,
+          "end": 14.24,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "树",
+          "start": 14.24,
+          "end": 14.44,
+          "probability": 0.99169921875
+        },
+        {
+          "text": "剩",
+          "start": 14.44,
+          "end": 14.6,
+          "probability": 0.996337890625
+        },
+        {
+          "text": "下",
+          "start": 14.6,
+          "end": 14.8,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "的",
+          "start": 14.8,
+          "end": 14.92,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "树",
+          "start": 14.92,
+          "end": 15.1,
+          "probability": 0.9931640625
+        },
+        {
+          "text": "蹲",
+          "start": 15.1,
+          "end": 15.22,
+          "probability": 0.5843505859375
+        },
+        {
+          "text": "角",
+          "start": 15.22,
+          "end": 15.4,
+          "probability": 0.69873046875
+        },
+        {
+          "text": "桌",
+          "start": 15.4,
+          "end": 15.8,
+          "probability": 0.5968017578125
+        }
+      ]
+    },
+    {
+      "start": 15.8,
+      "end": 18.34,
+      "text": "懒人死手树蹲 做等肚子撞上来",
+      "words": [
+        {
+          "text": "懒",
+          "start": 15.8,
+          "end": 16.2,
+          "probability": 0.893798828125
+        },
+        {
+          "text": "人",
+          "start": 16.2,
+          "end": 16.34,
+          "probability": 0.98486328125
+        },
+        {
+          "text": "死",
+          "start": 16.34,
+          "end": 16.54,
+          "probability": 0.8359375
+        },
+        {
+          "text": "手",
+          "start": 16.54,
+          "end": 16.68,
+          "probability": 0.52734375
+        },
+        {
+          "text": "树",
+          "start": 16.68,
+          "end": 16.82,
+          "probability": 0.9931640625
+        },
+        {
+          "text": "蹲",
+          "start": 16.82,
+          "end": 17.0,
+          "probability": 0.99658203125
+        },
+        {
+          "text": "做",
+          "start": 17.26,
+          "end": 17.34,
+          "probability": 0.60302734375
+        },
+        {
+          "text": "等",
+          "start": 17.34,
+          "end": 17.48,
+          "probability": 0.912109375
+        },
+        {
+          "text": "肚",
+          "start": 17.48,
+          "end": 17.66,
+          "probability": 0.834228515625
+        },
+        {
+          "text": "子",
+          "start": 17.66,
+          "end": 17.82,
+          "probability": 1.0
+        },
+        {
+          "text": "撞",
+          "start": 17.82,
+          "end": 17.94,
+          "probability": 0.8525390625
+        },
+        {
+          "text": "上",
+          "start": 17.94,
+          "end": 18.1,
+          "probability": 0.97705078125
+        },
+        {
+          "text": "来",
+          "start": 18.1,
+          "end": 18.34,
+          "probability": 0.9970703125
+        }
+      ]
+    },
+    {
+      "start": 18.34,
+      "end": 19.9,
+      "text": "这不就是手朱带兔吗",
+      "words": [
+        {
+          "text": "这",
+          "start": 18.34,
+          "end": 18.56,
+          "probability": 0.98828125
+        },
+        {
+          "text": "不",
+          "start": 18.56,
+          "end": 18.68,
+          "probability": 0.99609375
+        },
+        {
+          "text": "就是",
+          "start": 18.68,
+          "end": 18.9,
+          "probability": 0.99169921875
+        },
+        {
+          "text": "手",
+          "start": 18.9,
+          "end": 19.1,
+          "probability": 0.9638671875
+        },
+        {
+          "text": "朱",
+          "start": 19.1,
+          "end": 19.3,
+          "probability": 0.6444091796875
+        },
+        {
+          "text": "带",
+          "start": 19.3,
+          "end": 19.48,
+          "probability": 0.90087890625
+        },
+        {
+          "text": "兔",
+          "start": 19.48,
+          "end": 19.66,
+          "probability": 0.952880859375
+        },
+        {
+          "text": "吗",
+          "start": 19.66,
+          "end": 19.9,
+          "probability": 0.81103515625
+        }
+      ]
+    },
+    {
+      "start": 19.9,
+      "end": 22.86,
+      "text": "刚看下来 眉打磨加工的原木 就是朴",
+      "words": [
+        {
+          "text": "刚",
+          "start": 19.9,
+          "end": 20.4,
+          "probability": 0.84912109375
+        },
+        {
+          "text": "看",
+          "start": 20.4,
+          "end": 20.56,
+          "probability": 0.44091796875
+        },
+        {
+          "text": "下",
+          "start": 20.56,
+          "end": 20.72,
+          "probability": 0.994140625
+        },
+        {
+          "text": "来",
+          "start": 20.72,
+          "end": 21.0,
+          "probability": 0.99365234375
+        },
+        {
+          "text": "眉",
+          "start": 21.1,
+          "end": 21.22,
+          "probability": 0.59588623046875
+        },
+        {
+          "text": "打",
+          "start": 21.22,
+          "end": 21.36,
+          "probability": 0.98779296875
+        },
+        {
+          "text": "磨",
+          "start": 21.36,
+          "end": 21.52,
+          "probability": 0.885498046875
+        },
+        {
+          "text": "加",
+          "start": 21.52,
+          "end": 21.7,
+          "probability": 0.8916015625
+        },
+        {
+          "text": "工",
+          "start": 21.7,
+          "end": 21.86,
+          "probability": 0.9912109375
+        },
+        {
+          "text": "的",
+          "start": 21.86,
+          "end": 21.96,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "原",
+          "start": 21.96,
+          "end": 22.1,
+          "probability": 0.424560546875
+        },
+        {
+          "text": "木",
+          "start": 22.1,
+          "end": 22.26,
+          "probability": 0.92919921875
+        },
+        {
+          "text": "就是",
+          "start": 22.26,
+          "end": 22.62,
+          "probability": 0.408203125
+        },
+        {
+          "text": "朴",
+          "start": 22.62,
+          "end": 22.86,
+          "probability": 0.6605224609375
+        }
+      ]
+    },
+    {
+      "start": 23.24,
+      "end": 25.2,
+      "text": "眉染色制造的丝枝皮 饰素",
+      "words": [
+        {
+          "text": "眉",
+          "start": 23.24,
+          "end": 23.56,
+          "probability": 0.6849365234375
+        },
+        {
+          "text": "染",
+          "start": 23.56,
+          "end": 23.7,
+          "probability": 0.97802734375
+        },
+        {
+          "text": "色",
+          "start": 23.7,
+          "end": 23.84,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "制",
+          "start": 23.84,
+          "end": 24.0,
+          "probability": 0.51513671875
+        },
+        {
+          "text": "造",
+          "start": 24.0,
+          "end": 24.14,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "的",
+          "start": 24.14,
+          "end": 24.24,
+          "probability": 0.99609375
+        },
+        {
+          "text": "丝",
+          "start": 24.24,
+          "end": 24.38,
+          "probability": 0.6881103515625
+        },
+        {
+          "text": "枝",
+          "start": 24.38,
+          "end": 24.48,
+          "probability": 0.6435546875
+        },
+        {
+          "text": "皮",
+          "start": 24.48,
+          "end": 24.66,
+          "probability": 0.3779296875
+        },
+        {
+          "text": "饰",
+          "start": 24.98,
+          "end": 25.0,
+          "probability": 0.537841796875
+        },
+        {
+          "text": "素",
+          "start": 25.0,
+          "end": 25.2,
+          "probability": 0.64013671875
+        }
+      ]
+    },
+    {
+      "start": 25.2,
+      "end": 26.64,
+      "text": "组合起来就是朴素",
+      "words": [
+        {
+          "text": "组",
+          "start": 25.2,
+          "end": 25.6,
+          "probability": 0.812744140625
+        },
+        {
+          "text": "合",
+          "start": 25.6,
+          "end": 25.74,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "起",
+          "start": 25.74,
+          "end": 25.86,
+          "probability": 0.99609375
+        },
+        {
+          "text": "来",
+          "start": 25.86,
+          "end": 26.0,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "就是",
+          "start": 26.0,
+          "end": 26.18,
+          "probability": 0.92431640625
+        },
+        {
+          "text": "朴",
+          "start": 26.18,
+          "end": 26.46,
+          "probability": 0.92529296875
+        },
+        {
+          "text": "素",
+          "start": 26.46,
+          "end": 26.64,
+          "probability": 0.97119140625
+        }
+      ]
+    },
+    {
+      "start": 26.64,
+      "end": 28.8,
+      "text": "烂掉暴飞的木头 古称的小",
+      "words": [
+        {
+          "text": "烂",
+          "start": 26.64,
+          "end": 27.16,
+          "probability": 0.6812744140625
+        },
+        {
+          "text": "掉",
+          "start": 27.16,
+          "end": 27.34,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "暴",
+          "start": 27.34,
+          "end": 27.52,
+          "probability": 0.6527099609375
+        },
+        {
+          "text": "飞",
+          "start": 27.52,
+          "end": 27.7,
+          "probability": 0.95751953125
+        },
+        {
+          "text": "的",
+          "start": 27.7,
+          "end": 27.78,
+          "probability": 0.98583984375
+        },
+        {
+          "text": "木",
+          "start": 27.78,
+          "end": 27.9,
+          "probability": 0.96533203125
+        },
+        {
+          "text": "头",
+          "start": 27.9,
+          "end": 28.08,
+          "probability": 0.8154296875
+        },
+        {
+          "text": "古",
+          "start": 28.24,
+          "end": 28.34,
+          "probability": 0.67333984375
+        },
+        {
+          "text": "称",
+          "start": 28.34,
+          "end": 28.5,
+          "probability": 0.934326171875
+        },
+        {
+          "text": "的",
+          "start": 28.5,
+          "end": 28.66,
+          "probability": 0.79150390625
+        },
+        {
+          "text": "小",
+          "start": 28.66,
+          "end": 28.8,
+          "probability": 0.6591796875
+        }
+      ]
+    },
+    {
+      "start": 28.8,
+      "end": 29.92,
+      "text": "也就有了浮小",
+      "words": [
+        {
+          "text": "也",
+          "start": 28.8,
+          "end": 29.18,
+          "probability": 0.67919921875
+        },
+        {
+          "text": "就",
+          "start": 29.18,
+          "end": 29.32,
+          "probability": 0.9951171875
+        },
+        {
+          "text": "有",
+          "start": 29.32,
+          "end": 29.46,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "了",
+          "start": 29.46,
+          "end": 29.56,
+          "probability": 0.99560546875
+        },
+        {
+          "text": "浮",
+          "start": 29.56,
+          "end": 29.72,
+          "probability": 0.59234619140625
+        },
+        {
+          "text": "小",
+          "start": 29.72,
+          "end": 29.92,
+          "probability": 0.89794921875
+        }
+      ]
+    },
+    {
+      "start": 29.92,
+      "end": 31.74,
+      "text": "古人自潮 年迈衰敗",
+      "words": [
+        {
+          "text": "古",
+          "start": 29.92,
+          "end": 30.44,
+          "probability": 0.94775390625
+        },
+        {
+          "text": "人",
+          "start": 30.44,
+          "end": 30.54,
+          "probability": 0.99658203125
+        },
+        {
+          "text": "自",
+          "start": 30.54,
+          "end": 30.68,
+          "probability": 0.97265625
+        },
+        {
+          "text": "潮",
+          "start": 30.68,
+          "end": 30.92,
+          "probability": 0.665283203125
+        },
+        {
+          "text": "年",
+          "start": 31.16,
+          "end": 31.24,
+          "probability": 0.97216796875
+        },
+        {
+          "text": "迈",
+          "start": 31.24,
+          "end": 31.38,
+          "probability": 0.6689453125
+        },
+        {
+          "text": "衰",
+          "start": 31.38,
+          "end": 31.56,
+          "probability": 0.9755859375
+        },
+        {
+          "text": "敗",
+          "start": 31.56,
+          "end": 31.74,
+          "probability": 0.777587890625
+        }
+      ]
+    },
+    {
+      "start": 31.74,
+      "end": 34.12,
+      "text": "想枯烂木头 便签称老小",
+      "words": [
+        {
+          "text": "想",
+          "start": 31.74,
+          "end": 32.1,
+          "probability": 0.40771484375
+        },
+        {
+          "text": "枯",
+          "start": 32.1,
+          "end": 32.32,
+          "probability": 0.6285400390625
+        },
+        {
+          "text": "烂",
+          "start": 32.32,
+          "end": 32.42,
+          "probability": 0.889892578125
+        },
+        {
+          "text": "木",
+          "start": 32.42,
+          "end": 32.56,
+          "probability": 0.9951171875
+        },
+        {
+          "text": "头",
+          "start": 32.56,
+          "end": 32.82,
+          "probability": 0.99169921875
+        },
+        {
+          "text": "便",
+          "start": 32.98,
+          "end": 33.08,
+          "probability": 0.97509765625
+        },
+        {
+          "text": "签",
+          "start": 33.08,
+          "end": 33.3,
+          "probability": 0.55450439453125
+        },
+        {
+          "text": "称",
+          "start": 33.3,
+          "end": 33.52,
+          "probability": 0.990234375
+        },
+        {
+          "text": "老",
+          "start": 33.52,
+          "end": 33.9,
+          "probability": 0.8603515625
+        },
+        {
+          "text": "小",
+          "start": 33.9,
+          "end": 34.12,
+          "probability": 0.9912109375
+        }
+      ]
+    },
+    {
+      "start": 34.12,
+      "end": 36.68,
+      "text": "房屋承重的粗木大粮 是洞雨粮",
+      "words": [
+        {
+          "text": "房",
+          "start": 34.12,
+          "end": 34.7,
+          "probability": 0.88330078125
+        },
+        {
+          "text": "屋",
+          "start": 34.7,
+          "end": 34.86,
+          "probability": 0.985107421875
+        },
+        {
+          "text": "承",
+          "start": 34.86,
+          "end": 35.0,
+          "probability": 0.57073974609375
+        },
+        {
+          "text": "重",
+          "start": 35.0,
+          "end": 35.16,
+          "probability": 0.9853515625
+        },
+        {
+          "text": "的",
+          "start": 35.16,
+          "end": 35.3,
+          "probability": 0.91650390625
+        },
+        {
+          "text": "粗",
+          "start": 35.3,
+          "end": 35.44,
+          "probability": 0.6876220703125
+        },
+        {
+          "text": "木",
+          "start": 35.44,
+          "end": 35.56,
+          "probability": 0.77685546875
+        },
+        {
+          "text": "大",
+          "start": 35.56,
+          "end": 35.72,
+          "probability": 0.99072265625
+        },
+        {
+          "text": "粮",
+          "start": 35.72,
+          "end": 35.86,
+          "probability": 0.807373046875
+        },
+        {
+          "text": "是",
+          "start": 35.86,
+          "end": 36.2,
+          "probability": 0.259521484375
+        },
+        {
+          "text": "洞",
+          "start": 36.2,
+          "end": 36.36,
+          "probability": 0.7301025390625
+        },
+        {
+          "text": "雨",
+          "start": 36.36,
+          "end": 36.54,
+          "probability": 0.428466796875
+        },
+        {
+          "text": "粮",
+          "start": 36.54,
+          "end": 36.68,
+          "probability": 0.982177734375
+        }
+      ]
+    },
+    {
+      "start": 36.68,
+      "end": 39.78,
+      "text": "能扛大师的顶尖人才 便叫洞粮制裁",
+      "words": [
+        {
+          "text": "能",
+          "start": 36.68,
+          "end": 37.08,
+          "probability": 0.90625
+        },
+        {
+          "text": "扛",
+          "start": 37.08,
+          "end": 37.24,
+          "probability": 0.989501953125
+        },
+        {
+          "text": "大",
+          "start": 37.24,
+          "end": 37.4,
+          "probability": 0.9912109375
+        },
+        {
+          "text": "师",
+          "start": 37.4,
+          "end": 37.54,
+          "probability": 0.333251953125
+        },
+        {
+          "text": "的",
+          "start": 37.54,
+          "end": 37.66,
+          "probability": 0.99365234375
+        },
+        {
+          "text": "顶",
+          "start": 37.66,
+          "end": 37.84,
+          "probability": 0.939208984375
+        },
+        {
+          "text": "尖",
+          "start": 37.84,
+          "end": 38.0,
+          "probability": 0.967041015625
+        },
+        {
+          "text": "人",
+          "start": 38.0,
+          "end": 38.14,
+          "probability": 0.9775390625
+        },
+        {
+          "text": "才",
+          "start": 38.14,
+          "end": 38.32,
+          "probability": 0.822265625
+        },
+        {
+          "text": "便",
+          "start": 38.56,
+          "end": 38.66,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "叫",
+          "start": 38.66,
+          "end": 38.82,
+          "probability": 0.9013671875
+        },
+        {
+          "text": "洞",
+          "start": 38.82,
+          "end": 39.0,
+          "probability": 0.958984375
+        },
+        {
+          "text": "粮",
+          "start": 39.0,
+          "end": 39.18,
+          "probability": 0.85546875
+        },
+        {
+          "text": "制",
+          "start": 39.18,
+          "end": 39.34,
+          "probability": 0.287353515625
+        },
+        {
+          "text": "裁",
+          "start": 39.34,
+          "end": 39.78,
+          "probability": 0.94140625
+        }
+      ]
+    },
+    {
+      "start": 39.78,
+      "end": 41.98,
+      "text": "弯曲变形的木头 较枉",
+      "words": [
+        {
+          "text": "弯",
+          "start": 39.78,
+          "end": 40.14,
+          "probability": 0.738037109375
+        },
+        {
+          "text": "曲",
+          "start": 40.14,
+          "end": 40.3,
+          "probability": 0.86767578125
+        },
+        {
+          "text": "变",
+          "start": 40.3,
+          "end": 40.46,
+          "probability": 0.862060546875
+        },
+        {
+          "text": "形",
+          "start": 40.46,
+          "end": 40.62,
+          "probability": 0.99169921875
+        },
+        {
+          "text": "的",
+          "start": 40.62,
+          "end": 40.76,
+          "probability": 0.9951171875
+        },
+        {
+          "text": "木",
+          "start": 40.76,
+          "end": 40.9,
+          "probability": 0.99658203125
+        },
+        {
+          "text": "头",
+          "start": 40.9,
+          "end": 41.12,
+          "probability": 0.99560546875
+        },
+        {
+          "text": "较",
+          "start": 41.34,
+          "end": 41.42,
+          "probability": 0.6470947265625
+        },
+        {
+          "text": "枉",
+          "start": 41.42,
+          "end": 41.98,
+          "probability": 0.66943359375
+        }
+      ]
+    },
+    {
+      "start": 41.98,
+      "end": 43.34,
+      "text": "矫正弯木用力过猛",
+      "words": [
+        {
+          "text": "矫",
+          "start": 41.98,
+          "end": 42.28,
+          "probability": 0.56005859375
+        },
+        {
+          "text": "正",
+          "start": 42.28,
+          "end": 42.48,
+          "probability": 0.87060546875
+        },
+        {
+          "text": "弯",
+          "start": 42.48,
+          "end": 42.6,
+          "probability": 0.961181640625
+        },
+        {
+          "text": "木",
+          "start": 42.6,
+          "end": 42.76,
+          "probability": 0.492919921875
+        },
+        {
+          "text": "用",
+          "start": 42.76,
+          "end": 42.92,
+          "probability": 0.9443359375
+        },
+        {
+          "text": "力",
+          "start": 42.92,
+          "end": 43.04,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "过",
+          "start": 43.04,
+          "end": 43.22,
+          "probability": 0.97314453125
+        },
+        {
+          "text": "猛",
+          "start": 43.22,
+          "end": 43.34,
+          "probability": 0.778076171875
+        }
+      ]
+    },
+    {
+      "start": 43.34,
+      "end": 45.84,
+      "text": "歪向另一边 就是矫往过正",
+      "words": [
+        {
+          "text": "歪",
+          "start": 43.34,
+          "end": 43.74,
+          "probability": 0.77490234375
+        },
+        {
+          "text": "向",
+          "start": 43.74,
+          "end": 43.9,
+          "probability": 0.08514404296875
+        },
+        {
+          "text": "另",
+          "start": 43.9,
+          "end": 44.04,
+          "probability": 0.96240234375
+        },
+        {
+          "text": "一",
+          "start": 44.04,
+          "end": 44.2,
+          "probability": 0.99560546875
+        },
+        {
+          "text": "边",
+          "start": 44.2,
+          "end": 44.34,
+          "probability": 0.96826171875
+        },
+        {
+          "text": "就是",
+          "start": 44.34,
+          "end": 44.78,
+          "probability": 0.7783203125
+        },
+        {
+          "text": "矫",
+          "start": 44.78,
+          "end": 45.28,
+          "probability": 0.7646484375
+        },
+        {
+          "text": "往",
+          "start": 45.28,
+          "end": 45.5,
+          "probability": 0.6962890625
+        },
+        {
+          "text": "过",
+          "start": 45.5,
+          "end": 45.7,
+          "probability": 0.97802734375
+        },
+        {
+          "text": "正",
+          "start": 45.7,
+          "end": 45.84,
+          "probability": 0.9365234375
+        }
+      ]
+    },
+    {
+      "start": 45.84,
+      "end": 48.6,
+      "text": "凭空背锅 被抹黑歪曲 便是冤枉",
+      "words": [
+        {
+          "text": "凭",
+          "start": 45.84,
+          "end": 46.38,
+          "probability": 0.6817626953125
+        },
+        {
+          "text": "空",
+          "start": 46.38,
+          "end": 46.56,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "背",
+          "start": 46.56,
+          "end": 46.72,
+          "probability": 0.6806640625
+        },
+        {
+          "text": "锅",
+          "start": 46.72,
+          "end": 46.88,
+          "probability": 0.981201171875
+        },
+        {
+          "text": "被",
+          "start": 47.1,
+          "end": 47.16,
+          "probability": 0.98583984375
+        },
+        {
+          "text": "抹",
+          "start": 47.16,
+          "end": 47.32,
+          "probability": 0.9931640625
+        },
+        {
+          "text": "黑",
+          "start": 47.32,
+          "end": 47.48,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "歪",
+          "start": 47.48,
+          "end": 47.6,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "曲",
+          "start": 47.6,
+          "end": 47.82,
+          "probability": 0.984375
+        },
+        {
+          "text": "便",
+          "start": 48.02,
+          "end": 48.1,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "是",
+          "start": 48.1,
+          "end": 48.26,
+          "probability": 0.99609375
+        },
+        {
+          "text": "冤",
+          "start": 48.26,
+          "end": 48.46,
+          "probability": 0.60302734375
+        },
+        {
+          "text": "枉",
+          "start": 48.46,
+          "end": 48.6,
+          "probability": 0.936279296875
+        }
+      ]
+    },
+    {
+      "start": 48.6,
+      "end": 50.72,
+      "text": "假若你走错路白忙回一场",
+      "words": [
+        {
+          "text": "假",
+          "start": 48.6,
+          "end": 49.14,
+          "probability": 0.982421875
+        },
+        {
+          "text": "若",
+          "start": 49.14,
+          "end": 49.32,
+          "probability": 0.987060546875
+        },
+        {
+          "text": "你",
+          "start": 49.32,
+          "end": 49.58,
+          "probability": 0.53857421875
+        },
+        {
+          "text": "走",
+          "start": 49.58,
+          "end": 49.72,
+          "probability": 0.99267578125
+        },
+        {
+          "text": "错",
+          "start": 49.72,
+          "end": 49.9,
+          "probability": 0.97998046875
+        },
+        {
+          "text": "路",
+          "start": 49.9,
+          "end": 50.02,
+          "probability": 0.9931640625
+        },
+        {
+          "text": "白",
+          "start": 50.02,
+          "end": 50.16,
+          "probability": 0.98193359375
+        },
+        {
+          "text": "忙",
+          "start": 50.16,
+          "end": 50.3,
+          "probability": 0.454345703125
+        },
+        {
+          "text": "回",
+          "start": 50.3,
+          "end": 50.48,
+          "probability": 0.80419921875
+        },
+        {
+          "text": "一",
+          "start": 50.48,
+          "end": 50.62,
+          "probability": 0.947265625
+        },
+        {
+          "text": "场",
+          "start": 50.62,
+          "end": 50.72,
+          "probability": 0.98583984375
+        }
+      ]
+    },
+    {
+      "start": 50.72,
+      "end": 52.4,
+      "text": "便是枉费力气",
+      "words": [
+        {
+          "text": "便",
+          "start": 50.72,
+          "end": 51.14,
+          "probability": 0.72998046875
+        },
+        {
+          "text": "是",
+          "start": 51.14,
+          "end": 51.36,
+          "probability": 0.998046875
+        },
+        {
+          "text": "枉",
+          "start": 51.36,
+          "end": 51.66,
+          "probability": 0.58642578125
+        },
+        {
+          "text": "费",
+          "start": 51.66,
+          "end": 51.86,
+          "probability": 0.936767578125
+        },
+        {
+          "text": "力",
+          "start": 51.86,
+          "end": 52.02,
+          "probability": 0.8369140625
+        },
+        {
+          "text": "气",
+          "start": 52.02,
+          "end": 52.4,
+          "probability": 0.962890625
+        }
+      ]
+    },
+    {
+      "start": 52.4,
+      "end": 55.3,
+      "text": "一众原子木头的汉字 生动讲解其本意",
+      "words": [
+        {
+          "text": "一",
+          "start": 52.4,
+          "end": 52.8,
+          "probability": 0.921875
+        },
+        {
+          "text": "众",
+          "start": 52.8,
+          "end": 52.9,
+          "probability": 0.883056640625
+        },
+        {
+          "text": "原",
+          "start": 52.9,
+          "end": 53.06,
+          "probability": 0.356201171875
+        },
+        {
+          "text": "子",
+          "start": 53.06,
+          "end": 53.22,
+          "probability": 0.548828125
+        },
+        {
+          "text": "木",
+          "start": 53.22,
+          "end": 53.38,
+          "probability": 0.9921875
+        },
+        {
+          "text": "头",
+          "start": 53.38,
+          "end": 53.54,
+          "probability": 0.99658203125
+        },
+        {
+          "text": "的",
+          "start": 53.54,
+          "end": 53.64,
+          "probability": 0.9951171875
+        },
+        {
+          "text": "汉",
+          "start": 53.64,
+          "end": 53.8,
+          "probability": 0.946044921875
+        },
+        {
+          "text": "字",
+          "start": 53.8,
+          "end": 53.98,
+          "probability": 0.96337890625
+        },
+        {
+          "text": "生",
+          "start": 54.2,
+          "end": 54.28,
+          "probability": 0.75390625
+        },
+        {
+          "text": "动",
+          "start": 54.28,
+          "end": 54.42,
+          "probability": 0.99169921875
+        },
+        {
+          "text": "讲",
+          "start": 54.42,
+          "end": 54.62,
+          "probability": 0.392578125
+        },
+        {
+          "text": "解",
+          "start": 54.62,
+          "end": 54.8,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "其",
+          "start": 54.8,
+          "end": 54.94,
+          "probability": 0.7861328125
+        },
+        {
+          "text": "本",
+          "start": 54.94,
+          "end": 55.08,
+          "probability": 0.998046875
+        },
+        {
+          "text": "意",
+          "start": 55.08,
+          "end": 55.3,
+          "probability": 0.95166015625
+        }
+      ]
+    },
+    {
+      "start": 55.3,
+      "end": 57.34,
+      "text": "对应日常成语和词语",
+      "words": [
+        {
+          "text": "对",
+          "start": 55.3,
+          "end": 55.68,
+          "probability": 0.708984375
+        },
+        {
+          "text": "应",
+          "start": 55.68,
+          "end": 55.82,
+          "probability": 0.96533203125
+        },
+        {
+          "text": "日",
+          "start": 55.82,
+          "end": 55.96,
+          "probability": 0.284912109375
+        },
+        {
+          "text": "常",
+          "start": 55.96,
+          "end": 56.14,
+          "probability": 0.9873046875
+        },
+        {
+          "text": "成",
+          "start": 56.14,
+          "end": 56.32,
+          "probability": 0.90576171875
+        },
+        {
+          "text": "语",
+          "start": 56.32,
+          "end": 56.5,
+          "probability": 0.90087890625
+        },
+        {
+          "text": "和",
+          "start": 56.5,
+          "end": 56.66,
+          "probability": 0.214599609375
+        },
+        {
+          "text": "词",
+          "start": 56.66,
+          "end": 56.84,
+          "probability": 0.92431640625
+        },
+        {
+          "text": "语",
+          "start": 56.84,
+          "end": 57.34,
+          "probability": 0.955078125
+        }
+      ]
+    },
+    {
+      "start": 57.34,
+      "end": 59.02,
+      "text": "展现出老祖宗从树木",
+      "words": [
+        {
+          "text": "展",
+          "start": 57.34,
+          "end": 57.52,
+          "probability": 0.8681640625
+        },
+        {
+          "text": "现",
+          "start": 57.52,
+          "end": 57.68,
+          "probability": 0.994140625
+        },
+        {
+          "text": "出",
+          "start": 57.68,
+          "end": 57.86,
+          "probability": 0.99560546875
+        },
+        {
+          "text": "老",
+          "start": 57.86,
+          "end": 58.1,
+          "probability": 0.89697265625
+        },
+        {
+          "text": "祖",
+          "start": 58.1,
+          "end": 58.28,
+          "probability": 0.99658203125
+        },
+        {
+          "text": "宗",
+          "start": 58.28,
+          "end": 58.46,
+          "probability": 0.997314453125
+        },
+        {
+          "text": "从",
+          "start": 58.46,
+          "end": 58.62,
+          "probability": 0.7431640625
+        },
+        {
+          "text": "树",
+          "start": 58.62,
+          "end": 58.82,
+          "probability": 0.561248779296875
+        },
+        {
+          "text": "木",
+          "start": 58.82,
+          "end": 59.02,
+          "probability": 0.3828125
+        }
+      ]
+    },
+    {
+      "start": 59.02,
+      "end": 61.42,
+      "text": "木料形态中 造字造词的生活智慧",
+      "words": [
+        {
+          "text": "木",
+          "start": 59.02,
+          "end": 59.3,
+          "probability": 0.1806640625
+        },
+        {
+          "text": "料",
+          "start": 59.3,
+          "end": 59.44,
+          "probability": 0.71435546875
+        },
+        {
+          "text": "形",
+          "start": 59.44,
+          "end": 59.6,
+          "probability": 0.96484375
+        },
+        {
+          "text": "态",
+          "start": 59.6,
+          "end": 59.78,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "中",
+          "start": 59.78,
+          "end": 59.94,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "造",
+          "start": 60.14,
+          "end": 60.22,
+          "probability": 0.9541015625
+        },
+        {
+          "text": "字",
+          "start": 60.22,
+          "end": 60.4,
+          "probability": 0.10321044921875
+        },
+        {
+          "text": "造",
+          "start": 60.4,
+          "end": 60.56,
+          "probability": 0.94921875
+        },
+        {
+          "text": "词",
+          "start": 60.56,
+          "end": 60.78,
+          "probability": 0.95458984375
+        },
+        {
+          "text": "的",
+          "start": 60.78,
+          "end": 60.86,
+          "probability": 0.982421875
+        },
+        {
+          "text": "生活",
+          "start": 60.86,
+          "end": 61.14,
+          "probability": 0.9873046875
+        },
+        {
+          "text": "智",
+          "start": 61.14,
+          "end": 61.32,
+          "probability": 0.641845703125
+        },
+        {
+          "text": "慧",
+          "start": 61.32,
+          "end": 61.42,
+          "probability": 0.7247314453125
+        }
+      ]
+    }
+  ]
+}

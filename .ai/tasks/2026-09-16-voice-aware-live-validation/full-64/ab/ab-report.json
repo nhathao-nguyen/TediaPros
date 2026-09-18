@@ -1,0 +1,681 @@
+{
+  "schemaVersion": 1,
+  "kind": "tediapros-gemini-ab-corpus",
+  "runStarted": "2026-09-16T16:00:18.318Z",
+  "updatedAtUtc": "2026-09-16T16:59:04.407Z",
+  "serverUrl": "http://127.0.0.1:4982/openai/v1",
+  "transcriptRoot": "F:\\Son\\tool\\TediaPros\\.ai\\tasks\\2026-09-16-voice-aware-live-validation\\full-64\\transcripts",
+  "profileRoot": "F:\\Son\\tool\\TediaPros\\.ai\\tasks\\2026-09-16-voice-aware-live-validation\\edge-voice-calibration\\profiles",
+  "sourceVideoCount": 64,
+  "selectedVideoCount": 64,
+  "arms": {
+    "baseline": "a-baseline: cue-lines-v1, no voice hint",
+    "candidate": "b-voice-hint: cue-lines-v1 + advisory vi-VN-HoaiMyNeural profile"
+  },
+  "voiceHint": {
+    "median": 2.083,
+    "p10": 1.812,
+    "p90": 2.907
+  },
+  "videos": [
+    {
+      "index": 0,
+      "itemId": "video-input-01",
+      "sourcePath": "F:\\Son\\test\\@小温夫妻测评 超实用好吃做饭技巧 1080P.mp4",
+      "sourceSha256": "7cbaf57a575ced2063710de5c9c0273b4ab50123d8fe7526c327834522ac89c1",
+      "sourceDurationSec": 22.167,
+      "sourceSrtPath": "F:\\Son\\tool\\TediaPros\\.ai\\tasks\\2026-09-16-voice-aware-live-validation\\full-64\\transcripts\\video-input-01\\@小温夫妻测评 超实用好吃做饭技巧 1080P.srt",
+      "arms": {
+        "a-baseline": {
+          "status": "done",
+          "outputPath": "F:\\Son\\tool\\TediaPros\\.ai\\tasks\\2026-09-16-voice-aware-live-validation\\full-64\\ab\\video-01\\a-baseline\\translated.vi.srt",
+          "auditPath": "F:\\Son\\tool\\TediaPros\\.ai\\tasks\\2026-09-16-voice-aware-live-validation\\full-64\\ab\\video-01\\a-baseline\\gateway-audit.json",
+          "cueCount": 7,
+          "translatedCueCount": 7,
+          "disposition": "validated",
+          "languageEvidence": "unknown",
+          "issueCodes": [],
+          "issueCount": 0,
+          "semanticReview": "pending-human",
+          "estimatedFit": {
+            "cueCount": 7,
+            "fitAt1_10": 0,
+            "fitAt1_25": 0,
+            "fitAt1_80": 6,
+            "overAt1_80": 1,
+            "estimatedNaturalSeconds": 37,
+            "sourceWindowSeconds": 21.98
+          },
+          "modelIdentity": "gemini-gateway:gemini-advanced",
+          "budget": {
+            "limitsEnforced": false,
+            "plannedRequests": 1,
+            "recoveryLimit": 4,
+            "normalUsed": 1,
+            "recoveryUsed": 0,
+            "activeElapsedMs": 109674.8622,
+            "activeBudgetMs": 600000,
+            "perBatch": {
+              "translation-batch-1": {
+                "normalCharged": true,
+                "recoveryUsed": 0,
+                "splitDepth": 0,
+                "repairSets": [],
+                "transportRetries": {}
+              }
+            }
+          },
+          "elapsedMs": 109699
+        },
+        "b-voice-hint": {
+          "status": "done",
+          "outputPath": "F:\\Son\\tool\\TediaPros\\.ai\\tasks\\2026-09-16-voice-aware-live-validation\\full-64\\ab\\video-01\\b-voice-hint\\translated.vi.srt",
+          "auditPath": "F:\\Son\\tool\\TediaPros\\.ai\\tasks\\2026-09-16-voice-aware-live-validation\\full-64\\ab\\video-01\\b-voice-hint\\gateway-audit.json",
+          "cueCount": 7,
+          "translatedCueCount": 7,
+          "disposition": "validated",
+          "languageEvidence": "unknown",
+          "issueCodes": [],
+          "issueCount": 0,
+          "semanticReview": "pending-human",
+          "estimatedFit": {
+            "cueCount": 7,
+            "fitAt1_10": 0,
+            "fitAt1_25": 0,
+            "fitAt1_80": 6,
+            "overAt1_80": 1,
+            "estimatedNaturalSeconds": 36.486,
+            "sourceWindowSeconds": 21.98
+          },
+          "modelIdentity": "gemini-gateway:gemini-advanced",
+          "budget": {
+            "limitsEnforced": false,
+            "plannedRequests": 1,
+            "recoveryLimit": 4,
+            "normalUsed": 1,
+            "recoveryUsed": 0,
+            "activeElapsedMs": 105072.1919,
+            "activeBudgetMs": 600000,
+            "perBatch": {
+              "translation-batch-1": {
+                "normalCharged": true,
+                "recoveryUsed": 0,
+                "splitDepth": 0,
+                "repairSets": [],
+                "transportRetries": {}
+              }
+            }
+          },
+          "elapsedMs": 105089
+        }
+      }
+    },
+    {
+      "index": 1,
+      "itemId": "video-input-02",
+      "sourcePath": "F:\\Son\\test\\@小温夫妻测评 谁能告诉告诉我这姜末到底能做什么？磨泥器到底谁在用 1080P.mp4",
+      "sourceSha256": "a76245c2d42ea8290f8b4bdde26633a103adf977247891257ae55fd35405b244",
+      "sourceDurationSec": 141.533,
+      "sourceSrtPath": "F:\\Son\\tool\\TediaPros\\.ai\\tasks\\2026-09-16-voice-aware-live-validation\\full-64\\transcripts\\video-input-02\\@小温夫妻测评 谁能告诉告诉我这姜末到底能做什么？磨泥器到底谁在用 1080P.srt",
+      "arms": {
+        "a-baseline": {
+          "status": "failed",
+          "auditPath": "F:\\Son\\tool\\TediaPros\\.ai\\tasks\\2026-09-16-voice-aware-live-validation\\full-64\\ab\\video-02\\a-baseline\\gateway-audit.json",
+          "cueCount": 60,
+          "translatedCueCount": 20,
+          "disposition": "needs-review",
+          "languageEvidence": "unknown",
+          "issueCodes": [
+            "provider-transient",
+            "missing-id"
+          ],
+          "issueCount": 2,
+          "semanticReview": "pending-human",
+          "estimatedFit": {
+            "cueCount": 60,
+            "fitAt1_10": 40,
+            "fitAt1_25": 41,
+            "fitAt1_80": 46,
+            "overAt1_80": 14,
+            "estimatedNaturalSeconds": 73.5,
+            "sourceWindowSeconds": 120.8
+          },
+          "modelIdentity": "gemini-gateway:gemini-advanced",
+          "budget": {
+            "limitsEnforced": false,
+            "plannedRequests": 2,
+            "recoveryLimit": 4,
+            "normalUsed": 2,
+            "recoveryUsed": 0,
+            "activeElapsedMs": 526172.3354,
+            "activeBudgetMs": 600000,
+            "perBatch": {
+              "translation-batch-1": {
+                "normalCharged": true,
+                "recoveryUsed": 0,
+                "splitDepth": 0,
+                "repairSets": [],
+                "transportRetries": {}
+              },
+              "translation-batch-2": {
+                "normalCharged": true,
+                "recoveryUsed": 0,
+                "splitDepth": 0,
+                "repairSets": [],
+                "transportRetries": {}
+              }
+            }
+          },
+          "error": "Gemini Gateway request timed out. Gateway đã hoàn tất retry nội bộ; hãy thử lại thủ công để mở một lượt gateway mới.",
+          "elapsedMs": 526201
+        },
+        "b-voice-hint": {
+          "status": "done",
+          "outputPath": "F:\\Son\\tool\\TediaPros\\.ai\\tasks\\2026-09-16-voice-aware-live-validation\\full-64\\ab\\video-02\\b-voice-hint\\translated.vi.srt",
+          "auditPath": "F:\\Son\\tool\\TediaPros\\.ai\\tasks\\2026-09-16-voice-aware-live-validation\\full-64\\ab\\video-02\\b-voice-hint\\gateway-audit.json",
+          "cueCount": 60,
+          "translatedCueCount": 60,
+          "disposition": "with-warnings",
+          "languageEvidence": "unknown",
+          "issueCodes": [
+            "protected-token-suspect",
+            "protected-token-suspect",
+            "protected-token-suspect",
+            "protected-token-suspect",
+            "protected-token-suspect",
+            "protected-token-suspect",
+            "protected-token-suspect"
+          ],
+          "issueCount": 7,
+          "semanticReview": "pending-human",
+          "estimatedFit": {
+            "cueCount": 60,
+            "fitAt1_10": 0,
+            "fitAt1_25": 4,
+            "fitAt1_80": 13,
+            "overAt1_80": 47,
+            "estimatedNaturalSeconds": 269.323,
+            "sourceWindowSeconds": 120.8
+          },
+          "modelIdentity": "gemini-gateway:gemini-advanced",
+          "budget": {
+            "limitsEnforced": false,
+            "plannedRequests": 2,
+            "recoveryLimit": 4,
+            "normalUsed": 2,
+            "recoveryUsed": 0,
+            "activeElapsedMs": 408551.5717999999,
+            "activeBudgetMs": 600000,
+            "perBatch": {
+              "translation-batch-1": {
+                "normalCharged": true,
+                "recoveryUsed": 0,
+                "splitDepth": 0,
+                "repairSets": [],
+                "transportRetries": {}
+              },
+              "translation-batch-2": {
+                "normalCharged": true,
+                "recoveryUsed": 0,
+                "splitDepth": 0,
+                "repairSets": [],
+                "transportRetries": {}
+              }
+            }
+          },
+          "elapsedMs": 408851
+        }
+      }
+    },
+    {
+      "index": 2,
+      "itemId": "video-input-03",
+      "sourcePath": "F:\\Son\\test\\@小温夫妻测评 实测价格这么夯的五仁月饼，到底有什么猫腻？ 1080P.mp4",
+      "sourceSha256": "41b2a6491a78c385b25036dae0758dcda3903bc91c3cd0dc005853a28901bf6f",
+      "sourceDurationSec": 191.3,
+      "sourceSrtPath": "F:\\Son\\tool\\TediaPros\\.ai\\tasks\\2026-09-16-voice-aware-live-validation\\full-64\\transcripts\\video-input-03\\@小温夫妻测评 实测价格这么夯的五仁月饼，到底有什么猫腻？ 1080P.srt",
+      "arms": {
+        "a-baseline": {
+          "status": "failed",
+          "auditPath": "F:\\Son\\tool\\TediaPros\\.ai\\tasks\\2026-09-16-voice-aware-live-validation\\full-64\\ab\\video-03\\a-baseline\\gateway-audit.json",
+          "cueCount": 80,
+          "translatedCueCount": 0,
+          "disposition": "needs-review",
+          "languageEvidence": "unknown",
+          "issueCodes": [
+            "provider-transient",
+            "provider-transient",
+            "missing-id"
+          ],
+          "issueCount": 3,
+          "semanticReview": "pending-human",
+          "estimatedFit": {
+            "cueCount": 80,
+            "fitAt1_10": 80,
+            "fitAt1_25": 80,
+            "fitAt1_80": 80,
+            "overAt1_80": 0,
+            "estimatedNaturalSeconds": 0,
+            "sourceWindowSeconds": 166.28
+          },
+          "modelIdentity": "gemini-gateway:gemini-advanced",
+          "budget": {
+            "limitsEnforced": false,
+            "plannedRequests": 2,
+            "recoveryLimit": 4,
+            "normalUsed": 2,
+            "recoveryUsed": 0,
+            "activeElapsedMs": 360287.0817000001,
+            "activeBudgetMs": 600000,
+            "perBatch": {
+              "translation-batch-1": {
+                "normalCharged": true,
+                "recoveryUsed": 0,
+                "splitDepth": 0,
+                "repairSets": [],
+                "transportRetries": {}
+              },
+              "translation-batch-2": {
+                "normalCharged": true,
+                "recoveryUsed": 0,
+                "splitDepth": 0,
+                "repairSets": [],
+                "transportRetries": {}
+              }
+            }
+          },
+          "error": "Gemini Gateway request timed out. Gateway đã hoàn tất retry nội bộ; hãy thử lại thủ công để mở một lượt gateway mới.",
+          "elapsedMs": 360399
+        },
+        "b-voice-hint": {
+          "status": "failed",
+          "auditPath": "F:\\Son\\tool\\TediaPros\\.ai\\tasks\\2026-09-16-voice-aware-live-validation\\full-64\\ab\\video-03\\b-voice-hint\\gateway-audit.json",
+          "cueCount": 80,
+          "translatedCueCount": 40,
+          "disposition": "needs-review",
+          "languageEvidence": "unknown",
+          "issueCodes": [
+            "provider-transient",
+            "missing-id"
+          ],
+          "issueCount": 2,
+          "semanticReview": "pending-human",
+          "estimatedFit": {
+            "cueCount": 80,
+            "fitAt1_10": 40,
+            "fitAt1_25": 40,
+            "fitAt1_80": 52,
+            "overAt1_80": 28,
+            "estimatedNaturalSeconds": 167.547,
+            "sourceWindowSeconds": 166.28
+          },
+          "modelIdentity": "gemini-gateway:gemini-advanced",
+          "budget": {
+            "limitsEnforced": false,
+            "plannedRequests": 2,
+            "recoveryLimit": 4,
+            "normalUsed": 2,
+            "recoveryUsed": 0,
+            "activeElapsedMs": 394073.3343,
+            "activeBudgetMs": 600000,
+            "perBatch": {
+              "translation-batch-1": {
+                "normalCharged": true,
+                "recoveryUsed": 0,
+                "splitDepth": 0,
+                "repairSets": [],
+                "transportRetries": {}
+              },
+              "translation-batch-2": {
+                "normalCharged": true,
+                "recoveryUsed": 0,
+                "splitDepth": 0,
+                "repairSets": [],
+                "transportRetries": {}
+              }
+            }
+          },
+          "error": "Gemini Gateway request timed out. Gateway đã hoàn tất retry nội bộ; hãy thử lại thủ công để mở một lượt gateway mới.",
+          "elapsedMs": 394117
+        }
+      }
+    },
+    {
+      "index": 3,
+      "itemId": "video-input-04",
+      "sourcePath": "F:\\Son\\test\\@小温夫妻测评 这个油蜡夹克到底是咋回事，品质到底怎么样？ 1080P.mp4",
+      "sourceSha256": "9eb90d0b341e43d933316c55ff5acd6bb2ef04a45e3da0a3dd8a1f34cc07cbc7",
+      "sourceDurationSec": 133.633,
+      "sourceSrtPath": "F:\\Son\\tool\\TediaPros\\.ai\\tasks\\2026-09-16-voice-aware-live-validation\\full-64\\transcripts\\video-input-04\\@小温夫妻测评 这个油蜡夹克到底是咋回事，品质到底怎么样？ 1080P.srt",
+      "arms": {
+        "a-baseline": {
+          "status": "failed",
+          "auditPath": "F:\\Son\\tool\\TediaPros\\.ai\\tasks\\2026-09-16-voice-aware-live-validation\\full-64\\ab\\video-04\\a-baseline\\gateway-audit.json",
+          "cueCount": 81,
+          "translatedCueCount": 0,
+          "disposition": "needs-review",
+          "languageEvidence": "unknown",
+          "issueCodes": [
+            "provider-transient",
+            "provider-transient",
+            "missing-id"
+          ],
+          "issueCount": 3,
+          "semanticReview": "pending-human",
+          "estimatedFit": {
+            "cueCount": 81,
+            "fitAt1_10": 81,
+            "fitAt1_25": 81,
+            "fitAt1_80": 81,
+            "overAt1_80": 0,
+            "estimatedNaturalSeconds": 0,
+            "sourceWindowSeconds": 115.94
+          },
+          "modelIdentity": "gemini-gateway:gemini-advanced",
+          "budget": {
+            "limitsEnforced": false,
+            "plannedRequests": 2,
+            "recoveryLimit": 4,
+            "normalUsed": 2,
+            "recoveryUsed": 0,
+            "activeElapsedMs": 554391.2960000003,
+            "activeBudgetMs": 600000,
+            "perBatch": {
+              "translation-batch-1": {
+                "normalCharged": true,
+                "recoveryUsed": 0,
+                "splitDepth": 0,
+                "repairSets": [],
+                "transportRetries": {}
+              },
+              "translation-batch-2": {
+                "normalCharged": true,
+                "recoveryUsed": 0,
+                "splitDepth": 0,
+                "repairSets": [],
+                "transportRetries": {}
+              }
+            }
+          },
+          "error": "Gemini Gateway request timed out. Gateway đã hoàn tất retry nội bộ; hãy thử lại thủ công để mở một lượt gateway mới.",
+          "elapsedMs": 554402
+        },
+        "b-voice-hint": {
+          "status": "failed",
+          "auditPath": "F:\\Son\\tool\\TediaPros\\.ai\\tasks\\2026-09-16-voice-aware-live-validation\\full-64\\ab\\video-04\\b-voice-hint\\gateway-audit.json",
+          "cueCount": 81,
+          "translatedCueCount": 28,
+          "disposition": "needs-review",
+          "languageEvidence": "unknown",
+          "issueCodes": [
+            "provider-protocol",
+            "missing-id"
+          ],
+          "issueCount": 2,
+          "semanticReview": "pending-human",
+          "estimatedFit": {
+            "cueCount": 81,
+            "fitAt1_10": 53,
+            "fitAt1_25": 53,
+            "fitAt1_80": 57,
+            "overAt1_80": 24,
+            "estimatedNaturalSeconds": 93.135,
+            "sourceWindowSeconds": 115.94
+          },
+          "modelIdentity": "gemini-gateway:gemini-advanced",
+          "budget": {
+            "limitsEnforced": false,
+            "plannedRequests": 2,
+            "recoveryLimit": 4,
+            "normalUsed": 2,
+            "recoveryUsed": 0,
+            "activeElapsedMs": 473321.7403000002,
+            "activeBudgetMs": 600000,
+            "perBatch": {
+              "translation-batch-1": {
+                "normalCharged": true,
+                "recoveryUsed": 0,
+                "splitDepth": 0,
+                "repairSets": [],
+                "transportRetries": {}
+              },
+              "translation-batch-2": {
+                "normalCharged": true,
+                "recoveryUsed": 0,
+                "splitDepth": 0,
+                "repairSets": [],
+                "transportRetries": {}
+              }
+            }
+          },
+          "error": "Lượt review chưa khôi phục dấu kết thúc cho câu cuối của video.",
+          "elapsedMs": 473348
+        }
+      }
+    },
+    {
+      "index": 4,
+      "itemId": "video-input-05",
+      "sourcePath": "F:\\Son\\test\\2020-10-27_豪华海鲜螺蛳粉_美食_6888245857611795727.mp4",
+      "sourceSha256": "465d2bdccb59a1662523cd0e39074f283297f3d8bd596ac7647bbdbf943a05b3",
+      "sourceDurationSec": 180.914,
+      "sourceSrtPath": "F:\\Son\\tool\\TediaPros\\.ai\\tasks\\2026-09-16-voice-aware-live-validation\\full-64\\transcripts\\video-input-05\\2020-10-27_豪华海鲜螺蛳粉_美食_6888245857611795727.srt",
+      "arms": {
+        "a-baseline": {
+          "status": "failed",
+          "auditPath": "F:\\Son\\tool\\TediaPros\\.ai\\tasks\\2026-09-16-voice-aware-live-validation\\full-64\\ab\\video-05\\a-baseline\\gateway-audit.json",
+          "cueCount": 62,
+          "translatedCueCount": 14,
+          "disposition": "needs-review",
+          "languageEvidence": "unknown",
+          "issueCodes": [
+            "provider-transient",
+            "missing-id"
+          ],
+          "issueCount": 2,
+          "semanticReview": "pending-human",
+          "estimatedFit": {
+            "cueCount": 62,
+            "fitAt1_10": 48,
+            "fitAt1_25": 49,
+            "fitAt1_80": 53,
+            "overAt1_80": 9,
+            "estimatedNaturalSeconds": 40.5,
+            "sourceWindowSeconds": 93.79
+          },
+          "modelIdentity": "gemini-gateway:gemini-advanced",
+          "budget": {
+            "limitsEnforced": false,
+            "plannedRequests": 2,
+            "recoveryLimit": 4,
+            "normalUsed": 2,
+            "recoveryUsed": 0,
+            "activeElapsedMs": 82936.26349999988,
+            "activeBudgetMs": 600000,
+            "perBatch": {
+              "translation-batch-1": {
+                "normalCharged": true,
+                "recoveryUsed": 0,
+                "splitDepth": 0,
+                "repairSets": [],
+                "transportRetries": {}
+              },
+              "translation-batch-2": {
+                "normalCharged": true,
+                "recoveryUsed": 0,
+                "splitDepth": 0,
+                "repairSets": [],
+                "transportRetries": {}
+              }
+            }
+          },
+          "error": "Gemini Gateway lỗi upstream: after 1 attempts: upstream error: Gemini returned a transient failure message Gateway đã hoàn tất retry nội bộ; hãy thử lại thủ công để mở một lượt gateway mới.",
+          "elapsedMs": 83078
+        },
+        "b-voice-hint": {
+          "status": "failed",
+          "auditPath": "F:\\Son\\tool\\TediaPros\\.ai\\tasks\\2026-09-16-voice-aware-live-validation\\full-64\\ab\\video-05\\b-voice-hint\\gateway-audit.json",
+          "cueCount": 62,
+          "translatedCueCount": 14,
+          "disposition": "needs-review",
+          "languageEvidence": "unknown",
+          "issueCodes": [
+            "provider-transient",
+            "missing-id"
+          ],
+          "issueCount": 2,
+          "semanticReview": "pending-human",
+          "estimatedFit": {
+            "cueCount": 62,
+            "fitAt1_10": 49,
+            "fitAt1_25": 49,
+            "fitAt1_80": 50,
+            "overAt1_80": 12,
+            "estimatedNaturalSeconds": 42.247,
+            "sourceWindowSeconds": 93.79
+          },
+          "modelIdentity": "gemini-gateway:gemini-advanced",
+          "budget": {
+            "limitsEnforced": false,
+            "plannedRequests": 2,
+            "recoveryLimit": 4,
+            "normalUsed": 2,
+            "recoveryUsed": 0,
+            "activeElapsedMs": 214883.35250000004,
+            "activeBudgetMs": 600000,
+            "perBatch": {
+              "translation-batch-1": {
+                "normalCharged": true,
+                "recoveryUsed": 0,
+                "splitDepth": 0,
+                "repairSets": [],
+                "transportRetries": {}
+              },
+              "translation-batch-2": {
+                "normalCharged": true,
+                "recoveryUsed": 0,
+                "splitDepth": 0,
+                "repairSets": [],
+                "transportRetries": {}
+              }
+            }
+          },
+          "error": "Gemini Gateway request timed out. Gateway đã hoàn tất retry nội bộ; hãy thử lại thủ công để mở một lượt gateway mới.",
+          "elapsedMs": 214901
+        }
+      }
+    },
+    {
+      "index": 5,
+      "itemId": "video-input-06",
+      "sourcePath": "F:\\Son\\test\\2025-08-24_这个海姆立克仪真的好用吗？_测评_海姆立克急救法_亲测分享_有备无患_真实测评_7542118158246645033.mp4",
+      "sourceSha256": "0fdeca92e6a715f4b64d394be2e9cb3b4af0f8f5e3f59eb519ca7f60e47dd383",
+      "sourceDurationSec": 218.402,
+      "sourceSrtPath": "F:\\Son\\tool\\TediaPros\\.ai\\tasks\\2026-09-16-voice-aware-live-validation\\full-64\\transcripts\\video-input-06\\2025-08-24_这个海姆立克仪真的好用吗？_测评_海姆立克急救法_亲测分享_有备无患_真实测评_7542118158246645033.srt",
+      "arms": {
+        "a-baseline": {
+          "status": "failed",
+          "auditPath": "F:\\Son\\tool\\TediaPros\\.ai\\tasks\\2026-09-16-voice-aware-live-validation\\full-64\\ab\\video-06\\a-baseline\\gateway-audit.json",
+          "cueCount": 93,
+          "translatedCueCount": 47,
+          "disposition": "needs-review",
+          "languageEvidence": "unknown",
+          "issueCodes": [
+            "provider-transient",
+            "missing-id"
+          ],
+          "issueCount": 2,
+          "semanticReview": "pending-human",
+          "estimatedFit": {
+            "cueCount": 93,
+            "fitAt1_10": 48,
+            "fitAt1_25": 49,
+            "fitAt1_80": 57,
+            "overAt1_80": 36,
+            "estimatedNaturalSeconds": 150,
+            "sourceWindowSeconds": 173.24
+          },
+          "modelIdentity": "gemini-gateway:gemini-advanced",
+          "budget": {
+            "limitsEnforced": false,
+            "plannedRequests": 2,
+            "recoveryLimit": 4,
+            "normalUsed": 2,
+            "recoveryUsed": 0,
+            "activeElapsedMs": 216601.71030000038,
+            "activeBudgetMs": 600000,
+            "perBatch": {
+              "translation-batch-1": {
+                "normalCharged": true,
+                "recoveryUsed": 0,
+                "splitDepth": 0,
+                "repairSets": [],
+                "transportRetries": {}
+              },
+              "translation-batch-2": {
+                "normalCharged": true,
+                "recoveryUsed": 0,
+                "splitDepth": 0,
+                "repairSets": [],
+                "transportRetries": {}
+              }
+            }
+          },
+          "error": "Gemini Gateway lỗi upstream: after 1 attempts: upstream error: Gemini returned a transient failure message Gateway đã hoàn tất retry nội bộ; hãy thử lại thủ công để mở một lượt gateway mới.",
+          "elapsedMs": 216616
+        },
+        "b-voice-hint": {
+          "status": "failed",
+          "auditPath": "F:\\Son\\tool\\TediaPros\\.ai\\tasks\\2026-09-16-voice-aware-live-validation\\full-64\\ab\\video-06\\b-voice-hint\\gateway-audit.json",
+          "cueCount": 93,
+          "translatedCueCount": 47,
+          "disposition": "needs-review",
+          "languageEvidence": "unknown",
+          "issueCodes": [
+            "provider-transient",
+            "missing-id"
+          ],
+          "issueCount": 2,
+          "semanticReview": "pending-human",
+          "estimatedFit": {
+            "cueCount": 93,
+            "fitAt1_10": 48,
+            "fitAt1_25": 49,
+            "fitAt1_80": 59,
+            "overAt1_80": 34,
+            "estimatedNaturalSeconds": 150.264,
+            "sourceWindowSeconds": 173.24
+          },
+          "modelIdentity": "gemini-gateway:gemini-advanced",
+          "budget": {
+            "limitsEnforced": false,
+            "plannedRequests": 2,
+            "recoveryLimit": 4,
+            "normalUsed": 2,
+            "recoveryUsed": 0,
+            "activeElapsedMs": 293760.4336000001,
+            "activeBudgetMs": 600000,
+            "perBatch": {
+              "translation-batch-1": {
+                "normalCharged": true,
+                "recoveryUsed": 0,
+                "splitDepth": 0,
+                "repairSets": [],
+                "transportRetries": {}
+              },
+              "translation-batch-2": {
+                "normalCharged": true,
+                "recoveryUsed": 0,
+                "splitDepth": 0,
+                "repairSets": [],
+                "transportRetries": {}
+              }
+            }
+          },
+          "error": "Gemini Gateway request timed out. Gateway đã hoàn tất retry nội bộ; hãy thử lại thủ công để mở một lượt gateway mới.",
+          "elapsedMs": 293785
+        }
+      }
+    }
+  ]
+}

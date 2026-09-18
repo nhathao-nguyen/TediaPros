@@ -1,0 +1,362 @@
+{
+  "sourceLanguage": "zh",
+  "targetLocale": "vi-VN",
+  "mode": "dubbing",
+  "cues": [
+    {
+      "id": "cue-1",
+      "sourceIndex": 0,
+      "start": 0,
+      "end": 1.2,
+      "groupId": "g-0",
+      "text": "你敢相信吗"
+    },
+    {
+      "id": "cue-2",
+      "sourceIndex": 1,
+      "start": 1.5,
+      "end": 2.7,
+      "groupId": "g-0",
+      "text": "沃尔沃迷人的方向键按键声"
+    },
+    {
+      "id": "cue-3",
+      "sourceIndex": 2,
+      "start": 3,
+      "end": 4.2,
+      "groupId": "g-0",
+      "text": "居然根本不是程序员写出来的"
+    },
+    {
+      "id": "cue-4",
+      "sourceIndex": 3,
+      "start": 4.5,
+      "end": 5.7,
+      "groupId": "g-1",
+      "text": "其他车企做按键音"
+    },
+    {
+      "id": "cue-5",
+      "sourceIndex": 4,
+      "start": 6,
+      "end": 7.2,
+      "groupId": "g-1",
+      "text": "都是坐在办公室调电脑参数"
+    },
+    {
+      "id": "cue-6",
+      "sourceIndex": 5,
+      "start": 7.5,
+      "end": 8.7,
+      "groupId": "g-1",
+      "text": "但沃尔沃的设计师却不这么干"
+    },
+    {
+      "id": "cue-7",
+      "sourceIndex": 6,
+      "start": 9,
+      "end": 10.2,
+      "groupId": "g-2",
+      "text": "他说"
+    },
+    {
+      "id": "cue-8",
+      "sourceIndex": 7,
+      "start": 10.5,
+      "end": 11.7,
+      "groupId": "g-2",
+      "text": "这个按键声"
+    },
+    {
+      "id": "cue-9",
+      "sourceIndex": 8,
+      "start": 12,
+      "end": 13.2,
+      "groupId": "g-2",
+      "text": "车主要听上弯字"
+    },
+    {
+      "id": "cue-10",
+      "sourceIndex": 9,
+      "start": 13.5,
+      "end": 14.7,
+      "groupId": "g-3",
+      "text": "不能刺耳 不能刻意"
+    },
+    {
+      "id": "cue-11",
+      "sourceIndex": 10,
+      "start": 15,
+      "end": 16.2,
+      "groupId": "g-3",
+      "text": "更不能听久了心烦"
+    },
+    {
+      "id": "cue-12",
+      "sourceIndex": 11,
+      "start": 16.5,
+      "end": 17.7,
+      "groupId": "g-3",
+      "text": "哪怕堵在车水马龙里"
+    },
+    {
+      "id": "cue-13",
+      "sourceIndex": 12,
+      "start": 18,
+      "end": 19.2,
+      "groupId": "g-4",
+      "text": "听到它也能让人心里一静"
+    },
+    {
+      "id": "cue-14",
+      "sourceIndex": 13,
+      "start": 19.5,
+      "end": 20.7,
+      "groupId": "g-4",
+      "text": "于是他带着整个团队"
+    },
+    {
+      "id": "cue-15",
+      "sourceIndex": 14,
+      "start": 21,
+      "end": 22.2,
+      "groupId": "g-4",
+      "text": "扎进深山老林待了整整两天"
+    },
+    {
+      "id": "cue-16",
+      "sourceIndex": 15,
+      "start": 22.5,
+      "end": 23.7,
+      "groupId": "g-5",
+      "text": "折断了三百多根不同的树枝"
+    },
+    {
+      "id": "cue-17",
+      "sourceIndex": 16,
+      "start": 24,
+      "end": 25.2,
+      "groupId": "g-5",
+      "text": "去试每一种木头"
+    },
+    {
+      "id": "cue-18",
+      "sourceIndex": 17,
+      "start": 25.5,
+      "end": 26.7,
+      "groupId": "g-5",
+      "text": "每一个粗细在弯折时的声音"
+    },
+    {
+      "id": "cue-19",
+      "sourceIndex": 18,
+      "start": 27,
+      "end": 28.2,
+      "groupId": "g-6",
+      "text": "一遍又一遍"
+    },
+    {
+      "id": "cue-20",
+      "sourceIndex": 19,
+      "start": 28.5,
+      "end": 29.7,
+      "groupId": "g-6",
+      "text": "录下了三百多种大自然的声音"
+    },
+    {
+      "id": "cue-21",
+      "sourceIndex": 20,
+      "start": 30,
+      "end": 31.2,
+      "groupId": "g-6",
+      "text": "目标只有一个"
+    },
+    {
+      "id": "cue-22",
+      "sourceIndex": 21,
+      "start": 31.5,
+      "end": 32.7,
+      "groupId": "g-7",
+      "text": "找到一种"
+    },
+    {
+      "id": "cue-23",
+      "sourceIndex": 22,
+      "start": 33,
+      "end": 34.2,
+      "groupId": "g-7",
+      "text": "温柔 自然 听一千遍一万遍"
+    },
+    {
+      "id": "cue-24",
+      "sourceIndex": 23,
+      "start": 34.5,
+      "end": 35.7,
+      "groupId": "g-7",
+      "text": "也不会烦躁的声响"
+    },
+    {
+      "id": "cue-25",
+      "sourceIndex": 24,
+      "start": 36,
+      "end": 37.2,
+      "groupId": "g-8",
+      "text": "终于在无数次尝试后"
+    },
+    {
+      "id": "cue-26",
+      "sourceIndex": 25,
+      "start": 37.5,
+      "end": 38.7,
+      "groupId": "g-8",
+      "text": "他们找到了"
+    },
+    {
+      "id": "cue-27",
+      "sourceIndex": 26,
+      "start": 39,
+      "end": 40.2,
+      "groupId": "g-8",
+      "text": "像素树枝轻轻弯折时"
+    },
+    {
+      "id": "cue-28",
+      "sourceIndex": 27,
+      "start": 40.5,
+      "end": 41.7,
+      "groupId": "g-9",
+      "text": "那声温柔的嘎之声"
+    },
+    {
+      "id": "cue-29",
+      "sourceIndex": 28,
+      "start": 42,
+      "end": 43.2,
+      "groupId": "g-9",
+      "text": "后来他们把这段来自大森林的声音数字画"
+    },
+    {
+      "id": "cue-30",
+      "sourceIndex": 29,
+      "start": 43.5,
+      "end": 44.7,
+      "groupId": "g-9",
+      "text": "反复调鞋"
+    },
+    {
+      "id": "cue-31",
+      "sourceIndex": 30,
+      "start": 45,
+      "end": 46.2,
+      "groupId": "g-10",
+      "text": "辅平"
+    },
+    {
+      "id": "cue-32",
+      "sourceIndex": 31,
+      "start": 46.5,
+      "end": 47.7,
+      "groupId": "g-10",
+      "text": "才变成了如今窝耳窝方向键独有的点击声"
+    },
+    {
+      "id": "cue-33",
+      "sourceIndex": 32,
+      "start": 48,
+      "end": 49.2,
+      "groupId": "g-10",
+      "text": "这也是为什么"
+    },
+    {
+      "id": "cue-34",
+      "sourceIndex": 33,
+      "start": 49.5,
+      "end": 50.7,
+      "groupId": "g-11",
+      "text": "很多车主都说沃尔沃的按键"
+    },
+    {
+      "id": "cue-35",
+      "sourceIndex": 34,
+      "start": 51,
+      "end": 52.2,
+      "groupId": "g-11",
+      "text": "是全网最治愈的按键"
+    },
+    {
+      "id": "cue-36",
+      "sourceIndex": 35,
+      "start": 52.5,
+      "end": 53.7,
+      "groupId": "g-11",
+      "text": "听到这声来自自然的声音"
+    },
+    {
+      "id": "cue-37",
+      "sourceIndex": 36,
+      "start": 54,
+      "end": 55.2,
+      "groupId": "g-12",
+      "text": "哪怕外面再堵车"
+    },
+    {
+      "id": "cue-38",
+      "sourceIndex": 37,
+      "start": 55.5,
+      "end": 56.7,
+      "groupId": "g-12",
+      "text": "心情再烦躁"
+    },
+    {
+      "id": "cue-39",
+      "sourceIndex": 38,
+      "start": 57,
+      "end": 58.2,
+      "groupId": "g-12",
+      "text": "也能瞬间被抚平"
+    },
+    {
+      "id": "cue-40",
+      "sourceIndex": 39,
+      "start": 58.5,
+      "end": 59.7,
+      "groupId": "g-13",
+      "text": "原来高级感"
+    },
+    {
+      "id": "cue-41",
+      "sourceIndex": 40,
+      "start": 60,
+      "end": 61.2,
+      "groupId": "g-13",
+      "text": "真的藏在"
+    },
+    {
+      "id": "cue-42",
+      "sourceIndex": 41,
+      "start": 61.5,
+      "end": 62.7,
+      "groupId": "g-13",
+      "text": "那些容易被忽视的细节力"
+    },
+    {
+      "id": "cue-43",
+      "sourceIndex": 42,
+      "start": 63,
+      "end": 64.2,
+      "groupId": "g-14",
+      "text": "你还见过车上"
+    },
+    {
+      "id": "cue-44",
+      "sourceIndex": 43,
+      "start": 64.5,
+      "end": 65.7,
+      "groupId": "g-14",
+      "text": "哪些暖心的细节设计吗"
+    }
+  ],
+  "contextBefore": [],
+  "contextAfter": [],
+  "glossary": []
+}

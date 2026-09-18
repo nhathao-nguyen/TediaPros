@@ -1,0 +1,4308 @@
+{
+  "duration": 62.7649375,
+  "language": "zh",
+  "segments": [
+    {
+      "start": 0.0,
+      "end": 1.22,
+      "text": "原来古人庭院众树",
+      "words": [
+        {
+          "text": "原",
+          "start": 0.0,
+          "end": 0.18,
+          "probability": 0.97705078125
+        },
+        {
+          "text": "来",
+          "start": 0.18,
+          "end": 0.3,
+          "probability": 0.47607421875
+        },
+        {
+          "text": "古",
+          "start": 0.3,
+          "end": 0.44,
+          "probability": 0.376220703125
+        },
+        {
+          "text": "人",
+          "start": 0.44,
+          "end": 0.58,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "庭",
+          "start": 0.58,
+          "end": 0.76,
+          "probability": 0.851318359375
+        },
+        {
+          "text": "院",
+          "start": 0.76,
+          "end": 0.9,
+          "probability": 0.9794921875
+        },
+        {
+          "text": "众",
+          "start": 0.9,
+          "end": 1.06,
+          "probability": 0.824462890625
+        },
+        {
+          "text": "树",
+          "start": 1.06,
+          "end": 1.22,
+          "probability": 0.7216796875
+        }
+      ]
+    },
+    {
+      "start": 1.22,
+      "end": 2.56,
+      "text": "仍不是随便乱栽",
+      "words": [
+        {
+          "text": "仍",
+          "start": 1.22,
+          "end": 1.6,
+          "probability": 0.49535369873046875
+        },
+        {
+          "text": "不是",
+          "start": 1.6,
+          "end": 1.78,
+          "probability": 0.57568359375
+        },
+        {
+          "text": "随",
+          "start": 1.78,
+          "end": 2.02,
+          "probability": 0.99365234375
+        },
+        {
+          "text": "便",
+          "start": 2.02,
+          "end": 2.24,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "乱",
+          "start": 2.24,
+          "end": 2.34,
+          "probability": 0.997314453125
+        },
+        {
+          "text": "栽",
+          "start": 2.34,
+          "end": 2.56,
+          "probability": 0.8828125
+        }
+      ]
+    },
+    {
+      "start": 2.56,
+      "end": 3.68,
+      "text": "而是有讲究的",
+      "words": [
+        {
+          "text": "而",
+          "start": 2.56,
+          "end": 2.86,
+          "probability": 0.81396484375
+        },
+        {
+          "text": "是",
+          "start": 2.86,
+          "end": 3.0,
+          "probability": 0.998046875
+        },
+        {
+          "text": "有",
+          "start": 3.0,
+          "end": 3.12,
+          "probability": 0.95263671875
+        },
+        {
+          "text": "讲",
+          "start": 3.12,
+          "end": 3.34,
+          "probability": 0.97412109375
+        },
+        {
+          "text": "究",
+          "start": 3.34,
+          "end": 3.52,
+          "probability": 0.998046875
+        },
+        {
+          "text": "的",
+          "start": 3.52,
+          "end": 3.68,
+          "probability": 0.99267578125
+        }
+      ]
+    },
+    {
+      "start": 4.02,
+      "end": 4.64,
+      "text": "首先是",
+      "words": [
+        {
+          "text": "首先",
+          "start": 4.02,
+          "end": 4.34,
+          "probability": 0.96875
+        },
+        {
+          "text": "是",
+          "start": 4.34,
+          "end": 4.64,
+          "probability": 0.998046875
+        }
+      ]
+    },
+    {
+      "start": 4.64,
+      "end": 5.68,
+      "text": "门前不栽竹",
+      "words": [
+        {
+          "text": "门",
+          "start": 4.64,
+          "end": 5.0,
+          "probability": 0.76171875
+        },
+        {
+          "text": "前",
+          "start": 5.0,
+          "end": 5.18,
+          "probability": 0.912109375
+        },
+        {
+          "text": "不",
+          "start": 5.18,
+          "end": 5.4,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "栽",
+          "start": 5.4,
+          "end": 5.52,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "竹",
+          "start": 5.52,
+          "end": 5.68,
+          "probability": 0.822998046875
+        }
+      ]
+    },
+    {
+      "start": 5.68,
+      "end": 7.34,
+      "text": "竹子长得又高又密",
+      "words": [
+        {
+          "text": "竹",
+          "start": 5.68,
+          "end": 6.28,
+          "probability": 0.997802734375
+        },
+        {
+          "text": "子",
+          "start": 6.28,
+          "end": 6.4,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "长",
+          "start": 6.4,
+          "end": 6.54,
+          "probability": 0.99560546875
+        },
+        {
+          "text": "得",
+          "start": 6.54,
+          "end": 6.68,
+          "probability": 0.869140625
+        },
+        {
+          "text": "又",
+          "start": 6.68,
+          "end": 6.84,
+          "probability": 0.9931640625
+        },
+        {
+          "text": "高",
+          "start": 6.84,
+          "end": 7.02,
+          "probability": 0.998046875
+        },
+        {
+          "text": "又",
+          "start": 7.02,
+          "end": 7.18,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "密",
+          "start": 7.18,
+          "end": 7.34,
+          "probability": 0.94140625
+        }
+      ]
+    },
+    {
+      "start": 7.34,
+      "end": 8.58,
+      "text": "枝叶层层叠叠",
+      "words": [
+        {
+          "text": "枝",
+          "start": 7.34,
+          "end": 7.72,
+          "probability": 0.718017578125
+        },
+        {
+          "text": "叶",
+          "start": 7.72,
+          "end": 7.86,
+          "probability": 0.916259765625
+        },
+        {
+          "text": "层",
+          "start": 7.86,
+          "end": 8.04,
+          "probability": 0.99267578125
+        },
+        {
+          "text": "层",
+          "start": 8.04,
+          "end": 8.24,
+          "probability": 0.998291015625
+        },
+        {
+          "text": "叠",
+          "start": 8.24,
+          "end": 8.38,
+          "probability": 0.77490234375
+        },
+        {
+          "text": "叠",
+          "start": 8.38,
+          "end": 8.58,
+          "probability": 0.992431640625
+        }
+      ]
+    },
+    {
+      "start": 8.58,
+      "end": 10.22,
+      "text": "死死挡住门前的阳光",
+      "words": [
+        {
+          "text": "死",
+          "start": 8.58,
+          "end": 8.94,
+          "probability": 0.39697265625
+        },
+        {
+          "text": "死",
+          "start": 8.94,
+          "end": 9.18,
+          "probability": 0.98974609375
+        },
+        {
+          "text": "挡",
+          "start": 9.18,
+          "end": 9.28,
+          "probability": 0.986328125
+        },
+        {
+          "text": "住",
+          "start": 9.28,
+          "end": 9.44,
+          "probability": 0.99658203125
+        },
+        {
+          "text": "门",
+          "start": 9.44,
+          "end": 9.62,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "前",
+          "start": 9.62,
+          "end": 9.8,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "的",
+          "start": 9.8,
+          "end": 9.92,
+          "probability": 0.998046875
+        },
+        {
+          "text": "阳",
+          "start": 9.92,
+          "end": 10.06,
+          "probability": 0.97900390625
+        },
+        {
+          "text": "光",
+          "start": 10.06,
+          "end": 10.22,
+          "probability": 1.0
+        }
+      ]
+    },
+    {
+      "start": 10.58,
+      "end": 12.24,
+      "text": "时间久了屋里阴暗潮湿",
+      "words": [
+        {
+          "text": "时间",
+          "start": 10.58,
+          "end": 10.9,
+          "probability": 0.85302734375
+        },
+        {
+          "text": "久",
+          "start": 10.9,
+          "end": 11.14,
+          "probability": 0.99658203125
+        },
+        {
+          "text": "了",
+          "start": 11.14,
+          "end": 11.28,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "屋",
+          "start": 11.28,
+          "end": 11.46,
+          "probability": 0.973388671875
+        },
+        {
+          "text": "里",
+          "start": 11.46,
+          "end": 11.6,
+          "probability": 0.98388671875
+        },
+        {
+          "text": "阴",
+          "start": 11.6,
+          "end": 11.74,
+          "probability": 0.95849609375
+        },
+        {
+          "text": "暗",
+          "start": 11.74,
+          "end": 11.86,
+          "probability": 0.998046875
+        },
+        {
+          "text": "潮",
+          "start": 11.86,
+          "end": 12.04,
+          "probability": 0.986328125
+        },
+        {
+          "text": "湿",
+          "start": 12.04,
+          "end": 12.24,
+          "probability": 0.966064453125
+        }
+      ]
+    },
+    {
+      "start": 12.24,
+      "end": 13.18,
+      "text": "潮起虫虫",
+      "words": [
+        {
+          "text": "潮",
+          "start": 12.24,
+          "end": 12.64,
+          "probability": 0.979248046875
+        },
+        {
+          "text": "起",
+          "start": 12.64,
+          "end": 12.8,
+          "probability": 0.83984375
+        },
+        {
+          "text": "虫",
+          "start": 12.8,
+          "end": 12.96,
+          "probability": 0.620361328125
+        },
+        {
+          "text": "虫",
+          "start": 12.96,
+          "end": 13.18,
+          "probability": 0.9990234375
+        }
+      ]
+    },
+    {
+      "start": 13.18,
+      "end": 14.58,
+      "text": "住着又闷又压抑",
+      "words": [
+        {
+          "text": "住",
+          "start": 13.18,
+          "end": 13.54,
+          "probability": 0.86181640625
+        },
+        {
+          "text": "着",
+          "start": 13.54,
+          "end": 13.7,
+          "probability": 0.9853515625
+        },
+        {
+          "text": "又",
+          "start": 13.7,
+          "end": 13.86,
+          "probability": 0.9384765625
+        },
+        {
+          "text": "闷",
+          "start": 13.86,
+          "end": 14.06,
+          "probability": 0.968505859375
+        },
+        {
+          "text": "又",
+          "start": 14.06,
+          "end": 14.22,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "压",
+          "start": 14.22,
+          "end": 14.42,
+          "probability": 0.91064453125
+        },
+        {
+          "text": "抑",
+          "start": 14.42,
+          "end": 14.58,
+          "probability": 0.6597900390625
+        }
+      ]
+    },
+    {
+      "start": 14.58,
+      "end": 16.34,
+      "text": "其次是屋后不栽柳",
+      "words": [
+        {
+          "text": "其",
+          "start": 14.58,
+          "end": 15.12,
+          "probability": 0.99609375
+        },
+        {
+          "text": "次",
+          "start": 15.12,
+          "end": 15.26,
+          "probability": 0.9931640625
+        },
+        {
+          "text": "是",
+          "start": 15.26,
+          "end": 15.44,
+          "probability": 0.9951171875
+        },
+        {
+          "text": "屋",
+          "start": 15.44,
+          "end": 15.68,
+          "probability": 0.992919921875
+        },
+        {
+          "text": "后",
+          "start": 15.68,
+          "end": 15.86,
+          "probability": 0.994140625
+        },
+        {
+          "text": "不",
+          "start": 15.86,
+          "end": 16.02,
+          "probability": 1.0
+        },
+        {
+          "text": "栽",
+          "start": 16.02,
+          "end": 16.12,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "柳",
+          "start": 16.12,
+          "end": 16.34,
+          "probability": 0.825439453125
+        }
+      ]
+    },
+    {
+      "start": 16.34,
+      "end": 17.44,
+      "text": "柳树根系前",
+      "words": [
+        {
+          "text": "柳",
+          "start": 16.34,
+          "end": 16.76,
+          "probability": 0.98974609375
+        },
+        {
+          "text": "树",
+          "start": 16.76,
+          "end": 16.92,
+          "probability": 0.989990234375
+        },
+        {
+          "text": "根",
+          "start": 16.92,
+          "end": 17.06,
+          "probability": 0.84423828125
+        },
+        {
+          "text": "系",
+          "start": 17.06,
+          "end": 17.2,
+          "probability": 0.6982421875
+        },
+        {
+          "text": "前",
+          "start": 17.2,
+          "end": 17.44,
+          "probability": 0.8486328125
+        }
+      ]
+    },
+    {
+      "start": 17.44,
+      "end": 18.62,
+      "text": "蔓延能力极强",
+      "words": [
+        {
+          "text": "蔓",
+          "start": 17.44,
+          "end": 17.76,
+          "probability": 0.95263671875
+        },
+        {
+          "text": "延",
+          "start": 17.76,
+          "end": 17.92,
+          "probability": 0.983154296875
+        },
+        {
+          "text": "能",
+          "start": 17.92,
+          "end": 18.06,
+          "probability": 0.998046875
+        },
+        {
+          "text": "力",
+          "start": 18.06,
+          "end": 18.24,
+          "probability": 0.9853515625
+        },
+        {
+          "text": "极",
+          "start": 18.24,
+          "end": 18.38,
+          "probability": 0.95947265625
+        },
+        {
+          "text": "强",
+          "start": 18.38,
+          "end": 18.62,
+          "probability": 0.995849609375
+        }
+      ]
+    },
+    {
+      "start": 18.62,
+      "end": 19.82,
+      "text": "紧贴房屋栽重",
+      "words": [
+        {
+          "text": "紧",
+          "start": 18.62,
+          "end": 19.18,
+          "probability": 0.6270751953125
+        },
+        {
+          "text": "贴",
+          "start": 19.18,
+          "end": 19.32,
+          "probability": 0.945556640625
+        },
+        {
+          "text": "房",
+          "start": 19.32,
+          "end": 19.46,
+          "probability": 0.94287109375
+        },
+        {
+          "text": "屋",
+          "start": 19.46,
+          "end": 19.56,
+          "probability": 0.997314453125
+        },
+        {
+          "text": "栽",
+          "start": 19.56,
+          "end": 19.68,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "重",
+          "start": 19.68,
+          "end": 19.82,
+          "probability": 0.269775390625
+        }
+      ]
+    },
+    {
+      "start": 19.82,
+      "end": 21.08,
+      "text": "根系汇不断蔓延",
+      "words": [
+        {
+          "text": "根",
+          "start": 19.82,
+          "end": 20.14,
+          "probability": 0.9619140625
+        },
+        {
+          "text": "系",
+          "start": 20.14,
+          "end": 20.3,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "汇",
+          "start": 20.3,
+          "end": 20.46,
+          "probability": 0.756591796875
+        },
+        {
+          "text": "不",
+          "start": 20.46,
+          "end": 20.62,
+          "probability": 0.970703125
+        },
+        {
+          "text": "断",
+          "start": 20.62,
+          "end": 20.7,
+          "probability": 0.999755859375
+        },
+        {
+          "text": "蔓",
+          "start": 20.7,
+          "end": 20.88,
+          "probability": 1.0
+        },
+        {
+          "text": "延",
+          "start": 20.88,
+          "end": 21.08,
+          "probability": 0.999755859375
+        }
+      ]
+    },
+    {
+      "start": 21.08,
+      "end": 21.86,
+      "text": "肯市地基",
+      "words": [
+        {
+          "text": "肯",
+          "start": 21.08,
+          "end": 21.4,
+          "probability": 0.6556396484375
+        },
+        {
+          "text": "市",
+          "start": 21.4,
+          "end": 21.56,
+          "probability": 0.1783447265625
+        },
+        {
+          "text": "地",
+          "start": 21.56,
+          "end": 21.68,
+          "probability": 0.880859375
+        },
+        {
+          "text": "基",
+          "start": 21.68,
+          "end": 21.86,
+          "probability": 0.5849609375
+        }
+      ]
+    },
+    {
+      "start": 21.86,
+      "end": 23.58,
+      "text": "悄悄埋下房屋安全隐患",
+      "words": [
+        {
+          "text": "悄",
+          "start": 21.86,
+          "end": 22.2,
+          "probability": 0.92041015625
+        },
+        {
+          "text": "悄",
+          "start": 22.2,
+          "end": 22.32,
+          "probability": 0.9951171875
+        },
+        {
+          "text": "埋",
+          "start": 22.32,
+          "end": 22.48,
+          "probability": 0.8115234375
+        },
+        {
+          "text": "下",
+          "start": 22.48,
+          "end": 22.64,
+          "probability": 0.98486328125
+        },
+        {
+          "text": "房",
+          "start": 22.64,
+          "end": 22.82,
+          "probability": 0.99072265625
+        },
+        {
+          "text": "屋",
+          "start": 22.82,
+          "end": 22.94,
+          "probability": 0.999755859375
+        },
+        {
+          "text": "安全",
+          "start": 22.94,
+          "end": 23.24,
+          "probability": 0.99609375
+        },
+        {
+          "text": "隐",
+          "start": 23.24,
+          "end": 23.44,
+          "probability": 0.94970703125
+        },
+        {
+          "text": "患",
+          "start": 23.44,
+          "end": 23.58,
+          "probability": 0.783447265625
+        }
+      ]
+    },
+    {
+      "start": 23.58,
+      "end": 25.3,
+      "text": "最后院中不栽阳树",
+      "words": [
+        {
+          "text": "最",
+          "start": 23.58,
+          "end": 24.12,
+          "probability": 0.9580078125
+        },
+        {
+          "text": "后",
+          "start": 24.12,
+          "end": 24.28,
+          "probability": 1.0
+        },
+        {
+          "text": "院",
+          "start": 24.28,
+          "end": 24.44,
+          "probability": 0.9951171875
+        },
+        {
+          "text": "中",
+          "start": 24.44,
+          "end": 24.62,
+          "probability": 0.99072265625
+        },
+        {
+          "text": "不",
+          "start": 24.62,
+          "end": 24.86,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "栽",
+          "start": 24.86,
+          "end": 24.96,
+          "probability": 0.999755859375
+        },
+        {
+          "text": "阳",
+          "start": 24.96,
+          "end": 25.14,
+          "probability": 0.875
+        },
+        {
+          "text": "树",
+          "start": 25.14,
+          "end": 25.3,
+          "probability": 0.994384765625
+        }
+      ]
+    },
+    {
+      "start": 25.3,
+      "end": 27.04,
+      "text": "阳树叶田宽大厚实",
+      "words": [
+        {
+          "text": "阳",
+          "start": 25.3,
+          "end": 25.9,
+          "probability": 0.49919891357421875
+        },
+        {
+          "text": "树",
+          "start": 25.9,
+          "end": 26.04,
+          "probability": 0.70947265625
+        },
+        {
+          "text": "叶",
+          "start": 26.04,
+          "end": 26.18,
+          "probability": 0.899169921875
+        },
+        {
+          "text": "田",
+          "start": 26.18,
+          "end": 26.36,
+          "probability": 0.59912109375
+        },
+        {
+          "text": "宽",
+          "start": 26.36,
+          "end": 26.54,
+          "probability": 0.982177734375
+        },
+        {
+          "text": "大",
+          "start": 26.54,
+          "end": 26.72,
+          "probability": 0.98193359375
+        },
+        {
+          "text": "厚",
+          "start": 26.72,
+          "end": 26.9,
+          "probability": 0.763671875
+        },
+        {
+          "text": "实",
+          "start": 26.9,
+          "end": 27.04,
+          "probability": 0.6181640625
+        }
+      ]
+    },
+    {
+      "start": 27.04,
+      "end": 28.38,
+      "text": "哪怕是微风浮过",
+      "words": [
+        {
+          "text": "哪",
+          "start": 27.04,
+          "end": 27.44,
+          "probability": 0.94189453125
+        },
+        {
+          "text": "怕",
+          "start": 27.44,
+          "end": 27.62,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "是",
+          "start": 27.62,
+          "end": 27.76,
+          "probability": 0.99560546875
+        },
+        {
+          "text": "微",
+          "start": 27.76,
+          "end": 27.9,
+          "probability": 0.87548828125
+        },
+        {
+          "text": "风",
+          "start": 27.9,
+          "end": 28.04,
+          "probability": 0.939453125
+        },
+        {
+          "text": "浮",
+          "start": 28.04,
+          "end": 28.2,
+          "probability": 0.860107421875
+        },
+        {
+          "text": "过",
+          "start": 28.2,
+          "end": 28.38,
+          "probability": 0.9658203125
+        }
+      ]
+    },
+    {
+      "start": 28.38,
+      "end": 30.22,
+      "text": "也会发出花辣辣的拍手声响",
+      "words": [
+        {
+          "text": "也",
+          "start": 28.38,
+          "end": 28.66,
+          "probability": 0.94775390625
+        },
+        {
+          "text": "会",
+          "start": 28.66,
+          "end": 28.82,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "发",
+          "start": 28.82,
+          "end": 28.96,
+          "probability": 0.9814453125
+        },
+        {
+          "text": "出",
+          "start": 28.96,
+          "end": 29.12,
+          "probability": 0.998046875
+        },
+        {
+          "text": "花",
+          "start": 29.12,
+          "end": 29.32,
+          "probability": 0.55126953125
+        },
+        {
+          "text": "辣",
+          "start": 29.32,
+          "end": 29.42,
+          "probability": 0.6358642578125
+        },
+        {
+          "text": "辣",
+          "start": 29.42,
+          "end": 29.52,
+          "probability": 0.99658203125
+        },
+        {
+          "text": "的",
+          "start": 29.52,
+          "end": 29.62,
+          "probability": 0.91650390625
+        },
+        {
+          "text": "拍",
+          "start": 29.62,
+          "end": 29.76,
+          "probability": 0.8955078125
+        },
+        {
+          "text": "手",
+          "start": 29.76,
+          "end": 29.92,
+          "probability": 0.98095703125
+        },
+        {
+          "text": "声",
+          "start": 29.92,
+          "end": 30.06,
+          "probability": 0.970703125
+        },
+        {
+          "text": "响",
+          "start": 30.06,
+          "end": 30.22,
+          "probability": 0.884521484375
+        }
+      ]
+    },
+    {
+      "start": 30.22,
+      "end": 31.96,
+      "text": "夜深人静时格外刺耳",
+      "words": [
+        {
+          "text": "夜",
+          "start": 30.22,
+          "end": 30.76,
+          "probability": 0.37744140625
+        },
+        {
+          "text": "深",
+          "start": 30.76,
+          "end": 30.88,
+          "probability": 0.97607421875
+        },
+        {
+          "text": "人",
+          "start": 30.88,
+          "end": 31.04,
+          "probability": 0.953125
+        },
+        {
+          "text": "静",
+          "start": 31.04,
+          "end": 31.16,
+          "probability": 0.955078125
+        },
+        {
+          "text": "时",
+          "start": 31.16,
+          "end": 31.34,
+          "probability": 0.98681640625
+        },
+        {
+          "text": "格",
+          "start": 31.34,
+          "end": 31.54,
+          "probability": 0.935546875
+        },
+        {
+          "text": "外",
+          "start": 31.54,
+          "end": 31.68,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "刺",
+          "start": 31.68,
+          "end": 31.84,
+          "probability": 0.55682373046875
+        },
+        {
+          "text": "耳",
+          "start": 31.84,
+          "end": 31.96,
+          "probability": 0.963623046875
+        }
+      ]
+    },
+    {
+      "start": 31.96,
+      "end": 33.56,
+      "text": "严重影响日常休息",
+      "words": [
+        {
+          "text": "严",
+          "start": 31.96,
+          "end": 32.34,
+          "probability": 0.974609375
+        },
+        {
+          "text": "重",
+          "start": 32.34,
+          "end": 32.5,
+          "probability": 0.912109375
+        },
+        {
+          "text": "影",
+          "start": 32.5,
+          "end": 32.68,
+          "probability": 0.9931640625
+        },
+        {
+          "text": "响",
+          "start": 32.68,
+          "end": 32.84,
+          "probability": 0.999755859375
+        },
+        {
+          "text": "日",
+          "start": 32.84,
+          "end": 33.04,
+          "probability": 0.71728515625
+        },
+        {
+          "text": "常",
+          "start": 33.04,
+          "end": 33.22,
+          "probability": 0.99365234375
+        },
+        {
+          "text": "休",
+          "start": 33.22,
+          "end": 33.38,
+          "probability": 0.98828125
+        },
+        {
+          "text": "息",
+          "start": 33.38,
+          "end": 33.56,
+          "probability": 0.50537109375
+        }
+      ]
+    },
+    {
+      "start": 33.56,
+      "end": 35.12,
+      "text": "避开这些众树雷区",
+      "words": [
+        {
+          "text": "避",
+          "start": 33.56,
+          "end": 34.08,
+          "probability": 0.8779296875
+        },
+        {
+          "text": "开",
+          "start": 34.08,
+          "end": 34.24,
+          "probability": 0.9892578125
+        },
+        {
+          "text": "这",
+          "start": 34.24,
+          "end": 34.38,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "些",
+          "start": 34.38,
+          "end": 34.52,
+          "probability": 1.0
+        },
+        {
+          "text": "众",
+          "start": 34.52,
+          "end": 34.68,
+          "probability": 0.68115234375
+        },
+        {
+          "text": "树",
+          "start": 34.68,
+          "end": 34.8,
+          "probability": 0.870849609375
+        },
+        {
+          "text": "雷",
+          "start": 34.8,
+          "end": 34.92,
+          "probability": 0.95263671875
+        },
+        {
+          "text": "区",
+          "start": 34.92,
+          "end": 35.12,
+          "probability": 0.9599609375
+        }
+      ]
+    },
+    {
+      "start": 35.12,
+      "end": 37.58,
+      "text": "选对绿植就能为家宅天赐天运",
+      "words": [
+        {
+          "text": "选",
+          "start": 35.12,
+          "end": 35.54,
+          "probability": 0.989990234375
+        },
+        {
+          "text": "对",
+          "start": 35.54,
+          "end": 35.66,
+          "probability": 0.98828125
+        },
+        {
+          "text": "绿",
+          "start": 35.66,
+          "end": 35.84,
+          "probability": 0.986083984375
+        },
+        {
+          "text": "植",
+          "start": 35.84,
+          "end": 36.0,
+          "probability": 0.921875
+        },
+        {
+          "text": "就",
+          "start": 36.0,
+          "end": 36.32,
+          "probability": 0.986328125
+        },
+        {
+          "text": "能",
+          "start": 36.32,
+          "end": 36.42,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "为",
+          "start": 36.42,
+          "end": 36.54,
+          "probability": 0.63916015625
+        },
+        {
+          "text": "家",
+          "start": 36.54,
+          "end": 36.76,
+          "probability": 0.98876953125
+        },
+        {
+          "text": "宅",
+          "start": 36.76,
+          "end": 36.9,
+          "probability": 0.984619140625
+        },
+        {
+          "text": "天",
+          "start": 36.9,
+          "end": 37.14,
+          "probability": 0.87744140625
+        },
+        {
+          "text": "赐",
+          "start": 37.14,
+          "end": 37.28,
+          "probability": 0.761474609375
+        },
+        {
+          "text": "天",
+          "start": 37.28,
+          "end": 37.44,
+          "probability": 0.96630859375
+        },
+        {
+          "text": "运",
+          "start": 37.44,
+          "end": 37.58,
+          "probability": 0.84130859375
+        }
+      ]
+    },
+    {
+      "start": 37.58,
+      "end": 39.18,
+      "text": "庭院里栽种金柜",
+      "words": [
+        {
+          "text": "庭",
+          "start": 37.58,
+          "end": 38.14,
+          "probability": 0.954833984375
+        },
+        {
+          "text": "院",
+          "start": 38.14,
+          "end": 38.3,
+          "probability": 0.98291015625
+        },
+        {
+          "text": "里",
+          "start": 38.3,
+          "end": 38.44,
+          "probability": 0.99267578125
+        },
+        {
+          "text": "栽",
+          "start": 38.44,
+          "end": 38.6,
+          "probability": 0.9814453125
+        },
+        {
+          "text": "种",
+          "start": 38.6,
+          "end": 38.78,
+          "probability": 0.97021484375
+        },
+        {
+          "text": "金",
+          "start": 38.78,
+          "end": 38.98,
+          "probability": 0.419921875
+        },
+        {
+          "text": "柜",
+          "start": 38.98,
+          "end": 39.18,
+          "probability": 0.75927734375
+        }
+      ]
+    },
+    {
+      "start": 39.18,
+      "end": 39.76,
+      "text": "玉兰",
+      "words": [
+        {
+          "text": "玉",
+          "start": 39.18,
+          "end": 39.6,
+          "probability": 0.6558837890625
+        },
+        {
+          "text": "兰",
+          "start": 39.6,
+          "end": 39.76,
+          "probability": 0.978759765625
+        }
+      ]
+    },
+    {
+      "start": 39.76,
+      "end": 40.34,
+      "text": "石柳",
+      "words": [
+        {
+          "text": "石",
+          "start": 39.76,
+          "end": 40.2,
+          "probability": 0.61962890625
+        },
+        {
+          "text": "柳",
+          "start": 40.2,
+          "end": 40.34,
+          "probability": 0.917236328125
+        }
+      ]
+    },
+    {
+      "start": 40.34,
+      "end": 41.56,
+      "text": "海棠四种花木",
+      "words": [
+        {
+          "text": "海",
+          "start": 40.34,
+          "end": 40.72,
+          "probability": 0.85498046875
+        },
+        {
+          "text": "棠",
+          "start": 40.72,
+          "end": 40.9,
+          "probability": 0.822998046875
+        },
+        {
+          "text": "四",
+          "start": 40.9,
+          "end": 41.1,
+          "probability": 0.91943359375
+        },
+        {
+          "text": "种",
+          "start": 41.1,
+          "end": 41.24,
+          "probability": 0.9931640625
+        },
+        {
+          "text": "花",
+          "start": 41.24,
+          "end": 41.42,
+          "probability": 0.72119140625
+        },
+        {
+          "text": "木",
+          "start": 41.42,
+          "end": 41.56,
+          "probability": 0.97119140625
+        }
+      ]
+    },
+    {
+      "start": 41.56,
+      "end": 43.88,
+      "text": "刚好凑出寓意绝佳的金玉满汤",
+      "words": [
+        {
+          "text": "刚",
+          "start": 41.56,
+          "end": 42.08,
+          "probability": 0.96875
+        },
+        {
+          "text": "好",
+          "start": 42.08,
+          "end": 42.28,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "凑",
+          "start": 42.28,
+          "end": 42.42,
+          "probability": 0.9931640625
+        },
+        {
+          "text": "出",
+          "start": 42.42,
+          "end": 42.62,
+          "probability": 0.990234375
+        },
+        {
+          "text": "寓",
+          "start": 42.62,
+          "end": 42.76,
+          "probability": 0.6380615234375
+        },
+        {
+          "text": "意",
+          "start": 42.76,
+          "end": 42.84,
+          "probability": 0.927734375
+        },
+        {
+          "text": "绝",
+          "start": 42.84,
+          "end": 42.98,
+          "probability": 0.976318359375
+        },
+        {
+          "text": "佳",
+          "start": 42.98,
+          "end": 43.16,
+          "probability": 0.97900390625
+        },
+        {
+          "text": "的",
+          "start": 43.16,
+          "end": 43.28,
+          "probability": 0.99462890625
+        },
+        {
+          "text": "金",
+          "start": 43.28,
+          "end": 43.44,
+          "probability": 0.93798828125
+        },
+        {
+          "text": "玉",
+          "start": 43.44,
+          "end": 43.54,
+          "probability": 0.91162109375
+        },
+        {
+          "text": "满",
+          "start": 43.54,
+          "end": 43.66,
+          "probability": 0.864990234375
+        },
+        {
+          "text": "汤",
+          "start": 43.66,
+          "end": 43.88,
+          "probability": 0.863037109375
+        }
+      ]
+    },
+    {
+      "start": 43.88,
+      "end": 45.72,
+      "text": "象征合家赋贵顺岁",
+      "words": [
+        {
+          "text": "象",
+          "start": 43.88,
+          "end": 44.52,
+          "probability": 0.97216796875
+        },
+        {
+          "text": "征",
+          "start": 44.52,
+          "end": 44.68,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "合",
+          "start": 44.68,
+          "end": 44.84,
+          "probability": 0.220458984375
+        },
+        {
+          "text": "家",
+          "start": 44.84,
+          "end": 44.98,
+          "probability": 0.90771484375
+        },
+        {
+          "text": "赋",
+          "start": 44.98,
+          "end": 45.16,
+          "probability": 0.6356201171875
+        },
+        {
+          "text": "贵",
+          "start": 45.16,
+          "end": 45.32,
+          "probability": 0.6669921875
+        },
+        {
+          "text": "顺",
+          "start": 45.32,
+          "end": 45.5,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "岁",
+          "start": 45.5,
+          "end": 45.72,
+          "probability": 0.694091796875
+        }
+      ]
+    },
+    {
+      "start": 45.72,
+      "end": 46.8,
+      "text": "才愿兴望",
+      "words": [
+        {
+          "text": "才",
+          "start": 45.72,
+          "end": 46.24,
+          "probability": 0.162841796875
+        },
+        {
+          "text": "愿",
+          "start": 46.24,
+          "end": 46.44,
+          "probability": 0.581298828125
+        },
+        {
+          "text": "兴",
+          "start": 46.44,
+          "end": 46.6,
+          "probability": 0.790771484375
+        },
+        {
+          "text": "望",
+          "start": 46.6,
+          "end": 46.8,
+          "probability": 0.10577392578125
+        }
+      ]
+    },
+    {
+      "start": 46.8,
+      "end": 48.62,
+      "text": "其中石柳果实饱满",
+      "words": [
+        {
+          "text": "其",
+          "start": 46.8,
+          "end": 47.32,
+          "probability": 0.97900390625
+        },
+        {
+          "text": "中",
+          "start": 47.32,
+          "end": 47.48,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "石",
+          "start": 47.48,
+          "end": 47.82,
+          "probability": 0.9677734375
+        },
+        {
+          "text": "柳",
+          "start": 47.82,
+          "end": 47.96,
+          "probability": 0.996826171875
+        },
+        {
+          "text": "果",
+          "start": 47.96,
+          "end": 48.14,
+          "probability": 0.9609375
+        },
+        {
+          "text": "实",
+          "start": 48.14,
+          "end": 48.28,
+          "probability": 0.83447265625
+        },
+        {
+          "text": "饱",
+          "start": 48.28,
+          "end": 48.44,
+          "probability": 0.88427734375
+        },
+        {
+          "text": "满",
+          "start": 48.44,
+          "end": 48.62,
+          "probability": 0.9990234375
+        }
+      ]
+    },
+    {
+      "start": 48.62,
+      "end": 49.5,
+      "text": "紫多饱满",
+      "words": [
+        {
+          "text": "紫",
+          "start": 48.62,
+          "end": 49.0,
+          "probability": 0.818603515625
+        },
+        {
+          "text": "多",
+          "start": 49.0,
+          "end": 49.14,
+          "probability": 0.87744140625
+        },
+        {
+          "text": "饱",
+          "start": 49.14,
+          "end": 49.3,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "满",
+          "start": 49.3,
+          "end": 49.5,
+          "probability": 1.0
+        }
+      ]
+    },
+    {
+      "start": 49.5,
+      "end": 50.92,
+      "text": "更是自带多子多福",
+      "words": [
+        {
+          "text": "更",
+          "start": 49.5,
+          "end": 49.8,
+          "probability": 0.99609375
+        },
+        {
+          "text": "是",
+          "start": 49.8,
+          "end": 50.0,
+          "probability": 0.99560546875
+        },
+        {
+          "text": "自",
+          "start": 50.0,
+          "end": 50.14,
+          "probability": 0.984375
+        },
+        {
+          "text": "带",
+          "start": 50.14,
+          "end": 50.28,
+          "probability": 0.971435546875
+        },
+        {
+          "text": "多",
+          "start": 50.28,
+          "end": 50.48,
+          "probability": 0.947265625
+        },
+        {
+          "text": "子",
+          "start": 50.48,
+          "end": 50.62,
+          "probability": 0.3955078125
+        },
+        {
+          "text": "多",
+          "start": 50.62,
+          "end": 50.76,
+          "probability": 0.9638671875
+        },
+        {
+          "text": "福",
+          "start": 50.76,
+          "end": 50.92,
+          "probability": 0.900390625
+        }
+      ]
+    },
+    {
+      "start": 50.92,
+      "end": 52.6,
+      "text": "人丁欣望的美好彩头",
+      "words": [
+        {
+          "text": "人",
+          "start": 50.92,
+          "end": 51.24,
+          "probability": 0.494140625
+        },
+        {
+          "text": "丁",
+          "start": 51.24,
+          "end": 51.42,
+          "probability": 0.7021484375
+        },
+        {
+          "text": "欣",
+          "start": 51.42,
+          "end": 51.62,
+          "probability": 0.6522216796875
+        },
+        {
+          "text": "望",
+          "start": 51.62,
+          "end": 51.76,
+          "probability": 0.89013671875
+        },
+        {
+          "text": "的",
+          "start": 51.76,
+          "end": 51.88,
+          "probability": 0.72314453125
+        },
+        {
+          "text": "美",
+          "start": 51.88,
+          "end": 52.06,
+          "probability": 0.9892578125
+        },
+        {
+          "text": "好",
+          "start": 52.06,
+          "end": 52.2,
+          "probability": 0.99267578125
+        },
+        {
+          "text": "彩",
+          "start": 52.2,
+          "end": 52.38,
+          "probability": 0.9931640625
+        },
+        {
+          "text": "头",
+          "start": 52.38,
+          "end": 52.6,
+          "probability": 0.5869140625
+        }
+      ]
+    },
+    {
+      "start": 52.6,
+      "end": 53.46,
+      "text": "除此之外",
+      "words": [
+        {
+          "text": "除",
+          "start": 52.6,
+          "end": 53.12,
+          "probability": 0.91552734375
+        },
+        {
+          "text": "此",
+          "start": 53.12,
+          "end": 53.24,
+          "probability": 1.0
+        },
+        {
+          "text": "之",
+          "start": 53.24,
+          "end": 53.34,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "外",
+          "start": 53.34,
+          "end": 53.46,
+          "probability": 0.99951171875
+        }
+      ]
+    },
+    {
+      "start": 53.46,
+      "end": 54.82,
+      "text": "在院前左右两侧",
+      "words": [
+        {
+          "text": "在",
+          "start": 53.46,
+          "end": 53.8,
+          "probability": 0.89892578125
+        },
+        {
+          "text": "院",
+          "start": 53.8,
+          "end": 53.96,
+          "probability": 0.9453125
+        },
+        {
+          "text": "前",
+          "start": 53.96,
+          "end": 54.16,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "左右",
+          "start": 54.16,
+          "end": 54.34,
+          "probability": 0.99658203125
+        },
+        {
+          "text": "两",
+          "start": 54.34,
+          "end": 54.6,
+          "probability": 0.97802734375
+        },
+        {
+          "text": "侧",
+          "start": 54.6,
+          "end": 54.82,
+          "probability": 0.983642578125
+        }
+      ]
+    },
+    {
+      "start": 54.82,
+      "end": 56.36,
+      "text": "各种一棵桂花树",
+      "words": [
+        {
+          "text": "各",
+          "start": 54.82,
+          "end": 55.06,
+          "probability": 0.99609375
+        },
+        {
+          "text": "种",
+          "start": 55.06,
+          "end": 55.24,
+          "probability": 0.98583984375
+        },
+        {
+          "text": "一",
+          "start": 55.24,
+          "end": 55.38,
+          "probability": 0.97119140625
+        },
+        {
+          "text": "棵",
+          "start": 55.38,
+          "end": 55.52,
+          "probability": 0.697998046875
+        },
+        {
+          "text": "桂",
+          "start": 55.52,
+          "end": 55.66,
+          "probability": 0.968994140625
+        },
+        {
+          "text": "花",
+          "start": 55.66,
+          "end": 55.84,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "树",
+          "start": 55.84,
+          "end": 56.36,
+          "probability": 0.984375
+        }
+      ]
+    },
+    {
+      "start": 56.36,
+      "end": 57.78,
+      "text": "便是经典的双桂流芳",
+      "words": [
+        {
+          "text": "便",
+          "start": 56.36,
+          "end": 56.5,
+          "probability": 0.98046875
+        },
+        {
+          "text": "是",
+          "start": 56.5,
+          "end": 56.64,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "经",
+          "start": 56.64,
+          "end": 56.78,
+          "probability": 0.947265625
+        },
+        {
+          "text": "典",
+          "start": 56.78,
+          "end": 56.96,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "的",
+          "start": 56.96,
+          "end": 57.06,
+          "probability": 0.9814453125
+        },
+        {
+          "text": "双",
+          "start": 57.06,
+          "end": 57.22,
+          "probability": 0.998291015625
+        },
+        {
+          "text": "桂",
+          "start": 57.22,
+          "end": 57.38,
+          "probability": 0.829833984375
+        },
+        {
+          "text": "流",
+          "start": 57.38,
+          "end": 57.52,
+          "probability": 0.8076171875
+        },
+        {
+          "text": "芳",
+          "start": 57.52,
+          "end": 57.78,
+          "probability": 0.960693359375
+        }
+      ]
+    },
+    {
+      "start": 57.78,
+      "end": 59.82,
+      "text": "承载着家人对后代的欺寻",
+      "words": [
+        {
+          "text": "承",
+          "start": 57.78,
+          "end": 58.3,
+          "probability": 0.76171875
+        },
+        {
+          "text": "载",
+          "start": 58.3,
+          "end": 58.46,
+          "probability": 0.95458984375
+        },
+        {
+          "text": "着",
+          "start": 58.46,
+          "end": 58.54,
+          "probability": 0.98779296875
+        },
+        {
+          "text": "家",
+          "start": 58.54,
+          "end": 58.7,
+          "probability": 0.7802734375
+        },
+        {
+          "text": "人",
+          "start": 58.7,
+          "end": 58.86,
+          "probability": 1.0
+        },
+        {
+          "text": "对",
+          "start": 58.86,
+          "end": 58.98,
+          "probability": 0.99365234375
+        },
+        {
+          "text": "后",
+          "start": 58.98,
+          "end": 59.18,
+          "probability": 0.96240234375
+        },
+        {
+          "text": "代",
+          "start": 59.18,
+          "end": 59.34,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "的",
+          "start": 59.34,
+          "end": 59.44,
+          "probability": 0.99462890625
+        },
+        {
+          "text": "欺",
+          "start": 59.44,
+          "end": 59.62,
+          "probability": 0.6610107421875
+        },
+        {
+          "text": "寻",
+          "start": 59.62,
+          "end": 59.82,
+          "probability": 0.6756591796875
+        }
+      ]
+    },
+    {
+      "start": 59.82,
+      "end": 61.42,
+      "text": "义子孙金榜提名",
+      "words": [
+        {
+          "text": "义",
+          "start": 59.82,
+          "end": 60.24,
+          "probability": 0.560394287109375
+        },
+        {
+          "text": "子",
+          "start": 60.24,
+          "end": 60.48,
+          "probability": 0.90087890625
+        },
+        {
+          "text": "孙",
+          "start": 60.48,
+          "end": 60.68,
+          "probability": 0.996826171875
+        },
+        {
+          "text": "金",
+          "start": 60.68,
+          "end": 60.84,
+          "probability": 0.64990234375
+        },
+        {
+          "text": "榜",
+          "start": 60.84,
+          "end": 61.04,
+          "probability": 0.95263671875
+        },
+        {
+          "text": "提",
+          "start": 61.04,
+          "end": 61.2,
+          "probability": 0.927734375
+        },
+        {
+          "text": "名",
+          "start": 61.2,
+          "end": 61.42,
+          "probability": 0.9951171875
+        }
+      ]
+    },
+    {
+      "start": 61.42,
+      "end": 62.4,
+      "text": "前程四季",
+      "words": [
+        {
+          "text": "前",
+          "start": 61.42,
+          "end": 61.8,
+          "probability": 0.60107421875
+        },
+        {
+          "text": "程",
+          "start": 61.8,
+          "end": 62.06,
+          "probability": 0.94287109375
+        },
+        {
+          "text": "四",
+          "start": 62.06,
+          "end": 62.24,
+          "probability": 0.73486328125
+        },
+        {
+          "text": "季",
+          "start": 62.24,
+          "end": 62.4,
+          "probability": 0.67724609375
+        }
+      ]
+    }
+  ],
+  "cues": [
+    {
+      "start": 0.0,
+      "end": 1.22,
+      "text": "原来古人庭院众树",
+      "words": [
+        {
+          "text": "原",
+          "start": 0.0,
+          "end": 0.18,
+          "probability": 0.97705078125
+        },
+        {
+          "text": "来",
+          "start": 0.18,
+          "end": 0.3,
+          "probability": 0.47607421875
+        },
+        {
+          "text": "古",
+          "start": 0.3,
+          "end": 0.44,
+          "probability": 0.376220703125
+        },
+        {
+          "text": "人",
+          "start": 0.44,
+          "end": 0.58,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "庭",
+          "start": 0.58,
+          "end": 0.76,
+          "probability": 0.851318359375
+        },
+        {
+          "text": "院",
+          "start": 0.76,
+          "end": 0.9,
+          "probability": 0.9794921875
+        },
+        {
+          "text": "众",
+          "start": 0.9,
+          "end": 1.06,
+          "probability": 0.824462890625
+        },
+        {
+          "text": "树",
+          "start": 1.06,
+          "end": 1.22,
+          "probability": 0.7216796875
+        }
+      ]
+    },
+    {
+      "start": 1.22,
+      "end": 2.56,
+      "text": "仍不是随便乱栽",
+      "words": [
+        {
+          "text": "仍",
+          "start": 1.22,
+          "end": 1.6,
+          "probability": 0.49535369873046875
+        },
+        {
+          "text": "不是",
+          "start": 1.6,
+          "end": 1.78,
+          "probability": 0.57568359375
+        },
+        {
+          "text": "随",
+          "start": 1.78,
+          "end": 2.02,
+          "probability": 0.99365234375
+        },
+        {
+          "text": "便",
+          "start": 2.02,
+          "end": 2.24,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "乱",
+          "start": 2.24,
+          "end": 2.34,
+          "probability": 0.997314453125
+        },
+        {
+          "text": "栽",
+          "start": 2.34,
+          "end": 2.56,
+          "probability": 0.8828125
+        }
+      ]
+    },
+    {
+      "start": 2.56,
+      "end": 3.68,
+      "text": "而是有讲究的",
+      "words": [
+        {
+          "text": "而",
+          "start": 2.56,
+          "end": 2.86,
+          "probability": 0.81396484375
+        },
+        {
+          "text": "是",
+          "start": 2.86,
+          "end": 3.0,
+          "probability": 0.998046875
+        },
+        {
+          "text": "有",
+          "start": 3.0,
+          "end": 3.12,
+          "probability": 0.95263671875
+        },
+        {
+          "text": "讲",
+          "start": 3.12,
+          "end": 3.34,
+          "probability": 0.97412109375
+        },
+        {
+          "text": "究",
+          "start": 3.34,
+          "end": 3.52,
+          "probability": 0.998046875
+        },
+        {
+          "text": "的",
+          "start": 3.52,
+          "end": 3.68,
+          "probability": 0.99267578125
+        }
+      ]
+    },
+    {
+      "start": 4.02,
+      "end": 4.64,
+      "text": "首先是",
+      "words": [
+        {
+          "text": "首先",
+          "start": 4.02,
+          "end": 4.34,
+          "probability": 0.96875
+        },
+        {
+          "text": "是",
+          "start": 4.34,
+          "end": 4.64,
+          "probability": 0.998046875
+        }
+      ]
+    },
+    {
+      "start": 4.64,
+      "end": 5.68,
+      "text": "门前不栽竹",
+      "words": [
+        {
+          "text": "门",
+          "start": 4.64,
+          "end": 5.0,
+          "probability": 0.76171875
+        },
+        {
+          "text": "前",
+          "start": 5.0,
+          "end": 5.18,
+          "probability": 0.912109375
+        },
+        {
+          "text": "不",
+          "start": 5.18,
+          "end": 5.4,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "栽",
+          "start": 5.4,
+          "end": 5.52,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "竹",
+          "start": 5.52,
+          "end": 5.68,
+          "probability": 0.822998046875
+        }
+      ]
+    },
+    {
+      "start": 5.68,
+      "end": 7.34,
+      "text": "竹子长得又高又密",
+      "words": [
+        {
+          "text": "竹",
+          "start": 5.68,
+          "end": 6.28,
+          "probability": 0.997802734375
+        },
+        {
+          "text": "子",
+          "start": 6.28,
+          "end": 6.4,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "长",
+          "start": 6.4,
+          "end": 6.54,
+          "probability": 0.99560546875
+        },
+        {
+          "text": "得",
+          "start": 6.54,
+          "end": 6.68,
+          "probability": 0.869140625
+        },
+        {
+          "text": "又",
+          "start": 6.68,
+          "end": 6.84,
+          "probability": 0.9931640625
+        },
+        {
+          "text": "高",
+          "start": 6.84,
+          "end": 7.02,
+          "probability": 0.998046875
+        },
+        {
+          "text": "又",
+          "start": 7.02,
+          "end": 7.18,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "密",
+          "start": 7.18,
+          "end": 7.34,
+          "probability": 0.94140625
+        }
+      ]
+    },
+    {
+      "start": 7.34,
+      "end": 8.58,
+      "text": "枝叶层层叠叠",
+      "words": [
+        {
+          "text": "枝",
+          "start": 7.34,
+          "end": 7.72,
+          "probability": 0.718017578125
+        },
+        {
+          "text": "叶",
+          "start": 7.72,
+          "end": 7.86,
+          "probability": 0.916259765625
+        },
+        {
+          "text": "层",
+          "start": 7.86,
+          "end": 8.04,
+          "probability": 0.99267578125
+        },
+        {
+          "text": "层",
+          "start": 8.04,
+          "end": 8.24,
+          "probability": 0.998291015625
+        },
+        {
+          "text": "叠",
+          "start": 8.24,
+          "end": 8.38,
+          "probability": 0.77490234375
+        },
+        {
+          "text": "叠",
+          "start": 8.38,
+          "end": 8.58,
+          "probability": 0.992431640625
+        }
+      ]
+    },
+    {
+      "start": 8.58,
+      "end": 10.22,
+      "text": "死死挡住门前的阳光",
+      "words": [
+        {
+          "text": "死",
+          "start": 8.58,
+          "end": 8.94,
+          "probability": 0.39697265625
+        },
+        {
+          "text": "死",
+          "start": 8.94,
+          "end": 9.18,
+          "probability": 0.98974609375
+        },
+        {
+          "text": "挡",
+          "start": 9.18,
+          "end": 9.28,
+          "probability": 0.986328125
+        },
+        {
+          "text": "住",
+          "start": 9.28,
+          "end": 9.44,
+          "probability": 0.99658203125
+        },
+        {
+          "text": "门",
+          "start": 9.44,
+          "end": 9.62,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "前",
+          "start": 9.62,
+          "end": 9.8,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "的",
+          "start": 9.8,
+          "end": 9.92,
+          "probability": 0.998046875
+        },
+        {
+          "text": "阳",
+          "start": 9.92,
+          "end": 10.06,
+          "probability": 0.97900390625
+        },
+        {
+          "text": "光",
+          "start": 10.06,
+          "end": 10.22,
+          "probability": 1.0
+        }
+      ]
+    },
+    {
+      "start": 10.58,
+      "end": 12.24,
+      "text": "时间久了屋里阴暗潮湿",
+      "words": [
+        {
+          "text": "时间",
+          "start": 10.58,
+          "end": 10.9,
+          "probability": 0.85302734375
+        },
+        {
+          "text": "久",
+          "start": 10.9,
+          "end": 11.14,
+          "probability": 0.99658203125
+        },
+        {
+          "text": "了",
+          "start": 11.14,
+          "end": 11.28,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "屋",
+          "start": 11.28,
+          "end": 11.46,
+          "probability": 0.973388671875
+        },
+        {
+          "text": "里",
+          "start": 11.46,
+          "end": 11.6,
+          "probability": 0.98388671875
+        },
+        {
+          "text": "阴",
+          "start": 11.6,
+          "end": 11.74,
+          "probability": 0.95849609375
+        },
+        {
+          "text": "暗",
+          "start": 11.74,
+          "end": 11.86,
+          "probability": 0.998046875
+        },
+        {
+          "text": "潮",
+          "start": 11.86,
+          "end": 12.04,
+          "probability": 0.986328125
+        },
+        {
+          "text": "湿",
+          "start": 12.04,
+          "end": 12.24,
+          "probability": 0.966064453125
+        }
+      ]
+    },
+    {
+      "start": 12.24,
+      "end": 13.18,
+      "text": "潮起虫虫",
+      "words": [
+        {
+          "text": "潮",
+          "start": 12.24,
+          "end": 12.64,
+          "probability": 0.979248046875
+        },
+        {
+          "text": "起",
+          "start": 12.64,
+          "end": 12.8,
+          "probability": 0.83984375
+        },
+        {
+          "text": "虫",
+          "start": 12.8,
+          "end": 12.96,
+          "probability": 0.620361328125
+        },
+        {
+          "text": "虫",
+          "start": 12.96,
+          "end": 13.18,
+          "probability": 0.9990234375
+        }
+      ]
+    },
+    {
+      "start": 13.18,
+      "end": 14.58,
+      "text": "住着又闷又压抑",
+      "words": [
+        {
+          "text": "住",
+          "start": 13.18,
+          "end": 13.54,
+          "probability": 0.86181640625
+        },
+        {
+          "text": "着",
+          "start": 13.54,
+          "end": 13.7,
+          "probability": 0.9853515625
+        },
+        {
+          "text": "又",
+          "start": 13.7,
+          "end": 13.86,
+          "probability": 0.9384765625
+        },
+        {
+          "text": "闷",
+          "start": 13.86,
+          "end": 14.06,
+          "probability": 0.968505859375
+        },
+        {
+          "text": "又",
+          "start": 14.06,
+          "end": 14.22,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "压",
+          "start": 14.22,
+          "end": 14.42,
+          "probability": 0.91064453125
+        },
+        {
+          "text": "抑",
+          "start": 14.42,
+          "end": 14.58,
+          "probability": 0.6597900390625
+        }
+      ]
+    },
+    {
+      "start": 14.58,
+      "end": 16.34,
+      "text": "其次是屋后不栽柳",
+      "words": [
+        {
+          "text": "其",
+          "start": 14.58,
+          "end": 15.12,
+          "probability": 0.99609375
+        },
+        {
+          "text": "次",
+          "start": 15.12,
+          "end": 15.26,
+          "probability": 0.9931640625
+        },
+        {
+          "text": "是",
+          "start": 15.26,
+          "end": 15.44,
+          "probability": 0.9951171875
+        },
+        {
+          "text": "屋",
+          "start": 15.44,
+          "end": 15.68,
+          "probability": 0.992919921875
+        },
+        {
+          "text": "后",
+          "start": 15.68,
+          "end": 15.86,
+          "probability": 0.994140625
+        },
+        {
+          "text": "不",
+          "start": 15.86,
+          "end": 16.02,
+          "probability": 1.0
+        },
+        {
+          "text": "栽",
+          "start": 16.02,
+          "end": 16.12,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "柳",
+          "start": 16.12,
+          "end": 16.34,
+          "probability": 0.825439453125
+        }
+      ]
+    },
+    {
+      "start": 16.34,
+      "end": 17.44,
+      "text": "柳树根系前",
+      "words": [
+        {
+          "text": "柳",
+          "start": 16.34,
+          "end": 16.76,
+          "probability": 0.98974609375
+        },
+        {
+          "text": "树",
+          "start": 16.76,
+          "end": 16.92,
+          "probability": 0.989990234375
+        },
+        {
+          "text": "根",
+          "start": 16.92,
+          "end": 17.06,
+          "probability": 0.84423828125
+        },
+        {
+          "text": "系",
+          "start": 17.06,
+          "end": 17.2,
+          "probability": 0.6982421875
+        },
+        {
+          "text": "前",
+          "start": 17.2,
+          "end": 17.44,
+          "probability": 0.8486328125
+        }
+      ]
+    },
+    {
+      "start": 17.44,
+      "end": 18.62,
+      "text": "蔓延能力极强",
+      "words": [
+        {
+          "text": "蔓",
+          "start": 17.44,
+          "end": 17.76,
+          "probability": 0.95263671875
+        },
+        {
+          "text": "延",
+          "start": 17.76,
+          "end": 17.92,
+          "probability": 0.983154296875
+        },
+        {
+          "text": "能",
+          "start": 17.92,
+          "end": 18.06,
+          "probability": 0.998046875
+        },
+        {
+          "text": "力",
+          "start": 18.06,
+          "end": 18.24,
+          "probability": 0.9853515625
+        },
+        {
+          "text": "极",
+          "start": 18.24,
+          "end": 18.38,
+          "probability": 0.95947265625
+        },
+        {
+          "text": "强",
+          "start": 18.38,
+          "end": 18.62,
+          "probability": 0.995849609375
+        }
+      ]
+    },
+    {
+      "start": 18.62,
+      "end": 19.82,
+      "text": "紧贴房屋栽重",
+      "words": [
+        {
+          "text": "紧",
+          "start": 18.62,
+          "end": 19.18,
+          "probability": 0.6270751953125
+        },
+        {
+          "text": "贴",
+          "start": 19.18,
+          "end": 19.32,
+          "probability": 0.945556640625
+        },
+        {
+          "text": "房",
+          "start": 19.32,
+          "end": 19.46,
+          "probability": 0.94287109375
+        },
+        {
+          "text": "屋",
+          "start": 19.46,
+          "end": 19.56,
+          "probability": 0.997314453125
+        },
+        {
+          "text": "栽",
+          "start": 19.56,
+          "end": 19.68,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "重",
+          "start": 19.68,
+          "end": 19.82,
+          "probability": 0.269775390625
+        }
+      ]
+    },
+    {
+      "start": 19.82,
+      "end": 21.08,
+      "text": "根系汇不断蔓延",
+      "words": [
+        {
+          "text": "根",
+          "start": 19.82,
+          "end": 20.14,
+          "probability": 0.9619140625
+        },
+        {
+          "text": "系",
+          "start": 20.14,
+          "end": 20.3,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "汇",
+          "start": 20.3,
+          "end": 20.46,
+          "probability": 0.756591796875
+        },
+        {
+          "text": "不",
+          "start": 20.46,
+          "end": 20.62,
+          "probability": 0.970703125
+        },
+        {
+          "text": "断",
+          "start": 20.62,
+          "end": 20.7,
+          "probability": 0.999755859375
+        },
+        {
+          "text": "蔓",
+          "start": 20.7,
+          "end": 20.88,
+          "probability": 1.0
+        },
+        {
+          "text": "延",
+          "start": 20.88,
+          "end": 21.08,
+          "probability": 0.999755859375
+        }
+      ]
+    },
+    {
+      "start": 21.08,
+      "end": 21.86,
+      "text": "肯市地基",
+      "words": [
+        {
+          "text": "肯",
+          "start": 21.08,
+          "end": 21.4,
+          "probability": 0.6556396484375
+        },
+        {
+          "text": "市",
+          "start": 21.4,
+          "end": 21.56,
+          "probability": 0.1783447265625
+        },
+        {
+          "text": "地",
+          "start": 21.56,
+          "end": 21.68,
+          "probability": 0.880859375
+        },
+        {
+          "text": "基",
+          "start": 21.68,
+          "end": 21.86,
+          "probability": 0.5849609375
+        }
+      ]
+    },
+    {
+      "start": 21.86,
+      "end": 23.58,
+      "text": "悄悄埋下房屋安全隐患",
+      "words": [
+        {
+          "text": "悄",
+          "start": 21.86,
+          "end": 22.2,
+          "probability": 0.92041015625
+        },
+        {
+          "text": "悄",
+          "start": 22.2,
+          "end": 22.32,
+          "probability": 0.9951171875
+        },
+        {
+          "text": "埋",
+          "start": 22.32,
+          "end": 22.48,
+          "probability": 0.8115234375
+        },
+        {
+          "text": "下",
+          "start": 22.48,
+          "end": 22.64,
+          "probability": 0.98486328125
+        },
+        {
+          "text": "房",
+          "start": 22.64,
+          "end": 22.82,
+          "probability": 0.99072265625
+        },
+        {
+          "text": "屋",
+          "start": 22.82,
+          "end": 22.94,
+          "probability": 0.999755859375
+        },
+        {
+          "text": "安全",
+          "start": 22.94,
+          "end": 23.24,
+          "probability": 0.99609375
+        },
+        {
+          "text": "隐",
+          "start": 23.24,
+          "end": 23.44,
+          "probability": 0.94970703125
+        },
+        {
+          "text": "患",
+          "start": 23.44,
+          "end": 23.58,
+          "probability": 0.783447265625
+        }
+      ]
+    },
+    {
+      "start": 23.58,
+      "end": 25.3,
+      "text": "最后院中不栽阳树",
+      "words": [
+        {
+          "text": "最",
+          "start": 23.58,
+          "end": 24.12,
+          "probability": 0.9580078125
+        },
+        {
+          "text": "后",
+          "start": 24.12,
+          "end": 24.28,
+          "probability": 1.0
+        },
+        {
+          "text": "院",
+          "start": 24.28,
+          "end": 24.44,
+          "probability": 0.9951171875
+        },
+        {
+          "text": "中",
+          "start": 24.44,
+          "end": 24.62,
+          "probability": 0.99072265625
+        },
+        {
+          "text": "不",
+          "start": 24.62,
+          "end": 24.86,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "栽",
+          "start": 24.86,
+          "end": 24.96,
+          "probability": 0.999755859375
+        },
+        {
+          "text": "阳",
+          "start": 24.96,
+          "end": 25.14,
+          "probability": 0.875
+        },
+        {
+          "text": "树",
+          "start": 25.14,
+          "end": 25.3,
+          "probability": 0.994384765625
+        }
+      ]
+    },
+    {
+      "start": 25.3,
+      "end": 27.04,
+      "text": "阳树叶田宽大厚实",
+      "words": [
+        {
+          "text": "阳",
+          "start": 25.3,
+          "end": 25.9,
+          "probability": 0.49919891357421875
+        },
+        {
+          "text": "树",
+          "start": 25.9,
+          "end": 26.04,
+          "probability": 0.70947265625
+        },
+        {
+          "text": "叶",
+          "start": 26.04,
+          "end": 26.18,
+          "probability": 0.899169921875
+        },
+        {
+          "text": "田",
+          "start": 26.18,
+          "end": 26.36,
+          "probability": 0.59912109375
+        },
+        {
+          "text": "宽",
+          "start": 26.36,
+          "end": 26.54,
+          "probability": 0.982177734375
+        },
+        {
+          "text": "大",
+          "start": 26.54,
+          "end": 26.72,
+          "probability": 0.98193359375
+        },
+        {
+          "text": "厚",
+          "start": 26.72,
+          "end": 26.9,
+          "probability": 0.763671875
+        },
+        {
+          "text": "实",
+          "start": 26.9,
+          "end": 27.04,
+          "probability": 0.6181640625
+        }
+      ]
+    },
+    {
+      "start": 27.04,
+      "end": 28.38,
+      "text": "哪怕是微风浮过",
+      "words": [
+        {
+          "text": "哪",
+          "start": 27.04,
+          "end": 27.44,
+          "probability": 0.94189453125
+        },
+        {
+          "text": "怕",
+          "start": 27.44,
+          "end": 27.62,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "是",
+          "start": 27.62,
+          "end": 27.76,
+          "probability": 0.99560546875
+        },
+        {
+          "text": "微",
+          "start": 27.76,
+          "end": 27.9,
+          "probability": 0.87548828125
+        },
+        {
+          "text": "风",
+          "start": 27.9,
+          "end": 28.04,
+          "probability": 0.939453125
+        },
+        {
+          "text": "浮",
+          "start": 28.04,
+          "end": 28.2,
+          "probability": 0.860107421875
+        },
+        {
+          "text": "过",
+          "start": 28.2,
+          "end": 28.38,
+          "probability": 0.9658203125
+        }
+      ]
+    },
+    {
+      "start": 28.38,
+      "end": 30.22,
+      "text": "也会发出花辣辣的拍手声响",
+      "words": [
+        {
+          "text": "也",
+          "start": 28.38,
+          "end": 28.66,
+          "probability": 0.94775390625
+        },
+        {
+          "text": "会",
+          "start": 28.66,
+          "end": 28.82,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "发",
+          "start": 28.82,
+          "end": 28.96,
+          "probability": 0.9814453125
+        },
+        {
+          "text": "出",
+          "start": 28.96,
+          "end": 29.12,
+          "probability": 0.998046875
+        },
+        {
+          "text": "花",
+          "start": 29.12,
+          "end": 29.32,
+          "probability": 0.55126953125
+        },
+        {
+          "text": "辣",
+          "start": 29.32,
+          "end": 29.42,
+          "probability": 0.6358642578125
+        },
+        {
+          "text": "辣",
+          "start": 29.42,
+          "end": 29.52,
+          "probability": 0.99658203125
+        },
+        {
+          "text": "的",
+          "start": 29.52,
+          "end": 29.62,
+          "probability": 0.91650390625
+        },
+        {
+          "text": "拍",
+          "start": 29.62,
+          "end": 29.76,
+          "probability": 0.8955078125
+        },
+        {
+          "text": "手",
+          "start": 29.76,
+          "end": 29.92,
+          "probability": 0.98095703125
+        },
+        {
+          "text": "声",
+          "start": 29.92,
+          "end": 30.06,
+          "probability": 0.970703125
+        },
+        {
+          "text": "响",
+          "start": 30.06,
+          "end": 30.22,
+          "probability": 0.884521484375
+        }
+      ]
+    },
+    {
+      "start": 30.22,
+      "end": 31.96,
+      "text": "夜深人静时格外刺耳",
+      "words": [
+        {
+          "text": "夜",
+          "start": 30.22,
+          "end": 30.76,
+          "probability": 0.37744140625
+        },
+        {
+          "text": "深",
+          "start": 30.76,
+          "end": 30.88,
+          "probability": 0.97607421875
+        },
+        {
+          "text": "人",
+          "start": 30.88,
+          "end": 31.04,
+          "probability": 0.953125
+        },
+        {
+          "text": "静",
+          "start": 31.04,
+          "end": 31.16,
+          "probability": 0.955078125
+        },
+        {
+          "text": "时",
+          "start": 31.16,
+          "end": 31.34,
+          "probability": 0.98681640625
+        },
+        {
+          "text": "格",
+          "start": 31.34,
+          "end": 31.54,
+          "probability": 0.935546875
+        },
+        {
+          "text": "外",
+          "start": 31.54,
+          "end": 31.68,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "刺",
+          "start": 31.68,
+          "end": 31.84,
+          "probability": 0.55682373046875
+        },
+        {
+          "text": "耳",
+          "start": 31.84,
+          "end": 31.96,
+          "probability": 0.963623046875
+        }
+      ]
+    },
+    {
+      "start": 31.96,
+      "end": 33.56,
+      "text": "严重影响日常休息",
+      "words": [
+        {
+          "text": "严",
+          "start": 31.96,
+          "end": 32.34,
+          "probability": 0.974609375
+        },
+        {
+          "text": "重",
+          "start": 32.34,
+          "end": 32.5,
+          "probability": 0.912109375
+        },
+        {
+          "text": "影",
+          "start": 32.5,
+          "end": 32.68,
+          "probability": 0.9931640625
+        },
+        {
+          "text": "响",
+          "start": 32.68,
+          "end": 32.84,
+          "probability": 0.999755859375
+        },
+        {
+          "text": "日",
+          "start": 32.84,
+          "end": 33.04,
+          "probability": 0.71728515625
+        },
+        {
+          "text": "常",
+          "start": 33.04,
+          "end": 33.22,
+          "probability": 0.99365234375
+        },
+        {
+          "text": "休",
+          "start": 33.22,
+          "end": 33.38,
+          "probability": 0.98828125
+        },
+        {
+          "text": "息",
+          "start": 33.38,
+          "end": 33.56,
+          "probability": 0.50537109375
+        }
+      ]
+    },
+    {
+      "start": 33.56,
+      "end": 35.12,
+      "text": "避开这些众树雷区",
+      "words": [
+        {
+          "text": "避",
+          "start": 33.56,
+          "end": 34.08,
+          "probability": 0.8779296875
+        },
+        {
+          "text": "开",
+          "start": 34.08,
+          "end": 34.24,
+          "probability": 0.9892578125
+        },
+        {
+          "text": "这",
+          "start": 34.24,
+          "end": 34.38,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "些",
+          "start": 34.38,
+          "end": 34.52,
+          "probability": 1.0
+        },
+        {
+          "text": "众",
+          "start": 34.52,
+          "end": 34.68,
+          "probability": 0.68115234375
+        },
+        {
+          "text": "树",
+          "start": 34.68,
+          "end": 34.8,
+          "probability": 0.870849609375
+        },
+        {
+          "text": "雷",
+          "start": 34.8,
+          "end": 34.92,
+          "probability": 0.95263671875
+        },
+        {
+          "text": "区",
+          "start": 34.92,
+          "end": 35.12,
+          "probability": 0.9599609375
+        }
+      ]
+    },
+    {
+      "start": 35.12,
+      "end": 37.58,
+      "text": "选对绿植就能为家宅天赐天运",
+      "words": [
+        {
+          "text": "选",
+          "start": 35.12,
+          "end": 35.54,
+          "probability": 0.989990234375
+        },
+        {
+          "text": "对",
+          "start": 35.54,
+          "end": 35.66,
+          "probability": 0.98828125
+        },
+        {
+          "text": "绿",
+          "start": 35.66,
+          "end": 35.84,
+          "probability": 0.986083984375
+        },
+        {
+          "text": "植",
+          "start": 35.84,
+          "end": 36.0,
+          "probability": 0.921875
+        },
+        {
+          "text": "就",
+          "start": 36.0,
+          "end": 36.32,
+          "probability": 0.986328125
+        },
+        {
+          "text": "能",
+          "start": 36.32,
+          "end": 36.42,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "为",
+          "start": 36.42,
+          "end": 36.54,
+          "probability": 0.63916015625
+        },
+        {
+          "text": "家",
+          "start": 36.54,
+          "end": 36.76,
+          "probability": 0.98876953125
+        },
+        {
+          "text": "宅",
+          "start": 36.76,
+          "end": 36.9,
+          "probability": 0.984619140625
+        },
+        {
+          "text": "天",
+          "start": 36.9,
+          "end": 37.14,
+          "probability": 0.87744140625
+        },
+        {
+          "text": "赐",
+          "start": 37.14,
+          "end": 37.28,
+          "probability": 0.761474609375
+        },
+        {
+          "text": "天",
+          "start": 37.28,
+          "end": 37.44,
+          "probability": 0.96630859375
+        },
+        {
+          "text": "运",
+          "start": 37.44,
+          "end": 37.58,
+          "probability": 0.84130859375
+        }
+      ]
+    },
+    {
+      "start": 37.58,
+      "end": 39.18,
+      "text": "庭院里栽种金柜",
+      "words": [
+        {
+          "text": "庭",
+          "start": 37.58,
+          "end": 38.14,
+          "probability": 0.954833984375
+        },
+        {
+          "text": "院",
+          "start": 38.14,
+          "end": 38.3,
+          "probability": 0.98291015625
+        },
+        {
+          "text": "里",
+          "start": 38.3,
+          "end": 38.44,
+          "probability": 0.99267578125
+        },
+        {
+          "text": "栽",
+          "start": 38.44,
+          "end": 38.6,
+          "probability": 0.9814453125
+        },
+        {
+          "text": "种",
+          "start": 38.6,
+          "end": 38.78,
+          "probability": 0.97021484375
+        },
+        {
+          "text": "金",
+          "start": 38.78,
+          "end": 38.98,
+          "probability": 0.419921875
+        },
+        {
+          "text": "柜",
+          "start": 38.98,
+          "end": 39.18,
+          "probability": 0.75927734375
+        }
+      ]
+    },
+    {
+      "start": 39.18,
+      "end": 39.76,
+      "text": "玉兰",
+      "words": [
+        {
+          "text": "玉",
+          "start": 39.18,
+          "end": 39.6,
+          "probability": 0.6558837890625
+        },
+        {
+          "text": "兰",
+          "start": 39.6,
+          "end": 39.76,
+          "probability": 0.978759765625
+        }
+      ]
+    },
+    {
+      "start": 39.76,
+      "end": 40.34,
+      "text": "石柳",
+      "words": [
+        {
+          "text": "石",
+          "start": 39.76,
+          "end": 40.2,
+          "probability": 0.61962890625
+        },
+        {
+          "text": "柳",
+          "start": 40.2,
+          "end": 40.34,
+          "probability": 0.917236328125
+        }
+      ]
+    },
+    {
+      "start": 40.34,
+      "end": 41.56,
+      "text": "海棠四种花木",
+      "words": [
+        {
+          "text": "海",
+          "start": 40.34,
+          "end": 40.72,
+          "probability": 0.85498046875
+        },
+        {
+          "text": "棠",
+          "start": 40.72,
+          "end": 40.9,
+          "probability": 0.822998046875
+        },
+        {
+          "text": "四",
+          "start": 40.9,
+          "end": 41.1,
+          "probability": 0.91943359375
+        },
+        {
+          "text": "种",
+          "start": 41.1,
+          "end": 41.24,
+          "probability": 0.9931640625
+        },
+        {
+          "text": "花",
+          "start": 41.24,
+          "end": 41.42,
+          "probability": 0.72119140625
+        },
+        {
+          "text": "木",
+          "start": 41.42,
+          "end": 41.56,
+          "probability": 0.97119140625
+        }
+      ]
+    },
+    {
+      "start": 41.56,
+      "end": 43.88,
+      "text": "刚好凑出寓意绝佳的金玉满汤",
+      "words": [
+        {
+          "text": "刚",
+          "start": 41.56,
+          "end": 42.08,
+          "probability": 0.96875
+        },
+        {
+          "text": "好",
+          "start": 42.08,
+          "end": 42.28,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "凑",
+          "start": 42.28,
+          "end": 42.42,
+          "probability": 0.9931640625
+        },
+        {
+          "text": "出",
+          "start": 42.42,
+          "end": 42.62,
+          "probability": 0.990234375
+        },
+        {
+          "text": "寓",
+          "start": 42.62,
+          "end": 42.76,
+          "probability": 0.6380615234375
+        },
+        {
+          "text": "意",
+          "start": 42.76,
+          "end": 42.84,
+          "probability": 0.927734375
+        },
+        {
+          "text": "绝",
+          "start": 42.84,
+          "end": 42.98,
+          "probability": 0.976318359375
+        },
+        {
+          "text": "佳",
+          "start": 42.98,
+          "end": 43.16,
+          "probability": 0.97900390625
+        },
+        {
+          "text": "的",
+          "start": 43.16,
+          "end": 43.28,
+          "probability": 0.99462890625
+        },
+        {
+          "text": "金",
+          "start": 43.28,
+          "end": 43.44,
+          "probability": 0.93798828125
+        },
+        {
+          "text": "玉",
+          "start": 43.44,
+          "end": 43.54,
+          "probability": 0.91162109375
+        },
+        {
+          "text": "满",
+          "start": 43.54,
+          "end": 43.66,
+          "probability": 0.864990234375
+        },
+        {
+          "text": "汤",
+          "start": 43.66,
+          "end": 43.88,
+          "probability": 0.863037109375
+        }
+      ]
+    },
+    {
+      "start": 43.88,
+      "end": 45.72,
+      "text": "象征合家赋贵顺岁",
+      "words": [
+        {
+          "text": "象",
+          "start": 43.88,
+          "end": 44.52,
+          "probability": 0.97216796875
+        },
+        {
+          "text": "征",
+          "start": 44.52,
+          "end": 44.68,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "合",
+          "start": 44.68,
+          "end": 44.84,
+          "probability": 0.220458984375
+        },
+        {
+          "text": "家",
+          "start": 44.84,
+          "end": 44.98,
+          "probability": 0.90771484375
+        },
+        {
+          "text": "赋",
+          "start": 44.98,
+          "end": 45.16,
+          "probability": 0.6356201171875
+        },
+        {
+          "text": "贵",
+          "start": 45.16,
+          "end": 45.32,
+          "probability": 0.6669921875
+        },
+        {
+          "text": "顺",
+          "start": 45.32,
+          "end": 45.5,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "岁",
+          "start": 45.5,
+          "end": 45.72,
+          "probability": 0.694091796875
+        }
+      ]
+    },
+    {
+      "start": 45.72,
+      "end": 46.8,
+      "text": "才愿兴望",
+      "words": [
+        {
+          "text": "才",
+          "start": 45.72,
+          "end": 46.24,
+          "probability": 0.162841796875
+        },
+        {
+          "text": "愿",
+          "start": 46.24,
+          "end": 46.44,
+          "probability": 0.581298828125
+        },
+        {
+          "text": "兴",
+          "start": 46.44,
+          "end": 46.6,
+          "probability": 0.790771484375
+        },
+        {
+          "text": "望",
+          "start": 46.6,
+          "end": 46.8,
+          "probability": 0.10577392578125
+        }
+      ]
+    },
+    {
+      "start": 46.8,
+      "end": 48.62,
+      "text": "其中石柳果实饱满",
+      "words": [
+        {
+          "text": "其",
+          "start": 46.8,
+          "end": 47.32,
+          "probability": 0.97900390625
+        },
+        {
+          "text": "中",
+          "start": 47.32,
+          "end": 47.48,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "石",
+          "start": 47.48,
+          "end": 47.82,
+          "probability": 0.9677734375
+        },
+        {
+          "text": "柳",
+          "start": 47.82,
+          "end": 47.96,
+          "probability": 0.996826171875
+        },
+        {
+          "text": "果",
+          "start": 47.96,
+          "end": 48.14,
+          "probability": 0.9609375
+        },
+        {
+          "text": "实",
+          "start": 48.14,
+          "end": 48.28,
+          "probability": 0.83447265625
+        },
+        {
+          "text": "饱",
+          "start": 48.28,
+          "end": 48.44,
+          "probability": 0.88427734375
+        },
+        {
+          "text": "满",
+          "start": 48.44,
+          "end": 48.62,
+          "probability": 0.9990234375
+        }
+      ]
+    },
+    {
+      "start": 48.62,
+      "end": 49.5,
+      "text": "紫多饱满",
+      "words": [
+        {
+          "text": "紫",
+          "start": 48.62,
+          "end": 49.0,
+          "probability": 0.818603515625
+        },
+        {
+          "text": "多",
+          "start": 49.0,
+          "end": 49.14,
+          "probability": 0.87744140625
+        },
+        {
+          "text": "饱",
+          "start": 49.14,
+          "end": 49.3,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "满",
+          "start": 49.3,
+          "end": 49.5,
+          "probability": 1.0
+        }
+      ]
+    },
+    {
+      "start": 49.5,
+      "end": 50.92,
+      "text": "更是自带多子多福",
+      "words": [
+        {
+          "text": "更",
+          "start": 49.5,
+          "end": 49.8,
+          "probability": 0.99609375
+        },
+        {
+          "text": "是",
+          "start": 49.8,
+          "end": 50.0,
+          "probability": 0.99560546875
+        },
+        {
+          "text": "自",
+          "start": 50.0,
+          "end": 50.14,
+          "probability": 0.984375
+        },
+        {
+          "text": "带",
+          "start": 50.14,
+          "end": 50.28,
+          "probability": 0.971435546875
+        },
+        {
+          "text": "多",
+          "start": 50.28,
+          "end": 50.48,
+          "probability": 0.947265625
+        },
+        {
+          "text": "子",
+          "start": 50.48,
+          "end": 50.62,
+          "probability": 0.3955078125
+        },
+        {
+          "text": "多",
+          "start": 50.62,
+          "end": 50.76,
+          "probability": 0.9638671875
+        },
+        {
+          "text": "福",
+          "start": 50.76,
+          "end": 50.92,
+          "probability": 0.900390625
+        }
+      ]
+    },
+    {
+      "start": 50.92,
+      "end": 52.6,
+      "text": "人丁欣望的美好彩头",
+      "words": [
+        {
+          "text": "人",
+          "start": 50.92,
+          "end": 51.24,
+          "probability": 0.494140625
+        },
+        {
+          "text": "丁",
+          "start": 51.24,
+          "end": 51.42,
+          "probability": 0.7021484375
+        },
+        {
+          "text": "欣",
+          "start": 51.42,
+          "end": 51.62,
+          "probability": 0.6522216796875
+        },
+        {
+          "text": "望",
+          "start": 51.62,
+          "end": 51.76,
+          "probability": 0.89013671875
+        },
+        {
+          "text": "的",
+          "start": 51.76,
+          "end": 51.88,
+          "probability": 0.72314453125
+        },
+        {
+          "text": "美",
+          "start": 51.88,
+          "end": 52.06,
+          "probability": 0.9892578125
+        },
+        {
+          "text": "好",
+          "start": 52.06,
+          "end": 52.2,
+          "probability": 0.99267578125
+        },
+        {
+          "text": "彩",
+          "start": 52.2,
+          "end": 52.38,
+          "probability": 0.9931640625
+        },
+        {
+          "text": "头",
+          "start": 52.38,
+          "end": 52.6,
+          "probability": 0.5869140625
+        }
+      ]
+    },
+    {
+      "start": 52.6,
+      "end": 53.46,
+      "text": "除此之外",
+      "words": [
+        {
+          "text": "除",
+          "start": 52.6,
+          "end": 53.12,
+          "probability": 0.91552734375
+        },
+        {
+          "text": "此",
+          "start": 53.12,
+          "end": 53.24,
+          "probability": 1.0
+        },
+        {
+          "text": "之",
+          "start": 53.24,
+          "end": 53.34,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "外",
+          "start": 53.34,
+          "end": 53.46,
+          "probability": 0.99951171875
+        }
+      ]
+    },
+    {
+      "start": 53.46,
+      "end": 54.82,
+      "text": "在院前左右两侧",
+      "words": [
+        {
+          "text": "在",
+          "start": 53.46,
+          "end": 53.8,
+          "probability": 0.89892578125
+        },
+        {
+          "text": "院",
+          "start": 53.8,
+          "end": 53.96,
+          "probability": 0.9453125
+        },
+        {
+          "text": "前",
+          "start": 53.96,
+          "end": 54.16,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "左右",
+          "start": 54.16,
+          "end": 54.34,
+          "probability": 0.99658203125
+        },
+        {
+          "text": "两",
+          "start": 54.34,
+          "end": 54.6,
+          "probability": 0.97802734375
+        },
+        {
+          "text": "侧",
+          "start": 54.6,
+          "end": 54.82,
+          "probability": 0.983642578125
+        }
+      ]
+    },
+    {
+      "start": 54.82,
+      "end": 56.36,
+      "text": "各种一棵桂花树",
+      "words": [
+        {
+          "text": "各",
+          "start": 54.82,
+          "end": 55.06,
+          "probability": 0.99609375
+        },
+        {
+          "text": "种",
+          "start": 55.06,
+          "end": 55.24,
+          "probability": 0.98583984375
+        },
+        {
+          "text": "一",
+          "start": 55.24,
+          "end": 55.38,
+          "probability": 0.97119140625
+        },
+        {
+          "text": "棵",
+          "start": 55.38,
+          "end": 55.52,
+          "probability": 0.697998046875
+        },
+        {
+          "text": "桂",
+          "start": 55.52,
+          "end": 55.66,
+          "probability": 0.968994140625
+        },
+        {
+          "text": "花",
+          "start": 55.66,
+          "end": 55.84,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "树",
+          "start": 55.84,
+          "end": 56.36,
+          "probability": 0.984375
+        }
+      ]
+    },
+    {
+      "start": 56.36,
+      "end": 57.78,
+      "text": "便是经典的双桂流芳",
+      "words": [
+        {
+          "text": "便",
+          "start": 56.36,
+          "end": 56.5,
+          "probability": 0.98046875
+        },
+        {
+          "text": "是",
+          "start": 56.5,
+          "end": 56.64,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "经",
+          "start": 56.64,
+          "end": 56.78,
+          "probability": 0.947265625
+        },
+        {
+          "text": "典",
+          "start": 56.78,
+          "end": 56.96,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "的",
+          "start": 56.96,
+          "end": 57.06,
+          "probability": 0.9814453125
+        },
+        {
+          "text": "双",
+          "start": 57.06,
+          "end": 57.22,
+          "probability": 0.998291015625
+        },
+        {
+          "text": "桂",
+          "start": 57.22,
+          "end": 57.38,
+          "probability": 0.829833984375
+        },
+        {
+          "text": "流",
+          "start": 57.38,
+          "end": 57.52,
+          "probability": 0.8076171875
+        },
+        {
+          "text": "芳",
+          "start": 57.52,
+          "end": 57.78,
+          "probability": 0.960693359375
+        }
+      ]
+    },
+    {
+      "start": 57.78,
+      "end": 59.82,
+      "text": "承载着家人对后代的欺寻",
+      "words": [
+        {
+          "text": "承",
+          "start": 57.78,
+          "end": 58.3,
+          "probability": 0.76171875
+        },
+        {
+          "text": "载",
+          "start": 58.3,
+          "end": 58.46,
+          "probability": 0.95458984375
+        },
+        {
+          "text": "着",
+          "start": 58.46,
+          "end": 58.54,
+          "probability": 0.98779296875
+        },
+        {
+          "text": "家",
+          "start": 58.54,
+          "end": 58.7,
+          "probability": 0.7802734375
+        },
+        {
+          "text": "人",
+          "start": 58.7,
+          "end": 58.86,
+          "probability": 1.0
+        },
+        {
+          "text": "对",
+          "start": 58.86,
+          "end": 58.98,
+          "probability": 0.99365234375
+        },
+        {
+          "text": "后",
+          "start": 58.98,
+          "end": 59.18,
+          "probability": 0.96240234375
+        },
+        {
+          "text": "代",
+          "start": 59.18,
+          "end": 59.34,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "的",
+          "start": 59.34,
+          "end": 59.44,
+          "probability": 0.99462890625
+        },
+        {
+          "text": "欺",
+          "start": 59.44,
+          "end": 59.62,
+          "probability": 0.6610107421875
+        },
+        {
+          "text": "寻",
+          "start": 59.62,
+          "end": 59.82,
+          "probability": 0.6756591796875
+        }
+      ]
+    },
+    {
+      "start": 59.82,
+      "end": 61.42,
+      "text": "义子孙金榜提名",
+      "words": [
+        {
+          "text": "义",
+          "start": 59.82,
+          "end": 60.24,
+          "probability": 0.560394287109375
+        },
+        {
+          "text": "子",
+          "start": 60.24,
+          "end": 60.48,
+          "probability": 0.90087890625
+        },
+        {
+          "text": "孙",
+          "start": 60.48,
+          "end": 60.68,
+          "probability": 0.996826171875
+        },
+        {
+          "text": "金",
+          "start": 60.68,
+          "end": 60.84,
+          "probability": 0.64990234375
+        },
+        {
+          "text": "榜",
+          "start": 60.84,
+          "end": 61.04,
+          "probability": 0.95263671875
+        },
+        {
+          "text": "提",
+          "start": 61.04,
+          "end": 61.2,
+          "probability": 0.927734375
+        },
+        {
+          "text": "名",
+          "start": 61.2,
+          "end": 61.42,
+          "probability": 0.9951171875
+        }
+      ]
+    },
+    {
+      "start": 61.42,
+      "end": 62.4,
+      "text": "前程四季",
+      "words": [
+        {
+          "text": "前",
+          "start": 61.42,
+          "end": 61.8,
+          "probability": 0.60107421875
+        },
+        {
+          "text": "程",
+          "start": 61.8,
+          "end": 62.06,
+          "probability": 0.94287109375
+        },
+        {
+          "text": "四",
+          "start": 62.06,
+          "end": 62.24,
+          "probability": 0.73486328125
+        },
+        {
+          "text": "季",
+          "start": 62.24,
+          "end": 62.4,
+          "probability": 0.67724609375
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,214 @@
+{
+  "version": 1,
+  "profileKey": "3900d60f771352a6f657681d4db92fb62b0c362ca2b0d1371a4374b1d75c161c",
+  "provider": "edge-tts",
+  "model": "edge-tts",
+  "voice": "zh-CN-XiaoxiaoNeural",
+  "locale": "zh-cn",
+  "metric": "estimated-spoken-units-per-second",
+  "featureVersion": "spoken-unit-proxy-v1",
+  "normalizerVersion": "nfc-nfkc-space-v1",
+  "status": "advisory",
+  "observationCount": 8,
+  "eligibleSampleCount": 8,
+  "uniqueTextSampleCount": 8,
+  "rateP10": 1.566,
+  "rateMedian": 2.206,
+  "rateP90": 2.739,
+  "uncertaintyReasons": [
+    "abbreviations",
+    "mixed-script"
+  ],
+  "updatedAtUtc": "2026-09-16T09:40:26.895Z",
+  "records": [
+    {
+      "version": 1,
+      "sampleId": "6c20a445-a9c3-4cba-a53e-41331cfb6e10",
+      "profileKey": "3900d60f771352a6f657681d4db92fb62b0c362ca2b0d1371a4374b1d75c161c",
+      "textHash": "a18c9f2cb0cf7f906f572fa6eff5f50de7fa74965c987b12268e1e2593e45d61",
+      "spokenUnitCount": 7,
+      "textFeatures": {
+        "graphemes": 12,
+        "words": 7,
+        "numerals": 0,
+        "abbreviations": 0,
+        "pauses": 2
+      },
+      "locale": "zh-cn",
+      "durationNaturalMs": 3048,
+      "durationSource": "probed-trimmed-audio",
+      "speed": 1,
+      "audioFingerprint": "a1f4250f684e8862d4741ee7df0121a083ce4c1eb8eac881dabee99566738f3e",
+      "origin": "voice-tab",
+      "cacheHit": false,
+      "uncertaintyReasons": [],
+      "measuredAtUtc": "2026-09-16T09:40:16.353Z"
+    },
+    {
+      "version": 1,
+      "sampleId": "78335df1-f10d-4308-9d75-844ccf83f2e6",
+      "profileKey": "3900d60f771352a6f657681d4db92fb62b0c362ca2b0d1371a4374b1d75c161c",
+      "textHash": "d2744d634627948d760c04dd70f566e685dbf0c60f2446fdae1a5c769037749a",
+      "spokenUnitCount": 5,
+      "textFeatures": {
+        "graphemes": 12,
+        "words": 5,
+        "numerals": 0,
+        "abbreviations": 0,
+        "pauses": 1
+      },
+      "locale": "zh-cn",
+      "durationNaturalMs": 3192,
+      "durationSource": "probed-trimmed-audio",
+      "speed": 1,
+      "audioFingerprint": "c01e6e8588e0687cfa2a51ee0749bb5c9cedf30ffe5d9c9512c566178ffe5a85",
+      "origin": "voice-tab",
+      "cacheHit": false,
+      "uncertaintyReasons": [],
+      "measuredAtUtc": "2026-09-16T09:40:17.937Z"
+    },
+    {
+      "version": 1,
+      "sampleId": "b68b7d3d-5204-4705-93c5-1f70a8e53969",
+      "profileKey": "3900d60f771352a6f657681d4db92fb62b0c362ca2b0d1371a4374b1d75c161c",
+      "textHash": "ad9b3dd206abe23efe6a51d5885a1daea2845d01b4be154f7857edb7bf0160b8",
+      "spokenUnitCount": 14,
+      "textFeatures": {
+        "graphemes": 23,
+        "words": 14,
+        "numerals": 0,
+        "abbreviations": 0,
+        "pauses": 2
+      },
+      "locale": "zh-cn",
+      "durationNaturalMs": 5112,
+      "durationSource": "probed-trimmed-audio",
+      "speed": 1,
+      "audioFingerprint": "433fe36886d44ab0c36282c0e18209fe19d47f496dcdb06e3ae3c991bfa1494d",
+      "origin": "voice-tab",
+      "cacheHit": false,
+      "uncertaintyReasons": [],
+      "measuredAtUtc": "2026-09-16T09:40:19.464Z"
+    },
+    {
+      "version": 1,
+      "sampleId": "840d7466-35c4-4ec9-9b31-b2bbc8ddb4c3",
+      "profileKey": "3900d60f771352a6f657681d4db92fb62b0c362ca2b0d1371a4374b1d75c161c",
+      "textHash": "40b52b3bced5aafcaf061ce2c5ae794f0409b308d14b5e72d720d6469d436f15",
+      "spokenUnitCount": 9,
+      "textFeatures": {
+        "graphemes": 18,
+        "words": 9,
+        "numerals": 0,
+        "abbreviations": 0,
+        "pauses": 2
+      },
+      "locale": "zh-cn",
+      "durationNaturalMs": 4080,
+      "durationSource": "probed-trimmed-audio",
+      "speed": 1,
+      "audioFingerprint": "d2353119c4a8fa6f864c80b09a907525e4b9676d0c98905bd4fdc08cd4d7280a",
+      "origin": "voice-tab",
+      "cacheHit": false,
+      "uncertaintyReasons": [],
+      "measuredAtUtc": "2026-09-16T09:40:20.912Z"
+    },
+    {
+      "version": 1,
+      "sampleId": "d8b1bf33-8ffa-4b2a-b8d4-460274e426b4",
+      "profileKey": "3900d60f771352a6f657681d4db92fb62b0c362ca2b0d1371a4374b1d75c161c",
+      "textHash": "de84ddba3da634bc6d8a78f8ca71d4d41186b4aeedbec57c14b9081c01cb88cd",
+      "spokenUnitCount": 9,
+      "textFeatures": {
+        "graphemes": 16,
+        "words": 9,
+        "numerals": 0,
+        "abbreviations": 0,
+        "pauses": 2
+      },
+      "locale": "zh-cn",
+      "durationNaturalMs": 3696,
+      "durationSource": "probed-trimmed-audio",
+      "speed": 1,
+      "audioFingerprint": "4c3d02c14dc6af8e08b98e16d7069dad148a39309d18f2f31a3d83741f0f37c9",
+      "origin": "voice-tab",
+      "cacheHit": false,
+      "uncertaintyReasons": [],
+      "measuredAtUtc": "2026-09-16T09:40:22.447Z"
+    },
+    {
+      "version": 1,
+      "sampleId": "78434e84-cba6-4ca1-8f2e-bd8e9ecf808e",
+      "profileKey": "3900d60f771352a6f657681d4db92fb62b0c362ca2b0d1371a4374b1d75c161c",
+      "textHash": "79437a771b75f1d948ecefb1683441827c21ff6080e4eb0145e032027e21ef9e",
+      "spokenUnitCount": 14,
+      "textFeatures": {
+        "graphemes": 24,
+        "words": 14,
+        "numerals": 0,
+        "abbreviations": 2,
+        "pauses": 2
+      },
+      "locale": "zh-cn",
+      "durationNaturalMs": 5232,
+      "durationSource": "probed-trimmed-audio",
+      "speed": 1,
+      "audioFingerprint": "10a548433af54778af6f84f41425afa965a173b802699f213edb66bb9ebe9c87",
+      "origin": "voice-tab",
+      "cacheHit": false,
+      "uncertaintyReasons": [
+        "abbreviations",
+        "mixed-script"
+      ],
+      "measuredAtUtc": "2026-09-16T09:40:24.127Z"
+    },
+    {
+      "version": 1,
+      "sampleId": "dc7f6cc7-d202-454a-a7c3-c7c37b9f2c81",
+      "profileKey": "3900d60f771352a6f657681d4db92fb62b0c362ca2b0d1371a4374b1d75c161c",
+      "textHash": "ae5078f7caf8e75c717cb0d586de5c2452bef2263289d6d630415ae588308335",
+      "spokenUnitCount": 9,
+      "textFeatures": {
+        "graphemes": 22,
+        "words": 9,
+        "numerals": 0,
+        "abbreviations": 0,
+        "pauses": 2
+      },
+      "locale": "zh-cn",
+      "durationNaturalMs": 4248,
+      "durationSource": "probed-trimmed-audio",
+      "speed": 1,
+      "audioFingerprint": "208461570d5f04f2babfafa17dadfeb9da6111a4fb2e0e036c98887dd1ecd124",
+      "origin": "voice-tab",
+      "cacheHit": false,
+      "uncertaintyReasons": [
+        "mixed-script"
+      ],
+      "measuredAtUtc": "2026-09-16T09:40:25.463Z"
+    },
+    {
+      "version": 1,
+      "sampleId": "ce11cd60-1d8e-4e75-be56-f8552c2f11b0",
+      "profileKey": "3900d60f771352a6f657681d4db92fb62b0c362ca2b0d1371a4374b1d75c161c",
+      "textHash": "aacfe313268ab8b489adc9849031cb81736efddb4aed85bcf82f5822eff8aeec",
+      "spokenUnitCount": 7,
+      "textFeatures": {
+        "graphemes": 14,
+        "words": 7,
+        "numerals": 0,
+        "abbreviations": 0,
+        "pauses": 1
+      },
+      "locale": "zh-cn",
+      "durationNaturalMs": 3552,
+      "durationSource": "probed-trimmed-audio",
+      "speed": 1,
+      "audioFingerprint": "90217bdb6a02303d415624c37cfe7ade3a9019a9b54cd75dd8c74e762d6e6a0c",
+      "origin": "voice-tab",
+      "cacheHit": false,
+      "uncertaintyReasons": [],
+      "measuredAtUtc": "2026-09-16T09:40:26.895Z"
+    }
+  ]
+}

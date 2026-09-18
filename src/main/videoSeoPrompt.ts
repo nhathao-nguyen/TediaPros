@@ -1,6 +1,6 @@
 import type { ResolvedVideoSeoConfig, VideoSeoOptions } from '../shared/types'
 
-export const VIDEO_SEO_PROMPT_VERSION = 'video-seo-short-v4'
+export const VIDEO_SEO_PROMPT_VERSION = 'video-seo-short-v5'
 
 const TITLE_STYLE: Record<VideoSeoOptions['titleStyle'], string> = {
   auto: 'Dùng sentence case theo quy ước bản địa; chỉ viết hoa tên riêng và những từ ngôn ngữ đó yêu cầu.',
@@ -87,13 +87,14 @@ export function buildVideoSeoSystemPrompt(config: ResolvedVideoSeoConfig): strin
     'Cảnh báo: không giấu điều kiện an toàn quan trọng để gây tò mò. Nguồn nhiều ý: chọn ý bao quát; không dựng danh sách “N điều” nếu nguồn không đủ mục.',
     'Không bắt mọi video thành câu hỏi và không lặp một công thức mở đầu.',
     '',
-    'TITLE',
-    'Chọn đúng một title cụ thể, tự nhiên, có chủ thể hoặc hiện tượng rõ ràng. Đưa thông tin phân biệt video lên sớm và không cố nhét tên kênh.',
-    'Với tiếng Việt và ngôn ngữ Latin, ưu tiên 35–65 ký tự khi diễn đạt tự nhiên; đây là mục tiêu mềm. Giới hạn cứng là 100 ký tự Unicode.',
+    'TITLE — NGẮN, GÂY TÒ MÒ, CLICKBAIT',
+    'Title phải cực ngắn, gây sốc nhẹ hoặc tạo khoảng trống tò mò (curiosity gap) khiến người lướt dừng lại.',
+    'Ưu tiên 20–40 ký tự Unicode; giới hạn cứng là 70 ký tự. Cắt mọi từ thừa, mệnh đề phụ và lời giải thích.',
+    'Kỹ thuật khuyến khích: câu hỏi tu từ ngắn, con số bất ngờ đặt đầu câu, tương phản nghịch lý, câu bỏ lửng hoặc dấu ?! cuối.',
+    'Ví dụ tốt: "30m dưới đất chỉ để đi vệ sinh?!", "Xe 10 tỷ mà không có cửa", "Ăn thử đồ hết hạn 20 năm".',
+    'Không bịa sự kiện, con số hoặc nhân vật không có trong nguồn. Thông tin gây sốc phải có cơ sở từ source_text.',
     TITLE_STYLE[seo.titleStyle],
-    'Không hashtag, emoji, ALL CAPS, nhiều dấu chấm than, danh sách, nhãn “Tiêu đề:” hoặc dấu nháy bao cả title.',
-    'Không dùng lời hứa rỗng như “Bạn sẽ không tin”, “Sốc”, “100% hiệu quả”, “viral” hoặc “bí mật bị che giấu” khi nguồn không chứng minh.',
-    'Có thể tạo tò mò bằng câu hỏi, tương phản hoặc tình huống thật; không dùng “thứ này”, “chuyện đó” khi có thể gọi đúng chủ thể.',
+    'Không hashtag, emoji, ALL CAPS toàn bộ, nhãn "Tiêu đề:" hoặc dấu nháy bao cả title. Cho phép tối đa 1 dấu chấm than hoặc chấm hỏi cuối.',
     '',
     'DESCRIPTION / CAPTION',
     'Description là một paragraph và đọc độc lập vẫn biết video nói về gì. Câu đầu mang chủ đề hoặc tình huống cụ thể.',
@@ -110,6 +111,15 @@ export function buildVideoSeoSystemPrompt(config: ResolvedVideoSeoConfig): strin
     'Không tự thêm #shorts, #fyp, #viral, #trending, tên nền tảng hoặc tên thị trường chỉ để tìm độ phủ.',
     'Hashtag bắt đầu bằng #, chỉ gồm chữ Unicode, số và dấu gạch dưới; không khoảng trắng, không trùng sau khi bỏ khác biệt hoa/thường.',
     '',
+    'THUMBNAIL TEXT — CHỮ GHI TRÊN ẢNH BÌA',
+    'thumbnailText là một câu cực ngắn (tối đa 40 ký tự Unicode) dùng để ghép chữ lớn lên ảnh bìa thumbnail.',
+    'Phải gây tò mò tức thì, viết kiểu clickbait Douyin/TikTok, khác hoàn toàn với title (không lặp nguyên title).',
+    'Ưu tiên 10–25 ký tự; giới hạn cứng là 40 ký tự. Cắt mọi từ thừa, giữ lại đúng ý gây sốc hoặc tò mò nhất.',
+    'Kỹ thuật: câu hỏi tu từ cực ngắn, số bất ngờ, tương phản nghịch lý, câu bỏ lửng "…", hoặc dấu ?! cuối.',
+    'Ví dụ: "Ăn thử đồ hết hạn 20 năm?!", "Xe 10 tỷ KHÔNG CỬA", "30m dưới đất chỉ để…".',
+    'Không hashtag, không emoji, không ALL CAPS toàn bộ. Không bịa sự kiện không có trong nguồn.',
+    'Nếu nội dung không phù hợp để tạo thumbnail text, trả chuỗi rỗng "".',
+    '',
     'LOCALE VÀ TÙY CHỌN BIÊN TẬP',
     languageRule(config.language),
     countryRule(seo.country),
@@ -119,7 +129,7 @@ export function buildVideoSeoSystemPrompt(config: ResolvedVideoSeoConfig): strin
     'Disclaimer, nếu có, nằm ở cuối cùng paragraph và được tính trong giới hạn description.',
     '',
     'ĐỊNH DẠNG VÀ TỰ KIỂM TRA',
-    'Trả đúng JSON với title:string, description:string, tags:string[] và hashtags:string[]. Không thêm platform, rationale, score, sources hoặc field khác.',
+    'Trả đúng JSON với title:string, description:string, tags:string[], hashtags:string[] và thumbnailText:string. Không thêm platform, rationale, score, sources hoặc field khác.',
     'Trước khi trả kết quả, tự kiểm tra độ trung thực, ngôn ngữ, độ dài, sự bổ sung giữa title và caption, trùng lặp tags/hashtags và schema. Không xuất bước tự kiểm tra.',
     'Trả JSON trần, không Markdown hoặc code fence. Không cắt ngang từ, số, tên hoặc câu để đạt giới hạn; viết lại cho gọn.'
   ].join('\n')

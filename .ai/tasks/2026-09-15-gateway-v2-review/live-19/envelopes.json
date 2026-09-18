@@ -1,0 +1,60 @@
+[
+  {
+    "status": 200,
+    "id": "chatcmpl-1789442022",
+    "model": "gemini-advanced",
+    "choices": [
+      {
+        "index": 0,
+        "message": {
+          "role": "assistant",
+          "content": "{\n  \"translations\": {\n    \"cue-0-0\": \"Một năm được trả 1,8 triệu tệ,\",\n    \"cue-1-1480\": \"nhưng đồng hành cùng bạn chỉ có sự cô đơn và vô số cá dưới biển.\",\n    \"cue-2-3680\": \"Ở đây, bất cứ thứ gì ném xuống,\",\n    \"cue-3-5600\": \"cũng sẽ bị bầy cá xúm lại tranh giành sạch sẽ trong tích tắc.\",\n    \"cue-4-7660\": \"Trên giàn khoan biệt lập với thế giới bên ngoài này,\",\n    \"cue-5-9600\": \"câu cá sẽ là thú vui duy nhất của bạn.\",\n    \"cue-6-11080\": \"Hoặc là cùng đồng nghiệp ném bắp cải hỏng xuống rồi ngẩn ngơ ngắm cá.\",\n    \"cue-7-13860\": \"Đặc biệt là khi đêm xuống,\",\n    \"cue-8-14940\": \"sự cô đơn vô tận sẽ bao trùm lấy bạn.\",\n    \"cue-9-16440\": \"Ngay cả quả táo ném đi cũng bị bóng tối nuốt chửng trong nháy mắt,\",\n    \"cue-10-18880\": \"khiến cảm giác cô đơn càng trở nên mãnh liệt.\",\n    \"cue-11-19980\": \"Nhưng bù lại thì mỗi ngày được phục vụ đến bốn bữa ăn,\",\n    \"cue-12-21660\": \"phòng gym và tiện ích giải trí không thiếu thứ gì.\",\n    \"cue-13-22940\": \"Thậm chí còn có phòng máy tính và quán bar mini.\",\n    \"cue-14-24780\": \"Trực thăng mỗi tháng chỉ đến một lần,\",\n    \"cue-15-26740\": \"đón bạn vào bờ nghỉ ngơi đúng bốn ngày.\",\n    \"cue-16-28260\": \"Rất nhiều người đã không thể trụ lại được.\",\n    \"cue-17-29480\": \"Chỉ khi thấy mười mấy vạn tệ chuyển vào tài khoản đúng hạn mỗi tháng,\",\n    \"cue-18-31500\": \"bạn mới cảm thấy vui vẻ hơn một chút.\"\n  }\n}"
+        },
+        "finish_reason": "stop"
+      }
+    ],
+    "gateway_metadata": {
+      "gateway_contract_version": 2,
+      "requested_model": "gemini-advanced",
+      "resolved_model": "gemini-advanced",
+      "observed_model": "3.1 Pro",
+      "observed_model_id": "e6fa609c3fa255c0",
+      "model_verification": "matched",
+      "route_fingerprint": "29ed9729dbdd53e76081fc89bd7f7991b6a6e2c770e964fd8fa2ceaa0c22c646",
+      "completion_state": "complete",
+      "completion_evidence": "observed-terminal-frame-v1",
+      "logical_request_id": "c797f600-065d-4eba-96ad-cd1bb6c99889",
+      "upstream_attempts": 1,
+      "usage_known": false
+    }
+  },
+  {
+    "status": 200,
+    "id": "chatcmpl-1789442055",
+    "model": "gemini-advanced",
+    "choices": [
+      {
+        "index": 0,
+        "message": {
+          "role": "assistant",
+          "content": "{\"translations\":{\"cue-0-0\":\"Một năm chỉ trả bạn 1,8 triệu tệ,\",\"cue-1-1480\":\"nhưng đồng hành cùng bạn chỉ có sự cô đơn và vô số cá.\",\"cue-2-3680\":\"Ở đây bất cứ thứ gì ném xuống,\",\"cue-3-5600\":\"cũng sẽ bị bầy cá xúm lại tranh giành sạch sẽ trong tích tắc.\",\"cue-4-7660\":\"Trên giàn khoan biệt lập với thế giới này,\",\"cue-5-9600\":\"câu cá sẽ là thú vui duy nhất của bạn.\",\"cue-6-11080\":\"Hoặc là cùng đồng nghiệp ném bắp cải hỏng xuống rồi ngẩn ngơ ngắm cá.\",\"cue-7-13860\":\"Đặc biệt là khi đêm xuống,\",\"cue-8-14940\":\"sự cô đơn vô tận sẽ bao trùm lấy bạn.\",\"cue-9-16440\":\"Ngay cả quả táo ném đi cũng bị bóng tối nuốt chửng trong nháy mắt,\",\"cue-10-18880\":\"khiến cảm giác cô đơn càng thêm mãnh liệt.\",\"cue-11-19980\":\"Được cái mỗi ngày đều phục vụ bốn bữa ăn,\",\"cue-12-21660\":\"thể thao giải trí không thiếu thứ gì.\",\"cue-13-22940\":\"Còn có cả phòng net và quán bar mini.\",\"cue-14-24780\":\"Trực thăng mỗi tháng chỉ đến một lần,\",\"cue-15-26740\":\"đón bạn vào bờ nghỉ ngơi đúng bốn ngày.\",\"cue-16-28260\":\"Rất nhiều người đã không thể trụ lại được.\",\"cue-17-29480\":\"Chỉ có mười mấy vạn tệ chuyển vào tài khoản đúng hạn mỗi tháng,\",\"cue-18-31500\":\"mới giúp bạn vui vẻ hơn đôi chút.\"}}"
+        },
+        "finish_reason": "stop"
+      }
+    ],
+    "gateway_metadata": {
+      "gateway_contract_version": 2,
+      "requested_model": "gemini-advanced",
+      "resolved_model": "gemini-advanced",
+      "observed_model": "3.1 Pro",
+      "observed_model_id": "e6fa609c3fa255c0",
+      "model_verification": "matched",
+      "route_fingerprint": "29ed9729dbdd53e76081fc89bd7f7991b6a6e2c770e964fd8fa2ceaa0c22c646",
+      "completion_state": "complete",
+      "completion_evidence": "observed-terminal-frame-v1",
+      "logical_request_id": "8ede1196-a18c-4558-b03e-961441759679",
+      "upstream_attempts": 1,
+      "usage_known": false
+    }
+  }
+]

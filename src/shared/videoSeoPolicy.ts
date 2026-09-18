@@ -15,6 +15,7 @@ export type ShortVideoSeoErrorCode =
   | 'too-many-tags'
   | 'too-many-hashtags'
   | 'inline-hashtag'
+  | 'thumbnail-text-too-long'
 
 export class ShortVideoSeoValidationError extends Error {
   constructor(public readonly code: ShortVideoSeoErrorCode, message: string) {
@@ -39,5 +40,8 @@ export function validateShortVideoSeoMetadata(
   if (metadata.hashtags.length > 3) throw new ShortVideoSeoValidationError('too-many-hashtags', 'Metadata video ngắn có quá 3 hashtags.')
   if (INLINE_HASHTAG.test(metadata.title) || INLINE_HASHTAG.test(metadata.description)) {
     throw new ShortVideoSeoValidationError('inline-hashtag', 'Title và description không được chứa hashtag.')
+  }
+  if (Array.from(metadata.thumbnailText).length > 40) {
+    throw new ShortVideoSeoValidationError('thumbnail-text-too-long', 'Thumbnail text dài quá 40 ký tự.')
   }
 }

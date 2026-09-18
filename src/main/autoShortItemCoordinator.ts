@@ -14,8 +14,10 @@ import type {
   AutoShortSeparationPreset,
   SeparatorProvider,
   BurnResult,
-  WhisperProgress
+  WhisperProgress,
+  VideoTitleConfig
 } from '../shared/types'
+import { generateVideoTitle } from './videoTitle'
 import type { TranslationAssessment, TranslationInput, TranslationItem, TranslationIssue } from '../shared/translation'
 import type { TranslationBudgetSnapshot } from './translation/budget'
 import { parseSrt, serializeSrt } from '../shared/subtitles'
@@ -47,7 +49,7 @@ import {
 } from './autoShortOcrCheckpoint'
 import type { AutoShortExecutionPolicy } from './autoShortExecutionPolicy'
 import { classifyAutoShortTtsRecovery } from './autoShortTtsRecovery'
-import { isPermanentGatewayError } from './geminiGateway'
+import { GEMINI_GATEWAY_PROMPT_VERSION, isPermanentGatewayError, isProviderThrottledError } from './geminiGateway'
 import {
   createOcrBlurAuditMetadata,
   createSubtitlePlacementAuditMetadata,
@@ -57,6 +59,7 @@ import { resolveAutoShortSubtitlePlacement } from '../shared/autoShortSubtitlePl
 import type { writeTimedOcrBlurMask, TimedOcrBlurMask } from './ocrMask'
 import {
   translateStrict,
+  loadAutoShortVoiceHint,
   synthesizeVoice,
   stitchAudioTimeline,
   preserveAutoShortArtifacts,
@@ -72,8 +75,10 @@ import {
   defaultAutoShortOcrRegion,
   AUTO_SHORT_CHECKPOINT_VERSION,
   type PreparedAutoShortSeparation,
-  type AutoShortArtifactEntry
+  type AutoShortArtifactEntry,
+  type AutoShortTtsJobAdapter
 } from './autoshort'
+import type { DubbingFeedbackJournal } from './dubbing/synthesis'
 import type { SeparatorProviderState } from './separation/pipeline'
 import { createAutoShortItemScope, type BranchOutcome } from './autoShortItemScope'
 import {
@@ -106,6 +111,7 @@ import type { CutExecutionPlan } from '../shared/autoShortCutPlan'
 import { semanticFrameEditDigest, semanticTemporalSourceDigest } from './autoShortCutIdentity'
 import { validatePreparedCut } from './autoShortCutValidation'
 import { findCutSeamCueIssues } from '../shared/autoShortCutCues'
+import { createAutoShortThumbnail } from './autoShortThumbnail'
 import { assessTranslationLanguage, normalizeTranslationLocale } from './translation/language'
 import { mapTranslationsStrict } from './translation/response'
 import { createInvalidSourceAssessment } from './translation/orchestrator'
@@ -130,12 +136,9 @@ function visualVideoDuration(meta: { giay: number; videoDurationSeconds?: number
     : meta.giay
 }
 
-/**
- * Merge a partial translation checkpoint with the canonical SRT emitted by
- * the translator.  A successful strict translation writes the complete cue
- * set, so checkpoint entries already present in that SRT must not be appended
- * a second time and fail the identity validator as duplicate IDs.
- */
+/** Convert the immutable local OCR timeline into compact evidence. The model
+ * receives detected text, timing, confidence, and display-space region, never
+ * an arbitrary screenshot or OCR sidecar path. */
 export function mergeRecoveredTranslationItems(
   reusablePartial: readonly TranslationItem[],
   translated: readonly TranslationItem[]
@@ -199,6 +202,30 @@ export interface AutoShortItemContext {
   policy?: AutoShortExecutionPolicy
   resourceManager?: AutoShortResourceManager
   artifactCache?: ArtifactCache
+  /** Active-job-only TTS retry state; never read from or written to a checkpoint. */
+  feedbackJournal: DubbingFeedbackJournal
+}
+
+/**
+ * Keep the coordinator-to-dubbing contract explicit. In particular, a retry
+ * must receive the same job journal and the stable queue-item identity rather
+ * than silently creating a fresh journal for every attempt.
+ */
+export function buildAutoShortTtsJobAdapter(input: Pick<AutoShortItemContext,
+  'jobId' | 'signal' | 'emit' | 'ttsCapabilities' | 'ttsCapabilitiesUrl' | 'artifactCache' | 'artifactDir' | 'feedbackJournal'
+> & { itemId: string; resourceManager?: AutoShortResourceManager }): AutoShortTtsJobAdapter {
+  return {
+    id: input.jobId,
+    controller: { signal: input.signal },
+    emit: input.emit,
+    ttsCapabilities: input.ttsCapabilities,
+    ttsCapabilitiesUrl: input.ttsCapabilitiesUrl,
+    resourceManager: input.resourceManager,
+    artifactCache: input.artifactCache,
+    feedbackJournal: input.feedbackJournal,
+    feedbackJournalItemId: input.itemId,
+    acceptedCueStoreDir: join(input.artifactDir, 'accepted-dubbing-audio')
+  }
 }
 
 function emitProgress(
@@ -294,7 +321,7 @@ function parseCachedSubtitleArtifact(
     'invalid-source', 'missing-id', 'duplicate-id', 'unknown-id', 'empty-text',
     'unparsed-content', 'truncated-output', 'protected-token-suspect',
     'language-suspect', 'unsupported-capability', 'budget-exhausted',
-    'no-progress', 'provider-auth', 'provider-transient', 'provider-protocol', 'cancelled'
+    'no-progress', 'provider-auth', 'provider-transient', 'provider-protocol', 'provider-throttled', 'cancelled'
   ])
   for (const value of assessment.issues) {
     if (!value || typeof value !== 'object' || Array.isArray(value)) return null
@@ -340,7 +367,8 @@ function buildTranslationInput(
   sourceCues: readonly SubtitleCue[],
   sourceLanguage: string,
   targetLocale: string,
-  mode: 'subtitle' | 'dubbing'
+  mode: 'subtitle' | 'dubbing',
+  sourceVideoDuration?: number
 ): TranslationInput {
   const cues = sourceCues.map((cue, index) => ({
     id: cue.id,
@@ -354,6 +382,7 @@ function buildTranslationInput(
     sourceLanguage: sourceLanguage.trim() || 'auto',
     targetLocale,
     mode,
+    ...(sourceVideoDuration !== undefined && Number.isFinite(sourceVideoDuration) && sourceVideoDuration > 0 ? { sourceVideoDuration } : {}),
     cues,
     contextBefore: [],
     contextAfter: [],
@@ -371,7 +400,7 @@ function translationModelIdentity(config: AutoShortConfig): { modelIdentity: str
   }
   if (config.translateProvider === 'gemini-gateway') {
     return {
-      modelIdentity: 'gemini-gateway:gemini-advanced:two-pass-v4',
+      modelIdentity: `gemini-gateway:gemini-advanced:${GEMINI_GATEWAY_PROMPT_VERSION}`,
       revisionKnown: false,
       profileId: sanitizeEndpointAlias(config.translateServerUrl) || 'gemini-gateway-default'
     }
@@ -579,6 +608,7 @@ export function createAutoShortItemProcessor(
           if (await fileExists(checkpointFile)) {
             await copyFile(checkpointFile, join(checkpointDir, 'checkpoint.previous.json')).catch(() => {})
           }
+          await rm(join(checkpointDir, 'gemini-gateway'), { recursive: true, force: true }).catch(() => {})
           await mkdir(checkpointDir, { recursive: true })
           checkpoint = {}
           detectedSourceLanguage = null
@@ -1127,7 +1157,7 @@ export function createAutoShortItemProcessor(
         const sourceLanguage = resolveTranslationSourceLanguage(config.whisperLanguage, detectedSourceLanguage)
         const targetLocale = normalizeTranslationLocale(config.translateTarget)
         const translationMode = config.ttsEnabled ? 'dubbing' : 'subtitle'
-        const translationInput = buildTranslationInput(sourceCues, sourceLanguage, targetLocale, translationMode)
+        const translationInput = buildTranslationInput(sourceCues, sourceLanguage, targetLocale, translationMode, processingMeta.giay)
         translationInput.glossary = config.translationGuidance?.glossary.map(entry => ({ ...entry })) || []
         translationInput.synopsis = config.translationGuidance?.synopsis
         const model = translationModelIdentity(config)
@@ -1136,7 +1166,9 @@ export function createAutoShortItemProcessor(
           modelIdentity: model.modelIdentity,
           revisionKnown: model.revisionKnown,
           profileId: model.profileId,
-          promptVersion: TRANSLATION_PROMPT_VERSION,
+          promptVersion: config.translateProvider === 'gemini-gateway'
+            ? GEMINI_GATEWAY_PROMPT_VERSION
+            : TRANSLATION_PROMPT_VERSION,
           parserVersion: TRANSLATION_PARSER_VERSION,
           plannerVersion: 'translation-plan-v3',
           assessmentVersion: 'translation-assessment-v2',
@@ -1211,9 +1243,21 @@ export function createAutoShortItemProcessor(
 
         const retryGeneration = Number.isInteger(checkpoint.translationRetryGeneration) ? Number(checkpoint.translationRetryGeneration) : 0
         const attemptGeneration = Number.isInteger(checkpoint.translationAttemptGeneration) ? Number(checkpoint.translationAttemptGeneration) : 0
-        const needsExplicitRetry = checkpoint.translationAssessment?.disposition === 'needs-review' && retryGeneration <= attemptGeneration
+        const isProviderTransportFailure = checkpoint.translationAssessment?.issues?.length
+          ? checkpoint.translationAssessment.issues.every((issue) =>
+              issue.code === 'provider-protocol' || issue.code === 'provider-throttled' || issue.code === 'provider-transient'
+            )
+          : false
+        const hasNoTranslatedCues = !checkpoint.translatedCues || checkpoint.translatedCues.length === 0
+        const needsExplicitRetry = checkpoint.translationAssessment?.disposition === 'needs-review' &&
+          !isProviderTransportFailure &&
+          !hasNoTranslatedCues &&
+          retryGeneration <= attemptGeneration
         if (needsExplicitRetry && !reusedTranslation) {
           throw new Error('Bản dịch đang ở trạng thái cần kiểm tra; hãy chuẩn bị một lượt thử lại rõ ràng trước khi chạy lại.')
+        }
+        if (!reusedTranslation && (isProviderTransportFailure || hasNoTranslatedCues)) {
+          checkpoint.translationAssessment = undefined
         }
         if (!reusedTranslation) {
           checkpoint.translationAttemptGeneration = retryGeneration
@@ -1267,6 +1311,9 @@ export function createAutoShortItemProcessor(
           checkpoint.translationAssessment = undefined
           await saveCheckpoint()
           emitProgress(context, 'translating', 35, `Đang dịch phụ đề sang ${targetLocale}…`, undefined, undefined, { stage: 'translate', phase: 'running' }, undefined, translationAssessment, translationIdentity)
+          const voiceHint = config.translateProvider === 'gemini-gateway' && translationMode === 'dubbing'
+            ? await loadAutoShortVoiceHint(context, config, detectedSourceLanguage)
+            : undefined
           await telemetry.withStageSpan('translate', { endpointAlias: sanitizeEndpointAlias(config.translateServerUrl) }, async (span) => {
             const strictResult = await translateStrict(config, translationInputPath, targetSrtPath, (done, count) => {
               const completeDone = reusablePartial.length + done
@@ -1299,7 +1346,13 @@ export function createAutoShortItemProcessor(
               checkpoint.translationBudget = budget
               await saveCheckpoint()
             }, reusablePartial, checkpoint.translationBudget, processingMeta.giay,
-            config.translateProvider === 'gemini-gateway' ? join(workDir, 'gemini-gateway-translation-audit.json') : undefined)
+            config.translateProvider === 'gemini-gateway' ? join(workDir, 'gemini-gateway-translation-audit.json') : undefined,
+            voiceHint,
+            // The queue deletes workDir after a failed item. Gateway leases
+            // and validated draft/review checkpoints therefore live under the
+            // durable item checkpoint, where the resumed item can poll the
+            // exact same operation without another generation request.
+            config.translateProvider === 'gemini-gateway' ? join(checkpointDir, 'gemini-gateway') : undefined)
             providerTranslationAssessment = strictResult.assessment
             const translated = parseSrt(await readFile(targetSrtPath, 'utf8')).cues.filter((cue) => cue.text.trim())
             const restored = revalidate(mergeRecoveredTranslationItems(
@@ -1460,15 +1513,18 @@ export function createAutoShortItemProcessor(
 
       if (config.ttsEnabled) {
         emitProgress(context, 'generating_tts', 58, 'Đang tạo voice từ SRT đích…', undefined, undefined, { stage: 'tts', phase: 'running' })
-        // Adapt context to synthesizeVoice parameter
-        const jobAdapter: any = {
-          id: jobId,
-          controller: { signal },
+        const jobAdapter = buildAutoShortTtsJobAdapter({
+          jobId,
+          itemId: item.id,
+          signal,
           emit: context.emit,
           ttsCapabilities: context.ttsCapabilities,
           ttsCapabilitiesUrl: context.ttsCapabilitiesUrl,
-          resourceManager
-        }
+          resourceManager,
+          artifactCache: context.artifactCache,
+          artifactDir: context.artifactDir,
+          feedbackJournal: context.feedbackJournal
+        })
         const ttsEndpoint = config.ttsProvider === 'edge-tts' ? EDGE_TTS_ENDPOINT_ID : config.ttsServerUrl
         const synthesized = await telemetry.withStageSpan('tts', { endpointAlias: sanitizeEndpointAlias(ttsEndpoint), model: config.ttsModel }, async (span) => {
           const res = await synthesizeVoice(
@@ -1679,10 +1735,12 @@ export function createAutoShortItemProcessor(
       burnResult = await telemetry.withStageSpan('render', {}, async (span) => {
         const res = await resourceManager.withLease(['local-gpu-heavy', 'local-cpu-heavy'], signal, async (lease) => {
           span.recordResourceWait(lease.waitMs || 0)
+          const titleSrtPath = (config.translateTarget !== 'none' && targetSrtPath) ? targetSrtPath : renderSrtPath
           return deps.burn(
             {
               video: renderVideoPath,
               srt: renderSrtPath,
+              titleSrt: titleSrtPath,
               videoTitle: config.videoTitle ? {
                 ...config.videoTitle,
                 language: config.videoTitle.language === 'auto' && config.translateTarget !== 'none'
@@ -1704,6 +1762,7 @@ export function createAutoShortItemProcessor(
               bgOpacity: config.bgOpacity,
               subtitleDisplayStyle: renderDisplayStyle,
               subtitleFontSize: config.subtitleFontScale != null ? Math.round(config.subtitleFontScale * processingMeta.h) : config.subtitleFontSize,
+              subtitleFontWeight: config.subtitleFontWeight,
               subtitleFontScale: config.subtitleFontScale,
               outlineScale: config.outlineScale,
               highlightColor: config.highlightColor,
@@ -1738,6 +1797,8 @@ export function createAutoShortItemProcessor(
               expectedMedia: {
                 durationSeconds: outputDuration,
                 frameRate: processingMeta.frameRate,
+                averageFrameRate: processingMeta.averageFrameRate,
+                isVariableFrameRate: processingMeta.isVariableFrameRate,
                 requireAudio: Boolean(outputAudioPath || (processingMeta.hasAudio && config.audioMode === 'mix')),
                 durationToleranceFrames: 3
               },
@@ -1768,6 +1829,72 @@ export function createAutoShortItemProcessor(
       }
       const completedBurn = burnResult
       published = true
+
+      // Tự động tạo ảnh bìa thumbnail ghép tiêu đề AI nếu được bật
+      if (config.thumbnailConfig?.enabled) {
+        try {
+          emitProgress(context, 'rendering_video', 99, 'Đang tự động tạo ảnh bìa thumbnail…', undefined, undefined, { stage: 'render', phase: 'running' })
+          // Prefer dedicated thumbnailText over title for thumbnail overlay
+          let titleForThumbnail = completedBurn.seoMetadata?.thumbnailText?.trim() || completedBurn.title?.trim()
+          if (!titleForThumbnail && completedBurn.titlePath) {
+            const raw = await readFile(completedBurn.titlePath, 'utf8').catch(() => '')
+            const firstLine = raw.split(/\r?\n/)[0]?.replace(/^[#\s*]+/, '').trim()
+            if (firstLine) titleForThumbnail = firstLine
+          }
+
+          if (!titleForThumbnail && config.thumbnailConfig.autoTitleFromAi !== false) {
+            const titleSourceCues = (targetCues && targetCues.length > 0)
+              ? targetCues
+              : sourceCues
+            const titleTargetLanguage = config.translateTarget !== 'none'
+              ? config.translateTarget
+              : (config.videoTitle?.language || 'vi')
+            const effectiveTitleConfig: VideoTitleConfig = config.videoTitle ? {
+              ...config.videoTitle,
+              language: config.videoTitle.language === 'auto' && config.translateTarget !== 'none'
+                ? config.translateTarget
+                : config.videoTitle.language
+            } : {
+              provider: config.translateProvider === 'gemini-gateway' ? 'gemini-gateway' : 'gemini',
+              language: titleTargetLanguage,
+              serverUrl: config.translateServerUrl
+            }
+            try {
+              const generated = await generateVideoTitle(titleSourceCues, effectiveTitleConfig, signal)
+              if (generated?.trim()) {
+                titleForThumbnail = generated.trim()
+              }
+            } catch (err) {
+              logWarn(`[AutoShort] Không tạo được tiêu đề cho thumbnail từ SRT đã dịch: ${errLabel(err)}`)
+            }
+          }
+
+          const thumbRes = await createAutoShortThumbnail({
+            videoPath: item.filePath,
+            mode: config.thumbnailConfig.mode || 'first_frame',
+            cleanSubtitles: config.thumbnailConfig.cleanSubtitles !== false,
+            portraitBlur: config.portraitBlur,
+            videoAdjustments: config.videoAdjustments,
+            ocrRegion: undefined,
+            outputDir: itemOutputDir,
+            temporalEdit: item.temporalEdit,
+            titleOverlay: config.thumbnailConfig.autoTitleFromAi !== false && titleForThumbnail
+              ? {
+                  text: titleForThumbnail,
+                  style: config.thumbnailConfig.style || 'douyin_yellow',
+                  position: config.thumbnailConfig.position || 'ocr',
+                  fontSize: config.thumbnailConfig.fontSize || 'large'
+                }
+              : undefined
+          }, undefined, signal)
+
+          if (thumbRes.ok && thumbRes.thumbnailPath) {
+            artifactEntries.push({ source: thumbRes.thumbnailPath, name: basename(thumbRes.thumbnailPath) })
+          }
+        } catch (thumbErr) {
+          logWarn(`[AutoShort] Tự động tạo ảnh bìa thumbnail thất bại: ${errLabel(thumbErr)}`)
+        }
+      }
 
       try {
         artifactEntries.push({ source: completedBurn.output!, name: 'output.mp4' })
@@ -1844,6 +1971,7 @@ export function createAutoShortItemProcessor(
         generatedVoiceCount,
         voice,
         title: burnResult.title,
+        thumbnailText: burnResult.seoMetadata?.thumbnailText || burnResult.thumbnailText,
         titlePath: burnResult.titlePath,
         titleError: burnResult.titleError,
         seoMetadata: burnResult.seoMetadata,
@@ -1866,6 +1994,7 @@ export function createAutoShortItemProcessor(
           generatedVoiceCount,
           voice,
           title: burnResult.title,
+          thumbnailText: burnResult.seoMetadata?.thumbnailText || burnResult.thumbnailText,
           titlePath: burnResult.titlePath,
           titleError: burnResult.titleError,
           seoMetadata: burnResult.seoMetadata,
@@ -1899,7 +2028,7 @@ export function createAutoShortItemProcessor(
         ? 'Đã hủy tác vụ'
         : message || 'Xử lý video thất bại'
 
-      const recovery = !isCancelled && error instanceof DubbingVideoExtensionLimitError
+      let recovery = !isCancelled && error instanceof DubbingVideoExtensionLimitError
         ? {
             kind: 'dubbing-duration' as const,
             retryable: (context.recoveryAttempt || 1) === 1,
@@ -1911,6 +2040,14 @@ export function createAutoShortItemProcessor(
         : !isCancelled
           ? classifyAutoShortTtsRecovery(error, message, context.recoveryAttempt || 1)
           : undefined
+      const isThrottled = !isCancelled && (isProviderThrottledError(rawMessage) || (error as { providerCode?: string })?.providerCode === 'provider-throttled')
+      if (!recovery && isThrottled) {
+        recovery = {
+          kind: 'provider-throttled',
+          retryable: false,
+          attempt: context.recoveryAttempt || 1
+        }
+      }
       if (recovery && isPermanentGatewayError(rawMessage)) {
         recovery.retryable = false
       }
@@ -1942,11 +2079,13 @@ export function createAutoShortItemProcessor(
           version: 'translation-assessment-v2',
           disposition: 'needs-review',
           issues: [{
-            code: 'provider-protocol',
+            code: isThrottled ? 'provider-throttled' : 'provider-protocol',
             severity: 'error',
             confidence: 'certain',
             cueIds: [],
-            message: 'Bản dịch chưa được xác nhận do lỗi nhà cung cấp hoặc định dạng phản hồi; hãy thử lại một lần từ hàng đợi.'
+            message: isThrottled
+              ? 'Google Gemini Web tạm từ chối hoặc giới hạn tần suất (HTTP 405/429 - chống bot/rate limit); hãy thử lại sau.'
+              : 'Bản dịch chưa được xác nhận do lỗi nhà cung cấp hoặc định dạng phản hồi; hãy thử lại một lần từ hàng đợi.'
           }],
           languageEvidence: 'unknown'
         }

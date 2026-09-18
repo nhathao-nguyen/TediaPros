@@ -1,0 +1,25 @@
+{
+  "schemaVersion": 2,
+  "state": "draft-validated",
+  "identity": "gemini-gateway:gemini-advanced:gemini-gateway-two-pass-v10:ai-output-parser-v1:gateway-draft-v2:json-items:vi:7",
+  "raw": "{\"translations\":{\"cue-0-0\":\"Thịt cá, cho nhiều gừng giúp khử mùi tanh và tăng hương thơm.\",\"cue-1-2780\":\"Thịt bò, cho nhiều cà chua giúp thịt bò mềm nhừ hơn.\",\"cue-2-6080\":\"Thịt gà, cho nhiều tỏi giúp tôn lên hương vị của thịt gà.\",\"cue-3-8940\":\"Thịt cừu, cho nhiều củ cải giúp át đi mùi hôi của thịt cừu.\",\"cue-4-12220\":\"Thịt heo, cho nhiều hoa hồi giúp tăng hương thơm đậm đà của thịt heo.\",\"cue-5-15580\":\"Khoai tây, cho nhiều giấm giúp khoai tây ăn giòn hơn.\",\"cue-6-18980\":\"Đậu phụ, cho nhiều hành lá giúp tăng độ thơm ngon của đậu phụ.\"}}",
+  "rawSha256": "eee9b66819fb7dc30311204a1af6b1e7cfdf2f48f95c84d1e43707a577b00604",
+  "observedModelId": "e6fa609c3fa255c0",
+  "observedModel": "3.1 Pro",
+  "routeFingerprint": "29ed9729dbdd53e76081fc89bd7f7991b6a6e2c770e964fd8fa2ceaa0c22c646",
+  "sourceDigest": "0dd36f9ba35866dc465626127194e1c49316d71545d37fb9840231ac13924384",
+  "expectedIds": [
+    "cue-0-0",
+    "cue-1-2780",
+    "cue-2-6080",
+    "cue-3-8940",
+    "cue-4-12220",
+    "cue-5-15580",
+    "cue-6-18980"
+  ],
+  "targetLocale": "vi",
+  "draftPromptVersion": "gemini-gateway-two-pass-v10",
+  "reviewPromptVersion": "gemini-gateway-two-pass-v10",
+  "parserVersion": "ai-output-parser-v1:gateway-draft-v2",
+  "savedAtUtc": "2026-09-16T14:38:47.765Z"
+}

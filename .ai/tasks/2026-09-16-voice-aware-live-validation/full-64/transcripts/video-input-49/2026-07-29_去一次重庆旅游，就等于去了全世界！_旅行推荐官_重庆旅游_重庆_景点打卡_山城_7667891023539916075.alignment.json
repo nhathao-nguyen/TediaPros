@@ -1,0 +1,3580 @@
+{
+  "duration": 68.802125,
+  "language": "zh",
+  "segments": [
+    {
+      "start": 0.0,
+      "end": 1.86,
+      "text": "出不了国 那就去重庆吧",
+      "words": [
+        {
+          "text": "出",
+          "start": 0.0,
+          "end": 0.26,
+          "probability": 0.76123046875
+        },
+        {
+          "text": "不了",
+          "start": 0.26,
+          "end": 0.46,
+          "probability": 0.98291015625
+        },
+        {
+          "text": "国",
+          "start": 0.46,
+          "end": 0.66,
+          "probability": 0.6103515625
+        },
+        {
+          "text": "那",
+          "start": 0.66,
+          "end": 1.02,
+          "probability": 0.417724609375
+        },
+        {
+          "text": "就",
+          "start": 1.02,
+          "end": 1.14,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "去",
+          "start": 1.14,
+          "end": 1.26,
+          "probability": 0.9892578125
+        },
+        {
+          "text": "重",
+          "start": 1.26,
+          "end": 1.44,
+          "probability": 0.97119140625
+        },
+        {
+          "text": "庆",
+          "start": 1.44,
+          "end": 1.64,
+          "probability": 0.9912109375
+        },
+        {
+          "text": "吧",
+          "start": 1.64,
+          "end": 1.86,
+          "probability": 0.9931640625
+        }
+      ]
+    },
+    {
+      "start": 1.86,
+      "end": 4.6,
+      "text": "因为去了重庆 就等于去了全世界",
+      "words": [
+        {
+          "text": "因为",
+          "start": 1.86,
+          "end": 2.26,
+          "probability": 0.90966796875
+        },
+        {
+          "text": "去了",
+          "start": 2.26,
+          "end": 2.52,
+          "probability": 0.9541015625
+        },
+        {
+          "text": "重",
+          "start": 2.52,
+          "end": 2.82,
+          "probability": 0.98046875
+        },
+        {
+          "text": "庆",
+          "start": 2.82,
+          "end": 3.02,
+          "probability": 1.0
+        },
+        {
+          "text": "就",
+          "start": 3.02,
+          "end": 3.4,
+          "probability": 0.5185546875
+        },
+        {
+          "text": "等",
+          "start": 3.4,
+          "end": 3.58,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "于",
+          "start": 3.58,
+          "end": 3.74,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "去了",
+          "start": 3.74,
+          "end": 4.02,
+          "probability": 0.99462890625
+        },
+        {
+          "text": "全",
+          "start": 4.02,
+          "end": 4.28,
+          "probability": 0.98583984375
+        },
+        {
+          "text": "世界",
+          "start": 4.28,
+          "end": 4.6,
+          "probability": 0.9970703125
+        }
+      ]
+    },
+    {
+      "start": 4.6,
+      "end": 8.98,
+      "text": "一 去了红牙洞 就等于去了现实版的千语千学",
+      "words": [
+        {
+          "text": "一",
+          "start": 4.6,
+          "end": 5.38,
+          "probability": 0.75927734375
+        },
+        {
+          "text": "去了",
+          "start": 5.76,
+          "end": 5.98,
+          "probability": 0.99267578125
+        },
+        {
+          "text": "红",
+          "start": 5.98,
+          "end": 6.2,
+          "probability": 0.875732421875
+        },
+        {
+          "text": "牙",
+          "start": 6.2,
+          "end": 6.34,
+          "probability": 0.790283203125
+        },
+        {
+          "text": "洞",
+          "start": 6.34,
+          "end": 6.52,
+          "probability": 0.77880859375
+        },
+        {
+          "text": "就",
+          "start": 6.52,
+          "end": 6.88,
+          "probability": 0.68408203125
+        },
+        {
+          "text": "等",
+          "start": 6.88,
+          "end": 7.04,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "于",
+          "start": 7.04,
+          "end": 7.18,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "去了",
+          "start": 7.18,
+          "end": 7.44,
+          "probability": 0.9892578125
+        },
+        {
+          "text": "现",
+          "start": 7.44,
+          "end": 7.64,
+          "probability": 0.98046875
+        },
+        {
+          "text": "实",
+          "start": 7.64,
+          "end": 7.88,
+          "probability": 0.95947265625
+        },
+        {
+          "text": "版",
+          "start": 7.88,
+          "end": 8.06,
+          "probability": 0.9755859375
+        },
+        {
+          "text": "的",
+          "start": 8.06,
+          "end": 8.22,
+          "probability": 0.986328125
+        },
+        {
+          "text": "千",
+          "start": 8.22,
+          "end": 8.44,
+          "probability": 0.88720703125
+        },
+        {
+          "text": "语",
+          "start": 8.44,
+          "end": 8.6,
+          "probability": 0.950927734375
+        },
+        {
+          "text": "千",
+          "start": 8.6,
+          "end": 8.8,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "学",
+          "start": 8.8,
+          "end": 8.98,
+          "probability": 0.5888671875
+        }
+      ]
+    },
+    {
+      "start": 9.4,
+      "end": 13.16,
+      "text": "二 去了仙女山 就等于去了瑞士的高山草原",
+      "words": [
+        {
+          "text": "二",
+          "start": 9.4,
+          "end": 9.8,
+          "probability": 0.99462890625
+        },
+        {
+          "text": "去了",
+          "start": 10.18,
+          "end": 10.34,
+          "probability": 0.994140625
+        },
+        {
+          "text": "仙",
+          "start": 10.34,
+          "end": 10.5,
+          "probability": 0.91162109375
+        },
+        {
+          "text": "女",
+          "start": 10.5,
+          "end": 10.68,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "山",
+          "start": 10.68,
+          "end": 10.88,
+          "probability": 0.9951171875
+        },
+        {
+          "text": "就",
+          "start": 10.88,
+          "end": 11.26,
+          "probability": 0.884765625
+        },
+        {
+          "text": "等",
+          "start": 11.26,
+          "end": 11.42,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "于",
+          "start": 11.42,
+          "end": 11.56,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "去了",
+          "start": 11.56,
+          "end": 11.82,
+          "probability": 0.99462890625
+        },
+        {
+          "text": "瑞",
+          "start": 11.82,
+          "end": 12.02,
+          "probability": 0.98974609375
+        },
+        {
+          "text": "士",
+          "start": 12.02,
+          "end": 12.24,
+          "probability": 0.9833984375
+        },
+        {
+          "text": "的",
+          "start": 12.24,
+          "end": 12.36,
+          "probability": 0.98046875
+        },
+        {
+          "text": "高",
+          "start": 12.36,
+          "end": 12.56,
+          "probability": 0.99462890625
+        },
+        {
+          "text": "山",
+          "start": 12.56,
+          "end": 12.76,
+          "probability": 0.994140625
+        },
+        {
+          "text": "草",
+          "start": 12.76,
+          "end": 12.94,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "原",
+          "start": 12.94,
+          "end": 13.16,
+          "probability": 0.9697265625
+        }
+      ]
+    },
+    {
+      "start": 13.6,
+      "end": 18.2,
+      "text": "三 去了铜罗山矿山公园 就等于去了加拿大的孟联湖",
+      "words": [
+        {
+          "text": "三",
+          "start": 13.6,
+          "end": 14.0,
+          "probability": 0.982421875
+        },
+        {
+          "text": "去了",
+          "start": 14.4,
+          "end": 14.58,
+          "probability": 0.99658203125
+        },
+        {
+          "text": "铜",
+          "start": 14.58,
+          "end": 14.78,
+          "probability": 0.75244140625
+        },
+        {
+          "text": "罗",
+          "start": 14.78,
+          "end": 14.94,
+          "probability": 0.559967041015625
+        },
+        {
+          "text": "山",
+          "start": 14.94,
+          "end": 15.1,
+          "probability": 0.9951171875
+        },
+        {
+          "text": "矿",
+          "start": 15.1,
+          "end": 15.3,
+          "probability": 0.764892578125
+        },
+        {
+          "text": "山",
+          "start": 15.3,
+          "end": 15.48,
+          "probability": 0.998046875
+        },
+        {
+          "text": "公",
+          "start": 15.48,
+          "end": 15.64,
+          "probability": 0.978515625
+        },
+        {
+          "text": "园",
+          "start": 15.64,
+          "end": 15.84,
+          "probability": 0.984375
+        },
+        {
+          "text": "就",
+          "start": 15.84,
+          "end": 16.26,
+          "probability": 0.6826171875
+        },
+        {
+          "text": "等",
+          "start": 16.26,
+          "end": 16.44,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "于",
+          "start": 16.44,
+          "end": 16.58,
+          "probability": 0.998046875
+        },
+        {
+          "text": "去了",
+          "start": 16.58,
+          "end": 16.86,
+          "probability": 0.9951171875
+        },
+        {
+          "text": "加",
+          "start": 16.86,
+          "end": 17.1,
+          "probability": 0.9951171875
+        },
+        {
+          "text": "拿",
+          "start": 17.1,
+          "end": 17.26,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "大的",
+          "start": 17.26,
+          "end": 17.56,
+          "probability": 0.95654296875
+        },
+        {
+          "text": "孟",
+          "start": 17.56,
+          "end": 17.74,
+          "probability": 0.837158203125
+        },
+        {
+          "text": "联",
+          "start": 17.74,
+          "end": 17.92,
+          "probability": 0.60601806640625
+        },
+        {
+          "text": "湖",
+          "start": 17.92,
+          "end": 18.2,
+          "probability": 0.986572265625
+        }
+      ]
+    },
+    {
+      "start": 18.6,
+      "end": 23.12,
+      "text": "四 去了华盛园孟幻城堡 就等于去了欧洲的铜画城堡",
+      "words": [
+        {
+          "text": "四",
+          "start": 18.6,
+          "end": 19.0,
+          "probability": 0.9912109375
+        },
+        {
+          "text": "去了",
+          "start": 19.38,
+          "end": 19.56,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "华",
+          "start": 19.56,
+          "end": 19.74,
+          "probability": 0.993408203125
+        },
+        {
+          "text": "盛",
+          "start": 19.74,
+          "end": 19.9,
+          "probability": 0.982177734375
+        },
+        {
+          "text": "园",
+          "start": 19.9,
+          "end": 20.08,
+          "probability": 0.773681640625
+        },
+        {
+          "text": "孟",
+          "start": 20.08,
+          "end": 20.26,
+          "probability": 0.970947265625
+        },
+        {
+          "text": "幻",
+          "start": 20.26,
+          "end": 20.46,
+          "probability": 0.7108154296875
+        },
+        {
+          "text": "城",
+          "start": 20.46,
+          "end": 20.64,
+          "probability": 0.98828125
+        },
+        {
+          "text": "堡",
+          "start": 20.64,
+          "end": 20.84,
+          "probability": 0.992919921875
+        },
+        {
+          "text": "就",
+          "start": 20.84,
+          "end": 21.26,
+          "probability": 0.60888671875
+        },
+        {
+          "text": "等",
+          "start": 21.26,
+          "end": 21.42,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "于",
+          "start": 21.42,
+          "end": 21.56,
+          "probability": 0.998046875
+        },
+        {
+          "text": "去了",
+          "start": 21.56,
+          "end": 21.8,
+          "probability": 0.98828125
+        },
+        {
+          "text": "欧",
+          "start": 21.8,
+          "end": 22.0,
+          "probability": 0.996826171875
+        },
+        {
+          "text": "洲",
+          "start": 22.0,
+          "end": 22.18,
+          "probability": 0.9873046875
+        },
+        {
+          "text": "的",
+          "start": 22.18,
+          "end": 22.3,
+          "probability": 0.998046875
+        },
+        {
+          "text": "铜",
+          "start": 22.3,
+          "end": 22.48,
+          "probability": 0.788818359375
+        },
+        {
+          "text": "画",
+          "start": 22.48,
+          "end": 22.72,
+          "probability": 0.36328125
+        },
+        {
+          "text": "城",
+          "start": 22.72,
+          "end": 22.9,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "堡",
+          "start": 22.9,
+          "end": 23.12,
+          "probability": 0.999755859375
+        }
+      ]
+    },
+    {
+      "start": 23.58,
+      "end": 27.62,
+      "text": "五 去了佛图观青鬼站 就等于去了日本的联舱",
+      "words": [
+        {
+          "text": "五",
+          "start": 23.58,
+          "end": 23.98,
+          "probability": 0.9814453125
+        },
+        {
+          "text": "去了",
+          "start": 24.4,
+          "end": 24.56,
+          "probability": 0.998046875
+        },
+        {
+          "text": "佛",
+          "start": 24.56,
+          "end": 24.74,
+          "probability": 0.995849609375
+        },
+        {
+          "text": "图",
+          "start": 24.74,
+          "end": 24.88,
+          "probability": 0.680419921875
+        },
+        {
+          "text": "观",
+          "start": 24.88,
+          "end": 25.08,
+          "probability": 0.51416015625
+        },
+        {
+          "text": "青",
+          "start": 25.08,
+          "end": 25.32,
+          "probability": 0.5517578125
+        },
+        {
+          "text": "鬼",
+          "start": 25.32,
+          "end": 25.52,
+          "probability": 0.62744140625
+        },
+        {
+          "text": "站",
+          "start": 25.52,
+          "end": 25.74,
+          "probability": 0.69921875
+        },
+        {
+          "text": "就",
+          "start": 25.74,
+          "end": 26.14,
+          "probability": 0.7822265625
+        },
+        {
+          "text": "等",
+          "start": 26.14,
+          "end": 26.32,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "于",
+          "start": 26.32,
+          "end": 26.46,
+          "probability": 0.998046875
+        },
+        {
+          "text": "去了",
+          "start": 26.46,
+          "end": 26.72,
+          "probability": 0.99462890625
+        },
+        {
+          "text": "日本",
+          "start": 26.72,
+          "end": 27.04,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "的",
+          "start": 27.04,
+          "end": 27.26,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "联",
+          "start": 27.26,
+          "end": 27.38,
+          "probability": 0.9052734375
+        },
+        {
+          "text": "舱",
+          "start": 27.38,
+          "end": 27.62,
+          "probability": 0.64306640625
+        }
+      ]
+    },
+    {
+      "start": 28.02,
+      "end": 32.48,
+      "text": "六 去了北仓文创原 就等于去了韩国首尔的文艺街区",
+      "words": [
+        {
+          "text": "六",
+          "start": 28.02,
+          "end": 28.38,
+          "probability": 0.1546630859375
+        },
+        {
+          "text": "去了",
+          "start": 28.82,
+          "end": 28.98,
+          "probability": 0.95556640625
+        },
+        {
+          "text": "北",
+          "start": 28.98,
+          "end": 29.18,
+          "probability": 0.9912109375
+        },
+        {
+          "text": "仓",
+          "start": 29.18,
+          "end": 29.34,
+          "probability": 0.53924560546875
+        },
+        {
+          "text": "文",
+          "start": 29.34,
+          "end": 29.48,
+          "probability": 0.5751953125
+        },
+        {
+          "text": "创",
+          "start": 29.48,
+          "end": 29.64,
+          "probability": 0.97412109375
+        },
+        {
+          "text": "原",
+          "start": 29.64,
+          "end": 29.88,
+          "probability": 0.04681396484375
+        },
+        {
+          "text": "就",
+          "start": 29.88,
+          "end": 30.26,
+          "probability": 0.15673828125
+        },
+        {
+          "text": "等",
+          "start": 30.26,
+          "end": 30.4,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "于",
+          "start": 30.4,
+          "end": 30.54,
+          "probability": 0.86962890625
+        },
+        {
+          "text": "去了",
+          "start": 30.54,
+          "end": 30.78,
+          "probability": 0.99609375
+        },
+        {
+          "text": "韩",
+          "start": 30.78,
+          "end": 31.02,
+          "probability": 0.97265625
+        },
+        {
+          "text": "国",
+          "start": 31.02,
+          "end": 31.22,
+          "probability": 0.880859375
+        },
+        {
+          "text": "首",
+          "start": 31.22,
+          "end": 31.42,
+          "probability": 0.9501953125
+        },
+        {
+          "text": "尔",
+          "start": 31.42,
+          "end": 31.54,
+          "probability": 0.983642578125
+        },
+        {
+          "text": "的",
+          "start": 31.54,
+          "end": 31.74,
+          "probability": 0.98681640625
+        },
+        {
+          "text": "文",
+          "start": 31.74,
+          "end": 31.94,
+          "probability": 0.97509765625
+        },
+        {
+          "text": "艺",
+          "start": 31.94,
+          "end": 32.1,
+          "probability": 0.94482421875
+        },
+        {
+          "text": "街",
+          "start": 32.1,
+          "end": 32.28,
+          "probability": 0.98193359375
+        },
+        {
+          "text": "区",
+          "start": 32.28,
+          "end": 32.48,
+          "probability": 0.99560546875
+        }
+      ]
+    },
+    {
+      "start": 32.9,
+      "end": 37.24,
+      "text": "七 去了弗林红酒小镇 就等于去了法国的彩色小镇",
+      "words": [
+        {
+          "text": "七",
+          "start": 32.9,
+          "end": 33.26,
+          "probability": 0.89697265625
+        },
+        {
+          "text": "去了",
+          "start": 33.66,
+          "end": 33.84,
+          "probability": 0.99658203125
+        },
+        {
+          "text": "弗",
+          "start": 33.84,
+          "end": 34.02,
+          "probability": 0.86474609375
+        },
+        {
+          "text": "林",
+          "start": 34.02,
+          "end": 34.16,
+          "probability": 0.8955078125
+        },
+        {
+          "text": "红",
+          "start": 34.16,
+          "end": 34.38,
+          "probability": 0.909423828125
+        },
+        {
+          "text": "酒",
+          "start": 34.38,
+          "end": 34.54,
+          "probability": 0.94091796875
+        },
+        {
+          "text": "小",
+          "start": 34.54,
+          "end": 34.76,
+          "probability": 0.99365234375
+        },
+        {
+          "text": "镇",
+          "start": 34.76,
+          "end": 34.94,
+          "probability": 0.990478515625
+        },
+        {
+          "text": "就",
+          "start": 34.94,
+          "end": 35.34,
+          "probability": 0.76025390625
+        },
+        {
+          "text": "等",
+          "start": 35.34,
+          "end": 35.5,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "于",
+          "start": 35.5,
+          "end": 35.62,
+          "probability": 0.99658203125
+        },
+        {
+          "text": "去了",
+          "start": 35.62,
+          "end": 35.86,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "法",
+          "start": 35.86,
+          "end": 36.12,
+          "probability": 0.998046875
+        },
+        {
+          "text": "国",
+          "start": 36.12,
+          "end": 36.32,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "的",
+          "start": 36.32,
+          "end": 36.46,
+          "probability": 0.99658203125
+        },
+        {
+          "text": "彩",
+          "start": 36.46,
+          "end": 36.66,
+          "probability": 0.9951171875
+        },
+        {
+          "text": "色",
+          "start": 36.66,
+          "end": 36.86,
+          "probability": 0.99462890625
+        },
+        {
+          "text": "小",
+          "start": 36.86,
+          "end": 37.06,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "镇",
+          "start": 37.06,
+          "end": 37.24,
+          "probability": 0.999755859375
+        }
+      ]
+    },
+    {
+      "start": 37.62,
+      "end": 41.96,
+      "text": "八 去了法国水世兵营 就等于去了欧洲的百年庄园",
+      "words": [
+        {
+          "text": "八",
+          "start": 37.62,
+          "end": 37.98,
+          "probability": 0.96826171875
+        },
+        {
+          "text": "去了",
+          "start": 38.42,
+          "end": 38.6,
+          "probability": 0.998046875
+        },
+        {
+          "text": "法",
+          "start": 38.6,
+          "end": 38.92,
+          "probability": 0.998046875
+        },
+        {
+          "text": "国",
+          "start": 38.92,
+          "end": 39.06,
+          "probability": 0.99462890625
+        },
+        {
+          "text": "水",
+          "start": 39.06,
+          "end": 39.24,
+          "probability": 0.962890625
+        },
+        {
+          "text": "世",
+          "start": 39.24,
+          "end": 39.4,
+          "probability": 0.342041015625
+        },
+        {
+          "text": "兵",
+          "start": 39.4,
+          "end": 39.56,
+          "probability": 0.75634765625
+        },
+        {
+          "text": "营",
+          "start": 39.56,
+          "end": 39.78,
+          "probability": 0.9873046875
+        },
+        {
+          "text": "就",
+          "start": 39.78,
+          "end": 40.18,
+          "probability": 0.814453125
+        },
+        {
+          "text": "等",
+          "start": 40.18,
+          "end": 40.34,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "于",
+          "start": 40.34,
+          "end": 40.5,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "去了",
+          "start": 40.5,
+          "end": 40.72,
+          "probability": 0.9931640625
+        },
+        {
+          "text": "欧",
+          "start": 40.72,
+          "end": 40.92,
+          "probability": 0.996826171875
+        },
+        {
+          "text": "洲",
+          "start": 40.92,
+          "end": 41.1,
+          "probability": 0.990234375
+        },
+        {
+          "text": "的",
+          "start": 41.1,
+          "end": 41.22,
+          "probability": 0.994140625
+        },
+        {
+          "text": "百",
+          "start": 41.22,
+          "end": 41.42,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "年",
+          "start": 41.42,
+          "end": 41.62,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "庄",
+          "start": 41.62,
+          "end": 41.76,
+          "probability": 0.942138671875
+        },
+        {
+          "text": "园",
+          "start": 41.76,
+          "end": 41.96,
+          "probability": 0.9306640625
+        }
+      ]
+    },
+    {
+      "start": 42.4,
+      "end": 46.44,
+      "text": "九 去了莱福士广场 就等于去了新加坡的滨海湾",
+      "words": [
+        {
+          "text": "九",
+          "start": 42.4,
+          "end": 42.76,
+          "probability": 0.98974609375
+        },
+        {
+          "text": "去了",
+          "start": 43.22,
+          "end": 43.4,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "莱",
+          "start": 43.4,
+          "end": 43.54,
+          "probability": 0.70947265625
+        },
+        {
+          "text": "福",
+          "start": 43.54,
+          "end": 43.72,
+          "probability": 0.173828125
+        },
+        {
+          "text": "士",
+          "start": 43.72,
+          "end": 43.86,
+          "probability": 0.49267578125
+        },
+        {
+          "text": "广",
+          "start": 43.86,
+          "end": 44.0,
+          "probability": 0.988525390625
+        },
+        {
+          "text": "场",
+          "start": 44.0,
+          "end": 44.28,
+          "probability": 0.99072265625
+        },
+        {
+          "text": "就",
+          "start": 44.28,
+          "end": 44.66,
+          "probability": 0.83984375
+        },
+        {
+          "text": "等",
+          "start": 44.66,
+          "end": 44.82,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "于",
+          "start": 44.82,
+          "end": 44.96,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "去了",
+          "start": 44.96,
+          "end": 45.2,
+          "probability": 0.99658203125
+        },
+        {
+          "text": "新",
+          "start": 45.2,
+          "end": 45.4,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "加",
+          "start": 45.4,
+          "end": 45.56,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "坡",
+          "start": 45.56,
+          "end": 45.74,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "的",
+          "start": 45.74,
+          "end": 45.9,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "滨",
+          "start": 45.9,
+          "end": 46.04,
+          "probability": 0.869140625
+        },
+        {
+          "text": "海",
+          "start": 46.04,
+          "end": 46.3,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "湾",
+          "start": 46.3,
+          "end": 46.44,
+          "probability": 0.95654296875
+        }
+      ]
+    },
+    {
+      "start": 46.9,
+      "end": 51.92,
+      "text": "十 去了渠唐侠奎门 就等于去了美国的科罗拉多大峡谷",
+      "words": [
+        {
+          "text": "十",
+          "start": 46.9,
+          "end": 47.26,
+          "probability": 0.93798828125
+        },
+        {
+          "text": "去了",
+          "start": 47.62,
+          "end": 47.9,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "渠",
+          "start": 47.9,
+          "end": 48.08,
+          "probability": 0.787109375
+        },
+        {
+          "text": "唐",
+          "start": 48.08,
+          "end": 48.26,
+          "probability": 0.670166015625
+        },
+        {
+          "text": "侠",
+          "start": 48.26,
+          "end": 48.42,
+          "probability": 0.87939453125
+        },
+        {
+          "text": "奎",
+          "start": 48.42,
+          "end": 48.58,
+          "probability": 0.7210693359375
+        },
+        {
+          "text": "门",
+          "start": 48.58,
+          "end": 48.82,
+          "probability": 0.829345703125
+        },
+        {
+          "text": "就",
+          "start": 48.82,
+          "end": 49.22,
+          "probability": 0.72265625
+        },
+        {
+          "text": "等",
+          "start": 49.22,
+          "end": 49.38,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "于",
+          "start": 49.38,
+          "end": 49.52,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "去了",
+          "start": 49.52,
+          "end": 49.74,
+          "probability": 0.9921875
+        },
+        {
+          "text": "美",
+          "start": 49.74,
+          "end": 49.94,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "国",
+          "start": 49.94,
+          "end": 50.12,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "的",
+          "start": 50.12,
+          "end": 50.24,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "科",
+          "start": 50.24,
+          "end": 50.42,
+          "probability": 0.84716796875
+        },
+        {
+          "text": "罗",
+          "start": 50.42,
+          "end": 50.54,
+          "probability": 0.9638671875
+        },
+        {
+          "text": "拉",
+          "start": 50.54,
+          "end": 50.72,
+          "probability": 0.9931640625
+        },
+        {
+          "text": "多",
+          "start": 50.72,
+          "end": 50.84,
+          "probability": 0.9638671875
+        },
+        {
+          "text": "大",
+          "start": 50.84,
+          "end": 51.02,
+          "probability": 0.98974609375
+        },
+        {
+          "text": "峡",
+          "start": 51.02,
+          "end": 51.2,
+          "probability": 0.6717529296875
+        },
+        {
+          "text": "谷",
+          "start": 51.2,
+          "end": 51.92,
+          "probability": 0.989990234375
+        }
+      ]
+    },
+    {
+      "start": 51.92,
+      "end": 55.7,
+      "text": "十一 去了盛天湖 就等于去了瑞士的高山湖湖",
+      "words": [
+        {
+          "text": "十",
+          "start": 51.92,
+          "end": 52.16,
+          "probability": 0.986328125
+        },
+        {
+          "text": "一",
+          "start": 52.16,
+          "end": 52.32,
+          "probability": 0.9833984375
+        },
+        {
+          "text": "去了",
+          "start": 52.56,
+          "end": 52.8,
+          "probability": 0.99609375
+        },
+        {
+          "text": "盛",
+          "start": 52.8,
+          "end": 52.96,
+          "probability": 0.76953125
+        },
+        {
+          "text": "天",
+          "start": 52.96,
+          "end": 53.16,
+          "probability": 0.9794921875
+        },
+        {
+          "text": "湖",
+          "start": 53.16,
+          "end": 53.4,
+          "probability": 0.9814453125
+        },
+        {
+          "text": "就",
+          "start": 53.4,
+          "end": 53.76,
+          "probability": 0.86962890625
+        },
+        {
+          "text": "等",
+          "start": 53.76,
+          "end": 53.92,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "于",
+          "start": 53.92,
+          "end": 54.06,
+          "probability": 0.998046875
+        },
+        {
+          "text": "去了",
+          "start": 54.06,
+          "end": 54.32,
+          "probability": 0.98681640625
+        },
+        {
+          "text": "瑞",
+          "start": 54.32,
+          "end": 54.54,
+          "probability": 0.990234375
+        },
+        {
+          "text": "士",
+          "start": 54.54,
+          "end": 54.76,
+          "probability": 0.9794921875
+        },
+        {
+          "text": "的",
+          "start": 54.76,
+          "end": 54.9,
+          "probability": 0.990234375
+        },
+        {
+          "text": "高",
+          "start": 54.9,
+          "end": 55.08,
+          "probability": 0.98828125
+        },
+        {
+          "text": "山",
+          "start": 55.08,
+          "end": 55.3,
+          "probability": 0.63525390625
+        },
+        {
+          "text": "湖",
+          "start": 55.3,
+          "end": 55.52,
+          "probability": 0.952880859375
+        },
+        {
+          "text": "湖",
+          "start": 55.52,
+          "end": 55.7,
+          "probability": 0.723876953125
+        }
+      ]
+    },
+    {
+      "start": 56.1,
+      "end": 60.3,
+      "text": "春有轨道交通的列车阴道 下有两江畔的晚风流霞",
+      "words": [
+        {
+          "text": "春",
+          "start": 56.1,
+          "end": 56.46,
+          "probability": 0.7646484375
+        },
+        {
+          "text": "有",
+          "start": 56.46,
+          "end": 56.64,
+          "probability": 0.9384765625
+        },
+        {
+          "text": "轨",
+          "start": 56.64,
+          "end": 56.8,
+          "probability": 0.6690673828125
+        },
+        {
+          "text": "道",
+          "start": 56.8,
+          "end": 56.98,
+          "probability": 0.998046875
+        },
+        {
+          "text": "交",
+          "start": 56.98,
+          "end": 57.14,
+          "probability": 0.91162109375
+        },
+        {
+          "text": "通",
+          "start": 57.14,
+          "end": 57.34,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "的",
+          "start": 57.34,
+          "end": 57.48,
+          "probability": 0.970703125
+        },
+        {
+          "text": "列",
+          "start": 57.48,
+          "end": 57.64,
+          "probability": 0.94580078125
+        },
+        {
+          "text": "车",
+          "start": 57.64,
+          "end": 57.8,
+          "probability": 0.997802734375
+        },
+        {
+          "text": "阴",
+          "start": 57.8,
+          "end": 57.96,
+          "probability": 0.82861328125
+        },
+        {
+          "text": "道",
+          "start": 57.96,
+          "end": 58.14,
+          "probability": 0.9736328125
+        },
+        {
+          "text": "下",
+          "start": 58.44,
+          "end": 58.6,
+          "probability": 0.8955078125
+        },
+        {
+          "text": "有",
+          "start": 58.6,
+          "end": 58.76,
+          "probability": 0.62841796875
+        },
+        {
+          "text": "两",
+          "start": 58.76,
+          "end": 58.96,
+          "probability": 0.962890625
+        },
+        {
+          "text": "江",
+          "start": 58.96,
+          "end": 59.16,
+          "probability": 0.96240234375
+        },
+        {
+          "text": "畔",
+          "start": 59.16,
+          "end": 59.36,
+          "probability": 0.74951171875
+        },
+        {
+          "text": "的",
+          "start": 59.36,
+          "end": 59.5,
+          "probability": 0.98974609375
+        },
+        {
+          "text": "晚",
+          "start": 59.5,
+          "end": 59.68,
+          "probability": 0.90478515625
+        },
+        {
+          "text": "风",
+          "start": 59.68,
+          "end": 59.86,
+          "probability": 0.94091796875
+        },
+        {
+          "text": "流",
+          "start": 59.86,
+          "end": 60.02,
+          "probability": 0.46240234375
+        },
+        {
+          "text": "霞",
+          "start": 60.02,
+          "end": 60.3,
+          "probability": 0.7442626953125
+        }
+      ]
+    },
+    {
+      "start": 60.3,
+      "end": 64.46,
+      "text": "就有山王庭的曾林流津 都有金佛山的冰雪雾滑",
+      "words": [
+        {
+          "text": "就",
+          "start": 60.3,
+          "end": 60.66,
+          "probability": 0.21044921875
+        },
+        {
+          "text": "有",
+          "start": 60.66,
+          "end": 60.82,
+          "probability": 0.99609375
+        },
+        {
+          "text": "山",
+          "start": 60.82,
+          "end": 61.02,
+          "probability": 0.9765625
+        },
+        {
+          "text": "王",
+          "start": 61.02,
+          "end": 61.18,
+          "probability": 0.79150390625
+        },
+        {
+          "text": "庭",
+          "start": 61.18,
+          "end": 61.36,
+          "probability": 0.7490234375
+        },
+        {
+          "text": "的",
+          "start": 61.36,
+          "end": 61.5,
+          "probability": 0.9912109375
+        },
+        {
+          "text": "曾",
+          "start": 61.5,
+          "end": 61.7,
+          "probability": 0.400390625
+        },
+        {
+          "text": "林",
+          "start": 61.7,
+          "end": 61.86,
+          "probability": 0.2086181640625
+        },
+        {
+          "text": "流",
+          "start": 61.86,
+          "end": 62.02,
+          "probability": 0.64501953125
+        },
+        {
+          "text": "津",
+          "start": 62.02,
+          "end": 62.2,
+          "probability": 0.60833740234375
+        },
+        {
+          "text": "都有",
+          "start": 62.56,
+          "end": 62.74,
+          "probability": 0.44970703125
+        },
+        {
+          "text": "金",
+          "start": 62.74,
+          "end": 63.1,
+          "probability": 0.96142578125
+        },
+        {
+          "text": "佛",
+          "start": 63.1,
+          "end": 63.3,
+          "probability": 0.984619140625
+        },
+        {
+          "text": "山",
+          "start": 63.3,
+          "end": 63.48,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "的",
+          "start": 63.48,
+          "end": 63.6,
+          "probability": 0.9921875
+        },
+        {
+          "text": "冰",
+          "start": 63.6,
+          "end": 63.82,
+          "probability": 0.978515625
+        },
+        {
+          "text": "雪",
+          "start": 63.82,
+          "end": 64.04,
+          "probability": 0.99560546875
+        },
+        {
+          "text": "雾",
+          "start": 64.04,
+          "end": 64.2,
+          "probability": 0.675048828125
+        },
+        {
+          "text": "滑",
+          "start": 64.2,
+          "end": 64.46,
+          "probability": 0.64306640625
+        }
+      ]
+    },
+    {
+      "start": 64.46,
+      "end": 67.96,
+      "text": "重庆注定是一座被山水拥抱者的魔幻山城",
+      "words": [
+        {
+          "text": "重",
+          "start": 64.46,
+          "end": 64.82,
+          "probability": 0.8623046875
+        },
+        {
+          "text": "庆",
+          "start": 64.82,
+          "end": 65.0,
+          "probability": 0.996826171875
+        },
+        {
+          "text": "注",
+          "start": 65.0,
+          "end": 65.18,
+          "probability": 0.9443359375
+        },
+        {
+          "text": "定",
+          "start": 65.18,
+          "end": 65.34,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "是",
+          "start": 65.34,
+          "end": 65.48,
+          "probability": 0.9755859375
+        },
+        {
+          "text": "一",
+          "start": 65.48,
+          "end": 65.64,
+          "probability": 0.9921875
+        },
+        {
+          "text": "座",
+          "start": 65.64,
+          "end": 65.82,
+          "probability": 0.989501953125
+        },
+        {
+          "text": "被",
+          "start": 65.82,
+          "end": 66.0,
+          "probability": 0.9443359375
+        },
+        {
+          "text": "山",
+          "start": 66.0,
+          "end": 66.26,
+          "probability": 0.96728515625
+        },
+        {
+          "text": "水",
+          "start": 66.26,
+          "end": 66.48,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "拥",
+          "start": 66.48,
+          "end": 66.66,
+          "probability": 0.993896484375
+        },
+        {
+          "text": "抱",
+          "start": 66.66,
+          "end": 66.84,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "者",
+          "start": 66.84,
+          "end": 67.06,
+          "probability": 0.51318359375
+        },
+        {
+          "text": "的",
+          "start": 67.06,
+          "end": 67.16,
+          "probability": 0.99169921875
+        },
+        {
+          "text": "魔",
+          "start": 67.16,
+          "end": 67.4,
+          "probability": 0.379150390625
+        },
+        {
+          "text": "幻",
+          "start": 67.4,
+          "end": 67.6,
+          "probability": 0.9248046875
+        },
+        {
+          "text": "山",
+          "start": 67.6,
+          "end": 67.78,
+          "probability": 0.98681640625
+        },
+        {
+          "text": "城",
+          "start": 67.78,
+          "end": 67.96,
+          "probability": 0.984375
+        }
+      ]
+    }
+  ],
+  "cues": [
+    {
+      "start": 0.0,
+      "end": 1.86,
+      "text": "出不了国 那就去重庆吧",
+      "words": [
+        {
+          "text": "出",
+          "start": 0.0,
+          "end": 0.26,
+          "probability": 0.76123046875
+        },
+        {
+          "text": "不了",
+          "start": 0.26,
+          "end": 0.46,
+          "probability": 0.98291015625
+        },
+        {
+          "text": "国",
+          "start": 0.46,
+          "end": 0.66,
+          "probability": 0.6103515625
+        },
+        {
+          "text": "那",
+          "start": 0.66,
+          "end": 1.02,
+          "probability": 0.417724609375
+        },
+        {
+          "text": "就",
+          "start": 1.02,
+          "end": 1.14,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "去",
+          "start": 1.14,
+          "end": 1.26,
+          "probability": 0.9892578125
+        },
+        {
+          "text": "重",
+          "start": 1.26,
+          "end": 1.44,
+          "probability": 0.97119140625
+        },
+        {
+          "text": "庆",
+          "start": 1.44,
+          "end": 1.64,
+          "probability": 0.9912109375
+        },
+        {
+          "text": "吧",
+          "start": 1.64,
+          "end": 1.86,
+          "probability": 0.9931640625
+        }
+      ]
+    },
+    {
+      "start": 1.86,
+      "end": 4.6,
+      "text": "因为去了重庆 就等于去了全世界",
+      "words": [
+        {
+          "text": "因为",
+          "start": 1.86,
+          "end": 2.26,
+          "probability": 0.90966796875
+        },
+        {
+          "text": "去了",
+          "start": 2.26,
+          "end": 2.52,
+          "probability": 0.9541015625
+        },
+        {
+          "text": "重",
+          "start": 2.52,
+          "end": 2.82,
+          "probability": 0.98046875
+        },
+        {
+          "text": "庆",
+          "start": 2.82,
+          "end": 3.02,
+          "probability": 1.0
+        },
+        {
+          "text": "就",
+          "start": 3.02,
+          "end": 3.4,
+          "probability": 0.5185546875
+        },
+        {
+          "text": "等",
+          "start": 3.4,
+          "end": 3.58,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "于",
+          "start": 3.58,
+          "end": 3.74,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "去了",
+          "start": 3.74,
+          "end": 4.02,
+          "probability": 0.99462890625
+        },
+        {
+          "text": "全",
+          "start": 4.02,
+          "end": 4.28,
+          "probability": 0.98583984375
+        },
+        {
+          "text": "世界",
+          "start": 4.28,
+          "end": 4.6,
+          "probability": 0.9970703125
+        }
+      ]
+    },
+    {
+      "start": 4.6,
+      "end": 8.98,
+      "text": "一 去了红牙洞 就等于去了现实版的千语千学",
+      "words": [
+        {
+          "text": "一",
+          "start": 4.6,
+          "end": 5.38,
+          "probability": 0.75927734375
+        },
+        {
+          "text": "去了",
+          "start": 5.76,
+          "end": 5.98,
+          "probability": 0.99267578125
+        },
+        {
+          "text": "红",
+          "start": 5.98,
+          "end": 6.2,
+          "probability": 0.875732421875
+        },
+        {
+          "text": "牙",
+          "start": 6.2,
+          "end": 6.34,
+          "probability": 0.790283203125
+        },
+        {
+          "text": "洞",
+          "start": 6.34,
+          "end": 6.52,
+          "probability": 0.77880859375
+        },
+        {
+          "text": "就",
+          "start": 6.52,
+          "end": 6.88,
+          "probability": 0.68408203125
+        },
+        {
+          "text": "等",
+          "start": 6.88,
+          "end": 7.04,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "于",
+          "start": 7.04,
+          "end": 7.18,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "去了",
+          "start": 7.18,
+          "end": 7.44,
+          "probability": 0.9892578125
+        },
+        {
+          "text": "现",
+          "start": 7.44,
+          "end": 7.64,
+          "probability": 0.98046875
+        },
+        {
+          "text": "实",
+          "start": 7.64,
+          "end": 7.88,
+          "probability": 0.95947265625
+        },
+        {
+          "text": "版",
+          "start": 7.88,
+          "end": 8.06,
+          "probability": 0.9755859375
+        },
+        {
+          "text": "的",
+          "start": 8.06,
+          "end": 8.22,
+          "probability": 0.986328125
+        },
+        {
+          "text": "千",
+          "start": 8.22,
+          "end": 8.44,
+          "probability": 0.88720703125
+        },
+        {
+          "text": "语",
+          "start": 8.44,
+          "end": 8.6,
+          "probability": 0.950927734375
+        },
+        {
+          "text": "千",
+          "start": 8.6,
+          "end": 8.8,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "学",
+          "start": 8.8,
+          "end": 8.98,
+          "probability": 0.5888671875
+        }
+      ]
+    },
+    {
+      "start": 9.4,
+      "end": 13.16,
+      "text": "二 去了仙女山 就等于去了瑞士的高山草原",
+      "words": [
+        {
+          "text": "二",
+          "start": 9.4,
+          "end": 9.8,
+          "probability": 0.99462890625
+        },
+        {
+          "text": "去了",
+          "start": 10.18,
+          "end": 10.34,
+          "probability": 0.994140625
+        },
+        {
+          "text": "仙",
+          "start": 10.34,
+          "end": 10.5,
+          "probability": 0.91162109375
+        },
+        {
+          "text": "女",
+          "start": 10.5,
+          "end": 10.68,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "山",
+          "start": 10.68,
+          "end": 10.88,
+          "probability": 0.9951171875
+        },
+        {
+          "text": "就",
+          "start": 10.88,
+          "end": 11.26,
+          "probability": 0.884765625
+        },
+        {
+          "text": "等",
+          "start": 11.26,
+          "end": 11.42,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "于",
+          "start": 11.42,
+          "end": 11.56,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "去了",
+          "start": 11.56,
+          "end": 11.82,
+          "probability": 0.99462890625
+        },
+        {
+          "text": "瑞",
+          "start": 11.82,
+          "end": 12.02,
+          "probability": 0.98974609375
+        },
+        {
+          "text": "士",
+          "start": 12.02,
+          "end": 12.24,
+          "probability": 0.9833984375
+        },
+        {
+          "text": "的",
+          "start": 12.24,
+          "end": 12.36,
+          "probability": 0.98046875
+        },
+        {
+          "text": "高",
+          "start": 12.36,
+          "end": 12.56,
+          "probability": 0.99462890625
+        },
+        {
+          "text": "山",
+          "start": 12.56,
+          "end": 12.76,
+          "probability": 0.994140625
+        },
+        {
+          "text": "草",
+          "start": 12.76,
+          "end": 12.94,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "原",
+          "start": 12.94,
+          "end": 13.16,
+          "probability": 0.9697265625
+        }
+      ]
+    },
+    {
+      "start": 13.6,
+      "end": 18.2,
+      "text": "三 去了铜罗山矿山公园 就等于去了加拿大的孟联湖",
+      "words": [
+        {
+          "text": "三",
+          "start": 13.6,
+          "end": 14.0,
+          "probability": 0.982421875
+        },
+        {
+          "text": "去了",
+          "start": 14.4,
+          "end": 14.58,
+          "probability": 0.99658203125
+        },
+        {
+          "text": "铜",
+          "start": 14.58,
+          "end": 14.78,
+          "probability": 0.75244140625
+        },
+        {
+          "text": "罗",
+          "start": 14.78,
+          "end": 14.94,
+          "probability": 0.559967041015625
+        },
+        {
+          "text": "山",
+          "start": 14.94,
+          "end": 15.1,
+          "probability": 0.9951171875
+        },
+        {
+          "text": "矿",
+          "start": 15.1,
+          "end": 15.3,
+          "probability": 0.764892578125
+        },
+        {
+          "text": "山",
+          "start": 15.3,
+          "end": 15.48,
+          "probability": 0.998046875
+        },
+        {
+          "text": "公",
+          "start": 15.48,
+          "end": 15.64,
+          "probability": 0.978515625
+        },
+        {
+          "text": "园",
+          "start": 15.64,
+          "end": 15.84,
+          "probability": 0.984375
+        },
+        {
+          "text": "就",
+          "start": 15.84,
+          "end": 16.26,
+          "probability": 0.6826171875
+        },
+        {
+          "text": "等",
+          "start": 16.26,
+          "end": 16.44,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "于",
+          "start": 16.44,
+          "end": 16.58,
+          "probability": 0.998046875
+        },
+        {
+          "text": "去了",
+          "start": 16.58,
+          "end": 16.86,
+          "probability": 0.9951171875
+        },
+        {
+          "text": "加",
+          "start": 16.86,
+          "end": 17.1,
+          "probability": 0.9951171875
+        },
+        {
+          "text": "拿",
+          "start": 17.1,
+          "end": 17.26,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "大的",
+          "start": 17.26,
+          "end": 17.56,
+          "probability": 0.95654296875
+        },
+        {
+          "text": "孟",
+          "start": 17.56,
+          "end": 17.74,
+          "probability": 0.837158203125
+        },
+        {
+          "text": "联",
+          "start": 17.74,
+          "end": 17.92,
+          "probability": 0.60601806640625
+        },
+        {
+          "text": "湖",
+          "start": 17.92,
+          "end": 18.2,
+          "probability": 0.986572265625
+        }
+      ]
+    },
+    {
+      "start": 18.6,
+      "end": 23.12,
+      "text": "四 去了华盛园孟幻城堡 就等于去了欧洲的铜画城堡",
+      "words": [
+        {
+          "text": "四",
+          "start": 18.6,
+          "end": 19.0,
+          "probability": 0.9912109375
+        },
+        {
+          "text": "去了",
+          "start": 19.38,
+          "end": 19.56,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "华",
+          "start": 19.56,
+          "end": 19.74,
+          "probability": 0.993408203125
+        },
+        {
+          "text": "盛",
+          "start": 19.74,
+          "end": 19.9,
+          "probability": 0.982177734375
+        },
+        {
+          "text": "园",
+          "start": 19.9,
+          "end": 20.08,
+          "probability": 0.773681640625
+        },
+        {
+          "text": "孟",
+          "start": 20.08,
+          "end": 20.26,
+          "probability": 0.970947265625
+        },
+        {
+          "text": "幻",
+          "start": 20.26,
+          "end": 20.46,
+          "probability": 0.7108154296875
+        },
+        {
+          "text": "城",
+          "start": 20.46,
+          "end": 20.64,
+          "probability": 0.98828125
+        },
+        {
+          "text": "堡",
+          "start": 20.64,
+          "end": 20.84,
+          "probability": 0.992919921875
+        },
+        {
+          "text": "就",
+          "start": 20.84,
+          "end": 21.26,
+          "probability": 0.60888671875
+        },
+        {
+          "text": "等",
+          "start": 21.26,
+          "end": 21.42,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "于",
+          "start": 21.42,
+          "end": 21.56,
+          "probability": 0.998046875
+        },
+        {
+          "text": "去了",
+          "start": 21.56,
+          "end": 21.8,
+          "probability": 0.98828125
+        },
+        {
+          "text": "欧",
+          "start": 21.8,
+          "end": 22.0,
+          "probability": 0.996826171875
+        },
+        {
+          "text": "洲",
+          "start": 22.0,
+          "end": 22.18,
+          "probability": 0.9873046875
+        },
+        {
+          "text": "的",
+          "start": 22.18,
+          "end": 22.3,
+          "probability": 0.998046875
+        },
+        {
+          "text": "铜",
+          "start": 22.3,
+          "end": 22.48,
+          "probability": 0.788818359375
+        },
+        {
+          "text": "画",
+          "start": 22.48,
+          "end": 22.72,
+          "probability": 0.36328125
+        },
+        {
+          "text": "城",
+          "start": 22.72,
+          "end": 22.9,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "堡",
+          "start": 22.9,
+          "end": 23.12,
+          "probability": 0.999755859375
+        }
+      ]
+    },
+    {
+      "start": 23.58,
+      "end": 27.62,
+      "text": "五 去了佛图观青鬼站 就等于去了日本的联舱",
+      "words": [
+        {
+          "text": "五",
+          "start": 23.58,
+          "end": 23.98,
+          "probability": 0.9814453125
+        },
+        {
+          "text": "去了",
+          "start": 24.4,
+          "end": 24.56,
+          "probability": 0.998046875
+        },
+        {
+          "text": "佛",
+          "start": 24.56,
+          "end": 24.74,
+          "probability": 0.995849609375
+        },
+        {
+          "text": "图",
+          "start": 24.74,
+          "end": 24.88,
+          "probability": 0.680419921875
+        },
+        {
+          "text": "观",
+          "start": 24.88,
+          "end": 25.08,
+          "probability": 0.51416015625
+        },
+        {
+          "text": "青",
+          "start": 25.08,
+          "end": 25.32,
+          "probability": 0.5517578125
+        },
+        {
+          "text": "鬼",
+          "start": 25.32,
+          "end": 25.52,
+          "probability": 0.62744140625
+        },
+        {
+          "text": "站",
+          "start": 25.52,
+          "end": 25.74,
+          "probability": 0.69921875
+        },
+        {
+          "text": "就",
+          "start": 25.74,
+          "end": 26.14,
+          "probability": 0.7822265625
+        },
+        {
+          "text": "等",
+          "start": 26.14,
+          "end": 26.32,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "于",
+          "start": 26.32,
+          "end": 26.46,
+          "probability": 0.998046875
+        },
+        {
+          "text": "去了",
+          "start": 26.46,
+          "end": 26.72,
+          "probability": 0.99462890625
+        },
+        {
+          "text": "日本",
+          "start": 26.72,
+          "end": 27.04,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "的",
+          "start": 27.04,
+          "end": 27.26,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "联",
+          "start": 27.26,
+          "end": 27.38,
+          "probability": 0.9052734375
+        },
+        {
+          "text": "舱",
+          "start": 27.38,
+          "end": 27.62,
+          "probability": 0.64306640625
+        }
+      ]
+    },
+    {
+      "start": 28.02,
+      "end": 32.48,
+      "text": "六 去了北仓文创原 就等于去了韩国首尔的文艺街区",
+      "words": [
+        {
+          "text": "六",
+          "start": 28.02,
+          "end": 28.38,
+          "probability": 0.1546630859375
+        },
+        {
+          "text": "去了",
+          "start": 28.82,
+          "end": 28.98,
+          "probability": 0.95556640625
+        },
+        {
+          "text": "北",
+          "start": 28.98,
+          "end": 29.18,
+          "probability": 0.9912109375
+        },
+        {
+          "text": "仓",
+          "start": 29.18,
+          "end": 29.34,
+          "probability": 0.53924560546875
+        },
+        {
+          "text": "文",
+          "start": 29.34,
+          "end": 29.48,
+          "probability": 0.5751953125
+        },
+        {
+          "text": "创",
+          "start": 29.48,
+          "end": 29.64,
+          "probability": 0.97412109375
+        },
+        {
+          "text": "原",
+          "start": 29.64,
+          "end": 29.88,
+          "probability": 0.04681396484375
+        },
+        {
+          "text": "就",
+          "start": 29.88,
+          "end": 30.26,
+          "probability": 0.15673828125
+        },
+        {
+          "text": "等",
+          "start": 30.26,
+          "end": 30.4,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "于",
+          "start": 30.4,
+          "end": 30.54,
+          "probability": 0.86962890625
+        },
+        {
+          "text": "去了",
+          "start": 30.54,
+          "end": 30.78,
+          "probability": 0.99609375
+        },
+        {
+          "text": "韩",
+          "start": 30.78,
+          "end": 31.02,
+          "probability": 0.97265625
+        },
+        {
+          "text": "国",
+          "start": 31.02,
+          "end": 31.22,
+          "probability": 0.880859375
+        },
+        {
+          "text": "首",
+          "start": 31.22,
+          "end": 31.42,
+          "probability": 0.9501953125
+        },
+        {
+          "text": "尔",
+          "start": 31.42,
+          "end": 31.54,
+          "probability": 0.983642578125
+        },
+        {
+          "text": "的",
+          "start": 31.54,
+          "end": 31.74,
+          "probability": 0.98681640625
+        },
+        {
+          "text": "文",
+          "start": 31.74,
+          "end": 31.94,
+          "probability": 0.97509765625
+        },
+        {
+          "text": "艺",
+          "start": 31.94,
+          "end": 32.1,
+          "probability": 0.94482421875
+        },
+        {
+          "text": "街",
+          "start": 32.1,
+          "end": 32.28,
+          "probability": 0.98193359375
+        },
+        {
+          "text": "区",
+          "start": 32.28,
+          "end": 32.48,
+          "probability": 0.99560546875
+        }
+      ]
+    },
+    {
+      "start": 32.9,
+      "end": 37.24,
+      "text": "七 去了弗林红酒小镇 就等于去了法国的彩色小镇",
+      "words": [
+        {
+          "text": "七",
+          "start": 32.9,
+          "end": 33.26,
+          "probability": 0.89697265625
+        },
+        {
+          "text": "去了",
+          "start": 33.66,
+          "end": 33.84,
+          "probability": 0.99658203125
+        },
+        {
+          "text": "弗",
+          "start": 33.84,
+          "end": 34.02,
+          "probability": 0.86474609375
+        },
+        {
+          "text": "林",
+          "start": 34.02,
+          "end": 34.16,
+          "probability": 0.8955078125
+        },
+        {
+          "text": "红",
+          "start": 34.16,
+          "end": 34.38,
+          "probability": 0.909423828125
+        },
+        {
+          "text": "酒",
+          "start": 34.38,
+          "end": 34.54,
+          "probability": 0.94091796875
+        },
+        {
+          "text": "小",
+          "start": 34.54,
+          "end": 34.76,
+          "probability": 0.99365234375
+        },
+        {
+          "text": "镇",
+          "start": 34.76,
+          "end": 34.94,
+          "probability": 0.990478515625
+        },
+        {
+          "text": "就",
+          "start": 34.94,
+          "end": 35.34,
+          "probability": 0.76025390625
+        },
+        {
+          "text": "等",
+          "start": 35.34,
+          "end": 35.5,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "于",
+          "start": 35.5,
+          "end": 35.62,
+          "probability": 0.99658203125
+        },
+        {
+          "text": "去了",
+          "start": 35.62,
+          "end": 35.86,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "法",
+          "start": 35.86,
+          "end": 36.12,
+          "probability": 0.998046875
+        },
+        {
+          "text": "国",
+          "start": 36.12,
+          "end": 36.32,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "的",
+          "start": 36.32,
+          "end": 36.46,
+          "probability": 0.99658203125
+        },
+        {
+          "text": "彩",
+          "start": 36.46,
+          "end": 36.66,
+          "probability": 0.9951171875
+        },
+        {
+          "text": "色",
+          "start": 36.66,
+          "end": 36.86,
+          "probability": 0.99462890625
+        },
+        {
+          "text": "小",
+          "start": 36.86,
+          "end": 37.06,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "镇",
+          "start": 37.06,
+          "end": 37.24,
+          "probability": 0.999755859375
+        }
+      ]
+    },
+    {
+      "start": 37.62,
+      "end": 41.96,
+      "text": "八 去了法国水世兵营 就等于去了欧洲的百年庄园",
+      "words": [
+        {
+          "text": "八",
+          "start": 37.62,
+          "end": 37.98,
+          "probability": 0.96826171875
+        },
+        {
+          "text": "去了",
+          "start": 38.42,
+          "end": 38.6,
+          "probability": 0.998046875
+        },
+        {
+          "text": "法",
+          "start": 38.6,
+          "end": 38.92,
+          "probability": 0.998046875
+        },
+        {
+          "text": "国",
+          "start": 38.92,
+          "end": 39.06,
+          "probability": 0.99462890625
+        },
+        {
+          "text": "水",
+          "start": 39.06,
+          "end": 39.24,
+          "probability": 0.962890625
+        },
+        {
+          "text": "世",
+          "start": 39.24,
+          "end": 39.4,
+          "probability": 0.342041015625
+        },
+        {
+          "text": "兵",
+          "start": 39.4,
+          "end": 39.56,
+          "probability": 0.75634765625
+        },
+        {
+          "text": "营",
+          "start": 39.56,
+          "end": 39.78,
+          "probability": 0.9873046875
+        },
+        {
+          "text": "就",
+          "start": 39.78,
+          "end": 40.18,
+          "probability": 0.814453125
+        },
+        {
+          "text": "等",
+          "start": 40.18,
+          "end": 40.34,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "于",
+          "start": 40.34,
+          "end": 40.5,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "去了",
+          "start": 40.5,
+          "end": 40.72,
+          "probability": 0.9931640625
+        },
+        {
+          "text": "欧",
+          "start": 40.72,
+          "end": 40.92,
+          "probability": 0.996826171875
+        },
+        {
+          "text": "洲",
+          "start": 40.92,
+          "end": 41.1,
+          "probability": 0.990234375
+        },
+        {
+          "text": "的",
+          "start": 41.1,
+          "end": 41.22,
+          "probability": 0.994140625
+        },
+        {
+          "text": "百",
+          "start": 41.22,
+          "end": 41.42,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "年",
+          "start": 41.42,
+          "end": 41.62,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "庄",
+          "start": 41.62,
+          "end": 41.76,
+          "probability": 0.942138671875
+        },
+        {
+          "text": "园",
+          "start": 41.76,
+          "end": 41.96,
+          "probability": 0.9306640625
+        }
+      ]
+    },
+    {
+      "start": 42.4,
+      "end": 46.44,
+      "text": "九 去了莱福士广场 就等于去了新加坡的滨海湾",
+      "words": [
+        {
+          "text": "九",
+          "start": 42.4,
+          "end": 42.76,
+          "probability": 0.98974609375
+        },
+        {
+          "text": "去了",
+          "start": 43.22,
+          "end": 43.4,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "莱",
+          "start": 43.4,
+          "end": 43.54,
+          "probability": 0.70947265625
+        },
+        {
+          "text": "福",
+          "start": 43.54,
+          "end": 43.72,
+          "probability": 0.173828125
+        },
+        {
+          "text": "士",
+          "start": 43.72,
+          "end": 43.86,
+          "probability": 0.49267578125
+        },
+        {
+          "text": "广",
+          "start": 43.86,
+          "end": 44.0,
+          "probability": 0.988525390625
+        },
+        {
+          "text": "场",
+          "start": 44.0,
+          "end": 44.28,
+          "probability": 0.99072265625
+        },
+        {
+          "text": "就",
+          "start": 44.28,
+          "end": 44.66,
+          "probability": 0.83984375
+        },
+        {
+          "text": "等",
+          "start": 44.66,
+          "end": 44.82,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "于",
+          "start": 44.82,
+          "end": 44.96,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "去了",
+          "start": 44.96,
+          "end": 45.2,
+          "probability": 0.99658203125
+        },
+        {
+          "text": "新",
+          "start": 45.2,
+          "end": 45.4,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "加",
+          "start": 45.4,
+          "end": 45.56,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "坡",
+          "start": 45.56,
+          "end": 45.74,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "的",
+          "start": 45.74,
+          "end": 45.9,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "滨",
+          "start": 45.9,
+          "end": 46.04,
+          "probability": 0.869140625
+        },
+        {
+          "text": "海",
+          "start": 46.04,
+          "end": 46.3,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "湾",
+          "start": 46.3,
+          "end": 46.44,
+          "probability": 0.95654296875
+        }
+      ]
+    },
+    {
+      "start": 46.9,
+      "end": 51.92,
+      "text": "十 去了渠唐侠奎门 就等于去了美国的科罗拉多大峡谷",
+      "words": [
+        {
+          "text": "十",
+          "start": 46.9,
+          "end": 47.26,
+          "probability": 0.93798828125
+        },
+        {
+          "text": "去了",
+          "start": 47.62,
+          "end": 47.9,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "渠",
+          "start": 47.9,
+          "end": 48.08,
+          "probability": 0.787109375
+        },
+        {
+          "text": "唐",
+          "start": 48.08,
+          "end": 48.26,
+          "probability": 0.670166015625
+        },
+        {
+          "text": "侠",
+          "start": 48.26,
+          "end": 48.42,
+          "probability": 0.87939453125
+        },
+        {
+          "text": "奎",
+          "start": 48.42,
+          "end": 48.58,
+          "probability": 0.7210693359375
+        },
+        {
+          "text": "门",
+          "start": 48.58,
+          "end": 48.82,
+          "probability": 0.829345703125
+        },
+        {
+          "text": "就",
+          "start": 48.82,
+          "end": 49.22,
+          "probability": 0.72265625
+        },
+        {
+          "text": "等",
+          "start": 49.22,
+          "end": 49.38,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "于",
+          "start": 49.38,
+          "end": 49.52,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "去了",
+          "start": 49.52,
+          "end": 49.74,
+          "probability": 0.9921875
+        },
+        {
+          "text": "美",
+          "start": 49.74,
+          "end": 49.94,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "国",
+          "start": 49.94,
+          "end": 50.12,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "的",
+          "start": 50.12,
+          "end": 50.24,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "科",
+          "start": 50.24,
+          "end": 50.42,
+          "probability": 0.84716796875
+        },
+        {
+          "text": "罗",
+          "start": 50.42,
+          "end": 50.54,
+          "probability": 0.9638671875
+        },
+        {
+          "text": "拉",
+          "start": 50.54,
+          "end": 50.72,
+          "probability": 0.9931640625
+        },
+        {
+          "text": "多",
+          "start": 50.72,
+          "end": 50.84,
+          "probability": 0.9638671875
+        },
+        {
+          "text": "大",
+          "start": 50.84,
+          "end": 51.02,
+          "probability": 0.98974609375
+        },
+        {
+          "text": "峡",
+          "start": 51.02,
+          "end": 51.2,
+          "probability": 0.6717529296875
+        },
+        {
+          "text": "谷",
+          "start": 51.2,
+          "end": 51.92,
+          "probability": 0.989990234375
+        }
+      ]
+    },
+    {
+      "start": 51.92,
+      "end": 55.7,
+      "text": "十一 去了盛天湖 就等于去了瑞士的高山湖湖",
+      "words": [
+        {
+          "text": "十",
+          "start": 51.92,
+          "end": 52.16,
+          "probability": 0.986328125
+        },
+        {
+          "text": "一",
+          "start": 52.16,
+          "end": 52.32,
+          "probability": 0.9833984375
+        },
+        {
+          "text": "去了",
+          "start": 52.56,
+          "end": 52.8,
+          "probability": 0.99609375
+        },
+        {
+          "text": "盛",
+          "start": 52.8,
+          "end": 52.96,
+          "probability": 0.76953125
+        },
+        {
+          "text": "天",
+          "start": 52.96,
+          "end": 53.16,
+          "probability": 0.9794921875
+        },
+        {
+          "text": "湖",
+          "start": 53.16,
+          "end": 53.4,
+          "probability": 0.9814453125
+        },
+        {
+          "text": "就",
+          "start": 53.4,
+          "end": 53.76,
+          "probability": 0.86962890625
+        },
+        {
+          "text": "等",
+          "start": 53.76,
+          "end": 53.92,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "于",
+          "start": 53.92,
+          "end": 54.06,
+          "probability": 0.998046875
+        },
+        {
+          "text": "去了",
+          "start": 54.06,
+          "end": 54.32,
+          "probability": 0.98681640625
+        },
+        {
+          "text": "瑞",
+          "start": 54.32,
+          "end": 54.54,
+          "probability": 0.990234375
+        },
+        {
+          "text": "士",
+          "start": 54.54,
+          "end": 54.76,
+          "probability": 0.9794921875
+        },
+        {
+          "text": "的",
+          "start": 54.76,
+          "end": 54.9,
+          "probability": 0.990234375
+        },
+        {
+          "text": "高",
+          "start": 54.9,
+          "end": 55.08,
+          "probability": 0.98828125
+        },
+        {
+          "text": "山",
+          "start": 55.08,
+          "end": 55.3,
+          "probability": 0.63525390625
+        },
+        {
+          "text": "湖",
+          "start": 55.3,
+          "end": 55.52,
+          "probability": 0.952880859375
+        },
+        {
+          "text": "湖",
+          "start": 55.52,
+          "end": 55.7,
+          "probability": 0.723876953125
+        }
+      ]
+    },
+    {
+      "start": 56.1,
+      "end": 60.3,
+      "text": "春有轨道交通的列车阴道 下有两江畔的晚风流霞",
+      "words": [
+        {
+          "text": "春",
+          "start": 56.1,
+          "end": 56.46,
+          "probability": 0.7646484375
+        },
+        {
+          "text": "有",
+          "start": 56.46,
+          "end": 56.64,
+          "probability": 0.9384765625
+        },
+        {
+          "text": "轨",
+          "start": 56.64,
+          "end": 56.8,
+          "probability": 0.6690673828125
+        },
+        {
+          "text": "道",
+          "start": 56.8,
+          "end": 56.98,
+          "probability": 0.998046875
+        },
+        {
+          "text": "交",
+          "start": 56.98,
+          "end": 57.14,
+          "probability": 0.91162109375
+        },
+        {
+          "text": "通",
+          "start": 57.14,
+          "end": 57.34,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "的",
+          "start": 57.34,
+          "end": 57.48,
+          "probability": 0.970703125
+        },
+        {
+          "text": "列",
+          "start": 57.48,
+          "end": 57.64,
+          "probability": 0.94580078125
+        },
+        {
+          "text": "车",
+          "start": 57.64,
+          "end": 57.8,
+          "probability": 0.997802734375
+        },
+        {
+          "text": "阴",
+          "start": 57.8,
+          "end": 57.96,
+          "probability": 0.82861328125
+        },
+        {
+          "text": "道",
+          "start": 57.96,
+          "end": 58.14,
+          "probability": 0.9736328125
+        },
+        {
+          "text": "下",
+          "start": 58.44,
+          "end": 58.6,
+          "probability": 0.8955078125
+        },
+        {
+          "text": "有",
+          "start": 58.6,
+          "end": 58.76,
+          "probability": 0.62841796875
+        },
+        {
+          "text": "两",
+          "start": 58.76,
+          "end": 58.96,
+          "probability": 0.962890625
+        },
+        {
+          "text": "江",
+          "start": 58.96,
+          "end": 59.16,
+          "probability": 0.96240234375
+        },
+        {
+          "text": "畔",
+          "start": 59.16,
+          "end": 59.36,
+          "probability": 0.74951171875
+        },
+        {
+          "text": "的",
+          "start": 59.36,
+          "end": 59.5,
+          "probability": 0.98974609375
+        },
+        {
+          "text": "晚",
+          "start": 59.5,
+          "end": 59.68,
+          "probability": 0.90478515625
+        },
+        {
+          "text": "风",
+          "start": 59.68,
+          "end": 59.86,
+          "probability": 0.94091796875
+        },
+        {
+          "text": "流",
+          "start": 59.86,
+          "end": 60.02,
+          "probability": 0.46240234375
+        },
+        {
+          "text": "霞",
+          "start": 60.02,
+          "end": 60.3,
+          "probability": 0.7442626953125
+        }
+      ]
+    },
+    {
+      "start": 60.3,
+      "end": 64.46,
+      "text": "就有山王庭的曾林流津 都有金佛山的冰雪雾滑",
+      "words": [
+        {
+          "text": "就",
+          "start": 60.3,
+          "end": 60.66,
+          "probability": 0.21044921875
+        },
+        {
+          "text": "有",
+          "start": 60.66,
+          "end": 60.82,
+          "probability": 0.99609375
+        },
+        {
+          "text": "山",
+          "start": 60.82,
+          "end": 61.02,
+          "probability": 0.9765625
+        },
+        {
+          "text": "王",
+          "start": 61.02,
+          "end": 61.18,
+          "probability": 0.79150390625
+        },
+        {
+          "text": "庭",
+          "start": 61.18,
+          "end": 61.36,
+          "probability": 0.7490234375
+        },
+        {
+          "text": "的",
+          "start": 61.36,
+          "end": 61.5,
+          "probability": 0.9912109375
+        },
+        {
+          "text": "曾",
+          "start": 61.5,
+          "end": 61.7,
+          "probability": 0.400390625
+        },
+        {
+          "text": "林",
+          "start": 61.7,
+          "end": 61.86,
+          "probability": 0.2086181640625
+        },
+        {
+          "text": "流",
+          "start": 61.86,
+          "end": 62.02,
+          "probability": 0.64501953125
+        },
+        {
+          "text": "津",
+          "start": 62.02,
+          "end": 62.2,
+          "probability": 0.60833740234375
+        },
+        {
+          "text": "都有",
+          "start": 62.56,
+          "end": 62.74,
+          "probability": 0.44970703125
+        },
+        {
+          "text": "金",
+          "start": 62.74,
+          "end": 63.1,
+          "probability": 0.96142578125
+        },
+        {
+          "text": "佛",
+          "start": 63.1,
+          "end": 63.3,
+          "probability": 0.984619140625
+        },
+        {
+          "text": "山",
+          "start": 63.3,
+          "end": 63.48,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "的",
+          "start": 63.48,
+          "end": 63.6,
+          "probability": 0.9921875
+        },
+        {
+          "text": "冰",
+          "start": 63.6,
+          "end": 63.82,
+          "probability": 0.978515625
+        },
+        {
+          "text": "雪",
+          "start": 63.82,
+          "end": 64.04,
+          "probability": 0.99560546875
+        },
+        {
+          "text": "雾",
+          "start": 64.04,
+          "end": 64.2,
+          "probability": 0.675048828125
+        },
+        {
+          "text": "滑",
+          "start": 64.2,
+          "end": 64.46,
+          "probability": 0.64306640625
+        }
+      ]
+    },
+    {
+      "start": 64.46,
+      "end": 67.96,
+      "text": "重庆注定是一座被山水拥抱者的魔幻山城",
+      "words": [
+        {
+          "text": "重",
+          "start": 64.46,
+          "end": 64.82,
+          "probability": 0.8623046875
+        },
+        {
+          "text": "庆",
+          "start": 64.82,
+          "end": 65.0,
+          "probability": 0.996826171875
+        },
+        {
+          "text": "注",
+          "start": 65.0,
+          "end": 65.18,
+          "probability": 0.9443359375
+        },
+        {
+          "text": "定",
+          "start": 65.18,
+          "end": 65.34,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "是",
+          "start": 65.34,
+          "end": 65.48,
+          "probability": 0.9755859375
+        },
+        {
+          "text": "一",
+          "start": 65.48,
+          "end": 65.64,
+          "probability": 0.9921875
+        },
+        {
+          "text": "座",
+          "start": 65.64,
+          "end": 65.82,
+          "probability": 0.989501953125
+        },
+        {
+          "text": "被",
+          "start": 65.82,
+          "end": 66.0,
+          "probability": 0.9443359375
+        },
+        {
+          "text": "山",
+          "start": 66.0,
+          "end": 66.26,
+          "probability": 0.96728515625
+        },
+        {
+          "text": "水",
+          "start": 66.26,
+          "end": 66.48,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "拥",
+          "start": 66.48,
+          "end": 66.66,
+          "probability": 0.993896484375
+        },
+        {
+          "text": "抱",
+          "start": 66.66,
+          "end": 66.84,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "者",
+          "start": 66.84,
+          "end": 67.06,
+          "probability": 0.51318359375
+        },
+        {
+          "text": "的",
+          "start": 67.06,
+          "end": 67.16,
+          "probability": 0.99169921875
+        },
+        {
+          "text": "魔",
+          "start": 67.16,
+          "end": 67.4,
+          "probability": 0.379150390625
+        },
+        {
+          "text": "幻",
+          "start": 67.4,
+          "end": 67.6,
+          "probability": 0.9248046875
+        },
+        {
+          "text": "山",
+          "start": 67.6,
+          "end": 67.78,
+          "probability": 0.98681640625
+        },
+        {
+          "text": "城",
+          "start": 67.78,
+          "end": 67.96,
+          "probability": 0.984375
+        }
+      ]
+    }
+  ]
+}

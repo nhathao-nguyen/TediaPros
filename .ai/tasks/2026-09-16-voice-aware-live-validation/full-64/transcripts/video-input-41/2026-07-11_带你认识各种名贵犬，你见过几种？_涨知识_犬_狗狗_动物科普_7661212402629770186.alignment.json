@@ -1,0 +1,4824 @@
+{
+  "duration": 84.1273125,
+  "language": "zh",
+  "segments": [
+    {
+      "start": 0.0,
+      "end": 1.56,
+      "text": "这种拳我买得起吗",
+      "words": [
+        {
+          "text": "这",
+          "start": 0.0,
+          "end": 0.22,
+          "probability": 0.378173828125
+        },
+        {
+          "text": "种",
+          "start": 0.22,
+          "end": 0.4,
+          "probability": 0.99169921875
+        },
+        {
+          "text": "拳",
+          "start": 0.4,
+          "end": 0.58,
+          "probability": 0.7333984375
+        },
+        {
+          "text": "我",
+          "start": 0.58,
+          "end": 0.78,
+          "probability": 0.947265625
+        },
+        {
+          "text": "买",
+          "start": 0.78,
+          "end": 1.02,
+          "probability": 0.999267578125
+        },
+        {
+          "text": "得",
+          "start": 1.02,
+          "end": 1.12,
+          "probability": 0.88916015625
+        },
+        {
+          "text": "起",
+          "start": 1.12,
+          "end": 1.36,
+          "probability": 0.99560546875
+        },
+        {
+          "text": "吗",
+          "start": 1.36,
+          "end": 1.56,
+          "probability": 0.96826171875
+        }
+      ]
+    },
+    {
+      "start": 1.56,
+      "end": 2.38,
+      "text": "买不起",
+      "words": [
+        {
+          "text": "买",
+          "start": 1.56,
+          "end": 2.14,
+          "probability": 0.881591796875
+        },
+        {
+          "text": "不起",
+          "start": 2.14,
+          "end": 2.38,
+          "probability": 0.9833984375
+        }
+      ]
+    },
+    {
+      "start": 2.38,
+      "end": 4.08,
+      "text": "这是巨型贵宾拳",
+      "words": [
+        {
+          "text": "这是",
+          "start": 2.38,
+          "end": 3.06,
+          "probability": 0.454833984375
+        },
+        {
+          "text": "巨",
+          "start": 3.06,
+          "end": 3.3,
+          "probability": 0.88818359375
+        },
+        {
+          "text": "型",
+          "start": 3.3,
+          "end": 3.48,
+          "probability": 0.96923828125
+        },
+        {
+          "text": "贵",
+          "start": 3.48,
+          "end": 3.66,
+          "probability": 0.94775390625
+        },
+        {
+          "text": "宾",
+          "start": 3.66,
+          "end": 3.8,
+          "probability": 0.972900390625
+        },
+        {
+          "text": "拳",
+          "start": 3.8,
+          "end": 4.08,
+          "probability": 0.99755859375
+        }
+      ]
+    },
+    {
+      "start": 4.08,
+      "end": 5.26,
+      "text": "约十万一只",
+      "words": [
+        {
+          "text": "约",
+          "start": 4.08,
+          "end": 4.58,
+          "probability": 0.9462890625
+        },
+        {
+          "text": "十",
+          "start": 4.58,
+          "end": 4.78,
+          "probability": 0.72607421875
+        },
+        {
+          "text": "万",
+          "start": 4.78,
+          "end": 4.92,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "一",
+          "start": 4.92,
+          "end": 5.08,
+          "probability": 0.61083984375
+        },
+        {
+          "text": "只",
+          "start": 5.08,
+          "end": 5.26,
+          "probability": 0.759765625
+        }
+      ]
+    },
+    {
+      "start": 5.26,
+      "end": 7.06,
+      "text": "这种拳我买得起吗",
+      "words": [
+        {
+          "text": "这",
+          "start": 5.26,
+          "end": 5.68,
+          "probability": 0.83447265625
+        },
+        {
+          "text": "种",
+          "start": 5.68,
+          "end": 5.84,
+          "probability": 0.998046875
+        },
+        {
+          "text": "拳",
+          "start": 5.84,
+          "end": 6.06,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "我",
+          "start": 6.06,
+          "end": 6.26,
+          "probability": 0.99609375
+        },
+        {
+          "text": "买",
+          "start": 6.26,
+          "end": 6.48,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "得",
+          "start": 6.48,
+          "end": 6.58,
+          "probability": 0.986328125
+        },
+        {
+          "text": "起",
+          "start": 6.58,
+          "end": 6.82,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "吗",
+          "start": 6.82,
+          "end": 7.06,
+          "probability": 0.99609375
+        }
+      ]
+    },
+    {
+      "start": 7.06,
+      "end": 7.9,
+      "text": "买不起",
+      "words": [
+        {
+          "text": "买",
+          "start": 7.06,
+          "end": 7.58,
+          "probability": 0.996337890625
+        },
+        {
+          "text": "不起",
+          "start": 7.58,
+          "end": 7.9,
+          "probability": 1.0
+        }
+      ]
+    },
+    {
+      "start": 7.9,
+      "end": 9.46,
+      "text": "这是兰丸牧羊拳",
+      "words": [
+        {
+          "text": "这是",
+          "start": 7.9,
+          "end": 8.5,
+          "probability": 0.95849609375
+        },
+        {
+          "text": "兰",
+          "start": 8.5,
+          "end": 8.72,
+          "probability": 0.64794921875
+        },
+        {
+          "text": "丸",
+          "start": 8.72,
+          "end": 8.88,
+          "probability": 0.685302734375
+        },
+        {
+          "text": "牧",
+          "start": 8.88,
+          "end": 9.02,
+          "probability": 0.8662109375
+        },
+        {
+          "text": "羊",
+          "start": 9.02,
+          "end": 9.18,
+          "probability": 0.872314453125
+        },
+        {
+          "text": "拳",
+          "start": 9.18,
+          "end": 9.46,
+          "probability": 0.998046875
+        }
+      ]
+    },
+    {
+      "start": 9.46,
+      "end": 10.78,
+      "text": "约十五万一只",
+      "words": [
+        {
+          "text": "约",
+          "start": 9.46,
+          "end": 9.9,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "十",
+          "start": 9.9,
+          "end": 10.1,
+          "probability": 0.96533203125
+        },
+        {
+          "text": "五",
+          "start": 10.1,
+          "end": 10.26,
+          "probability": 0.9501953125
+        },
+        {
+          "text": "万",
+          "start": 10.26,
+          "end": 10.4,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "一",
+          "start": 10.4,
+          "end": 10.56,
+          "probability": 0.994140625
+        },
+        {
+          "text": "只",
+          "start": 10.56,
+          "end": 10.78,
+          "probability": 0.9609375
+        }
+      ]
+    },
+    {
+      "start": 10.78,
+      "end": 12.5,
+      "text": "这种拳我买得起吗",
+      "words": [
+        {
+          "text": "这",
+          "start": 10.78,
+          "end": 11.12,
+          "probability": 0.97705078125
+        },
+        {
+          "text": "种",
+          "start": 11.12,
+          "end": 11.3,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "拳",
+          "start": 11.3,
+          "end": 11.5,
+          "probability": 1.0
+        },
+        {
+          "text": "我",
+          "start": 11.5,
+          "end": 11.7,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "买",
+          "start": 11.7,
+          "end": 11.92,
+          "probability": 1.0
+        },
+        {
+          "text": "得",
+          "start": 11.92,
+          "end": 12.04,
+          "probability": 0.99169921875
+        },
+        {
+          "text": "起",
+          "start": 12.04,
+          "end": 12.28,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "吗",
+          "start": 12.28,
+          "end": 12.5,
+          "probability": 0.99853515625
+        }
+      ]
+    },
+    {
+      "start": 12.5,
+      "end": 13.44,
+      "text": "买不起",
+      "words": [
+        {
+          "text": "买",
+          "start": 12.5,
+          "end": 13.12,
+          "probability": 0.998779296875
+        },
+        {
+          "text": "不起",
+          "start": 13.12,
+          "end": 13.44,
+          "probability": 1.0
+        }
+      ]
+    },
+    {
+      "start": 13.44,
+      "end": 15.08,
+      "text": "这是马尔祭司拳",
+      "words": [
+        {
+          "text": "这是",
+          "start": 13.44,
+          "end": 14.14,
+          "probability": 0.98046875
+        },
+        {
+          "text": "马",
+          "start": 14.14,
+          "end": 14.38,
+          "probability": 0.705078125
+        },
+        {
+          "text": "尔",
+          "start": 14.38,
+          "end": 14.52,
+          "probability": 0.995849609375
+        },
+        {
+          "text": "祭",
+          "start": 14.52,
+          "end": 14.68,
+          "probability": 0.6544189453125
+        },
+        {
+          "text": "司",
+          "start": 14.68,
+          "end": 14.82,
+          "probability": 0.6708984375
+        },
+        {
+          "text": "拳",
+          "start": 14.82,
+          "end": 15.08,
+          "probability": 0.998779296875
+        }
+      ]
+    },
+    {
+      "start": 15.08,
+      "end": 16.26,
+      "text": "约八万一只",
+      "words": [
+        {
+          "text": "约",
+          "start": 15.08,
+          "end": 15.5,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "八",
+          "start": 15.5,
+          "end": 15.7,
+          "probability": 0.99267578125
+        },
+        {
+          "text": "万",
+          "start": 15.7,
+          "end": 15.86,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "一",
+          "start": 15.86,
+          "end": 16.02,
+          "probability": 0.998046875
+        },
+        {
+          "text": "只",
+          "start": 16.02,
+          "end": 16.26,
+          "probability": 0.9599609375
+        }
+      ]
+    },
+    {
+      "start": 16.26,
+      "end": 18.0,
+      "text": "这种拳我买得起吗",
+      "words": [
+        {
+          "text": "这",
+          "start": 16.26,
+          "end": 16.6,
+          "probability": 0.98681640625
+        },
+        {
+          "text": "种",
+          "start": 16.6,
+          "end": 16.78,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "拳",
+          "start": 16.78,
+          "end": 16.98,
+          "probability": 0.999755859375
+        },
+        {
+          "text": "我",
+          "start": 16.98,
+          "end": 17.2,
+          "probability": 0.998046875
+        },
+        {
+          "text": "买",
+          "start": 17.2,
+          "end": 17.42,
+          "probability": 1.0
+        },
+        {
+          "text": "得",
+          "start": 17.42,
+          "end": 17.52,
+          "probability": 0.9931640625
+        },
+        {
+          "text": "起",
+          "start": 17.52,
+          "end": 17.74,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "吗",
+          "start": 17.74,
+          "end": 18.0,
+          "probability": 0.99755859375
+        }
+      ]
+    },
+    {
+      "start": 18.0,
+      "end": 19.76,
+      "text": "这是极为有灵性的拳",
+      "words": [
+        {
+          "text": "这是",
+          "start": 18.0,
+          "end": 18.56,
+          "probability": 0.9072265625
+        },
+        {
+          "text": "极",
+          "start": 18.56,
+          "end": 18.8,
+          "probability": 0.822509765625
+        },
+        {
+          "text": "为",
+          "start": 18.8,
+          "end": 18.92,
+          "probability": 0.9814453125
+        },
+        {
+          "text": "有",
+          "start": 18.92,
+          "end": 19.08,
+          "probability": 0.9931640625
+        },
+        {
+          "text": "灵",
+          "start": 19.08,
+          "end": 19.24,
+          "probability": 0.906005859375
+        },
+        {
+          "text": "性",
+          "start": 19.24,
+          "end": 19.38,
+          "probability": 0.97705078125
+        },
+        {
+          "text": "的",
+          "start": 19.38,
+          "end": 19.52,
+          "probability": 0.99560546875
+        },
+        {
+          "text": "拳",
+          "start": 19.52,
+          "end": 19.76,
+          "probability": 0.999267578125
+        }
+      ]
+    },
+    {
+      "start": 19.76,
+      "end": 21.18,
+      "text": "刷到极是祥锐",
+      "words": [
+        {
+          "text": "刷",
+          "start": 19.76,
+          "end": 20.36,
+          "probability": 0.78955078125
+        },
+        {
+          "text": "到",
+          "start": 20.36,
+          "end": 20.52,
+          "probability": 0.8681640625
+        },
+        {
+          "text": "极",
+          "start": 20.52,
+          "end": 20.7,
+          "probability": 0.952880859375
+        },
+        {
+          "text": "是",
+          "start": 20.7,
+          "end": 20.84,
+          "probability": 0.72314453125
+        },
+        {
+          "text": "祥",
+          "start": 20.84,
+          "end": 21.02,
+          "probability": 0.902587890625
+        },
+        {
+          "text": "锐",
+          "start": 21.02,
+          "end": 21.18,
+          "probability": 0.6898193359375
+        }
+      ]
+    },
+    {
+      "start": 21.18,
+      "end": 22.7,
+      "text": "建议留下小花花",
+      "words": [
+        {
+          "text": "建",
+          "start": 21.18,
+          "end": 21.64,
+          "probability": 0.9560546875
+        },
+        {
+          "text": "议",
+          "start": 21.64,
+          "end": 21.78,
+          "probability": 0.998046875
+        },
+        {
+          "text": "留",
+          "start": 21.78,
+          "end": 21.94,
+          "probability": 0.98876953125
+        },
+        {
+          "text": "下",
+          "start": 21.94,
+          "end": 22.1,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "小",
+          "start": 22.1,
+          "end": 22.3,
+          "probability": 0.94970703125
+        },
+        {
+          "text": "花",
+          "start": 22.3,
+          "end": 22.44,
+          "probability": 0.99169921875
+        },
+        {
+          "text": "花",
+          "start": 22.44,
+          "end": 22.7,
+          "probability": 0.99951171875
+        }
+      ]
+    },
+    {
+      "start": 22.7,
+      "end": 24.82,
+      "text": "往后家宅平安福气到来",
+      "words": [
+        {
+          "text": "往",
+          "start": 22.7,
+          "end": 23.2,
+          "probability": 0.9912109375
+        },
+        {
+          "text": "后",
+          "start": 23.2,
+          "end": 23.4,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "家",
+          "start": 23.4,
+          "end": 23.6,
+          "probability": 0.6181640625
+        },
+        {
+          "text": "宅",
+          "start": 23.6,
+          "end": 23.74,
+          "probability": 0.9287109375
+        },
+        {
+          "text": "平",
+          "start": 23.74,
+          "end": 23.92,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "安",
+          "start": 23.92,
+          "end": 24.1,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "福",
+          "start": 24.1,
+          "end": 24.26,
+          "probability": 0.8525390625
+        },
+        {
+          "text": "气",
+          "start": 24.26,
+          "end": 24.44,
+          "probability": 0.93310546875
+        },
+        {
+          "text": "到",
+          "start": 24.44,
+          "end": 24.58,
+          "probability": 0.96728515625
+        },
+        {
+          "text": "来",
+          "start": 24.58,
+          "end": 24.82,
+          "probability": 0.9990234375
+        }
+      ]
+    },
+    {
+      "start": 24.82,
+      "end": 26.54,
+      "text": "这种拳我买得起吗",
+      "words": [
+        {
+          "text": "这",
+          "start": 24.82,
+          "end": 25.16,
+          "probability": 0.98681640625
+        },
+        {
+          "text": "种",
+          "start": 25.16,
+          "end": 25.36,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "拳",
+          "start": 25.36,
+          "end": 25.56,
+          "probability": 0.999755859375
+        },
+        {
+          "text": "我",
+          "start": 25.56,
+          "end": 25.76,
+          "probability": 0.998046875
+        },
+        {
+          "text": "买",
+          "start": 25.76,
+          "end": 25.98,
+          "probability": 1.0
+        },
+        {
+          "text": "得",
+          "start": 25.98,
+          "end": 26.1,
+          "probability": 0.9931640625
+        },
+        {
+          "text": "起",
+          "start": 26.1,
+          "end": 26.34,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "吗",
+          "start": 26.34,
+          "end": 26.54,
+          "probability": 0.99853515625
+        }
+      ]
+    },
+    {
+      "start": 26.54,
+      "end": 27.34,
+      "text": "买不起",
+      "words": [
+        {
+          "text": "买",
+          "start": 26.54,
+          "end": 27.08,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "不起",
+          "start": 27.08,
+          "end": 27.34,
+          "probability": 1.0
+        }
+      ]
+    },
+    {
+      "start": 27.34,
+      "end": 28.88,
+      "text": "这是约客下拳",
+      "words": [
+        {
+          "text": "这是",
+          "start": 27.34,
+          "end": 28.04,
+          "probability": 0.96044921875
+        },
+        {
+          "text": "约",
+          "start": 28.04,
+          "end": 28.24,
+          "probability": 0.766845703125
+        },
+        {
+          "text": "客",
+          "start": 28.24,
+          "end": 28.42,
+          "probability": 0.466064453125
+        },
+        {
+          "text": "下",
+          "start": 28.42,
+          "end": 28.6,
+          "probability": 0.78271484375
+        },
+        {
+          "text": "拳",
+          "start": 28.6,
+          "end": 28.88,
+          "probability": 0.999267578125
+        }
+      ]
+    },
+    {
+      "start": 28.88,
+      "end": 30.02,
+      "text": "约五万一只",
+      "words": [
+        {
+          "text": "约",
+          "start": 28.88,
+          "end": 29.32,
+          "probability": 0.5023345947265625
+        },
+        {
+          "text": "五",
+          "start": 29.32,
+          "end": 29.5,
+          "probability": 0.71044921875
+        },
+        {
+          "text": "万",
+          "start": 29.5,
+          "end": 29.66,
+          "probability": 0.99609375
+        },
+        {
+          "text": "一",
+          "start": 29.66,
+          "end": 29.86,
+          "probability": 0.8974609375
+        },
+        {
+          "text": "只",
+          "start": 29.86,
+          "end": 30.02,
+          "probability": 0.54833984375
+        }
+      ]
+    },
+    {
+      "start": 30.02,
+      "end": 31.82,
+      "text": "这种拳我买得起吗",
+      "words": [
+        {
+          "text": "这",
+          "start": 30.02,
+          "end": 30.44,
+          "probability": 0.6318359375
+        },
+        {
+          "text": "种",
+          "start": 30.44,
+          "end": 30.64,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "拳",
+          "start": 30.64,
+          "end": 30.82,
+          "probability": 0.58441162109375
+        },
+        {
+          "text": "我",
+          "start": 30.82,
+          "end": 31.04,
+          "probability": 0.94873046875
+        },
+        {
+          "text": "买",
+          "start": 31.04,
+          "end": 31.24,
+          "probability": 0.999267578125
+        },
+        {
+          "text": "得",
+          "start": 31.24,
+          "end": 31.36,
+          "probability": 0.9267578125
+        },
+        {
+          "text": "起",
+          "start": 31.36,
+          "end": 31.6,
+          "probability": 0.99658203125
+        },
+        {
+          "text": "吗",
+          "start": 31.6,
+          "end": 31.82,
+          "probability": 0.98291015625
+        }
+      ]
+    },
+    {
+      "start": 31.82,
+      "end": 32.6,
+      "text": "买不起",
+      "words": [
+        {
+          "text": "买",
+          "start": 31.82,
+          "end": 32.36,
+          "probability": 0.95751953125
+        },
+        {
+          "text": "不起",
+          "start": 32.36,
+          "end": 32.6,
+          "probability": 0.98193359375
+        }
+      ]
+    },
+    {
+      "start": 32.6,
+      "end": 34.1,
+      "text": "这是罗威那拳",
+      "words": [
+        {
+          "text": "这是",
+          "start": 32.6,
+          "end": 33.34,
+          "probability": 0.55419921875
+        },
+        {
+          "text": "罗",
+          "start": 33.34,
+          "end": 33.56,
+          "probability": 0.945068359375
+        },
+        {
+          "text": "威",
+          "start": 33.56,
+          "end": 33.7,
+          "probability": 0.897216796875
+        },
+        {
+          "text": "那",
+          "start": 33.7,
+          "end": 33.88,
+          "probability": 0.64306640625
+        },
+        {
+          "text": "拳",
+          "start": 33.88,
+          "end": 34.1,
+          "probability": 0.999267578125
+        }
+      ]
+    },
+    {
+      "start": 34.1,
+      "end": 35.36,
+      "text": "约三万一只",
+      "words": [
+        {
+          "text": "约",
+          "start": 34.1,
+          "end": 34.54,
+          "probability": 0.995361328125
+        },
+        {
+          "text": "三",
+          "start": 34.54,
+          "end": 34.74,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "万",
+          "start": 34.74,
+          "end": 34.9,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "一",
+          "start": 34.9,
+          "end": 35.08,
+          "probability": 0.99560546875
+        },
+        {
+          "text": "只",
+          "start": 35.08,
+          "end": 35.36,
+          "probability": 0.97607421875
+        }
+      ]
+    },
+    {
+      "start": 35.36,
+      "end": 37.02,
+      "text": "这种拳我买得起吗",
+      "words": [
+        {
+          "text": "这",
+          "start": 35.36,
+          "end": 35.66,
+          "probability": 0.98828125
+        },
+        {
+          "text": "种",
+          "start": 35.66,
+          "end": 35.84,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "拳",
+          "start": 35.84,
+          "end": 36.04,
+          "probability": 0.999755859375
+        },
+        {
+          "text": "我",
+          "start": 36.04,
+          "end": 36.24,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "买",
+          "start": 36.24,
+          "end": 36.46,
+          "probability": 1.0
+        },
+        {
+          "text": "得",
+          "start": 36.46,
+          "end": 36.58,
+          "probability": 0.99365234375
+        },
+        {
+          "text": "起",
+          "start": 36.58,
+          "end": 36.82,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "吗",
+          "start": 36.82,
+          "end": 37.02,
+          "probability": 0.9970703125
+        }
+      ]
+    },
+    {
+      "start": 37.02,
+      "end": 37.86,
+      "text": "买不起",
+      "words": [
+        {
+          "text": "买",
+          "start": 37.02,
+          "end": 37.56,
+          "probability": 0.996826171875
+        },
+        {
+          "text": "不起",
+          "start": 37.56,
+          "end": 37.86,
+          "probability": 1.0
+        }
+      ]
+    },
+    {
+      "start": 37.86,
+      "end": 39.24,
+      "text": "这是捷克郎拳",
+      "words": [
+        {
+          "text": "这是",
+          "start": 37.86,
+          "end": 38.5,
+          "probability": 0.94384765625
+        },
+        {
+          "text": "捷",
+          "start": 38.5,
+          "end": 38.72,
+          "probability": 0.801025390625
+        },
+        {
+          "text": "克",
+          "start": 38.72,
+          "end": 38.88,
+          "probability": 0.9580078125
+        },
+        {
+          "text": "郎",
+          "start": 38.88,
+          "end": 39.0,
+          "probability": 0.822998046875
+        },
+        {
+          "text": "拳",
+          "start": 39.0,
+          "end": 39.24,
+          "probability": 0.99951171875
+        }
+      ]
+    },
+    {
+      "start": 39.24,
+      "end": 40.48,
+      "text": "约十万一只",
+      "words": [
+        {
+          "text": "约",
+          "start": 39.24,
+          "end": 39.78,
+          "probability": 0.996826171875
+        },
+        {
+          "text": "十",
+          "start": 39.78,
+          "end": 39.94,
+          "probability": 0.98681640625
+        },
+        {
+          "text": "万",
+          "start": 39.94,
+          "end": 40.08,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "一",
+          "start": 40.08,
+          "end": 40.26,
+          "probability": 0.99560546875
+        },
+        {
+          "text": "只",
+          "start": 40.26,
+          "end": 40.48,
+          "probability": 0.97607421875
+        }
+      ]
+    },
+    {
+      "start": 40.48,
+      "end": 42.16,
+      "text": "这种拳我买得起吗",
+      "words": [
+        {
+          "text": "这",
+          "start": 40.48,
+          "end": 40.82,
+          "probability": 0.99365234375
+        },
+        {
+          "text": "种",
+          "start": 40.82,
+          "end": 40.98,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "拳",
+          "start": 40.98,
+          "end": 41.18,
+          "probability": 0.999755859375
+        },
+        {
+          "text": "我",
+          "start": 41.18,
+          "end": 41.38,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "买",
+          "start": 41.38,
+          "end": 41.6,
+          "probability": 0.999755859375
+        },
+        {
+          "text": "得",
+          "start": 41.6,
+          "end": 41.72,
+          "probability": 0.99560546875
+        },
+        {
+          "text": "起",
+          "start": 41.72,
+          "end": 41.96,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "吗",
+          "start": 41.96,
+          "end": 42.16,
+          "probability": 0.99853515625
+        }
+      ]
+    },
+    {
+      "start": 42.16,
+      "end": 43.1,
+      "text": "买不起",
+      "words": [
+        {
+          "text": "买",
+          "start": 42.16,
+          "end": 42.8,
+          "probability": 0.998291015625
+        },
+        {
+          "text": "不起",
+          "start": 42.8,
+          "end": 43.1,
+          "probability": 1.0
+        }
+      ]
+    },
+    {
+      "start": 43.1,
+      "end": 44.78,
+      "text": "这是棉花面纱拳",
+      "words": [
+        {
+          "text": "这是",
+          "start": 43.1,
+          "end": 43.76,
+          "probability": 0.9912109375
+        },
+        {
+          "text": "棉",
+          "start": 43.76,
+          "end": 43.96,
+          "probability": 0.9765625
+        },
+        {
+          "text": "花",
+          "start": 43.96,
+          "end": 44.14,
+          "probability": 1.0
+        },
+        {
+          "text": "面",
+          "start": 44.14,
+          "end": 44.32,
+          "probability": 0.53564453125
+        },
+        {
+          "text": "纱",
+          "start": 44.32,
+          "end": 44.48,
+          "probability": 0.84716796875
+        },
+        {
+          "text": "拳",
+          "start": 44.48,
+          "end": 44.78,
+          "probability": 0.99951171875
+        }
+      ]
+    },
+    {
+      "start": 44.78,
+      "end": 46.12,
+      "text": "约十五万一只",
+      "words": [
+        {
+          "text": "约",
+          "start": 44.78,
+          "end": 45.26,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "十",
+          "start": 45.26,
+          "end": 45.44,
+          "probability": 0.98095703125
+        },
+        {
+          "text": "五",
+          "start": 45.44,
+          "end": 45.62,
+          "probability": 0.978515625
+        },
+        {
+          "text": "万",
+          "start": 45.62,
+          "end": 45.74,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "一",
+          "start": 45.74,
+          "end": 45.92,
+          "probability": 0.99658203125
+        },
+        {
+          "text": "只",
+          "start": 45.92,
+          "end": 46.12,
+          "probability": 0.9775390625
+        }
+      ]
+    },
+    {
+      "start": 46.12,
+      "end": 47.86,
+      "text": "这种拳我买得起吗",
+      "words": [
+        {
+          "text": "这",
+          "start": 46.12,
+          "end": 46.46,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "种",
+          "start": 46.46,
+          "end": 46.64,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "拳",
+          "start": 46.64,
+          "end": 46.84,
+          "probability": 0.999755859375
+        },
+        {
+          "text": "我",
+          "start": 46.84,
+          "end": 47.04,
+          "probability": 0.998046875
+        },
+        {
+          "text": "买",
+          "start": 47.04,
+          "end": 47.24,
+          "probability": 0.999755859375
+        },
+        {
+          "text": "得",
+          "start": 47.24,
+          "end": 47.36,
+          "probability": 0.99658203125
+        },
+        {
+          "text": "起",
+          "start": 47.36,
+          "end": 47.62,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "吗",
+          "start": 47.62,
+          "end": 47.86,
+          "probability": 0.99853515625
+        }
+      ]
+    },
+    {
+      "start": 47.86,
+      "end": 48.66,
+      "text": "买不起",
+      "words": [
+        {
+          "text": "买",
+          "start": 47.86,
+          "end": 48.36,
+          "probability": 0.999267578125
+        },
+        {
+          "text": "不起",
+          "start": 48.36,
+          "end": 48.66,
+          "probability": 1.0
+        }
+      ]
+    },
+    {
+      "start": 48.66,
+      "end": 50.26,
+      "text": "这是法老王猎拳",
+      "words": [
+        {
+          "text": "这是",
+          "start": 48.66,
+          "end": 49.34,
+          "probability": 0.98974609375
+        },
+        {
+          "text": "法",
+          "start": 49.34,
+          "end": 49.56,
+          "probability": 0.51318359375
+        },
+        {
+          "text": "老",
+          "start": 49.56,
+          "end": 49.7,
+          "probability": 0.94189453125
+        },
+        {
+          "text": "王",
+          "start": 49.7,
+          "end": 49.88,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "猎",
+          "start": 49.88,
+          "end": 50.02,
+          "probability": 0.7264404296875
+        },
+        {
+          "text": "拳",
+          "start": 50.02,
+          "end": 50.26,
+          "probability": 0.99951171875
+        }
+      ]
+    },
+    {
+      "start": 50.26,
+      "end": 51.7,
+      "text": "约二十万一只",
+      "words": [
+        {
+          "text": "约",
+          "start": 50.26,
+          "end": 50.84,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "二",
+          "start": 50.84,
+          "end": 51.02,
+          "probability": 0.99267578125
+        },
+        {
+          "text": "十",
+          "start": 51.02,
+          "end": 51.16,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "万",
+          "start": 51.16,
+          "end": 51.3,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "一",
+          "start": 51.3,
+          "end": 51.5,
+          "probability": 0.99462890625
+        },
+        {
+          "text": "只",
+          "start": 51.5,
+          "end": 51.7,
+          "probability": 0.98583984375
+        }
+      ]
+    },
+    {
+      "start": 51.7,
+      "end": 53.38,
+      "text": "这种拳我买得起吗",
+      "words": [
+        {
+          "text": "这",
+          "start": 51.7,
+          "end": 52.0,
+          "probability": 0.99560546875
+        },
+        {
+          "text": "种",
+          "start": 52.0,
+          "end": 52.18,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "拳",
+          "start": 52.18,
+          "end": 52.38,
+          "probability": 0.999755859375
+        },
+        {
+          "text": "我",
+          "start": 52.38,
+          "end": 52.58,
+          "probability": 0.998046875
+        },
+        {
+          "text": "买",
+          "start": 52.58,
+          "end": 52.8,
+          "probability": 1.0
+        },
+        {
+          "text": "得",
+          "start": 52.8,
+          "end": 52.92,
+          "probability": 0.99560546875
+        },
+        {
+          "text": "起",
+          "start": 52.92,
+          "end": 53.14,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "吗",
+          "start": 53.14,
+          "end": 53.38,
+          "probability": 0.9990234375
+        }
+      ]
+    },
+    {
+      "start": 53.38,
+      "end": 54.28,
+      "text": "买不起",
+      "words": [
+        {
+          "text": "买",
+          "start": 53.38,
+          "end": 53.98,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "不起",
+          "start": 53.98,
+          "end": 54.28,
+          "probability": 1.0
+        }
+      ]
+    },
+    {
+      "start": 54.28,
+      "end": 55.96,
+      "text": "这是阿富汗猎拳",
+      "words": [
+        {
+          "text": "这是",
+          "start": 54.28,
+          "end": 54.92,
+          "probability": 0.9912109375
+        },
+        {
+          "text": "阿",
+          "start": 54.92,
+          "end": 55.16,
+          "probability": 0.998046875
+        },
+        {
+          "text": "富",
+          "start": 55.16,
+          "end": 55.26,
+          "probability": 0.970703125
+        },
+        {
+          "text": "汗",
+          "start": 55.26,
+          "end": 55.44,
+          "probability": 0.7415771484375
+        },
+        {
+          "text": "猎",
+          "start": 55.44,
+          "end": 55.56,
+          "probability": 0.994873046875
+        },
+        {
+          "text": "拳",
+          "start": 55.56,
+          "end": 55.96,
+          "probability": 0.9990234375
+        }
+      ]
+    },
+    {
+      "start": 55.96,
+      "end": 57.0,
+      "text": "约七万一只",
+      "words": [
+        {
+          "text": "约",
+          "start": 55.96,
+          "end": 56.28,
+          "probability": 0.998779296875
+        },
+        {
+          "text": "七",
+          "start": 56.28,
+          "end": 56.46,
+          "probability": 0.99560546875
+        },
+        {
+          "text": "万",
+          "start": 56.46,
+          "end": 56.62,
+          "probability": 0.99658203125
+        },
+        {
+          "text": "一",
+          "start": 56.62,
+          "end": 56.78,
+          "probability": 0.998046875
+        },
+        {
+          "text": "只",
+          "start": 56.78,
+          "end": 57.0,
+          "probability": 0.97314453125
+        }
+      ]
+    },
+    {
+      "start": 57.0,
+      "end": 58.72,
+      "text": "这种拳我买得起吗",
+      "words": [
+        {
+          "text": "这",
+          "start": 57.0,
+          "end": 57.36,
+          "probability": 0.380126953125
+        },
+        {
+          "text": "种",
+          "start": 57.36,
+          "end": 57.54,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "拳",
+          "start": 57.54,
+          "end": 57.72,
+          "probability": 0.66845703125
+        },
+        {
+          "text": "我",
+          "start": 57.72,
+          "end": 57.92,
+          "probability": 0.94921875
+        },
+        {
+          "text": "买",
+          "start": 57.92,
+          "end": 58.16,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "得",
+          "start": 58.16,
+          "end": 58.26,
+          "probability": 0.89990234375
+        },
+        {
+          "text": "起",
+          "start": 58.26,
+          "end": 58.48,
+          "probability": 0.99560546875
+        },
+        {
+          "text": "吗",
+          "start": 58.48,
+          "end": 58.72,
+          "probability": 0.96875
+        }
+      ]
+    },
+    {
+      "start": 58.72,
+      "end": 61.28,
+      "text": "买不起 这是纽波利顿熬拳",
+      "words": [
+        {
+          "text": "买",
+          "start": 58.72,
+          "end": 59.3,
+          "probability": 0.876708984375
+        },
+        {
+          "text": "不起",
+          "start": 59.3,
+          "end": 59.52,
+          "probability": 0.9912109375
+        },
+        {
+          "text": "这是",
+          "start": 59.98,
+          "end": 60.14,
+          "probability": 0.990234375
+        },
+        {
+          "text": "纽",
+          "start": 60.14,
+          "end": 60.36,
+          "probability": 0.707763671875
+        },
+        {
+          "text": "波",
+          "start": 60.36,
+          "end": 60.54,
+          "probability": 0.8642578125
+        },
+        {
+          "text": "利",
+          "start": 60.54,
+          "end": 60.68,
+          "probability": 0.40234375
+        },
+        {
+          "text": "顿",
+          "start": 60.68,
+          "end": 60.8,
+          "probability": 0.7196044921875
+        },
+        {
+          "text": "熬",
+          "start": 60.8,
+          "end": 60.98,
+          "probability": 0.554962158203125
+        },
+        {
+          "text": "拳",
+          "start": 60.98,
+          "end": 61.28,
+          "probability": 0.99755859375
+        }
+      ]
+    },
+    {
+      "start": 61.28,
+      "end": 62.32,
+      "text": "约五万一只",
+      "words": [
+        {
+          "text": "约",
+          "start": 61.28,
+          "end": 61.68,
+          "probability": 0.826171875
+        },
+        {
+          "text": "五",
+          "start": 61.68,
+          "end": 61.86,
+          "probability": 0.49951171875
+        },
+        {
+          "text": "万",
+          "start": 61.86,
+          "end": 61.98,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "一",
+          "start": 61.98,
+          "end": 62.14,
+          "probability": 0.77197265625
+        },
+        {
+          "text": "只",
+          "start": 62.14,
+          "end": 62.32,
+          "probability": 0.68359375
+        }
+      ]
+    },
+    {
+      "start": 62.32,
+      "end": 64.08,
+      "text": "这种拳我买得起吗",
+      "words": [
+        {
+          "text": "这",
+          "start": 62.32,
+          "end": 62.68,
+          "probability": 0.935546875
+        },
+        {
+          "text": "种",
+          "start": 62.68,
+          "end": 62.88,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "拳",
+          "start": 62.88,
+          "end": 63.08,
+          "probability": 0.999755859375
+        },
+        {
+          "text": "我",
+          "start": 63.08,
+          "end": 63.28,
+          "probability": 0.994140625
+        },
+        {
+          "text": "买",
+          "start": 63.28,
+          "end": 63.5,
+          "probability": 0.999755859375
+        },
+        {
+          "text": "得",
+          "start": 63.5,
+          "end": 63.62,
+          "probability": 0.98779296875
+        },
+        {
+          "text": "起",
+          "start": 63.62,
+          "end": 63.84,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "吗",
+          "start": 63.84,
+          "end": 64.08,
+          "probability": 0.99658203125
+        }
+      ]
+    },
+    {
+      "start": 64.08,
+      "end": 66.72,
+      "text": "买不起 这是法国豆牛拳",
+      "words": [
+        {
+          "text": "买",
+          "start": 64.08,
+          "end": 64.6,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "不起",
+          "start": 64.6,
+          "end": 64.94,
+          "probability": 1.0
+        },
+        {
+          "text": "这是",
+          "start": 65.4,
+          "end": 65.56,
+          "probability": 0.998046875
+        },
+        {
+          "text": "法",
+          "start": 65.56,
+          "end": 65.8,
+          "probability": 0.9951171875
+        },
+        {
+          "text": "国",
+          "start": 65.8,
+          "end": 65.96,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "豆",
+          "start": 65.96,
+          "end": 66.1,
+          "probability": 0.74755859375
+        },
+        {
+          "text": "牛",
+          "start": 66.1,
+          "end": 66.26,
+          "probability": 0.97802734375
+        },
+        {
+          "text": "拳",
+          "start": 66.26,
+          "end": 66.72,
+          "probability": 0.997802734375
+        }
+      ]
+    },
+    {
+      "start": 66.72,
+      "end": 67.66,
+      "text": "约六万一只",
+      "words": [
+        {
+          "text": "约",
+          "start": 66.72,
+          "end": 66.98,
+          "probability": 0.976318359375
+        },
+        {
+          "text": "六",
+          "start": 66.98,
+          "end": 67.14,
+          "probability": 0.99658203125
+        },
+        {
+          "text": "万",
+          "start": 67.14,
+          "end": 67.32,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "一",
+          "start": 67.32,
+          "end": 67.46,
+          "probability": 0.99560546875
+        },
+        {
+          "text": "只",
+          "start": 67.46,
+          "end": 67.66,
+          "probability": 0.97314453125
+        }
+      ]
+    },
+    {
+      "start": 67.66,
+      "end": 69.38,
+      "text": "这种拳我买得起吗",
+      "words": [
+        {
+          "text": "这",
+          "start": 67.66,
+          "end": 68.0,
+          "probability": 0.99365234375
+        },
+        {
+          "text": "种",
+          "start": 68.0,
+          "end": 68.18,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "拳",
+          "start": 68.18,
+          "end": 68.4,
+          "probability": 0.999755859375
+        },
+        {
+          "text": "我",
+          "start": 68.4,
+          "end": 68.58,
+          "probability": 0.99609375
+        },
+        {
+          "text": "买",
+          "start": 68.58,
+          "end": 68.8,
+          "probability": 0.999755859375
+        },
+        {
+          "text": "得",
+          "start": 68.8,
+          "end": 68.92,
+          "probability": 0.9951171875
+        },
+        {
+          "text": "起",
+          "start": 68.92,
+          "end": 69.16,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "吗",
+          "start": 69.16,
+          "end": 69.38,
+          "probability": 0.99853515625
+        }
+      ]
+    },
+    {
+      "start": 69.38,
+      "end": 71.64,
+      "text": "买不起 这是西施拳",
+      "words": [
+        {
+          "text": "买",
+          "start": 69.38,
+          "end": 69.94,
+          "probability": 0.999267578125
+        },
+        {
+          "text": "不起",
+          "start": 69.94,
+          "end": 70.22,
+          "probability": 1.0
+        },
+        {
+          "text": "这是",
+          "start": 70.62,
+          "end": 70.88,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "西",
+          "start": 70.88,
+          "end": 71.1,
+          "probability": 0.8955078125
+        },
+        {
+          "text": "施",
+          "start": 71.1,
+          "end": 71.26,
+          "probability": 0.904296875
+        },
+        {
+          "text": "拳",
+          "start": 71.26,
+          "end": 71.64,
+          "probability": 0.99951171875
+        }
+      ]
+    },
+    {
+      "start": 71.64,
+      "end": 72.74,
+      "text": "约三万一只",
+      "words": [
+        {
+          "text": "约",
+          "start": 71.64,
+          "end": 71.96,
+          "probability": 0.99609375
+        },
+        {
+          "text": "三",
+          "start": 71.96,
+          "end": 72.16,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "万",
+          "start": 72.16,
+          "end": 72.32,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "一",
+          "start": 72.32,
+          "end": 72.5,
+          "probability": 0.99609375
+        },
+        {
+          "text": "只",
+          "start": 72.5,
+          "end": 72.74,
+          "probability": 0.97216796875
+        }
+      ]
+    },
+    {
+      "start": 72.74,
+      "end": 74.42,
+      "text": "这种拳我买得起吗",
+      "words": [
+        {
+          "text": "这",
+          "start": 72.74,
+          "end": 73.06,
+          "probability": 0.99462890625
+        },
+        {
+          "text": "种",
+          "start": 73.06,
+          "end": 73.22,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "拳",
+          "start": 73.22,
+          "end": 73.44,
+          "probability": 0.999755859375
+        },
+        {
+          "text": "我",
+          "start": 73.44,
+          "end": 73.64,
+          "probability": 0.99609375
+        },
+        {
+          "text": "买",
+          "start": 73.64,
+          "end": 73.86,
+          "probability": 0.999755859375
+        },
+        {
+          "text": "得",
+          "start": 73.86,
+          "end": 73.96,
+          "probability": 0.9931640625
+        },
+        {
+          "text": "起",
+          "start": 73.96,
+          "end": 74.2,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "吗",
+          "start": 74.2,
+          "end": 74.42,
+          "probability": 0.99853515625
+        }
+      ]
+    },
+    {
+      "start": 74.42,
+      "end": 76.52,
+      "text": "买不起 这是藏熬",
+      "words": [
+        {
+          "text": "买",
+          "start": 74.42,
+          "end": 75.0,
+          "probability": 0.999267578125
+        },
+        {
+          "text": "不起",
+          "start": 75.0,
+          "end": 75.3,
+          "probability": 1.0
+        },
+        {
+          "text": "这是",
+          "start": 75.86,
+          "end": 76.06,
+          "probability": 0.998046875
+        },
+        {
+          "text": "藏",
+          "start": 76.06,
+          "end": 76.26,
+          "probability": 0.930908203125
+        },
+        {
+          "text": "熬",
+          "start": 76.26,
+          "end": 76.52,
+          "probability": 0.88818359375
+        }
+      ]
+    },
+    {
+      "start": 76.52,
+      "end": 78.4,
+      "text": "这种品项的约一百万一只",
+      "words": [
+        {
+          "text": "这",
+          "start": 76.52,
+          "end": 76.82,
+          "probability": 0.61767578125
+        },
+        {
+          "text": "种",
+          "start": 76.82,
+          "end": 77.0,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "品",
+          "start": 77.0,
+          "end": 77.14,
+          "probability": 0.990234375
+        },
+        {
+          "text": "项",
+          "start": 77.14,
+          "end": 77.32,
+          "probability": 0.87548828125
+        },
+        {
+          "text": "的",
+          "start": 77.32,
+          "end": 77.44,
+          "probability": 0.87744140625
+        },
+        {
+          "text": "约",
+          "start": 77.44,
+          "end": 77.6,
+          "probability": 0.999267578125
+        },
+        {
+          "text": "一",
+          "start": 77.6,
+          "end": 77.74,
+          "probability": 0.9072265625
+        },
+        {
+          "text": "百",
+          "start": 77.74,
+          "end": 77.86,
+          "probability": 0.998046875
+        },
+        {
+          "text": "万",
+          "start": 77.86,
+          "end": 78.02,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "一",
+          "start": 78.02,
+          "end": 78.2,
+          "probability": 0.99169921875
+        },
+        {
+          "text": "只",
+          "start": 78.2,
+          "end": 78.4,
+          "probability": 0.97802734375
+        }
+      ]
+    },
+    {
+      "start": 78.4,
+      "end": 80.14,
+      "text": "这种拳我买得起吗",
+      "words": [
+        {
+          "text": "这",
+          "start": 78.4,
+          "end": 78.74,
+          "probability": 0.9892578125
+        },
+        {
+          "text": "种",
+          "start": 78.74,
+          "end": 78.94,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "拳",
+          "start": 78.94,
+          "end": 79.14,
+          "probability": 0.999755859375
+        },
+        {
+          "text": "我",
+          "start": 79.14,
+          "end": 79.34,
+          "probability": 0.99658203125
+        },
+        {
+          "text": "买",
+          "start": 79.34,
+          "end": 79.56,
+          "probability": 1.0
+        },
+        {
+          "text": "得",
+          "start": 79.56,
+          "end": 79.66,
+          "probability": 0.9951171875
+        },
+        {
+          "text": "起",
+          "start": 79.66,
+          "end": 79.9,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "吗",
+          "start": 79.9,
+          "end": 80.14,
+          "probability": 0.9990234375
+        }
+      ]
+    },
+    {
+      "start": 80.14,
+      "end": 82.7,
+      "text": "买不起 这是墨西哥五毛拳",
+      "words": [
+        {
+          "text": "买",
+          "start": 80.14,
+          "end": 80.72,
+          "probability": 0.999267578125
+        },
+        {
+          "text": "不起",
+          "start": 80.72,
+          "end": 80.96,
+          "probability": 1.0
+        },
+        {
+          "text": "这是",
+          "start": 81.44,
+          "end": 81.64,
+          "probability": 0.998046875
+        },
+        {
+          "text": "墨",
+          "start": 81.64,
+          "end": 81.84,
+          "probability": 0.959228515625
+        },
+        {
+          "text": "西",
+          "start": 81.84,
+          "end": 82.02,
+          "probability": 0.99365234375
+        },
+        {
+          "text": "哥",
+          "start": 82.02,
+          "end": 82.14,
+          "probability": 0.9814453125
+        },
+        {
+          "text": "五",
+          "start": 82.14,
+          "end": 82.3,
+          "probability": 0.76904296875
+        },
+        {
+          "text": "毛",
+          "start": 82.3,
+          "end": 82.42,
+          "probability": 0.99365234375
+        },
+        {
+          "text": "拳",
+          "start": 82.42,
+          "end": 82.7,
+          "probability": 0.998291015625
+        }
+      ]
+    },
+    {
+      "start": 82.7,
+      "end": 83.92,
+      "text": "约十万一只",
+      "words": [
+        {
+          "text": "约",
+          "start": 82.7,
+          "end": 83.26,
+          "probability": 0.998779296875
+        },
+        {
+          "text": "十",
+          "start": 83.26,
+          "end": 83.44,
+          "probability": 0.9892578125
+        },
+        {
+          "text": "万",
+          "start": 83.44,
+          "end": 83.58,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "一",
+          "start": 83.58,
+          "end": 83.74,
+          "probability": 0.99658203125
+        },
+        {
+          "text": "只",
+          "start": 83.74,
+          "end": 83.92,
+          "probability": 0.98583984375
+        }
+      ]
+    }
+  ],
+  "cues": [
+    {
+      "start": 0.0,
+      "end": 1.56,
+      "text": "这种拳我买得起吗",
+      "words": [
+        {
+          "text": "这",
+          "start": 0.0,
+          "end": 0.22,
+          "probability": 0.378173828125
+        },
+        {
+          "text": "种",
+          "start": 0.22,
+          "end": 0.4,
+          "probability": 0.99169921875
+        },
+        {
+          "text": "拳",
+          "start": 0.4,
+          "end": 0.58,
+          "probability": 0.7333984375
+        },
+        {
+          "text": "我",
+          "start": 0.58,
+          "end": 0.78,
+          "probability": 0.947265625
+        },
+        {
+          "text": "买",
+          "start": 0.78,
+          "end": 1.02,
+          "probability": 0.999267578125
+        },
+        {
+          "text": "得",
+          "start": 1.02,
+          "end": 1.12,
+          "probability": 0.88916015625
+        },
+        {
+          "text": "起",
+          "start": 1.12,
+          "end": 1.36,
+          "probability": 0.99560546875
+        },
+        {
+          "text": "吗",
+          "start": 1.36,
+          "end": 1.56,
+          "probability": 0.96826171875
+        }
+      ]
+    },
+    {
+      "start": 1.56,
+      "end": 2.38,
+      "text": "买不起",
+      "words": [
+        {
+          "text": "买",
+          "start": 1.56,
+          "end": 2.14,
+          "probability": 0.881591796875
+        },
+        {
+          "text": "不起",
+          "start": 2.14,
+          "end": 2.38,
+          "probability": 0.9833984375
+        }
+      ]
+    },
+    {
+      "start": 2.38,
+      "end": 4.08,
+      "text": "这是巨型贵宾拳",
+      "words": [
+        {
+          "text": "这是",
+          "start": 2.38,
+          "end": 3.06,
+          "probability": 0.454833984375
+        },
+        {
+          "text": "巨",
+          "start": 3.06,
+          "end": 3.3,
+          "probability": 0.88818359375
+        },
+        {
+          "text": "型",
+          "start": 3.3,
+          "end": 3.48,
+          "probability": 0.96923828125
+        },
+        {
+          "text": "贵",
+          "start": 3.48,
+          "end": 3.66,
+          "probability": 0.94775390625
+        },
+        {
+          "text": "宾",
+          "start": 3.66,
+          "end": 3.8,
+          "probability": 0.972900390625
+        },
+        {
+          "text": "拳",
+          "start": 3.8,
+          "end": 4.08,
+          "probability": 0.99755859375
+        }
+      ]
+    },
+    {
+      "start": 4.08,
+      "end": 5.26,
+      "text": "约十万一只",
+      "words": [
+        {
+          "text": "约",
+          "start": 4.08,
+          "end": 4.58,
+          "probability": 0.9462890625
+        },
+        {
+          "text": "十",
+          "start": 4.58,
+          "end": 4.78,
+          "probability": 0.72607421875
+        },
+        {
+          "text": "万",
+          "start": 4.78,
+          "end": 4.92,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "一",
+          "start": 4.92,
+          "end": 5.08,
+          "probability": 0.61083984375
+        },
+        {
+          "text": "只",
+          "start": 5.08,
+          "end": 5.26,
+          "probability": 0.759765625
+        }
+      ]
+    },
+    {
+      "start": 5.26,
+      "end": 7.06,
+      "text": "这种拳我买得起吗",
+      "words": [
+        {
+          "text": "这",
+          "start": 5.26,
+          "end": 5.68,
+          "probability": 0.83447265625
+        },
+        {
+          "text": "种",
+          "start": 5.68,
+          "end": 5.84,
+          "probability": 0.998046875
+        },
+        {
+          "text": "拳",
+          "start": 5.84,
+          "end": 6.06,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "我",
+          "start": 6.06,
+          "end": 6.26,
+          "probability": 0.99609375
+        },
+        {
+          "text": "买",
+          "start": 6.26,
+          "end": 6.48,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "得",
+          "start": 6.48,
+          "end": 6.58,
+          "probability": 0.986328125
+        },
+        {
+          "text": "起",
+          "start": 6.58,
+          "end": 6.82,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "吗",
+          "start": 6.82,
+          "end": 7.06,
+          "probability": 0.99609375
+        }
+      ]
+    },
+    {
+      "start": 7.06,
+      "end": 7.9,
+      "text": "买不起",
+      "words": [
+        {
+          "text": "买",
+          "start": 7.06,
+          "end": 7.58,
+          "probability": 0.996337890625
+        },
+        {
+          "text": "不起",
+          "start": 7.58,
+          "end": 7.9,
+          "probability": 1.0
+        }
+      ]
+    },
+    {
+      "start": 7.9,
+      "end": 9.46,
+      "text": "这是兰丸牧羊拳",
+      "words": [
+        {
+          "text": "这是",
+          "start": 7.9,
+          "end": 8.5,
+          "probability": 0.95849609375
+        },
+        {
+          "text": "兰",
+          "start": 8.5,
+          "end": 8.72,
+          "probability": 0.64794921875
+        },
+        {
+          "text": "丸",
+          "start": 8.72,
+          "end": 8.88,
+          "probability": 0.685302734375
+        },
+        {
+          "text": "牧",
+          "start": 8.88,
+          "end": 9.02,
+          "probability": 0.8662109375
+        },
+        {
+          "text": "羊",
+          "start": 9.02,
+          "end": 9.18,
+          "probability": 0.872314453125
+        },
+        {
+          "text": "拳",
+          "start": 9.18,
+          "end": 9.46,
+          "probability": 0.998046875
+        }
+      ]
+    },
+    {
+      "start": 9.46,
+      "end": 10.78,
+      "text": "约十五万一只",
+      "words": [
+        {
+          "text": "约",
+          "start": 9.46,
+          "end": 9.9,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "十",
+          "start": 9.9,
+          "end": 10.1,
+          "probability": 0.96533203125
+        },
+        {
+          "text": "五",
+          "start": 10.1,
+          "end": 10.26,
+          "probability": 0.9501953125
+        },
+        {
+          "text": "万",
+          "start": 10.26,
+          "end": 10.4,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "一",
+          "start": 10.4,
+          "end": 10.56,
+          "probability": 0.994140625
+        },
+        {
+          "text": "只",
+          "start": 10.56,
+          "end": 10.78,
+          "probability": 0.9609375
+        }
+      ]
+    },
+    {
+      "start": 10.78,
+      "end": 12.5,
+      "text": "这种拳我买得起吗",
+      "words": [
+        {
+          "text": "这",
+          "start": 10.78,
+          "end": 11.12,
+          "probability": 0.97705078125
+        },
+        {
+          "text": "种",
+          "start": 11.12,
+          "end": 11.3,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "拳",
+          "start": 11.3,
+          "end": 11.5,
+          "probability": 1.0
+        },
+        {
+          "text": "我",
+          "start": 11.5,
+          "end": 11.7,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "买",
+          "start": 11.7,
+          "end": 11.92,
+          "probability": 1.0
+        },
+        {
+          "text": "得",
+          "start": 11.92,
+          "end": 12.04,
+          "probability": 0.99169921875
+        },
+        {
+          "text": "起",
+          "start": 12.04,
+          "end": 12.28,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "吗",
+          "start": 12.28,
+          "end": 12.5,
+          "probability": 0.99853515625
+        }
+      ]
+    },
+    {
+      "start": 12.5,
+      "end": 13.44,
+      "text": "买不起",
+      "words": [
+        {
+          "text": "买",
+          "start": 12.5,
+          "end": 13.12,
+          "probability": 0.998779296875
+        },
+        {
+          "text": "不起",
+          "start": 13.12,
+          "end": 13.44,
+          "probability": 1.0
+        }
+      ]
+    },
+    {
+      "start": 13.44,
+      "end": 15.08,
+      "text": "这是马尔祭司拳",
+      "words": [
+        {
+          "text": "这是",
+          "start": 13.44,
+          "end": 14.14,
+          "probability": 0.98046875
+        },
+        {
+          "text": "马",
+          "start": 14.14,
+          "end": 14.38,
+          "probability": 0.705078125
+        },
+        {
+          "text": "尔",
+          "start": 14.38,
+          "end": 14.52,
+          "probability": 0.995849609375
+        },
+        {
+          "text": "祭",
+          "start": 14.52,
+          "end": 14.68,
+          "probability": 0.6544189453125
+        },
+        {
+          "text": "司",
+          "start": 14.68,
+          "end": 14.82,
+          "probability": 0.6708984375
+        },
+        {
+          "text": "拳",
+          "start": 14.82,
+          "end": 15.08,
+          "probability": 0.998779296875
+        }
+      ]
+    },
+    {
+      "start": 15.08,
+      "end": 16.26,
+      "text": "约八万一只",
+      "words": [
+        {
+          "text": "约",
+          "start": 15.08,
+          "end": 15.5,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "八",
+          "start": 15.5,
+          "end": 15.7,
+          "probability": 0.99267578125
+        },
+        {
+          "text": "万",
+          "start": 15.7,
+          "end": 15.86,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "一",
+          "start": 15.86,
+          "end": 16.02,
+          "probability": 0.998046875
+        },
+        {
+          "text": "只",
+          "start": 16.02,
+          "end": 16.26,
+          "probability": 0.9599609375
+        }
+      ]
+    },
+    {
+      "start": 16.26,
+      "end": 18.0,
+      "text": "这种拳我买得起吗",
+      "words": [
+        {
+          "text": "这",
+          "start": 16.26,
+          "end": 16.6,
+          "probability": 0.98681640625
+        },
+        {
+          "text": "种",
+          "start": 16.6,
+          "end": 16.78,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "拳",
+          "start": 16.78,
+          "end": 16.98,
+          "probability": 0.999755859375
+        },
+        {
+          "text": "我",
+          "start": 16.98,
+          "end": 17.2,
+          "probability": 0.998046875
+        },
+        {
+          "text": "买",
+          "start": 17.2,
+          "end": 17.42,
+          "probability": 1.0
+        },
+        {
+          "text": "得",
+          "start": 17.42,
+          "end": 17.52,
+          "probability": 0.9931640625
+        },
+        {
+          "text": "起",
+          "start": 17.52,
+          "end": 17.74,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "吗",
+          "start": 17.74,
+          "end": 18.0,
+          "probability": 0.99755859375
+        }
+      ]
+    },
+    {
+      "start": 18.0,
+      "end": 19.76,
+      "text": "这是极为有灵性的拳",
+      "words": [
+        {
+          "text": "这是",
+          "start": 18.0,
+          "end": 18.56,
+          "probability": 0.9072265625
+        },
+        {
+          "text": "极",
+          "start": 18.56,
+          "end": 18.8,
+          "probability": 0.822509765625
+        },
+        {
+          "text": "为",
+          "start": 18.8,
+          "end": 18.92,
+          "probability": 0.9814453125
+        },
+        {
+          "text": "有",
+          "start": 18.92,
+          "end": 19.08,
+          "probability": 0.9931640625
+        },
+        {
+          "text": "灵",
+          "start": 19.08,
+          "end": 19.24,
+          "probability": 0.906005859375
+        },
+        {
+          "text": "性",
+          "start": 19.24,
+          "end": 19.38,
+          "probability": 0.97705078125
+        },
+        {
+          "text": "的",
+          "start": 19.38,
+          "end": 19.52,
+          "probability": 0.99560546875
+        },
+        {
+          "text": "拳",
+          "start": 19.52,
+          "end": 19.76,
+          "probability": 0.999267578125
+        }
+      ]
+    },
+    {
+      "start": 19.76,
+      "end": 21.18,
+      "text": "刷到极是祥锐",
+      "words": [
+        {
+          "text": "刷",
+          "start": 19.76,
+          "end": 20.36,
+          "probability": 0.78955078125
+        },
+        {
+          "text": "到",
+          "start": 20.36,
+          "end": 20.52,
+          "probability": 0.8681640625
+        },
+        {
+          "text": "极",
+          "start": 20.52,
+          "end": 20.7,
+          "probability": 0.952880859375
+        },
+        {
+          "text": "是",
+          "start": 20.7,
+          "end": 20.84,
+          "probability": 0.72314453125
+        },
+        {
+          "text": "祥",
+          "start": 20.84,
+          "end": 21.02,
+          "probability": 0.902587890625
+        },
+        {
+          "text": "锐",
+          "start": 21.02,
+          "end": 21.18,
+          "probability": 0.6898193359375
+        }
+      ]
+    },
+    {
+      "start": 21.18,
+      "end": 22.7,
+      "text": "建议留下小花花",
+      "words": [
+        {
+          "text": "建",
+          "start": 21.18,
+          "end": 21.64,
+          "probability": 0.9560546875
+        },
+        {
+          "text": "议",
+          "start": 21.64,
+          "end": 21.78,
+          "probability": 0.998046875
+        },
+        {
+          "text": "留",
+          "start": 21.78,
+          "end": 21.94,
+          "probability": 0.98876953125
+        },
+        {
+          "text": "下",
+          "start": 21.94,
+          "end": 22.1,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "小",
+          "start": 22.1,
+          "end": 22.3,
+          "probability": 0.94970703125
+        },
+        {
+          "text": "花",
+          "start": 22.3,
+          "end": 22.44,
+          "probability": 0.99169921875
+        },
+        {
+          "text": "花",
+          "start": 22.44,
+          "end": 22.7,
+          "probability": 0.99951171875
+        }
+      ]
+    },
+    {
+      "start": 22.7,
+      "end": 24.82,
+      "text": "往后家宅平安福气到来",
+      "words": [
+        {
+          "text": "往",
+          "start": 22.7,
+          "end": 23.2,
+          "probability": 0.9912109375
+        },
+        {
+          "text": "后",
+          "start": 23.2,
+          "end": 23.4,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "家",
+          "start": 23.4,
+          "end": 23.6,
+          "probability": 0.6181640625
+        },
+        {
+          "text": "宅",
+          "start": 23.6,
+          "end": 23.74,
+          "probability": 0.9287109375
+        },
+        {
+          "text": "平",
+          "start": 23.74,
+          "end": 23.92,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "安",
+          "start": 23.92,
+          "end": 24.1,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "福",
+          "start": 24.1,
+          "end": 24.26,
+          "probability": 0.8525390625
+        },
+        {
+          "text": "气",
+          "start": 24.26,
+          "end": 24.44,
+          "probability": 0.93310546875
+        },
+        {
+          "text": "到",
+          "start": 24.44,
+          "end": 24.58,
+          "probability": 0.96728515625
+        },
+        {
+          "text": "来",
+          "start": 24.58,
+          "end": 24.82,
+          "probability": 0.9990234375
+        }
+      ]
+    },
+    {
+      "start": 24.82,
+      "end": 26.54,
+      "text": "这种拳我买得起吗",
+      "words": [
+        {
+          "text": "这",
+          "start": 24.82,
+          "end": 25.16,
+          "probability": 0.98681640625
+        },
+        {
+          "text": "种",
+          "start": 25.16,
+          "end": 25.36,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "拳",
+          "start": 25.36,
+          "end": 25.56,
+          "probability": 0.999755859375
+        },
+        {
+          "text": "我",
+          "start": 25.56,
+          "end": 25.76,
+          "probability": 0.998046875
+        },
+        {
+          "text": "买",
+          "start": 25.76,
+          "end": 25.98,
+          "probability": 1.0
+        },
+        {
+          "text": "得",
+          "start": 25.98,
+          "end": 26.1,
+          "probability": 0.9931640625
+        },
+        {
+          "text": "起",
+          "start": 26.1,
+          "end": 26.34,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "吗",
+          "start": 26.34,
+          "end": 26.54,
+          "probability": 0.99853515625
+        }
+      ]
+    },
+    {
+      "start": 26.54,
+      "end": 27.34,
+      "text": "买不起",
+      "words": [
+        {
+          "text": "买",
+          "start": 26.54,
+          "end": 27.08,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "不起",
+          "start": 27.08,
+          "end": 27.34,
+          "probability": 1.0
+        }
+      ]
+    },
+    {
+      "start": 27.34,
+      "end": 28.88,
+      "text": "这是约客下拳",
+      "words": [
+        {
+          "text": "这是",
+          "start": 27.34,
+          "end": 28.04,
+          "probability": 0.96044921875
+        },
+        {
+          "text": "约",
+          "start": 28.04,
+          "end": 28.24,
+          "probability": 0.766845703125
+        },
+        {
+          "text": "客",
+          "start": 28.24,
+          "end": 28.42,
+          "probability": 0.466064453125
+        },
+        {
+          "text": "下",
+          "start": 28.42,
+          "end": 28.6,
+          "probability": 0.78271484375
+        },
+        {
+          "text": "拳",
+          "start": 28.6,
+          "end": 28.88,
+          "probability": 0.999267578125
+        }
+      ]
+    },
+    {
+      "start": 28.88,
+      "end": 30.02,
+      "text": "约五万一只",
+      "words": [
+        {
+          "text": "约",
+          "start": 28.88,
+          "end": 29.32,
+          "probability": 0.5023345947265625
+        },
+        {
+          "text": "五",
+          "start": 29.32,
+          "end": 29.5,
+          "probability": 0.71044921875
+        },
+        {
+          "text": "万",
+          "start": 29.5,
+          "end": 29.66,
+          "probability": 0.99609375
+        },
+        {
+          "text": "一",
+          "start": 29.66,
+          "end": 29.86,
+          "probability": 0.8974609375
+        },
+        {
+          "text": "只",
+          "start": 29.86,
+          "end": 30.02,
+          "probability": 0.54833984375
+        }
+      ]
+    },
+    {
+      "start": 30.02,
+      "end": 31.82,
+      "text": "这种拳我买得起吗",
+      "words": [
+        {
+          "text": "这",
+          "start": 30.02,
+          "end": 30.44,
+          "probability": 0.6318359375
+        },
+        {
+          "text": "种",
+          "start": 30.44,
+          "end": 30.64,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "拳",
+          "start": 30.64,
+          "end": 30.82,
+          "probability": 0.58441162109375
+        },
+        {
+          "text": "我",
+          "start": 30.82,
+          "end": 31.04,
+          "probability": 0.94873046875
+        },
+        {
+          "text": "买",
+          "start": 31.04,
+          "end": 31.24,
+          "probability": 0.999267578125
+        },
+        {
+          "text": "得",
+          "start": 31.24,
+          "end": 31.36,
+          "probability": 0.9267578125
+        },
+        {
+          "text": "起",
+          "start": 31.36,
+          "end": 31.6,
+          "probability": 0.99658203125
+        },
+        {
+          "text": "吗",
+          "start": 31.6,
+          "end": 31.82,
+          "probability": 0.98291015625
+        }
+      ]
+    },
+    {
+      "start": 31.82,
+      "end": 32.6,
+      "text": "买不起",
+      "words": [
+        {
+          "text": "买",
+          "start": 31.82,
+          "end": 32.36,
+          "probability": 0.95751953125
+        },
+        {
+          "text": "不起",
+          "start": 32.36,
+          "end": 32.6,
+          "probability": 0.98193359375
+        }
+      ]
+    },
+    {
+      "start": 32.6,
+      "end": 34.1,
+      "text": "这是罗威那拳",
+      "words": [
+        {
+          "text": "这是",
+          "start": 32.6,
+          "end": 33.34,
+          "probability": 0.55419921875
+        },
+        {
+          "text": "罗",
+          "start": 33.34,
+          "end": 33.56,
+          "probability": 0.945068359375
+        },
+        {
+          "text": "威",
+          "start": 33.56,
+          "end": 33.7,
+          "probability": 0.897216796875
+        },
+        {
+          "text": "那",
+          "start": 33.7,
+          "end": 33.88,
+          "probability": 0.64306640625
+        },
+        {
+          "text": "拳",
+          "start": 33.88,
+          "end": 34.1,
+          "probability": 0.999267578125
+        }
+      ]
+    },
+    {
+      "start": 34.1,
+      "end": 35.36,
+      "text": "约三万一只",
+      "words": [
+        {
+          "text": "约",
+          "start": 34.1,
+          "end": 34.54,
+          "probability": 0.995361328125
+        },
+        {
+          "text": "三",
+          "start": 34.54,
+          "end": 34.74,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "万",
+          "start": 34.74,
+          "end": 34.9,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "一",
+          "start": 34.9,
+          "end": 35.08,
+          "probability": 0.99560546875
+        },
+        {
+          "text": "只",
+          "start": 35.08,
+          "end": 35.36,
+          "probability": 0.97607421875
+        }
+      ]
+    },
+    {
+      "start": 35.36,
+      "end": 37.02,
+      "text": "这种拳我买得起吗",
+      "words": [
+        {
+          "text": "这",
+          "start": 35.36,
+          "end": 35.66,
+          "probability": 0.98828125
+        },
+        {
+          "text": "种",
+          "start": 35.66,
+          "end": 35.84,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "拳",
+          "start": 35.84,
+          "end": 36.04,
+          "probability": 0.999755859375
+        },
+        {
+          "text": "我",
+          "start": 36.04,
+          "end": 36.24,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "买",
+          "start": 36.24,
+          "end": 36.46,
+          "probability": 1.0
+        },
+        {
+          "text": "得",
+          "start": 36.46,
+          "end": 36.58,
+          "probability": 0.99365234375
+        },
+        {
+          "text": "起",
+          "start": 36.58,
+          "end": 36.82,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "吗",
+          "start": 36.82,
+          "end": 37.02,
+          "probability": 0.9970703125
+        }
+      ]
+    },
+    {
+      "start": 37.02,
+      "end": 37.86,
+      "text": "买不起",
+      "words": [
+        {
+          "text": "买",
+          "start": 37.02,
+          "end": 37.56,
+          "probability": 0.996826171875
+        },
+        {
+          "text": "不起",
+          "start": 37.56,
+          "end": 37.86,
+          "probability": 1.0
+        }
+      ]
+    },
+    {
+      "start": 37.86,
+      "end": 39.24,
+      "text": "这是捷克郎拳",
+      "words": [
+        {
+          "text": "这是",
+          "start": 37.86,
+          "end": 38.5,
+          "probability": 0.94384765625
+        },
+        {
+          "text": "捷",
+          "start": 38.5,
+          "end": 38.72,
+          "probability": 0.801025390625
+        },
+        {
+          "text": "克",
+          "start": 38.72,
+          "end": 38.88,
+          "probability": 0.9580078125
+        },
+        {
+          "text": "郎",
+          "start": 38.88,
+          "end": 39.0,
+          "probability": 0.822998046875
+        },
+        {
+          "text": "拳",
+          "start": 39.0,
+          "end": 39.24,
+          "probability": 0.99951171875
+        }
+      ]
+    },
+    {
+      "start": 39.24,
+      "end": 40.48,
+      "text": "约十万一只",
+      "words": [
+        {
+          "text": "约",
+          "start": 39.24,
+          "end": 39.78,
+          "probability": 0.996826171875
+        },
+        {
+          "text": "十",
+          "start": 39.78,
+          "end": 39.94,
+          "probability": 0.98681640625
+        },
+        {
+          "text": "万",
+          "start": 39.94,
+          "end": 40.08,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "一",
+          "start": 40.08,
+          "end": 40.26,
+          "probability": 0.99560546875
+        },
+        {
+          "text": "只",
+          "start": 40.26,
+          "end": 40.48,
+          "probability": 0.97607421875
+        }
+      ]
+    },
+    {
+      "start": 40.48,
+      "end": 42.16,
+      "text": "这种拳我买得起吗",
+      "words": [
+        {
+          "text": "这",
+          "start": 40.48,
+          "end": 40.82,
+          "probability": 0.99365234375
+        },
+        {
+          "text": "种",
+          "start": 40.82,
+          "end": 40.98,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "拳",
+          "start": 40.98,
+          "end": 41.18,
+          "probability": 0.999755859375
+        },
+        {
+          "text": "我",
+          "start": 41.18,
+          "end": 41.38,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "买",
+          "start": 41.38,
+          "end": 41.6,
+          "probability": 0.999755859375
+        },
+        {
+          "text": "得",
+          "start": 41.6,
+          "end": 41.72,
+          "probability": 0.99560546875
+        },
+        {
+          "text": "起",
+          "start": 41.72,
+          "end": 41.96,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "吗",
+          "start": 41.96,
+          "end": 42.16,
+          "probability": 0.99853515625
+        }
+      ]
+    },
+    {
+      "start": 42.16,
+      "end": 43.1,
+      "text": "买不起",
+      "words": [
+        {
+          "text": "买",
+          "start": 42.16,
+          "end": 42.8,
+          "probability": 0.998291015625
+        },
+        {
+          "text": "不起",
+          "start": 42.8,
+          "end": 43.1,
+          "probability": 1.0
+        }
+      ]
+    },
+    {
+      "start": 43.1,
+      "end": 44.78,
+      "text": "这是棉花面纱拳",
+      "words": [
+        {
+          "text": "这是",
+          "start": 43.1,
+          "end": 43.76,
+          "probability": 0.9912109375
+        },
+        {
+          "text": "棉",
+          "start": 43.76,
+          "end": 43.96,
+          "probability": 0.9765625
+        },
+        {
+          "text": "花",
+          "start": 43.96,
+          "end": 44.14,
+          "probability": 1.0
+        },
+        {
+          "text": "面",
+          "start": 44.14,
+          "end": 44.32,
+          "probability": 0.53564453125
+        },
+        {
+          "text": "纱",
+          "start": 44.32,
+          "end": 44.48,
+          "probability": 0.84716796875
+        },
+        {
+          "text": "拳",
+          "start": 44.48,
+          "end": 44.78,
+          "probability": 0.99951171875
+        }
+      ]
+    },
+    {
+      "start": 44.78,
+      "end": 46.12,
+      "text": "约十五万一只",
+      "words": [
+        {
+          "text": "约",
+          "start": 44.78,
+          "end": 45.26,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "十",
+          "start": 45.26,
+          "end": 45.44,
+          "probability": 0.98095703125
+        },
+        {
+          "text": "五",
+          "start": 45.44,
+          "end": 45.62,
+          "probability": 0.978515625
+        },
+        {
+          "text": "万",
+          "start": 45.62,
+          "end": 45.74,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "一",
+          "start": 45.74,
+          "end": 45.92,
+          "probability": 0.99658203125
+        },
+        {
+          "text": "只",
+          "start": 45.92,
+          "end": 46.12,
+          "probability": 0.9775390625
+        }
+      ]
+    },
+    {
+      "start": 46.12,
+      "end": 47.86,
+      "text": "这种拳我买得起吗",
+      "words": [
+        {
+          "text": "这",
+          "start": 46.12,
+          "end": 46.46,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "种",
+          "start": 46.46,
+          "end": 46.64,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "拳",
+          "start": 46.64,
+          "end": 46.84,
+          "probability": 0.999755859375
+        },
+        {
+          "text": "我",
+          "start": 46.84,
+          "end": 47.04,
+          "probability": 0.998046875
+        },
+        {
+          "text": "买",
+          "start": 47.04,
+          "end": 47.24,
+          "probability": 0.999755859375
+        },
+        {
+          "text": "得",
+          "start": 47.24,
+          "end": 47.36,
+          "probability": 0.99658203125
+        },
+        {
+          "text": "起",
+          "start": 47.36,
+          "end": 47.62,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "吗",
+          "start": 47.62,
+          "end": 47.86,
+          "probability": 0.99853515625
+        }
+      ]
+    },
+    {
+      "start": 47.86,
+      "end": 48.66,
+      "text": "买不起",
+      "words": [
+        {
+          "text": "买",
+          "start": 47.86,
+          "end": 48.36,
+          "probability": 0.999267578125
+        },
+        {
+          "text": "不起",
+          "start": 48.36,
+          "end": 48.66,
+          "probability": 1.0
+        }
+      ]
+    },
+    {
+      "start": 48.66,
+      "end": 50.26,
+      "text": "这是法老王猎拳",
+      "words": [
+        {
+          "text": "这是",
+          "start": 48.66,
+          "end": 49.34,
+          "probability": 0.98974609375
+        },
+        {
+          "text": "法",
+          "start": 49.34,
+          "end": 49.56,
+          "probability": 0.51318359375
+        },
+        {
+          "text": "老",
+          "start": 49.56,
+          "end": 49.7,
+          "probability": 0.94189453125
+        },
+        {
+          "text": "王",
+          "start": 49.7,
+          "end": 49.88,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "猎",
+          "start": 49.88,
+          "end": 50.02,
+          "probability": 0.7264404296875
+        },
+        {
+          "text": "拳",
+          "start": 50.02,
+          "end": 50.26,
+          "probability": 0.99951171875
+        }
+      ]
+    },
+    {
+      "start": 50.26,
+      "end": 51.7,
+      "text": "约二十万一只",
+      "words": [
+        {
+          "text": "约",
+          "start": 50.26,
+          "end": 50.84,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "二",
+          "start": 50.84,
+          "end": 51.02,
+          "probability": 0.99267578125
+        },
+        {
+          "text": "十",
+          "start": 51.02,
+          "end": 51.16,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "万",
+          "start": 51.16,
+          "end": 51.3,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "一",
+          "start": 51.3,
+          "end": 51.5,
+          "probability": 0.99462890625
+        },
+        {
+          "text": "只",
+          "start": 51.5,
+          "end": 51.7,
+          "probability": 0.98583984375
+        }
+      ]
+    },
+    {
+      "start": 51.7,
+      "end": 53.38,
+      "text": "这种拳我买得起吗",
+      "words": [
+        {
+          "text": "这",
+          "start": 51.7,
+          "end": 52.0,
+          "probability": 0.99560546875
+        },
+        {
+          "text": "种",
+          "start": 52.0,
+          "end": 52.18,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "拳",
+          "start": 52.18,
+          "end": 52.38,
+          "probability": 0.999755859375
+        },
+        {
+          "text": "我",
+          "start": 52.38,
+          "end": 52.58,
+          "probability": 0.998046875
+        },
+        {
+          "text": "买",
+          "start": 52.58,
+          "end": 52.8,
+          "probability": 1.0
+        },
+        {
+          "text": "得",
+          "start": 52.8,
+          "end": 52.92,
+          "probability": 0.99560546875
+        },
+        {
+          "text": "起",
+          "start": 52.92,
+          "end": 53.14,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "吗",
+          "start": 53.14,
+          "end": 53.38,
+          "probability": 0.9990234375
+        }
+      ]
+    },
+    {
+      "start": 53.38,
+      "end": 54.28,
+      "text": "买不起",
+      "words": [
+        {
+          "text": "买",
+          "start": 53.38,
+          "end": 53.98,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "不起",
+          "start": 53.98,
+          "end": 54.28,
+          "probability": 1.0
+        }
+      ]
+    },
+    {
+      "start": 54.28,
+      "end": 55.96,
+      "text": "这是阿富汗猎拳",
+      "words": [
+        {
+          "text": "这是",
+          "start": 54.28,
+          "end": 54.92,
+          "probability": 0.9912109375
+        },
+        {
+          "text": "阿",
+          "start": 54.92,
+          "end": 55.16,
+          "probability": 0.998046875
+        },
+        {
+          "text": "富",
+          "start": 55.16,
+          "end": 55.26,
+          "probability": 0.970703125
+        },
+        {
+          "text": "汗",
+          "start": 55.26,
+          "end": 55.44,
+          "probability": 0.7415771484375
+        },
+        {
+          "text": "猎",
+          "start": 55.44,
+          "end": 55.56,
+          "probability": 0.994873046875
+        },
+        {
+          "text": "拳",
+          "start": 55.56,
+          "end": 55.96,
+          "probability": 0.9990234375
+        }
+      ]
+    },
+    {
+      "start": 55.96,
+      "end": 57.0,
+      "text": "约七万一只",
+      "words": [
+        {
+          "text": "约",
+          "start": 55.96,
+          "end": 56.28,
+          "probability": 0.998779296875
+        },
+        {
+          "text": "七",
+          "start": 56.28,
+          "end": 56.46,
+          "probability": 0.99560546875
+        },
+        {
+          "text": "万",
+          "start": 56.46,
+          "end": 56.62,
+          "probability": 0.99658203125
+        },
+        {
+          "text": "一",
+          "start": 56.62,
+          "end": 56.78,
+          "probability": 0.998046875
+        },
+        {
+          "text": "只",
+          "start": 56.78,
+          "end": 57.0,
+          "probability": 0.97314453125
+        }
+      ]
+    },
+    {
+      "start": 57.0,
+      "end": 58.72,
+      "text": "这种拳我买得起吗",
+      "words": [
+        {
+          "text": "这",
+          "start": 57.0,
+          "end": 57.36,
+          "probability": 0.380126953125
+        },
+        {
+          "text": "种",
+          "start": 57.36,
+          "end": 57.54,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "拳",
+          "start": 57.54,
+          "end": 57.72,
+          "probability": 0.66845703125
+        },
+        {
+          "text": "我",
+          "start": 57.72,
+          "end": 57.92,
+          "probability": 0.94921875
+        },
+        {
+          "text": "买",
+          "start": 57.92,
+          "end": 58.16,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "得",
+          "start": 58.16,
+          "end": 58.26,
+          "probability": 0.89990234375
+        },
+        {
+          "text": "起",
+          "start": 58.26,
+          "end": 58.48,
+          "probability": 0.99560546875
+        },
+        {
+          "text": "吗",
+          "start": 58.48,
+          "end": 58.72,
+          "probability": 0.96875
+        }
+      ]
+    },
+    {
+      "start": 58.72,
+      "end": 61.28,
+      "text": "买不起 这是纽波利顿熬拳",
+      "words": [
+        {
+          "text": "买",
+          "start": 58.72,
+          "end": 59.3,
+          "probability": 0.876708984375
+        },
+        {
+          "text": "不起",
+          "start": 59.3,
+          "end": 59.52,
+          "probability": 0.9912109375
+        },
+        {
+          "text": "这是",
+          "start": 59.98,
+          "end": 60.14,
+          "probability": 0.990234375
+        },
+        {
+          "text": "纽",
+          "start": 60.14,
+          "end": 60.36,
+          "probability": 0.707763671875
+        },
+        {
+          "text": "波",
+          "start": 60.36,
+          "end": 60.54,
+          "probability": 0.8642578125
+        },
+        {
+          "text": "利",
+          "start": 60.54,
+          "end": 60.68,
+          "probability": 0.40234375
+        },
+        {
+          "text": "顿",
+          "start": 60.68,
+          "end": 60.8,
+          "probability": 0.7196044921875
+        },
+        {
+          "text": "熬",
+          "start": 60.8,
+          "end": 60.98,
+          "probability": 0.554962158203125
+        },
+        {
+          "text": "拳",
+          "start": 60.98,
+          "end": 61.28,
+          "probability": 0.99755859375
+        }
+      ]
+    },
+    {
+      "start": 61.28,
+      "end": 62.32,
+      "text": "约五万一只",
+      "words": [
+        {
+          "text": "约",
+          "start": 61.28,
+          "end": 61.68,
+          "probability": 0.826171875
+        },
+        {
+          "text": "五",
+          "start": 61.68,
+          "end": 61.86,
+          "probability": 0.49951171875
+        },
+        {
+          "text": "万",
+          "start": 61.86,
+          "end": 61.98,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "一",
+          "start": 61.98,
+          "end": 62.14,
+          "probability": 0.77197265625
+        },
+        {
+          "text": "只",
+          "start": 62.14,
+          "end": 62.32,
+          "probability": 0.68359375
+        }
+      ]
+    },
+    {
+      "start": 62.32,
+      "end": 64.08,
+      "text": "这种拳我买得起吗",
+      "words": [
+        {
+          "text": "这",
+          "start": 62.32,
+          "end": 62.68,
+          "probability": 0.935546875
+        },
+        {
+          "text": "种",
+          "start": 62.68,
+          "end": 62.88,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "拳",
+          "start": 62.88,
+          "end": 63.08,
+          "probability": 0.999755859375
+        },
+        {
+          "text": "我",
+          "start": 63.08,
+          "end": 63.28,
+          "probability": 0.994140625
+        },
+        {
+          "text": "买",
+          "start": 63.28,
+          "end": 63.5,
+          "probability": 0.999755859375
+        },
+        {
+          "text": "得",
+          "start": 63.5,
+          "end": 63.62,
+          "probability": 0.98779296875
+        },
+        {
+          "text": "起",
+          "start": 63.62,
+          "end": 63.84,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "吗",
+          "start": 63.84,
+          "end": 64.08,
+          "probability": 0.99658203125
+        }
+      ]
+    },
+    {
+      "start": 64.08,
+      "end": 66.72,
+      "text": "买不起 这是法国豆牛拳",
+      "words": [
+        {
+          "text": "买",
+          "start": 64.08,
+          "end": 64.6,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "不起",
+          "start": 64.6,
+          "end": 64.94,
+          "probability": 1.0
+        },
+        {
+          "text": "这是",
+          "start": 65.4,
+          "end": 65.56,
+          "probability": 0.998046875
+        },
+        {
+          "text": "法",
+          "start": 65.56,
+          "end": 65.8,
+          "probability": 0.9951171875
+        },
+        {
+          "text": "国",
+          "start": 65.8,
+          "end": 65.96,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "豆",
+          "start": 65.96,
+          "end": 66.1,
+          "probability": 0.74755859375
+        },
+        {
+          "text": "牛",
+          "start": 66.1,
+          "end": 66.26,
+          "probability": 0.97802734375
+        },
+        {
+          "text": "拳",
+          "start": 66.26,
+          "end": 66.72,
+          "probability": 0.997802734375
+        }
+      ]
+    },
+    {
+      "start": 66.72,
+      "end": 67.66,
+      "text": "约六万一只",
+      "words": [
+        {
+          "text": "约",
+          "start": 66.72,
+          "end": 66.98,
+          "probability": 0.976318359375
+        },
+        {
+          "text": "六",
+          "start": 66.98,
+          "end": 67.14,
+          "probability": 0.99658203125
+        },
+        {
+          "text": "万",
+          "start": 67.14,
+          "end": 67.32,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "一",
+          "start": 67.32,
+          "end": 67.46,
+          "probability": 0.99560546875
+        },
+        {
+          "text": "只",
+          "start": 67.46,
+          "end": 67.66,
+          "probability": 0.97314453125
+        }
+      ]
+    },
+    {
+      "start": 67.66,
+      "end": 69.38,
+      "text": "这种拳我买得起吗",
+      "words": [
+        {
+          "text": "这",
+          "start": 67.66,
+          "end": 68.0,
+          "probability": 0.99365234375
+        },
+        {
+          "text": "种",
+          "start": 68.0,
+          "end": 68.18,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "拳",
+          "start": 68.18,
+          "end": 68.4,
+          "probability": 0.999755859375
+        },
+        {
+          "text": "我",
+          "start": 68.4,
+          "end": 68.58,
+          "probability": 0.99609375
+        },
+        {
+          "text": "买",
+          "start": 68.58,
+          "end": 68.8,
+          "probability": 0.999755859375
+        },
+        {
+          "text": "得",
+          "start": 68.8,
+          "end": 68.92,
+          "probability": 0.9951171875
+        },
+        {
+          "text": "起",
+          "start": 68.92,
+          "end": 69.16,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "吗",
+          "start": 69.16,
+          "end": 69.38,
+          "probability": 0.99853515625
+        }
+      ]
+    },
+    {
+      "start": 69.38,
+      "end": 71.64,
+      "text": "买不起 这是西施拳",
+      "words": [
+        {
+          "text": "买",
+          "start": 69.38,
+          "end": 69.94,
+          "probability": 0.999267578125
+        },
+        {
+          "text": "不起",
+          "start": 69.94,
+          "end": 70.22,
+          "probability": 1.0
+        },
+        {
+          "text": "这是",
+          "start": 70.62,
+          "end": 70.88,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "西",
+          "start": 70.88,
+          "end": 71.1,
+          "probability": 0.8955078125
+        },
+        {
+          "text": "施",
+          "start": 71.1,
+          "end": 71.26,
+          "probability": 0.904296875
+        },
+        {
+          "text": "拳",
+          "start": 71.26,
+          "end": 71.64,
+          "probability": 0.99951171875
+        }
+      ]
+    },
+    {
+      "start": 71.64,
+      "end": 72.74,
+      "text": "约三万一只",
+      "words": [
+        {
+          "text": "约",
+          "start": 71.64,
+          "end": 71.96,
+          "probability": 0.99609375
+        },
+        {
+          "text": "三",
+          "start": 71.96,
+          "end": 72.16,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "万",
+          "start": 72.16,
+          "end": 72.32,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "一",
+          "start": 72.32,
+          "end": 72.5,
+          "probability": 0.99609375
+        },
+        {
+          "text": "只",
+          "start": 72.5,
+          "end": 72.74,
+          "probability": 0.97216796875
+        }
+      ]
+    },
+    {
+      "start": 72.74,
+      "end": 74.42,
+      "text": "这种拳我买得起吗",
+      "words": [
+        {
+          "text": "这",
+          "start": 72.74,
+          "end": 73.06,
+          "probability": 0.99462890625
+        },
+        {
+          "text": "种",
+          "start": 73.06,
+          "end": 73.22,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "拳",
+          "start": 73.22,
+          "end": 73.44,
+          "probability": 0.999755859375
+        },
+        {
+          "text": "我",
+          "start": 73.44,
+          "end": 73.64,
+          "probability": 0.99609375
+        },
+        {
+          "text": "买",
+          "start": 73.64,
+          "end": 73.86,
+          "probability": 0.999755859375
+        },
+        {
+          "text": "得",
+          "start": 73.86,
+          "end": 73.96,
+          "probability": 0.9931640625
+        },
+        {
+          "text": "起",
+          "start": 73.96,
+          "end": 74.2,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "吗",
+          "start": 74.2,
+          "end": 74.42,
+          "probability": 0.99853515625
+        }
+      ]
+    },
+    {
+      "start": 74.42,
+      "end": 76.52,
+      "text": "买不起 这是藏熬",
+      "words": [
+        {
+          "text": "买",
+          "start": 74.42,
+          "end": 75.0,
+          "probability": 0.999267578125
+        },
+        {
+          "text": "不起",
+          "start": 75.0,
+          "end": 75.3,
+          "probability": 1.0
+        },
+        {
+          "text": "这是",
+          "start": 75.86,
+          "end": 76.06,
+          "probability": 0.998046875
+        },
+        {
+          "text": "藏",
+          "start": 76.06,
+          "end": 76.26,
+          "probability": 0.930908203125
+        },
+        {
+          "text": "熬",
+          "start": 76.26,
+          "end": 76.52,
+          "probability": 0.88818359375
+        }
+      ]
+    },
+    {
+      "start": 76.52,
+      "end": 78.4,
+      "text": "这种品项的约一百万一只",
+      "words": [
+        {
+          "text": "这",
+          "start": 76.52,
+          "end": 76.82,
+          "probability": 0.61767578125
+        },
+        {
+          "text": "种",
+          "start": 76.82,
+          "end": 77.0,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "品",
+          "start": 77.0,
+          "end": 77.14,
+          "probability": 0.990234375
+        },
+        {
+          "text": "项",
+          "start": 77.14,
+          "end": 77.32,
+          "probability": 0.87548828125
+        },
+        {
+          "text": "的",
+          "start": 77.32,
+          "end": 77.44,
+          "probability": 0.87744140625
+        },
+        {
+          "text": "约",
+          "start": 77.44,
+          "end": 77.6,
+          "probability": 0.999267578125
+        },
+        {
+          "text": "一",
+          "start": 77.6,
+          "end": 77.74,
+          "probability": 0.9072265625
+        },
+        {
+          "text": "百",
+          "start": 77.74,
+          "end": 77.86,
+          "probability": 0.998046875
+        },
+        {
+          "text": "万",
+          "start": 77.86,
+          "end": 78.02,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "一",
+          "start": 78.02,
+          "end": 78.2,
+          "probability": 0.99169921875
+        },
+        {
+          "text": "只",
+          "start": 78.2,
+          "end": 78.4,
+          "probability": 0.97802734375
+        }
+      ]
+    },
+    {
+      "start": 78.4,
+      "end": 80.14,
+      "text": "这种拳我买得起吗",
+      "words": [
+        {
+          "text": "这",
+          "start": 78.4,
+          "end": 78.74,
+          "probability": 0.9892578125
+        },
+        {
+          "text": "种",
+          "start": 78.74,
+          "end": 78.94,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "拳",
+          "start": 78.94,
+          "end": 79.14,
+          "probability": 0.999755859375
+        },
+        {
+          "text": "我",
+          "start": 79.14,
+          "end": 79.34,
+          "probability": 0.99658203125
+        },
+        {
+          "text": "买",
+          "start": 79.34,
+          "end": 79.56,
+          "probability": 1.0
+        },
+        {
+          "text": "得",
+          "start": 79.56,
+          "end": 79.66,
+          "probability": 0.9951171875
+        },
+        {
+          "text": "起",
+          "start": 79.66,
+          "end": 79.9,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "吗",
+          "start": 79.9,
+          "end": 80.14,
+          "probability": 0.9990234375
+        }
+      ]
+    },
+    {
+      "start": 80.14,
+      "end": 82.7,
+      "text": "买不起 这是墨西哥五毛拳",
+      "words": [
+        {
+          "text": "买",
+          "start": 80.14,
+          "end": 80.72,
+          "probability": 0.999267578125
+        },
+        {
+          "text": "不起",
+          "start": 80.72,
+          "end": 80.96,
+          "probability": 1.0
+        },
+        {
+          "text": "这是",
+          "start": 81.44,
+          "end": 81.64,
+          "probability": 0.998046875
+        },
+        {
+          "text": "墨",
+          "start": 81.64,
+          "end": 81.84,
+          "probability": 0.959228515625
+        },
+        {
+          "text": "西",
+          "start": 81.84,
+          "end": 82.02,
+          "probability": 0.99365234375
+        },
+        {
+          "text": "哥",
+          "start": 82.02,
+          "end": 82.14,
+          "probability": 0.9814453125
+        },
+        {
+          "text": "五",
+          "start": 82.14,
+          "end": 82.3,
+          "probability": 0.76904296875
+        },
+        {
+          "text": "毛",
+          "start": 82.3,
+          "end": 82.42,
+          "probability": 0.99365234375
+        },
+        {
+          "text": "拳",
+          "start": 82.42,
+          "end": 82.7,
+          "probability": 0.998291015625
+        }
+      ]
+    },
+    {
+      "start": 82.7,
+      "end": 83.92,
+      "text": "约十万一只",
+      "words": [
+        {
+          "text": "约",
+          "start": 82.7,
+          "end": 83.26,
+          "probability": 0.998779296875
+        },
+        {
+          "text": "十",
+          "start": 83.26,
+          "end": 83.44,
+          "probability": 0.9892578125
+        },
+        {
+          "text": "万",
+          "start": 83.44,
+          "end": 83.58,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "一",
+          "start": 83.58,
+          "end": 83.74,
+          "probability": 0.99658203125
+        },
+        {
+          "text": "只",
+          "start": 83.74,
+          "end": 83.92,
+          "probability": 0.98583984375
+        }
+      ]
+    }
+  ]
+}

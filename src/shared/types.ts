@@ -421,6 +421,7 @@ export interface SubtitleLayoutRequest {
   videoHeight: number
   subRegion?: { x0: number; y0: number; x1: number; y1: number }
   fontId?: string | null
+  fontWeight?: number
   bgEnabled?: boolean
   profile?: SubtitleLayoutProfile
   autoOptimize?: boolean
@@ -448,6 +449,8 @@ export interface BurnReq {
   videoAdjustments?: VideoAdjustments
   video: string
   srt?: string | null
+  /** Optional separate subtitle track specifically used for title/SEO generation (e.g. translated.srt instead of timed.srt or source.srt). */
+  titleSrt?: string | null
   outputDir: string
   /** Optional deterministic file name chosen by a batch job. */
   outputName?: string
@@ -478,6 +481,7 @@ export interface BurnReq {
   subtitleLayoutProfile?: SubtitleLayoutProfile
   subtitleAutoOptimize?: boolean
   subtitleFontSize?: number
+  subtitleFontWeight?: number
   /** Optional ASR/TTS word timing for effects. Burn falls back per cue when it
    * cannot match this timing to the laid-out subtitle text exactly. */
   wordTimings?: Array<{ start: number; end: number; words: TimedWord[] }>
@@ -497,6 +501,7 @@ export interface BurnResult {
   output?: string
   error?: string
   title?: string
+  thumbnailText?: string
   titlePath?: string
   titleError?: string
   seoMetadata?: VideoSeoMetadata
@@ -530,6 +535,8 @@ export interface VideoSeoMetadata {
   description: string
   tags: string[]
   hashtags: string[]
+  /** Short clickbait text (≤40 chars) optimised for thumbnail overlay. */
+  thumbnailText: string
 }
 
 export interface VideoTitleConfig {
@@ -537,7 +544,23 @@ export interface VideoTitleConfig {
   /** auto follows the language of the exported subtitle text. */
   language: string
   serverUrl?: string
+  model?: string
   seo?: Partial<VideoSeoOptions>
+}
+
+export interface AutoShortRetryTitleRequest {
+  itemId: string
+  outputPath?: string
+  artifactDir?: string
+  config?: VideoTitleConfig
+}
+
+export interface AutoShortRetryTitleResult {
+  ok: boolean
+  title?: string
+  titlePath?: string
+  seoMetadata?: VideoSeoMetadata
+  error?: string
 }
 
 export type ResolvedVideoSeoConfig = Omit<VideoTitleConfig, 'seo'> & { seo: VideoSeoOptions }
@@ -814,6 +837,7 @@ export interface TtsSpeechRequest {
 }
 
 export interface TtsCloneRequest {
+  provider?: TtsProvider
   serverUrl?: string
   apiKey?: string
   text: string
@@ -843,6 +867,36 @@ export interface TtsGenerateResult {
   speed?: number
   error?: string
   requestSpans?: AutoShortRequestSpan[]
+}
+
+export interface TtsVoiceProfileRequest {
+  provider?: TtsProvider
+  serverUrl?: string
+  model?: string
+  voice?: string
+  language: string
+  speed?: number
+  options?: Record<string, any>
+  referenceAudioPath?: string
+}
+
+export interface TtsVoiceProfileSummary {
+  ok: boolean
+  profileKey?: string
+  provider?: string
+  model?: string
+  voice?: string
+  locale?: string
+  status?: 'cold' | 'advisory' | 'qualified' | 'stale'
+  metric?: 'estimated-spoken-units-per-second'
+  eligibleSampleCount?: number
+  uniqueTextSampleCount?: number
+  rateP10?: number | null
+  rateMedian?: number | null
+  rateP90?: number | null
+  uncertaintyReasons?: string[]
+  updatedAtUtc?: string | null
+  error?: string
 }
 
 export interface ClonedVoice {
@@ -964,6 +1018,7 @@ export interface AutoShortConfig {
   bgOpacity?: number
   subtitleDisplayStyle?: SubtitleDisplayStyle
   subtitleFontSize?: number
+  subtitleFontWeight?: number
   highlightColor?: string
   subtitleHighlightPop?: boolean
   subtitleLayoutProfile?: SubtitleLayoutProfile
@@ -994,6 +1049,7 @@ export interface AutoShortConfig {
   originalAudioVolume: number
   backgroundMusic?: AutoShortBackgroundMusicConfig
   outputDir: string
+  thumbnailConfig?: AutoShortThumbnailConfig
   executionPolicy?: {
     edgeTtsConcurrency?: 1 | 2
     maxActiveItems?: 1 | 2
@@ -1115,6 +1171,57 @@ export interface AutoShortSttnPreviewProgress {
   message: string
 }
 
+export type AutoShortThumbnailMode = 'first_frame' | 'current_frame'
+
+export type AutoShortThumbnailStyle = 'douyin_yellow' | 'douyin_black' | 'sticker_red' | 'tiktok_white'
+export type AutoShortThumbnailFontSize = 'standard' | 'large' | 'huge'
+
+export interface AutoShortThumbnailTitleOverlay {
+  text: string
+  style?: AutoShortThumbnailStyle
+  position?: 'ocr' | 'top' | 'center' | 'bottom'
+  fontSize?: AutoShortThumbnailFontSize
+}
+
+export interface AutoShortThumbnailConfig {
+  enabled: boolean
+  mode: AutoShortThumbnailMode
+  cleanSubtitles: boolean
+  style?: AutoShortThumbnailStyle
+  position?: 'ocr' | 'top' | 'center' | 'bottom'
+  fontSize?: AutoShortThumbnailFontSize
+  autoTitleFromAi?: boolean
+}
+
+export interface AutoShortThumbnailRequest {
+  videoPath: string
+  mode: AutoShortThumbnailMode
+  timestampSeconds?: number
+  cleanSubtitles?: boolean
+  portraitBlur?: boolean
+  videoAdjustments?: VideoAdjustments
+  ocrRegion?: AutoShortNormalizedRegion | null
+  outputDir: string
+  temporalEdit?: import('./autoShortTemporalEdit').AutoShortTemporalEdit | import('./autoShortCutContract').AutoShortTemporalEditV2
+  titleOverlay?: AutoShortThumbnailTitleOverlay
+}
+
+export type AutoShortThumbnailResult =
+  | {
+      ok: true
+      thumbnailPath: string
+      timestamp: number
+      provider?: 'cuda' | 'cpu'
+      cleaned: boolean
+      detectedOcrRegion?: { x0: number; y0: number; x1: number; y1: number } | null
+    }
+  | { ok: false; error: string }
+
+export interface AutoShortThumbnailProgress {
+  percent: number
+  message: string
+}
+
 export type AutoShortItemStatus =
   | 'idle'
   | 'queued'
@@ -1140,12 +1247,14 @@ export interface AutoShortTaskItem {
   currentStepMessage?: string
   outputPath?: string
   artifactDir?: string
+  thumbnailPath?: string
   error?: string
   extractedCueCount?: number
   translatedCueCount?: number
   generatedVoiceCount?: number
   voice?: string
   title?: string
+  thumbnailText?: string
   titlePath?: string
   titleError?: string
   seoMetadata?: VideoSeoMetadata
@@ -1313,6 +1422,7 @@ export interface AutoShortItemResult {
   generatedVoiceCount?: number
   voice?: string
   title?: string
+  thumbnailText?: string
   titlePath?: string
   titleError?: string
   seoMetadata?: VideoSeoMetadata
@@ -1321,7 +1431,7 @@ export interface AutoShortItemResult {
   /** Opaque translation identity; never contains source text or credentials. */
   translationIdentity?: string
   recovery?: {
-    kind: 'dubbing-duration' | 'tts-quality' | 'translation-content' | 'provider-transient'
+    kind: 'dubbing-duration' | 'tts-quality' | 'translation-content' | 'provider-transient' | 'provider-throttled'
     retryable: boolean
     attempt: 1 | 2
     cueId?: string

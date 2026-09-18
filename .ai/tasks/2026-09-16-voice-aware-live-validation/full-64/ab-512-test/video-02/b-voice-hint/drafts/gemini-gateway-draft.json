@@ -1,0 +1,24 @@
+{
+  "schemaVersion": 2,
+  "state": "draft-validated",
+  "identity": "gemini-gateway:gemini-advanced:gemini-gateway-two-pass-v10:ai-output-parser-v1:gateway-draft-v2:cue-lines-v1:vi:6",
+  "raw": "{\"translations\":{\"cue-54-132840\":\"Dù vậy, món đồ nhỏ này trông thực sự rất ổn.\",\"cue-55-135100\":\"Nếu bạn thực sự có nhu cầu sử dụng,\",\"cue-56-136420\":\"hãy nhớ hỏi kỹ xem\",\"cue-57-137420\":\"sản phẩm có giấy chứng nhận chất lượng và làm từ chất liệu gì nhé.\",\"cue-58-139260\":\"Mọi người hãy cân nhắc kỹ\",\"cue-59-140380\":\"theo hoàn cảnh của mình.\"}}",
+  "rawSha256": "f08a07ffef3235e11a61ccf816ce5a0b3ba7d506945a111681a9597fe06dfa05",
+  "observedModelId": "8c46e95b1a07cecc",
+  "observedModel": "3.5 Flash-Lite",
+  "routeFingerprint": "29ed9729dbdd53e76081fc89bd7f7991b6a6e2c770e964fd8fa2ceaa0c22c646",
+  "sourceDigest": "2a1dad75f23dce99cbebab3c24123349f4ab2a6c9143e0db56be698c84ec7082",
+  "expectedIds": [
+    "cue-54-132840",
+    "cue-55-135100",
+    "cue-56-136420",
+    "cue-57-137420",
+    "cue-58-139260",
+    "cue-59-140380"
+  ],
+  "targetLocale": "vi",
+  "draftPromptVersion": "gemini-gateway-two-pass-v10",
+  "reviewPromptVersion": "gemini-gateway-two-pass-v10",
+  "parserVersion": "ai-output-parser-v1:gateway-draft-v2",
+  "savedAtUtc": "2026-09-16T17:04:37.013Z"
+}

@@ -1,0 +1,30 @@
+{
+  "schemaVersion": 2,
+  "state": "draft-validated",
+  "identity": "gemini-gateway:gemini-advanced:gemini-gateway-two-pass-v10:ai-output-parser-v1:gateway-draft-v2:cue-lines-v1:vi:12",
+  "raw": "{\"translations\":{\"cue-21-27080\":\"chính là giúp loài người dọn sạch chất bẩn trong tai.\",\"cue-22-29300\":\"Còn mèo đốm gỉ,\",\"cue-23-30100\":\"dù không lớn hơn chiếc lá là bao,\",\"cue-24-31620\":\"nhưng lại là loài thú ăn thịt hung mãnh\",\"cue-25-33100\":\"trong khu rừng Sri Lanka.\",\"cue-26-34200\":\"Nguồn thức ăn chính là muỗi,\",\"cue-27-35520\":\"được mệnh danh là chuyên gia diệt muỗi.\",\"cue-28-36640\":\"Chó ↜teacup⟫ mới sinh tuy nhỏ,\",\"cue-29-38240\":\"nhưng lớn lên cũng chỉ đến thế.\",\"cue-30-39280\":\"Thậm chí nhỏ đến mức không bò nổi ra khỏi chiếc dép.\",\"cue-31-41220\":\"Ngựa lùn tuy nhỏ,\",\"cue-32-41940\":\"nhưng toàn thân lại tràn đầy sức mạnh.\"}}",
+  "rawSha256": "46657034d91dad7b976619620dbd20d3617d6ae60700dc44dfd914de9267ff86",
+  "observedModelId": "8c46e95b1a07cecc",
+  "observedModel": "3.5 Flash-Lite",
+  "routeFingerprint": "29ed9729dbdd53e76081fc89bd7f7991b6a6e2c770e964fd8fa2ceaa0c22c646",
+  "sourceDigest": "6adbc82f2bafe6b8c790968306eda03859bcc2d49f63b3476727a65a80d2f55b",
+  "expectedIds": [
+    "cue-21-27080",
+    "cue-22-29300",
+    "cue-23-30100",
+    "cue-24-31620",
+    "cue-25-33100",
+    "cue-26-34200",
+    "cue-27-35520",
+    "cue-28-36640",
+    "cue-29-38240",
+    "cue-30-39280",
+    "cue-31-41220",
+    "cue-32-41940"
+  ],
+  "targetLocale": "vi",
+  "draftPromptVersion": "gemini-gateway-two-pass-v10",
+  "reviewPromptVersion": "gemini-gateway-two-pass-v10",
+  "parserVersion": "ai-output-parser-v1:gateway-draft-v2",
+  "savedAtUtc": "2026-09-16T17:12:18.858Z"
+}

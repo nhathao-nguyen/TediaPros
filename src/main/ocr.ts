@@ -521,9 +521,9 @@ export async function ocrVideoWithVisualTimeline(
       terminateProcessTree(p)
     }
 
-    if (options.signal.aborted) {
+    if (options.signal?.aborted) {
       abortHandler()
-    } else {
+    } else if (options.signal) {
       options.signal.addEventListener('abort', abortHandler, { once: true })
     }
 
@@ -575,7 +575,7 @@ export async function ocrVideoWithVisualTimeline(
       if (settled) return
       settled = true
       if (watchdogTimer) clearTimeout(watchdogTimer)
-      options.signal.removeEventListener('abort', abortHandler)
+      options.signal?.removeEventListener('abort', abortHandler)
       reject(err)
     })
 
@@ -583,8 +583,8 @@ export async function ocrVideoWithVisualTimeline(
       if (settled) return
       settled = true
       if (watchdogTimer) clearTimeout(watchdogTimer)
-      options.signal.removeEventListener('abort', abortHandler)
-      if (options.signal.aborted) {
+      options.signal?.removeEventListener('abort', abortHandler)
+      if (options.signal?.aborted) {
         reject(new Error('Tiến trình OCR đã bị huỷ.'))
         return
       }

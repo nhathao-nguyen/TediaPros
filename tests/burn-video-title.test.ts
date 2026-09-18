@@ -14,7 +14,8 @@ const seo = (title: string): VideoSeoMetadata => ({
   title,
   description: 'Video mô tả chính xác nội dung trong phụ đề.',
   tags: ['nội dung video', 'phụ đề'],
-  hashtags: ['#noidungvideo', '#phude']
+  hashtags: ['#noidungvideo', '#phude'],
+  thumbnailText: ''
 })
 
 async function fixture() {
@@ -68,6 +69,26 @@ test('burn title uses the exported SRT language and video stream duration, then 
       `${title}\n\nDescription:\nVideo mô tả chính xác nội dung trong phụ đề.\n\nTags:\nnội dung video, phụ đề\n\nHashtags:\n#noidungvideo #phude\n`)
     assert.equal(await readFile(f.video, 'utf8'), 'completed video sentinel')
     assert.match(progress[0].message!, /AI.*tiêu đề/u)
+  } finally { await f.cleanup() }
+})
+
+test('completeBurnVideoTitle uses titleSrt when provided instead of srt', async () => {
+  const f = await fixture()
+  const customTitleSrt = join(f.root, 'custom_translated.srt')
+  await writeFile(customTitleSrt, [
+    '1', '00:00:00,000 --> 00:00:01,000', 'Tiêu đề từ bản dịch riêng.', ''
+  ].join('\r\n'), 'utf8')
+  try {
+    const signal = new AbortController().signal
+    const completed = await completeBurnVideoTitle(f.result, { ...f.req, titleSrt: customTitleSrt }, () => {}, signal, {
+      probe: async () => probe(),
+      generate: async (cues) => {
+        assert.equal(cues[0]?.text, 'Tiêu đề từ bản dịch riêng.')
+        return seo('Tiêu đề chuẩn')
+      }
+    })
+    assert.equal(completed.ok, true)
+    assert.equal(completed.title, 'Tiêu đề chuẩn')
   } finally { await f.cleanup() }
 })
 
@@ -132,7 +153,7 @@ test('provider failure and empty title preserve video without exposing provider 
     let writeCount = 0
     for (const generate of [
       async () => { throw new Error('secret-key-sentinel https://private-server.example/api C:\\private\\token.json') },
-      async () => ({ title: '', description: '', tags: [], hashtags: [] }) as VideoSeoMetadata
+      async () => ({ title: '', description: '', tags: [], hashtags: [], thumbnailText: '' }) as VideoSeoMetadata
     ]) {
       const completed = await completeBurnVideoTitle(f.result, f.req, () => {}, new AbortController().signal, {
         probe, generate, write: async () => { writeCount++; return '' }

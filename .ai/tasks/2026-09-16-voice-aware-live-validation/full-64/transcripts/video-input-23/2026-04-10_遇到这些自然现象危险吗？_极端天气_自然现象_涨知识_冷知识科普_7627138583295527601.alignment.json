@@ -1,0 +1,7476 @@
+{
+  "duration": 107.672375,
+  "language": "zh",
+  "segments": [
+    {
+      "start": 0.0,
+      "end": 1.8,
+      "text": "这种自然现象危险吗",
+      "words": [
+        {
+          "text": "这",
+          "start": 0.0,
+          "end": 0.28,
+          "probability": 0.410888671875
+        },
+        {
+          "text": "种",
+          "start": 0.28,
+          "end": 0.48,
+          "probability": 0.98779296875
+        },
+        {
+          "text": "自",
+          "start": 0.48,
+          "end": 0.64,
+          "probability": 0.97265625
+        },
+        {
+          "text": "然",
+          "start": 0.64,
+          "end": 0.78,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "现",
+          "start": 0.78,
+          "end": 0.96,
+          "probability": 0.97509765625
+        },
+        {
+          "text": "象",
+          "start": 0.96,
+          "end": 1.16,
+          "probability": 0.96826171875
+        },
+        {
+          "text": "危",
+          "start": 1.16,
+          "end": 1.36,
+          "probability": 0.97216796875
+        },
+        {
+          "text": "险",
+          "start": 1.36,
+          "end": 1.56,
+          "probability": 0.999755859375
+        },
+        {
+          "text": "吗",
+          "start": 1.56,
+          "end": 1.8,
+          "probability": 0.95068359375
+        }
+      ]
+    },
+    {
+      "start": 1.8,
+      "end": 3.98,
+      "text": "这是遇到了强队留冰雹天气",
+      "words": [
+        {
+          "text": "这是",
+          "start": 1.8,
+          "end": 2.42,
+          "probability": 0.431884765625
+        },
+        {
+          "text": "遇",
+          "start": 2.42,
+          "end": 2.62,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "到了",
+          "start": 2.62,
+          "end": 2.82,
+          "probability": 0.93212890625
+        },
+        {
+          "text": "强",
+          "start": 2.82,
+          "end": 2.98,
+          "probability": 0.887451171875
+        },
+        {
+          "text": "队",
+          "start": 2.98,
+          "end": 3.16,
+          "probability": 0.86474609375
+        },
+        {
+          "text": "留",
+          "start": 3.16,
+          "end": 3.3,
+          "probability": 0.32861328125
+        },
+        {
+          "text": "冰",
+          "start": 3.3,
+          "end": 3.46,
+          "probability": 0.914306640625
+        },
+        {
+          "text": "雹",
+          "start": 3.46,
+          "end": 3.62,
+          "probability": 0.5968017578125
+        },
+        {
+          "text": "天",
+          "start": 3.62,
+          "end": 3.76,
+          "probability": 0.99169921875
+        },
+        {
+          "text": "气",
+          "start": 3.76,
+          "end": 3.98,
+          "probability": 0.97900390625
+        }
+      ]
+    },
+    {
+      "start": 3.98,
+      "end": 6.14,
+      "text": "如果是在野外那就非常危险",
+      "words": [
+        {
+          "text": "如果",
+          "start": 3.98,
+          "end": 4.54,
+          "probability": 0.90234375
+        },
+        {
+          "text": "是",
+          "start": 4.54,
+          "end": 4.78,
+          "probability": 0.98193359375
+        },
+        {
+          "text": "在",
+          "start": 4.78,
+          "end": 4.92,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "野",
+          "start": 4.92,
+          "end": 5.04,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "外",
+          "start": 5.04,
+          "end": 5.18,
+          "probability": 1.0
+        },
+        {
+          "text": "那就",
+          "start": 5.18,
+          "end": 5.4,
+          "probability": 0.57861328125
+        },
+        {
+          "text": "非常",
+          "start": 5.4,
+          "end": 5.68,
+          "probability": 0.98681640625
+        },
+        {
+          "text": "危",
+          "start": 5.68,
+          "end": 5.88,
+          "probability": 0.99462890625
+        },
+        {
+          "text": "险",
+          "start": 5.88,
+          "end": 6.14,
+          "probability": 1.0
+        }
+      ]
+    },
+    {
+      "start": 6.14,
+      "end": 8.2,
+      "text": "躲在树林里是一种错误的行为",
+      "words": [
+        {
+          "text": "躲",
+          "start": 6.14,
+          "end": 6.56,
+          "probability": 0.99365234375
+        },
+        {
+          "text": "在",
+          "start": 6.56,
+          "end": 6.74,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "树",
+          "start": 6.74,
+          "end": 6.86,
+          "probability": 0.996826171875
+        },
+        {
+          "text": "林",
+          "start": 6.86,
+          "end": 7.0,
+          "probability": 0.99169921875
+        },
+        {
+          "text": "里",
+          "start": 7.0,
+          "end": 7.12,
+          "probability": 0.9892578125
+        },
+        {
+          "text": "是",
+          "start": 7.12,
+          "end": 7.3,
+          "probability": 0.99169921875
+        },
+        {
+          "text": "一",
+          "start": 7.3,
+          "end": 7.4,
+          "probability": 0.99658203125
+        },
+        {
+          "text": "种",
+          "start": 7.4,
+          "end": 7.5,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "错",
+          "start": 7.5,
+          "end": 7.68,
+          "probability": 0.98974609375
+        },
+        {
+          "text": "误",
+          "start": 7.68,
+          "end": 7.78,
+          "probability": 0.996337890625
+        },
+        {
+          "text": "的",
+          "start": 7.78,
+          "end": 7.88,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "行",
+          "start": 7.88,
+          "end": 8.02,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "为",
+          "start": 8.02,
+          "end": 8.2,
+          "probability": 0.99658203125
+        }
+      ]
+    },
+    {
+      "start": 8.2,
+      "end": 10.04,
+      "text": "因为这样很容易遭遇雷机",
+      "words": [
+        {
+          "text": "因为",
+          "start": 8.2,
+          "end": 8.7,
+          "probability": 0.97802734375
+        },
+        {
+          "text": "这样",
+          "start": 8.7,
+          "end": 8.96,
+          "probability": 0.99462890625
+        },
+        {
+          "text": "很",
+          "start": 8.96,
+          "end": 9.18,
+          "probability": 0.99609375
+        },
+        {
+          "text": "容易",
+          "start": 9.18,
+          "end": 9.42,
+          "probability": 1.0
+        },
+        {
+          "text": "遭",
+          "start": 9.42,
+          "end": 9.58,
+          "probability": 0.995361328125
+        },
+        {
+          "text": "遇",
+          "start": 9.58,
+          "end": 9.74,
+          "probability": 0.997314453125
+        },
+        {
+          "text": "雷",
+          "start": 9.74,
+          "end": 9.86,
+          "probability": 0.9580078125
+        },
+        {
+          "text": "机",
+          "start": 9.86,
+          "end": 10.04,
+          "probability": 0.6552734375
+        }
+      ]
+    },
+    {
+      "start": 10.04,
+      "end": 12.2,
+      "text": "还有有些冰雹比拳头还要大",
+      "words": [
+        {
+          "text": "还有",
+          "start": 10.04,
+          "end": 10.6,
+          "probability": 0.94873046875
+        },
+        {
+          "text": "有",
+          "start": 10.6,
+          "end": 10.82,
+          "probability": 0.9873046875
+        },
+        {
+          "text": "些",
+          "start": 10.82,
+          "end": 10.96,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "冰",
+          "start": 10.96,
+          "end": 11.12,
+          "probability": 0.994873046875
+        },
+        {
+          "text": "雹",
+          "start": 11.12,
+          "end": 11.28,
+          "probability": 0.971435546875
+        },
+        {
+          "text": "比",
+          "start": 11.28,
+          "end": 11.44,
+          "probability": 0.9921875
+        },
+        {
+          "text": "拳",
+          "start": 11.44,
+          "end": 11.6,
+          "probability": 0.9765625
+        },
+        {
+          "text": "头",
+          "start": 11.6,
+          "end": 11.72,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "还",
+          "start": 11.72,
+          "end": 11.88,
+          "probability": 0.984375
+        },
+        {
+          "text": "要",
+          "start": 11.88,
+          "end": 12.0,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "大",
+          "start": 12.0,
+          "end": 12.2,
+          "probability": 0.99951171875
+        }
+      ]
+    },
+    {
+      "start": 12.2,
+      "end": 14.42,
+      "text": "要尽量找个坚固的庇护所才行",
+      "words": [
+        {
+          "text": "要",
+          "start": 12.2,
+          "end": 12.62,
+          "probability": 0.970703125
+        },
+        {
+          "text": "尽",
+          "start": 12.62,
+          "end": 12.8,
+          "probability": 0.998291015625
+        },
+        {
+          "text": "量",
+          "start": 12.8,
+          "end": 12.94,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "找",
+          "start": 12.94,
+          "end": 13.08,
+          "probability": 0.994140625
+        },
+        {
+          "text": "个",
+          "start": 13.08,
+          "end": 13.22,
+          "probability": 0.994140625
+        },
+        {
+          "text": "坚",
+          "start": 13.22,
+          "end": 13.36,
+          "probability": 0.86962890625
+        },
+        {
+          "text": "固",
+          "start": 13.36,
+          "end": 13.5,
+          "probability": 0.99658203125
+        },
+        {
+          "text": "的",
+          "start": 13.5,
+          "end": 13.62,
+          "probability": 0.9658203125
+        },
+        {
+          "text": "庇",
+          "start": 13.62,
+          "end": 13.74,
+          "probability": 0.94921875
+        },
+        {
+          "text": "护",
+          "start": 13.74,
+          "end": 13.84,
+          "probability": 0.993408203125
+        },
+        {
+          "text": "所",
+          "start": 13.84,
+          "end": 14.02,
+          "probability": 0.9951171875
+        },
+        {
+          "text": "才",
+          "start": 14.02,
+          "end": 14.16,
+          "probability": 0.89990234375
+        },
+        {
+          "text": "行",
+          "start": 14.16,
+          "end": 14.42,
+          "probability": 1.0
+        }
+      ]
+    },
+    {
+      "start": 14.42,
+      "end": 16.18,
+      "text": "这种自然现象危险吗",
+      "words": [
+        {
+          "text": "这",
+          "start": 14.42,
+          "end": 14.64,
+          "probability": 0.8935546875
+        },
+        {
+          "text": "种",
+          "start": 14.64,
+          "end": 14.84,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "自",
+          "start": 14.84,
+          "end": 15.0,
+          "probability": 0.99609375
+        },
+        {
+          "text": "然",
+          "start": 15.0,
+          "end": 15.14,
+          "probability": 1.0
+        },
+        {
+          "text": "现",
+          "start": 15.14,
+          "end": 15.34,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "象",
+          "start": 15.34,
+          "end": 15.54,
+          "probability": 0.9873046875
+        },
+        {
+          "text": "危",
+          "start": 15.54,
+          "end": 15.72,
+          "probability": 0.9892578125
+        },
+        {
+          "text": "险",
+          "start": 15.72,
+          "end": 15.94,
+          "probability": 1.0
+        },
+        {
+          "text": "吗",
+          "start": 15.94,
+          "end": 16.18,
+          "probability": 0.9814453125
+        }
+      ]
+    },
+    {
+      "start": 16.18,
+      "end": 17.2,
+      "text": "非常危险",
+      "words": [
+        {
+          "text": "非常",
+          "start": 16.18,
+          "end": 16.74,
+          "probability": 0.96435546875
+        },
+        {
+          "text": "危",
+          "start": 16.74,
+          "end": 16.98,
+          "probability": 0.99267578125
+        },
+        {
+          "text": "险",
+          "start": 16.98,
+          "end": 17.2,
+          "probability": 1.0
+        }
+      ]
+    },
+    {
+      "start": 17.2,
+      "end": 19.04,
+      "text": "这是强劲电感应现象",
+      "words": [
+        {
+          "text": "这是",
+          "start": 17.2,
+          "end": 17.66,
+          "probability": 0.90869140625
+        },
+        {
+          "text": "强",
+          "start": 17.66,
+          "end": 17.92,
+          "probability": 0.951171875
+        },
+        {
+          "text": "劲",
+          "start": 17.92,
+          "end": 18.08,
+          "probability": 0.61956787109375
+        },
+        {
+          "text": "电",
+          "start": 18.08,
+          "end": 18.24,
+          "probability": 0.422607421875
+        },
+        {
+          "text": "感",
+          "start": 18.24,
+          "end": 18.38,
+          "probability": 0.94189453125
+        },
+        {
+          "text": "应",
+          "start": 18.38,
+          "end": 18.54,
+          "probability": 0.802734375
+        },
+        {
+          "text": "现",
+          "start": 18.54,
+          "end": 18.7,
+          "probability": 0.99658203125
+        },
+        {
+          "text": "象",
+          "start": 18.7,
+          "end": 19.04,
+          "probability": 0.98095703125
+        }
+      ]
+    },
+    {
+      "start": 19.04,
+      "end": 20.2,
+      "text": "出现这种现象",
+      "words": [
+        {
+          "text": "出",
+          "start": 19.04,
+          "end": 19.32,
+          "probability": 0.56982421875
+        },
+        {
+          "text": "现",
+          "start": 19.32,
+          "end": 19.48,
+          "probability": 0.99560546875
+        },
+        {
+          "text": "这",
+          "start": 19.48,
+          "end": 19.64,
+          "probability": 0.9951171875
+        },
+        {
+          "text": "种",
+          "start": 19.64,
+          "end": 19.78,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "现",
+          "start": 19.78,
+          "end": 19.94,
+          "probability": 0.9951171875
+        },
+        {
+          "text": "象",
+          "start": 19.94,
+          "end": 20.2,
+          "probability": 0.98486328125
+        }
+      ]
+    },
+    {
+      "start": 20.2,
+      "end": 21.98,
+      "text": "说明头顶上方有带电雷云",
+      "words": [
+        {
+          "text": "说",
+          "start": 20.2,
+          "end": 20.4,
+          "probability": 0.98681640625
+        },
+        {
+          "text": "明",
+          "start": 20.4,
+          "end": 20.56,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "头",
+          "start": 20.56,
+          "end": 20.72,
+          "probability": 0.97216796875
+        },
+        {
+          "text": "顶",
+          "start": 20.72,
+          "end": 20.86,
+          "probability": 0.993896484375
+        },
+        {
+          "text": "上",
+          "start": 20.86,
+          "end": 21.02,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "方",
+          "start": 21.02,
+          "end": 21.2,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "有",
+          "start": 21.2,
+          "end": 21.34,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "带",
+          "start": 21.34,
+          "end": 21.5,
+          "probability": 0.86962890625
+        },
+        {
+          "text": "电",
+          "start": 21.5,
+          "end": 21.64,
+          "probability": 0.99169921875
+        },
+        {
+          "text": "雷",
+          "start": 21.64,
+          "end": 21.76,
+          "probability": 0.99169921875
+        },
+        {
+          "text": "云",
+          "start": 21.76,
+          "end": 21.98,
+          "probability": 0.99658203125
+        }
+      ]
+    },
+    {
+      "start": 21.98,
+      "end": 23.74,
+      "text": "随时可能成为雷机目标",
+      "words": [
+        {
+          "text": "随",
+          "start": 21.98,
+          "end": 22.42,
+          "probability": 0.95068359375
+        },
+        {
+          "text": "时",
+          "start": 22.42,
+          "end": 22.56,
+          "probability": 0.998046875
+        },
+        {
+          "text": "可能",
+          "start": 22.56,
+          "end": 22.8,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "成",
+          "start": 22.8,
+          "end": 23.0,
+          "probability": 0.99560546875
+        },
+        {
+          "text": "为",
+          "start": 23.0,
+          "end": 23.14,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "雷",
+          "start": 23.14,
+          "end": 23.28,
+          "probability": 0.99658203125
+        },
+        {
+          "text": "机",
+          "start": 23.28,
+          "end": 23.42,
+          "probability": 0.9482421875
+        },
+        {
+          "text": "目",
+          "start": 23.42,
+          "end": 23.56,
+          "probability": 0.99609375
+        },
+        {
+          "text": "标",
+          "start": 23.56,
+          "end": 23.74,
+          "probability": 0.999267578125
+        }
+      ]
+    },
+    {
+      "start": 23.74,
+      "end": 25.98,
+      "text": "遇到千万不要在原地继续逗留",
+      "words": [
+        {
+          "text": "遇",
+          "start": 23.74,
+          "end": 24.22,
+          "probability": 0.962158203125
+        },
+        {
+          "text": "到",
+          "start": 24.22,
+          "end": 24.36,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "千",
+          "start": 24.36,
+          "end": 24.5,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "万",
+          "start": 24.5,
+          "end": 24.64,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "不要",
+          "start": 24.64,
+          "end": 24.84,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "在",
+          "start": 24.84,
+          "end": 25.06,
+          "probability": 0.869140625
+        },
+        {
+          "text": "原",
+          "start": 25.06,
+          "end": 25.2,
+          "probability": 0.97412109375
+        },
+        {
+          "text": "地",
+          "start": 25.2,
+          "end": 25.34,
+          "probability": 1.0
+        },
+        {
+          "text": "继",
+          "start": 25.34,
+          "end": 25.52,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "续",
+          "start": 25.52,
+          "end": 25.64,
+          "probability": 1.0
+        },
+        {
+          "text": "逗",
+          "start": 25.64,
+          "end": 25.78,
+          "probability": 0.957275390625
+        },
+        {
+          "text": "留",
+          "start": 25.78,
+          "end": 25.98,
+          "probability": 0.875
+        }
+      ]
+    },
+    {
+      "start": 25.98,
+      "end": 28.52,
+      "text": "记得赶紧架车离开或者回家躲避",
+      "words": [
+        {
+          "text": "记",
+          "start": 25.98,
+          "end": 26.42,
+          "probability": 0.97314453125
+        },
+        {
+          "text": "得",
+          "start": 26.42,
+          "end": 26.54,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "赶",
+          "start": 26.54,
+          "end": 26.7,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "紧",
+          "start": 26.7,
+          "end": 26.88,
+          "probability": 0.997802734375
+        },
+        {
+          "text": "架",
+          "start": 26.88,
+          "end": 27.06,
+          "probability": 0.6346435546875
+        },
+        {
+          "text": "车",
+          "start": 27.06,
+          "end": 27.18,
+          "probability": 0.934326171875
+        },
+        {
+          "text": "离",
+          "start": 27.18,
+          "end": 27.32,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "开",
+          "start": 27.32,
+          "end": 27.54,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "或者",
+          "start": 27.54,
+          "end": 27.82,
+          "probability": 0.98583984375
+        },
+        {
+          "text": "回",
+          "start": 27.82,
+          "end": 28.04,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "家",
+          "start": 28.04,
+          "end": 28.18,
+          "probability": 1.0
+        },
+        {
+          "text": "躲",
+          "start": 28.18,
+          "end": 28.32,
+          "probability": 0.995849609375
+        },
+        {
+          "text": "避",
+          "start": 28.32,
+          "end": 28.52,
+          "probability": 0.997802734375
+        }
+      ]
+    },
+    {
+      "start": 28.52,
+      "end": 30.26,
+      "text": "这种自然现象危险吗",
+      "words": [
+        {
+          "text": "这",
+          "start": 28.52,
+          "end": 28.76,
+          "probability": 0.6728515625
+        },
+        {
+          "text": "种",
+          "start": 28.76,
+          "end": 28.96,
+          "probability": 0.99560546875
+        },
+        {
+          "text": "自",
+          "start": 28.96,
+          "end": 29.1,
+          "probability": 0.95947265625
+        },
+        {
+          "text": "然",
+          "start": 29.1,
+          "end": 29.24,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "现",
+          "start": 29.24,
+          "end": 29.44,
+          "probability": 0.97216796875
+        },
+        {
+          "text": "象",
+          "start": 29.44,
+          "end": 29.62,
+          "probability": 0.9716796875
+        },
+        {
+          "text": "危",
+          "start": 29.62,
+          "end": 29.82,
+          "probability": 0.97900390625
+        },
+        {
+          "text": "险",
+          "start": 29.82,
+          "end": 30.04,
+          "probability": 1.0
+        },
+        {
+          "text": "吗",
+          "start": 30.04,
+          "end": 30.26,
+          "probability": 0.9462890625
+        }
+      ]
+    },
+    {
+      "start": 30.26,
+      "end": 31.28,
+      "text": "这是地火",
+      "words": [
+        {
+          "text": "这是",
+          "start": 30.26,
+          "end": 30.9,
+          "probability": 0.5771484375
+        },
+        {
+          "text": "地",
+          "start": 30.9,
+          "end": 31.1,
+          "probability": 0.9384765625
+        },
+        {
+          "text": "火",
+          "start": 31.1,
+          "end": 31.28,
+          "probability": 0.99267578125
+        }
+      ]
+    },
+    {
+      "start": 31.28,
+      "end": 33.46,
+      "text": "是由于地下煤炭自然而形成的",
+      "words": [
+        {
+          "text": "是",
+          "start": 31.28,
+          "end": 31.72,
+          "probability": 0.845703125
+        },
+        {
+          "text": "由",
+          "start": 31.72,
+          "end": 31.88,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "于",
+          "start": 31.88,
+          "end": 32.0,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "地",
+          "start": 32.0,
+          "end": 32.14,
+          "probability": 0.9853515625
+        },
+        {
+          "text": "下",
+          "start": 32.14,
+          "end": 32.28,
+          "probability": 0.99658203125
+        },
+        {
+          "text": "煤",
+          "start": 32.28,
+          "end": 32.42,
+          "probability": 0.80224609375
+        },
+        {
+          "text": "炭",
+          "start": 32.42,
+          "end": 32.56,
+          "probability": 0.98046875
+        },
+        {
+          "text": "自",
+          "start": 32.56,
+          "end": 32.74,
+          "probability": 0.98828125
+        },
+        {
+          "text": "然",
+          "start": 32.74,
+          "end": 32.84,
+          "probability": 1.0
+        },
+        {
+          "text": "而",
+          "start": 32.84,
+          "end": 32.94,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "形",
+          "start": 32.94,
+          "end": 33.12,
+          "probability": 0.9658203125
+        },
+        {
+          "text": "成",
+          "start": 33.12,
+          "end": 33.26,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "的",
+          "start": 33.26,
+          "end": 33.46,
+          "probability": 0.998046875
+        }
+      ]
+    },
+    {
+      "start": 33.46,
+      "end": 34.94,
+      "text": "探四好像没有危险",
+      "words": [
+        {
+          "text": "探",
+          "start": 33.46,
+          "end": 33.86,
+          "probability": 0.6439208984375
+        },
+        {
+          "text": "四",
+          "start": 33.86,
+          "end": 34.04,
+          "probability": 0.4326171875
+        },
+        {
+          "text": "好像",
+          "start": 34.04,
+          "end": 34.26,
+          "probability": 0.9912109375
+        },
+        {
+          "text": "没有",
+          "start": 34.26,
+          "end": 34.5,
+          "probability": 0.994140625
+        },
+        {
+          "text": "危",
+          "start": 34.5,
+          "end": 34.7,
+          "probability": 0.98681640625
+        },
+        {
+          "text": "险",
+          "start": 34.7,
+          "end": 34.94,
+          "probability": 1.0
+        }
+      ]
+    },
+    {
+      "start": 34.94,
+      "end": 36.66,
+      "text": "但如果煤炭燃烧不充分",
+      "words": [
+        {
+          "text": "但",
+          "start": 34.94,
+          "end": 35.34,
+          "probability": 0.9580078125
+        },
+        {
+          "text": "如果",
+          "start": 35.34,
+          "end": 35.54,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "煤",
+          "start": 35.54,
+          "end": 35.76,
+          "probability": 0.997314453125
+        },
+        {
+          "text": "炭",
+          "start": 35.76,
+          "end": 35.9,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "燃",
+          "start": 35.9,
+          "end": 36.04,
+          "probability": 0.990478515625
+        },
+        {
+          "text": "烧",
+          "start": 36.04,
+          "end": 36.2,
+          "probability": 0.994384765625
+        },
+        {
+          "text": "不",
+          "start": 36.2,
+          "end": 36.36,
+          "probability": 0.93603515625
+        },
+        {
+          "text": "充",
+          "start": 36.36,
+          "end": 36.48,
+          "probability": 0.999267578125
+        },
+        {
+          "text": "分",
+          "start": 36.48,
+          "end": 36.66,
+          "probability": 0.98876953125
+        }
+      ]
+    },
+    {
+      "start": 36.66,
+      "end": 38.24,
+      "text": "可能会释放出大量的",
+      "words": [
+        {
+          "text": "可能",
+          "start": 36.66,
+          "end": 37.2,
+          "probability": 0.98583984375
+        },
+        {
+          "text": "会",
+          "start": 37.2,
+          "end": 37.4,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "释",
+          "start": 37.4,
+          "end": 37.54,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "放",
+          "start": 37.54,
+          "end": 37.66,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "出",
+          "start": 37.66,
+          "end": 37.82,
+          "probability": 0.99560546875
+        },
+        {
+          "text": "大",
+          "start": 37.82,
+          "end": 38.0,
+          "probability": 0.99560546875
+        },
+        {
+          "text": "量",
+          "start": 38.0,
+          "end": 38.12,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "的",
+          "start": 38.12,
+          "end": 38.24,
+          "probability": 0.99755859375
+        }
+      ]
+    },
+    {
+      "start": 38.24,
+      "end": 39.64,
+      "text": "依氧化碳等有害气体",
+      "words": [
+        {
+          "text": "依",
+          "start": 38.24,
+          "end": 38.38,
+          "probability": 0.53802490234375
+        },
+        {
+          "text": "氧",
+          "start": 38.38,
+          "end": 38.48,
+          "probability": 0.7265625
+        },
+        {
+          "text": "化",
+          "start": 38.48,
+          "end": 38.62,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "碳",
+          "start": 38.62,
+          "end": 38.76,
+          "probability": 0.86962890625
+        },
+        {
+          "text": "等",
+          "start": 38.76,
+          "end": 38.92,
+          "probability": 0.97412109375
+        },
+        {
+          "text": "有",
+          "start": 38.92,
+          "end": 39.1,
+          "probability": 0.97265625
+        },
+        {
+          "text": "害",
+          "start": 39.1,
+          "end": 39.24,
+          "probability": 0.94970703125
+        },
+        {
+          "text": "气",
+          "start": 39.24,
+          "end": 39.38,
+          "probability": 0.87109375
+        },
+        {
+          "text": "体",
+          "start": 39.38,
+          "end": 39.64,
+          "probability": 0.98974609375
+        }
+      ]
+    },
+    {
+      "start": 39.64,
+      "end": 40.54,
+      "text": "较为危险",
+      "words": [
+        {
+          "text": "较",
+          "start": 39.64,
+          "end": 40.02,
+          "probability": 0.905517578125
+        },
+        {
+          "text": "为",
+          "start": 40.02,
+          "end": 40.16,
+          "probability": 0.92724609375
+        },
+        {
+          "text": "危",
+          "start": 40.16,
+          "end": 40.32,
+          "probability": 0.9814453125
+        },
+        {
+          "text": "险",
+          "start": 40.32,
+          "end": 40.54,
+          "probability": 1.0
+        }
+      ]
+    },
+    {
+      "start": 40.54,
+      "end": 42.26,
+      "text": "遇到几辆不要靠近观看",
+      "words": [
+        {
+          "text": "遇",
+          "start": 40.54,
+          "end": 40.92,
+          "probability": 0.7371826171875
+        },
+        {
+          "text": "到",
+          "start": 40.92,
+          "end": 41.06,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "几",
+          "start": 41.06,
+          "end": 41.22,
+          "probability": 0.663818359375
+        },
+        {
+          "text": "辆",
+          "start": 41.22,
+          "end": 41.32,
+          "probability": 0.646484375
+        },
+        {
+          "text": "不要",
+          "start": 41.32,
+          "end": 41.6,
+          "probability": 0.984375
+        },
+        {
+          "text": "靠",
+          "start": 41.6,
+          "end": 41.76,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "近",
+          "start": 41.76,
+          "end": 41.92,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "观",
+          "start": 41.92,
+          "end": 42.08,
+          "probability": 0.98876953125
+        },
+        {
+          "text": "看",
+          "start": 42.08,
+          "end": 42.26,
+          "probability": 0.92431640625
+        }
+      ]
+    },
+    {
+      "start": 42.26,
+      "end": 44.08,
+      "text": "这种自然现象危险吗",
+      "words": [
+        {
+          "text": "这",
+          "start": 42.26,
+          "end": 42.56,
+          "probability": 0.96923828125
+        },
+        {
+          "text": "种",
+          "start": 42.56,
+          "end": 42.74,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "自",
+          "start": 42.74,
+          "end": 42.92,
+          "probability": 0.99658203125
+        },
+        {
+          "text": "然",
+          "start": 42.92,
+          "end": 43.04,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "现",
+          "start": 43.04,
+          "end": 43.24,
+          "probability": 0.9951171875
+        },
+        {
+          "text": "象",
+          "start": 43.24,
+          "end": 43.42,
+          "probability": 0.9912109375
+        },
+        {
+          "text": "危",
+          "start": 43.42,
+          "end": 43.62,
+          "probability": 0.994140625
+        },
+        {
+          "text": "险",
+          "start": 43.62,
+          "end": 43.84,
+          "probability": 1.0
+        },
+        {
+          "text": "吗",
+          "start": 43.84,
+          "end": 44.08,
+          "probability": 0.97998046875
+        }
+      ]
+    },
+    {
+      "start": 44.08,
+      "end": 45.04,
+      "text": "为什么险",
+      "words": [
+        {
+          "text": "为什么",
+          "start": 44.08,
+          "end": 44.64,
+          "probability": 0.9462890625
+        },
+        {
+          "text": "险",
+          "start": 44.64,
+          "end": 45.04,
+          "probability": 0.863525390625
+        }
+      ]
+    },
+    {
+      "start": 45.04,
+      "end": 46.64,
+      "text": "这是瀑布往下坠落时",
+      "words": [
+        {
+          "text": "这是",
+          "start": 45.04,
+          "end": 45.5,
+          "probability": 0.87109375
+        },
+        {
+          "text": "瀑",
+          "start": 45.5,
+          "end": 45.7,
+          "probability": 0.970703125
+        },
+        {
+          "text": "布",
+          "start": 45.7,
+          "end": 45.84,
+          "probability": 0.98828125
+        },
+        {
+          "text": "往",
+          "start": 45.84,
+          "end": 45.98,
+          "probability": 0.9912109375
+        },
+        {
+          "text": "下",
+          "start": 45.98,
+          "end": 46.14,
+          "probability": 0.998046875
+        },
+        {
+          "text": "坠",
+          "start": 46.14,
+          "end": 46.28,
+          "probability": 0.971923828125
+        },
+        {
+          "text": "落",
+          "start": 46.28,
+          "end": 46.44,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "时",
+          "start": 46.44,
+          "end": 46.64,
+          "probability": 0.97802734375
+        }
+      ]
+    },
+    {
+      "start": 46.64,
+      "end": 48.26,
+      "text": "遇到强风吹了起来",
+      "words": [
+        {
+          "text": "遇",
+          "start": 46.64,
+          "end": 46.96,
+          "probability": 0.971435546875
+        },
+        {
+          "text": "到",
+          "start": 46.96,
+          "end": 47.1,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "强",
+          "start": 47.1,
+          "end": 47.26,
+          "probability": 0.6788330078125
+        },
+        {
+          "text": "风",
+          "start": 47.26,
+          "end": 47.42,
+          "probability": 0.814453125
+        },
+        {
+          "text": "吹",
+          "start": 47.42,
+          "end": 47.6,
+          "probability": 0.997802734375
+        },
+        {
+          "text": "了",
+          "start": 47.6,
+          "end": 47.72,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "起",
+          "start": 47.72,
+          "end": 47.86,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "来",
+          "start": 47.86,
+          "end": 48.26,
+          "probability": 0.9990234375
+        }
+      ]
+    },
+    {
+      "start": 48.26,
+      "end": 50.04,
+      "text": "形成了十分罕见的自然奇观",
+      "words": [
+        {
+          "text": "形",
+          "start": 48.26,
+          "end": 48.48,
+          "probability": 0.89306640625
+        },
+        {
+          "text": "成",
+          "start": 48.48,
+          "end": 48.62,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "了",
+          "start": 48.62,
+          "end": 48.76,
+          "probability": 0.9951171875
+        },
+        {
+          "text": "十",
+          "start": 48.76,
+          "end": 48.92,
+          "probability": 0.9892578125
+        },
+        {
+          "text": "分",
+          "start": 48.92,
+          "end": 49.04,
+          "probability": 0.9912109375
+        },
+        {
+          "text": "罕",
+          "start": 49.04,
+          "end": 49.2,
+          "probability": 0.9931640625
+        },
+        {
+          "text": "见",
+          "start": 49.2,
+          "end": 49.32,
+          "probability": 0.99169921875
+        },
+        {
+          "text": "的",
+          "start": 49.32,
+          "end": 49.44,
+          "probability": 0.99658203125
+        },
+        {
+          "text": "自",
+          "start": 49.44,
+          "end": 49.58,
+          "probability": 0.9951171875
+        },
+        {
+          "text": "然",
+          "start": 49.58,
+          "end": 49.68,
+          "probability": 1.0
+        },
+        {
+          "text": "奇",
+          "start": 49.68,
+          "end": 49.84,
+          "probability": 0.892578125
+        },
+        {
+          "text": "观",
+          "start": 49.84,
+          "end": 50.04,
+          "probability": 0.9765625
+        }
+      ]
+    },
+    {
+      "start": 50.04,
+      "end": 51.16,
+      "text": "看到的宝兹们",
+      "words": [
+        {
+          "text": "看到",
+          "start": 50.04,
+          "end": 50.56,
+          "probability": 0.98876953125
+        },
+        {
+          "text": "的",
+          "start": 50.56,
+          "end": 50.74,
+          "probability": 0.99658203125
+        },
+        {
+          "text": "宝",
+          "start": 50.74,
+          "end": 50.86,
+          "probability": 0.970703125
+        },
+        {
+          "text": "兹",
+          "start": 50.86,
+          "end": 51.02,
+          "probability": 0.598876953125
+        },
+        {
+          "text": "们",
+          "start": 51.02,
+          "end": 51.16,
+          "probability": 0.984375
+        }
+      ]
+    },
+    {
+      "start": 51.16,
+      "end": 52.44,
+      "text": "千万不要守养流花",
+      "words": [
+        {
+          "text": "千",
+          "start": 51.16,
+          "end": 51.4,
+          "probability": 0.9873046875
+        },
+        {
+          "text": "万",
+          "start": 51.4,
+          "end": 51.56,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "不要",
+          "start": 51.56,
+          "end": 51.78,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "守",
+          "start": 51.78,
+          "end": 51.96,
+          "probability": 0.5283203125
+        },
+        {
+          "text": "养",
+          "start": 51.96,
+          "end": 52.08,
+          "probability": 0.9462890625
+        },
+        {
+          "text": "流",
+          "start": 52.08,
+          "end": 52.24,
+          "probability": 0.634765625
+        },
+        {
+          "text": "花",
+          "start": 52.24,
+          "end": 52.44,
+          "probability": 0.93115234375
+        }
+      ]
+    },
+    {
+      "start": 52.44,
+      "end": 53.8,
+      "text": "不然二零二六年",
+      "words": [
+        {
+          "text": "不",
+          "start": 52.44,
+          "end": 52.9,
+          "probability": 0.98876953125
+        },
+        {
+          "text": "然",
+          "start": 52.9,
+          "end": 53.04,
+          "probability": 0.998046875
+        },
+        {
+          "text": "二",
+          "start": 53.04,
+          "end": 53.2,
+          "probability": 0.57275390625
+        },
+        {
+          "text": "零",
+          "start": 53.2,
+          "end": 53.32,
+          "probability": 0.918701171875
+        },
+        {
+          "text": "二",
+          "start": 53.32,
+          "end": 53.44,
+          "probability": 0.99658203125
+        },
+        {
+          "text": "六",
+          "start": 53.44,
+          "end": 53.6,
+          "probability": 0.986328125
+        },
+        {
+          "text": "年",
+          "start": 53.6,
+          "end": 53.8,
+          "probability": 0.9921875
+        }
+      ]
+    },
+    {
+      "start": 53.8,
+      "end": 55.38,
+      "text": "指定日子过的风生水起",
+      "words": [
+        {
+          "text": "指",
+          "start": 53.8,
+          "end": 54.04,
+          "probability": 0.705078125
+        },
+        {
+          "text": "定",
+          "start": 54.04,
+          "end": 54.2,
+          "probability": 0.9931640625
+        },
+        {
+          "text": "日",
+          "start": 54.2,
+          "end": 54.34,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "子",
+          "start": 54.34,
+          "end": 54.48,
+          "probability": 1.0
+        },
+        {
+          "text": "过",
+          "start": 54.48,
+          "end": 54.6,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "的",
+          "start": 54.6,
+          "end": 54.72,
+          "probability": 0.712890625
+        },
+        {
+          "text": "风",
+          "start": 54.72,
+          "end": 54.86,
+          "probability": 0.9150390625
+        },
+        {
+          "text": "生",
+          "start": 54.86,
+          "end": 55.0,
+          "probability": 0.88818359375
+        },
+        {
+          "text": "水",
+          "start": 55.0,
+          "end": 55.16,
+          "probability": 0.9892578125
+        },
+        {
+          "text": "起",
+          "start": 55.16,
+          "end": 55.38,
+          "probability": 0.9267578125
+        }
+      ]
+    },
+    {
+      "start": 55.38,
+      "end": 56.32,
+      "text": "好运连连",
+      "words": [
+        {
+          "text": "好",
+          "start": 55.38,
+          "end": 55.8,
+          "probability": 0.9052734375
+        },
+        {
+          "text": "运",
+          "start": 55.8,
+          "end": 55.94,
+          "probability": 0.98876953125
+        },
+        {
+          "text": "连",
+          "start": 55.94,
+          "end": 56.12,
+          "probability": 0.944091796875
+        },
+        {
+          "text": "连",
+          "start": 56.12,
+          "end": 56.32,
+          "probability": 0.99072265625
+        }
+      ]
+    },
+    {
+      "start": 56.32,
+      "end": 58.1,
+      "text": "这种自然现象危险吗",
+      "words": [
+        {
+          "text": "这",
+          "start": 56.32,
+          "end": 56.58,
+          "probability": 0.483642578125
+        },
+        {
+          "text": "种",
+          "start": 56.58,
+          "end": 56.78,
+          "probability": 0.9912109375
+        },
+        {
+          "text": "自",
+          "start": 56.78,
+          "end": 56.94,
+          "probability": 0.94873046875
+        },
+        {
+          "text": "然",
+          "start": 56.94,
+          "end": 57.08,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "现",
+          "start": 57.08,
+          "end": 57.28,
+          "probability": 0.9716796875
+        },
+        {
+          "text": "象",
+          "start": 57.28,
+          "end": 57.46,
+          "probability": 0.95751953125
+        },
+        {
+          "text": "危",
+          "start": 57.46,
+          "end": 57.66,
+          "probability": 0.9775390625
+        },
+        {
+          "text": "险",
+          "start": 57.66,
+          "end": 57.86,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "吗",
+          "start": 57.86,
+          "end": 58.1,
+          "probability": 0.95263671875
+        }
+      ]
+    },
+    {
+      "start": 58.1,
+      "end": 60.0,
+      "text": "这是遇到了恐怖的沙尘暴",
+      "words": [
+        {
+          "text": "这是",
+          "start": 58.1,
+          "end": 58.68,
+          "probability": 0.27001953125
+        },
+        {
+          "text": "遇",
+          "start": 58.68,
+          "end": 58.9,
+          "probability": 0.996826171875
+        },
+        {
+          "text": "到了",
+          "start": 58.9,
+          "end": 59.1,
+          "probability": 0.9150390625
+        },
+        {
+          "text": "恐",
+          "start": 59.1,
+          "end": 59.28,
+          "probability": 0.99365234375
+        },
+        {
+          "text": "怖",
+          "start": 59.28,
+          "end": 59.44,
+          "probability": 0.998046875
+        },
+        {
+          "text": "的",
+          "start": 59.44,
+          "end": 59.56,
+          "probability": 0.99560546875
+        },
+        {
+          "text": "沙",
+          "start": 59.56,
+          "end": 59.68,
+          "probability": 0.920166015625
+        },
+        {
+          "text": "尘",
+          "start": 59.68,
+          "end": 59.84,
+          "probability": 0.8466796875
+        },
+        {
+          "text": "暴",
+          "start": 59.84,
+          "end": 60.0,
+          "probability": 0.762451171875
+        }
+      ]
+    },
+    {
+      "start": 60.0,
+      "end": 61.4,
+      "text": "一旦被笼罩其中",
+      "words": [
+        {
+          "text": "一",
+          "start": 60.0,
+          "end": 60.5,
+          "probability": 0.81640625
+        },
+        {
+          "text": "旦",
+          "start": 60.5,
+          "end": 60.62,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "被",
+          "start": 60.62,
+          "end": 60.76,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "笼",
+          "start": 60.76,
+          "end": 60.9,
+          "probability": 0.7135009765625
+        },
+        {
+          "text": "罩",
+          "start": 60.9,
+          "end": 61.02,
+          "probability": 0.906982421875
+        },
+        {
+          "text": "其",
+          "start": 61.02,
+          "end": 61.22,
+          "probability": 0.8662109375
+        },
+        {
+          "text": "中",
+          "start": 61.22,
+          "end": 61.4,
+          "probability": 0.9970703125
+        }
+      ]
+    },
+    {
+      "start": 61.4,
+      "end": 62.88,
+      "text": "不仅视线会被阻挡",
+      "words": [
+        {
+          "text": "不",
+          "start": 61.4,
+          "end": 61.86,
+          "probability": 0.86474609375
+        },
+        {
+          "text": "仅",
+          "start": 61.86,
+          "end": 62.02,
+          "probability": 0.993408203125
+        },
+        {
+          "text": "视",
+          "start": 62.02,
+          "end": 62.16,
+          "probability": 0.259521484375
+        },
+        {
+          "text": "线",
+          "start": 62.16,
+          "end": 62.3,
+          "probability": 0.99267578125
+        },
+        {
+          "text": "会",
+          "start": 62.3,
+          "end": 62.44,
+          "probability": 0.9873046875
+        },
+        {
+          "text": "被",
+          "start": 62.44,
+          "end": 62.6,
+          "probability": 0.99609375
+        },
+        {
+          "text": "阻",
+          "start": 62.6,
+          "end": 62.74,
+          "probability": 0.99658203125
+        },
+        {
+          "text": "挡",
+          "start": 62.74,
+          "end": 62.88,
+          "probability": 0.99658203125
+        }
+      ]
+    },
+    {
+      "start": 62.88,
+      "end": 64.56,
+      "text": "集米之内都看不清路",
+      "words": [
+        {
+          "text": "集",
+          "start": 62.88,
+          "end": 63.36,
+          "probability": 0.2275390625
+        },
+        {
+          "text": "米",
+          "start": 63.36,
+          "end": 63.5,
+          "probability": 0.66650390625
+        },
+        {
+          "text": "之",
+          "start": 63.5,
+          "end": 63.64,
+          "probability": 0.96435546875
+        },
+        {
+          "text": "内",
+          "start": 63.64,
+          "end": 63.76,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "都",
+          "start": 63.76,
+          "end": 63.92,
+          "probability": 0.9951171875
+        },
+        {
+          "text": "看",
+          "start": 63.92,
+          "end": 64.06,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "不",
+          "start": 64.06,
+          "end": 64.2,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "清",
+          "start": 64.2,
+          "end": 64.32,
+          "probability": 0.91357421875
+        },
+        {
+          "text": "路",
+          "start": 64.32,
+          "end": 64.56,
+          "probability": 0.85888671875
+        }
+      ]
+    },
+    {
+      "start": 64.56,
+      "end": 66.4,
+      "text": "而且急一吸入细小的沙尘",
+      "words": [
+        {
+          "text": "而且",
+          "start": 64.56,
+          "end": 65.04,
+          "probability": 0.99365234375
+        },
+        {
+          "text": "急",
+          "start": 65.04,
+          "end": 65.26,
+          "probability": 0.5703125
+        },
+        {
+          "text": "一",
+          "start": 65.26,
+          "end": 65.38,
+          "probability": 0.2381591796875
+        },
+        {
+          "text": "吸",
+          "start": 65.38,
+          "end": 65.5,
+          "probability": 0.447265625
+        },
+        {
+          "text": "入",
+          "start": 65.5,
+          "end": 65.66,
+          "probability": 0.998046875
+        },
+        {
+          "text": "细",
+          "start": 65.66,
+          "end": 65.82,
+          "probability": 0.981689453125
+        },
+        {
+          "text": "小",
+          "start": 65.82,
+          "end": 65.96,
+          "probability": 0.99072265625
+        },
+        {
+          "text": "的",
+          "start": 65.96,
+          "end": 66.06,
+          "probability": 0.99609375
+        },
+        {
+          "text": "沙",
+          "start": 66.06,
+          "end": 66.2,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "尘",
+          "start": 66.2,
+          "end": 66.4,
+          "probability": 0.992919921875
+        }
+      ]
+    },
+    {
+      "start": 66.4,
+      "end": 67.66,
+      "text": "造成健康隐患",
+      "words": [
+        {
+          "text": "造",
+          "start": 66.4,
+          "end": 66.9,
+          "probability": 0.962890625
+        },
+        {
+          "text": "成",
+          "start": 66.9,
+          "end": 67.08,
+          "probability": 1.0
+        },
+        {
+          "text": "健",
+          "start": 67.08,
+          "end": 67.22,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "康",
+          "start": 67.22,
+          "end": 67.36,
+          "probability": 0.999267578125
+        },
+        {
+          "text": "隐",
+          "start": 67.36,
+          "end": 67.54,
+          "probability": 0.99609375
+        },
+        {
+          "text": "患",
+          "start": 67.54,
+          "end": 67.66,
+          "probability": 0.99462890625
+        }
+      ]
+    },
+    {
+      "start": 67.66,
+      "end": 68.86,
+      "text": "比较危险",
+      "words": [
+        {
+          "text": "比",
+          "start": 67.66,
+          "end": 68.08,
+          "probability": 0.74365234375
+        },
+        {
+          "text": "较",
+          "start": 68.08,
+          "end": 68.22,
+          "probability": 1.0
+        },
+        {
+          "text": "危",
+          "start": 68.22,
+          "end": 68.36,
+          "probability": 0.9775390625
+        },
+        {
+          "text": "险",
+          "start": 68.36,
+          "end": 68.86,
+          "probability": 1.0
+        }
+      ]
+    },
+    {
+      "start": 68.86,
+      "end": 70.26,
+      "text": "趁现在还没有到跟前",
+      "words": [
+        {
+          "text": "趁",
+          "start": 68.86,
+          "end": 69.1,
+          "probability": 0.98095703125
+        },
+        {
+          "text": "现在",
+          "start": 69.1,
+          "end": 69.4,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "还",
+          "start": 69.4,
+          "end": 69.56,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "没有",
+          "start": 69.56,
+          "end": 69.7,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "到",
+          "start": 69.7,
+          "end": 69.88,
+          "probability": 0.7548828125
+        },
+        {
+          "text": "跟",
+          "start": 69.88,
+          "end": 70.04,
+          "probability": 0.9091796875
+        },
+        {
+          "text": "前",
+          "start": 70.04,
+          "end": 70.26,
+          "probability": 0.9951171875
+        }
+      ]
+    },
+    {
+      "start": 70.26,
+      "end": 71.46,
+      "text": "赶紧去撤离开",
+      "words": [
+        {
+          "text": "赶",
+          "start": 70.26,
+          "end": 70.7,
+          "probability": 0.988525390625
+        },
+        {
+          "text": "紧",
+          "start": 70.7,
+          "end": 70.88,
+          "probability": 0.998046875
+        },
+        {
+          "text": "去",
+          "start": 70.88,
+          "end": 71.06,
+          "probability": 0.91162109375
+        },
+        {
+          "text": "撤",
+          "start": 71.06,
+          "end": 71.18,
+          "probability": 0.898681640625
+        },
+        {
+          "text": "离",
+          "start": 71.18,
+          "end": 71.32,
+          "probability": 0.999755859375
+        },
+        {
+          "text": "开",
+          "start": 71.32,
+          "end": 71.46,
+          "probability": 0.99755859375
+        }
+      ]
+    },
+    {
+      "start": 71.46,
+      "end": 72.72,
+      "text": "寻找安全的地方躲避",
+      "words": [
+        {
+          "text": "寻",
+          "start": 71.46,
+          "end": 71.6,
+          "probability": 0.98486328125
+        },
+        {
+          "text": "找",
+          "start": 71.6,
+          "end": 71.78,
+          "probability": 0.94677734375
+        },
+        {
+          "text": "安全",
+          "start": 71.78,
+          "end": 71.98,
+          "probability": 0.99169921875
+        },
+        {
+          "text": "的",
+          "start": 71.98,
+          "end": 72.14,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "地方",
+          "start": 72.14,
+          "end": 72.34,
+          "probability": 0.99609375
+        },
+        {
+          "text": "躲",
+          "start": 72.34,
+          "end": 72.56,
+          "probability": 0.99072265625
+        },
+        {
+          "text": "避",
+          "start": 72.56,
+          "end": 72.72,
+          "probability": 0.999267578125
+        }
+      ]
+    },
+    {
+      "start": 72.72,
+      "end": 74.54,
+      "text": "这种自然现象危险吗",
+      "words": [
+        {
+          "text": "这",
+          "start": 72.72,
+          "end": 73.02,
+          "probability": 0.908203125
+        },
+        {
+          "text": "种",
+          "start": 73.02,
+          "end": 73.22,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "自",
+          "start": 73.22,
+          "end": 73.36,
+          "probability": 0.98681640625
+        },
+        {
+          "text": "然",
+          "start": 73.36,
+          "end": 73.52,
+          "probability": 1.0
+        },
+        {
+          "text": "现",
+          "start": 73.52,
+          "end": 73.72,
+          "probability": 0.994140625
+        },
+        {
+          "text": "象",
+          "start": 73.72,
+          "end": 73.9,
+          "probability": 0.97607421875
+        },
+        {
+          "text": "危",
+          "start": 73.9,
+          "end": 74.1,
+          "probability": 0.98779296875
+        },
+        {
+          "text": "险",
+          "start": 74.1,
+          "end": 74.3,
+          "probability": 1.0
+        },
+        {
+          "text": "吗",
+          "start": 74.3,
+          "end": 74.54,
+          "probability": 0.98779296875
+        }
+      ]
+    },
+    {
+      "start": 74.54,
+      "end": 75.58,
+      "text": "非常危险",
+      "words": [
+        {
+          "text": "非常",
+          "start": 74.54,
+          "end": 75.12,
+          "probability": 0.96044921875
+        },
+        {
+          "text": "危",
+          "start": 75.12,
+          "end": 75.36,
+          "probability": 0.99609375
+        },
+        {
+          "text": "险",
+          "start": 75.36,
+          "end": 75.58,
+          "probability": 0.999755859375
+        }
+      ]
+    },
+    {
+      "start": 75.58,
+      "end": 77.56,
+      "text": "这是轮船在海上遇到了风暴",
+      "words": [
+        {
+          "text": "这是",
+          "start": 75.58,
+          "end": 76.04,
+          "probability": 0.78466796875
+        },
+        {
+          "text": "轮",
+          "start": 76.04,
+          "end": 76.26,
+          "probability": 0.6884765625
+        },
+        {
+          "text": "船",
+          "start": 76.26,
+          "end": 76.42,
+          "probability": 0.951904296875
+        },
+        {
+          "text": "在",
+          "start": 76.42,
+          "end": 76.58,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "海",
+          "start": 76.58,
+          "end": 76.72,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "上",
+          "start": 76.72,
+          "end": 76.86,
+          "probability": 0.99658203125
+        },
+        {
+          "text": "遇",
+          "start": 76.86,
+          "end": 77.0,
+          "probability": 1.0
+        },
+        {
+          "text": "到了",
+          "start": 77.0,
+          "end": 77.16,
+          "probability": 0.96875
+        },
+        {
+          "text": "风",
+          "start": 77.16,
+          "end": 77.34,
+          "probability": 0.974609375
+        },
+        {
+          "text": "暴",
+          "start": 77.34,
+          "end": 77.56,
+          "probability": 0.990478515625
+        }
+      ]
+    },
+    {
+      "start": 77.56,
+      "end": 79.36,
+      "text": "是所有跑船人的终极噩梦",
+      "words": [
+        {
+          "text": "是",
+          "start": 77.56,
+          "end": 77.98,
+          "probability": 0.98828125
+        },
+        {
+          "text": "所有",
+          "start": 77.98,
+          "end": 78.2,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "跑",
+          "start": 78.2,
+          "end": 78.42,
+          "probability": 0.88037109375
+        },
+        {
+          "text": "船",
+          "start": 78.42,
+          "end": 78.56,
+          "probability": 0.926025390625
+        },
+        {
+          "text": "人",
+          "start": 78.56,
+          "end": 78.7,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "的",
+          "start": 78.7,
+          "end": 78.82,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "终",
+          "start": 78.82,
+          "end": 78.96,
+          "probability": 0.918212890625
+        },
+        {
+          "text": "极",
+          "start": 78.96,
+          "end": 79.1,
+          "probability": 0.994140625
+        },
+        {
+          "text": "噩",
+          "start": 79.1,
+          "end": 79.24,
+          "probability": 0.80517578125
+        },
+        {
+          "text": "梦",
+          "start": 79.24,
+          "end": 79.36,
+          "probability": 0.995849609375
+        }
+      ]
+    },
+    {
+      "start": 79.36,
+      "end": 80.82,
+      "text": "此刻毫无办法",
+      "words": [
+        {
+          "text": "此",
+          "start": 79.36,
+          "end": 79.8,
+          "probability": 0.994140625
+        },
+        {
+          "text": "刻",
+          "start": 79.8,
+          "end": 79.96,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "毫",
+          "start": 79.96,
+          "end": 80.12,
+          "probability": 0.998291015625
+        },
+        {
+          "text": "无",
+          "start": 80.12,
+          "end": 80.24,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "办",
+          "start": 80.24,
+          "end": 80.42,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "法",
+          "start": 80.42,
+          "end": 80.82,
+          "probability": 1.0
+        }
+      ]
+    },
+    {
+      "start": 80.82,
+      "end": 81.82,
+      "text": "也就只能在心里",
+      "words": [
+        {
+          "text": "也",
+          "start": 80.82,
+          "end": 81.02,
+          "probability": 0.98974609375
+        },
+        {
+          "text": "就",
+          "start": 81.02,
+          "end": 81.18,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "只",
+          "start": 81.18,
+          "end": 81.3,
+          "probability": 0.998046875
+        },
+        {
+          "text": "能",
+          "start": 81.3,
+          "end": 81.4,
+          "probability": 1.0
+        },
+        {
+          "text": "在",
+          "start": 81.4,
+          "end": 81.54,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "心",
+          "start": 81.54,
+          "end": 81.7,
+          "probability": 0.99609375
+        },
+        {
+          "text": "里",
+          "start": 81.7,
+          "end": 81.82,
+          "probability": 0.94384765625
+        }
+      ]
+    },
+    {
+      "start": 81.82,
+      "end": 82.9,
+      "text": "默念妈祖保佑了",
+      "words": [
+        {
+          "text": "默",
+          "start": 81.82,
+          "end": 81.96,
+          "probability": 0.857666015625
+        },
+        {
+          "text": "念",
+          "start": 81.96,
+          "end": 82.1,
+          "probability": 0.970703125
+        },
+        {
+          "text": "妈",
+          "start": 82.1,
+          "end": 82.26,
+          "probability": 0.72412109375
+        },
+        {
+          "text": "祖",
+          "start": 82.26,
+          "end": 82.4,
+          "probability": 0.920166015625
+        },
+        {
+          "text": "保",
+          "start": 82.4,
+          "end": 82.56,
+          "probability": 0.96142578125
+        },
+        {
+          "text": "佑",
+          "start": 82.56,
+          "end": 82.68,
+          "probability": 0.98291015625
+        },
+        {
+          "text": "了",
+          "start": 82.68,
+          "end": 82.9,
+          "probability": 0.96923828125
+        }
+      ]
+    },
+    {
+      "start": 82.9,
+      "end": 84.46,
+      "text": "不过风浪越大越贵",
+      "words": [
+        {
+          "text": "不",
+          "start": 82.9,
+          "end": 83.32,
+          "probability": 0.2208251953125
+        },
+        {
+          "text": "过",
+          "start": 83.32,
+          "end": 83.48,
+          "probability": 0.9814453125
+        },
+        {
+          "text": "风",
+          "start": 83.48,
+          "end": 83.62,
+          "probability": 0.79541015625
+        },
+        {
+          "text": "浪",
+          "start": 83.62,
+          "end": 83.74,
+          "probability": 0.94384765625
+        },
+        {
+          "text": "越",
+          "start": 83.74,
+          "end": 83.9,
+          "probability": 0.9794921875
+        },
+        {
+          "text": "大",
+          "start": 83.9,
+          "end": 84.04,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "越",
+          "start": 84.04,
+          "end": 84.2,
+          "probability": 0.7109375
+        },
+        {
+          "text": "贵",
+          "start": 84.2,
+          "end": 84.46,
+          "probability": 0.975830078125
+        }
+      ]
+    },
+    {
+      "start": 84.46,
+      "end": 86.24,
+      "text": "这种自然现象危险吗",
+      "words": [
+        {
+          "text": "这",
+          "start": 84.46,
+          "end": 84.7,
+          "probability": 0.7685546875
+        },
+        {
+          "text": "种",
+          "start": 84.7,
+          "end": 84.92,
+          "probability": 0.99365234375
+        },
+        {
+          "text": "自",
+          "start": 84.92,
+          "end": 85.08,
+          "probability": 0.96484375
+        },
+        {
+          "text": "然",
+          "start": 85.08,
+          "end": 85.22,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "现",
+          "start": 85.22,
+          "end": 85.4,
+          "probability": 0.91064453125
+        },
+        {
+          "text": "象",
+          "start": 85.4,
+          "end": 85.6,
+          "probability": 0.962890625
+        },
+        {
+          "text": "危",
+          "start": 85.6,
+          "end": 85.78,
+          "probability": 0.9462890625
+        },
+        {
+          "text": "险",
+          "start": 85.78,
+          "end": 86.0,
+          "probability": 0.999755859375
+        },
+        {
+          "text": "吗",
+          "start": 86.0,
+          "end": 86.24,
+          "probability": 0.87646484375
+        }
+      ]
+    },
+    {
+      "start": 86.24,
+      "end": 87.6,
+      "text": "这是遇到了雪崩",
+      "words": [
+        {
+          "text": "这是",
+          "start": 86.24,
+          "end": 86.82,
+          "probability": 0.5498046875
+        },
+        {
+          "text": "遇",
+          "start": 86.82,
+          "end": 87.02,
+          "probability": 0.997314453125
+        },
+        {
+          "text": "到了",
+          "start": 87.02,
+          "end": 87.22,
+          "probability": 0.87109375
+        },
+        {
+          "text": "雪",
+          "start": 87.22,
+          "end": 87.42,
+          "probability": 0.9912109375
+        },
+        {
+          "text": "崩",
+          "start": 87.42,
+          "end": 87.6,
+          "probability": 0.984130859375
+        }
+      ]
+    },
+    {
+      "start": 87.6,
+      "end": 89.78,
+      "text": "一种威力十分恐怖的自然在海",
+      "words": [
+        {
+          "text": "一",
+          "start": 87.6,
+          "end": 88.02,
+          "probability": 0.70556640625
+        },
+        {
+          "text": "种",
+          "start": 88.02,
+          "end": 88.18,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "威",
+          "start": 88.18,
+          "end": 88.34,
+          "probability": 0.864501953125
+        },
+        {
+          "text": "力",
+          "start": 88.34,
+          "end": 88.46,
+          "probability": 0.88916015625
+        },
+        {
+          "text": "十",
+          "start": 88.46,
+          "end": 88.62,
+          "probability": 0.97900390625
+        },
+        {
+          "text": "分",
+          "start": 88.62,
+          "end": 88.76,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "恐",
+          "start": 88.76,
+          "end": 88.9,
+          "probability": 0.994140625
+        },
+        {
+          "text": "怖",
+          "start": 88.9,
+          "end": 89.04,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "的",
+          "start": 89.04,
+          "end": 89.14,
+          "probability": 0.98876953125
+        },
+        {
+          "text": "自",
+          "start": 89.14,
+          "end": 89.28,
+          "probability": 0.9931640625
+        },
+        {
+          "text": "然",
+          "start": 89.28,
+          "end": 89.4,
+          "probability": 1.0
+        },
+        {
+          "text": "在",
+          "start": 89.4,
+          "end": 89.54,
+          "probability": 0.0132598876953125
+        },
+        {
+          "text": "海",
+          "start": 89.54,
+          "end": 89.78,
+          "probability": 0.974609375
+        }
+      ]
+    },
+    {
+      "start": 89.78,
+      "end": 90.76,
+      "text": "是探险者们",
+      "words": [
+        {
+          "text": "是",
+          "start": 89.78,
+          "end": 90.18,
+          "probability": 0.94970703125
+        },
+        {
+          "text": "探",
+          "start": 90.18,
+          "end": 90.32,
+          "probability": 0.747314453125
+        },
+        {
+          "text": "险",
+          "start": 90.32,
+          "end": 90.46,
+          "probability": 0.970947265625
+        },
+        {
+          "text": "者",
+          "start": 90.46,
+          "end": 90.6,
+          "probability": 0.72265625
+        },
+        {
+          "text": "们",
+          "start": 90.6,
+          "end": 90.76,
+          "probability": 0.908203125
+        }
+      ]
+    },
+    {
+      "start": 90.76,
+      "end": 92.54,
+      "text": "攀登雪山时最害怕遇到的",
+      "words": [
+        {
+          "text": "攀",
+          "start": 90.76,
+          "end": 90.9,
+          "probability": 0.850830078125
+        },
+        {
+          "text": "登",
+          "start": 90.9,
+          "end": 91.06,
+          "probability": 0.716796875
+        },
+        {
+          "text": "雪",
+          "start": 91.06,
+          "end": 91.22,
+          "probability": 0.99560546875
+        },
+        {
+          "text": "山",
+          "start": 91.22,
+          "end": 91.36,
+          "probability": 0.99609375
+        },
+        {
+          "text": "时",
+          "start": 91.36,
+          "end": 91.56,
+          "probability": 0.984375
+        },
+        {
+          "text": "最",
+          "start": 91.56,
+          "end": 91.76,
+          "probability": 0.9853515625
+        },
+        {
+          "text": "害",
+          "start": 91.76,
+          "end": 91.92,
+          "probability": 0.9892578125
+        },
+        {
+          "text": "怕",
+          "start": 91.92,
+          "end": 92.04,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "遇",
+          "start": 92.04,
+          "end": 92.18,
+          "probability": 0.999267578125
+        },
+        {
+          "text": "到",
+          "start": 92.18,
+          "end": 92.34,
+          "probability": 0.99560546875
+        },
+        {
+          "text": "的",
+          "start": 92.34,
+          "end": 92.54,
+          "probability": 0.99658203125
+        }
+      ]
+    },
+    {
+      "start": 92.54,
+      "end": 94.78,
+      "text": "一旦碰到如果没有安全躲避的地方",
+      "words": [
+        {
+          "text": "一",
+          "start": 92.54,
+          "end": 92.92,
+          "probability": 0.97802734375
+        },
+        {
+          "text": "旦",
+          "start": 92.92,
+          "end": 93.04,
+          "probability": 0.985595703125
+        },
+        {
+          "text": "碰",
+          "start": 93.04,
+          "end": 93.22,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "到",
+          "start": 93.22,
+          "end": 93.36,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "如果",
+          "start": 93.36,
+          "end": 93.54,
+          "probability": 0.99560546875
+        },
+        {
+          "text": "没有",
+          "start": 93.54,
+          "end": 93.78,
+          "probability": 0.99609375
+        },
+        {
+          "text": "安全",
+          "start": 93.78,
+          "end": 94.1,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "躲",
+          "start": 94.1,
+          "end": 94.3,
+          "probability": 0.953857421875
+        },
+        {
+          "text": "避",
+          "start": 94.3,
+          "end": 94.44,
+          "probability": 0.997314453125
+        },
+        {
+          "text": "的",
+          "start": 94.44,
+          "end": 94.52,
+          "probability": 0.998046875
+        },
+        {
+          "text": "地方",
+          "start": 94.52,
+          "end": 94.78,
+          "probability": 0.9990234375
+        }
+      ]
+    },
+    {
+      "start": 94.78,
+      "end": 95.98,
+      "text": "很容易遭到团面",
+      "words": [
+        {
+          "text": "很",
+          "start": 94.78,
+          "end": 95.06,
+          "probability": 0.95458984375
+        },
+        {
+          "text": "容易",
+          "start": 95.06,
+          "end": 95.34,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "遭",
+          "start": 95.34,
+          "end": 95.5,
+          "probability": 0.9638671875
+        },
+        {
+          "text": "到",
+          "start": 95.5,
+          "end": 95.64,
+          "probability": 0.99658203125
+        },
+        {
+          "text": "团",
+          "start": 95.64,
+          "end": 95.76,
+          "probability": 0.9833984375
+        },
+        {
+          "text": "面",
+          "start": 95.76,
+          "end": 95.98,
+          "probability": 0.5
+        }
+      ]
+    },
+    {
+      "start": 95.98,
+      "end": 97.0,
+      "text": "非常的危险",
+      "words": [
+        {
+          "text": "非常的",
+          "start": 95.98,
+          "end": 96.46,
+          "probability": 0.640625
+        },
+        {
+          "text": "危",
+          "start": 96.46,
+          "end": 96.78,
+          "probability": 0.98046875
+        },
+        {
+          "text": "险",
+          "start": 96.78,
+          "end": 97.0,
+          "probability": 1.0
+        }
+      ]
+    },
+    {
+      "start": 97.0,
+      "end": 98.72,
+      "text": "这种自然现象危险吗",
+      "words": [
+        {
+          "text": "这",
+          "start": 97.0,
+          "end": 97.18,
+          "probability": 0.94189453125
+        },
+        {
+          "text": "种",
+          "start": 97.18,
+          "end": 97.38,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "自",
+          "start": 97.38,
+          "end": 97.54,
+          "probability": 0.99560546875
+        },
+        {
+          "text": "然",
+          "start": 97.54,
+          "end": 97.68,
+          "probability": 1.0
+        },
+        {
+          "text": "现",
+          "start": 97.68,
+          "end": 97.86,
+          "probability": 0.99072265625
+        },
+        {
+          "text": "象",
+          "start": 97.86,
+          "end": 98.06,
+          "probability": 0.97314453125
+        },
+        {
+          "text": "危",
+          "start": 98.06,
+          "end": 98.26,
+          "probability": 0.9912109375
+        },
+        {
+          "text": "险",
+          "start": 98.26,
+          "end": 98.48,
+          "probability": 1.0
+        },
+        {
+          "text": "吗",
+          "start": 98.48,
+          "end": 98.72,
+          "probability": 0.9814453125
+        }
+      ]
+    },
+    {
+      "start": 98.72,
+      "end": 100.2,
+      "text": "这是龙溪水现象",
+      "words": [
+        {
+          "text": "这是",
+          "start": 98.72,
+          "end": 99.2,
+          "probability": 0.96484375
+        },
+        {
+          "text": "龙",
+          "start": 99.2,
+          "end": 99.42,
+          "probability": 0.763427734375
+        },
+        {
+          "text": "溪",
+          "start": 99.42,
+          "end": 99.58,
+          "probability": 0.87109375
+        },
+        {
+          "text": "水",
+          "start": 99.58,
+          "end": 99.72,
+          "probability": 0.99560546875
+        },
+        {
+          "text": "现",
+          "start": 99.72,
+          "end": 99.88,
+          "probability": 0.9638671875
+        },
+        {
+          "text": "象",
+          "start": 99.88,
+          "end": 100.2,
+          "probability": 0.9931640625
+        }
+      ]
+    },
+    {
+      "start": 100.2,
+      "end": 101.94,
+      "text": "而且吸的还是滚烫的开水",
+      "words": [
+        {
+          "text": "而且",
+          "start": 100.2,
+          "end": 100.6,
+          "probability": 0.76025390625
+        },
+        {
+          "text": "吸",
+          "start": 100.6,
+          "end": 100.8,
+          "probability": 0.7431640625
+        },
+        {
+          "text": "的",
+          "start": 100.8,
+          "end": 100.9,
+          "probability": 0.89111328125
+        },
+        {
+          "text": "还是",
+          "start": 100.9,
+          "end": 101.06,
+          "probability": 0.9951171875
+        },
+        {
+          "text": "滚",
+          "start": 101.06,
+          "end": 101.3,
+          "probability": 0.998779296875
+        },
+        {
+          "text": "烫",
+          "start": 101.3,
+          "end": 101.44,
+          "probability": 0.978759765625
+        },
+        {
+          "text": "的",
+          "start": 101.44,
+          "end": 101.56,
+          "probability": 0.9169921875
+        },
+        {
+          "text": "开",
+          "start": 101.56,
+          "end": 101.7,
+          "probability": 0.98974609375
+        },
+        {
+          "text": "水",
+          "start": 101.7,
+          "end": 101.94,
+          "probability": 0.99951171875
+        }
+      ]
+    },
+    {
+      "start": 101.94,
+      "end": 103.34,
+      "text": "千万不要靠得太近",
+      "words": [
+        {
+          "text": "千",
+          "start": 101.94,
+          "end": 102.34,
+          "probability": 0.404296875
+        },
+        {
+          "text": "万",
+          "start": 102.34,
+          "end": 102.5,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "不要",
+          "start": 102.5,
+          "end": 102.68,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "靠",
+          "start": 102.68,
+          "end": 102.88,
+          "probability": 0.999267578125
+        },
+        {
+          "text": "得",
+          "start": 102.88,
+          "end": 102.98,
+          "probability": 0.6728515625
+        },
+        {
+          "text": "太",
+          "start": 102.98,
+          "end": 103.14,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "近",
+          "start": 103.14,
+          "end": 103.34,
+          "probability": 0.9775390625
+        }
+      ]
+    },
+    {
+      "start": 103.34,
+      "end": 104.8,
+      "text": "并找好有遮挡的地方",
+      "words": [
+        {
+          "text": "并",
+          "start": 103.34,
+          "end": 103.72,
+          "probability": 0.968505859375
+        },
+        {
+          "text": "找",
+          "start": 103.72,
+          "end": 103.84,
+          "probability": 0.94775390625
+        },
+        {
+          "text": "好",
+          "start": 103.84,
+          "end": 104.0,
+          "probability": 0.9921875
+        },
+        {
+          "text": "有",
+          "start": 104.0,
+          "end": 104.14,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "遮",
+          "start": 104.14,
+          "end": 104.3,
+          "probability": 0.960205078125
+        },
+        {
+          "text": "挡",
+          "start": 104.3,
+          "end": 104.42,
+          "probability": 0.99072265625
+        },
+        {
+          "text": "的",
+          "start": 104.42,
+          "end": 104.52,
+          "probability": 0.998046875
+        },
+        {
+          "text": "地方",
+          "start": 104.52,
+          "end": 104.8,
+          "probability": 0.9990234375
+        }
+      ]
+    },
+    {
+      "start": 104.8,
+      "end": 106.66,
+      "text": "避免被飘落的开水烫伤",
+      "words": [
+        {
+          "text": "避",
+          "start": 104.8,
+          "end": 105.28,
+          "probability": 0.99267578125
+        },
+        {
+          "text": "免",
+          "start": 105.28,
+          "end": 105.42,
+          "probability": 0.980712890625
+        },
+        {
+          "text": "被",
+          "start": 105.42,
+          "end": 105.56,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "飘",
+          "start": 105.56,
+          "end": 105.76,
+          "probability": 0.93505859375
+        },
+        {
+          "text": "落",
+          "start": 105.76,
+          "end": 105.88,
+          "probability": 0.99658203125
+        },
+        {
+          "text": "的",
+          "start": 105.88,
+          "end": 105.98,
+          "probability": 0.982421875
+        },
+        {
+          "text": "开",
+          "start": 105.98,
+          "end": 106.14,
+          "probability": 0.9892578125
+        },
+        {
+          "text": "水",
+          "start": 106.14,
+          "end": 106.28,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "烫",
+          "start": 106.28,
+          "end": 106.42,
+          "probability": 0.862060546875
+        },
+        {
+          "text": "伤",
+          "start": 106.42,
+          "end": 106.66,
+          "probability": 0.98046875
+        }
+      ]
+    },
+    {
+      "start": 106.66,
+      "end": 107.58,
+      "text": "非常的危险",
+      "words": [
+        {
+          "text": "非常的",
+          "start": 106.66,
+          "end": 107.1,
+          "probability": 0.94482421875
+        },
+        {
+          "text": "危",
+          "start": 107.1,
+          "end": 107.4,
+          "probability": 0.99658203125
+        },
+        {
+          "text": "险",
+          "start": 107.4,
+          "end": 107.58,
+          "probability": 0.999755859375
+        }
+      ]
+    }
+  ],
+  "cues": [
+    {
+      "start": 0.0,
+      "end": 1.8,
+      "text": "这种自然现象危险吗",
+      "words": [
+        {
+          "text": "这",
+          "start": 0.0,
+          "end": 0.28,
+          "probability": 0.410888671875
+        },
+        {
+          "text": "种",
+          "start": 0.28,
+          "end": 0.48,
+          "probability": 0.98779296875
+        },
+        {
+          "text": "自",
+          "start": 0.48,
+          "end": 0.64,
+          "probability": 0.97265625
+        },
+        {
+          "text": "然",
+          "start": 0.64,
+          "end": 0.78,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "现",
+          "start": 0.78,
+          "end": 0.96,
+          "probability": 0.97509765625
+        },
+        {
+          "text": "象",
+          "start": 0.96,
+          "end": 1.16,
+          "probability": 0.96826171875
+        },
+        {
+          "text": "危",
+          "start": 1.16,
+          "end": 1.36,
+          "probability": 0.97216796875
+        },
+        {
+          "text": "险",
+          "start": 1.36,
+          "end": 1.56,
+          "probability": 0.999755859375
+        },
+        {
+          "text": "吗",
+          "start": 1.56,
+          "end": 1.8,
+          "probability": 0.95068359375
+        }
+      ]
+    },
+    {
+      "start": 1.8,
+      "end": 3.98,
+      "text": "这是遇到了强队留冰雹天气",
+      "words": [
+        {
+          "text": "这是",
+          "start": 1.8,
+          "end": 2.42,
+          "probability": 0.431884765625
+        },
+        {
+          "text": "遇",
+          "start": 2.42,
+          "end": 2.62,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "到了",
+          "start": 2.62,
+          "end": 2.82,
+          "probability": 0.93212890625
+        },
+        {
+          "text": "强",
+          "start": 2.82,
+          "end": 2.98,
+          "probability": 0.887451171875
+        },
+        {
+          "text": "队",
+          "start": 2.98,
+          "end": 3.16,
+          "probability": 0.86474609375
+        },
+        {
+          "text": "留",
+          "start": 3.16,
+          "end": 3.3,
+          "probability": 0.32861328125
+        },
+        {
+          "text": "冰",
+          "start": 3.3,
+          "end": 3.46,
+          "probability": 0.914306640625
+        },
+        {
+          "text": "雹",
+          "start": 3.46,
+          "end": 3.62,
+          "probability": 0.5968017578125
+        },
+        {
+          "text": "天",
+          "start": 3.62,
+          "end": 3.76,
+          "probability": 0.99169921875
+        },
+        {
+          "text": "气",
+          "start": 3.76,
+          "end": 3.98,
+          "probability": 0.97900390625
+        }
+      ]
+    },
+    {
+      "start": 3.98,
+      "end": 6.14,
+      "text": "如果是在野外那就非常危险",
+      "words": [
+        {
+          "text": "如果",
+          "start": 3.98,
+          "end": 4.54,
+          "probability": 0.90234375
+        },
+        {
+          "text": "是",
+          "start": 4.54,
+          "end": 4.78,
+          "probability": 0.98193359375
+        },
+        {
+          "text": "在",
+          "start": 4.78,
+          "end": 4.92,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "野",
+          "start": 4.92,
+          "end": 5.04,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "外",
+          "start": 5.04,
+          "end": 5.18,
+          "probability": 1.0
+        },
+        {
+          "text": "那就",
+          "start": 5.18,
+          "end": 5.4,
+          "probability": 0.57861328125
+        },
+        {
+          "text": "非常",
+          "start": 5.4,
+          "end": 5.68,
+          "probability": 0.98681640625
+        },
+        {
+          "text": "危",
+          "start": 5.68,
+          "end": 5.88,
+          "probability": 0.99462890625
+        },
+        {
+          "text": "险",
+          "start": 5.88,
+          "end": 6.14,
+          "probability": 1.0
+        }
+      ]
+    },
+    {
+      "start": 6.14,
+      "end": 8.2,
+      "text": "躲在树林里是一种错误的行为",
+      "words": [
+        {
+          "text": "躲",
+          "start": 6.14,
+          "end": 6.56,
+          "probability": 0.99365234375
+        },
+        {
+          "text": "在",
+          "start": 6.56,
+          "end": 6.74,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "树",
+          "start": 6.74,
+          "end": 6.86,
+          "probability": 0.996826171875
+        },
+        {
+          "text": "林",
+          "start": 6.86,
+          "end": 7.0,
+          "probability": 0.99169921875
+        },
+        {
+          "text": "里",
+          "start": 7.0,
+          "end": 7.12,
+          "probability": 0.9892578125
+        },
+        {
+          "text": "是",
+          "start": 7.12,
+          "end": 7.3,
+          "probability": 0.99169921875
+        },
+        {
+          "text": "一",
+          "start": 7.3,
+          "end": 7.4,
+          "probability": 0.99658203125
+        },
+        {
+          "text": "种",
+          "start": 7.4,
+          "end": 7.5,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "错",
+          "start": 7.5,
+          "end": 7.68,
+          "probability": 0.98974609375
+        },
+        {
+          "text": "误",
+          "start": 7.68,
+          "end": 7.78,
+          "probability": 0.996337890625
+        },
+        {
+          "text": "的",
+          "start": 7.78,
+          "end": 7.88,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "行",
+          "start": 7.88,
+          "end": 8.02,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "为",
+          "start": 8.02,
+          "end": 8.2,
+          "probability": 0.99658203125
+        }
+      ]
+    },
+    {
+      "start": 8.2,
+      "end": 10.04,
+      "text": "因为这样很容易遭遇雷机",
+      "words": [
+        {
+          "text": "因为",
+          "start": 8.2,
+          "end": 8.7,
+          "probability": 0.97802734375
+        },
+        {
+          "text": "这样",
+          "start": 8.7,
+          "end": 8.96,
+          "probability": 0.99462890625
+        },
+        {
+          "text": "很",
+          "start": 8.96,
+          "end": 9.18,
+          "probability": 0.99609375
+        },
+        {
+          "text": "容易",
+          "start": 9.18,
+          "end": 9.42,
+          "probability": 1.0
+        },
+        {
+          "text": "遭",
+          "start": 9.42,
+          "end": 9.58,
+          "probability": 0.995361328125
+        },
+        {
+          "text": "遇",
+          "start": 9.58,
+          "end": 9.74,
+          "probability": 0.997314453125
+        },
+        {
+          "text": "雷",
+          "start": 9.74,
+          "end": 9.86,
+          "probability": 0.9580078125
+        },
+        {
+          "text": "机",
+          "start": 9.86,
+          "end": 10.04,
+          "probability": 0.6552734375
+        }
+      ]
+    },
+    {
+      "start": 10.04,
+      "end": 12.2,
+      "text": "还有有些冰雹比拳头还要大",
+      "words": [
+        {
+          "text": "还有",
+          "start": 10.04,
+          "end": 10.6,
+          "probability": 0.94873046875
+        },
+        {
+          "text": "有",
+          "start": 10.6,
+          "end": 10.82,
+          "probability": 0.9873046875
+        },
+        {
+          "text": "些",
+          "start": 10.82,
+          "end": 10.96,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "冰",
+          "start": 10.96,
+          "end": 11.12,
+          "probability": 0.994873046875
+        },
+        {
+          "text": "雹",
+          "start": 11.12,
+          "end": 11.28,
+          "probability": 0.971435546875
+        },
+        {
+          "text": "比",
+          "start": 11.28,
+          "end": 11.44,
+          "probability": 0.9921875
+        },
+        {
+          "text": "拳",
+          "start": 11.44,
+          "end": 11.6,
+          "probability": 0.9765625
+        },
+        {
+          "text": "头",
+          "start": 11.6,
+          "end": 11.72,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "还",
+          "start": 11.72,
+          "end": 11.88,
+          "probability": 0.984375
+        },
+        {
+          "text": "要",
+          "start": 11.88,
+          "end": 12.0,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "大",
+          "start": 12.0,
+          "end": 12.2,
+          "probability": 0.99951171875
+        }
+      ]
+    },
+    {
+      "start": 12.2,
+      "end": 14.42,
+      "text": "要尽量找个坚固的庇护所才行",
+      "words": [
+        {
+          "text": "要",
+          "start": 12.2,
+          "end": 12.62,
+          "probability": 0.970703125
+        },
+        {
+          "text": "尽",
+          "start": 12.62,
+          "end": 12.8,
+          "probability": 0.998291015625
+        },
+        {
+          "text": "量",
+          "start": 12.8,
+          "end": 12.94,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "找",
+          "start": 12.94,
+          "end": 13.08,
+          "probability": 0.994140625
+        },
+        {
+          "text": "个",
+          "start": 13.08,
+          "end": 13.22,
+          "probability": 0.994140625
+        },
+        {
+          "text": "坚",
+          "start": 13.22,
+          "end": 13.36,
+          "probability": 0.86962890625
+        },
+        {
+          "text": "固",
+          "start": 13.36,
+          "end": 13.5,
+          "probability": 0.99658203125
+        },
+        {
+          "text": "的",
+          "start": 13.5,
+          "end": 13.62,
+          "probability": 0.9658203125
+        },
+        {
+          "text": "庇",
+          "start": 13.62,
+          "end": 13.74,
+          "probability": 0.94921875
+        },
+        {
+          "text": "护",
+          "start": 13.74,
+          "end": 13.84,
+          "probability": 0.993408203125
+        },
+        {
+          "text": "所",
+          "start": 13.84,
+          "end": 14.02,
+          "probability": 0.9951171875
+        },
+        {
+          "text": "才",
+          "start": 14.02,
+          "end": 14.16,
+          "probability": 0.89990234375
+        },
+        {
+          "text": "行",
+          "start": 14.16,
+          "end": 14.42,
+          "probability": 1.0
+        }
+      ]
+    },
+    {
+      "start": 14.42,
+      "end": 16.18,
+      "text": "这种自然现象危险吗",
+      "words": [
+        {
+          "text": "这",
+          "start": 14.42,
+          "end": 14.64,
+          "probability": 0.8935546875
+        },
+        {
+          "text": "种",
+          "start": 14.64,
+          "end": 14.84,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "自",
+          "start": 14.84,
+          "end": 15.0,
+          "probability": 0.99609375
+        },
+        {
+          "text": "然",
+          "start": 15.0,
+          "end": 15.14,
+          "probability": 1.0
+        },
+        {
+          "text": "现",
+          "start": 15.14,
+          "end": 15.34,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "象",
+          "start": 15.34,
+          "end": 15.54,
+          "probability": 0.9873046875
+        },
+        {
+          "text": "危",
+          "start": 15.54,
+          "end": 15.72,
+          "probability": 0.9892578125
+        },
+        {
+          "text": "险",
+          "start": 15.72,
+          "end": 15.94,
+          "probability": 1.0
+        },
+        {
+          "text": "吗",
+          "start": 15.94,
+          "end": 16.18,
+          "probability": 0.9814453125
+        }
+      ]
+    },
+    {
+      "start": 16.18,
+      "end": 17.2,
+      "text": "非常危险",
+      "words": [
+        {
+          "text": "非常",
+          "start": 16.18,
+          "end": 16.74,
+          "probability": 0.96435546875
+        },
+        {
+          "text": "危",
+          "start": 16.74,
+          "end": 16.98,
+          "probability": 0.99267578125
+        },
+        {
+          "text": "险",
+          "start": 16.98,
+          "end": 17.2,
+          "probability": 1.0
+        }
+      ]
+    },
+    {
+      "start": 17.2,
+      "end": 19.04,
+      "text": "这是强劲电感应现象",
+      "words": [
+        {
+          "text": "这是",
+          "start": 17.2,
+          "end": 17.66,
+          "probability": 0.90869140625
+        },
+        {
+          "text": "强",
+          "start": 17.66,
+          "end": 17.92,
+          "probability": 0.951171875
+        },
+        {
+          "text": "劲",
+          "start": 17.92,
+          "end": 18.08,
+          "probability": 0.61956787109375
+        },
+        {
+          "text": "电",
+          "start": 18.08,
+          "end": 18.24,
+          "probability": 0.422607421875
+        },
+        {
+          "text": "感",
+          "start": 18.24,
+          "end": 18.38,
+          "probability": 0.94189453125
+        },
+        {
+          "text": "应",
+          "start": 18.38,
+          "end": 18.54,
+          "probability": 0.802734375
+        },
+        {
+          "text": "现",
+          "start": 18.54,
+          "end": 18.7,
+          "probability": 0.99658203125
+        },
+        {
+          "text": "象",
+          "start": 18.7,
+          "end": 19.04,
+          "probability": 0.98095703125
+        }
+      ]
+    },
+    {
+      "start": 19.04,
+      "end": 20.2,
+      "text": "出现这种现象",
+      "words": [
+        {
+          "text": "出",
+          "start": 19.04,
+          "end": 19.32,
+          "probability": 0.56982421875
+        },
+        {
+          "text": "现",
+          "start": 19.32,
+          "end": 19.48,
+          "probability": 0.99560546875
+        },
+        {
+          "text": "这",
+          "start": 19.48,
+          "end": 19.64,
+          "probability": 0.9951171875
+        },
+        {
+          "text": "种",
+          "start": 19.64,
+          "end": 19.78,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "现",
+          "start": 19.78,
+          "end": 19.94,
+          "probability": 0.9951171875
+        },
+        {
+          "text": "象",
+          "start": 19.94,
+          "end": 20.2,
+          "probability": 0.98486328125
+        }
+      ]
+    },
+    {
+      "start": 20.2,
+      "end": 21.98,
+      "text": "说明头顶上方有带电雷云",
+      "words": [
+        {
+          "text": "说",
+          "start": 20.2,
+          "end": 20.4,
+          "probability": 0.98681640625
+        },
+        {
+          "text": "明",
+          "start": 20.4,
+          "end": 20.56,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "头",
+          "start": 20.56,
+          "end": 20.72,
+          "probability": 0.97216796875
+        },
+        {
+          "text": "顶",
+          "start": 20.72,
+          "end": 20.86,
+          "probability": 0.993896484375
+        },
+        {
+          "text": "上",
+          "start": 20.86,
+          "end": 21.02,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "方",
+          "start": 21.02,
+          "end": 21.2,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "有",
+          "start": 21.2,
+          "end": 21.34,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "带",
+          "start": 21.34,
+          "end": 21.5,
+          "probability": 0.86962890625
+        },
+        {
+          "text": "电",
+          "start": 21.5,
+          "end": 21.64,
+          "probability": 0.99169921875
+        },
+        {
+          "text": "雷",
+          "start": 21.64,
+          "end": 21.76,
+          "probability": 0.99169921875
+        },
+        {
+          "text": "云",
+          "start": 21.76,
+          "end": 21.98,
+          "probability": 0.99658203125
+        }
+      ]
+    },
+    {
+      "start": 21.98,
+      "end": 23.74,
+      "text": "随时可能成为雷机目标",
+      "words": [
+        {
+          "text": "随",
+          "start": 21.98,
+          "end": 22.42,
+          "probability": 0.95068359375
+        },
+        {
+          "text": "时",
+          "start": 22.42,
+          "end": 22.56,
+          "probability": 0.998046875
+        },
+        {
+          "text": "可能",
+          "start": 22.56,
+          "end": 22.8,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "成",
+          "start": 22.8,
+          "end": 23.0,
+          "probability": 0.99560546875
+        },
+        {
+          "text": "为",
+          "start": 23.0,
+          "end": 23.14,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "雷",
+          "start": 23.14,
+          "end": 23.28,
+          "probability": 0.99658203125
+        },
+        {
+          "text": "机",
+          "start": 23.28,
+          "end": 23.42,
+          "probability": 0.9482421875
+        },
+        {
+          "text": "目",
+          "start": 23.42,
+          "end": 23.56,
+          "probability": 0.99609375
+        },
+        {
+          "text": "标",
+          "start": 23.56,
+          "end": 23.74,
+          "probability": 0.999267578125
+        }
+      ]
+    },
+    {
+      "start": 23.74,
+      "end": 25.98,
+      "text": "遇到千万不要在原地继续逗留",
+      "words": [
+        {
+          "text": "遇",
+          "start": 23.74,
+          "end": 24.22,
+          "probability": 0.962158203125
+        },
+        {
+          "text": "到",
+          "start": 24.22,
+          "end": 24.36,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "千",
+          "start": 24.36,
+          "end": 24.5,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "万",
+          "start": 24.5,
+          "end": 24.64,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "不要",
+          "start": 24.64,
+          "end": 24.84,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "在",
+          "start": 24.84,
+          "end": 25.06,
+          "probability": 0.869140625
+        },
+        {
+          "text": "原",
+          "start": 25.06,
+          "end": 25.2,
+          "probability": 0.97412109375
+        },
+        {
+          "text": "地",
+          "start": 25.2,
+          "end": 25.34,
+          "probability": 1.0
+        },
+        {
+          "text": "继",
+          "start": 25.34,
+          "end": 25.52,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "续",
+          "start": 25.52,
+          "end": 25.64,
+          "probability": 1.0
+        },
+        {
+          "text": "逗",
+          "start": 25.64,
+          "end": 25.78,
+          "probability": 0.957275390625
+        },
+        {
+          "text": "留",
+          "start": 25.78,
+          "end": 25.98,
+          "probability": 0.875
+        }
+      ]
+    },
+    {
+      "start": 25.98,
+      "end": 28.52,
+      "text": "记得赶紧架车离开或者回家躲避",
+      "words": [
+        {
+          "text": "记",
+          "start": 25.98,
+          "end": 26.42,
+          "probability": 0.97314453125
+        },
+        {
+          "text": "得",
+          "start": 26.42,
+          "end": 26.54,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "赶",
+          "start": 26.54,
+          "end": 26.7,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "紧",
+          "start": 26.7,
+          "end": 26.88,
+          "probability": 0.997802734375
+        },
+        {
+          "text": "架",
+          "start": 26.88,
+          "end": 27.06,
+          "probability": 0.6346435546875
+        },
+        {
+          "text": "车",
+          "start": 27.06,
+          "end": 27.18,
+          "probability": 0.934326171875
+        },
+        {
+          "text": "离",
+          "start": 27.18,
+          "end": 27.32,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "开",
+          "start": 27.32,
+          "end": 27.54,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "或者",
+          "start": 27.54,
+          "end": 27.82,
+          "probability": 0.98583984375
+        },
+        {
+          "text": "回",
+          "start": 27.82,
+          "end": 28.04,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "家",
+          "start": 28.04,
+          "end": 28.18,
+          "probability": 1.0
+        },
+        {
+          "text": "躲",
+          "start": 28.18,
+          "end": 28.32,
+          "probability": 0.995849609375
+        },
+        {
+          "text": "避",
+          "start": 28.32,
+          "end": 28.52,
+          "probability": 0.997802734375
+        }
+      ]
+    },
+    {
+      "start": 28.52,
+      "end": 30.26,
+      "text": "这种自然现象危险吗",
+      "words": [
+        {
+          "text": "这",
+          "start": 28.52,
+          "end": 28.76,
+          "probability": 0.6728515625
+        },
+        {
+          "text": "种",
+          "start": 28.76,
+          "end": 28.96,
+          "probability": 0.99560546875
+        },
+        {
+          "text": "自",
+          "start": 28.96,
+          "end": 29.1,
+          "probability": 0.95947265625
+        },
+        {
+          "text": "然",
+          "start": 29.1,
+          "end": 29.24,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "现",
+          "start": 29.24,
+          "end": 29.44,
+          "probability": 0.97216796875
+        },
+        {
+          "text": "象",
+          "start": 29.44,
+          "end": 29.62,
+          "probability": 0.9716796875
+        },
+        {
+          "text": "危",
+          "start": 29.62,
+          "end": 29.82,
+          "probability": 0.97900390625
+        },
+        {
+          "text": "险",
+          "start": 29.82,
+          "end": 30.04,
+          "probability": 1.0
+        },
+        {
+          "text": "吗",
+          "start": 30.04,
+          "end": 30.26,
+          "probability": 0.9462890625
+        }
+      ]
+    },
+    {
+      "start": 30.26,
+      "end": 31.28,
+      "text": "这是地火",
+      "words": [
+        {
+          "text": "这是",
+          "start": 30.26,
+          "end": 30.9,
+          "probability": 0.5771484375
+        },
+        {
+          "text": "地",
+          "start": 30.9,
+          "end": 31.1,
+          "probability": 0.9384765625
+        },
+        {
+          "text": "火",
+          "start": 31.1,
+          "end": 31.28,
+          "probability": 0.99267578125
+        }
+      ]
+    },
+    {
+      "start": 31.28,
+      "end": 33.46,
+      "text": "是由于地下煤炭自然而形成的",
+      "words": [
+        {
+          "text": "是",
+          "start": 31.28,
+          "end": 31.72,
+          "probability": 0.845703125
+        },
+        {
+          "text": "由",
+          "start": 31.72,
+          "end": 31.88,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "于",
+          "start": 31.88,
+          "end": 32.0,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "地",
+          "start": 32.0,
+          "end": 32.14,
+          "probability": 0.9853515625
+        },
+        {
+          "text": "下",
+          "start": 32.14,
+          "end": 32.28,
+          "probability": 0.99658203125
+        },
+        {
+          "text": "煤",
+          "start": 32.28,
+          "end": 32.42,
+          "probability": 0.80224609375
+        },
+        {
+          "text": "炭",
+          "start": 32.42,
+          "end": 32.56,
+          "probability": 0.98046875
+        },
+        {
+          "text": "自",
+          "start": 32.56,
+          "end": 32.74,
+          "probability": 0.98828125
+        },
+        {
+          "text": "然",
+          "start": 32.74,
+          "end": 32.84,
+          "probability": 1.0
+        },
+        {
+          "text": "而",
+          "start": 32.84,
+          "end": 32.94,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "形",
+          "start": 32.94,
+          "end": 33.12,
+          "probability": 0.9658203125
+        },
+        {
+          "text": "成",
+          "start": 33.12,
+          "end": 33.26,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "的",
+          "start": 33.26,
+          "end": 33.46,
+          "probability": 0.998046875
+        }
+      ]
+    },
+    {
+      "start": 33.46,
+      "end": 34.94,
+      "text": "探四好像没有危险",
+      "words": [
+        {
+          "text": "探",
+          "start": 33.46,
+          "end": 33.86,
+          "probability": 0.6439208984375
+        },
+        {
+          "text": "四",
+          "start": 33.86,
+          "end": 34.04,
+          "probability": 0.4326171875
+        },
+        {
+          "text": "好像",
+          "start": 34.04,
+          "end": 34.26,
+          "probability": 0.9912109375
+        },
+        {
+          "text": "没有",
+          "start": 34.26,
+          "end": 34.5,
+          "probability": 0.994140625
+        },
+        {
+          "text": "危",
+          "start": 34.5,
+          "end": 34.7,
+          "probability": 0.98681640625
+        },
+        {
+          "text": "险",
+          "start": 34.7,
+          "end": 34.94,
+          "probability": 1.0
+        }
+      ]
+    },
+    {
+      "start": 34.94,
+      "end": 36.66,
+      "text": "但如果煤炭燃烧不充分",
+      "words": [
+        {
+          "text": "但",
+          "start": 34.94,
+          "end": 35.34,
+          "probability": 0.9580078125
+        },
+        {
+          "text": "如果",
+          "start": 35.34,
+          "end": 35.54,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "煤",
+          "start": 35.54,
+          "end": 35.76,
+          "probability": 0.997314453125
+        },
+        {
+          "text": "炭",
+          "start": 35.76,
+          "end": 35.9,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "燃",
+          "start": 35.9,
+          "end": 36.04,
+          "probability": 0.990478515625
+        },
+        {
+          "text": "烧",
+          "start": 36.04,
+          "end": 36.2,
+          "probability": 0.994384765625
+        },
+        {
+          "text": "不",
+          "start": 36.2,
+          "end": 36.36,
+          "probability": 0.93603515625
+        },
+        {
+          "text": "充",
+          "start": 36.36,
+          "end": 36.48,
+          "probability": 0.999267578125
+        },
+        {
+          "text": "分",
+          "start": 36.48,
+          "end": 36.66,
+          "probability": 0.98876953125
+        }
+      ]
+    },
+    {
+      "start": 36.66,
+      "end": 38.24,
+      "text": "可能会释放出大量的",
+      "words": [
+        {
+          "text": "可能",
+          "start": 36.66,
+          "end": 37.2,
+          "probability": 0.98583984375
+        },
+        {
+          "text": "会",
+          "start": 37.2,
+          "end": 37.4,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "释",
+          "start": 37.4,
+          "end": 37.54,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "放",
+          "start": 37.54,
+          "end": 37.66,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "出",
+          "start": 37.66,
+          "end": 37.82,
+          "probability": 0.99560546875
+        },
+        {
+          "text": "大",
+          "start": 37.82,
+          "end": 38.0,
+          "probability": 0.99560546875
+        },
+        {
+          "text": "量",
+          "start": 38.0,
+          "end": 38.12,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "的",
+          "start": 38.12,
+          "end": 38.24,
+          "probability": 0.99755859375
+        }
+      ]
+    },
+    {
+      "start": 38.24,
+      "end": 39.64,
+      "text": "依氧化碳等有害气体",
+      "words": [
+        {
+          "text": "依",
+          "start": 38.24,
+          "end": 38.38,
+          "probability": 0.53802490234375
+        },
+        {
+          "text": "氧",
+          "start": 38.38,
+          "end": 38.48,
+          "probability": 0.7265625
+        },
+        {
+          "text": "化",
+          "start": 38.48,
+          "end": 38.62,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "碳",
+          "start": 38.62,
+          "end": 38.76,
+          "probability": 0.86962890625
+        },
+        {
+          "text": "等",
+          "start": 38.76,
+          "end": 38.92,
+          "probability": 0.97412109375
+        },
+        {
+          "text": "有",
+          "start": 38.92,
+          "end": 39.1,
+          "probability": 0.97265625
+        },
+        {
+          "text": "害",
+          "start": 39.1,
+          "end": 39.24,
+          "probability": 0.94970703125
+        },
+        {
+          "text": "气",
+          "start": 39.24,
+          "end": 39.38,
+          "probability": 0.87109375
+        },
+        {
+          "text": "体",
+          "start": 39.38,
+          "end": 39.64,
+          "probability": 0.98974609375
+        }
+      ]
+    },
+    {
+      "start": 39.64,
+      "end": 40.54,
+      "text": "较为危险",
+      "words": [
+        {
+          "text": "较",
+          "start": 39.64,
+          "end": 40.02,
+          "probability": 0.905517578125
+        },
+        {
+          "text": "为",
+          "start": 40.02,
+          "end": 40.16,
+          "probability": 0.92724609375
+        },
+        {
+          "text": "危",
+          "start": 40.16,
+          "end": 40.32,
+          "probability": 0.9814453125
+        },
+        {
+          "text": "险",
+          "start": 40.32,
+          "end": 40.54,
+          "probability": 1.0
+        }
+      ]
+    },
+    {
+      "start": 40.54,
+      "end": 42.26,
+      "text": "遇到几辆不要靠近观看",
+      "words": [
+        {
+          "text": "遇",
+          "start": 40.54,
+          "end": 40.92,
+          "probability": 0.7371826171875
+        },
+        {
+          "text": "到",
+          "start": 40.92,
+          "end": 41.06,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "几",
+          "start": 41.06,
+          "end": 41.22,
+          "probability": 0.663818359375
+        },
+        {
+          "text": "辆",
+          "start": 41.22,
+          "end": 41.32,
+          "probability": 0.646484375
+        },
+        {
+          "text": "不要",
+          "start": 41.32,
+          "end": 41.6,
+          "probability": 0.984375
+        },
+        {
+          "text": "靠",
+          "start": 41.6,
+          "end": 41.76,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "近",
+          "start": 41.76,
+          "end": 41.92,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "观",
+          "start": 41.92,
+          "end": 42.08,
+          "probability": 0.98876953125
+        },
+        {
+          "text": "看",
+          "start": 42.08,
+          "end": 42.26,
+          "probability": 0.92431640625
+        }
+      ]
+    },
+    {
+      "start": 42.26,
+      "end": 44.08,
+      "text": "这种自然现象危险吗",
+      "words": [
+        {
+          "text": "这",
+          "start": 42.26,
+          "end": 42.56,
+          "probability": 0.96923828125
+        },
+        {
+          "text": "种",
+          "start": 42.56,
+          "end": 42.74,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "自",
+          "start": 42.74,
+          "end": 42.92,
+          "probability": 0.99658203125
+        },
+        {
+          "text": "然",
+          "start": 42.92,
+          "end": 43.04,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "现",
+          "start": 43.04,
+          "end": 43.24,
+          "probability": 0.9951171875
+        },
+        {
+          "text": "象",
+          "start": 43.24,
+          "end": 43.42,
+          "probability": 0.9912109375
+        },
+        {
+          "text": "危",
+          "start": 43.42,
+          "end": 43.62,
+          "probability": 0.994140625
+        },
+        {
+          "text": "险",
+          "start": 43.62,
+          "end": 43.84,
+          "probability": 1.0
+        },
+        {
+          "text": "吗",
+          "start": 43.84,
+          "end": 44.08,
+          "probability": 0.97998046875
+        }
+      ]
+    },
+    {
+      "start": 44.08,
+      "end": 45.04,
+      "text": "为什么险",
+      "words": [
+        {
+          "text": "为什么",
+          "start": 44.08,
+          "end": 44.64,
+          "probability": 0.9462890625
+        },
+        {
+          "text": "险",
+          "start": 44.64,
+          "end": 45.04,
+          "probability": 0.863525390625
+        }
+      ]
+    },
+    {
+      "start": 45.04,
+      "end": 46.64,
+      "text": "这是瀑布往下坠落时",
+      "words": [
+        {
+          "text": "这是",
+          "start": 45.04,
+          "end": 45.5,
+          "probability": 0.87109375
+        },
+        {
+          "text": "瀑",
+          "start": 45.5,
+          "end": 45.7,
+          "probability": 0.970703125
+        },
+        {
+          "text": "布",
+          "start": 45.7,
+          "end": 45.84,
+          "probability": 0.98828125
+        },
+        {
+          "text": "往",
+          "start": 45.84,
+          "end": 45.98,
+          "probability": 0.9912109375
+        },
+        {
+          "text": "下",
+          "start": 45.98,
+          "end": 46.14,
+          "probability": 0.998046875
+        },
+        {
+          "text": "坠",
+          "start": 46.14,
+          "end": 46.28,
+          "probability": 0.971923828125
+        },
+        {
+          "text": "落",
+          "start": 46.28,
+          "end": 46.44,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "时",
+          "start": 46.44,
+          "end": 46.64,
+          "probability": 0.97802734375
+        }
+      ]
+    },
+    {
+      "start": 46.64,
+      "end": 48.26,
+      "text": "遇到强风吹了起来",
+      "words": [
+        {
+          "text": "遇",
+          "start": 46.64,
+          "end": 46.96,
+          "probability": 0.971435546875
+        },
+        {
+          "text": "到",
+          "start": 46.96,
+          "end": 47.1,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "强",
+          "start": 47.1,
+          "end": 47.26,
+          "probability": 0.6788330078125
+        },
+        {
+          "text": "风",
+          "start": 47.26,
+          "end": 47.42,
+          "probability": 0.814453125
+        },
+        {
+          "text": "吹",
+          "start": 47.42,
+          "end": 47.6,
+          "probability": 0.997802734375
+        },
+        {
+          "text": "了",
+          "start": 47.6,
+          "end": 47.72,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "起",
+          "start": 47.72,
+          "end": 47.86,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "来",
+          "start": 47.86,
+          "end": 48.26,
+          "probability": 0.9990234375
+        }
+      ]
+    },
+    {
+      "start": 48.26,
+      "end": 50.04,
+      "text": "形成了十分罕见的自然奇观",
+      "words": [
+        {
+          "text": "形",
+          "start": 48.26,
+          "end": 48.48,
+          "probability": 0.89306640625
+        },
+        {
+          "text": "成",
+          "start": 48.48,
+          "end": 48.62,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "了",
+          "start": 48.62,
+          "end": 48.76,
+          "probability": 0.9951171875
+        },
+        {
+          "text": "十",
+          "start": 48.76,
+          "end": 48.92,
+          "probability": 0.9892578125
+        },
+        {
+          "text": "分",
+          "start": 48.92,
+          "end": 49.04,
+          "probability": 0.9912109375
+        },
+        {
+          "text": "罕",
+          "start": 49.04,
+          "end": 49.2,
+          "probability": 0.9931640625
+        },
+        {
+          "text": "见",
+          "start": 49.2,
+          "end": 49.32,
+          "probability": 0.99169921875
+        },
+        {
+          "text": "的",
+          "start": 49.32,
+          "end": 49.44,
+          "probability": 0.99658203125
+        },
+        {
+          "text": "自",
+          "start": 49.44,
+          "end": 49.58,
+          "probability": 0.9951171875
+        },
+        {
+          "text": "然",
+          "start": 49.58,
+          "end": 49.68,
+          "probability": 1.0
+        },
+        {
+          "text": "奇",
+          "start": 49.68,
+          "end": 49.84,
+          "probability": 0.892578125
+        },
+        {
+          "text": "观",
+          "start": 49.84,
+          "end": 50.04,
+          "probability": 0.9765625
+        }
+      ]
+    },
+    {
+      "start": 50.04,
+      "end": 51.16,
+      "text": "看到的宝兹们",
+      "words": [
+        {
+          "text": "看到",
+          "start": 50.04,
+          "end": 50.56,
+          "probability": 0.98876953125
+        },
+        {
+          "text": "的",
+          "start": 50.56,
+          "end": 50.74,
+          "probability": 0.99658203125
+        },
+        {
+          "text": "宝",
+          "start": 50.74,
+          "end": 50.86,
+          "probability": 0.970703125
+        },
+        {
+          "text": "兹",
+          "start": 50.86,
+          "end": 51.02,
+          "probability": 0.598876953125
+        },
+        {
+          "text": "们",
+          "start": 51.02,
+          "end": 51.16,
+          "probability": 0.984375
+        }
+      ]
+    },
+    {
+      "start": 51.16,
+      "end": 52.44,
+      "text": "千万不要守养流花",
+      "words": [
+        {
+          "text": "千",
+          "start": 51.16,
+          "end": 51.4,
+          "probability": 0.9873046875
+        },
+        {
+          "text": "万",
+          "start": 51.4,
+          "end": 51.56,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "不要",
+          "start": 51.56,
+          "end": 51.78,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "守",
+          "start": 51.78,
+          "end": 51.96,
+          "probability": 0.5283203125
+        },
+        {
+          "text": "养",
+          "start": 51.96,
+          "end": 52.08,
+          "probability": 0.9462890625
+        },
+        {
+          "text": "流",
+          "start": 52.08,
+          "end": 52.24,
+          "probability": 0.634765625
+        },
+        {
+          "text": "花",
+          "start": 52.24,
+          "end": 52.44,
+          "probability": 0.93115234375
+        }
+      ]
+    },
+    {
+      "start": 52.44,
+      "end": 53.8,
+      "text": "不然二零二六年",
+      "words": [
+        {
+          "text": "不",
+          "start": 52.44,
+          "end": 52.9,
+          "probability": 0.98876953125
+        },
+        {
+          "text": "然",
+          "start": 52.9,
+          "end": 53.04,
+          "probability": 0.998046875
+        },
+        {
+          "text": "二",
+          "start": 53.04,
+          "end": 53.2,
+          "probability": 0.57275390625
+        },
+        {
+          "text": "零",
+          "start": 53.2,
+          "end": 53.32,
+          "probability": 0.918701171875
+        },
+        {
+          "text": "二",
+          "start": 53.32,
+          "end": 53.44,
+          "probability": 0.99658203125
+        },
+        {
+          "text": "六",
+          "start": 53.44,
+          "end": 53.6,
+          "probability": 0.986328125
+        },
+        {
+          "text": "年",
+          "start": 53.6,
+          "end": 53.8,
+          "probability": 0.9921875
+        }
+      ]
+    },
+    {
+      "start": 53.8,
+      "end": 55.38,
+      "text": "指定日子过的风生水起",
+      "words": [
+        {
+          "text": "指",
+          "start": 53.8,
+          "end": 54.04,
+          "probability": 0.705078125
+        },
+        {
+          "text": "定",
+          "start": 54.04,
+          "end": 54.2,
+          "probability": 0.9931640625
+        },
+        {
+          "text": "日",
+          "start": 54.2,
+          "end": 54.34,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "子",
+          "start": 54.34,
+          "end": 54.48,
+          "probability": 1.0
+        },
+        {
+          "text": "过",
+          "start": 54.48,
+          "end": 54.6,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "的",
+          "start": 54.6,
+          "end": 54.72,
+          "probability": 0.712890625
+        },
+        {
+          "text": "风",
+          "start": 54.72,
+          "end": 54.86,
+          "probability": 0.9150390625
+        },
+        {
+          "text": "生",
+          "start": 54.86,
+          "end": 55.0,
+          "probability": 0.88818359375
+        },
+        {
+          "text": "水",
+          "start": 55.0,
+          "end": 55.16,
+          "probability": 0.9892578125
+        },
+        {
+          "text": "起",
+          "start": 55.16,
+          "end": 55.38,
+          "probability": 0.9267578125
+        }
+      ]
+    },
+    {
+      "start": 55.38,
+      "end": 56.32,
+      "text": "好运连连",
+      "words": [
+        {
+          "text": "好",
+          "start": 55.38,
+          "end": 55.8,
+          "probability": 0.9052734375
+        },
+        {
+          "text": "运",
+          "start": 55.8,
+          "end": 55.94,
+          "probability": 0.98876953125
+        },
+        {
+          "text": "连",
+          "start": 55.94,
+          "end": 56.12,
+          "probability": 0.944091796875
+        },
+        {
+          "text": "连",
+          "start": 56.12,
+          "end": 56.32,
+          "probability": 0.99072265625
+        }
+      ]
+    },
+    {
+      "start": 56.32,
+      "end": 58.1,
+      "text": "这种自然现象危险吗",
+      "words": [
+        {
+          "text": "这",
+          "start": 56.32,
+          "end": 56.58,
+          "probability": 0.483642578125
+        },
+        {
+          "text": "种",
+          "start": 56.58,
+          "end": 56.78,
+          "probability": 0.9912109375
+        },
+        {
+          "text": "自",
+          "start": 56.78,
+          "end": 56.94,
+          "probability": 0.94873046875
+        },
+        {
+          "text": "然",
+          "start": 56.94,
+          "end": 57.08,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "现",
+          "start": 57.08,
+          "end": 57.28,
+          "probability": 0.9716796875
+        },
+        {
+          "text": "象",
+          "start": 57.28,
+          "end": 57.46,
+          "probability": 0.95751953125
+        },
+        {
+          "text": "危",
+          "start": 57.46,
+          "end": 57.66,
+          "probability": 0.9775390625
+        },
+        {
+          "text": "险",
+          "start": 57.66,
+          "end": 57.86,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "吗",
+          "start": 57.86,
+          "end": 58.1,
+          "probability": 0.95263671875
+        }
+      ]
+    },
+    {
+      "start": 58.1,
+      "end": 60.0,
+      "text": "这是遇到了恐怖的沙尘暴",
+      "words": [
+        {
+          "text": "这是",
+          "start": 58.1,
+          "end": 58.68,
+          "probability": 0.27001953125
+        },
+        {
+          "text": "遇",
+          "start": 58.68,
+          "end": 58.9,
+          "probability": 0.996826171875
+        },
+        {
+          "text": "到了",
+          "start": 58.9,
+          "end": 59.1,
+          "probability": 0.9150390625
+        },
+        {
+          "text": "恐",
+          "start": 59.1,
+          "end": 59.28,
+          "probability": 0.99365234375
+        },
+        {
+          "text": "怖",
+          "start": 59.28,
+          "end": 59.44,
+          "probability": 0.998046875
+        },
+        {
+          "text": "的",
+          "start": 59.44,
+          "end": 59.56,
+          "probability": 0.99560546875
+        },
+        {
+          "text": "沙",
+          "start": 59.56,
+          "end": 59.68,
+          "probability": 0.920166015625
+        },
+        {
+          "text": "尘",
+          "start": 59.68,
+          "end": 59.84,
+          "probability": 0.8466796875
+        },
+        {
+          "text": "暴",
+          "start": 59.84,
+          "end": 60.0,
+          "probability": 0.762451171875
+        }
+      ]
+    },
+    {
+      "start": 60.0,
+      "end": 61.4,
+      "text": "一旦被笼罩其中",
+      "words": [
+        {
+          "text": "一",
+          "start": 60.0,
+          "end": 60.5,
+          "probability": 0.81640625
+        },
+        {
+          "text": "旦",
+          "start": 60.5,
+          "end": 60.62,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "被",
+          "start": 60.62,
+          "end": 60.76,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "笼",
+          "start": 60.76,
+          "end": 60.9,
+          "probability": 0.7135009765625
+        },
+        {
+          "text": "罩",
+          "start": 60.9,
+          "end": 61.02,
+          "probability": 0.906982421875
+        },
+        {
+          "text": "其",
+          "start": 61.02,
+          "end": 61.22,
+          "probability": 0.8662109375
+        },
+        {
+          "text": "中",
+          "start": 61.22,
+          "end": 61.4,
+          "probability": 0.9970703125
+        }
+      ]
+    },
+    {
+      "start": 61.4,
+      "end": 62.88,
+      "text": "不仅视线会被阻挡",
+      "words": [
+        {
+          "text": "不",
+          "start": 61.4,
+          "end": 61.86,
+          "probability": 0.86474609375
+        },
+        {
+          "text": "仅",
+          "start": 61.86,
+          "end": 62.02,
+          "probability": 0.993408203125
+        },
+        {
+          "text": "视",
+          "start": 62.02,
+          "end": 62.16,
+          "probability": 0.259521484375
+        },
+        {
+          "text": "线",
+          "start": 62.16,
+          "end": 62.3,
+          "probability": 0.99267578125
+        },
+        {
+          "text": "会",
+          "start": 62.3,
+          "end": 62.44,
+          "probability": 0.9873046875
+        },
+        {
+          "text": "被",
+          "start": 62.44,
+          "end": 62.6,
+          "probability": 0.99609375
+        },
+        {
+          "text": "阻",
+          "start": 62.6,
+          "end": 62.74,
+          "probability": 0.99658203125
+        },
+        {
+          "text": "挡",
+          "start": 62.74,
+          "end": 62.88,
+          "probability": 0.99658203125
+        }
+      ]
+    },
+    {
+      "start": 62.88,
+      "end": 64.56,
+      "text": "集米之内都看不清路",
+      "words": [
+        {
+          "text": "集",
+          "start": 62.88,
+          "end": 63.36,
+          "probability": 0.2275390625
+        },
+        {
+          "text": "米",
+          "start": 63.36,
+          "end": 63.5,
+          "probability": 0.66650390625
+        },
+        {
+          "text": "之",
+          "start": 63.5,
+          "end": 63.64,
+          "probability": 0.96435546875
+        },
+        {
+          "text": "内",
+          "start": 63.64,
+          "end": 63.76,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "都",
+          "start": 63.76,
+          "end": 63.92,
+          "probability": 0.9951171875
+        },
+        {
+          "text": "看",
+          "start": 63.92,
+          "end": 64.06,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "不",
+          "start": 64.06,
+          "end": 64.2,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "清",
+          "start": 64.2,
+          "end": 64.32,
+          "probability": 0.91357421875
+        },
+        {
+          "text": "路",
+          "start": 64.32,
+          "end": 64.56,
+          "probability": 0.85888671875
+        }
+      ]
+    },
+    {
+      "start": 64.56,
+      "end": 66.4,
+      "text": "而且急一吸入细小的沙尘",
+      "words": [
+        {
+          "text": "而且",
+          "start": 64.56,
+          "end": 65.04,
+          "probability": 0.99365234375
+        },
+        {
+          "text": "急",
+          "start": 65.04,
+          "end": 65.26,
+          "probability": 0.5703125
+        },
+        {
+          "text": "一",
+          "start": 65.26,
+          "end": 65.38,
+          "probability": 0.2381591796875
+        },
+        {
+          "text": "吸",
+          "start": 65.38,
+          "end": 65.5,
+          "probability": 0.447265625
+        },
+        {
+          "text": "入",
+          "start": 65.5,
+          "end": 65.66,
+          "probability": 0.998046875
+        },
+        {
+          "text": "细",
+          "start": 65.66,
+          "end": 65.82,
+          "probability": 0.981689453125
+        },
+        {
+          "text": "小",
+          "start": 65.82,
+          "end": 65.96,
+          "probability": 0.99072265625
+        },
+        {
+          "text": "的",
+          "start": 65.96,
+          "end": 66.06,
+          "probability": 0.99609375
+        },
+        {
+          "text": "沙",
+          "start": 66.06,
+          "end": 66.2,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "尘",
+          "start": 66.2,
+          "end": 66.4,
+          "probability": 0.992919921875
+        }
+      ]
+    },
+    {
+      "start": 66.4,
+      "end": 67.66,
+      "text": "造成健康隐患",
+      "words": [
+        {
+          "text": "造",
+          "start": 66.4,
+          "end": 66.9,
+          "probability": 0.962890625
+        },
+        {
+          "text": "成",
+          "start": 66.9,
+          "end": 67.08,
+          "probability": 1.0
+        },
+        {
+          "text": "健",
+          "start": 67.08,
+          "end": 67.22,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "康",
+          "start": 67.22,
+          "end": 67.36,
+          "probability": 0.999267578125
+        },
+        {
+          "text": "隐",
+          "start": 67.36,
+          "end": 67.54,
+          "probability": 0.99609375
+        },
+        {
+          "text": "患",
+          "start": 67.54,
+          "end": 67.66,
+          "probability": 0.99462890625
+        }
+      ]
+    },
+    {
+      "start": 67.66,
+      "end": 68.86,
+      "text": "比较危险",
+      "words": [
+        {
+          "text": "比",
+          "start": 67.66,
+          "end": 68.08,
+          "probability": 0.74365234375
+        },
+        {
+          "text": "较",
+          "start": 68.08,
+          "end": 68.22,
+          "probability": 1.0
+        },
+        {
+          "text": "危",
+          "start": 68.22,
+          "end": 68.36,
+          "probability": 0.9775390625
+        },
+        {
+          "text": "险",
+          "start": 68.36,
+          "end": 68.86,
+          "probability": 1.0
+        }
+      ]
+    },
+    {
+      "start": 68.86,
+      "end": 70.26,
+      "text": "趁现在还没有到跟前",
+      "words": [
+        {
+          "text": "趁",
+          "start": 68.86,
+          "end": 69.1,
+          "probability": 0.98095703125
+        },
+        {
+          "text": "现在",
+          "start": 69.1,
+          "end": 69.4,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "还",
+          "start": 69.4,
+          "end": 69.56,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "没有",
+          "start": 69.56,
+          "end": 69.7,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "到",
+          "start": 69.7,
+          "end": 69.88,
+          "probability": 0.7548828125
+        },
+        {
+          "text": "跟",
+          "start": 69.88,
+          "end": 70.04,
+          "probability": 0.9091796875
+        },
+        {
+          "text": "前",
+          "start": 70.04,
+          "end": 70.26,
+          "probability": 0.9951171875
+        }
+      ]
+    },
+    {
+      "start": 70.26,
+      "end": 71.46,
+      "text": "赶紧去撤离开",
+      "words": [
+        {
+          "text": "赶",
+          "start": 70.26,
+          "end": 70.7,
+          "probability": 0.988525390625
+        },
+        {
+          "text": "紧",
+          "start": 70.7,
+          "end": 70.88,
+          "probability": 0.998046875
+        },
+        {
+          "text": "去",
+          "start": 70.88,
+          "end": 71.06,
+          "probability": 0.91162109375
+        },
+        {
+          "text": "撤",
+          "start": 71.06,
+          "end": 71.18,
+          "probability": 0.898681640625
+        },
+        {
+          "text": "离",
+          "start": 71.18,
+          "end": 71.32,
+          "probability": 0.999755859375
+        },
+        {
+          "text": "开",
+          "start": 71.32,
+          "end": 71.46,
+          "probability": 0.99755859375
+        }
+      ]
+    },
+    {
+      "start": 71.46,
+      "end": 72.72,
+      "text": "寻找安全的地方躲避",
+      "words": [
+        {
+          "text": "寻",
+          "start": 71.46,
+          "end": 71.6,
+          "probability": 0.98486328125
+        },
+        {
+          "text": "找",
+          "start": 71.6,
+          "end": 71.78,
+          "probability": 0.94677734375
+        },
+        {
+          "text": "安全",
+          "start": 71.78,
+          "end": 71.98,
+          "probability": 0.99169921875
+        },
+        {
+          "text": "的",
+          "start": 71.98,
+          "end": 72.14,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "地方",
+          "start": 72.14,
+          "end": 72.34,
+          "probability": 0.99609375
+        },
+        {
+          "text": "躲",
+          "start": 72.34,
+          "end": 72.56,
+          "probability": 0.99072265625
+        },
+        {
+          "text": "避",
+          "start": 72.56,
+          "end": 72.72,
+          "probability": 0.999267578125
+        }
+      ]
+    },
+    {
+      "start": 72.72,
+      "end": 74.54,
+      "text": "这种自然现象危险吗",
+      "words": [
+        {
+          "text": "这",
+          "start": 72.72,
+          "end": 73.02,
+          "probability": 0.908203125
+        },
+        {
+          "text": "种",
+          "start": 73.02,
+          "end": 73.22,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "自",
+          "start": 73.22,
+          "end": 73.36,
+          "probability": 0.98681640625
+        },
+        {
+          "text": "然",
+          "start": 73.36,
+          "end": 73.52,
+          "probability": 1.0
+        },
+        {
+          "text": "现",
+          "start": 73.52,
+          "end": 73.72,
+          "probability": 0.994140625
+        },
+        {
+          "text": "象",
+          "start": 73.72,
+          "end": 73.9,
+          "probability": 0.97607421875
+        },
+        {
+          "text": "危",
+          "start": 73.9,
+          "end": 74.1,
+          "probability": 0.98779296875
+        },
+        {
+          "text": "险",
+          "start": 74.1,
+          "end": 74.3,
+          "probability": 1.0
+        },
+        {
+          "text": "吗",
+          "start": 74.3,
+          "end": 74.54,
+          "probability": 0.98779296875
+        }
+      ]
+    },
+    {
+      "start": 74.54,
+      "end": 75.58,
+      "text": "非常危险",
+      "words": [
+        {
+          "text": "非常",
+          "start": 74.54,
+          "end": 75.12,
+          "probability": 0.96044921875
+        },
+        {
+          "text": "危",
+          "start": 75.12,
+          "end": 75.36,
+          "probability": 0.99609375
+        },
+        {
+          "text": "险",
+          "start": 75.36,
+          "end": 75.58,
+          "probability": 0.999755859375
+        }
+      ]
+    },
+    {
+      "start": 75.58,
+      "end": 77.56,
+      "text": "这是轮船在海上遇到了风暴",
+      "words": [
+        {
+          "text": "这是",
+          "start": 75.58,
+          "end": 76.04,
+          "probability": 0.78466796875
+        },
+        {
+          "text": "轮",
+          "start": 76.04,
+          "end": 76.26,
+          "probability": 0.6884765625
+        },
+        {
+          "text": "船",
+          "start": 76.26,
+          "end": 76.42,
+          "probability": 0.951904296875
+        },
+        {
+          "text": "在",
+          "start": 76.42,
+          "end": 76.58,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "海",
+          "start": 76.58,
+          "end": 76.72,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "上",
+          "start": 76.72,
+          "end": 76.86,
+          "probability": 0.99658203125
+        },
+        {
+          "text": "遇",
+          "start": 76.86,
+          "end": 77.0,
+          "probability": 1.0
+        },
+        {
+          "text": "到了",
+          "start": 77.0,
+          "end": 77.16,
+          "probability": 0.96875
+        },
+        {
+          "text": "风",
+          "start": 77.16,
+          "end": 77.34,
+          "probability": 0.974609375
+        },
+        {
+          "text": "暴",
+          "start": 77.34,
+          "end": 77.56,
+          "probability": 0.990478515625
+        }
+      ]
+    },
+    {
+      "start": 77.56,
+      "end": 79.36,
+      "text": "是所有跑船人的终极噩梦",
+      "words": [
+        {
+          "text": "是",
+          "start": 77.56,
+          "end": 77.98,
+          "probability": 0.98828125
+        },
+        {
+          "text": "所有",
+          "start": 77.98,
+          "end": 78.2,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "跑",
+          "start": 78.2,
+          "end": 78.42,
+          "probability": 0.88037109375
+        },
+        {
+          "text": "船",
+          "start": 78.42,
+          "end": 78.56,
+          "probability": 0.926025390625
+        },
+        {
+          "text": "人",
+          "start": 78.56,
+          "end": 78.7,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "的",
+          "start": 78.7,
+          "end": 78.82,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "终",
+          "start": 78.82,
+          "end": 78.96,
+          "probability": 0.918212890625
+        },
+        {
+          "text": "极",
+          "start": 78.96,
+          "end": 79.1,
+          "probability": 0.994140625
+        },
+        {
+          "text": "噩",
+          "start": 79.1,
+          "end": 79.24,
+          "probability": 0.80517578125
+        },
+        {
+          "text": "梦",
+          "start": 79.24,
+          "end": 79.36,
+          "probability": 0.995849609375
+        }
+      ]
+    },
+    {
+      "start": 79.36,
+      "end": 80.82,
+      "text": "此刻毫无办法",
+      "words": [
+        {
+          "text": "此",
+          "start": 79.36,
+          "end": 79.8,
+          "probability": 0.994140625
+        },
+        {
+          "text": "刻",
+          "start": 79.8,
+          "end": 79.96,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "毫",
+          "start": 79.96,
+          "end": 80.12,
+          "probability": 0.998291015625
+        },
+        {
+          "text": "无",
+          "start": 80.12,
+          "end": 80.24,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "办",
+          "start": 80.24,
+          "end": 80.42,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "法",
+          "start": 80.42,
+          "end": 80.82,
+          "probability": 1.0
+        }
+      ]
+    },
+    {
+      "start": 80.82,
+      "end": 81.82,
+      "text": "也就只能在心里",
+      "words": [
+        {
+          "text": "也",
+          "start": 80.82,
+          "end": 81.02,
+          "probability": 0.98974609375
+        },
+        {
+          "text": "就",
+          "start": 81.02,
+          "end": 81.18,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "只",
+          "start": 81.18,
+          "end": 81.3,
+          "probability": 0.998046875
+        },
+        {
+          "text": "能",
+          "start": 81.3,
+          "end": 81.4,
+          "probability": 1.0
+        },
+        {
+          "text": "在",
+          "start": 81.4,
+          "end": 81.54,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "心",
+          "start": 81.54,
+          "end": 81.7,
+          "probability": 0.99609375
+        },
+        {
+          "text": "里",
+          "start": 81.7,
+          "end": 81.82,
+          "probability": 0.94384765625
+        }
+      ]
+    },
+    {
+      "start": 81.82,
+      "end": 82.9,
+      "text": "默念妈祖保佑了",
+      "words": [
+        {
+          "text": "默",
+          "start": 81.82,
+          "end": 81.96,
+          "probability": 0.857666015625
+        },
+        {
+          "text": "念",
+          "start": 81.96,
+          "end": 82.1,
+          "probability": 0.970703125
+        },
+        {
+          "text": "妈",
+          "start": 82.1,
+          "end": 82.26,
+          "probability": 0.72412109375
+        },
+        {
+          "text": "祖",
+          "start": 82.26,
+          "end": 82.4,
+          "probability": 0.920166015625
+        },
+        {
+          "text": "保",
+          "start": 82.4,
+          "end": 82.56,
+          "probability": 0.96142578125
+        },
+        {
+          "text": "佑",
+          "start": 82.56,
+          "end": 82.68,
+          "probability": 0.98291015625
+        },
+        {
+          "text": "了",
+          "start": 82.68,
+          "end": 82.9,
+          "probability": 0.96923828125
+        }
+      ]
+    },
+    {
+      "start": 82.9,
+      "end": 84.46,
+      "text": "不过风浪越大越贵",
+      "words": [
+        {
+          "text": "不",
+          "start": 82.9,
+          "end": 83.32,
+          "probability": 0.2208251953125
+        },
+        {
+          "text": "过",
+          "start": 83.32,
+          "end": 83.48,
+          "probability": 0.9814453125
+        },
+        {
+          "text": "风",
+          "start": 83.48,
+          "end": 83.62,
+          "probability": 0.79541015625
+        },
+        {
+          "text": "浪",
+          "start": 83.62,
+          "end": 83.74,
+          "probability": 0.94384765625
+        },
+        {
+          "text": "越",
+          "start": 83.74,
+          "end": 83.9,
+          "probability": 0.9794921875
+        },
+        {
+          "text": "大",
+          "start": 83.9,
+          "end": 84.04,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "越",
+          "start": 84.04,
+          "end": 84.2,
+          "probability": 0.7109375
+        },
+        {
+          "text": "贵",
+          "start": 84.2,
+          "end": 84.46,
+          "probability": 0.975830078125
+        }
+      ]
+    },
+    {
+      "start": 84.46,
+      "end": 86.24,
+      "text": "这种自然现象危险吗",
+      "words": [
+        {
+          "text": "这",
+          "start": 84.46,
+          "end": 84.7,
+          "probability": 0.7685546875
+        },
+        {
+          "text": "种",
+          "start": 84.7,
+          "end": 84.92,
+          "probability": 0.99365234375
+        },
+        {
+          "text": "自",
+          "start": 84.92,
+          "end": 85.08,
+          "probability": 0.96484375
+        },
+        {
+          "text": "然",
+          "start": 85.08,
+          "end": 85.22,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "现",
+          "start": 85.22,
+          "end": 85.4,
+          "probability": 0.91064453125
+        },
+        {
+          "text": "象",
+          "start": 85.4,
+          "end": 85.6,
+          "probability": 0.962890625
+        },
+        {
+          "text": "危",
+          "start": 85.6,
+          "end": 85.78,
+          "probability": 0.9462890625
+        },
+        {
+          "text": "险",
+          "start": 85.78,
+          "end": 86.0,
+          "probability": 0.999755859375
+        },
+        {
+          "text": "吗",
+          "start": 86.0,
+          "end": 86.24,
+          "probability": 0.87646484375
+        }
+      ]
+    },
+    {
+      "start": 86.24,
+      "end": 87.6,
+      "text": "这是遇到了雪崩",
+      "words": [
+        {
+          "text": "这是",
+          "start": 86.24,
+          "end": 86.82,
+          "probability": 0.5498046875
+        },
+        {
+          "text": "遇",
+          "start": 86.82,
+          "end": 87.02,
+          "probability": 0.997314453125
+        },
+        {
+          "text": "到了",
+          "start": 87.02,
+          "end": 87.22,
+          "probability": 0.87109375
+        },
+        {
+          "text": "雪",
+          "start": 87.22,
+          "end": 87.42,
+          "probability": 0.9912109375
+        },
+        {
+          "text": "崩",
+          "start": 87.42,
+          "end": 87.6,
+          "probability": 0.984130859375
+        }
+      ]
+    },
+    {
+      "start": 87.6,
+      "end": 89.78,
+      "text": "一种威力十分恐怖的自然在海",
+      "words": [
+        {
+          "text": "一",
+          "start": 87.6,
+          "end": 88.02,
+          "probability": 0.70556640625
+        },
+        {
+          "text": "种",
+          "start": 88.02,
+          "end": 88.18,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "威",
+          "start": 88.18,
+          "end": 88.34,
+          "probability": 0.864501953125
+        },
+        {
+          "text": "力",
+          "start": 88.34,
+          "end": 88.46,
+          "probability": 0.88916015625
+        },
+        {
+          "text": "十",
+          "start": 88.46,
+          "end": 88.62,
+          "probability": 0.97900390625
+        },
+        {
+          "text": "分",
+          "start": 88.62,
+          "end": 88.76,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "恐",
+          "start": 88.76,
+          "end": 88.9,
+          "probability": 0.994140625
+        },
+        {
+          "text": "怖",
+          "start": 88.9,
+          "end": 89.04,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "的",
+          "start": 89.04,
+          "end": 89.14,
+          "probability": 0.98876953125
+        },
+        {
+          "text": "自",
+          "start": 89.14,
+          "end": 89.28,
+          "probability": 0.9931640625
+        },
+        {
+          "text": "然",
+          "start": 89.28,
+          "end": 89.4,
+          "probability": 1.0
+        },
+        {
+          "text": "在",
+          "start": 89.4,
+          "end": 89.54,
+          "probability": 0.0132598876953125
+        },
+        {
+          "text": "海",
+          "start": 89.54,
+          "end": 89.78,
+          "probability": 0.974609375
+        }
+      ]
+    },
+    {
+      "start": 89.78,
+      "end": 90.76,
+      "text": "是探险者们",
+      "words": [
+        {
+          "text": "是",
+          "start": 89.78,
+          "end": 90.18,
+          "probability": 0.94970703125
+        },
+        {
+          "text": "探",
+          "start": 90.18,
+          "end": 90.32,
+          "probability": 0.747314453125
+        },
+        {
+          "text": "险",
+          "start": 90.32,
+          "end": 90.46,
+          "probability": 0.970947265625
+        },
+        {
+          "text": "者",
+          "start": 90.46,
+          "end": 90.6,
+          "probability": 0.72265625
+        },
+        {
+          "text": "们",
+          "start": 90.6,
+          "end": 90.76,
+          "probability": 0.908203125
+        }
+      ]
+    },
+    {
+      "start": 90.76,
+      "end": 92.54,
+      "text": "攀登雪山时最害怕遇到的",
+      "words": [
+        {
+          "text": "攀",
+          "start": 90.76,
+          "end": 90.9,
+          "probability": 0.850830078125
+        },
+        {
+          "text": "登",
+          "start": 90.9,
+          "end": 91.06,
+          "probability": 0.716796875
+        },
+        {
+          "text": "雪",
+          "start": 91.06,
+          "end": 91.22,
+          "probability": 0.99560546875
+        },
+        {
+          "text": "山",
+          "start": 91.22,
+          "end": 91.36,
+          "probability": 0.99609375
+        },
+        {
+          "text": "时",
+          "start": 91.36,
+          "end": 91.56,
+          "probability": 0.984375
+        },
+        {
+          "text": "最",
+          "start": 91.56,
+          "end": 91.76,
+          "probability": 0.9853515625
+        },
+        {
+          "text": "害",
+          "start": 91.76,
+          "end": 91.92,
+          "probability": 0.9892578125
+        },
+        {
+          "text": "怕",
+          "start": 91.92,
+          "end": 92.04,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "遇",
+          "start": 92.04,
+          "end": 92.18,
+          "probability": 0.999267578125
+        },
+        {
+          "text": "到",
+          "start": 92.18,
+          "end": 92.34,
+          "probability": 0.99560546875
+        },
+        {
+          "text": "的",
+          "start": 92.34,
+          "end": 92.54,
+          "probability": 0.99658203125
+        }
+      ]
+    },
+    {
+      "start": 92.54,
+      "end": 94.78,
+      "text": "一旦碰到如果没有安全躲避的地方",
+      "words": [
+        {
+          "text": "一",
+          "start": 92.54,
+          "end": 92.92,
+          "probability": 0.97802734375
+        },
+        {
+          "text": "旦",
+          "start": 92.92,
+          "end": 93.04,
+          "probability": 0.985595703125
+        },
+        {
+          "text": "碰",
+          "start": 93.04,
+          "end": 93.22,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "到",
+          "start": 93.22,
+          "end": 93.36,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "如果",
+          "start": 93.36,
+          "end": 93.54,
+          "probability": 0.99560546875
+        },
+        {
+          "text": "没有",
+          "start": 93.54,
+          "end": 93.78,
+          "probability": 0.99609375
+        },
+        {
+          "text": "安全",
+          "start": 93.78,
+          "end": 94.1,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "躲",
+          "start": 94.1,
+          "end": 94.3,
+          "probability": 0.953857421875
+        },
+        {
+          "text": "避",
+          "start": 94.3,
+          "end": 94.44,
+          "probability": 0.997314453125
+        },
+        {
+          "text": "的",
+          "start": 94.44,
+          "end": 94.52,
+          "probability": 0.998046875
+        },
+        {
+          "text": "地方",
+          "start": 94.52,
+          "end": 94.78,
+          "probability": 0.9990234375
+        }
+      ]
+    },
+    {
+      "start": 94.78,
+      "end": 95.98,
+      "text": "很容易遭到团面",
+      "words": [
+        {
+          "text": "很",
+          "start": 94.78,
+          "end": 95.06,
+          "probability": 0.95458984375
+        },
+        {
+          "text": "容易",
+          "start": 95.06,
+          "end": 95.34,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "遭",
+          "start": 95.34,
+          "end": 95.5,
+          "probability": 0.9638671875
+        },
+        {
+          "text": "到",
+          "start": 95.5,
+          "end": 95.64,
+          "probability": 0.99658203125
+        },
+        {
+          "text": "团",
+          "start": 95.64,
+          "end": 95.76,
+          "probability": 0.9833984375
+        },
+        {
+          "text": "面",
+          "start": 95.76,
+          "end": 95.98,
+          "probability": 0.5
+        }
+      ]
+    },
+    {
+      "start": 95.98,
+      "end": 97.0,
+      "text": "非常的危险",
+      "words": [
+        {
+          "text": "非常的",
+          "start": 95.98,
+          "end": 96.46,
+          "probability": 0.640625
+        },
+        {
+          "text": "危",
+          "start": 96.46,
+          "end": 96.78,
+          "probability": 0.98046875
+        },
+        {
+          "text": "险",
+          "start": 96.78,
+          "end": 97.0,
+          "probability": 1.0
+        }
+      ]
+    },
+    {
+      "start": 97.0,
+      "end": 98.72,
+      "text": "这种自然现象危险吗",
+      "words": [
+        {
+          "text": "这",
+          "start": 97.0,
+          "end": 97.18,
+          "probability": 0.94189453125
+        },
+        {
+          "text": "种",
+          "start": 97.18,
+          "end": 97.38,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "自",
+          "start": 97.38,
+          "end": 97.54,
+          "probability": 0.99560546875
+        },
+        {
+          "text": "然",
+          "start": 97.54,
+          "end": 97.68,
+          "probability": 1.0
+        },
+        {
+          "text": "现",
+          "start": 97.68,
+          "end": 97.86,
+          "probability": 0.99072265625
+        },
+        {
+          "text": "象",
+          "start": 97.86,
+          "end": 98.06,
+          "probability": 0.97314453125
+        },
+        {
+          "text": "危",
+          "start": 98.06,
+          "end": 98.26,
+          "probability": 0.9912109375
+        },
+        {
+          "text": "险",
+          "start": 98.26,
+          "end": 98.48,
+          "probability": 1.0
+        },
+        {
+          "text": "吗",
+          "start": 98.48,
+          "end": 98.72,
+          "probability": 0.9814453125
+        }
+      ]
+    },
+    {
+      "start": 98.72,
+      "end": 100.2,
+      "text": "这是龙溪水现象",
+      "words": [
+        {
+          "text": "这是",
+          "start": 98.72,
+          "end": 99.2,
+          "probability": 0.96484375
+        },
+        {
+          "text": "龙",
+          "start": 99.2,
+          "end": 99.42,
+          "probability": 0.763427734375
+        },
+        {
+          "text": "溪",
+          "start": 99.42,
+          "end": 99.58,
+          "probability": 0.87109375
+        },
+        {
+          "text": "水",
+          "start": 99.58,
+          "end": 99.72,
+          "probability": 0.99560546875
+        },
+        {
+          "text": "现",
+          "start": 99.72,
+          "end": 99.88,
+          "probability": 0.9638671875
+        },
+        {
+          "text": "象",
+          "start": 99.88,
+          "end": 100.2,
+          "probability": 0.9931640625
+        }
+      ]
+    },
+    {
+      "start": 100.2,
+      "end": 101.94,
+      "text": "而且吸的还是滚烫的开水",
+      "words": [
+        {
+          "text": "而且",
+          "start": 100.2,
+          "end": 100.6,
+          "probability": 0.76025390625
+        },
+        {
+          "text": "吸",
+          "start": 100.6,
+          "end": 100.8,
+          "probability": 0.7431640625
+        },
+        {
+          "text": "的",
+          "start": 100.8,
+          "end": 100.9,
+          "probability": 0.89111328125
+        },
+        {
+          "text": "还是",
+          "start": 100.9,
+          "end": 101.06,
+          "probability": 0.9951171875
+        },
+        {
+          "text": "滚",
+          "start": 101.06,
+          "end": 101.3,
+          "probability": 0.998779296875
+        },
+        {
+          "text": "烫",
+          "start": 101.3,
+          "end": 101.44,
+          "probability": 0.978759765625
+        },
+        {
+          "text": "的",
+          "start": 101.44,
+          "end": 101.56,
+          "probability": 0.9169921875
+        },
+        {
+          "text": "开",
+          "start": 101.56,
+          "end": 101.7,
+          "probability": 0.98974609375
+        },
+        {
+          "text": "水",
+          "start": 101.7,
+          "end": 101.94,
+          "probability": 0.99951171875
+        }
+      ]
+    },
+    {
+      "start": 101.94,
+      "end": 103.34,
+      "text": "千万不要靠得太近",
+      "words": [
+        {
+          "text": "千",
+          "start": 101.94,
+          "end": 102.34,
+          "probability": 0.404296875
+        },
+        {
+          "text": "万",
+          "start": 102.34,
+          "end": 102.5,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "不要",
+          "start": 102.5,
+          "end": 102.68,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "靠",
+          "start": 102.68,
+          "end": 102.88,
+          "probability": 0.999267578125
+        },
+        {
+          "text": "得",
+          "start": 102.88,
+          "end": 102.98,
+          "probability": 0.6728515625
+        },
+        {
+          "text": "太",
+          "start": 102.98,
+          "end": 103.14,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "近",
+          "start": 103.14,
+          "end": 103.34,
+          "probability": 0.9775390625
+        }
+      ]
+    },
+    {
+      "start": 103.34,
+      "end": 104.8,
+      "text": "并找好有遮挡的地方",
+      "words": [
+        {
+          "text": "并",
+          "start": 103.34,
+          "end": 103.72,
+          "probability": 0.968505859375
+        },
+        {
+          "text": "找",
+          "start": 103.72,
+          "end": 103.84,
+          "probability": 0.94775390625
+        },
+        {
+          "text": "好",
+          "start": 103.84,
+          "end": 104.0,
+          "probability": 0.9921875
+        },
+        {
+          "text": "有",
+          "start": 104.0,
+          "end": 104.14,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "遮",
+          "start": 104.14,
+          "end": 104.3,
+          "probability": 0.960205078125
+        },
+        {
+          "text": "挡",
+          "start": 104.3,
+          "end": 104.42,
+          "probability": 0.99072265625
+        },
+        {
+          "text": "的",
+          "start": 104.42,
+          "end": 104.52,
+          "probability": 0.998046875
+        },
+        {
+          "text": "地方",
+          "start": 104.52,
+          "end": 104.8,
+          "probability": 0.9990234375
+        }
+      ]
+    },
+    {
+      "start": 104.8,
+      "end": 106.66,
+      "text": "避免被飘落的开水烫伤",
+      "words": [
+        {
+          "text": "避",
+          "start": 104.8,
+          "end": 105.28,
+          "probability": 0.99267578125
+        },
+        {
+          "text": "免",
+          "start": 105.28,
+          "end": 105.42,
+          "probability": 0.980712890625
+        },
+        {
+          "text": "被",
+          "start": 105.42,
+          "end": 105.56,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "飘",
+          "start": 105.56,
+          "end": 105.76,
+          "probability": 0.93505859375
+        },
+        {
+          "text": "落",
+          "start": 105.76,
+          "end": 105.88,
+          "probability": 0.99658203125
+        },
+        {
+          "text": "的",
+          "start": 105.88,
+          "end": 105.98,
+          "probability": 0.982421875
+        },
+        {
+          "text": "开",
+          "start": 105.98,
+          "end": 106.14,
+          "probability": 0.9892578125
+        },
+        {
+          "text": "水",
+          "start": 106.14,
+          "end": 106.28,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "烫",
+          "start": 106.28,
+          "end": 106.42,
+          "probability": 0.862060546875
+        },
+        {
+          "text": "伤",
+          "start": 106.42,
+          "end": 106.66,
+          "probability": 0.98046875
+        }
+      ]
+    },
+    {
+      "start": 106.66,
+      "end": 107.58,
+      "text": "非常的危险",
+      "words": [
+        {
+          "text": "非常的",
+          "start": 106.66,
+          "end": 107.1,
+          "probability": 0.94482421875
+        },
+        {
+          "text": "危",
+          "start": 107.1,
+          "end": 107.4,
+          "probability": 0.99658203125
+        },
+        {
+          "text": "险",
+          "start": 107.4,
+          "end": 107.58,
+          "probability": 0.999755859375
+        }
+      ]
+    }
+  ]
+}

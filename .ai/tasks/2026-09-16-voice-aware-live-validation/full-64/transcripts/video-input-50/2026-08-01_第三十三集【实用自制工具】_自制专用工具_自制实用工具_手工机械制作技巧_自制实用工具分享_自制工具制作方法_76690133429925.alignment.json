@@ -1,0 +1,5516 @@
+{
+  "duration": 66.5265625,
+  "language": "zh",
+  "segments": [
+    {
+      "start": 0.0,
+      "end": 1.4,
+      "text": "亲爱的观众朋友们一起来看看",
+      "words": [
+        {
+          "text": "亲",
+          "start": 0.0,
+          "end": 0.22,
+          "probability": 0.5361328125
+        },
+        {
+          "text": "爱",
+          "start": 0.22,
+          "end": 0.3,
+          "probability": 0.99462890625
+        },
+        {
+          "text": "的",
+          "start": 0.3,
+          "end": 0.4,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "观",
+          "start": 0.4,
+          "end": 0.5,
+          "probability": 0.98876953125
+        },
+        {
+          "text": "众",
+          "start": 0.5,
+          "end": 0.58,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "朋友",
+          "start": 0.58,
+          "end": 0.7,
+          "probability": 0.99560546875
+        },
+        {
+          "text": "们",
+          "start": 0.7,
+          "end": 0.86,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "一起",
+          "start": 0.86,
+          "end": 1.08,
+          "probability": 0.81689453125
+        },
+        {
+          "text": "来",
+          "start": 1.08,
+          "end": 1.24,
+          "probability": 0.99560546875
+        },
+        {
+          "text": "看看",
+          "start": 1.24,
+          "end": 1.4,
+          "probability": 0.98876953125
+        }
+      ]
+    },
+    {
+      "start": 1.4,
+      "end": 3.02,
+      "text": "这些有意思的自制工具吧",
+      "words": [
+        {
+          "text": "这",
+          "start": 1.4,
+          "end": 1.76,
+          "probability": 0.96875
+        },
+        {
+          "text": "些",
+          "start": 1.76,
+          "end": 1.88,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "有",
+          "start": 1.88,
+          "end": 2.0,
+          "probability": 0.99560546875
+        },
+        {
+          "text": "意思",
+          "start": 2.0,
+          "end": 2.18,
+          "probability": 0.998046875
+        },
+        {
+          "text": "的",
+          "start": 2.18,
+          "end": 2.36,
+          "probability": 0.9892578125
+        },
+        {
+          "text": "自",
+          "start": 2.36,
+          "end": 2.48,
+          "probability": 0.96826171875
+        },
+        {
+          "text": "制",
+          "start": 2.48,
+          "end": 2.58,
+          "probability": 0.90234375
+        },
+        {
+          "text": "工",
+          "start": 2.58,
+          "end": 2.72,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "具",
+          "start": 2.72,
+          "end": 2.86,
+          "probability": 0.9951171875
+        },
+        {
+          "text": "吧",
+          "start": 2.86,
+          "end": 3.02,
+          "probability": 0.9130859375
+        }
+      ]
+    },
+    {
+      "start": 3.02,
+      "end": 4.4,
+      "text": "材料好找 制作简单",
+      "words": [
+        {
+          "text": "材",
+          "start": 3.02,
+          "end": 3.4,
+          "probability": 0.936279296875
+        },
+        {
+          "text": "料",
+          "start": 3.4,
+          "end": 3.5,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "好",
+          "start": 3.5,
+          "end": 3.68,
+          "probability": 0.96533203125
+        },
+        {
+          "text": "找",
+          "start": 3.68,
+          "end": 3.82,
+          "probability": 0.990234375
+        },
+        {
+          "text": "制",
+          "start": 3.94,
+          "end": 4.04,
+          "probability": 0.98486328125
+        },
+        {
+          "text": "作",
+          "start": 4.04,
+          "end": 4.14,
+          "probability": 0.99609375
+        },
+        {
+          "text": "简",
+          "start": 4.14,
+          "end": 4.28,
+          "probability": 0.9833984375
+        },
+        {
+          "text": "单",
+          "start": 4.28,
+          "end": 4.4,
+          "probability": 1.0
+        }
+      ]
+    },
+    {
+      "start": 4.4,
+      "end": 5.48,
+      "text": "关键是还很实用",
+      "words": [
+        {
+          "text": "关",
+          "start": 4.4,
+          "end": 4.7,
+          "probability": 0.7119140625
+        },
+        {
+          "text": "键",
+          "start": 4.7,
+          "end": 4.8,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "是",
+          "start": 4.8,
+          "end": 4.92,
+          "probability": 0.98681640625
+        },
+        {
+          "text": "还",
+          "start": 4.92,
+          "end": 5.02,
+          "probability": 0.8837890625
+        },
+        {
+          "text": "很",
+          "start": 5.02,
+          "end": 5.18,
+          "probability": 0.99609375
+        },
+        {
+          "text": "实",
+          "start": 5.18,
+          "end": 5.34,
+          "probability": 0.958984375
+        },
+        {
+          "text": "用",
+          "start": 5.34,
+          "end": 5.48,
+          "probability": 0.99951171875
+        }
+      ]
+    },
+    {
+      "start": 5.48,
+      "end": 6.78,
+      "text": "用后钢板 线为销",
+      "words": [
+        {
+          "text": "用",
+          "start": 5.48,
+          "end": 5.74,
+          "probability": 0.95703125
+        },
+        {
+          "text": "后",
+          "start": 5.74,
+          "end": 5.92,
+          "probability": 0.814453125
+        },
+        {
+          "text": "钢",
+          "start": 5.92,
+          "end": 6.04,
+          "probability": 0.864990234375
+        },
+        {
+          "text": "板",
+          "start": 6.04,
+          "end": 6.2,
+          "probability": 0.982421875
+        },
+        {
+          "text": "线",
+          "start": 6.42,
+          "end": 6.52,
+          "probability": 0.9921875
+        },
+        {
+          "text": "为",
+          "start": 6.52,
+          "end": 6.64,
+          "probability": 0.8095703125
+        },
+        {
+          "text": "销",
+          "start": 6.64,
+          "end": 6.78,
+          "probability": 0.761962890625
+        }
+      ]
+    },
+    {
+      "start": 6.78,
+      "end": 9.32,
+      "text": "原钢手柄就能自制一个手动线材折弯器",
+      "words": [
+        {
+          "text": "原",
+          "start": 6.78,
+          "end": 7.16,
+          "probability": 0.1820068359375
+        },
+        {
+          "text": "钢",
+          "start": 7.16,
+          "end": 7.26,
+          "probability": 0.988525390625
+        },
+        {
+          "text": "手",
+          "start": 7.26,
+          "end": 7.42,
+          "probability": 0.9560546875
+        },
+        {
+          "text": "柄",
+          "start": 7.42,
+          "end": 7.54,
+          "probability": 0.993896484375
+        },
+        {
+          "text": "就",
+          "start": 7.54,
+          "end": 7.78,
+          "probability": 0.85546875
+        },
+        {
+          "text": "能",
+          "start": 7.78,
+          "end": 7.9,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "自",
+          "start": 7.9,
+          "end": 8.02,
+          "probability": 0.9951171875
+        },
+        {
+          "text": "制",
+          "start": 8.02,
+          "end": 8.14,
+          "probability": 0.97314453125
+        },
+        {
+          "text": "一个",
+          "start": 8.14,
+          "end": 8.3,
+          "probability": 0.9921875
+        },
+        {
+          "text": "手",
+          "start": 8.3,
+          "end": 8.48,
+          "probability": 0.9951171875
+        },
+        {
+          "text": "动",
+          "start": 8.48,
+          "end": 8.6,
+          "probability": 0.94384765625
+        },
+        {
+          "text": "线",
+          "start": 8.6,
+          "end": 8.74,
+          "probability": 0.978515625
+        },
+        {
+          "text": "材",
+          "start": 8.74,
+          "end": 8.9,
+          "probability": 0.846923828125
+        },
+        {
+          "text": "折",
+          "start": 8.9,
+          "end": 9.04,
+          "probability": 0.9462890625
+        },
+        {
+          "text": "弯",
+          "start": 9.04,
+          "end": 9.14,
+          "probability": 0.8955078125
+        },
+        {
+          "text": "器",
+          "start": 9.14,
+          "end": 9.32,
+          "probability": 0.84033203125
+        }
+      ]
+    },
+    {
+      "start": 9.32,
+      "end": 10.7,
+      "text": "只需把线材放在卡槽中",
+      "words": [
+        {
+          "text": "只",
+          "start": 9.32,
+          "end": 9.54,
+          "probability": 0.8974609375
+        },
+        {
+          "text": "需",
+          "start": 9.54,
+          "end": 9.64,
+          "probability": 0.90087890625
+        },
+        {
+          "text": "把",
+          "start": 9.64,
+          "end": 9.74,
+          "probability": 0.98974609375
+        },
+        {
+          "text": "线",
+          "start": 9.74,
+          "end": 9.88,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "材",
+          "start": 9.88,
+          "end": 10.04,
+          "probability": 0.998779296875
+        },
+        {
+          "text": "放",
+          "start": 10.04,
+          "end": 10.16,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "在",
+          "start": 10.16,
+          "end": 10.28,
+          "probability": 0.99658203125
+        },
+        {
+          "text": "卡",
+          "start": 10.28,
+          "end": 10.42,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "槽",
+          "start": 10.42,
+          "end": 10.52,
+          "probability": 0.982421875
+        },
+        {
+          "text": "中",
+          "start": 10.52,
+          "end": 10.7,
+          "probability": 0.998046875
+        }
+      ]
+    },
+    {
+      "start": 10.7,
+      "end": 11.7,
+      "text": "通过转动手柄",
+      "words": [
+        {
+          "text": "通",
+          "start": 10.7,
+          "end": 10.94,
+          "probability": 0.91748046875
+        },
+        {
+          "text": "过",
+          "start": 10.94,
+          "end": 11.1,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "转",
+          "start": 11.1,
+          "end": 11.24,
+          "probability": 0.995849609375
+        },
+        {
+          "text": "动",
+          "start": 11.24,
+          "end": 11.38,
+          "probability": 0.9931640625
+        },
+        {
+          "text": "手",
+          "start": 11.38,
+          "end": 11.54,
+          "probability": 0.99609375
+        },
+        {
+          "text": "柄",
+          "start": 11.54,
+          "end": 11.7,
+          "probability": 1.0
+        }
+      ]
+    },
+    {
+      "start": 11.7,
+      "end": 14.1,
+      "text": "就能让线材一次性弯出标准的波浪纹路",
+      "words": [
+        {
+          "text": "就",
+          "start": 11.7,
+          "end": 11.94,
+          "probability": 0.98291015625
+        },
+        {
+          "text": "能",
+          "start": 11.94,
+          "end": 12.02,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "让",
+          "start": 12.02,
+          "end": 12.14,
+          "probability": 0.998046875
+        },
+        {
+          "text": "线",
+          "start": 12.14,
+          "end": 12.28,
+          "probability": 0.989990234375
+        },
+        {
+          "text": "材",
+          "start": 12.28,
+          "end": 12.42,
+          "probability": 0.998779296875
+        },
+        {
+          "text": "一次",
+          "start": 12.42,
+          "end": 12.64,
+          "probability": 0.9658203125
+        },
+        {
+          "text": "性",
+          "start": 12.64,
+          "end": 12.86,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "弯",
+          "start": 12.86,
+          "end": 12.96,
+          "probability": 0.947509765625
+        },
+        {
+          "text": "出",
+          "start": 12.96,
+          "end": 13.1,
+          "probability": 0.962890625
+        },
+        {
+          "text": "标",
+          "start": 13.1,
+          "end": 13.26,
+          "probability": 0.992919921875
+        },
+        {
+          "text": "准",
+          "start": 13.26,
+          "end": 13.44,
+          "probability": 0.999755859375
+        },
+        {
+          "text": "的",
+          "start": 13.44,
+          "end": 13.54,
+          "probability": 0.99609375
+        },
+        {
+          "text": "波",
+          "start": 13.54,
+          "end": 13.68,
+          "probability": 0.9482421875
+        },
+        {
+          "text": "浪",
+          "start": 13.68,
+          "end": 13.78,
+          "probability": 0.990966796875
+        },
+        {
+          "text": "纹",
+          "start": 13.78,
+          "end": 13.94,
+          "probability": 0.985107421875
+        },
+        {
+          "text": "路",
+          "start": 13.94,
+          "end": 14.1,
+          "probability": 0.99755859375
+        }
+      ]
+    },
+    {
+      "start": 14.1,
+      "end": 15.28,
+      "text": "用后钢板 轴承",
+      "words": [
+        {
+          "text": "用",
+          "start": 14.1,
+          "end": 14.34,
+          "probability": 0.970703125
+        },
+        {
+          "text": "后",
+          "start": 14.34,
+          "end": 14.48,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "钢",
+          "start": 14.48,
+          "end": 14.62,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "板",
+          "start": 14.62,
+          "end": 14.86,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "轴",
+          "start": 15.0,
+          "end": 15.06,
+          "probability": 0.90625
+        },
+        {
+          "text": "承",
+          "start": 15.06,
+          "end": 15.28,
+          "probability": 0.719482421875
+        }
+      ]
+    },
+    {
+      "start": 15.28,
+      "end": 16.56,
+      "text": "原钢 定位滚轮",
+      "words": [
+        {
+          "text": "原",
+          "start": 15.28,
+          "end": 15.6,
+          "probability": 0.260498046875
+        },
+        {
+          "text": "钢",
+          "start": 15.6,
+          "end": 15.8,
+          "probability": 0.998291015625
+        },
+        {
+          "text": "定",
+          "start": 16.04,
+          "end": 16.12,
+          "probability": 0.98779296875
+        },
+        {
+          "text": "位",
+          "start": 16.12,
+          "end": 16.28,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "滚",
+          "start": 16.28,
+          "end": 16.44,
+          "probability": 0.97900390625
+        },
+        {
+          "text": "轮",
+          "start": 16.44,
+          "end": 16.56,
+          "probability": 0.99560546875
+        }
+      ]
+    },
+    {
+      "start": 16.56,
+      "end": 18.86,
+      "text": "手柄就能自制一个铁衣链环折弯器",
+      "words": [
+        {
+          "text": "手",
+          "start": 16.56,
+          "end": 16.96,
+          "probability": 0.958984375
+        },
+        {
+          "text": "柄",
+          "start": 16.96,
+          "end": 17.1,
+          "probability": 1.0
+        },
+        {
+          "text": "就",
+          "start": 17.1,
+          "end": 17.24,
+          "probability": 0.9951171875
+        },
+        {
+          "text": "能",
+          "start": 17.24,
+          "end": 17.34,
+          "probability": 0.99658203125
+        },
+        {
+          "text": "自",
+          "start": 17.34,
+          "end": 17.46,
+          "probability": 0.99609375
+        },
+        {
+          "text": "制",
+          "start": 17.46,
+          "end": 17.58,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "一个",
+          "start": 17.58,
+          "end": 17.76,
+          "probability": 0.99609375
+        },
+        {
+          "text": "铁",
+          "start": 17.76,
+          "end": 17.96,
+          "probability": 0.9388020833333334
+        },
+        {
+          "text": "衣",
+          "start": 17.96,
+          "end": 18.14,
+          "probability": 0.8408203125
+        },
+        {
+          "text": "链",
+          "start": 18.14,
+          "end": 18.24,
+          "probability": 0.9371744791666666
+        },
+        {
+          "text": "环",
+          "start": 18.24,
+          "end": 18.4,
+          "probability": 0.88916015625
+        },
+        {
+          "text": "折",
+          "start": 18.4,
+          "end": 18.54,
+          "probability": 0.998046875
+        },
+        {
+          "text": "弯",
+          "start": 18.54,
+          "end": 18.66,
+          "probability": 0.997314453125
+        },
+        {
+          "text": "器",
+          "start": 18.66,
+          "end": 18.86,
+          "probability": 0.9990234375
+        }
+      ]
+    },
+    {
+      "start": 18.86,
+      "end": 20.34,
+      "text": "只需把金属条放在原钢中",
+      "words": [
+        {
+          "text": "只",
+          "start": 18.86,
+          "end": 19.04,
+          "probability": 0.99560546875
+        },
+        {
+          "text": "需",
+          "start": 19.04,
+          "end": 19.14,
+          "probability": 0.955078125
+        },
+        {
+          "text": "把",
+          "start": 19.14,
+          "end": 19.24,
+          "probability": 0.994140625
+        },
+        {
+          "text": "金",
+          "start": 19.24,
+          "end": 19.42,
+          "probability": 0.98779296875
+        },
+        {
+          "text": "属",
+          "start": 19.42,
+          "end": 19.5,
+          "probability": 0.975830078125
+        },
+        {
+          "text": "条",
+          "start": 19.5,
+          "end": 19.62,
+          "probability": 0.99609375
+        },
+        {
+          "text": "放",
+          "start": 19.62,
+          "end": 19.78,
+          "probability": 0.998046875
+        },
+        {
+          "text": "在",
+          "start": 19.78,
+          "end": 19.9,
+          "probability": 0.998046875
+        },
+        {
+          "text": "原",
+          "start": 19.9,
+          "end": 20.04,
+          "probability": 0.98876953125
+        },
+        {
+          "text": "钢",
+          "start": 20.04,
+          "end": 20.14,
+          "probability": 0.997802734375
+        },
+        {
+          "text": "中",
+          "start": 20.14,
+          "end": 20.34,
+          "probability": 0.99462890625
+        }
+      ]
+    },
+    {
+      "start": 20.34,
+      "end": 21.32,
+      "text": "通过转动手柄",
+      "words": [
+        {
+          "text": "通",
+          "start": 20.34,
+          "end": 20.56,
+          "probability": 0.9677734375
+        },
+        {
+          "text": "过",
+          "start": 20.56,
+          "end": 20.72,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "转",
+          "start": 20.72,
+          "end": 20.86,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "动",
+          "start": 20.86,
+          "end": 21.0,
+          "probability": 0.99658203125
+        },
+        {
+          "text": "手",
+          "start": 21.0,
+          "end": 21.16,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "柄",
+          "start": 21.16,
+          "end": 21.32,
+          "probability": 1.0
+        }
+      ]
+    },
+    {
+      "start": 21.32,
+      "end": 23.54,
+      "text": "就能让金属条强制弯折成圆形链环",
+      "words": [
+        {
+          "text": "就",
+          "start": 21.32,
+          "end": 21.52,
+          "probability": 0.340087890625
+        },
+        {
+          "text": "能",
+          "start": 21.52,
+          "end": 21.64,
+          "probability": 0.95654296875
+        },
+        {
+          "text": "让",
+          "start": 21.64,
+          "end": 21.76,
+          "probability": 0.67236328125
+        },
+        {
+          "text": "金",
+          "start": 21.76,
+          "end": 21.94,
+          "probability": 0.98095703125
+        },
+        {
+          "text": "属",
+          "start": 21.94,
+          "end": 22.04,
+          "probability": 0.967529296875
+        },
+        {
+          "text": "条",
+          "start": 22.04,
+          "end": 22.18,
+          "probability": 0.99365234375
+        },
+        {
+          "text": "强",
+          "start": 22.18,
+          "end": 22.4,
+          "probability": 0.9658203125
+        },
+        {
+          "text": "制",
+          "start": 22.4,
+          "end": 22.56,
+          "probability": 0.986328125
+        },
+        {
+          "text": "弯",
+          "start": 22.56,
+          "end": 22.68,
+          "probability": 0.958251953125
+        },
+        {
+          "text": "折",
+          "start": 22.68,
+          "end": 22.82,
+          "probability": 0.9921875
+        },
+        {
+          "text": "成",
+          "start": 22.82,
+          "end": 22.96,
+          "probability": 0.88330078125
+        },
+        {
+          "text": "圆",
+          "start": 22.96,
+          "end": 23.12,
+          "probability": 0.826904296875
+        },
+        {
+          "text": "形",
+          "start": 23.12,
+          "end": 23.24,
+          "probability": 0.984375
+        },
+        {
+          "text": "链",
+          "start": 23.24,
+          "end": 23.36,
+          "probability": 0.98779296875
+        },
+        {
+          "text": "环",
+          "start": 23.36,
+          "end": 23.54,
+          "probability": 0.934814453125
+        }
+      ]
+    },
+    {
+      "start": 23.54,
+      "end": 24.84,
+      "text": "比纯手掰更省力",
+      "words": [
+        {
+          "text": "比",
+          "start": 23.54,
+          "end": 23.92,
+          "probability": 0.94873046875
+        },
+        {
+          "text": "纯",
+          "start": 23.92,
+          "end": 24.08,
+          "probability": 0.769287109375
+        },
+        {
+          "text": "手",
+          "start": 24.08,
+          "end": 24.22,
+          "probability": 0.96337890625
+        },
+        {
+          "text": "掰",
+          "start": 24.22,
+          "end": 24.36,
+          "probability": 0.86181640625
+        },
+        {
+          "text": "更",
+          "start": 24.36,
+          "end": 24.54,
+          "probability": 0.98388671875
+        },
+        {
+          "text": "省",
+          "start": 24.54,
+          "end": 24.68,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "力",
+          "start": 24.68,
+          "end": 24.84,
+          "probability": 0.90234375
+        }
+      ]
+    },
+    {
+      "start": 24.84,
+      "end": 26.28,
+      "text": "成型也更加规整好看",
+      "words": [
+        {
+          "text": "成",
+          "start": 24.84,
+          "end": 25.14,
+          "probability": 0.859375
+        },
+        {
+          "text": "型",
+          "start": 25.14,
+          "end": 25.28,
+          "probability": 0.6904296875
+        },
+        {
+          "text": "也",
+          "start": 25.28,
+          "end": 25.4,
+          "probability": 0.9873046875
+        },
+        {
+          "text": "更",
+          "start": 25.4,
+          "end": 25.54,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "加",
+          "start": 25.54,
+          "end": 25.72,
+          "probability": 0.9951171875
+        },
+        {
+          "text": "规",
+          "start": 25.72,
+          "end": 25.84,
+          "probability": 0.96435546875
+        },
+        {
+          "text": "整",
+          "start": 25.84,
+          "end": 25.94,
+          "probability": 0.9697265625
+        },
+        {
+          "text": "好",
+          "start": 25.94,
+          "end": 26.12,
+          "probability": 0.994140625
+        },
+        {
+          "text": "看",
+          "start": 26.12,
+          "end": 26.28,
+          "probability": 0.99951171875
+        }
+      ]
+    },
+    {
+      "start": 26.28,
+      "end": 27.66,
+      "text": "用后钢板 调节螺栓",
+      "words": [
+        {
+          "text": "用",
+          "start": 26.28,
+          "end": 26.58,
+          "probability": 0.984375
+        },
+        {
+          "text": "后",
+          "start": 26.58,
+          "end": 26.72,
+          "probability": 0.6953125
+        },
+        {
+          "text": "钢",
+          "start": 26.72,
+          "end": 26.84,
+          "probability": 0.8291015625
+        },
+        {
+          "text": "板",
+          "start": 26.84,
+          "end": 27.08,
+          "probability": 0.955078125
+        },
+        {
+          "text": "调",
+          "start": 27.18,
+          "end": 27.28,
+          "probability": 0.9794921875
+        },
+        {
+          "text": "节",
+          "start": 27.28,
+          "end": 27.4,
+          "probability": 0.8935546875
+        },
+        {
+          "text": "螺",
+          "start": 27.4,
+          "end": 27.54,
+          "probability": 0.918212890625
+        },
+        {
+          "text": "栓",
+          "start": 27.54,
+          "end": 27.66,
+          "probability": 0.662353515625
+        }
+      ]
+    },
+    {
+      "start": 27.66,
+      "end": 28.8,
+      "text": "原管 定位销",
+      "words": [
+        {
+          "text": "原",
+          "start": 27.66,
+          "end": 27.96,
+          "probability": 0.01348876953125
+        },
+        {
+          "text": "管",
+          "start": 27.96,
+          "end": 28.2,
+          "probability": 0.90087890625
+        },
+        {
+          "text": "定",
+          "start": 28.46,
+          "end": 28.5,
+          "probability": 0.92724609375
+        },
+        {
+          "text": "位",
+          "start": 28.5,
+          "end": 28.64,
+          "probability": 0.3046875
+        },
+        {
+          "text": "销",
+          "start": 28.64,
+          "end": 28.8,
+          "probability": 0.8984375
+        }
+      ]
+    },
+    {
+      "start": 28.8,
+      "end": 29.48,
+      "text": "轴承手柄",
+      "words": [
+        {
+          "text": "轴",
+          "start": 28.8,
+          "end": 29.04,
+          "probability": 0.810546875
+        },
+        {
+          "text": "承",
+          "start": 29.04,
+          "end": 29.2,
+          "probability": 0.58795166015625
+        },
+        {
+          "text": "手",
+          "start": 29.2,
+          "end": 29.34,
+          "probability": 0.9111328125
+        },
+        {
+          "text": "柄",
+          "start": 29.34,
+          "end": 29.48,
+          "probability": 0.995849609375
+        }
+      ]
+    },
+    {
+      "start": 29.48,
+      "end": 31.26,
+      "text": "就能自制一个手动原钢折弯器",
+      "words": [
+        {
+          "text": "就",
+          "start": 29.48,
+          "end": 29.74,
+          "probability": 0.8408203125
+        },
+        {
+          "text": "能",
+          "start": 29.74,
+          "end": 29.86,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "自",
+          "start": 29.86,
+          "end": 29.98,
+          "probability": 0.9951171875
+        },
+        {
+          "text": "制",
+          "start": 29.98,
+          "end": 30.08,
+          "probability": 0.9208984375
+        },
+        {
+          "text": "一个",
+          "start": 30.08,
+          "end": 30.26,
+          "probability": 0.99365234375
+        },
+        {
+          "text": "手",
+          "start": 30.26,
+          "end": 30.44,
+          "probability": 0.99560546875
+        },
+        {
+          "text": "动",
+          "start": 30.44,
+          "end": 30.56,
+          "probability": 0.984375
+        },
+        {
+          "text": "原",
+          "start": 30.56,
+          "end": 30.74,
+          "probability": 0.43017578125
+        },
+        {
+          "text": "钢",
+          "start": 30.74,
+          "end": 30.86,
+          "probability": 0.991943359375
+        },
+        {
+          "text": "折",
+          "start": 30.86,
+          "end": 31.0,
+          "probability": 0.974365234375
+        },
+        {
+          "text": "弯",
+          "start": 31.0,
+          "end": 31.1,
+          "probability": 0.97216796875
+        },
+        {
+          "text": "器",
+          "start": 31.1,
+          "end": 31.26,
+          "probability": 0.9443359375
+        }
+      ]
+    },
+    {
+      "start": 31.26,
+      "end": 32.9,
+      "text": "只需把原钢放在卡槽里",
+      "words": [
+        {
+          "text": "只",
+          "start": 31.26,
+          "end": 31.66,
+          "probability": 0.98486328125
+        },
+        {
+          "text": "需",
+          "start": 31.66,
+          "end": 31.78,
+          "probability": 0.91748046875
+        },
+        {
+          "text": "把",
+          "start": 31.78,
+          "end": 31.88,
+          "probability": 0.99462890625
+        },
+        {
+          "text": "原",
+          "start": 31.88,
+          "end": 32.04,
+          "probability": 0.99658203125
+        },
+        {
+          "text": "钢",
+          "start": 32.04,
+          "end": 32.18,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "放",
+          "start": 32.18,
+          "end": 32.32,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "在",
+          "start": 32.32,
+          "end": 32.44,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "卡",
+          "start": 32.44,
+          "end": 32.6,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "槽",
+          "start": 32.6,
+          "end": 32.72,
+          "probability": 0.990478515625
+        },
+        {
+          "text": "里",
+          "start": 32.72,
+          "end": 32.9,
+          "probability": 0.98828125
+        }
+      ]
+    },
+    {
+      "start": 32.9,
+      "end": 33.86,
+      "text": "通过转动手柄",
+      "words": [
+        {
+          "text": "通",
+          "start": 32.9,
+          "end": 33.1,
+          "probability": 0.92138671875
+        },
+        {
+          "text": "过",
+          "start": 33.1,
+          "end": 33.24,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "转",
+          "start": 33.24,
+          "end": 33.4,
+          "probability": 0.992431640625
+        },
+        {
+          "text": "动",
+          "start": 33.4,
+          "end": 33.54,
+          "probability": 0.9931640625
+        },
+        {
+          "text": "手",
+          "start": 33.54,
+          "end": 33.7,
+          "probability": 0.9951171875
+        },
+        {
+          "text": "柄",
+          "start": 33.7,
+          "end": 33.86,
+          "probability": 1.0
+        }
+      ]
+    },
+    {
+      "start": 33.86,
+      "end": 35.92,
+      "text": "就能让原钢强制弯折做方形",
+      "words": [
+        {
+          "text": "就",
+          "start": 33.86,
+          "end": 34.08,
+          "probability": 0.97509765625
+        },
+        {
+          "text": "能",
+          "start": 34.08,
+          "end": 34.18,
+          "probability": 0.998046875
+        },
+        {
+          "text": "让",
+          "start": 34.18,
+          "end": 34.28,
+          "probability": 0.9951171875
+        },
+        {
+          "text": "原",
+          "start": 34.28,
+          "end": 34.46,
+          "probability": 0.9951171875
+        },
+        {
+          "text": "钢",
+          "start": 34.46,
+          "end": 34.6,
+          "probability": 0.998779296875
+        },
+        {
+          "text": "强",
+          "start": 34.6,
+          "end": 34.8,
+          "probability": 0.99609375
+        },
+        {
+          "text": "制",
+          "start": 34.8,
+          "end": 34.98,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "弯",
+          "start": 34.98,
+          "end": 35.14,
+          "probability": 0.998779296875
+        },
+        {
+          "text": "折",
+          "start": 35.14,
+          "end": 35.34,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "做",
+          "start": 35.34,
+          "end": 35.6,
+          "probability": 0.85546875
+        },
+        {
+          "text": "方",
+          "start": 35.6,
+          "end": 35.74,
+          "probability": 0.99462890625
+        },
+        {
+          "text": "形",
+          "start": 35.74,
+          "end": 35.92,
+          "probability": 0.94970703125
+        }
+      ]
+    },
+    {
+      "start": 35.92,
+      "end": 38.62,
+      "text": "举行都能用用螺栓 螺母 费就链条",
+      "words": [
+        {
+          "text": "举",
+          "start": 35.92,
+          "end": 36.28,
+          "probability": 0.92236328125
+        },
+        {
+          "text": "行",
+          "start": 36.28,
+          "end": 36.42,
+          "probability": 0.96875
+        },
+        {
+          "text": "都",
+          "start": 36.42,
+          "end": 36.56,
+          "probability": 0.99658203125
+        },
+        {
+          "text": "能",
+          "start": 36.56,
+          "end": 36.72,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "用",
+          "start": 36.72,
+          "end": 36.86,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "用",
+          "start": 36.86,
+          "end": 37.1,
+          "probability": 0.96044921875
+        },
+        {
+          "text": "螺",
+          "start": 37.1,
+          "end": 37.24,
+          "probability": 0.990966796875
+        },
+        {
+          "text": "栓",
+          "start": 37.24,
+          "end": 37.4,
+          "probability": 0.949951171875
+        },
+        {
+          "text": "螺",
+          "start": 37.58,
+          "end": 37.7,
+          "probability": 0.9453125
+        },
+        {
+          "text": "母",
+          "start": 37.7,
+          "end": 37.88,
+          "probability": 0.544921875
+        },
+        {
+          "text": "费",
+          "start": 38.1,
+          "end": 38.18,
+          "probability": 0.6627197265625
+        },
+        {
+          "text": "就",
+          "start": 38.18,
+          "end": 38.32,
+          "probability": 0.3017578125
+        },
+        {
+          "text": "链",
+          "start": 38.32,
+          "end": 38.42,
+          "probability": 0.9982096354166666
+        },
+        {
+          "text": "条",
+          "start": 38.42,
+          "end": 38.62,
+          "probability": 0.9892578125
+        }
+      ]
+    },
+    {
+      "start": 38.62,
+      "end": 41.0,
+      "text": "手柄就能自制一个手动弹簧绕制工具",
+      "words": [
+        {
+          "text": "手",
+          "start": 38.62,
+          "end": 38.9,
+          "probability": 0.98974609375
+        },
+        {
+          "text": "柄",
+          "start": 38.9,
+          "end": 39.04,
+          "probability": 1.0
+        },
+        {
+          "text": "就",
+          "start": 39.04,
+          "end": 39.18,
+          "probability": 0.9912109375
+        },
+        {
+          "text": "能",
+          "start": 39.18,
+          "end": 39.28,
+          "probability": 0.998046875
+        },
+        {
+          "text": "自",
+          "start": 39.28,
+          "end": 39.42,
+          "probability": 0.998046875
+        },
+        {
+          "text": "制",
+          "start": 39.42,
+          "end": 39.54,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "一个",
+          "start": 39.54,
+          "end": 39.72,
+          "probability": 0.99609375
+        },
+        {
+          "text": "手",
+          "start": 39.72,
+          "end": 39.94,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "动",
+          "start": 39.94,
+          "end": 40.06,
+          "probability": 0.99560546875
+        },
+        {
+          "text": "弹",
+          "start": 40.06,
+          "end": 40.24,
+          "probability": 0.987548828125
+        },
+        {
+          "text": "簧",
+          "start": 40.24,
+          "end": 40.4,
+          "probability": 0.975830078125
+        },
+        {
+          "text": "绕",
+          "start": 40.4,
+          "end": 40.56,
+          "probability": 0.986572265625
+        },
+        {
+          "text": "制",
+          "start": 40.56,
+          "end": 40.68,
+          "probability": 0.638671875
+        },
+        {
+          "text": "工",
+          "start": 40.68,
+          "end": 40.82,
+          "probability": 0.99560546875
+        },
+        {
+          "text": "具",
+          "start": 40.82,
+          "end": 41.0,
+          "probability": 0.99755859375
+        }
+      ]
+    },
+    {
+      "start": 41.0,
+      "end": 43.28,
+      "text": "只需把细铁丝穿过链条卡在螺栓上",
+      "words": [
+        {
+          "text": "只",
+          "start": 41.0,
+          "end": 41.36,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "需",
+          "start": 41.36,
+          "end": 41.46,
+          "probability": 0.97314453125
+        },
+        {
+          "text": "把",
+          "start": 41.46,
+          "end": 41.58,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "细",
+          "start": 41.58,
+          "end": 41.72,
+          "probability": 0.9521484375
+        },
+        {
+          "text": "铁",
+          "start": 41.72,
+          "end": 41.84,
+          "probability": 0.9539388020833334
+        },
+        {
+          "text": "丝",
+          "start": 41.84,
+          "end": 42.02,
+          "probability": 0.982666015625
+        },
+        {
+          "text": "穿",
+          "start": 42.02,
+          "end": 42.2,
+          "probability": 0.942626953125
+        },
+        {
+          "text": "过",
+          "start": 42.2,
+          "end": 42.34,
+          "probability": 0.99658203125
+        },
+        {
+          "text": "链",
+          "start": 42.34,
+          "end": 42.42,
+          "probability": 0.998046875
+        },
+        {
+          "text": "条",
+          "start": 42.42,
+          "end": 42.64,
+          "probability": 0.98681640625
+        },
+        {
+          "text": "卡",
+          "start": 42.64,
+          "end": 42.78,
+          "probability": 0.9765625
+        },
+        {
+          "text": "在",
+          "start": 42.78,
+          "end": 42.9,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "螺",
+          "start": 42.9,
+          "end": 43.0,
+          "probability": 0.998291015625
+        },
+        {
+          "text": "栓",
+          "start": 43.0,
+          "end": 43.12,
+          "probability": 0.990478515625
+        },
+        {
+          "text": "上",
+          "start": 43.12,
+          "end": 43.28,
+          "probability": 0.99072265625
+        }
+      ]
+    },
+    {
+      "start": 43.28,
+      "end": 44.24,
+      "text": "通过转动手柄",
+      "words": [
+        {
+          "text": "通",
+          "start": 43.28,
+          "end": 43.52,
+          "probability": 0.98388671875
+        },
+        {
+          "text": "过",
+          "start": 43.52,
+          "end": 43.66,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "转",
+          "start": 43.66,
+          "end": 43.82,
+          "probability": 0.997802734375
+        },
+        {
+          "text": "动",
+          "start": 43.82,
+          "end": 43.94,
+          "probability": 0.99560546875
+        },
+        {
+          "text": "手",
+          "start": 43.94,
+          "end": 44.12,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "柄",
+          "start": 44.12,
+          "end": 44.24,
+          "probability": 1.0
+        }
+      ]
+    },
+    {
+      "start": 44.24,
+      "end": 47.02,
+      "text": "就能让细铁丝 沿螺栓纹路一圈圈进行缠绕",
+      "words": [
+        {
+          "text": "就",
+          "start": 44.24,
+          "end": 44.48,
+          "probability": 0.552734375
+        },
+        {
+          "text": "能",
+          "start": 44.48,
+          "end": 44.6,
+          "probability": 0.9892578125
+        },
+        {
+          "text": "让",
+          "start": 44.6,
+          "end": 44.72,
+          "probability": 0.7744140625
+        },
+        {
+          "text": "细",
+          "start": 44.72,
+          "end": 44.9,
+          "probability": 0.973388671875
+        },
+        {
+          "text": "铁",
+          "start": 44.9,
+          "end": 45.04,
+          "probability": 0.9679361979166666
+        },
+        {
+          "text": "丝",
+          "start": 45.04,
+          "end": 45.24,
+          "probability": 0.984375
+        },
+        {
+          "text": "沿",
+          "start": 45.32,
+          "end": 45.44,
+          "probability": 0.86376953125
+        },
+        {
+          "text": "螺",
+          "start": 45.44,
+          "end": 45.56,
+          "probability": 0.6796875
+        },
+        {
+          "text": "栓",
+          "start": 45.56,
+          "end": 45.68,
+          "probability": 0.493896484375
+        },
+        {
+          "text": "纹",
+          "start": 45.68,
+          "end": 45.84,
+          "probability": 0.916015625
+        },
+        {
+          "text": "路",
+          "start": 45.84,
+          "end": 46.0,
+          "probability": 0.98974609375
+        },
+        {
+          "text": "一",
+          "start": 46.0,
+          "end": 46.14,
+          "probability": 0.79736328125
+        },
+        {
+          "text": "圈",
+          "start": 46.14,
+          "end": 46.28,
+          "probability": 0.997802734375
+        },
+        {
+          "text": "圈",
+          "start": 46.28,
+          "end": 46.44,
+          "probability": 0.99365234375
+        },
+        {
+          "text": "进",
+          "start": 46.44,
+          "end": 46.56,
+          "probability": 0.97265625
+        },
+        {
+          "text": "行",
+          "start": 46.56,
+          "end": 46.7,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "缠",
+          "start": 46.7,
+          "end": 46.86,
+          "probability": 0.808349609375
+        },
+        {
+          "text": "绕",
+          "start": 46.86,
+          "end": 47.02,
+          "probability": 0.997314453125
+        }
+      ]
+    },
+    {
+      "start": 47.02,
+      "end": 48.5,
+      "text": "从而绕制出规整的弹簧",
+      "words": [
+        {
+          "text": "从",
+          "start": 47.02,
+          "end": 47.24,
+          "probability": 0.9697265625
+        },
+        {
+          "text": "而",
+          "start": 47.24,
+          "end": 47.34,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "绕",
+          "start": 47.34,
+          "end": 47.46,
+          "probability": 0.961181640625
+        },
+        {
+          "text": "制",
+          "start": 47.46,
+          "end": 47.6,
+          "probability": 0.349609375
+        },
+        {
+          "text": "出",
+          "start": 47.6,
+          "end": 47.74,
+          "probability": 0.9951171875
+        },
+        {
+          "text": "规",
+          "start": 47.74,
+          "end": 47.88,
+          "probability": 0.783935546875
+        },
+        {
+          "text": "整",
+          "start": 47.88,
+          "end": 48.02,
+          "probability": 0.953125
+        },
+        {
+          "text": "的",
+          "start": 48.02,
+          "end": 48.14,
+          "probability": 0.990234375
+        },
+        {
+          "text": "弹",
+          "start": 48.14,
+          "end": 48.28,
+          "probability": 0.97021484375
+        },
+        {
+          "text": "簧",
+          "start": 48.28,
+          "end": 48.5,
+          "probability": 0.99267578125
+        }
+      ]
+    },
+    {
+      "start": 48.5,
+      "end": 50.16,
+      "text": "用槽钢 螺栓 原钢",
+      "words": [
+        {
+          "text": "用",
+          "start": 48.5,
+          "end": 48.76,
+          "probability": 0.63134765625
+        },
+        {
+          "text": "槽",
+          "start": 48.76,
+          "end": 48.98,
+          "probability": 0.896728515625
+        },
+        {
+          "text": "钢",
+          "start": 48.98,
+          "end": 49.14,
+          "probability": 0.907958984375
+        },
+        {
+          "text": "螺",
+          "start": 49.36,
+          "end": 49.5,
+          "probability": 0.9951171875
+        },
+        {
+          "text": "栓",
+          "start": 49.5,
+          "end": 49.66,
+          "probability": 0.98828125
+        },
+        {
+          "text": "原",
+          "start": 49.84,
+          "end": 49.94,
+          "probability": 0.1488037109375
+        },
+        {
+          "text": "钢",
+          "start": 49.94,
+          "end": 50.16,
+          "probability": 0.99365234375
+        }
+      ]
+    },
+    {
+      "start": 50.16,
+      "end": 51.94,
+      "text": "就能自制一个手动钢筋折弯器",
+      "words": [
+        {
+          "text": "就",
+          "start": 50.16,
+          "end": 50.4,
+          "probability": 0.6982421875
+        },
+        {
+          "text": "能",
+          "start": 50.4,
+          "end": 50.52,
+          "probability": 0.998046875
+        },
+        {
+          "text": "自",
+          "start": 50.52,
+          "end": 50.66,
+          "probability": 0.98388671875
+        },
+        {
+          "text": "制",
+          "start": 50.66,
+          "end": 50.8,
+          "probability": 0.951171875
+        },
+        {
+          "text": "一个",
+          "start": 50.8,
+          "end": 50.96,
+          "probability": 0.99267578125
+        },
+        {
+          "text": "手",
+          "start": 50.96,
+          "end": 51.14,
+          "probability": 0.9951171875
+        },
+        {
+          "text": "动",
+          "start": 51.14,
+          "end": 51.26,
+          "probability": 0.974609375
+        },
+        {
+          "text": "钢",
+          "start": 51.26,
+          "end": 51.42,
+          "probability": 0.994384765625
+        },
+        {
+          "text": "筋",
+          "start": 51.42,
+          "end": 51.54,
+          "probability": 0.935546875
+        },
+        {
+          "text": "折",
+          "start": 51.54,
+          "end": 51.68,
+          "probability": 0.98779296875
+        },
+        {
+          "text": "弯",
+          "start": 51.68,
+          "end": 51.8,
+          "probability": 0.89892578125
+        },
+        {
+          "text": "器",
+          "start": 51.8,
+          "end": 51.94,
+          "probability": 0.96923828125
+        }
+      ]
+    },
+    {
+      "start": 51.94,
+      "end": 53.24,
+      "text": "只需把钢筋放在原钢中",
+      "words": [
+        {
+          "text": "只",
+          "start": 51.94,
+          "end": 52.18,
+          "probability": 0.94384765625
+        },
+        {
+          "text": "需",
+          "start": 52.18,
+          "end": 52.3,
+          "probability": 0.89990234375
+        },
+        {
+          "text": "把",
+          "start": 52.3,
+          "end": 52.38,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "钢",
+          "start": 52.38,
+          "end": 52.52,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "筋",
+          "start": 52.52,
+          "end": 52.64,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "放",
+          "start": 52.64,
+          "end": 52.74,
+          "probability": 0.99560546875
+        },
+        {
+          "text": "在",
+          "start": 52.74,
+          "end": 52.84,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "原",
+          "start": 52.84,
+          "end": 52.98,
+          "probability": 0.9873046875
+        },
+        {
+          "text": "钢",
+          "start": 52.98,
+          "end": 53.12,
+          "probability": 0.998046875
+        },
+        {
+          "text": "中",
+          "start": 53.12,
+          "end": 53.24,
+          "probability": 0.99658203125
+        }
+      ]
+    },
+    {
+      "start": 53.24,
+      "end": 54.24,
+      "text": "通过转动手柄",
+      "words": [
+        {
+          "text": "通",
+          "start": 53.24,
+          "end": 53.5,
+          "probability": 0.712890625
+        },
+        {
+          "text": "过",
+          "start": 53.5,
+          "end": 53.64,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "转",
+          "start": 53.64,
+          "end": 53.82,
+          "probability": 0.991943359375
+        },
+        {
+          "text": "动",
+          "start": 53.82,
+          "end": 53.94,
+          "probability": 0.99462890625
+        },
+        {
+          "text": "手",
+          "start": 53.94,
+          "end": 54.1,
+          "probability": 0.98486328125
+        },
+        {
+          "text": "柄",
+          "start": 54.1,
+          "end": 54.24,
+          "probability": 0.99609375
+        }
+      ]
+    },
+    {
+      "start": 54.24,
+      "end": 55.08,
+      "text": "就能放大人力",
+      "words": [
+        {
+          "text": "就",
+          "start": 54.24,
+          "end": 54.46,
+          "probability": 0.8212890625
+        },
+        {
+          "text": "能",
+          "start": 54.46,
+          "end": 54.58,
+          "probability": 0.998046875
+        },
+        {
+          "text": "放",
+          "start": 54.58,
+          "end": 54.7,
+          "probability": 0.99609375
+        },
+        {
+          "text": "大",
+          "start": 54.7,
+          "end": 54.82,
+          "probability": 0.994140625
+        },
+        {
+          "text": "人",
+          "start": 54.82,
+          "end": 54.94,
+          "probability": 0.99560546875
+        },
+        {
+          "text": "力",
+          "start": 54.94,
+          "end": 55.08,
+          "probability": 0.99951171875
+        }
+      ]
+    },
+    {
+      "start": 55.08,
+      "end": 57.06,
+      "text": "强制将钢筋弯折成标准指甲",
+      "words": [
+        {
+          "text": "强",
+          "start": 55.08,
+          "end": 55.34,
+          "probability": 0.964111328125
+        },
+        {
+          "text": "制",
+          "start": 55.34,
+          "end": 55.5,
+          "probability": 0.98681640625
+        },
+        {
+          "text": "将",
+          "start": 55.5,
+          "end": 55.62,
+          "probability": 0.99365234375
+        },
+        {
+          "text": "钢",
+          "start": 55.62,
+          "end": 55.78,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "筋",
+          "start": 55.78,
+          "end": 55.94,
+          "probability": 0.999755859375
+        },
+        {
+          "text": "弯",
+          "start": 55.94,
+          "end": 56.02,
+          "probability": 0.974609375
+        },
+        {
+          "text": "折",
+          "start": 56.02,
+          "end": 56.14,
+          "probability": 0.998291015625
+        },
+        {
+          "text": "成",
+          "start": 56.14,
+          "end": 56.26,
+          "probability": 0.96728515625
+        },
+        {
+          "text": "标",
+          "start": 56.26,
+          "end": 56.44,
+          "probability": 0.993408203125
+        },
+        {
+          "text": "准",
+          "start": 56.44,
+          "end": 56.6,
+          "probability": 0.999755859375
+        },
+        {
+          "text": "指",
+          "start": 56.6,
+          "end": 56.74,
+          "probability": 0.70458984375
+        },
+        {
+          "text": "甲",
+          "start": 56.74,
+          "end": 57.06,
+          "probability": 0.927734375
+        }
+      ]
+    },
+    {
+      "start": 57.06,
+      "end": 58.42,
+      "text": "用后钢板 成型滚轮",
+      "words": [
+        {
+          "text": "用",
+          "start": 57.06,
+          "end": 57.22,
+          "probability": 0.8935546875
+        },
+        {
+          "text": "后",
+          "start": 57.22,
+          "end": 57.36,
+          "probability": 0.8486328125
+        },
+        {
+          "text": "钢",
+          "start": 57.36,
+          "end": 57.54,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "板",
+          "start": 57.54,
+          "end": 57.74,
+          "probability": 0.9619140625
+        },
+        {
+          "text": "成",
+          "start": 57.88,
+          "end": 57.98,
+          "probability": 0.88134765625
+        },
+        {
+          "text": "型",
+          "start": 57.98,
+          "end": 58.12,
+          "probability": 0.5986328125
+        },
+        {
+          "text": "滚",
+          "start": 58.12,
+          "end": 58.24,
+          "probability": 0.973388671875
+        },
+        {
+          "text": "轮",
+          "start": 58.24,
+          "end": 58.42,
+          "probability": 0.996337890625
+        }
+      ]
+    },
+    {
+      "start": 58.42,
+      "end": 60.64,
+      "text": "手柄就能自制一个手动方管弯管器",
+      "words": [
+        {
+          "text": "手",
+          "start": 58.42,
+          "end": 58.76,
+          "probability": 0.96044921875
+        },
+        {
+          "text": "柄",
+          "start": 58.76,
+          "end": 58.9,
+          "probability": 0.999755859375
+        },
+        {
+          "text": "就",
+          "start": 58.9,
+          "end": 59.04,
+          "probability": 0.99072265625
+        },
+        {
+          "text": "能",
+          "start": 59.04,
+          "end": 59.14,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "自",
+          "start": 59.14,
+          "end": 59.28,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "制",
+          "start": 59.28,
+          "end": 59.4,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "一个",
+          "start": 59.4,
+          "end": 59.56,
+          "probability": 0.99560546875
+        },
+        {
+          "text": "手",
+          "start": 59.56,
+          "end": 59.76,
+          "probability": 0.99609375
+        },
+        {
+          "text": "动",
+          "start": 59.76,
+          "end": 59.9,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "方",
+          "start": 59.9,
+          "end": 60.04,
+          "probability": 0.9677734375
+        },
+        {
+          "text": "管",
+          "start": 60.04,
+          "end": 60.2,
+          "probability": 0.55712890625
+        },
+        {
+          "text": "弯",
+          "start": 60.2,
+          "end": 60.34,
+          "probability": 0.9931640625
+        },
+        {
+          "text": "管",
+          "start": 60.34,
+          "end": 60.46,
+          "probability": 0.98193359375
+        },
+        {
+          "text": "器",
+          "start": 60.46,
+          "end": 60.64,
+          "probability": 0.99609375
+        }
+      ]
+    },
+    {
+      "start": 60.64,
+      "end": 62.06,
+      "text": "只需把方管插入滚轮中",
+      "words": [
+        {
+          "text": "只",
+          "start": 60.64,
+          "end": 60.9,
+          "probability": 0.998046875
+        },
+        {
+          "text": "需",
+          "start": 60.9,
+          "end": 61.0,
+          "probability": 0.9814453125
+        },
+        {
+          "text": "把",
+          "start": 61.0,
+          "end": 61.08,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "方",
+          "start": 61.08,
+          "end": 61.24,
+          "probability": 0.99609375
+        },
+        {
+          "text": "管",
+          "start": 61.24,
+          "end": 61.4,
+          "probability": 0.986328125
+        },
+        {
+          "text": "插",
+          "start": 61.4,
+          "end": 61.58,
+          "probability": 0.98974609375
+        },
+        {
+          "text": "入",
+          "start": 61.58,
+          "end": 61.68,
+          "probability": 0.998046875
+        },
+        {
+          "text": "滚",
+          "start": 61.68,
+          "end": 61.82,
+          "probability": 0.996826171875
+        },
+        {
+          "text": "轮",
+          "start": 61.82,
+          "end": 61.96,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "中",
+          "start": 61.96,
+          "end": 62.06,
+          "probability": 0.994140625
+        }
+      ]
+    },
+    {
+      "start": 62.06,
+      "end": 63.08,
+      "text": "通过转动手柄",
+      "words": [
+        {
+          "text": "通",
+          "start": 62.06,
+          "end": 62.32,
+          "probability": 0.95947265625
+        },
+        {
+          "text": "过",
+          "start": 62.32,
+          "end": 62.48,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "转",
+          "start": 62.48,
+          "end": 62.62,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "动",
+          "start": 62.62,
+          "end": 62.76,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "手",
+          "start": 62.76,
+          "end": 62.92,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "柄",
+          "start": 62.92,
+          "end": 63.08,
+          "probability": 1.0
+        }
+      ]
+    },
+    {
+      "start": 63.08,
+      "end": 64.42,
+      "text": "就能让方管均匀受力",
+      "words": [
+        {
+          "text": "就",
+          "start": 63.08,
+          "end": 63.3,
+          "probability": 0.94970703125
+        },
+        {
+          "text": "能",
+          "start": 63.3,
+          "end": 63.42,
+          "probability": 0.99658203125
+        },
+        {
+          "text": "让",
+          "start": 63.42,
+          "end": 63.52,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "方",
+          "start": 63.52,
+          "end": 63.68,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "管",
+          "start": 63.68,
+          "end": 63.84,
+          "probability": 0.9912109375
+        },
+        {
+          "text": "均",
+          "start": 63.84,
+          "end": 64.02,
+          "probability": 0.99560546875
+        },
+        {
+          "text": "匀",
+          "start": 64.02,
+          "end": 64.12,
+          "probability": 0.960693359375
+        },
+        {
+          "text": "受",
+          "start": 64.12,
+          "end": 64.26,
+          "probability": 0.89306640625
+        },
+        {
+          "text": "力",
+          "start": 64.26,
+          "end": 64.42,
+          "probability": 0.99658203125
+        }
+      ]
+    },
+    {
+      "start": 64.42,
+      "end": 66.28,
+      "text": "从而一次性搬出标准圆弧形",
+      "words": [
+        {
+          "text": "从",
+          "start": 64.42,
+          "end": 64.68,
+          "probability": 0.82177734375
+        },
+        {
+          "text": "而",
+          "start": 64.68,
+          "end": 64.78,
+          "probability": 0.99462890625
+        },
+        {
+          "text": "一次",
+          "start": 64.78,
+          "end": 65.02,
+          "probability": 0.92919921875
+        },
+        {
+          "text": "性",
+          "start": 65.02,
+          "end": 65.22,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "搬",
+          "start": 65.22,
+          "end": 65.36,
+          "probability": 0.7218017578125
+        },
+        {
+          "text": "出",
+          "start": 65.36,
+          "end": 65.5,
+          "probability": 0.99560546875
+        },
+        {
+          "text": "标",
+          "start": 65.5,
+          "end": 65.68,
+          "probability": 0.97900390625
+        },
+        {
+          "text": "准",
+          "start": 65.68,
+          "end": 65.88,
+          "probability": 0.999755859375
+        },
+        {
+          "text": "圆",
+          "start": 65.88,
+          "end": 66.0,
+          "probability": 0.6669921875
+        },
+        {
+          "text": "弧",
+          "start": 66.0,
+          "end": 66.16,
+          "probability": 0.864501953125
+        },
+        {
+          "text": "形",
+          "start": 66.16,
+          "end": 66.28,
+          "probability": 0.89697265625
+        }
+      ]
+    }
+  ],
+  "cues": [
+    {
+      "start": 0.0,
+      "end": 1.4,
+      "text": "亲爱的观众朋友们一起来看看",
+      "words": [
+        {
+          "text": "亲",
+          "start": 0.0,
+          "end": 0.22,
+          "probability": 0.5361328125
+        },
+        {
+          "text": "爱",
+          "start": 0.22,
+          "end": 0.3,
+          "probability": 0.99462890625
+        },
+        {
+          "text": "的",
+          "start": 0.3,
+          "end": 0.4,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "观",
+          "start": 0.4,
+          "end": 0.5,
+          "probability": 0.98876953125
+        },
+        {
+          "text": "众",
+          "start": 0.5,
+          "end": 0.58,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "朋友",
+          "start": 0.58,
+          "end": 0.7,
+          "probability": 0.99560546875
+        },
+        {
+          "text": "们",
+          "start": 0.7,
+          "end": 0.86,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "一起",
+          "start": 0.86,
+          "end": 1.08,
+          "probability": 0.81689453125
+        },
+        {
+          "text": "来",
+          "start": 1.08,
+          "end": 1.24,
+          "probability": 0.99560546875
+        },
+        {
+          "text": "看看",
+          "start": 1.24,
+          "end": 1.4,
+          "probability": 0.98876953125
+        }
+      ]
+    },
+    {
+      "start": 1.4,
+      "end": 3.02,
+      "text": "这些有意思的自制工具吧",
+      "words": [
+        {
+          "text": "这",
+          "start": 1.4,
+          "end": 1.76,
+          "probability": 0.96875
+        },
+        {
+          "text": "些",
+          "start": 1.76,
+          "end": 1.88,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "有",
+          "start": 1.88,
+          "end": 2.0,
+          "probability": 0.99560546875
+        },
+        {
+          "text": "意思",
+          "start": 2.0,
+          "end": 2.18,
+          "probability": 0.998046875
+        },
+        {
+          "text": "的",
+          "start": 2.18,
+          "end": 2.36,
+          "probability": 0.9892578125
+        },
+        {
+          "text": "自",
+          "start": 2.36,
+          "end": 2.48,
+          "probability": 0.96826171875
+        },
+        {
+          "text": "制",
+          "start": 2.48,
+          "end": 2.58,
+          "probability": 0.90234375
+        },
+        {
+          "text": "工",
+          "start": 2.58,
+          "end": 2.72,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "具",
+          "start": 2.72,
+          "end": 2.86,
+          "probability": 0.9951171875
+        },
+        {
+          "text": "吧",
+          "start": 2.86,
+          "end": 3.02,
+          "probability": 0.9130859375
+        }
+      ]
+    },
+    {
+      "start": 3.02,
+      "end": 4.4,
+      "text": "材料好找 制作简单",
+      "words": [
+        {
+          "text": "材",
+          "start": 3.02,
+          "end": 3.4,
+          "probability": 0.936279296875
+        },
+        {
+          "text": "料",
+          "start": 3.4,
+          "end": 3.5,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "好",
+          "start": 3.5,
+          "end": 3.68,
+          "probability": 0.96533203125
+        },
+        {
+          "text": "找",
+          "start": 3.68,
+          "end": 3.82,
+          "probability": 0.990234375
+        },
+        {
+          "text": "制",
+          "start": 3.94,
+          "end": 4.04,
+          "probability": 0.98486328125
+        },
+        {
+          "text": "作",
+          "start": 4.04,
+          "end": 4.14,
+          "probability": 0.99609375
+        },
+        {
+          "text": "简",
+          "start": 4.14,
+          "end": 4.28,
+          "probability": 0.9833984375
+        },
+        {
+          "text": "单",
+          "start": 4.28,
+          "end": 4.4,
+          "probability": 1.0
+        }
+      ]
+    },
+    {
+      "start": 4.4,
+      "end": 5.48,
+      "text": "关键是还很实用",
+      "words": [
+        {
+          "text": "关",
+          "start": 4.4,
+          "end": 4.7,
+          "probability": 0.7119140625
+        },
+        {
+          "text": "键",
+          "start": 4.7,
+          "end": 4.8,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "是",
+          "start": 4.8,
+          "end": 4.92,
+          "probability": 0.98681640625
+        },
+        {
+          "text": "还",
+          "start": 4.92,
+          "end": 5.02,
+          "probability": 0.8837890625
+        },
+        {
+          "text": "很",
+          "start": 5.02,
+          "end": 5.18,
+          "probability": 0.99609375
+        },
+        {
+          "text": "实",
+          "start": 5.18,
+          "end": 5.34,
+          "probability": 0.958984375
+        },
+        {
+          "text": "用",
+          "start": 5.34,
+          "end": 5.48,
+          "probability": 0.99951171875
+        }
+      ]
+    },
+    {
+      "start": 5.48,
+      "end": 6.78,
+      "text": "用后钢板 线为销",
+      "words": [
+        {
+          "text": "用",
+          "start": 5.48,
+          "end": 5.74,
+          "probability": 0.95703125
+        },
+        {
+          "text": "后",
+          "start": 5.74,
+          "end": 5.92,
+          "probability": 0.814453125
+        },
+        {
+          "text": "钢",
+          "start": 5.92,
+          "end": 6.04,
+          "probability": 0.864990234375
+        },
+        {
+          "text": "板",
+          "start": 6.04,
+          "end": 6.2,
+          "probability": 0.982421875
+        },
+        {
+          "text": "线",
+          "start": 6.42,
+          "end": 6.52,
+          "probability": 0.9921875
+        },
+        {
+          "text": "为",
+          "start": 6.52,
+          "end": 6.64,
+          "probability": 0.8095703125
+        },
+        {
+          "text": "销",
+          "start": 6.64,
+          "end": 6.78,
+          "probability": 0.761962890625
+        }
+      ]
+    },
+    {
+      "start": 6.78,
+      "end": 9.32,
+      "text": "原钢手柄就能自制一个手动线材折弯器",
+      "words": [
+        {
+          "text": "原",
+          "start": 6.78,
+          "end": 7.16,
+          "probability": 0.1820068359375
+        },
+        {
+          "text": "钢",
+          "start": 7.16,
+          "end": 7.26,
+          "probability": 0.988525390625
+        },
+        {
+          "text": "手",
+          "start": 7.26,
+          "end": 7.42,
+          "probability": 0.9560546875
+        },
+        {
+          "text": "柄",
+          "start": 7.42,
+          "end": 7.54,
+          "probability": 0.993896484375
+        },
+        {
+          "text": "就",
+          "start": 7.54,
+          "end": 7.78,
+          "probability": 0.85546875
+        },
+        {
+          "text": "能",
+          "start": 7.78,
+          "end": 7.9,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "自",
+          "start": 7.9,
+          "end": 8.02,
+          "probability": 0.9951171875
+        },
+        {
+          "text": "制",
+          "start": 8.02,
+          "end": 8.14,
+          "probability": 0.97314453125
+        },
+        {
+          "text": "一个",
+          "start": 8.14,
+          "end": 8.3,
+          "probability": 0.9921875
+        },
+        {
+          "text": "手",
+          "start": 8.3,
+          "end": 8.48,
+          "probability": 0.9951171875
+        },
+        {
+          "text": "动",
+          "start": 8.48,
+          "end": 8.6,
+          "probability": 0.94384765625
+        },
+        {
+          "text": "线",
+          "start": 8.6,
+          "end": 8.74,
+          "probability": 0.978515625
+        },
+        {
+          "text": "材",
+          "start": 8.74,
+          "end": 8.9,
+          "probability": 0.846923828125
+        },
+        {
+          "text": "折",
+          "start": 8.9,
+          "end": 9.04,
+          "probability": 0.9462890625
+        },
+        {
+          "text": "弯",
+          "start": 9.04,
+          "end": 9.14,
+          "probability": 0.8955078125
+        },
+        {
+          "text": "器",
+          "start": 9.14,
+          "end": 9.32,
+          "probability": 0.84033203125
+        }
+      ]
+    },
+    {
+      "start": 9.32,
+      "end": 10.7,
+      "text": "只需把线材放在卡槽中",
+      "words": [
+        {
+          "text": "只",
+          "start": 9.32,
+          "end": 9.54,
+          "probability": 0.8974609375
+        },
+        {
+          "text": "需",
+          "start": 9.54,
+          "end": 9.64,
+          "probability": 0.90087890625
+        },
+        {
+          "text": "把",
+          "start": 9.64,
+          "end": 9.74,
+          "probability": 0.98974609375
+        },
+        {
+          "text": "线",
+          "start": 9.74,
+          "end": 9.88,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "材",
+          "start": 9.88,
+          "end": 10.04,
+          "probability": 0.998779296875
+        },
+        {
+          "text": "放",
+          "start": 10.04,
+          "end": 10.16,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "在",
+          "start": 10.16,
+          "end": 10.28,
+          "probability": 0.99658203125
+        },
+        {
+          "text": "卡",
+          "start": 10.28,
+          "end": 10.42,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "槽",
+          "start": 10.42,
+          "end": 10.52,
+          "probability": 0.982421875
+        },
+        {
+          "text": "中",
+          "start": 10.52,
+          "end": 10.7,
+          "probability": 0.998046875
+        }
+      ]
+    },
+    {
+      "start": 10.7,
+      "end": 11.7,
+      "text": "通过转动手柄",
+      "words": [
+        {
+          "text": "通",
+          "start": 10.7,
+          "end": 10.94,
+          "probability": 0.91748046875
+        },
+        {
+          "text": "过",
+          "start": 10.94,
+          "end": 11.1,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "转",
+          "start": 11.1,
+          "end": 11.24,
+          "probability": 0.995849609375
+        },
+        {
+          "text": "动",
+          "start": 11.24,
+          "end": 11.38,
+          "probability": 0.9931640625
+        },
+        {
+          "text": "手",
+          "start": 11.38,
+          "end": 11.54,
+          "probability": 0.99609375
+        },
+        {
+          "text": "柄",
+          "start": 11.54,
+          "end": 11.7,
+          "probability": 1.0
+        }
+      ]
+    },
+    {
+      "start": 11.7,
+      "end": 14.1,
+      "text": "就能让线材一次性弯出标准的波浪纹路",
+      "words": [
+        {
+          "text": "就",
+          "start": 11.7,
+          "end": 11.94,
+          "probability": 0.98291015625
+        },
+        {
+          "text": "能",
+          "start": 11.94,
+          "end": 12.02,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "让",
+          "start": 12.02,
+          "end": 12.14,
+          "probability": 0.998046875
+        },
+        {
+          "text": "线",
+          "start": 12.14,
+          "end": 12.28,
+          "probability": 0.989990234375
+        },
+        {
+          "text": "材",
+          "start": 12.28,
+          "end": 12.42,
+          "probability": 0.998779296875
+        },
+        {
+          "text": "一次",
+          "start": 12.42,
+          "end": 12.64,
+          "probability": 0.9658203125
+        },
+        {
+          "text": "性",
+          "start": 12.64,
+          "end": 12.86,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "弯",
+          "start": 12.86,
+          "end": 12.96,
+          "probability": 0.947509765625
+        },
+        {
+          "text": "出",
+          "start": 12.96,
+          "end": 13.1,
+          "probability": 0.962890625
+        },
+        {
+          "text": "标",
+          "start": 13.1,
+          "end": 13.26,
+          "probability": 0.992919921875
+        },
+        {
+          "text": "准",
+          "start": 13.26,
+          "end": 13.44,
+          "probability": 0.999755859375
+        },
+        {
+          "text": "的",
+          "start": 13.44,
+          "end": 13.54,
+          "probability": 0.99609375
+        },
+        {
+          "text": "波",
+          "start": 13.54,
+          "end": 13.68,
+          "probability": 0.9482421875
+        },
+        {
+          "text": "浪",
+          "start": 13.68,
+          "end": 13.78,
+          "probability": 0.990966796875
+        },
+        {
+          "text": "纹",
+          "start": 13.78,
+          "end": 13.94,
+          "probability": 0.985107421875
+        },
+        {
+          "text": "路",
+          "start": 13.94,
+          "end": 14.1,
+          "probability": 0.99755859375
+        }
+      ]
+    },
+    {
+      "start": 14.1,
+      "end": 15.28,
+      "text": "用后钢板 轴承",
+      "words": [
+        {
+          "text": "用",
+          "start": 14.1,
+          "end": 14.34,
+          "probability": 0.970703125
+        },
+        {
+          "text": "后",
+          "start": 14.34,
+          "end": 14.48,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "钢",
+          "start": 14.48,
+          "end": 14.62,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "板",
+          "start": 14.62,
+          "end": 14.86,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "轴",
+          "start": 15.0,
+          "end": 15.06,
+          "probability": 0.90625
+        },
+        {
+          "text": "承",
+          "start": 15.06,
+          "end": 15.28,
+          "probability": 0.719482421875
+        }
+      ]
+    },
+    {
+      "start": 15.28,
+      "end": 16.56,
+      "text": "原钢 定位滚轮",
+      "words": [
+        {
+          "text": "原",
+          "start": 15.28,
+          "end": 15.6,
+          "probability": 0.260498046875
+        },
+        {
+          "text": "钢",
+          "start": 15.6,
+          "end": 15.8,
+          "probability": 0.998291015625
+        },
+        {
+          "text": "定",
+          "start": 16.04,
+          "end": 16.12,
+          "probability": 0.98779296875
+        },
+        {
+          "text": "位",
+          "start": 16.12,
+          "end": 16.28,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "滚",
+          "start": 16.28,
+          "end": 16.44,
+          "probability": 0.97900390625
+        },
+        {
+          "text": "轮",
+          "start": 16.44,
+          "end": 16.56,
+          "probability": 0.99560546875
+        }
+      ]
+    },
+    {
+      "start": 16.56,
+      "end": 18.86,
+      "text": "手柄就能自制一个铁衣链环折弯器",
+      "words": [
+        {
+          "text": "手",
+          "start": 16.56,
+          "end": 16.96,
+          "probability": 0.958984375
+        },
+        {
+          "text": "柄",
+          "start": 16.96,
+          "end": 17.1,
+          "probability": 1.0
+        },
+        {
+          "text": "就",
+          "start": 17.1,
+          "end": 17.24,
+          "probability": 0.9951171875
+        },
+        {
+          "text": "能",
+          "start": 17.24,
+          "end": 17.34,
+          "probability": 0.99658203125
+        },
+        {
+          "text": "自",
+          "start": 17.34,
+          "end": 17.46,
+          "probability": 0.99609375
+        },
+        {
+          "text": "制",
+          "start": 17.46,
+          "end": 17.58,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "一个",
+          "start": 17.58,
+          "end": 17.76,
+          "probability": 0.99609375
+        },
+        {
+          "text": "铁",
+          "start": 17.76,
+          "end": 17.96,
+          "probability": 0.9388020833333334
+        },
+        {
+          "text": "衣",
+          "start": 17.96,
+          "end": 18.14,
+          "probability": 0.8408203125
+        },
+        {
+          "text": "链",
+          "start": 18.14,
+          "end": 18.24,
+          "probability": 0.9371744791666666
+        },
+        {
+          "text": "环",
+          "start": 18.24,
+          "end": 18.4,
+          "probability": 0.88916015625
+        },
+        {
+          "text": "折",
+          "start": 18.4,
+          "end": 18.54,
+          "probability": 0.998046875
+        },
+        {
+          "text": "弯",
+          "start": 18.54,
+          "end": 18.66,
+          "probability": 0.997314453125
+        },
+        {
+          "text": "器",
+          "start": 18.66,
+          "end": 18.86,
+          "probability": 0.9990234375
+        }
+      ]
+    },
+    {
+      "start": 18.86,
+      "end": 20.34,
+      "text": "只需把金属条放在原钢中",
+      "words": [
+        {
+          "text": "只",
+          "start": 18.86,
+          "end": 19.04,
+          "probability": 0.99560546875
+        },
+        {
+          "text": "需",
+          "start": 19.04,
+          "end": 19.14,
+          "probability": 0.955078125
+        },
+        {
+          "text": "把",
+          "start": 19.14,
+          "end": 19.24,
+          "probability": 0.994140625
+        },
+        {
+          "text": "金",
+          "start": 19.24,
+          "end": 19.42,
+          "probability": 0.98779296875
+        },
+        {
+          "text": "属",
+          "start": 19.42,
+          "end": 19.5,
+          "probability": 0.975830078125
+        },
+        {
+          "text": "条",
+          "start": 19.5,
+          "end": 19.62,
+          "probability": 0.99609375
+        },
+        {
+          "text": "放",
+          "start": 19.62,
+          "end": 19.78,
+          "probability": 0.998046875
+        },
+        {
+          "text": "在",
+          "start": 19.78,
+          "end": 19.9,
+          "probability": 0.998046875
+        },
+        {
+          "text": "原",
+          "start": 19.9,
+          "end": 20.04,
+          "probability": 0.98876953125
+        },
+        {
+          "text": "钢",
+          "start": 20.04,
+          "end": 20.14,
+          "probability": 0.997802734375
+        },
+        {
+          "text": "中",
+          "start": 20.14,
+          "end": 20.34,
+          "probability": 0.99462890625
+        }
+      ]
+    },
+    {
+      "start": 20.34,
+      "end": 21.32,
+      "text": "通过转动手柄",
+      "words": [
+        {
+          "text": "通",
+          "start": 20.34,
+          "end": 20.56,
+          "probability": 0.9677734375
+        },
+        {
+          "text": "过",
+          "start": 20.56,
+          "end": 20.72,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "转",
+          "start": 20.72,
+          "end": 20.86,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "动",
+          "start": 20.86,
+          "end": 21.0,
+          "probability": 0.99658203125
+        },
+        {
+          "text": "手",
+          "start": 21.0,
+          "end": 21.16,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "柄",
+          "start": 21.16,
+          "end": 21.32,
+          "probability": 1.0
+        }
+      ]
+    },
+    {
+      "start": 21.32,
+      "end": 23.54,
+      "text": "就能让金属条强制弯折成圆形链环",
+      "words": [
+        {
+          "text": "就",
+          "start": 21.32,
+          "end": 21.52,
+          "probability": 0.340087890625
+        },
+        {
+          "text": "能",
+          "start": 21.52,
+          "end": 21.64,
+          "probability": 0.95654296875
+        },
+        {
+          "text": "让",
+          "start": 21.64,
+          "end": 21.76,
+          "probability": 0.67236328125
+        },
+        {
+          "text": "金",
+          "start": 21.76,
+          "end": 21.94,
+          "probability": 0.98095703125
+        },
+        {
+          "text": "属",
+          "start": 21.94,
+          "end": 22.04,
+          "probability": 0.967529296875
+        },
+        {
+          "text": "条",
+          "start": 22.04,
+          "end": 22.18,
+          "probability": 0.99365234375
+        },
+        {
+          "text": "强",
+          "start": 22.18,
+          "end": 22.4,
+          "probability": 0.9658203125
+        },
+        {
+          "text": "制",
+          "start": 22.4,
+          "end": 22.56,
+          "probability": 0.986328125
+        },
+        {
+          "text": "弯",
+          "start": 22.56,
+          "end": 22.68,
+          "probability": 0.958251953125
+        },
+        {
+          "text": "折",
+          "start": 22.68,
+          "end": 22.82,
+          "probability": 0.9921875
+        },
+        {
+          "text": "成",
+          "start": 22.82,
+          "end": 22.96,
+          "probability": 0.88330078125
+        },
+        {
+          "text": "圆",
+          "start": 22.96,
+          "end": 23.12,
+          "probability": 0.826904296875
+        },
+        {
+          "text": "形",
+          "start": 23.12,
+          "end": 23.24,
+          "probability": 0.984375
+        },
+        {
+          "text": "链",
+          "start": 23.24,
+          "end": 23.36,
+          "probability": 0.98779296875
+        },
+        {
+          "text": "环",
+          "start": 23.36,
+          "end": 23.54,
+          "probability": 0.934814453125
+        }
+      ]
+    },
+    {
+      "start": 23.54,
+      "end": 24.84,
+      "text": "比纯手掰更省力",
+      "words": [
+        {
+          "text": "比",
+          "start": 23.54,
+          "end": 23.92,
+          "probability": 0.94873046875
+        },
+        {
+          "text": "纯",
+          "start": 23.92,
+          "end": 24.08,
+          "probability": 0.769287109375
+        },
+        {
+          "text": "手",
+          "start": 24.08,
+          "end": 24.22,
+          "probability": 0.96337890625
+        },
+        {
+          "text": "掰",
+          "start": 24.22,
+          "end": 24.36,
+          "probability": 0.86181640625
+        },
+        {
+          "text": "更",
+          "start": 24.36,
+          "end": 24.54,
+          "probability": 0.98388671875
+        },
+        {
+          "text": "省",
+          "start": 24.54,
+          "end": 24.68,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "力",
+          "start": 24.68,
+          "end": 24.84,
+          "probability": 0.90234375
+        }
+      ]
+    },
+    {
+      "start": 24.84,
+      "end": 26.28,
+      "text": "成型也更加规整好看",
+      "words": [
+        {
+          "text": "成",
+          "start": 24.84,
+          "end": 25.14,
+          "probability": 0.859375
+        },
+        {
+          "text": "型",
+          "start": 25.14,
+          "end": 25.28,
+          "probability": 0.6904296875
+        },
+        {
+          "text": "也",
+          "start": 25.28,
+          "end": 25.4,
+          "probability": 0.9873046875
+        },
+        {
+          "text": "更",
+          "start": 25.4,
+          "end": 25.54,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "加",
+          "start": 25.54,
+          "end": 25.72,
+          "probability": 0.9951171875
+        },
+        {
+          "text": "规",
+          "start": 25.72,
+          "end": 25.84,
+          "probability": 0.96435546875
+        },
+        {
+          "text": "整",
+          "start": 25.84,
+          "end": 25.94,
+          "probability": 0.9697265625
+        },
+        {
+          "text": "好",
+          "start": 25.94,
+          "end": 26.12,
+          "probability": 0.994140625
+        },
+        {
+          "text": "看",
+          "start": 26.12,
+          "end": 26.28,
+          "probability": 0.99951171875
+        }
+      ]
+    },
+    {
+      "start": 26.28,
+      "end": 27.66,
+      "text": "用后钢板 调节螺栓",
+      "words": [
+        {
+          "text": "用",
+          "start": 26.28,
+          "end": 26.58,
+          "probability": 0.984375
+        },
+        {
+          "text": "后",
+          "start": 26.58,
+          "end": 26.72,
+          "probability": 0.6953125
+        },
+        {
+          "text": "钢",
+          "start": 26.72,
+          "end": 26.84,
+          "probability": 0.8291015625
+        },
+        {
+          "text": "板",
+          "start": 26.84,
+          "end": 27.08,
+          "probability": 0.955078125
+        },
+        {
+          "text": "调",
+          "start": 27.18,
+          "end": 27.28,
+          "probability": 0.9794921875
+        },
+        {
+          "text": "节",
+          "start": 27.28,
+          "end": 27.4,
+          "probability": 0.8935546875
+        },
+        {
+          "text": "螺",
+          "start": 27.4,
+          "end": 27.54,
+          "probability": 0.918212890625
+        },
+        {
+          "text": "栓",
+          "start": 27.54,
+          "end": 27.66,
+          "probability": 0.662353515625
+        }
+      ]
+    },
+    {
+      "start": 27.66,
+      "end": 28.8,
+      "text": "原管 定位销",
+      "words": [
+        {
+          "text": "原",
+          "start": 27.66,
+          "end": 27.96,
+          "probability": 0.01348876953125
+        },
+        {
+          "text": "管",
+          "start": 27.96,
+          "end": 28.2,
+          "probability": 0.90087890625
+        },
+        {
+          "text": "定",
+          "start": 28.46,
+          "end": 28.5,
+          "probability": 0.92724609375
+        },
+        {
+          "text": "位",
+          "start": 28.5,
+          "end": 28.64,
+          "probability": 0.3046875
+        },
+        {
+          "text": "销",
+          "start": 28.64,
+          "end": 28.8,
+          "probability": 0.8984375
+        }
+      ]
+    },
+    {
+      "start": 28.8,
+      "end": 29.48,
+      "text": "轴承手柄",
+      "words": [
+        {
+          "text": "轴",
+          "start": 28.8,
+          "end": 29.04,
+          "probability": 0.810546875
+        },
+        {
+          "text": "承",
+          "start": 29.04,
+          "end": 29.2,
+          "probability": 0.58795166015625
+        },
+        {
+          "text": "手",
+          "start": 29.2,
+          "end": 29.34,
+          "probability": 0.9111328125
+        },
+        {
+          "text": "柄",
+          "start": 29.34,
+          "end": 29.48,
+          "probability": 0.995849609375
+        }
+      ]
+    },
+    {
+      "start": 29.48,
+      "end": 31.26,
+      "text": "就能自制一个手动原钢折弯器",
+      "words": [
+        {
+          "text": "就",
+          "start": 29.48,
+          "end": 29.74,
+          "probability": 0.8408203125
+        },
+        {
+          "text": "能",
+          "start": 29.74,
+          "end": 29.86,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "自",
+          "start": 29.86,
+          "end": 29.98,
+          "probability": 0.9951171875
+        },
+        {
+          "text": "制",
+          "start": 29.98,
+          "end": 30.08,
+          "probability": 0.9208984375
+        },
+        {
+          "text": "一个",
+          "start": 30.08,
+          "end": 30.26,
+          "probability": 0.99365234375
+        },
+        {
+          "text": "手",
+          "start": 30.26,
+          "end": 30.44,
+          "probability": 0.99560546875
+        },
+        {
+          "text": "动",
+          "start": 30.44,
+          "end": 30.56,
+          "probability": 0.984375
+        },
+        {
+          "text": "原",
+          "start": 30.56,
+          "end": 30.74,
+          "probability": 0.43017578125
+        },
+        {
+          "text": "钢",
+          "start": 30.74,
+          "end": 30.86,
+          "probability": 0.991943359375
+        },
+        {
+          "text": "折",
+          "start": 30.86,
+          "end": 31.0,
+          "probability": 0.974365234375
+        },
+        {
+          "text": "弯",
+          "start": 31.0,
+          "end": 31.1,
+          "probability": 0.97216796875
+        },
+        {
+          "text": "器",
+          "start": 31.1,
+          "end": 31.26,
+          "probability": 0.9443359375
+        }
+      ]
+    },
+    {
+      "start": 31.26,
+      "end": 32.9,
+      "text": "只需把原钢放在卡槽里",
+      "words": [
+        {
+          "text": "只",
+          "start": 31.26,
+          "end": 31.66,
+          "probability": 0.98486328125
+        },
+        {
+          "text": "需",
+          "start": 31.66,
+          "end": 31.78,
+          "probability": 0.91748046875
+        },
+        {
+          "text": "把",
+          "start": 31.78,
+          "end": 31.88,
+          "probability": 0.99462890625
+        },
+        {
+          "text": "原",
+          "start": 31.88,
+          "end": 32.04,
+          "probability": 0.99658203125
+        },
+        {
+          "text": "钢",
+          "start": 32.04,
+          "end": 32.18,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "放",
+          "start": 32.18,
+          "end": 32.32,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "在",
+          "start": 32.32,
+          "end": 32.44,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "卡",
+          "start": 32.44,
+          "end": 32.6,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "槽",
+          "start": 32.6,
+          "end": 32.72,
+          "probability": 0.990478515625
+        },
+        {
+          "text": "里",
+          "start": 32.72,
+          "end": 32.9,
+          "probability": 0.98828125
+        }
+      ]
+    },
+    {
+      "start": 32.9,
+      "end": 33.86,
+      "text": "通过转动手柄",
+      "words": [
+        {
+          "text": "通",
+          "start": 32.9,
+          "end": 33.1,
+          "probability": 0.92138671875
+        },
+        {
+          "text": "过",
+          "start": 33.1,
+          "end": 33.24,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "转",
+          "start": 33.24,
+          "end": 33.4,
+          "probability": 0.992431640625
+        },
+        {
+          "text": "动",
+          "start": 33.4,
+          "end": 33.54,
+          "probability": 0.9931640625
+        },
+        {
+          "text": "手",
+          "start": 33.54,
+          "end": 33.7,
+          "probability": 0.9951171875
+        },
+        {
+          "text": "柄",
+          "start": 33.7,
+          "end": 33.86,
+          "probability": 1.0
+        }
+      ]
+    },
+    {
+      "start": 33.86,
+      "end": 35.92,
+      "text": "就能让原钢强制弯折做方形",
+      "words": [
+        {
+          "text": "就",
+          "start": 33.86,
+          "end": 34.08,
+          "probability": 0.97509765625
+        },
+        {
+          "text": "能",
+          "start": 34.08,
+          "end": 34.18,
+          "probability": 0.998046875
+        },
+        {
+          "text": "让",
+          "start": 34.18,
+          "end": 34.28,
+          "probability": 0.9951171875
+        },
+        {
+          "text": "原",
+          "start": 34.28,
+          "end": 34.46,
+          "probability": 0.9951171875
+        },
+        {
+          "text": "钢",
+          "start": 34.46,
+          "end": 34.6,
+          "probability": 0.998779296875
+        },
+        {
+          "text": "强",
+          "start": 34.6,
+          "end": 34.8,
+          "probability": 0.99609375
+        },
+        {
+          "text": "制",
+          "start": 34.8,
+          "end": 34.98,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "弯",
+          "start": 34.98,
+          "end": 35.14,
+          "probability": 0.998779296875
+        },
+        {
+          "text": "折",
+          "start": 35.14,
+          "end": 35.34,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "做",
+          "start": 35.34,
+          "end": 35.6,
+          "probability": 0.85546875
+        },
+        {
+          "text": "方",
+          "start": 35.6,
+          "end": 35.74,
+          "probability": 0.99462890625
+        },
+        {
+          "text": "形",
+          "start": 35.74,
+          "end": 35.92,
+          "probability": 0.94970703125
+        }
+      ]
+    },
+    {
+      "start": 35.92,
+      "end": 38.62,
+      "text": "举行都能用用螺栓 螺母 费就链条",
+      "words": [
+        {
+          "text": "举",
+          "start": 35.92,
+          "end": 36.28,
+          "probability": 0.92236328125
+        },
+        {
+          "text": "行",
+          "start": 36.28,
+          "end": 36.42,
+          "probability": 0.96875
+        },
+        {
+          "text": "都",
+          "start": 36.42,
+          "end": 36.56,
+          "probability": 0.99658203125
+        },
+        {
+          "text": "能",
+          "start": 36.56,
+          "end": 36.72,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "用",
+          "start": 36.72,
+          "end": 36.86,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "用",
+          "start": 36.86,
+          "end": 37.1,
+          "probability": 0.96044921875
+        },
+        {
+          "text": "螺",
+          "start": 37.1,
+          "end": 37.24,
+          "probability": 0.990966796875
+        },
+        {
+          "text": "栓",
+          "start": 37.24,
+          "end": 37.4,
+          "probability": 0.949951171875
+        },
+        {
+          "text": "螺",
+          "start": 37.58,
+          "end": 37.7,
+          "probability": 0.9453125
+        },
+        {
+          "text": "母",
+          "start": 37.7,
+          "end": 37.88,
+          "probability": 0.544921875
+        },
+        {
+          "text": "费",
+          "start": 38.1,
+          "end": 38.18,
+          "probability": 0.6627197265625
+        },
+        {
+          "text": "就",
+          "start": 38.18,
+          "end": 38.32,
+          "probability": 0.3017578125
+        },
+        {
+          "text": "链",
+          "start": 38.32,
+          "end": 38.42,
+          "probability": 0.9982096354166666
+        },
+        {
+          "text": "条",
+          "start": 38.42,
+          "end": 38.62,
+          "probability": 0.9892578125
+        }
+      ]
+    },
+    {
+      "start": 38.62,
+      "end": 41.0,
+      "text": "手柄就能自制一个手动弹簧绕制工具",
+      "words": [
+        {
+          "text": "手",
+          "start": 38.62,
+          "end": 38.9,
+          "probability": 0.98974609375
+        },
+        {
+          "text": "柄",
+          "start": 38.9,
+          "end": 39.04,
+          "probability": 1.0
+        },
+        {
+          "text": "就",
+          "start": 39.04,
+          "end": 39.18,
+          "probability": 0.9912109375
+        },
+        {
+          "text": "能",
+          "start": 39.18,
+          "end": 39.28,
+          "probability": 0.998046875
+        },
+        {
+          "text": "自",
+          "start": 39.28,
+          "end": 39.42,
+          "probability": 0.998046875
+        },
+        {
+          "text": "制",
+          "start": 39.42,
+          "end": 39.54,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "一个",
+          "start": 39.54,
+          "end": 39.72,
+          "probability": 0.99609375
+        },
+        {
+          "text": "手",
+          "start": 39.72,
+          "end": 39.94,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "动",
+          "start": 39.94,
+          "end": 40.06,
+          "probability": 0.99560546875
+        },
+        {
+          "text": "弹",
+          "start": 40.06,
+          "end": 40.24,
+          "probability": 0.987548828125
+        },
+        {
+          "text": "簧",
+          "start": 40.24,
+          "end": 40.4,
+          "probability": 0.975830078125
+        },
+        {
+          "text": "绕",
+          "start": 40.4,
+          "end": 40.56,
+          "probability": 0.986572265625
+        },
+        {
+          "text": "制",
+          "start": 40.56,
+          "end": 40.68,
+          "probability": 0.638671875
+        },
+        {
+          "text": "工",
+          "start": 40.68,
+          "end": 40.82,
+          "probability": 0.99560546875
+        },
+        {
+          "text": "具",
+          "start": 40.82,
+          "end": 41.0,
+          "probability": 0.99755859375
+        }
+      ]
+    },
+    {
+      "start": 41.0,
+      "end": 43.28,
+      "text": "只需把细铁丝穿过链条卡在螺栓上",
+      "words": [
+        {
+          "text": "只",
+          "start": 41.0,
+          "end": 41.36,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "需",
+          "start": 41.36,
+          "end": 41.46,
+          "probability": 0.97314453125
+        },
+        {
+          "text": "把",
+          "start": 41.46,
+          "end": 41.58,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "细",
+          "start": 41.58,
+          "end": 41.72,
+          "probability": 0.9521484375
+        },
+        {
+          "text": "铁",
+          "start": 41.72,
+          "end": 41.84,
+          "probability": 0.9539388020833334
+        },
+        {
+          "text": "丝",
+          "start": 41.84,
+          "end": 42.02,
+          "probability": 0.982666015625
+        },
+        {
+          "text": "穿",
+          "start": 42.02,
+          "end": 42.2,
+          "probability": 0.942626953125
+        },
+        {
+          "text": "过",
+          "start": 42.2,
+          "end": 42.34,
+          "probability": 0.99658203125
+        },
+        {
+          "text": "链",
+          "start": 42.34,
+          "end": 42.42,
+          "probability": 0.998046875
+        },
+        {
+          "text": "条",
+          "start": 42.42,
+          "end": 42.64,
+          "probability": 0.98681640625
+        },
+        {
+          "text": "卡",
+          "start": 42.64,
+          "end": 42.78,
+          "probability": 0.9765625
+        },
+        {
+          "text": "在",
+          "start": 42.78,
+          "end": 42.9,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "螺",
+          "start": 42.9,
+          "end": 43.0,
+          "probability": 0.998291015625
+        },
+        {
+          "text": "栓",
+          "start": 43.0,
+          "end": 43.12,
+          "probability": 0.990478515625
+        },
+        {
+          "text": "上",
+          "start": 43.12,
+          "end": 43.28,
+          "probability": 0.99072265625
+        }
+      ]
+    },
+    {
+      "start": 43.28,
+      "end": 44.24,
+      "text": "通过转动手柄",
+      "words": [
+        {
+          "text": "通",
+          "start": 43.28,
+          "end": 43.52,
+          "probability": 0.98388671875
+        },
+        {
+          "text": "过",
+          "start": 43.52,
+          "end": 43.66,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "转",
+          "start": 43.66,
+          "end": 43.82,
+          "probability": 0.997802734375
+        },
+        {
+          "text": "动",
+          "start": 43.82,
+          "end": 43.94,
+          "probability": 0.99560546875
+        },
+        {
+          "text": "手",
+          "start": 43.94,
+          "end": 44.12,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "柄",
+          "start": 44.12,
+          "end": 44.24,
+          "probability": 1.0
+        }
+      ]
+    },
+    {
+      "start": 44.24,
+      "end": 47.02,
+      "text": "就能让细铁丝 沿螺栓纹路一圈圈进行缠绕",
+      "words": [
+        {
+          "text": "就",
+          "start": 44.24,
+          "end": 44.48,
+          "probability": 0.552734375
+        },
+        {
+          "text": "能",
+          "start": 44.48,
+          "end": 44.6,
+          "probability": 0.9892578125
+        },
+        {
+          "text": "让",
+          "start": 44.6,
+          "end": 44.72,
+          "probability": 0.7744140625
+        },
+        {
+          "text": "细",
+          "start": 44.72,
+          "end": 44.9,
+          "probability": 0.973388671875
+        },
+        {
+          "text": "铁",
+          "start": 44.9,
+          "end": 45.04,
+          "probability": 0.9679361979166666
+        },
+        {
+          "text": "丝",
+          "start": 45.04,
+          "end": 45.24,
+          "probability": 0.984375
+        },
+        {
+          "text": "沿",
+          "start": 45.32,
+          "end": 45.44,
+          "probability": 0.86376953125
+        },
+        {
+          "text": "螺",
+          "start": 45.44,
+          "end": 45.56,
+          "probability": 0.6796875
+        },
+        {
+          "text": "栓",
+          "start": 45.56,
+          "end": 45.68,
+          "probability": 0.493896484375
+        },
+        {
+          "text": "纹",
+          "start": 45.68,
+          "end": 45.84,
+          "probability": 0.916015625
+        },
+        {
+          "text": "路",
+          "start": 45.84,
+          "end": 46.0,
+          "probability": 0.98974609375
+        },
+        {
+          "text": "一",
+          "start": 46.0,
+          "end": 46.14,
+          "probability": 0.79736328125
+        },
+        {
+          "text": "圈",
+          "start": 46.14,
+          "end": 46.28,
+          "probability": 0.997802734375
+        },
+        {
+          "text": "圈",
+          "start": 46.28,
+          "end": 46.44,
+          "probability": 0.99365234375
+        },
+        {
+          "text": "进",
+          "start": 46.44,
+          "end": 46.56,
+          "probability": 0.97265625
+        },
+        {
+          "text": "行",
+          "start": 46.56,
+          "end": 46.7,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "缠",
+          "start": 46.7,
+          "end": 46.86,
+          "probability": 0.808349609375
+        },
+        {
+          "text": "绕",
+          "start": 46.86,
+          "end": 47.02,
+          "probability": 0.997314453125
+        }
+      ]
+    },
+    {
+      "start": 47.02,
+      "end": 48.5,
+      "text": "从而绕制出规整的弹簧",
+      "words": [
+        {
+          "text": "从",
+          "start": 47.02,
+          "end": 47.24,
+          "probability": 0.9697265625
+        },
+        {
+          "text": "而",
+          "start": 47.24,
+          "end": 47.34,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "绕",
+          "start": 47.34,
+          "end": 47.46,
+          "probability": 0.961181640625
+        },
+        {
+          "text": "制",
+          "start": 47.46,
+          "end": 47.6,
+          "probability": 0.349609375
+        },
+        {
+          "text": "出",
+          "start": 47.6,
+          "end": 47.74,
+          "probability": 0.9951171875
+        },
+        {
+          "text": "规",
+          "start": 47.74,
+          "end": 47.88,
+          "probability": 0.783935546875
+        },
+        {
+          "text": "整",
+          "start": 47.88,
+          "end": 48.02,
+          "probability": 0.953125
+        },
+        {
+          "text": "的",
+          "start": 48.02,
+          "end": 48.14,
+          "probability": 0.990234375
+        },
+        {
+          "text": "弹",
+          "start": 48.14,
+          "end": 48.28,
+          "probability": 0.97021484375
+        },
+        {
+          "text": "簧",
+          "start": 48.28,
+          "end": 48.5,
+          "probability": 0.99267578125
+        }
+      ]
+    },
+    {
+      "start": 48.5,
+      "end": 50.16,
+      "text": "用槽钢 螺栓 原钢",
+      "words": [
+        {
+          "text": "用",
+          "start": 48.5,
+          "end": 48.76,
+          "probability": 0.63134765625
+        },
+        {
+          "text": "槽",
+          "start": 48.76,
+          "end": 48.98,
+          "probability": 0.896728515625
+        },
+        {
+          "text": "钢",
+          "start": 48.98,
+          "end": 49.14,
+          "probability": 0.907958984375
+        },
+        {
+          "text": "螺",
+          "start": 49.36,
+          "end": 49.5,
+          "probability": 0.9951171875
+        },
+        {
+          "text": "栓",
+          "start": 49.5,
+          "end": 49.66,
+          "probability": 0.98828125
+        },
+        {
+          "text": "原",
+          "start": 49.84,
+          "end": 49.94,
+          "probability": 0.1488037109375
+        },
+        {
+          "text": "钢",
+          "start": 49.94,
+          "end": 50.16,
+          "probability": 0.99365234375
+        }
+      ]
+    },
+    {
+      "start": 50.16,
+      "end": 51.94,
+      "text": "就能自制一个手动钢筋折弯器",
+      "words": [
+        {
+          "text": "就",
+          "start": 50.16,
+          "end": 50.4,
+          "probability": 0.6982421875
+        },
+        {
+          "text": "能",
+          "start": 50.4,
+          "end": 50.52,
+          "probability": 0.998046875
+        },
+        {
+          "text": "自",
+          "start": 50.52,
+          "end": 50.66,
+          "probability": 0.98388671875
+        },
+        {
+          "text": "制",
+          "start": 50.66,
+          "end": 50.8,
+          "probability": 0.951171875
+        },
+        {
+          "text": "一个",
+          "start": 50.8,
+          "end": 50.96,
+          "probability": 0.99267578125
+        },
+        {
+          "text": "手",
+          "start": 50.96,
+          "end": 51.14,
+          "probability": 0.9951171875
+        },
+        {
+          "text": "动",
+          "start": 51.14,
+          "end": 51.26,
+          "probability": 0.974609375
+        },
+        {
+          "text": "钢",
+          "start": 51.26,
+          "end": 51.42,
+          "probability": 0.994384765625
+        },
+        {
+          "text": "筋",
+          "start": 51.42,
+          "end": 51.54,
+          "probability": 0.935546875
+        },
+        {
+          "text": "折",
+          "start": 51.54,
+          "end": 51.68,
+          "probability": 0.98779296875
+        },
+        {
+          "text": "弯",
+          "start": 51.68,
+          "end": 51.8,
+          "probability": 0.89892578125
+        },
+        {
+          "text": "器",
+          "start": 51.8,
+          "end": 51.94,
+          "probability": 0.96923828125
+        }
+      ]
+    },
+    {
+      "start": 51.94,
+      "end": 53.24,
+      "text": "只需把钢筋放在原钢中",
+      "words": [
+        {
+          "text": "只",
+          "start": 51.94,
+          "end": 52.18,
+          "probability": 0.94384765625
+        },
+        {
+          "text": "需",
+          "start": 52.18,
+          "end": 52.3,
+          "probability": 0.89990234375
+        },
+        {
+          "text": "把",
+          "start": 52.3,
+          "end": 52.38,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "钢",
+          "start": 52.38,
+          "end": 52.52,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "筋",
+          "start": 52.52,
+          "end": 52.64,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "放",
+          "start": 52.64,
+          "end": 52.74,
+          "probability": 0.99560546875
+        },
+        {
+          "text": "在",
+          "start": 52.74,
+          "end": 52.84,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "原",
+          "start": 52.84,
+          "end": 52.98,
+          "probability": 0.9873046875
+        },
+        {
+          "text": "钢",
+          "start": 52.98,
+          "end": 53.12,
+          "probability": 0.998046875
+        },
+        {
+          "text": "中",
+          "start": 53.12,
+          "end": 53.24,
+          "probability": 0.99658203125
+        }
+      ]
+    },
+    {
+      "start": 53.24,
+      "end": 54.24,
+      "text": "通过转动手柄",
+      "words": [
+        {
+          "text": "通",
+          "start": 53.24,
+          "end": 53.5,
+          "probability": 0.712890625
+        },
+        {
+          "text": "过",
+          "start": 53.5,
+          "end": 53.64,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "转",
+          "start": 53.64,
+          "end": 53.82,
+          "probability": 0.991943359375
+        },
+        {
+          "text": "动",
+          "start": 53.82,
+          "end": 53.94,
+          "probability": 0.99462890625
+        },
+        {
+          "text": "手",
+          "start": 53.94,
+          "end": 54.1,
+          "probability": 0.98486328125
+        },
+        {
+          "text": "柄",
+          "start": 54.1,
+          "end": 54.24,
+          "probability": 0.99609375
+        }
+      ]
+    },
+    {
+      "start": 54.24,
+      "end": 55.08,
+      "text": "就能放大人力",
+      "words": [
+        {
+          "text": "就",
+          "start": 54.24,
+          "end": 54.46,
+          "probability": 0.8212890625
+        },
+        {
+          "text": "能",
+          "start": 54.46,
+          "end": 54.58,
+          "probability": 0.998046875
+        },
+        {
+          "text": "放",
+          "start": 54.58,
+          "end": 54.7,
+          "probability": 0.99609375
+        },
+        {
+          "text": "大",
+          "start": 54.7,
+          "end": 54.82,
+          "probability": 0.994140625
+        },
+        {
+          "text": "人",
+          "start": 54.82,
+          "end": 54.94,
+          "probability": 0.99560546875
+        },
+        {
+          "text": "力",
+          "start": 54.94,
+          "end": 55.08,
+          "probability": 0.99951171875
+        }
+      ]
+    },
+    {
+      "start": 55.08,
+      "end": 57.06,
+      "text": "强制将钢筋弯折成标准指甲",
+      "words": [
+        {
+          "text": "强",
+          "start": 55.08,
+          "end": 55.34,
+          "probability": 0.964111328125
+        },
+        {
+          "text": "制",
+          "start": 55.34,
+          "end": 55.5,
+          "probability": 0.98681640625
+        },
+        {
+          "text": "将",
+          "start": 55.5,
+          "end": 55.62,
+          "probability": 0.99365234375
+        },
+        {
+          "text": "钢",
+          "start": 55.62,
+          "end": 55.78,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "筋",
+          "start": 55.78,
+          "end": 55.94,
+          "probability": 0.999755859375
+        },
+        {
+          "text": "弯",
+          "start": 55.94,
+          "end": 56.02,
+          "probability": 0.974609375
+        },
+        {
+          "text": "折",
+          "start": 56.02,
+          "end": 56.14,
+          "probability": 0.998291015625
+        },
+        {
+          "text": "成",
+          "start": 56.14,
+          "end": 56.26,
+          "probability": 0.96728515625
+        },
+        {
+          "text": "标",
+          "start": 56.26,
+          "end": 56.44,
+          "probability": 0.993408203125
+        },
+        {
+          "text": "准",
+          "start": 56.44,
+          "end": 56.6,
+          "probability": 0.999755859375
+        },
+        {
+          "text": "指",
+          "start": 56.6,
+          "end": 56.74,
+          "probability": 0.70458984375
+        },
+        {
+          "text": "甲",
+          "start": 56.74,
+          "end": 57.06,
+          "probability": 0.927734375
+        }
+      ]
+    },
+    {
+      "start": 57.06,
+      "end": 58.42,
+      "text": "用后钢板 成型滚轮",
+      "words": [
+        {
+          "text": "用",
+          "start": 57.06,
+          "end": 57.22,
+          "probability": 0.8935546875
+        },
+        {
+          "text": "后",
+          "start": 57.22,
+          "end": 57.36,
+          "probability": 0.8486328125
+        },
+        {
+          "text": "钢",
+          "start": 57.36,
+          "end": 57.54,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "板",
+          "start": 57.54,
+          "end": 57.74,
+          "probability": 0.9619140625
+        },
+        {
+          "text": "成",
+          "start": 57.88,
+          "end": 57.98,
+          "probability": 0.88134765625
+        },
+        {
+          "text": "型",
+          "start": 57.98,
+          "end": 58.12,
+          "probability": 0.5986328125
+        },
+        {
+          "text": "滚",
+          "start": 58.12,
+          "end": 58.24,
+          "probability": 0.973388671875
+        },
+        {
+          "text": "轮",
+          "start": 58.24,
+          "end": 58.42,
+          "probability": 0.996337890625
+        }
+      ]
+    },
+    {
+      "start": 58.42,
+      "end": 60.64,
+      "text": "手柄就能自制一个手动方管弯管器",
+      "words": [
+        {
+          "text": "手",
+          "start": 58.42,
+          "end": 58.76,
+          "probability": 0.96044921875
+        },
+        {
+          "text": "柄",
+          "start": 58.76,
+          "end": 58.9,
+          "probability": 0.999755859375
+        },
+        {
+          "text": "就",
+          "start": 58.9,
+          "end": 59.04,
+          "probability": 0.99072265625
+        },
+        {
+          "text": "能",
+          "start": 59.04,
+          "end": 59.14,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "自",
+          "start": 59.14,
+          "end": 59.28,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "制",
+          "start": 59.28,
+          "end": 59.4,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "一个",
+          "start": 59.4,
+          "end": 59.56,
+          "probability": 0.99560546875
+        },
+        {
+          "text": "手",
+          "start": 59.56,
+          "end": 59.76,
+          "probability": 0.99609375
+        },
+        {
+          "text": "动",
+          "start": 59.76,
+          "end": 59.9,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "方",
+          "start": 59.9,
+          "end": 60.04,
+          "probability": 0.9677734375
+        },
+        {
+          "text": "管",
+          "start": 60.04,
+          "end": 60.2,
+          "probability": 0.55712890625
+        },
+        {
+          "text": "弯",
+          "start": 60.2,
+          "end": 60.34,
+          "probability": 0.9931640625
+        },
+        {
+          "text": "管",
+          "start": 60.34,
+          "end": 60.46,
+          "probability": 0.98193359375
+        },
+        {
+          "text": "器",
+          "start": 60.46,
+          "end": 60.64,
+          "probability": 0.99609375
+        }
+      ]
+    },
+    {
+      "start": 60.64,
+      "end": 62.06,
+      "text": "只需把方管插入滚轮中",
+      "words": [
+        {
+          "text": "只",
+          "start": 60.64,
+          "end": 60.9,
+          "probability": 0.998046875
+        },
+        {
+          "text": "需",
+          "start": 60.9,
+          "end": 61.0,
+          "probability": 0.9814453125
+        },
+        {
+          "text": "把",
+          "start": 61.0,
+          "end": 61.08,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "方",
+          "start": 61.08,
+          "end": 61.24,
+          "probability": 0.99609375
+        },
+        {
+          "text": "管",
+          "start": 61.24,
+          "end": 61.4,
+          "probability": 0.986328125
+        },
+        {
+          "text": "插",
+          "start": 61.4,
+          "end": 61.58,
+          "probability": 0.98974609375
+        },
+        {
+          "text": "入",
+          "start": 61.58,
+          "end": 61.68,
+          "probability": 0.998046875
+        },
+        {
+          "text": "滚",
+          "start": 61.68,
+          "end": 61.82,
+          "probability": 0.996826171875
+        },
+        {
+          "text": "轮",
+          "start": 61.82,
+          "end": 61.96,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "中",
+          "start": 61.96,
+          "end": 62.06,
+          "probability": 0.994140625
+        }
+      ]
+    },
+    {
+      "start": 62.06,
+      "end": 63.08,
+      "text": "通过转动手柄",
+      "words": [
+        {
+          "text": "通",
+          "start": 62.06,
+          "end": 62.32,
+          "probability": 0.95947265625
+        },
+        {
+          "text": "过",
+          "start": 62.32,
+          "end": 62.48,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "转",
+          "start": 62.48,
+          "end": 62.62,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "动",
+          "start": 62.62,
+          "end": 62.76,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "手",
+          "start": 62.76,
+          "end": 62.92,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "柄",
+          "start": 62.92,
+          "end": 63.08,
+          "probability": 1.0
+        }
+      ]
+    },
+    {
+      "start": 63.08,
+      "end": 64.42,
+      "text": "就能让方管均匀受力",
+      "words": [
+        {
+          "text": "就",
+          "start": 63.08,
+          "end": 63.3,
+          "probability": 0.94970703125
+        },
+        {
+          "text": "能",
+          "start": 63.3,
+          "end": 63.42,
+          "probability": 0.99658203125
+        },
+        {
+          "text": "让",
+          "start": 63.42,
+          "end": 63.52,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "方",
+          "start": 63.52,
+          "end": 63.68,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "管",
+          "start": 63.68,
+          "end": 63.84,
+          "probability": 0.9912109375
+        },
+        {
+          "text": "均",
+          "start": 63.84,
+          "end": 64.02,
+          "probability": 0.99560546875
+        },
+        {
+          "text": "匀",
+          "start": 64.02,
+          "end": 64.12,
+          "probability": 0.960693359375
+        },
+        {
+          "text": "受",
+          "start": 64.12,
+          "end": 64.26,
+          "probability": 0.89306640625
+        },
+        {
+          "text": "力",
+          "start": 64.26,
+          "end": 64.42,
+          "probability": 0.99658203125
+        }
+      ]
+    },
+    {
+      "start": 64.42,
+      "end": 66.28,
+      "text": "从而一次性搬出标准圆弧形",
+      "words": [
+        {
+          "text": "从",
+          "start": 64.42,
+          "end": 64.68,
+          "probability": 0.82177734375
+        },
+        {
+          "text": "而",
+          "start": 64.68,
+          "end": 64.78,
+          "probability": 0.99462890625
+        },
+        {
+          "text": "一次",
+          "start": 64.78,
+          "end": 65.02,
+          "probability": 0.92919921875
+        },
+        {
+          "text": "性",
+          "start": 65.02,
+          "end": 65.22,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "搬",
+          "start": 65.22,
+          "end": 65.36,
+          "probability": 0.7218017578125
+        },
+        {
+          "text": "出",
+          "start": 65.36,
+          "end": 65.5,
+          "probability": 0.99560546875
+        },
+        {
+          "text": "标",
+          "start": 65.5,
+          "end": 65.68,
+          "probability": 0.97900390625
+        },
+        {
+          "text": "准",
+          "start": 65.68,
+          "end": 65.88,
+          "probability": 0.999755859375
+        },
+        {
+          "text": "圆",
+          "start": 65.88,
+          "end": 66.0,
+          "probability": 0.6669921875
+        },
+        {
+          "text": "弧",
+          "start": 66.0,
+          "end": 66.16,
+          "probability": 0.864501953125
+        },
+        {
+          "text": "形",
+          "start": 66.16,
+          "end": 66.28,
+          "probability": 0.89697265625
+        }
+      ]
+    }
+  ]
+}

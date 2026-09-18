@@ -1,0 +1,171 @@
+{
+  "schemaVersion": 1,
+  "kind": "tediapros-gemini-ab-corpus",
+  "runStarted": "2026-09-16T17:03:46.038Z",
+  "finishedAtUtc": "2026-09-16T17:04:39.859Z",
+  "updatedAtUtc": "2026-09-16T17:04:39.859Z",
+  "serverUrl": "http://127.0.0.1:4982/openai/v1",
+  "transcriptRoot": "F:\\Son\\tool\\TediaPros\\.ai\\tasks\\2026-09-16-voice-aware-live-validation\\full-64\\transcripts",
+  "profileRoot": "F:\\Son\\tool\\TediaPros\\.ai\\tasks\\2026-09-16\\voice-aware-live-validation\\edge-voice-calibration\\profiles",
+  "sourceVideoCount": 64,
+  "selectedVideoCount": 1,
+  "doneVideoCount": 0,
+  "failedArmCount": 1,
+  "semanticReview": "pending-human",
+  "arms": {
+    "baseline": "a-baseline: cue-lines-v1, no voice hint",
+    "candidate": "b-voice-hint: cue-lines-v1 + advisory vi-VN-HoaiMyNeural profile"
+  },
+  "videos": [
+    {
+      "index": 1,
+      "itemId": "video-input-02",
+      "sourcePath": "F:\\Son\\test\\@小温夫妻测评 谁能告诉告诉我这姜末到底能做什么？磨泥器到底谁在用 1080P.mp4",
+      "sourceSha256": "a76245c2d42ea8290f8b4bdde26633a103adf977247891257ae55fd35405b244",
+      "sourceDurationSec": 141.533,
+      "sourceSrtPath": "F:\\Son\\tool\\TediaPros\\.ai\\tasks\\2026-09-16-voice-aware-live-validation\\full-64\\transcripts\\video-input-02\\@小温夫妻测评 谁能告诉告诉我这姜末到底能做什么？磨泥器到底谁在用 1080P.srt",
+      "arms": {
+        "a-baseline": {
+          "status": "failed",
+          "auditPath": "F:\\Son\\tool\\TediaPros\\.ai\\tasks\\2026-09-16-voice-aware-live-validation\\full-64\\ab-512-test\\video-02\\a-baseline\\gateway-audit.json",
+          "cueCount": 60,
+          "translatedCueCount": 40,
+          "disposition": "needs-review",
+          "languageEvidence": "unknown",
+          "issueCodes": [
+            "provider-protocol",
+            "missing-id"
+          ],
+          "issueCount": 2,
+          "semanticReview": "pending-human",
+          "estimatedFit": {
+            "cueCount": 60,
+            "fitAt1_10": 20,
+            "fitAt1_25": 21,
+            "fitAt1_80": 26,
+            "overAt1_80": 34,
+            "estimatedNaturalSeconds": 197.5,
+            "sourceWindowSeconds": 120.8
+          },
+          "modelIdentity": "gemini-gateway:gemini-advanced",
+          "budget": {
+            "limitsEnforced": false,
+            "plannedRequests": 4,
+            "recoveryLimit": 4,
+            "normalUsed": 4,
+            "recoveryUsed": 0,
+            "activeElapsedMs": 24878.1741,
+            "activeBudgetMs": 600000,
+            "perBatch": {
+              "translation-batch-1": {
+                "normalCharged": true,
+                "recoveryUsed": 0,
+                "splitDepth": 0,
+                "repairSets": [],
+                "transportRetries": {}
+              },
+              "translation-batch-2": {
+                "normalCharged": true,
+                "recoveryUsed": 0,
+                "splitDepth": 0,
+                "repairSets": [],
+                "transportRetries": {}
+              },
+              "translation-batch-3": {
+                "normalCharged": true,
+                "recoveryUsed": 0,
+                "splitDepth": 0,
+                "repairSets": [],
+                "transportRetries": {}
+              },
+              "translation-batch-4": {
+                "normalCharged": true,
+                "recoveryUsed": 0,
+                "splitDepth": 0,
+                "repairSets": [],
+                "transportRetries": {}
+              }
+            }
+          },
+          "error": "Lượt Gateway không đúng contract cue-lines-v1: Cue ID cue-54-132840 không thuộc tập yêu cầu.",
+          "elapsedMs": 24908
+        },
+        "b-voice-hint": {
+          "status": "done",
+          "outputPath": "F:\\Son\\tool\\TediaPros\\.ai\\tasks\\2026-09-16-voice-aware-live-validation\\full-64\\ab-512-test\\video-02\\b-voice-hint\\translated.vi.srt",
+          "auditPath": "F:\\Son\\tool\\TediaPros\\.ai\\tasks\\2026-09-16-voice-aware-live-validation\\full-64\\ab-512-test\\video-02\\b-voice-hint\\gateway-audit.json",
+          "cueCount": 60,
+          "translatedCueCount": 60,
+          "disposition": "with-warnings",
+          "languageEvidence": "unknown",
+          "issueCodes": [
+            "protected-token-suspect",
+            "protected-token-suspect",
+            "protected-token-suspect",
+            "protected-token-suspect",
+            "protected-token-suspect",
+            "protected-token-suspect",
+            "protected-token-suspect",
+            "protected-token-suspect",
+            "protected-token-suspect",
+            "protected-token-suspect",
+            "protected-token-suspect",
+            "protected-token-suspect"
+          ],
+          "issueCount": 12,
+          "semanticReview": "pending-human",
+          "estimatedFit": {
+            "cueCount": 60,
+            "fitAt1_10": 0,
+            "fitAt1_25": 1,
+            "fitAt1_80": 12,
+            "overAt1_80": 48,
+            "estimatedNaturalSeconds": 273,
+            "sourceWindowSeconds": 120.8
+          },
+          "modelIdentity": "gemini-gateway:gemini-advanced",
+          "budget": {
+            "limitsEnforced": false,
+            "plannedRequests": 4,
+            "recoveryLimit": 4,
+            "normalUsed": 4,
+            "recoveryUsed": 0,
+            "activeElapsedMs": 28826.524900000004,
+            "activeBudgetMs": 600000,
+            "perBatch": {
+              "translation-batch-1": {
+                "normalCharged": true,
+                "recoveryUsed": 0,
+                "splitDepth": 0,
+                "repairSets": [],
+                "transportRetries": {}
+              },
+              "translation-batch-2": {
+                "normalCharged": true,
+                "recoveryUsed": 0,
+                "splitDepth": 0,
+                "repairSets": [],
+                "transportRetries": {}
+              },
+              "translation-batch-3": {
+                "normalCharged": true,
+                "recoveryUsed": 0,
+                "splitDepth": 0,
+                "repairSets": [],
+                "transportRetries": {}
+              },
+              "translation-batch-4": {
+                "normalCharged": true,
+                "recoveryUsed": 0,
+                "splitDepth": 0,
+                "repairSets": [],
+                "transportRetries": {}
+              }
+            }
+          },
+          "elapsedMs": 28845
+        }
+      }
+    }
+  ]
+}

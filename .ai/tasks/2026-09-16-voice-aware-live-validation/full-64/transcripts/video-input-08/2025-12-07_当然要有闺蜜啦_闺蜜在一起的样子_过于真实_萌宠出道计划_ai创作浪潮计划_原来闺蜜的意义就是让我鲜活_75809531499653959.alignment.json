@@ -1,0 +1,94 @@
+{
+  "duration": 27.5635,
+  "language": "zh",
+  "segments": [
+    {
+      "start": 0.14,
+      "end": 1.14,
+      "text": "字幕by索兰娅",
+      "words": [
+        {
+          "text": "字",
+          "start": 0.14,
+          "end": 1.08,
+          "probability": 0.048858642578125
+        },
+        {
+          "text": "幕",
+          "start": 1.08,
+          "end": 1.14,
+          "probability": 0.99560546875
+        },
+        {
+          "text": "by",
+          "start": 1.14,
+          "end": 1.14,
+          "probability": 0.06854248046875
+        },
+        {
+          "text": "索",
+          "start": 1.14,
+          "end": 1.14,
+          "probability": 0.6536865234375
+        },
+        {
+          "text": "兰",
+          "start": 1.14,
+          "end": 1.14,
+          "probability": 0.87451171875
+        },
+        {
+          "text": "娅",
+          "start": 1.14,
+          "end": 1.14,
+          "probability": 0.846923828125
+        }
+      ]
+    }
+  ],
+  "cues": [
+    {
+      "start": 0.14,
+      "end": 1.14,
+      "text": "字幕by索兰娅",
+      "words": [
+        {
+          "text": "字",
+          "start": 0.14,
+          "end": 1.08,
+          "probability": 0.048858642578125
+        },
+        {
+          "text": "幕",
+          "start": 1.08,
+          "end": 1.14,
+          "probability": 0.99560546875
+        },
+        {
+          "text": "by",
+          "start": 1.14,
+          "end": 1.14,
+          "probability": 0.06854248046875
+        },
+        {
+          "text": "索",
+          "start": 1.14,
+          "end": 1.14,
+          "probability": 0.6536865234375
+        },
+        {
+          "text": "兰",
+          "start": 1.14,
+          "end": 1.14,
+          "probability": 0.87451171875
+        },
+        {
+          "text": "娅",
+          "start": 1.14,
+          "end": 1.14,
+          "probability": 0.846923828125
+        }
+      ]
+    }
+  ]
+}

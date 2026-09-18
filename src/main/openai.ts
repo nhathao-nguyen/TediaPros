@@ -15,7 +15,7 @@ import {
   stripOuterQuotes,
   validateTranslationItems
 } from './translate-shared'
-import { buildTranslationMessages, buildTranslationBatchMessages } from './translation/prompts'
+import { buildTranslationMessages, buildTranslationBatchMessages, modelMessageText } from './translation/prompts'
 import { parseTranslationResponse } from './translation/response'
 import type { TranslationAdapter } from './translation/orchestrator'
 import { translateFileWithAdapter } from './translation/fileRunner'
@@ -146,7 +146,7 @@ export async function createOpenAiTranslationAdapter(key: string): Promise<Trans
     async requestOnce(batch, signal) {
       const model = models[Math.min(cursor++, Math.max(0, models.length - 1))] || firstModel
       const messages = buildTranslationBatchMessages(batch, 'json-items')
-      const result = await goi(key, model, messages[0].content, messages[1].content, true, undefined, signal)
+      const result = await goi(key, model, modelMessageText(messages[0].content), modelMessageText(messages[1].content), true, undefined, signal)
       if (!result.ok) {
         const retryable = result.lui === true || result.status === 429 || (result.status != null && result.status >= 500)
         throw Object.assign(new Error(result.err || 'OpenAI translation request failed.'), {
@@ -355,7 +355,7 @@ export async function translateSrt(
       glossary: []
     }
     const messages = buildTranslationMessages(promptInput, 'json-items')
-    const r = await goiCoLui(key, models, messages[0].content, messages[1].content, true, undefined, options.signal)
+    const r = await goiCoLui(key, models, modelMessageText(messages[0].content), modelMessageText(messages[1].content), true, undefined, options.signal)
     if (!r.ok) return { ok: false, error: errLabel(r.err) }
 
     const parsed = parseTranslationResponse(r.text || '', 'json-items', c.map((block) => block.id || ''), Boolean(r.truncated))

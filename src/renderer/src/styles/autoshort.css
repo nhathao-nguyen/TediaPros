@@ -339,6 +339,11 @@
   color: var(--warn);
 }
 
+.status-pill.waiting {
+  background: rgba(245, 158, 11, 0.18);
+  color: #f59e0b;
+}
+
 .status-pill.working {
   background: rgba(110, 161, 255, 0.18);
   color: var(--primary);

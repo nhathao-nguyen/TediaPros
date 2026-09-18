@@ -11,7 +11,9 @@ import {
   type AutoShortRequestSpan,
   type TtsModelInfo,
   type TtsServerHealth,
-  type TtsSpeechRequest
+  type TtsSpeechRequest,
+  type TtsVoiceProfileRequest,
+  type TtsVoiceProfileSummary
 } from '../shared/types'
 import { getGlobalResourceManager } from './autoShortResourceManager'
 import {
@@ -23,6 +25,8 @@ import {
 } from './edgeTts'
 import { assertTtsAudioHeader, planTtsAudioSave, ttsAudioFormat } from '../shared/ttsAudioFormat'
 import { resolveTtsProvider } from '../shared/edgeTtsContract'
+import { addVoiceMeasurement, createVoiceMeasurementProfile, loadVoiceMeasurementProfile, saveVoiceMeasurementProfile, voiceMeasurementProfileKey, voiceMeasurementProfileSummary } from './dubbing/voiceMeasurements'
+import { EDGE_TTS_ENDPOINT_ID } from './edgeTtsIdentity'
 
 export {
   generateEdgeTTS,
@@ -286,6 +290,102 @@ export function cleanOptions(
   return clean
 }
 
+async function recordVoiceTabMeasurement(
+  req: TtsSpeechRequest | TtsCloneRequest,
+  result: { model?: string; provider?: string; voice?: string; durationMs?: number; speed?: number },
+  audio: Buffer,
+  referenceContentHash?: string
+): Promise<void> {
+  // AutoShort records the authoritative trimmed/probed sample itself. The
+  // standalone Voice tab has no trim stage, so only a positive provider
+  // duration header is retained and is explicitly marked as advisory.
+  if (!app.isReady() || !(result.durationMs && result.durationMs > 0) || !Number.isFinite(result.durationMs)) return
+  // The selected engine is the stable identity. Provider response headers are
+  // advisory and may use a backend-internal name (for example "chatterbox").
+  const provider = ('provider' in req ? req.provider : undefined) || result.provider || 'local-tts'
+  const model = result.model || req.model || provider
+  const voice = result.voice || ('voice' in req ? req.voice : undefined) || ('referenceAudioPath' in req ? 'reference_clone' : 'default')
+  const referenceAudio = 'referenceAudioPath' in req && req.referenceAudioPath
+    ? await stat(req.referenceAudioPath).then((info) => ({ path: req.referenceAudioPath, size: info.size, mtimeMs: info.mtimeMs })).catch(() => ({ path: req.referenceAudioPath, size: 0, mtimeMs: 0 }))
+    : undefined
+  const effectiveSpeed = result.speed || req.speed || 1
+  const measurementOptions = { ...(req.options || {}) }
+  if (Math.abs(effectiveSpeed - 1) > 1e-6) measurementOptions.serverSpeed = effectiveSpeed
+  const profileKey = voiceMeasurementProfileKey({
+    endpoint: provider === 'edge-tts' ? EDGE_TTS_ENDPOINT_ID : req.serverUrl,
+    model,
+    voice,
+    language: req.language,
+    options: measurementOptions,
+    referenceAudio,
+    referenceContentHash
+  })
+  const root = join(app.getPath('userData'), 'voice-measurements')
+  const current = await loadVoiceMeasurementProfile(root, profileKey) || createVoiceMeasurementProfile({
+    profileKey, provider, model, voice, locale: req.language
+  })
+  addVoiceMeasurement(current, {
+    profileKey, provider, model, voice, locale: req.language, text: req.text,
+    durationNaturalMs: result.durationMs, durationSource: 'provider-duration-header',
+    speed: effectiveSpeed, audioFingerprint: createHash('sha256').update(audio).digest('hex'),
+    origin: 'voice-tab', cacheHit: false
+  })
+  await saveVoiceMeasurementProfile(root, current)
+}
+
+function profileReferenceInput(referenceAudioPath?: string): Promise<{
+  path: string
+  size: number
+  mtimeMs: number
+} | undefined> {
+  if (!referenceAudioPath) return Promise.resolve(undefined)
+  return stat(referenceAudioPath)
+    .then((info) => ({ path: referenceAudioPath, size: info.size, mtimeMs: info.mtimeMs }))
+    .catch(() => ({ path: referenceAudioPath, size: 0, mtimeMs: 0 }))
+}
+
+/** Read the selected voice's bounded measurement summary without exposing samples. */
+export async function getTtsVoiceProfile(req: TtsVoiceProfileRequest): Promise<TtsVoiceProfileSummary> {
+  try {
+    const provider = req.provider || 'local-tts'
+    const isClone = Boolean(req.referenceAudioPath)
+    const model = req.model?.trim() || (provider === 'edge-tts' ? 'edge-tts' : provider)
+    const voice = isClone ? 'reference_clone' : req.voice?.trim() || 'default'
+    const referenceAudio = await profileReferenceInput(req.referenceAudioPath)
+    let referenceContentHash: string | undefined
+    if (req.referenceAudioPath) {
+      referenceContentHash = await readFile(req.referenceAudioPath)
+        .then((buffer) => createHash('sha256').update(buffer).digest('hex'))
+        .catch(() => undefined)
+    }
+    const effectiveSpeed = Number.isFinite(req.speed) && (req.speed || 0) > 0 ? Number(req.speed) : 1
+    const options = { ...(req.options || {}) }
+    if (Math.abs(effectiveSpeed - 1) > 1e-6) options.serverSpeed = effectiveSpeed
+    const profileKey = voiceMeasurementProfileKey({
+      endpoint: provider === 'edge-tts' ? EDGE_TTS_ENDPOINT_ID : req.serverUrl,
+      model,
+      voice,
+      language: req.language,
+      options,
+      referenceAudio,
+      referenceContentHash
+    })
+    const root = join(app.getPath('userData'), 'voice-measurements')
+    const profile = await loadVoiceMeasurementProfile(root, profileKey)
+    return {
+      ok: true,
+      ...voiceMeasurementProfileSummary(profile),
+      profileKey,
+      provider,
+      model,
+      voice,
+      locale: req.language.trim().replace(/_/gu, '-').toLowerCase()
+    }
+  } catch (error) {
+    return { ok: false, error: error instanceof Error ? error.message : String(error) }
+  }
+}
+
 export async function generateSpeech(
   req: TtsSpeechRequest,
   signal?: AbortSignal,
@@ -298,7 +398,13 @@ export async function generateSpeech(
     return { ok: false, error: error instanceof Error ? error.message : String(error) }
   }
   if (provider === 'edge-tts') {
-    return generateEdgeTTS(req, signal, savePath)
+    const result = await generateEdgeTTS(req, signal, savePath)
+    if (result.ok && !savePath) {
+      await recordVoiceTabMeasurement(req, result, result.audioBase64 ? Buffer.from(result.audioBase64, 'base64') : Buffer.alloc(0)).catch((error) => {
+        logWarn(`[TTS] Không ghi được Edge-TTS voice measurement: ${errLabel(error)}`)
+      })
+    }
+    return result
   }
 
   const base = normalizeUrl(req.serverUrl)
@@ -384,7 +490,7 @@ export async function generateSpeech(
       return { ok: false, error: 'Không thể lưu file âm thanh vào đĩa', requestSpans }
     }
 
-    return {
+    const result: TtsGenerateResult = {
       ok: true,
       audioBase64: savePath ? undefined : audioBase64,
       audioMimeType: mimeType,
@@ -399,6 +505,12 @@ export async function generateSpeech(
       speed: parseFloat(res.headers.get('x-tts-speed') || '1.0'),
       requestSpans
     }
+    if (!savePath) {
+      await recordVoiceTabMeasurement(req, result, buffer).catch((error) => {
+        logWarn(`[TTS] Không ghi được voice measurement: ${errLabel(error)}`)
+      })
+    }
+    return result
   } catch (err: any) {
     logWarn(`[TTS] Error generating speech: ${errLabel(err)}`)
     if (signal?.aborted) return { ok: false, error: 'Đã hủy tác vụ', requestSpans }
@@ -514,7 +626,7 @@ export async function generateVoiceClone(
       return { ok: false, error: 'Không thể lưu file âm thanh vào đĩa', requestSpans }
     }
 
-    return {
+    const result: TtsGenerateResult = {
       ok: true,
       audioBase64: savePath ? undefined : audioBase64,
       audioMimeType: mimeType,
@@ -529,6 +641,12 @@ export async function generateVoiceClone(
       speed: parseFloat(res.headers.get('x-tts-speed') || `${req.speed || 1.0}`),
       requestSpans
     }
+    if (!savePath) {
+      await recordVoiceTabMeasurement(req, result, buffer, createHash('sha256').update(audioFileBuffer as any).digest('hex')).catch((error) => {
+        logWarn(`[TTS] Không ghi được clone voice measurement: ${errLabel(error)}`)
+      })
+    }
+    return result
   } catch (err: any) {
     logWarn(`[TTS] Error generating voice clone: ${errLabel(err)}`)
     if (signal?.aborted) return { ok: false, error: 'Đã hủy tác vụ', requestSpans }

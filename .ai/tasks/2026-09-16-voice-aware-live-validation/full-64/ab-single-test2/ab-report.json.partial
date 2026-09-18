@@ -1,0 +1,125 @@
+{
+  "schemaVersion": 1,
+  "kind": "tediapros-gemini-ab-corpus",
+  "runStarted": "2026-09-16T17:27:39.867Z",
+  "finishedAtUtc": "2026-09-16T17:27:41.735Z",
+  "updatedAtUtc": "2026-09-16T17:27:41.735Z",
+  "serverUrl": "http://127.0.0.1:4982/openai/v1",
+  "transcriptRoot": "F:\\Son\\tool\\TediaPros\\.ai\\tasks\\2026-09-16-voice-aware-live-validation\\full-64\\transcripts",
+  "profileRoot": "F:\\Son\\tool\\TediaPros\\.ai\\tasks\\2026-09-16-voice-aware-live-validation\\edge-voice-calibration\\profiles",
+  "reviewMode": "draft-only",
+  "sourceVideoCount": 64,
+  "selectedVideoCount": 1,
+  "doneVideoCount": 0,
+  "failedArmCount": 2,
+  "semanticReview": "pending-human",
+  "arms": {
+    "baseline": "a-baseline: cue-lines-v1, no voice hint",
+    "candidate": "b-voice-hint: cue-lines-v1 + advisory vi-VN-HoaiMyNeural profile"
+  },
+  "voiceHint": {
+    "median": 2.083,
+    "p10": 1.812,
+    "p90": 2.907
+  },
+  "videos": [
+    {
+      "index": 0,
+      "itemId": "video-input-01",
+      "sourcePath": "F:\\Son\\test\\@小温夫妻测评 超实用好吃做饭技巧 1080P.mp4",
+      "sourceSha256": "7cbaf57a575ced2063710de5c9c0273b4ab50123d8fe7526c327834522ac89c1",
+      "sourceDurationSec": 22.167,
+      "sourceSrtPath": "F:\\Son\\tool\\TediaPros\\.ai\\tasks\\2026-09-16-voice-aware-live-validation\\full-64\\transcripts\\video-input-01\\@小温夫妻测评 超实用好吃做饭技巧 1080P.srt",
+      "arms": {
+        "a-baseline": {
+          "status": "failed",
+          "auditPath": "F:\\Son\\tool\\TediaPros\\.ai\\tasks\\2026-09-16-voice-aware-live-validation\\full-64\\ab-single-test2\\video-01\\a-baseline\\gateway-audit.json",
+          "cueCount": 7,
+          "translatedCueCount": 0,
+          "disposition": "needs-review",
+          "languageEvidence": "unknown",
+          "issueCodes": [
+            "provider-transient",
+            "missing-id"
+          ],
+          "issueCount": 2,
+          "semanticReview": "pending-human",
+          "estimatedFit": {
+            "cueCount": 7,
+            "fitAt1_10": 7,
+            "fitAt1_25": 7,
+            "fitAt1_80": 7,
+            "overAt1_80": 0,
+            "estimatedNaturalSeconds": 0,
+            "sourceWindowSeconds": 21.98
+          },
+          "modelIdentity": "gemini-gateway:gemini-advanced",
+          "budget": {
+            "limitsEnforced": false,
+            "plannedRequests": 1,
+            "recoveryLimit": 4,
+            "normalUsed": 1,
+            "recoveryUsed": 0,
+            "activeElapsedMs": 1293.8862,
+            "activeBudgetMs": 600000,
+            "perBatch": {
+              "translation-batch-1": {
+                "normalCharged": true,
+                "recoveryUsed": 0,
+                "splitDepth": 0,
+                "repairSets": [],
+                "transportRetries": {}
+              }
+            }
+          },
+          "error": "Gemini Gateway lỗi upstream: generate failed with status: 429 Gateway đã hoàn tất retry nội bộ; hãy thử lại thủ công để mở một lượt gateway mới.",
+          "elapsedMs": 1302
+        },
+        "b-voice-hint": {
+          "status": "failed",
+          "auditPath": "F:\\Son\\tool\\TediaPros\\.ai\\tasks\\2026-09-16-voice-aware-live-validation\\full-64\\ab-single-test2\\video-01\\b-voice-hint\\gateway-audit.json",
+          "cueCount": 7,
+          "translatedCueCount": 0,
+          "disposition": "needs-review",
+          "languageEvidence": "unknown",
+          "issueCodes": [
+            "provider-transient",
+            "missing-id"
+          ],
+          "issueCount": 2,
+          "semanticReview": "pending-human",
+          "estimatedFit": {
+            "cueCount": 7,
+            "fitAt1_10": 7,
+            "fitAt1_25": 7,
+            "fitAt1_80": 7,
+            "overAt1_80": 0,
+            "estimatedNaturalSeconds": 0,
+            "sourceWindowSeconds": 21.98
+          },
+          "modelIdentity": "gemini-gateway:gemini-advanced",
+          "budget": {
+            "limitsEnforced": false,
+            "plannedRequests": 1,
+            "recoveryLimit": 4,
+            "normalUsed": 1,
+            "recoveryUsed": 0,
+            "activeElapsedMs": 496.23670000000016,
+            "activeBudgetMs": 600000,
+            "perBatch": {
+              "translation-batch-1": {
+                "normalCharged": true,
+                "recoveryUsed": 0,
+                "splitDepth": 0,
+                "repairSets": [],
+                "transportRetries": {}
+              }
+            }
+          },
+          "error": "Gemini Gateway lỗi upstream: generate failed with status: 429 Gateway đã hoàn tất retry nội bộ; hãy thử lại thủ công để mở một lượt gateway mới.",
+          "elapsedMs": 499
+        }
+      }
+    }
+  ]
+}

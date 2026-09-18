@@ -1,0 +1,3229 @@
+{
+  "schemaVersion": 1,
+  "kind": "tediapros-gemini-ab-corpus-summary",
+  "sourceReport": "F:\\Son\\tool\\TediaPros\\.ai\\tasks\\2026-09-16-voice-aware-live-validation\\full-64\\ab\\ab-report.json",
+  "generatedAtUtc": "2026-09-16T16:23:30.796Z",
+  "sourceVideoCount": 64,
+  "recordedVideoCount": 2,
+  "missingVideoCount": 62,
+  "doneVideoCount": 1,
+  "statusCounts": {
+    "baseline": {
+      "done": 1,
+      "failed": 1,
+      "missing": 62
+    },
+    "candidate": {
+      "done": 2,
+      "missing": 62
+    }
+  },
+  "issueCodeCounts": {
+    "baseline": {
+      "provider-transient": 1,
+      "missing-id": 1
+    },
+    "candidate": {
+      "protected-token-suspect": 7
+    }
+  },
+  "aggregate": {
+    "fitAt1_10": {
+      "baseline": {
+        "fit": 40,
+        "total": 67,
+        "rate": 0.5970149253731343
+      },
+      "candidate": {
+        "fit": 0,
+        "total": 67,
+        "rate": 0
+      }
+    },
+    "fitAt1_25": {
+      "baseline": {
+        "fit": 41,
+        "total": 67,
+        "rate": 0.6119402985074627
+      },
+      "candidate": {
+        "fit": 4,
+        "total": 67,
+        "rate": 0.05970149253731343
+      }
+    },
+    "fitAt1_80": {
+      "baseline": {
+        "fit": 52,
+        "total": 67,
+        "rate": 0.7761194029850746
+      },
+      "candidate": {
+        "fit": 19,
+        "total": 67,
+        "rate": 0.2835820895522388
+      }
+    }
+  },
+  "pairedBootstrap": {
+    "fitAt1_10": {
+      "videos": 2,
+      "baseline": {
+        "fit": 40,
+        "total": 67,
+        "rate": 0.5970149253731343
+      },
+      "candidate": {
+        "fit": 0,
+        "total": 67,
+        "rate": 0
+      },
+      "difference": -0.5970149253731343,
+      "interval95": [
+        -0.6666666666666666,
+        0
+      ],
+      "resamples": 1000,
+      "seed": 1592598566
+    },
+    "fitAt1_25": {
+      "videos": 2,
+      "baseline": {
+        "fit": 41,
+        "total": 67,
+        "rate": 0.6119402985074627
+      },
+      "candidate": {
+        "fit": 4,
+        "total": 67,
+        "rate": 0.05970149253731343
+      },
+      "difference": -0.5522388059701493,
+      "interval95": [
+        -0.6166666666666667,
+        0
+      ],
+      "resamples": 1000,
+      "seed": 1592598566
+    },
+    "fitAt1_80": {
+      "videos": 2,
+      "baseline": {
+        "fit": 52,
+        "total": 67,
+        "rate": 0.7761194029850746
+      },
+      "candidate": {
+        "fit": 19,
+        "total": 67,
+        "rate": 0.2835820895522388
+      },
+      "difference": -0.49253731343283585,
+      "interval95": [
+        -0.55,
+        0
+      ],
+      "resamples": 1000,
+      "seed": 1592598566
+    }
+  },
+  "evidence": {
+    "timing": "proxy-estimate-from-live-edge-tts-profile; not measured translated WAV",
+    "semantic": "provider assessment only; human semantic review remains pending",
+    "voiceProfile": {
+      "median": 2.083,
+      "p10": 1.812,
+      "p90": 2.907
+    },
+    "outputContract": {
+      "baseline": "a-baseline: cue-lines-v1, no voice hint",
+      "candidate": "b-voice-hint: cue-lines-v1 + advisory vi-VN-HoaiMyNeural profile"
+    },
+    "outcome": "incomplete-or-inconclusive"
+  },
+  "videos": [
+    {
+      "index": 0,
+      "sourcePath": "F:\\Son\\test\\@小温夫妻测评 超实用好吃做饭技巧 1080P.mp4",
+      "baseline": {
+        "status": "done",
+        "disposition": "validated",
+        "cueCount": 7,
+        "translatedCueCount": 7,
+        "issueCodes": [],
+        "estimatedFit": {
+          "fitAt1_10": {
+            "fit": 0,
+            "total": 7
+          },
+          "fitAt1_25": {
+            "fit": 0,
+            "total": 7
+          },
+          "fitAt1_80": {
+            "fit": 6,
+            "total": 7
+          }
+        },
+        "semanticReview": "pending-human"
+      },
+      "candidate": {
+        "status": "done",
+        "disposition": "validated",
+        "cueCount": 7,
+        "translatedCueCount": 7,
+        "issueCodes": [],
+        "estimatedFit": {
+          "fitAt1_10": {
+            "fit": 0,
+            "total": 7
+          },
+          "fitAt1_25": {
+            "fit": 0,
+            "total": 7
+          },
+          "fitAt1_80": {
+            "fit": 6,
+            "total": 7
+          }
+        },
+        "semanticReview": "pending-human"
+      }
+    },
+    {
+      "index": 1,
+      "sourcePath": "F:\\Son\\test\\@小温夫妻测评 谁能告诉告诉我这姜末到底能做什么？磨泥器到底谁在用 1080P.mp4",
+      "baseline": {
+        "status": "failed",
+        "disposition": "needs-review",
+        "cueCount": 60,
+        "translatedCueCount": 20,
+        "issueCodes": [
+          "provider-transient",
+          "missing-id"
+        ],
+        "estimatedFit": {
+          "fitAt1_10": {
+            "fit": 40,
+            "total": 60
+          },
+          "fitAt1_25": {
+            "fit": 41,
+            "total": 60
+          },
+          "fitAt1_80": {
+            "fit": 46,
+            "total": 60
+          }
+        },
+        "semanticReview": "pending-human"
+      },
+      "candidate": {
+        "status": "done",
+        "disposition": "with-warnings",
+        "cueCount": 60,
+        "translatedCueCount": 60,
+        "issueCodes": [
+          "protected-token-suspect",
+          "protected-token-suspect",
+          "protected-token-suspect",
+          "protected-token-suspect",
+          "protected-token-suspect",
+          "protected-token-suspect",
+          "protected-token-suspect"
+        ],
+        "estimatedFit": {
+          "fitAt1_10": {
+            "fit": 0,
+            "total": 60
+          },
+          "fitAt1_25": {
+            "fit": 4,
+            "total": 60
+          },
+          "fitAt1_80": {
+            "fit": 13,
+            "total": 60
+          }
+        },
+        "semanticReview": "pending-human"
+      }
+    },
+    {
+      "index": 2,
+      "sourcePath": null,
+      "baseline": {
+        "status": "missing",
+        "disposition": null,
+        "cueCount": 0,
+        "translatedCueCount": 0,
+        "issueCodes": [],
+        "estimatedFit": {
+          "fitAt1_10": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_25": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_80": {
+            "fit": 0,
+            "total": 0
+          }
+        },
+        "semanticReview": "missing"
+      },
+      "candidate": {
+        "status": "missing",
+        "disposition": null,
+        "cueCount": 0,
+        "translatedCueCount": 0,
+        "issueCodes": [],
+        "estimatedFit": {
+          "fitAt1_10": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_25": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_80": {
+            "fit": 0,
+            "total": 0
+          }
+        },
+        "semanticReview": "missing"
+      }
+    },
+    {
+      "index": 3,
+      "sourcePath": null,
+      "baseline": {
+        "status": "missing",
+        "disposition": null,
+        "cueCount": 0,
+        "translatedCueCount": 0,
+        "issueCodes": [],
+        "estimatedFit": {
+          "fitAt1_10": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_25": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_80": {
+            "fit": 0,
+            "total": 0
+          }
+        },
+        "semanticReview": "missing"
+      },
+      "candidate": {
+        "status": "missing",
+        "disposition": null,
+        "cueCount": 0,
+        "translatedCueCount": 0,
+        "issueCodes": [],
+        "estimatedFit": {
+          "fitAt1_10": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_25": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_80": {
+            "fit": 0,
+            "total": 0
+          }
+        },
+        "semanticReview": "missing"
+      }
+    },
+    {
+      "index": 4,
+      "sourcePath": null,
+      "baseline": {
+        "status": "missing",
+        "disposition": null,
+        "cueCount": 0,
+        "translatedCueCount": 0,
+        "issueCodes": [],
+        "estimatedFit": {
+          "fitAt1_10": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_25": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_80": {
+            "fit": 0,
+            "total": 0
+          }
+        },
+        "semanticReview": "missing"
+      },
+      "candidate": {
+        "status": "missing",
+        "disposition": null,
+        "cueCount": 0,
+        "translatedCueCount": 0,
+        "issueCodes": [],
+        "estimatedFit": {
+          "fitAt1_10": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_25": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_80": {
+            "fit": 0,
+            "total": 0
+          }
+        },
+        "semanticReview": "missing"
+      }
+    },
+    {
+      "index": 5,
+      "sourcePath": null,
+      "baseline": {
+        "status": "missing",
+        "disposition": null,
+        "cueCount": 0,
+        "translatedCueCount": 0,
+        "issueCodes": [],
+        "estimatedFit": {
+          "fitAt1_10": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_25": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_80": {
+            "fit": 0,
+            "total": 0
+          }
+        },
+        "semanticReview": "missing"
+      },
+      "candidate": {
+        "status": "missing",
+        "disposition": null,
+        "cueCount": 0,
+        "translatedCueCount": 0,
+        "issueCodes": [],
+        "estimatedFit": {
+          "fitAt1_10": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_25": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_80": {
+            "fit": 0,
+            "total": 0
+          }
+        },
+        "semanticReview": "missing"
+      }
+    },
+    {
+      "index": 6,
+      "sourcePath": null,
+      "baseline": {
+        "status": "missing",
+        "disposition": null,
+        "cueCount": 0,
+        "translatedCueCount": 0,
+        "issueCodes": [],
+        "estimatedFit": {
+          "fitAt1_10": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_25": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_80": {
+            "fit": 0,
+            "total": 0
+          }
+        },
+        "semanticReview": "missing"
+      },
+      "candidate": {
+        "status": "missing",
+        "disposition": null,
+        "cueCount": 0,
+        "translatedCueCount": 0,
+        "issueCodes": [],
+        "estimatedFit": {
+          "fitAt1_10": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_25": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_80": {
+            "fit": 0,
+            "total": 0
+          }
+        },
+        "semanticReview": "missing"
+      }
+    },
+    {
+      "index": 7,
+      "sourcePath": null,
+      "baseline": {
+        "status": "missing",
+        "disposition": null,
+        "cueCount": 0,
+        "translatedCueCount": 0,
+        "issueCodes": [],
+        "estimatedFit": {
+          "fitAt1_10": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_25": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_80": {
+            "fit": 0,
+            "total": 0
+          }
+        },
+        "semanticReview": "missing"
+      },
+      "candidate": {
+        "status": "missing",
+        "disposition": null,
+        "cueCount": 0,
+        "translatedCueCount": 0,
+        "issueCodes": [],
+        "estimatedFit": {
+          "fitAt1_10": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_25": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_80": {
+            "fit": 0,
+            "total": 0
+          }
+        },
+        "semanticReview": "missing"
+      }
+    },
+    {
+      "index": 8,
+      "sourcePath": null,
+      "baseline": {
+        "status": "missing",
+        "disposition": null,
+        "cueCount": 0,
+        "translatedCueCount": 0,
+        "issueCodes": [],
+        "estimatedFit": {
+          "fitAt1_10": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_25": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_80": {
+            "fit": 0,
+            "total": 0
+          }
+        },
+        "semanticReview": "missing"
+      },
+      "candidate": {
+        "status": "missing",
+        "disposition": null,
+        "cueCount": 0,
+        "translatedCueCount": 0,
+        "issueCodes": [],
+        "estimatedFit": {
+          "fitAt1_10": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_25": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_80": {
+            "fit": 0,
+            "total": 0
+          }
+        },
+        "semanticReview": "missing"
+      }
+    },
+    {
+      "index": 9,
+      "sourcePath": null,
+      "baseline": {
+        "status": "missing",
+        "disposition": null,
+        "cueCount": 0,
+        "translatedCueCount": 0,
+        "issueCodes": [],
+        "estimatedFit": {
+          "fitAt1_10": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_25": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_80": {
+            "fit": 0,
+            "total": 0
+          }
+        },
+        "semanticReview": "missing"
+      },
+      "candidate": {
+        "status": "missing",
+        "disposition": null,
+        "cueCount": 0,
+        "translatedCueCount": 0,
+        "issueCodes": [],
+        "estimatedFit": {
+          "fitAt1_10": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_25": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_80": {
+            "fit": 0,
+            "total": 0
+          }
+        },
+        "semanticReview": "missing"
+      }
+    },
+    {
+      "index": 10,
+      "sourcePath": null,
+      "baseline": {
+        "status": "missing",
+        "disposition": null,
+        "cueCount": 0,
+        "translatedCueCount": 0,
+        "issueCodes": [],
+        "estimatedFit": {
+          "fitAt1_10": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_25": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_80": {
+            "fit": 0,
+            "total": 0
+          }
+        },
+        "semanticReview": "missing"
+      },
+      "candidate": {
+        "status": "missing",
+        "disposition": null,
+        "cueCount": 0,
+        "translatedCueCount": 0,
+        "issueCodes": [],
+        "estimatedFit": {
+          "fitAt1_10": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_25": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_80": {
+            "fit": 0,
+            "total": 0
+          }
+        },
+        "semanticReview": "missing"
+      }
+    },
+    {
+      "index": 11,
+      "sourcePath": null,
+      "baseline": {
+        "status": "missing",
+        "disposition": null,
+        "cueCount": 0,
+        "translatedCueCount": 0,
+        "issueCodes": [],
+        "estimatedFit": {
+          "fitAt1_10": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_25": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_80": {
+            "fit": 0,
+            "total": 0
+          }
+        },
+        "semanticReview": "missing"
+      },
+      "candidate": {
+        "status": "missing",
+        "disposition": null,
+        "cueCount": 0,
+        "translatedCueCount": 0,
+        "issueCodes": [],
+        "estimatedFit": {
+          "fitAt1_10": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_25": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_80": {
+            "fit": 0,
+            "total": 0
+          }
+        },
+        "semanticReview": "missing"
+      }
+    },
+    {
+      "index": 12,
+      "sourcePath": null,
+      "baseline": {
+        "status": "missing",
+        "disposition": null,
+        "cueCount": 0,
+        "translatedCueCount": 0,
+        "issueCodes": [],
+        "estimatedFit": {
+          "fitAt1_10": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_25": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_80": {
+            "fit": 0,
+            "total": 0
+          }
+        },
+        "semanticReview": "missing"
+      },
+      "candidate": {
+        "status": "missing",
+        "disposition": null,
+        "cueCount": 0,
+        "translatedCueCount": 0,
+        "issueCodes": [],
+        "estimatedFit": {
+          "fitAt1_10": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_25": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_80": {
+            "fit": 0,
+            "total": 0
+          }
+        },
+        "semanticReview": "missing"
+      }
+    },
+    {
+      "index": 13,
+      "sourcePath": null,
+      "baseline": {
+        "status": "missing",
+        "disposition": null,
+        "cueCount": 0,
+        "translatedCueCount": 0,
+        "issueCodes": [],
+        "estimatedFit": {
+          "fitAt1_10": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_25": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_80": {
+            "fit": 0,
+            "total": 0
+          }
+        },
+        "semanticReview": "missing"
+      },
+      "candidate": {
+        "status": "missing",
+        "disposition": null,
+        "cueCount": 0,
+        "translatedCueCount": 0,
+        "issueCodes": [],
+        "estimatedFit": {
+          "fitAt1_10": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_25": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_80": {
+            "fit": 0,
+            "total": 0
+          }
+        },
+        "semanticReview": "missing"
+      }
+    },
+    {
+      "index": 14,
+      "sourcePath": null,
+      "baseline": {
+        "status": "missing",
+        "disposition": null,
+        "cueCount": 0,
+        "translatedCueCount": 0,
+        "issueCodes": [],
+        "estimatedFit": {
+          "fitAt1_10": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_25": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_80": {
+            "fit": 0,
+            "total": 0
+          }
+        },
+        "semanticReview": "missing"
+      },
+      "candidate": {
+        "status": "missing",
+        "disposition": null,
+        "cueCount": 0,
+        "translatedCueCount": 0,
+        "issueCodes": [],
+        "estimatedFit": {
+          "fitAt1_10": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_25": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_80": {
+            "fit": 0,
+            "total": 0
+          }
+        },
+        "semanticReview": "missing"
+      }
+    },
+    {
+      "index": 15,
+      "sourcePath": null,
+      "baseline": {
+        "status": "missing",
+        "disposition": null,
+        "cueCount": 0,
+        "translatedCueCount": 0,
+        "issueCodes": [],
+        "estimatedFit": {
+          "fitAt1_10": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_25": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_80": {
+            "fit": 0,
+            "total": 0
+          }
+        },
+        "semanticReview": "missing"
+      },
+      "candidate": {
+        "status": "missing",
+        "disposition": null,
+        "cueCount": 0,
+        "translatedCueCount": 0,
+        "issueCodes": [],
+        "estimatedFit": {
+          "fitAt1_10": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_25": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_80": {
+            "fit": 0,
+            "total": 0
+          }
+        },
+        "semanticReview": "missing"
+      }
+    },
+    {
+      "index": 16,
+      "sourcePath": null,
+      "baseline": {
+        "status": "missing",
+        "disposition": null,
+        "cueCount": 0,
+        "translatedCueCount": 0,
+        "issueCodes": [],
+        "estimatedFit": {
+          "fitAt1_10": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_25": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_80": {
+            "fit": 0,
+            "total": 0
+          }
+        },
+        "semanticReview": "missing"
+      },
+      "candidate": {
+        "status": "missing",
+        "disposition": null,
+        "cueCount": 0,
+        "translatedCueCount": 0,
+        "issueCodes": [],
+        "estimatedFit": {
+          "fitAt1_10": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_25": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_80": {
+            "fit": 0,
+            "total": 0
+          }
+        },
+        "semanticReview": "missing"
+      }
+    },
+    {
+      "index": 17,
+      "sourcePath": null,
+      "baseline": {
+        "status": "missing",
+        "disposition": null,
+        "cueCount": 0,
+        "translatedCueCount": 0,
+        "issueCodes": [],
+        "estimatedFit": {
+          "fitAt1_10": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_25": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_80": {
+            "fit": 0,
+            "total": 0
+          }
+        },
+        "semanticReview": "missing"
+      },
+      "candidate": {
+        "status": "missing",
+        "disposition": null,
+        "cueCount": 0,
+        "translatedCueCount": 0,
+        "issueCodes": [],
+        "estimatedFit": {
+          "fitAt1_10": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_25": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_80": {
+            "fit": 0,
+            "total": 0
+          }
+        },
+        "semanticReview": "missing"
+      }
+    },
+    {
+      "index": 18,
+      "sourcePath": null,
+      "baseline": {
+        "status": "missing",
+        "disposition": null,
+        "cueCount": 0,
+        "translatedCueCount": 0,
+        "issueCodes": [],
+        "estimatedFit": {
+          "fitAt1_10": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_25": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_80": {
+            "fit": 0,
+            "total": 0
+          }
+        },
+        "semanticReview": "missing"
+      },
+      "candidate": {
+        "status": "missing",
+        "disposition": null,
+        "cueCount": 0,
+        "translatedCueCount": 0,
+        "issueCodes": [],
+        "estimatedFit": {
+          "fitAt1_10": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_25": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_80": {
+            "fit": 0,
+            "total": 0
+          }
+        },
+        "semanticReview": "missing"
+      }
+    },
+    {
+      "index": 19,
+      "sourcePath": null,
+      "baseline": {
+        "status": "missing",
+        "disposition": null,
+        "cueCount": 0,
+        "translatedCueCount": 0,
+        "issueCodes": [],
+        "estimatedFit": {
+          "fitAt1_10": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_25": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_80": {
+            "fit": 0,
+            "total": 0
+          }
+        },
+        "semanticReview": "missing"
+      },
+      "candidate": {
+        "status": "missing",
+        "disposition": null,
+        "cueCount": 0,
+        "translatedCueCount": 0,
+        "issueCodes": [],
+        "estimatedFit": {
+          "fitAt1_10": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_25": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_80": {
+            "fit": 0,
+            "total": 0
+          }
+        },
+        "semanticReview": "missing"
+      }
+    },
+    {
+      "index": 20,
+      "sourcePath": null,
+      "baseline": {
+        "status": "missing",
+        "disposition": null,
+        "cueCount": 0,
+        "translatedCueCount": 0,
+        "issueCodes": [],
+        "estimatedFit": {
+          "fitAt1_10": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_25": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_80": {
+            "fit": 0,
+            "total": 0
+          }
+        },
+        "semanticReview": "missing"
+      },
+      "candidate": {
+        "status": "missing",
+        "disposition": null,
+        "cueCount": 0,
+        "translatedCueCount": 0,
+        "issueCodes": [],
+        "estimatedFit": {
+          "fitAt1_10": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_25": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_80": {
+            "fit": 0,
+            "total": 0
+          }
+        },
+        "semanticReview": "missing"
+      }
+    },
+    {
+      "index": 21,
+      "sourcePath": null,
+      "baseline": {
+        "status": "missing",
+        "disposition": null,
+        "cueCount": 0,
+        "translatedCueCount": 0,
+        "issueCodes": [],
+        "estimatedFit": {
+          "fitAt1_10": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_25": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_80": {
+            "fit": 0,
+            "total": 0
+          }
+        },
+        "semanticReview": "missing"
+      },
+      "candidate": {
+        "status": "missing",
+        "disposition": null,
+        "cueCount": 0,
+        "translatedCueCount": 0,
+        "issueCodes": [],
+        "estimatedFit": {
+          "fitAt1_10": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_25": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_80": {
+            "fit": 0,
+            "total": 0
+          }
+        },
+        "semanticReview": "missing"
+      }
+    },
+    {
+      "index": 22,
+      "sourcePath": null,
+      "baseline": {
+        "status": "missing",
+        "disposition": null,
+        "cueCount": 0,
+        "translatedCueCount": 0,
+        "issueCodes": [],
+        "estimatedFit": {
+          "fitAt1_10": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_25": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_80": {
+            "fit": 0,
+            "total": 0
+          }
+        },
+        "semanticReview": "missing"
+      },
+      "candidate": {
+        "status": "missing",
+        "disposition": null,
+        "cueCount": 0,
+        "translatedCueCount": 0,
+        "issueCodes": [],
+        "estimatedFit": {
+          "fitAt1_10": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_25": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_80": {
+            "fit": 0,
+            "total": 0
+          }
+        },
+        "semanticReview": "missing"
+      }
+    },
+    {
+      "index": 23,
+      "sourcePath": null,
+      "baseline": {
+        "status": "missing",
+        "disposition": null,
+        "cueCount": 0,
+        "translatedCueCount": 0,
+        "issueCodes": [],
+        "estimatedFit": {
+          "fitAt1_10": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_25": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_80": {
+            "fit": 0,
+            "total": 0
+          }
+        },
+        "semanticReview": "missing"
+      },
+      "candidate": {
+        "status": "missing",
+        "disposition": null,
+        "cueCount": 0,
+        "translatedCueCount": 0,
+        "issueCodes": [],
+        "estimatedFit": {
+          "fitAt1_10": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_25": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_80": {
+            "fit": 0,
+            "total": 0
+          }
+        },
+        "semanticReview": "missing"
+      }
+    },
+    {
+      "index": 24,
+      "sourcePath": null,
+      "baseline": {
+        "status": "missing",
+        "disposition": null,
+        "cueCount": 0,
+        "translatedCueCount": 0,
+        "issueCodes": [],
+        "estimatedFit": {
+          "fitAt1_10": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_25": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_80": {
+            "fit": 0,
+            "total": 0
+          }
+        },
+        "semanticReview": "missing"
+      },
+      "candidate": {
+        "status": "missing",
+        "disposition": null,
+        "cueCount": 0,
+        "translatedCueCount": 0,
+        "issueCodes": [],
+        "estimatedFit": {
+          "fitAt1_10": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_25": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_80": {
+            "fit": 0,
+            "total": 0
+          }
+        },
+        "semanticReview": "missing"
+      }
+    },
+    {
+      "index": 25,
+      "sourcePath": null,
+      "baseline": {
+        "status": "missing",
+        "disposition": null,
+        "cueCount": 0,
+        "translatedCueCount": 0,
+        "issueCodes": [],
+        "estimatedFit": {
+          "fitAt1_10": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_25": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_80": {
+            "fit": 0,
+            "total": 0
+          }
+        },
+        "semanticReview": "missing"
+      },
+      "candidate": {
+        "status": "missing",
+        "disposition": null,
+        "cueCount": 0,
+        "translatedCueCount": 0,
+        "issueCodes": [],
+        "estimatedFit": {
+          "fitAt1_10": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_25": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_80": {
+            "fit": 0,
+            "total": 0
+          }
+        },
+        "semanticReview": "missing"
+      }
+    },
+    {
+      "index": 26,
+      "sourcePath": null,
+      "baseline": {
+        "status": "missing",
+        "disposition": null,
+        "cueCount": 0,
+        "translatedCueCount": 0,
+        "issueCodes": [],
+        "estimatedFit": {
+          "fitAt1_10": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_25": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_80": {
+            "fit": 0,
+            "total": 0
+          }
+        },
+        "semanticReview": "missing"
+      },
+      "candidate": {
+        "status": "missing",
+        "disposition": null,
+        "cueCount": 0,
+        "translatedCueCount": 0,
+        "issueCodes": [],
+        "estimatedFit": {
+          "fitAt1_10": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_25": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_80": {
+            "fit": 0,
+            "total": 0
+          }
+        },
+        "semanticReview": "missing"
+      }
+    },
+    {
+      "index": 27,
+      "sourcePath": null,
+      "baseline": {
+        "status": "missing",
+        "disposition": null,
+        "cueCount": 0,
+        "translatedCueCount": 0,
+        "issueCodes": [],
+        "estimatedFit": {
+          "fitAt1_10": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_25": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_80": {
+            "fit": 0,
+            "total": 0
+          }
+        },
+        "semanticReview": "missing"
+      },
+      "candidate": {
+        "status": "missing",
+        "disposition": null,
+        "cueCount": 0,
+        "translatedCueCount": 0,
+        "issueCodes": [],
+        "estimatedFit": {
+          "fitAt1_10": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_25": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_80": {
+            "fit": 0,
+            "total": 0
+          }
+        },
+        "semanticReview": "missing"
+      }
+    },
+    {
+      "index": 28,
+      "sourcePath": null,
+      "baseline": {
+        "status": "missing",
+        "disposition": null,
+        "cueCount": 0,
+        "translatedCueCount": 0,
+        "issueCodes": [],
+        "estimatedFit": {
+          "fitAt1_10": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_25": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_80": {
+            "fit": 0,
+            "total": 0
+          }
+        },
+        "semanticReview": "missing"
+      },
+      "candidate": {
+        "status": "missing",
+        "disposition": null,
+        "cueCount": 0,
+        "translatedCueCount": 0,
+        "issueCodes": [],
+        "estimatedFit": {
+          "fitAt1_10": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_25": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_80": {
+            "fit": 0,
+            "total": 0
+          }
+        },
+        "semanticReview": "missing"
+      }
+    },
+    {
+      "index": 29,
+      "sourcePath": null,
+      "baseline": {
+        "status": "missing",
+        "disposition": null,
+        "cueCount": 0,
+        "translatedCueCount": 0,
+        "issueCodes": [],
+        "estimatedFit": {
+          "fitAt1_10": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_25": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_80": {
+            "fit": 0,
+            "total": 0
+          }
+        },
+        "semanticReview": "missing"
+      },
+      "candidate": {
+        "status": "missing",
+        "disposition": null,
+        "cueCount": 0,
+        "translatedCueCount": 0,
+        "issueCodes": [],
+        "estimatedFit": {
+          "fitAt1_10": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_25": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_80": {
+            "fit": 0,
+            "total": 0
+          }
+        },
+        "semanticReview": "missing"
+      }
+    },
+    {
+      "index": 30,
+      "sourcePath": null,
+      "baseline": {
+        "status": "missing",
+        "disposition": null,
+        "cueCount": 0,
+        "translatedCueCount": 0,
+        "issueCodes": [],
+        "estimatedFit": {
+          "fitAt1_10": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_25": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_80": {
+            "fit": 0,
+            "total": 0
+          }
+        },
+        "semanticReview": "missing"
+      },
+      "candidate": {
+        "status": "missing",
+        "disposition": null,
+        "cueCount": 0,
+        "translatedCueCount": 0,
+        "issueCodes": [],
+        "estimatedFit": {
+          "fitAt1_10": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_25": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_80": {
+            "fit": 0,
+            "total": 0
+          }
+        },
+        "semanticReview": "missing"
+      }
+    },
+    {
+      "index": 31,
+      "sourcePath": null,
+      "baseline": {
+        "status": "missing",
+        "disposition": null,
+        "cueCount": 0,
+        "translatedCueCount": 0,
+        "issueCodes": [],
+        "estimatedFit": {
+          "fitAt1_10": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_25": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_80": {
+            "fit": 0,
+            "total": 0
+          }
+        },
+        "semanticReview": "missing"
+      },
+      "candidate": {
+        "status": "missing",
+        "disposition": null,
+        "cueCount": 0,
+        "translatedCueCount": 0,
+        "issueCodes": [],
+        "estimatedFit": {
+          "fitAt1_10": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_25": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_80": {
+            "fit": 0,
+            "total": 0
+          }
+        },
+        "semanticReview": "missing"
+      }
+    },
+    {
+      "index": 32,
+      "sourcePath": null,
+      "baseline": {
+        "status": "missing",
+        "disposition": null,
+        "cueCount": 0,
+        "translatedCueCount": 0,
+        "issueCodes": [],
+        "estimatedFit": {
+          "fitAt1_10": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_25": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_80": {
+            "fit": 0,
+            "total": 0
+          }
+        },
+        "semanticReview": "missing"
+      },
+      "candidate": {
+        "status": "missing",
+        "disposition": null,
+        "cueCount": 0,
+        "translatedCueCount": 0,
+        "issueCodes": [],
+        "estimatedFit": {
+          "fitAt1_10": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_25": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_80": {
+            "fit": 0,
+            "total": 0
+          }
+        },
+        "semanticReview": "missing"
+      }
+    },
+    {
+      "index": 33,
+      "sourcePath": null,
+      "baseline": {
+        "status": "missing",
+        "disposition": null,
+        "cueCount": 0,
+        "translatedCueCount": 0,
+        "issueCodes": [],
+        "estimatedFit": {
+          "fitAt1_10": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_25": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_80": {
+            "fit": 0,
+            "total": 0
+          }
+        },
+        "semanticReview": "missing"
+      },
+      "candidate": {
+        "status": "missing",
+        "disposition": null,
+        "cueCount": 0,
+        "translatedCueCount": 0,
+        "issueCodes": [],
+        "estimatedFit": {
+          "fitAt1_10": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_25": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_80": {
+            "fit": 0,
+            "total": 0
+          }
+        },
+        "semanticReview": "missing"
+      }
+    },
+    {
+      "index": 34,
+      "sourcePath": null,
+      "baseline": {
+        "status": "missing",
+        "disposition": null,
+        "cueCount": 0,
+        "translatedCueCount": 0,
+        "issueCodes": [],
+        "estimatedFit": {
+          "fitAt1_10": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_25": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_80": {
+            "fit": 0,
+            "total": 0
+          }
+        },
+        "semanticReview": "missing"
+      },
+      "candidate": {
+        "status": "missing",
+        "disposition": null,
+        "cueCount": 0,
+        "translatedCueCount": 0,
+        "issueCodes": [],
+        "estimatedFit": {
+          "fitAt1_10": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_25": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_80": {
+            "fit": 0,
+            "total": 0
+          }
+        },
+        "semanticReview": "missing"
+      }
+    },
+    {
+      "index": 35,
+      "sourcePath": null,
+      "baseline": {
+        "status": "missing",
+        "disposition": null,
+        "cueCount": 0,
+        "translatedCueCount": 0,
+        "issueCodes": [],
+        "estimatedFit": {
+          "fitAt1_10": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_25": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_80": {
+            "fit": 0,
+            "total": 0
+          }
+        },
+        "semanticReview": "missing"
+      },
+      "candidate": {
+        "status": "missing",
+        "disposition": null,
+        "cueCount": 0,
+        "translatedCueCount": 0,
+        "issueCodes": [],
+        "estimatedFit": {
+          "fitAt1_10": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_25": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_80": {
+            "fit": 0,
+            "total": 0
+          }
+        },
+        "semanticReview": "missing"
+      }
+    },
+    {
+      "index": 36,
+      "sourcePath": null,
+      "baseline": {
+        "status": "missing",
+        "disposition": null,
+        "cueCount": 0,
+        "translatedCueCount": 0,
+        "issueCodes": [],
+        "estimatedFit": {
+          "fitAt1_10": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_25": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_80": {
+            "fit": 0,
+            "total": 0
+          }
+        },
+        "semanticReview": "missing"
+      },
+      "candidate": {
+        "status": "missing",
+        "disposition": null,
+        "cueCount": 0,
+        "translatedCueCount": 0,
+        "issueCodes": [],
+        "estimatedFit": {
+          "fitAt1_10": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_25": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_80": {
+            "fit": 0,
+            "total": 0
+          }
+        },
+        "semanticReview": "missing"
+      }
+    },
+    {
+      "index": 37,
+      "sourcePath": null,
+      "baseline": {
+        "status": "missing",
+        "disposition": null,
+        "cueCount": 0,
+        "translatedCueCount": 0,
+        "issueCodes": [],
+        "estimatedFit": {
+          "fitAt1_10": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_25": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_80": {
+            "fit": 0,
+            "total": 0
+          }
+        },
+        "semanticReview": "missing"
+      },
+      "candidate": {
+        "status": "missing",
+        "disposition": null,
+        "cueCount": 0,
+        "translatedCueCount": 0,
+        "issueCodes": [],
+        "estimatedFit": {
+          "fitAt1_10": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_25": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_80": {
+            "fit": 0,
+            "total": 0
+          }
+        },
+        "semanticReview": "missing"
+      }
+    },
+    {
+      "index": 38,
+      "sourcePath": null,
+      "baseline": {
+        "status": "missing",
+        "disposition": null,
+        "cueCount": 0,
+        "translatedCueCount": 0,
+        "issueCodes": [],
+        "estimatedFit": {
+          "fitAt1_10": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_25": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_80": {
+            "fit": 0,
+            "total": 0
+          }
+        },
+        "semanticReview": "missing"
+      },
+      "candidate": {
+        "status": "missing",
+        "disposition": null,
+        "cueCount": 0,
+        "translatedCueCount": 0,
+        "issueCodes": [],
+        "estimatedFit": {
+          "fitAt1_10": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_25": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_80": {
+            "fit": 0,
+            "total": 0
+          }
+        },
+        "semanticReview": "missing"
+      }
+    },
+    {
+      "index": 39,
+      "sourcePath": null,
+      "baseline": {
+        "status": "missing",
+        "disposition": null,
+        "cueCount": 0,
+        "translatedCueCount": 0,
+        "issueCodes": [],
+        "estimatedFit": {
+          "fitAt1_10": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_25": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_80": {
+            "fit": 0,
+            "total": 0
+          }
+        },
+        "semanticReview": "missing"
+      },
+      "candidate": {
+        "status": "missing",
+        "disposition": null,
+        "cueCount": 0,
+        "translatedCueCount": 0,
+        "issueCodes": [],
+        "estimatedFit": {
+          "fitAt1_10": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_25": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_80": {
+            "fit": 0,
+            "total": 0
+          }
+        },
+        "semanticReview": "missing"
+      }
+    },
+    {
+      "index": 40,
+      "sourcePath": null,
+      "baseline": {
+        "status": "missing",
+        "disposition": null,
+        "cueCount": 0,
+        "translatedCueCount": 0,
+        "issueCodes": [],
+        "estimatedFit": {
+          "fitAt1_10": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_25": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_80": {
+            "fit": 0,
+            "total": 0
+          }
+        },
+        "semanticReview": "missing"
+      },
+      "candidate": {
+        "status": "missing",
+        "disposition": null,
+        "cueCount": 0,
+        "translatedCueCount": 0,
+        "issueCodes": [],
+        "estimatedFit": {
+          "fitAt1_10": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_25": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_80": {
+            "fit": 0,
+            "total": 0
+          }
+        },
+        "semanticReview": "missing"
+      }
+    },
+    {
+      "index": 41,
+      "sourcePath": null,
+      "baseline": {
+        "status": "missing",
+        "disposition": null,
+        "cueCount": 0,
+        "translatedCueCount": 0,
+        "issueCodes": [],
+        "estimatedFit": {
+          "fitAt1_10": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_25": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_80": {
+            "fit": 0,
+            "total": 0
+          }
+        },
+        "semanticReview": "missing"
+      },
+      "candidate": {
+        "status": "missing",
+        "disposition": null,
+        "cueCount": 0,
+        "translatedCueCount": 0,
+        "issueCodes": [],
+        "estimatedFit": {
+          "fitAt1_10": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_25": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_80": {
+            "fit": 0,
+            "total": 0
+          }
+        },
+        "semanticReview": "missing"
+      }
+    },
+    {
+      "index": 42,
+      "sourcePath": null,
+      "baseline": {
+        "status": "missing",
+        "disposition": null,
+        "cueCount": 0,
+        "translatedCueCount": 0,
+        "issueCodes": [],
+        "estimatedFit": {
+          "fitAt1_10": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_25": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_80": {
+            "fit": 0,
+            "total": 0
+          }
+        },
+        "semanticReview": "missing"
+      },
+      "candidate": {
+        "status": "missing",
+        "disposition": null,
+        "cueCount": 0,
+        "translatedCueCount": 0,
+        "issueCodes": [],
+        "estimatedFit": {
+          "fitAt1_10": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_25": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_80": {
+            "fit": 0,
+            "total": 0
+          }
+        },
+        "semanticReview": "missing"
+      }
+    },
+    {
+      "index": 43,
+      "sourcePath": null,
+      "baseline": {
+        "status": "missing",
+        "disposition": null,
+        "cueCount": 0,
+        "translatedCueCount": 0,
+        "issueCodes": [],
+        "estimatedFit": {
+          "fitAt1_10": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_25": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_80": {
+            "fit": 0,
+            "total": 0
+          }
+        },
+        "semanticReview": "missing"
+      },
+      "candidate": {
+        "status": "missing",
+        "disposition": null,
+        "cueCount": 0,
+        "translatedCueCount": 0,
+        "issueCodes": [],
+        "estimatedFit": {
+          "fitAt1_10": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_25": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_80": {
+            "fit": 0,
+            "total": 0
+          }
+        },
+        "semanticReview": "missing"
+      }
+    },
+    {
+      "index": 44,
+      "sourcePath": null,
+      "baseline": {
+        "status": "missing",
+        "disposition": null,
+        "cueCount": 0,
+        "translatedCueCount": 0,
+        "issueCodes": [],
+        "estimatedFit": {
+          "fitAt1_10": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_25": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_80": {
+            "fit": 0,
+            "total": 0
+          }
+        },
+        "semanticReview": "missing"
+      },
+      "candidate": {
+        "status": "missing",
+        "disposition": null,
+        "cueCount": 0,
+        "translatedCueCount": 0,
+        "issueCodes": [],
+        "estimatedFit": {
+          "fitAt1_10": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_25": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_80": {
+            "fit": 0,
+            "total": 0
+          }
+        },
+        "semanticReview": "missing"
+      }
+    },
+    {
+      "index": 45,
+      "sourcePath": null,
+      "baseline": {
+        "status": "missing",
+        "disposition": null,
+        "cueCount": 0,
+        "translatedCueCount": 0,
+        "issueCodes": [],
+        "estimatedFit": {
+          "fitAt1_10": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_25": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_80": {
+            "fit": 0,
+            "total": 0
+          }
+        },
+        "semanticReview": "missing"
+      },
+      "candidate": {
+        "status": "missing",
+        "disposition": null,
+        "cueCount": 0,
+        "translatedCueCount": 0,
+        "issueCodes": [],
+        "estimatedFit": {
+          "fitAt1_10": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_25": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_80": {
+            "fit": 0,
+            "total": 0
+          }
+        },
+        "semanticReview": "missing"
+      }
+    },
+    {
+      "index": 46,
+      "sourcePath": null,
+      "baseline": {
+        "status": "missing",
+        "disposition": null,
+        "cueCount": 0,
+        "translatedCueCount": 0,
+        "issueCodes": [],
+        "estimatedFit": {
+          "fitAt1_10": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_25": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_80": {
+            "fit": 0,
+            "total": 0
+          }
+        },
+        "semanticReview": "missing"
+      },
+      "candidate": {
+        "status": "missing",
+        "disposition": null,
+        "cueCount": 0,
+        "translatedCueCount": 0,
+        "issueCodes": [],
+        "estimatedFit": {
+          "fitAt1_10": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_25": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_80": {
+            "fit": 0,
+            "total": 0
+          }
+        },
+        "semanticReview": "missing"
+      }
+    },
+    {
+      "index": 47,
+      "sourcePath": null,
+      "baseline": {
+        "status": "missing",
+        "disposition": null,
+        "cueCount": 0,
+        "translatedCueCount": 0,
+        "issueCodes": [],
+        "estimatedFit": {
+          "fitAt1_10": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_25": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_80": {
+            "fit": 0,
+            "total": 0
+          }
+        },
+        "semanticReview": "missing"
+      },
+      "candidate": {
+        "status": "missing",
+        "disposition": null,
+        "cueCount": 0,
+        "translatedCueCount": 0,
+        "issueCodes": [],
+        "estimatedFit": {
+          "fitAt1_10": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_25": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_80": {
+            "fit": 0,
+            "total": 0
+          }
+        },
+        "semanticReview": "missing"
+      }
+    },
+    {
+      "index": 48,
+      "sourcePath": null,
+      "baseline": {
+        "status": "missing",
+        "disposition": null,
+        "cueCount": 0,
+        "translatedCueCount": 0,
+        "issueCodes": [],
+        "estimatedFit": {
+          "fitAt1_10": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_25": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_80": {
+            "fit": 0,
+            "total": 0
+          }
+        },
+        "semanticReview": "missing"
+      },
+      "candidate": {
+        "status": "missing",
+        "disposition": null,
+        "cueCount": 0,
+        "translatedCueCount": 0,
+        "issueCodes": [],
+        "estimatedFit": {
+          "fitAt1_10": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_25": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_80": {
+            "fit": 0,
+            "total": 0
+          }
+        },
+        "semanticReview": "missing"
+      }
+    },
+    {
+      "index": 49,
+      "sourcePath": null,
+      "baseline": {
+        "status": "missing",
+        "disposition": null,
+        "cueCount": 0,
+        "translatedCueCount": 0,
+        "issueCodes": [],
+        "estimatedFit": {
+          "fitAt1_10": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_25": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_80": {
+            "fit": 0,
+            "total": 0
+          }
+        },
+        "semanticReview": "missing"
+      },
+      "candidate": {
+        "status": "missing",
+        "disposition": null,
+        "cueCount": 0,
+        "translatedCueCount": 0,
+        "issueCodes": [],
+        "estimatedFit": {
+          "fitAt1_10": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_25": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_80": {
+            "fit": 0,
+            "total": 0
+          }
+        },
+        "semanticReview": "missing"
+      }
+    },
+    {
+      "index": 50,
+      "sourcePath": null,
+      "baseline": {
+        "status": "missing",
+        "disposition": null,
+        "cueCount": 0,
+        "translatedCueCount": 0,
+        "issueCodes": [],
+        "estimatedFit": {
+          "fitAt1_10": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_25": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_80": {
+            "fit": 0,
+            "total": 0
+          }
+        },
+        "semanticReview": "missing"
+      },
+      "candidate": {
+        "status": "missing",
+        "disposition": null,
+        "cueCount": 0,
+        "translatedCueCount": 0,
+        "issueCodes": [],
+        "estimatedFit": {
+          "fitAt1_10": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_25": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_80": {
+            "fit": 0,
+            "total": 0
+          }
+        },
+        "semanticReview": "missing"
+      }
+    },
+    {
+      "index": 51,
+      "sourcePath": null,
+      "baseline": {
+        "status": "missing",
+        "disposition": null,
+        "cueCount": 0,
+        "translatedCueCount": 0,
+        "issueCodes": [],
+        "estimatedFit": {
+          "fitAt1_10": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_25": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_80": {
+            "fit": 0,
+            "total": 0
+          }
+        },
+        "semanticReview": "missing"
+      },
+      "candidate": {
+        "status": "missing",
+        "disposition": null,
+        "cueCount": 0,
+        "translatedCueCount": 0,
+        "issueCodes": [],
+        "estimatedFit": {
+          "fitAt1_10": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_25": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_80": {
+            "fit": 0,
+            "total": 0
+          }
+        },
+        "semanticReview": "missing"
+      }
+    },
+    {
+      "index": 52,
+      "sourcePath": null,
+      "baseline": {
+        "status": "missing",
+        "disposition": null,
+        "cueCount": 0,
+        "translatedCueCount": 0,
+        "issueCodes": [],
+        "estimatedFit": {
+          "fitAt1_10": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_25": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_80": {
+            "fit": 0,
+            "total": 0
+          }
+        },
+        "semanticReview": "missing"
+      },
+      "candidate": {
+        "status": "missing",
+        "disposition": null,
+        "cueCount": 0,
+        "translatedCueCount": 0,
+        "issueCodes": [],
+        "estimatedFit": {
+          "fitAt1_10": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_25": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_80": {
+            "fit": 0,
+            "total": 0
+          }
+        },
+        "semanticReview": "missing"
+      }
+    },
+    {
+      "index": 53,
+      "sourcePath": null,
+      "baseline": {
+        "status": "missing",
+        "disposition": null,
+        "cueCount": 0,
+        "translatedCueCount": 0,
+        "issueCodes": [],
+        "estimatedFit": {
+          "fitAt1_10": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_25": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_80": {
+            "fit": 0,
+            "total": 0
+          }
+        },
+        "semanticReview": "missing"
+      },
+      "candidate": {
+        "status": "missing",
+        "disposition": null,
+        "cueCount": 0,
+        "translatedCueCount": 0,
+        "issueCodes": [],
+        "estimatedFit": {
+          "fitAt1_10": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_25": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_80": {
+            "fit": 0,
+            "total": 0
+          }
+        },
+        "semanticReview": "missing"
+      }
+    },
+    {
+      "index": 54,
+      "sourcePath": null,
+      "baseline": {
+        "status": "missing",
+        "disposition": null,
+        "cueCount": 0,
+        "translatedCueCount": 0,
+        "issueCodes": [],
+        "estimatedFit": {
+          "fitAt1_10": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_25": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_80": {
+            "fit": 0,
+            "total": 0
+          }
+        },
+        "semanticReview": "missing"
+      },
+      "candidate": {
+        "status": "missing",
+        "disposition": null,
+        "cueCount": 0,
+        "translatedCueCount": 0,
+        "issueCodes": [],
+        "estimatedFit": {
+          "fitAt1_10": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_25": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_80": {
+            "fit": 0,
+            "total": 0
+          }
+        },
+        "semanticReview": "missing"
+      }
+    },
+    {
+      "index": 55,
+      "sourcePath": null,
+      "baseline": {
+        "status": "missing",
+        "disposition": null,
+        "cueCount": 0,
+        "translatedCueCount": 0,
+        "issueCodes": [],
+        "estimatedFit": {
+          "fitAt1_10": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_25": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_80": {
+            "fit": 0,
+            "total": 0
+          }
+        },
+        "semanticReview": "missing"
+      },
+      "candidate": {
+        "status": "missing",
+        "disposition": null,
+        "cueCount": 0,
+        "translatedCueCount": 0,
+        "issueCodes": [],
+        "estimatedFit": {
+          "fitAt1_10": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_25": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_80": {
+            "fit": 0,
+            "total": 0
+          }
+        },
+        "semanticReview": "missing"
+      }
+    },
+    {
+      "index": 56,
+      "sourcePath": null,
+      "baseline": {
+        "status": "missing",
+        "disposition": null,
+        "cueCount": 0,
+        "translatedCueCount": 0,
+        "issueCodes": [],
+        "estimatedFit": {
+          "fitAt1_10": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_25": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_80": {
+            "fit": 0,
+            "total": 0
+          }
+        },
+        "semanticReview": "missing"
+      },
+      "candidate": {
+        "status": "missing",
+        "disposition": null,
+        "cueCount": 0,
+        "translatedCueCount": 0,
+        "issueCodes": [],
+        "estimatedFit": {
+          "fitAt1_10": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_25": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_80": {
+            "fit": 0,
+            "total": 0
+          }
+        },
+        "semanticReview": "missing"
+      }
+    },
+    {
+      "index": 57,
+      "sourcePath": null,
+      "baseline": {
+        "status": "missing",
+        "disposition": null,
+        "cueCount": 0,
+        "translatedCueCount": 0,
+        "issueCodes": [],
+        "estimatedFit": {
+          "fitAt1_10": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_25": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_80": {
+            "fit": 0,
+            "total": 0
+          }
+        },
+        "semanticReview": "missing"
+      },
+      "candidate": {
+        "status": "missing",
+        "disposition": null,
+        "cueCount": 0,
+        "translatedCueCount": 0,
+        "issueCodes": [],
+        "estimatedFit": {
+          "fitAt1_10": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_25": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_80": {
+            "fit": 0,
+            "total": 0
+          }
+        },
+        "semanticReview": "missing"
+      }
+    },
+    {
+      "index": 58,
+      "sourcePath": null,
+      "baseline": {
+        "status": "missing",
+        "disposition": null,
+        "cueCount": 0,
+        "translatedCueCount": 0,
+        "issueCodes": [],
+        "estimatedFit": {
+          "fitAt1_10": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_25": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_80": {
+            "fit": 0,
+            "total": 0
+          }
+        },
+        "semanticReview": "missing"
+      },
+      "candidate": {
+        "status": "missing",
+        "disposition": null,
+        "cueCount": 0,
+        "translatedCueCount": 0,
+        "issueCodes": [],
+        "estimatedFit": {
+          "fitAt1_10": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_25": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_80": {
+            "fit": 0,
+            "total": 0
+          }
+        },
+        "semanticReview": "missing"
+      }
+    },
+    {
+      "index": 59,
+      "sourcePath": null,
+      "baseline": {
+        "status": "missing",
+        "disposition": null,
+        "cueCount": 0,
+        "translatedCueCount": 0,
+        "issueCodes": [],
+        "estimatedFit": {
+          "fitAt1_10": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_25": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_80": {
+            "fit": 0,
+            "total": 0
+          }
+        },
+        "semanticReview": "missing"
+      },
+      "candidate": {
+        "status": "missing",
+        "disposition": null,
+        "cueCount": 0,
+        "translatedCueCount": 0,
+        "issueCodes": [],
+        "estimatedFit": {
+          "fitAt1_10": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_25": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_80": {
+            "fit": 0,
+            "total": 0
+          }
+        },
+        "semanticReview": "missing"
+      }
+    },
+    {
+      "index": 60,
+      "sourcePath": null,
+      "baseline": {
+        "status": "missing",
+        "disposition": null,
+        "cueCount": 0,
+        "translatedCueCount": 0,
+        "issueCodes": [],
+        "estimatedFit": {
+          "fitAt1_10": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_25": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_80": {
+            "fit": 0,
+            "total": 0
+          }
+        },
+        "semanticReview": "missing"
+      },
+      "candidate": {
+        "status": "missing",
+        "disposition": null,
+        "cueCount": 0,
+        "translatedCueCount": 0,
+        "issueCodes": [],
+        "estimatedFit": {
+          "fitAt1_10": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_25": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_80": {
+            "fit": 0,
+            "total": 0
+          }
+        },
+        "semanticReview": "missing"
+      }
+    },
+    {
+      "index": 61,
+      "sourcePath": null,
+      "baseline": {
+        "status": "missing",
+        "disposition": null,
+        "cueCount": 0,
+        "translatedCueCount": 0,
+        "issueCodes": [],
+        "estimatedFit": {
+          "fitAt1_10": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_25": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_80": {
+            "fit": 0,
+            "total": 0
+          }
+        },
+        "semanticReview": "missing"
+      },
+      "candidate": {
+        "status": "missing",
+        "disposition": null,
+        "cueCount": 0,
+        "translatedCueCount": 0,
+        "issueCodes": [],
+        "estimatedFit": {
+          "fitAt1_10": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_25": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_80": {
+            "fit": 0,
+            "total": 0
+          }
+        },
+        "semanticReview": "missing"
+      }
+    },
+    {
+      "index": 62,
+      "sourcePath": null,
+      "baseline": {
+        "status": "missing",
+        "disposition": null,
+        "cueCount": 0,
+        "translatedCueCount": 0,
+        "issueCodes": [],
+        "estimatedFit": {
+          "fitAt1_10": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_25": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_80": {
+            "fit": 0,
+            "total": 0
+          }
+        },
+        "semanticReview": "missing"
+      },
+      "candidate": {
+        "status": "missing",
+        "disposition": null,
+        "cueCount": 0,
+        "translatedCueCount": 0,
+        "issueCodes": [],
+        "estimatedFit": {
+          "fitAt1_10": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_25": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_80": {
+            "fit": 0,
+            "total": 0
+          }
+        },
+        "semanticReview": "missing"
+      }
+    },
+    {
+      "index": 63,
+      "sourcePath": null,
+      "baseline": {
+        "status": "missing",
+        "disposition": null,
+        "cueCount": 0,
+        "translatedCueCount": 0,
+        "issueCodes": [],
+        "estimatedFit": {
+          "fitAt1_10": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_25": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_80": {
+            "fit": 0,
+            "total": 0
+          }
+        },
+        "semanticReview": "missing"
+      },
+      "candidate": {
+        "status": "missing",
+        "disposition": null,
+        "cueCount": 0,
+        "translatedCueCount": 0,
+        "issueCodes": [],
+        "estimatedFit": {
+          "fitAt1_10": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_25": {
+            "fit": 0,
+            "total": 0
+          },
+          "fitAt1_80": {
+            "fit": 0,
+            "total": 0
+          }
+        },
+        "semanticReview": "missing"
+      }
+    }
+  ]
+}

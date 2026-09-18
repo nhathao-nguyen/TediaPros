@@ -1,0 +1,44 @@
+{
+  "schemaVersion": 1,
+  "checkedAtUtc": "2026-09-16T09:43:41Z",
+  "server": {
+    "baseUrl": "http://127.0.0.1:4982",
+    "health": { "status": 200, "service": "gemini-web-to-api" },
+    "binary": "F:\\Son\\tool\\CreateMediaTool\\.artifacts\\live-validation\\server-live.exe",
+    "pid": 28684
+  },
+  "env": {
+    "cookieVariablesPresent": ["GEMINI_1PSID", "GEMINI_1PSIDTS"],
+    "secretValuesOmitted": true
+  },
+  "capabilities": {
+    "gatewayContractVersion": 2,
+    "providerReady": true,
+    "providerError": "",
+    "model": "gemini-advanced",
+    "version": "gemini-web-gateway-v2"
+  },
+  "modelVerification": {
+    "state": "verified",
+    "requestedModel": "gemini-advanced",
+    "observedModel": "3.1 Pro",
+    "observedModelId": "e6fa609c3fa255c0",
+    "verificationGenerationRequests": 0,
+    "meaning": "cached verification after a fresh cookie-backed verification"
+  },
+  "completionProbe": {
+    "status": 200,
+    "requestedModel": "gemini-advanced",
+    "textOutputContract": "cue-lines-v1",
+    "content": "[cue-1] Hello, this video is 12 seconds long.\n[cue-2] The reading speed must be natural and clear.",
+    "gatewayMetadata": {
+      "gatewayContractVersion": 2,
+      "observedModel": "3.1 Pro",
+      "observedModelId": "e6fa609c3fa255c0",
+      "modelVerification": "matched",
+      "completionState": "complete",
+      "completionEvidence": "observed-terminal-frame-v1",
+      "upstreamAttempts": 1
+    }
+  }
+}

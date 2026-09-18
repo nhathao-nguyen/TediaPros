@@ -1208,6 +1208,12 @@ test('AutoShort key check uses the selected local translation server URL', async
   assert.match(main, /checkLocalTranslateKey\(serverUrl, key, targetLanguage, sourceLanguage\)/u)
 })
 
+test('AutoShort preflight checks Gemini Gateway without spending a model probe', async () => {
+  const main = await readFile(join(process.cwd(), 'src', 'main', 'autoshort.ts'), 'utf8')
+  assert.match(main, /checkGeminiGateway\(config\.translateServerUrl\)/u)
+  assert.doesNotMatch(main, /checkGeminiGateway\(config\.translateServerUrl,\s*\{\s*verifyModel:\s*true\s*\}\)/u)
+})
+
 test('AutoShort exposes only native Whisper models and the selected device', async () => {
   const renderer = await readFile(join(process.cwd(), 'src', 'renderer', 'src', 'components', 'AutoShort.tsx'), 'utf8')
   assert.doesNotMatch(renderer, /<option value="tiny">/u)

@@ -206,3 +206,50 @@ test('AutoShort Queue Runner: cancellation during recovery finalizes every defer
   assert.deepEqual(recoveryStarts, ['a'])
   assert.deepEqual(results.map((result) => result.status), ['cancelled', 'cancelled'])
 })
+
+test('AutoShort Queue Runner: circuit breaker trips after consecutive throttled errors and stops unstarted items', async () => {
+  const items: AutoShortQueueItemInput[] = Array.from({ length: 5 }, (_, i) => ({
+    id: `item-${i}`,
+    filePath: `video-${i}.mp4`
+  }))
+  const started: number[] = []
+  let trippedReason = ''
+  let trippedCount = 0
+
+  const results = await runAutoShortQueue({
+    items,
+    signal: new AbortController().signal,
+    maxActiveItems: 1,
+    circuitBreakerThreshold: 2,
+    isThrottledError: (res) => res.error?.includes('405/429') ?? false,
+    onCircuitTrip: (reason, count) => {
+      trippedReason = reason
+      trippedCount = count
+    },
+    processItem: async (item, index) => {
+      started.push(index)
+      if (index === 0 || index === 1) {
+        return {
+          itemId: item.id,
+          filePath: item.filePath,
+          status: 'error',
+          error: 'Google Gemini Web tạm từ chối (HTTP 405/429 - chống bot)'
+        }
+      }
+      return { itemId: item.id, filePath: item.filePath, status: 'done' }
+    },
+    onTerminal: () => {}
+  })
+
+  assert.deepEqual(started, [0, 1], 'Only the first 2 items should have run before circuit tripped')
+  assert.equal(trippedCount, 2, 'Tripped count should be 2')
+  assert.match(trippedReason, /Circuit Breaker/u)
+  assert.equal(results.length, 5)
+  assert.equal(results[0].status, 'error')
+  assert.equal(results[1].status, 'error')
+  assert.equal(results[2].status, 'error')
+  assert.match(results[2].error || '', /Circuit Breaker/u)
+  assert.equal(results[3].status, 'error')
+  assert.equal(results[4].status, 'error')
+})
+

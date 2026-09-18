@@ -137,6 +137,7 @@ import {
   getTtsModels,
   generateSpeech,
   generateVoiceClone,
+  getTtsVoiceProfile,
   saveTtsAudio,
   selectReferenceAudioFile,
   fetchEdgeVoices
@@ -154,9 +155,11 @@ import {
   resumeAutoShortBatch,
   startAutoShortJob,
   retryAutoShortTranslation,
+  retryAutoShortTitle,
   selectAutoShortVideoFiles
 } from './autoshort'
 import { listAutoShortMusicTracks } from './autoShortMusicLibrary'
+import { createAutoShortThumbnail } from './autoShortThumbnail'
 import { isAutoShortSeparationPreset } from '../shared/autoShortSeparation'
 import type {
   DichProvider,
@@ -164,8 +167,10 @@ import type {
   SubtitleLayoutRequest,
   TtsCloneRequest,
   TtsSpeechRequest,
+  TtsVoiceProfileRequest,
   AutoShortConfig,
   AutoShortDependencyConfig,
+  AutoShortThumbnailRequest,
   Video2xRunRequest,
   WhisperRequest,
   DownloadRequest,
@@ -259,7 +264,18 @@ function createWindow(): void {
     }
   })
 
-  mainWindow.on('ready-to-show', () => mainWindow?.show())
+  mainWindow.on('ready-to-show', () => {
+    logInfo('Cửa sổ chính sẵn sàng hiển thị (ready-to-show)')
+    mainWindow?.show()
+    mainWindow?.focus()
+  })
+  setTimeout(() => {
+    if (mainWindow && !mainWindow.isDestroyed() && !mainWindow.isVisible()) {
+      logWarn('Fallback hiển thị cửa sổ chính sau timeout')
+      mainWindow.show()
+      mainWindow.focus()
+    }
+  }, 2500)
   mainWindow.on('closed', () => {
     mainWindow = null
   })
@@ -801,7 +817,8 @@ function registerIpc(): void {
     if (
       (request.autoOptimize != null && typeof request.autoOptimize !== 'boolean') ||
       (request.bgEnabled != null && typeof request.bgEnabled !== 'boolean') ||
-      (request.fontId != null && (typeof request.fontId !== 'string' || request.fontId.length > 100))
+      (request.fontId != null && (typeof request.fontId !== 'string' || request.fontId.length > 100)) ||
+      (request.fontWeight != null && (!Number.isFinite(request.fontWeight) || request.fontWeight < 100 || request.fontWeight > 900))
     ) {
       throw new Error('Cấu hình phụ đề không hợp lệ.')
     }
@@ -844,7 +861,8 @@ function registerIpc(): void {
           fontSize: bc.fontSize,
           boxPadding
         },
-        request.fontId
+        request.fontId,
+        request.fontWeight
       ).plan
     } catch (error) {
       debugRaw('subtitle layout plan', error)
@@ -1050,6 +1068,10 @@ function registerIpc(): void {
     const rejected = rejectUntrustedAutoShortIpc(event)
     return rejected || generateVoiceClone(req)
   })
+  ipcMain.handle('tts:getVoiceProfile', async (event, req: TtsVoiceProfileRequest) => {
+    const rejected = rejectUntrustedAutoShortIpc(event)
+    return rejected || getTtsVoiceProfile(req)
+  })
   ipcMain.handle('tts:saveAudio', async (event, audioBase64: string, defaultName?: string, audioMimeType?: string) => {
     const rejected = rejectUntrustedAutoShortIpc(event)
     return rejected || saveTtsAudio(audioBase64, defaultName, audioMimeType)
@@ -1084,6 +1106,28 @@ function registerIpc(): void {
     const rejected = rejectUntrustedAutoShortIpc(event)
     if (rejected) throw new Error(rejected.error)
     return cancelAutoShortSttnPreview(event.sender.id)
+  })
+  const thumbnailControllers = new Map<number, AbortController>()
+  ipcMain.handle('auto-short:create-thumbnail', async (event, raw: AutoShortThumbnailRequest) => {
+    const rejected = rejectUntrustedAutoShortIpc(event)
+    if (rejected) return rejected
+    const ownerId = event.sender.id
+    thumbnailControllers.get(ownerId)?.abort()
+    const controller = new AbortController()
+    thumbnailControllers.set(ownerId, controller)
+    event.sender.once('destroyed', () => {
+      controller.abort()
+      thumbnailControllers.delete(ownerId)
+    })
+    try {
+      return await createAutoShortThumbnail(raw, progress => {
+        if (!event.sender.isDestroyed()) event.sender.send('auto-short:thumbnail-progress', progress)
+      }, controller.signal)
+    } finally {
+      if (thumbnailControllers.get(ownerId) === controller) {
+        thumbnailControllers.delete(ownerId)
+      }
+    }
   })
   ipcMain.handle('autoshort:selectVideos', async (event) => {
     const rejected = rejectUntrustedAutoShortIpc(event)
@@ -1251,6 +1295,21 @@ function registerIpc(): void {
       return { ok: false, error: 'Yêu cầu thử lại bản dịch không hợp lệ.' }
     }
     return retryAutoShortTranslation({ itemId: value.itemId, expectedIdentity: value.expectedIdentity })
+  })
+  ipcMain.handle('autoshort:retryTitle', async (event, raw: unknown) => {
+    const rejected = rejectUntrustedAutoShortIpc(event)
+    if (rejected) return rejected
+    if (!raw || typeof raw !== 'object' || Array.isArray(raw)) return { ok: false, error: 'Yêu cầu thử lại tiêu đề không hợp lệ.' }
+    const value = raw as Record<string, unknown>
+    if (typeof value.itemId !== 'string' || !value.itemId.trim()) {
+      return { ok: false, error: 'Yêu cầu thử lại tiêu đề không hợp lệ.' }
+    }
+    return retryAutoShortTitle({
+      itemId: value.itemId,
+      ...(typeof value.outputPath === 'string' ? { outputPath: value.outputPath } : {}),
+      ...(typeof value.artifactDir === 'string' ? { artifactDir: value.artifactDir } : {}),
+      ...(value.config && typeof value.config === 'object' ? { config: value.config as any } : {})
+    })
   })
   ipcMain.handle('autoshort:clearCache', async (event) => {
     const rejected = rejectUntrustedAutoShortIpc(event)

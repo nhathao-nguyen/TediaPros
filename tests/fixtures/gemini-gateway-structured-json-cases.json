@@ -42,6 +42,20 @@
     "expectedText": "{\"translations\":{\"cue-1\":\"Hello.\"}}"
   },
   {
+    "name": "literal_backticks_in_json_string",
+    "input": "{\"translations\":{\"cue-1\":\"Use ``` as literal text.\"}}",
+    "expectedValid": true,
+    "expectedOperations": [],
+    "expectedText": "{\"translations\":{\"cue-1\":\"Use ``` as literal text.\"}}"
+  },
+  {
+    "name": "literal_backticks_in_fenced_json_string",
+    "input": "```json\n{\"translations\":{\"cue-1\":\"Use ``` as literal text.\"}}\n```",
+    "expectedValid": true,
+    "expectedOperations": ["unwrap-json-fence"],
+    "expectedText": "{\"translations\":{\"cue-1\":\"Use ``` as literal text.\"}}"
+  },
+  {
     "name": "duplicate_literal_key",
     "input": "{\"translations\":{\"cue-1\":\"A\",\"cue-1\":\"B\"}}",
     "expectedValid": false,
@@ -52,6 +66,18 @@
     "input": "{\"translations\":{\"cue-1\":\"A\",\"\\u0063ue-1\":\"B\"}}",
     "expectedValid": false,
     "expectedErrorCode": "duplicate-key"
+  },
+  {
+    "name": "unpaired_high_surrogate",
+    "input": "{\"translations\":{\"cue-1\":\"\\uD800\"}}",
+    "expectedValid": false,
+    "expectedErrorCode": "invalid-unicode"
+  },
+  {
+    "name": "unpaired_low_surrogate",
+    "input": "{\"translations\":{\"cue-1\":\"\\uDC00\"}}",
+    "expectedValid": false,
+    "expectedErrorCode": "invalid-unicode"
   },
   {
     "name": "prose_before_fence",
@@ -81,13 +107,13 @@
     "name": "array_root",
     "input": "[{\"translations\":{\"cue-1\":\"Hello.\"}}]",
     "expectedValid": false,
-    "expectedErrorCode": "invalid-json"
+    "expectedErrorCode": "wrong-root"
   },
   {
     "name": "string_root",
     "input": "\"just a string\"",
     "expectedValid": false,
-    "expectedErrorCode": "invalid-json"
+    "expectedErrorCode": "wrong-root"
   },
   {
     "name": "truncated_string",

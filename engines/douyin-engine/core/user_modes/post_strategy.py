@@ -47,7 +47,7 @@ class PostUserModeStrategy(BaseUserModeStrategy):
             page_items = self.select_items(page)
 
             if not page_items:
-                if request_cursor and page.get("status_code") == 0:
+                if not aweme_list or (request_cursor and page.get("status_code") == 0):
                     pagination_restricted = True
                     logger.warning(
                         "User post pagination likely blocked at cursor=%s, switching to browser fallback",

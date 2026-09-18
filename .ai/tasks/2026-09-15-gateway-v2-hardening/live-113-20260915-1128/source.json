@@ -1,0 +1,914 @@
+{
+  "sourceLanguage": "zh",
+  "targetLocale": "vi-VN",
+  "mode": "dubbing",
+  "cues": [
+    {
+      "id": "cue-1",
+      "sourceIndex": 0,
+      "start": 0,
+      "end": 0.8,
+      "groupId": "g-0",
+      "text": "大家仔细看这里"
+    },
+    {
+      "id": "cue-2",
+      "sourceIndex": 1,
+      "start": 0.9,
+      "end": 1.7,
+      "groupId": "g-0",
+      "text": "看似普通的一块木头"
+    },
+    {
+      "id": "cue-3",
+      "sourceIndex": 2,
+      "start": 1.8,
+      "end": 2.6,
+      "groupId": "g-0",
+      "text": "经过师傅的手"
+    },
+    {
+      "id": "cue-4",
+      "sourceIndex": 3,
+      "start": 2.7,
+      "end": 3.5,
+      "groupId": "g-0",
+      "text": "慢慢展现出纹理"
+    },
+    {
+      "id": "cue-5",
+      "sourceIndex": 4,
+      "start": 3.6,
+      "end": 4.4,
+      "groupId": "g-1",
+      "text": "先用细砂纸打磨"
+    },
+    {
+      "id": "cue-6",
+      "sourceIndex": 5,
+      "start": 4.5,
+      "end": 5.3,
+      "groupId": "g-1",
+      "text": "边缘一定要圆润"
+    },
+    {
+      "id": "cue-7",
+      "sourceIndex": 6,
+      "start": 5.4,
+      "end": 6.2,
+      "groupId": "g-1",
+      "text": "不能留下毛刺"
+    },
+    {
+      "id": "cue-8",
+      "sourceIndex": 7,
+      "start": 6.3,
+      "end": 7.1,
+      "groupId": "g-1",
+      "text": "再涂上一层木蜡油"
+    },
+    {
+      "id": "cue-9",
+      "sourceIndex": 8,
+      "start": 7.2,
+      "end": 8,
+      "groupId": "g-2",
+      "text": "瞬间色泽就变了"
+    },
+    {
+      "id": "cue-10",
+      "sourceIndex": 9,
+      "start": 8.1,
+      "end": 8.9,
+      "groupId": "g-2",
+      "text": "这就是手作的温度"
+    },
+    {
+      "id": "cue-11",
+      "sourceIndex": 10,
+      "start": 9,
+      "end": 9.8,
+      "groupId": "g-2",
+      "text": "每一步都要耐心"
+    },
+    {
+      "id": "cue-12",
+      "sourceIndex": 11,
+      "start": 9.9,
+      "end": 10.7,
+      "groupId": "g-2",
+      "text": "稍微用力过猛"
+    },
+    {
+      "id": "cue-13",
+      "sourceIndex": 12,
+      "start": 10.8,
+      "end": 11.6,
+      "groupId": "g-3",
+      "text": "就可能前功尽弃"
+    },
+    {
+      "id": "cue-14",
+      "sourceIndex": 13,
+      "start": 11.7,
+      "end": 12.5,
+      "groupId": "g-3",
+      "text": "细节决定成败"
+    },
+    {
+      "id": "cue-15",
+      "sourceIndex": 14,
+      "start": 12.6,
+      "end": 13.4,
+      "groupId": "g-3",
+      "text": "最后组装完成"
+    },
+    {
+      "id": "cue-16",
+      "sourceIndex": 15,
+      "start": 13.5,
+      "end": 14.3,
+      "groupId": "g-3",
+      "text": "是不是非常惊艳"
+    },
+    {
+      "id": "cue-17",
+      "sourceIndex": 16,
+      "start": 14.4,
+      "end": 15.2,
+      "groupId": "g-4",
+      "text": "大家仔细看这里"
+    },
+    {
+      "id": "cue-18",
+      "sourceIndex": 17,
+      "start": 15.3,
+      "end": 16.1,
+      "groupId": "g-4",
+      "text": "看似普通的一块木头"
+    },
+    {
+      "id": "cue-19",
+      "sourceIndex": 18,
+      "start": 16.2,
+      "end": 17,
+      "groupId": "g-4",
+      "text": "经过师傅的手"
+    },
+    {
+      "id": "cue-20",
+      "sourceIndex": 19,
+      "start": 17.1,
+      "end": 17.9,
+      "groupId": "g-4",
+      "text": "慢慢展现出纹理"
+    },
+    {
+      "id": "cue-21",
+      "sourceIndex": 20,
+      "start": 18,
+      "end": 18.8,
+      "groupId": "g-5",
+      "text": "先用细砂纸打磨"
+    },
+    {
+      "id": "cue-22",
+      "sourceIndex": 21,
+      "start": 18.9,
+      "end": 19.7,
+      "groupId": "g-5",
+      "text": "边缘一定要圆润"
+    },
+    {
+      "id": "cue-23",
+      "sourceIndex": 22,
+      "start": 19.8,
+      "end": 20.6,
+      "groupId": "g-5",
+      "text": "不能留下毛刺"
+    },
+    {
+      "id": "cue-24",
+      "sourceIndex": 23,
+      "start": 20.7,
+      "end": 21.5,
+      "groupId": "g-5",
+      "text": "再涂上一层木蜡油"
+    },
+    {
+      "id": "cue-25",
+      "sourceIndex": 24,
+      "start": 21.6,
+      "end": 22.4,
+      "groupId": "g-6",
+      "text": "瞬间色泽就变了"
+    },
+    {
+      "id": "cue-26",
+      "sourceIndex": 25,
+      "start": 22.5,
+      "end": 23.3,
+      "groupId": "g-6",
+      "text": "这就是手作的温度"
+    },
+    {
+      "id": "cue-27",
+      "sourceIndex": 26,
+      "start": 23.4,
+      "end": 24.2,
+      "groupId": "g-6",
+      "text": "每一步都要耐心"
+    },
+    {
+      "id": "cue-28",
+      "sourceIndex": 27,
+      "start": 24.3,
+      "end": 25.1,
+      "groupId": "g-6",
+      "text": "稍微用力过猛"
+    },
+    {
+      "id": "cue-29",
+      "sourceIndex": 28,
+      "start": 25.2,
+      "end": 26,
+      "groupId": "g-7",
+      "text": "就可能前功尽弃"
+    },
+    {
+      "id": "cue-30",
+      "sourceIndex": 29,
+      "start": 26.1,
+      "end": 26.9,
+      "groupId": "g-7",
+      "text": "细节决定成败"
+    },
+    {
+      "id": "cue-31",
+      "sourceIndex": 30,
+      "start": 27,
+      "end": 27.8,
+      "groupId": "g-7",
+      "text": "最后组装完成"
+    },
+    {
+      "id": "cue-32",
+      "sourceIndex": 31,
+      "start": 27.9,
+      "end": 28.7,
+      "groupId": "g-7",
+      "text": "是不是非常惊艳"
+    },
+    {
+      "id": "cue-33",
+      "sourceIndex": 32,
+      "start": 28.8,
+      "end": 29.6,
+      "groupId": "g-8",
+      "text": "大家仔细看这里"
+    },
+    {
+      "id": "cue-34",
+      "sourceIndex": 33,
+      "start": 29.7,
+      "end": 30.5,
+      "groupId": "g-8",
+      "text": "看似普通的一块木头"
+    },
+    {
+      "id": "cue-35",
+      "sourceIndex": 34,
+      "start": 30.6,
+      "end": 31.4,
+      "groupId": "g-8",
+      "text": "经过师傅的手"
+    },
+    {
+      "id": "cue-36",
+      "sourceIndex": 35,
+      "start": 31.5,
+      "end": 32.3,
+      "groupId": "g-8",
+      "text": "慢慢展现出纹理"
+    },
+    {
+      "id": "cue-37",
+      "sourceIndex": 36,
+      "start": 32.4,
+      "end": 33.2,
+      "groupId": "g-9",
+      "text": "先用细砂纸打磨"
+    },
+    {
+      "id": "cue-38",
+      "sourceIndex": 37,
+      "start": 33.3,
+      "end": 34.1,
+      "groupId": "g-9",
+      "text": "边缘一定要圆润"
+    },
+    {
+      "id": "cue-39",
+      "sourceIndex": 38,
+      "start": 34.2,
+      "end": 35,
+      "groupId": "g-9",
+      "text": "不能留下毛刺"
+    },
+    {
+      "id": "cue-40",
+      "sourceIndex": 39,
+      "start": 35.1,
+      "end": 35.9,
+      "groupId": "g-9",
+      "text": "再涂上一层木蜡油"
+    },
+    {
+      "id": "cue-41",
+      "sourceIndex": 40,
+      "start": 36,
+      "end": 36.8,
+      "groupId": "g-10",
+      "text": "瞬间色泽就变了"
+    },
+    {
+      "id": "cue-42",
+      "sourceIndex": 41,
+      "start": 36.9,
+      "end": 37.7,
+      "groupId": "g-10",
+      "text": "这就是手作的温度"
+    },
+    {
+      "id": "cue-43",
+      "sourceIndex": 42,
+      "start": 37.8,
+      "end": 38.6,
+      "groupId": "g-10",
+      "text": "每一步都要耐心"
+    },
+    {
+      "id": "cue-44",
+      "sourceIndex": 43,
+      "start": 38.7,
+      "end": 39.5,
+      "groupId": "g-10",
+      "text": "稍微用力过猛"
+    },
+    {
+      "id": "cue-45",
+      "sourceIndex": 44,
+      "start": 39.6,
+      "end": 40.4,
+      "groupId": "g-11",
+      "text": "就可能前功尽弃"
+    },
+    {
+      "id": "cue-46",
+      "sourceIndex": 45,
+      "start": 40.5,
+      "end": 41.3,
+      "groupId": "g-11",
+      "text": "细节决定成败"
+    },
+    {
+      "id": "cue-47",
+      "sourceIndex": 46,
+      "start": 41.4,
+      "end": 42.2,
+      "groupId": "g-11",
+      "text": "最后组装完成"
+    },
+    {
+      "id": "cue-48",
+      "sourceIndex": 47,
+      "start": 42.3,
+      "end": 43.1,
+      "groupId": "g-11",
+      "text": "是不是非常惊艳"
+    },
+    {
+      "id": "cue-49",
+      "sourceIndex": 48,
+      "start": 43.2,
+      "end": 44,
+      "groupId": "g-12",
+      "text": "大家仔细看这里"
+    },
+    {
+      "id": "cue-50",
+      "sourceIndex": 49,
+      "start": 44.1,
+      "end": 44.9,
+      "groupId": "g-12",
+      "text": "看似普通的一块木头"
+    },
+    {
+      "id": "cue-51",
+      "sourceIndex": 50,
+      "start": 45,
+      "end": 45.8,
+      "groupId": "g-12",
+      "text": "经过师傅的手"
+    },
+    {
+      "id": "cue-52",
+      "sourceIndex": 51,
+      "start": 45.9,
+      "end": 46.7,
+      "groupId": "g-12",
+      "text": "慢慢展现出纹理"
+    },
+    {
+      "id": "cue-53",
+      "sourceIndex": 52,
+      "start": 46.8,
+      "end": 47.6,
+      "groupId": "g-13",
+      "text": "先用细砂纸打磨"
+    },
+    {
+      "id": "cue-54",
+      "sourceIndex": 53,
+      "start": 47.7,
+      "end": 48.5,
+      "groupId": "g-13",
+      "text": "边缘一定要圆润"
+    },
+    {
+      "id": "cue-55",
+      "sourceIndex": 54,
+      "start": 48.6,
+      "end": 49.4,
+      "groupId": "g-13",
+      "text": "不能留下毛刺"
+    },
+    {
+      "id": "cue-56",
+      "sourceIndex": 55,
+      "start": 49.5,
+      "end": 50.3,
+      "groupId": "g-13",
+      "text": "再涂上一层木蜡油"
+    },
+    {
+      "id": "cue-57",
+      "sourceIndex": 56,
+      "start": 50.4,
+      "end": 51.2,
+      "groupId": "g-14",
+      "text": "瞬间色泽就变了"
+    },
+    {
+      "id": "cue-58",
+      "sourceIndex": 57,
+      "start": 51.3,
+      "end": 52.1,
+      "groupId": "g-14",
+      "text": "这就是手作的温度"
+    },
+    {
+      "id": "cue-59",
+      "sourceIndex": 58,
+      "start": 52.2,
+      "end": 53,
+      "groupId": "g-14",
+      "text": "每一步都要耐心"
+    },
+    {
+      "id": "cue-60",
+      "sourceIndex": 59,
+      "start": 53.1,
+      "end": 53.9,
+      "groupId": "g-14",
+      "text": "稍微用力过猛"
+    },
+    {
+      "id": "cue-61",
+      "sourceIndex": 60,
+      "start": 54,
+      "end": 54.8,
+      "groupId": "g-15",
+      "text": "就可能前功尽弃"
+    },
+    {
+      "id": "cue-62",
+      "sourceIndex": 61,
+      "start": 54.9,
+      "end": 55.7,
+      "groupId": "g-15",
+      "text": "细节决定成败"
+    },
+    {
+      "id": "cue-63",
+      "sourceIndex": 62,
+      "start": 55.8,
+      "end": 56.6,
+      "groupId": "g-15",
+      "text": "最后组装完成"
+    },
+    {
+      "id": "cue-64",
+      "sourceIndex": 63,
+      "start": 56.7,
+      "end": 57.5,
+      "groupId": "g-15",
+      "text": "是不是非常惊艳"
+    },
+    {
+      "id": "cue-65",
+      "sourceIndex": 64,
+      "start": 57.6,
+      "end": 58.4,
+      "groupId": "g-16",
+      "text": "大家仔细看这里"
+    },
+    {
+      "id": "cue-66",
+      "sourceIndex": 65,
+      "start": 58.5,
+      "end": 59.3,
+      "groupId": "g-16",
+      "text": "看似普通的一块木头"
+    },
+    {
+      "id": "cue-67",
+      "sourceIndex": 66,
+      "start": 59.4,
+      "end": 60.2,
+      "groupId": "g-16",
+      "text": "经过师傅的手"
+    },
+    {
+      "id": "cue-68",
+      "sourceIndex": 67,
+      "start": 60.3,
+      "end": 61.1,
+      "groupId": "g-16",
+      "text": "慢慢展现出纹理"
+    },
+    {
+      "id": "cue-69",
+      "sourceIndex": 68,
+      "start": 61.2,
+      "end": 62,
+      "groupId": "g-17",
+      "text": "先用细砂纸打磨"
+    },
+    {
+      "id": "cue-70",
+      "sourceIndex": 69,
+      "start": 62.1,
+      "end": 62.9,
+      "groupId": "g-17",
+      "text": "边缘一定要圆润"
+    },
+    {
+      "id": "cue-71",
+      "sourceIndex": 70,
+      "start": 63,
+      "end": 63.8,
+      "groupId": "g-17",
+      "text": "不能留下毛刺"
+    },
+    {
+      "id": "cue-72",
+      "sourceIndex": 71,
+      "start": 63.9,
+      "end": 64.7,
+      "groupId": "g-17",
+      "text": "再涂上一层木蜡油"
+    },
+    {
+      "id": "cue-73",
+      "sourceIndex": 72,
+      "start": 64.8,
+      "end": 65.6,
+      "groupId": "g-18",
+      "text": "瞬间色泽就变了"
+    },
+    {
+      "id": "cue-74",
+      "sourceIndex": 73,
+      "start": 65.7,
+      "end": 66.5,
+      "groupId": "g-18",
+      "text": "这就是手作的温度"
+    },
+    {
+      "id": "cue-75",
+      "sourceIndex": 74,
+      "start": 66.6,
+      "end": 67.4,
+      "groupId": "g-18",
+      "text": "每一步都要耐心"
+    },
+    {
+      "id": "cue-76",
+      "sourceIndex": 75,
+      "start": 67.5,
+      "end": 68.3,
+      "groupId": "g-18",
+      "text": "稍微用力过猛"
+    },
+    {
+      "id": "cue-77",
+      "sourceIndex": 76,
+      "start": 68.4,
+      "end": 69.2,
+      "groupId": "g-19",
+      "text": "就可能前功尽弃"
+    },
+    {
+      "id": "cue-78",
+      "sourceIndex": 77,
+      "start": 69.3,
+      "end": 70.1,
+      "groupId": "g-19",
+      "text": "细节决定成败"
+    },
+    {
+      "id": "cue-79",
+      "sourceIndex": 78,
+      "start": 70.2,
+      "end": 71,
+      "groupId": "g-19",
+      "text": "最后组装完成"
+    },
+    {
+      "id": "cue-80",
+      "sourceIndex": 79,
+      "start": 71.1,
+      "end": 71.9,
+      "groupId": "g-19",
+      "text": "是不是非常惊艳"
+    },
+    {
+      "id": "cue-81",
+      "sourceIndex": 80,
+      "start": 72,
+      "end": 72.8,
+      "groupId": "g-20",
+      "text": "大家仔细看这里"
+    },
+    {
+      "id": "cue-82",
+      "sourceIndex": 81,
+      "start": 72.9,
+      "end": 73.7,
+      "groupId": "g-20",
+      "text": "看似普通的一块木头"
+    },
+    {
+      "id": "cue-83",
+      "sourceIndex": 82,
+      "start": 73.8,
+      "end": 74.6,
+      "groupId": "g-20",
+      "text": "经过师傅的手"
+    },
+    {
+      "id": "cue-84",
+      "sourceIndex": 83,
+      "start": 74.7,
+      "end": 75.5,
+      "groupId": "g-20",
+      "text": "慢慢展现出纹理"
+    },
+    {
+      "id": "cue-85",
+      "sourceIndex": 84,
+      "start": 75.6,
+      "end": 76.4,
+      "groupId": "g-21",
+      "text": "先用细砂纸打磨"
+    },
+    {
+      "id": "cue-86",
+      "sourceIndex": 85,
+      "start": 76.5,
+      "end": 77.3,
+      "groupId": "g-21",
+      "text": "边缘一定要圆润"
+    },
+    {
+      "id": "cue-87",
+      "sourceIndex": 86,
+      "start": 77.4,
+      "end": 78.2,
+      "groupId": "g-21",
+      "text": "不能留下毛刺"
+    },
+    {
+      "id": "cue-88",
+      "sourceIndex": 87,
+      "start": 78.3,
+      "end": 79.1,
+      "groupId": "g-21",
+      "text": "再涂上一层木蜡油"
+    },
+    {
+      "id": "cue-89",
+      "sourceIndex": 88,
+      "start": 79.2,
+      "end": 80,
+      "groupId": "g-22",
+      "text": "瞬间色泽就变了"
+    },
+    {
+      "id": "cue-90",
+      "sourceIndex": 89,
+      "start": 80.1,
+      "end": 80.9,
+      "groupId": "g-22",
+      "text": "这就是手作的温度"
+    },
+    {
+      "id": "cue-91",
+      "sourceIndex": 90,
+      "start": 81,
+      "end": 81.8,
+      "groupId": "g-22",
+      "text": "每一步都要耐心"
+    },
+    {
+      "id": "cue-92",
+      "sourceIndex": 91,
+      "start": 81.9,
+      "end": 82.7,
+      "groupId": "g-22",
+      "text": "稍微用力过猛"
+    },
+    {
+      "id": "cue-93",
+      "sourceIndex": 92,
+      "start": 82.8,
+      "end": 83.6,
+      "groupId": "g-23",
+      "text": "就可能前功尽弃"
+    },
+    {
+      "id": "cue-94",
+      "sourceIndex": 93,
+      "start": 83.7,
+      "end": 84.5,
+      "groupId": "g-23",
+      "text": "细节决定成败"
+    },
+    {
+      "id": "cue-95",
+      "sourceIndex": 94,
+      "start": 84.6,
+      "end": 85.4,
+      "groupId": "g-23",
+      "text": "最后组装完成"
+    },
+    {
+      "id": "cue-96",
+      "sourceIndex": 95,
+      "start": 85.5,
+      "end": 86.3,
+      "groupId": "g-23",
+      "text": "是不是非常惊艳"
+    },
+    {
+      "id": "cue-97",
+      "sourceIndex": 96,
+      "start": 86.4,
+      "end": 87.2,
+      "groupId": "g-24",
+      "text": "大家仔细看这里"
+    },
+    {
+      "id": "cue-98",
+      "sourceIndex": 97,
+      "start": 87.3,
+      "end": 88.1,
+      "groupId": "g-24",
+      "text": "看似普通的一块木头"
+    },
+    {
+      "id": "cue-99",
+      "sourceIndex": 98,
+      "start": 88.2,
+      "end": 89,
+      "groupId": "g-24",
+      "text": "经过师傅的手"
+    },
+    {
+      "id": "cue-100",
+      "sourceIndex": 99,
+      "start": 89.1,
+      "end": 89.9,
+      "groupId": "g-24",
+      "text": "慢慢展现出纹理"
+    },
+    {
+      "id": "cue-101",
+      "sourceIndex": 100,
+      "start": 90,
+      "end": 90.8,
+      "groupId": "g-25",
+      "text": "先用细砂纸打磨"
+    },
+    {
+      "id": "cue-102",
+      "sourceIndex": 101,
+      "start": 90.9,
+      "end": 91.7,
+      "groupId": "g-25",
+      "text": "边缘一定要圆润"
+    },
+    {
+      "id": "cue-103",
+      "sourceIndex": 102,
+      "start": 91.8,
+      "end": 92.6,
+      "groupId": "g-25",
+      "text": "不能留下毛刺"
+    },
+    {
+      "id": "cue-104",
+      "sourceIndex": 103,
+      "start": 92.7,
+      "end": 93.5,
+      "groupId": "g-25",
+      "text": "再涂上一层木蜡油"
+    },
+    {
+      "id": "cue-105",
+      "sourceIndex": 104,
+      "start": 93.6,
+      "end": 94.4,
+      "groupId": "g-26",
+      "text": "瞬间色泽就变了"
+    },
+    {
+      "id": "cue-106",
+      "sourceIndex": 105,
+      "start": 94.5,
+      "end": 95.3,
+      "groupId": "g-26",
+      "text": "这就是手作的温度"
+    },
+    {
+      "id": "cue-107",
+      "sourceIndex": 106,
+      "start": 95.4,
+      "end": 96.2,
+      "groupId": "g-26",
+      "text": "每一步都要耐心"
+    },
+    {
+      "id": "cue-108",
+      "sourceIndex": 107,
+      "start": 96.3,
+      "end": 97.1,
+      "groupId": "g-26",
+      "text": "稍微用力过猛"
+    },
+    {
+      "id": "cue-109",
+      "sourceIndex": 108,
+      "start": 97.2,
+      "end": 98,
+      "groupId": "g-27",
+      "text": "就可能前功尽弃"
+    },
+    {
+      "id": "cue-110",
+      "sourceIndex": 109,
+      "start": 98.1,
+      "end": 98.9,
+      "groupId": "g-27",
+      "text": "细节决定成败"
+    },
+    {
+      "id": "cue-111",
+      "sourceIndex": 110,
+      "start": 99,
+      "end": 99.8,
+      "groupId": "g-27",
+      "text": "最后组装完成"
+    },
+    {
+      "id": "cue-112",
+      "sourceIndex": 111,
+      "start": 99.9,
+      "end": 100.7,
+      "groupId": "g-27",
+      "text": "是不是非常惊艳"
+    },
+    {
+      "id": "cue-113",
+      "sourceIndex": 112,
+      "start": 100.8,
+      "end": 101.6,
+      "groupId": "g-28",
+      "text": "大家仔细看这里"
+    }
+  ],
+  "contextBefore": [],
+  "contextAfter": [],
+  "glossary": []
+}

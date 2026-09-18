@@ -1013,7 +1013,7 @@ test('Step 12.1 & 12.2: Real Main-path coordinator integration with real mask wr
       probeMedia: async (vid) => {
         const res = spawnSync(ffprobe, [
           '-v', 'error',
-          '-show_entries', 'stream=index,codec_type,width,height,start_time,duration,r_frame_rate,sample_aspect_ratio:stream_tags=rotate:stream_side_data=rotation',
+          '-show_entries', 'stream=index,codec_type,width,height,start_time,duration,r_frame_rate,avg_frame_rate,sample_aspect_ratio:stream_tags=rotate:stream_side_data=rotation',
           '-show_entries', 'format=duration,start_time',
           '-of', 'json',
           vid

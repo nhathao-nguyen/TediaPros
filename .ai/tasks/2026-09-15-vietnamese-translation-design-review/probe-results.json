@@ -1,0 +1,158 @@
+{
+  "kind": "OFFLINE_PROBE",
+  "providerCalls": 0,
+  "ttsCalls": 0,
+  "sourceHashes": {
+    "src/main/dubbing/plan.ts": "d8354b90889eae7b434c1d6b3f9e2321eb960f393092993ca775bf108dc3e5b4",
+    "src/main/dubbing/translation.ts": "a9f37684f2b19370c5981aebe0ba4b4ac289bb5d73b87ae57f285c9313d939a7",
+    "src/main/geminiGatewayPrompts.ts": "6d835aae7c5a36f386982bd83162a7392269627ed5b1236425932ad249d50e3a",
+    "src/main/translation/prompts.ts": "903401e1dd5b57229d59910938db1161a86de5ad37b4af396fd820a2b34b71c1",
+    "src/main/dubbing/durationPredictor.ts": "e3875669e8b6127f9f6d1e3d3c97e4d1a15122c62051a55b5ca46e23da9a6536",
+    "src/main/autoShortContentQuality.ts": "2e6e3b396b419a8ac6e2dcd07ef4d06fc267a8fc304a7c1f3becba0a66025d9f"
+  },
+  "promptComparison": {
+    "speaking_duration_seconds": {
+      "standard": true,
+      "gatewayDraft": false,
+      "gatewayReview": false
+    },
+    "target_natural_seconds": {
+      "standard": true,
+      "gatewayDraft": false,
+      "gatewayReview": false
+    },
+    "hard_max_natural_seconds": {
+      "standard": true,
+      "gatewayDraft": false,
+      "gatewayReview": false
+    },
+    "suggested_max_words": {
+      "standard": true,
+      "gatewayDraft": false,
+      "gatewayReview": false
+    }
+  },
+  "budgetMismatch": {
+    "sourceCueCount": 6,
+    "sumOfIndividualWindows": 3,
+    "actualGroupedWindow": 5.5,
+    "explanation": "Individual reservations remove 0.5 seconds six times; the merged speech unit reserves its external gap once."
+  },
+  "semanticNegativeControls": [
+    {
+      "error": "changed-object",
+      "original": "Cho 2 thìa muối vào nước.",
+      "candidate": "Cho 2 thìa đường vào nước.",
+      "actual": {
+        "ok": true,
+        "reasons": []
+      }
+    },
+    {
+      "error": "reversed-action-order",
+      "original": "Rút phích cắm trước khi vệ sinh máy.",
+      "candidate": "Vệ sinh máy trước khi rút phích cắm.",
+      "actual": {
+        "ok": true,
+        "reasons": []
+      }
+    }
+  ],
+  "coldEstimate": {
+    "seconds": 2.18,
+    "uncertaintySeconds": 0.75,
+    "confidence": 0,
+    "calibration": "uncalibrated",
+    "uncertaintyReasons": []
+  },
+  "defaultVietnameseBudgetForTwoSeconds": {
+    "unit": "words",
+    "budget": 9
+  },
+  "featureExamples": [
+    {
+      "text": "học sinh",
+      "features": {
+        "graphemes": 7,
+        "words": 2,
+        "numerals": 0,
+        "abbreviations": 0,
+        "pauses": 0
+      }
+    },
+    {
+      "text": "1.250 kg",
+      "features": {
+        "graphemes": 7,
+        "words": 2,
+        "numerals": 4,
+        "abbreviations": 0,
+        "pauses": 0
+      }
+    },
+    {
+      "text": "một nghìn hai trăm năm mươi ki lô gam",
+      "features": {
+        "graphemes": 29,
+        "words": 9,
+        "numerals": 0,
+        "abbreviations": 0,
+        "pauses": 0
+      }
+    }
+  ],
+  "historicalArtifactReplay": [
+    {
+      "name": "live-v8-volvo-20260915-1245",
+      "cueCount": 44,
+      "speechGroups": 13,
+      "timingEvidence": "synthetic fixture timestamps; do not use for real duration claims",
+      "longRows": [
+        {
+          "id": "cue-29",
+          "text": "Sau đó, họ đã số hóa đoạn âm thanh đến từ khu rừng lớn này,",
+          "sourceText": "后来他们把这段来自大森林的声音数字画",
+          "whitespaceUnits": 15
+        },
+        {
+          "id": "cue-32",
+          "text": "mới tạo thành tiếng bấm phím điều hướng đặc trưng của Volvo ngày nay.",
+          "sourceText": "才变成了如今窝耳窝方向键独有的点击声",
+          "whitespaceUnits": 14
+        },
+        {
+          "id": "cue-23",
+          "text": "âm thanh êm ái, tự nhiên, nghe một ngàn lần, mười ngàn lần",
+          "sourceText": "温柔 自然 听一千遍一万遍",
+          "whitespaceUnits": 13
+        }
+      ]
+    },
+    {
+      "name": "live-v8-actual-113-20260915-1250",
+      "cueCount": 113,
+      "speechGroups": 78,
+      "timingEvidence": "saved cue timeline; no TTS measurement in this probe",
+      "longRows": [
+        {
+          "id": "cue-10-15780",
+          "text": "Chỉ cần xoay ba núm vặn là có thể chuyển đổi các hình dạng và độ dày khác nhau.",
+          "sourceText": "转动三个旋钮就可以切换不同的形状和厚度",
+          "whitespaceUnits": 19
+        },
+        {
+          "id": "cue-13-24960",
+          "text": "Nếu có thời gian rảnh, mong các bạn cho một lượt thích và theo dõi miễn phí.",
+          "sourceText": "那欢迎的空我们来采免费的赞和关注",
+          "whitespaceUnits": 17
+        },
+        {
+          "id": "cue-22-40540",
+          "text": "Như vậy là có thể thái lát, thái con chì, bào sợi, thái hạt lựu được rồi.",
+          "sourceText": "这样就可以切片切条切丝切丁了",
+          "whitespaceUnits": 17
+        }
+      ]
+    }
+  ]
+}

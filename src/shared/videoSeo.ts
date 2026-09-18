@@ -12,6 +12,7 @@ const TITLE_CONTROL = /[\r\n\u2028\u2029\u0000-\u001f\u007f]/u
 const LIST_OR_QA_LINE = /^\s*(?:[-*•#]|\d+[.)]\s|(?:q|a|hỏi|đáp)\s*:)/imu
 const HASHTAG_CHAR = /[\p{L}\p{N}_]/u
 const HASHTAG_MAX_CHARS = 500
+const THUMBNAIL_TEXT_MAX_CHARS = 40
 
 export const DEFAULT_VIDEO_SEO_OPTIONS: Readonly<VideoSeoOptions> = Object.freeze({
   country: 'auto',
@@ -125,7 +126,7 @@ function regionOf(language: string): string | undefined {
 }
 
 export function resolveVideoSeoConfig(config: VideoTitleConfig, outputLanguage?: string): ResolvedVideoSeoConfig {
-  if (!oneOf(config.provider, ['gemini', 'openai', 'local'])) throw new Error('Nhà cung cấp AI metadata không hợp lệ.')
+  if (!oneOf(config.provider, ['gemini', 'openai', 'local', 'gemini-gateway'])) throw new Error('Nhà cung cấp AI metadata không hợp lệ.')
   if (config.serverUrl !== undefined) {
     try {
       const url = new URL(config.serverUrl)
@@ -157,18 +158,18 @@ export function resolveVideoSeoConfig(config: VideoTitleConfig, outputLanguage?:
 function normalizeMetadata(raw: unknown, allowLegacyMissingHashtags: boolean): VideoSeoMetadata {
   if (!raw || typeof raw !== 'object' || Array.isArray(raw)) throw new Error('AI trả về metadata không hợp lệ.')
   const record = raw as Record<string, unknown>
-  if (!allowLegacyMissingHashtags) assertExactKeys(record, ['title', 'description', 'tags', 'hashtags'])
+  if (!allowLegacyMissingHashtags) assertExactKeys(record, ['title', 'description', 'tags', 'hashtags', 'thumbnailText'])
   if (typeof record.title !== 'string' || typeof record.description !== 'string' || !Array.isArray(record.tags)) {
     throw new Error('AI trả về metadata không đúng cấu trúc.')
   }
   const title = normalize(record.title)
   const sourceDescription = record.description.normalize('NFC').trim()
   if (!title || codePoints(title) > 100 || TITLE_CONTROL.test(title) || LIST_OR_QA_LINE.test(title) || /[<>]/u.test(title) ||
-    containsProtocolPayload(title, ['title', 'description', 'tags', 'hashtags'])) {
+    containsProtocolPayload(title, ['title', 'description', 'tags', 'hashtags', 'thumbnailText'])) {
     throw new Error('Tiêu đề metadata không hợp lệ hoặc dài quá 100 ký tự.')
   }
   if (!sourceDescription || CONTROL.test(sourceDescription) || /[<>]/u.test(sourceDescription) || LIST_OR_QA_LINE.test(sourceDescription) ||
-    containsProtocolPayload(sourceDescription, ['title', 'description', 'tags', 'hashtags'])) {
+    containsProtocolPayload(sourceDescription, ['title', 'description', 'tags', 'hashtags', 'thumbnailText'])) {
     throw new Error('Description phải là một đoạn văn hợp lệ.')
   }
   const description = sourceDescription.replace(/\s+/gu, ' ')
@@ -189,7 +190,16 @@ function normalizeMetadata(raw: unknown, allowLegacyMissingHashtags: boolean): V
   if (countYouTubeTagCharacters(tags) > 500) throw new Error('Tổng tags dài quá 500 ký tự.')
   if (Array.isArray(record.hashtags) && record.hashtags.length > 100) throw new Error('Metadata có quá nhiều hashtags.')
   const hashtags = normalizeHashtags(record.hashtags, tags, allowLegacyMissingHashtags)
-  return { title, description, tags, hashtags }
+  // thumbnailText: optional for legacy metadata, validated for fresh AI responses
+  const rawThumbText = record.thumbnailText
+  let thumbnailText = ''
+  if (rawThumbText !== undefined) {
+    if (typeof rawThumbText !== 'string') throw new Error('thumbnailText phải là chuỗi.')
+    thumbnailText = normalize(rawThumbText)
+    if (TITLE_CONTROL.test(thumbnailText)) throw new Error('Thumbnail text chứa ký tự điều khiển không hợp lệ.')
+    if (codePoints(thumbnailText) > THUMBNAIL_TEXT_MAX_CHARS) throw new Error(`Thumbnail text dài quá ${THUMBNAIL_TEXT_MAX_CHARS} ký tự.`)
+  }
+  return { title, description, tags, hashtags, thumbnailText }
 }
 
 /**
@@ -220,7 +230,16 @@ export function countYouTubeTagCharacters(tags: readonly string[]): number {
 
 export function formatVideoSeoMetadata(value: VideoSeoMetadata): string {
   const metadata = normalizeMetadata(value, false)
-  return `${metadata.title}\n\nDescription:\n${metadata.description}\n\nTags:\n${metadata.tags.join(', ')}\n\nHashtags:\n${metadata.hashtags.join(' ')}\n`
+  const parts = [
+    metadata.title,
+    `\nDescription:\n${metadata.description}`,
+    `\nTags:\n${metadata.tags.join(', ')}`,
+    `\nHashtags:\n${metadata.hashtags.join(' ')}`
+  ]
+  if (metadata.thumbnailText) {
+    parts.push(`\nThumbnail Text:\n${metadata.thumbnailText}`)
+  }
+  return parts.join('\n') + '\n'
 }
 
 export function formatVideoSeoCaption(value: VideoSeoMetadata): string {
@@ -259,7 +278,7 @@ export function parseVideoSeoPreset(raw: string): ResolvedVideoSeoConfig {
   const record = parsed as Record<string, unknown>
   const allowed = new Set(['version', 'provider', 'language', 'serverUrl', 'seo'])
   if (Object.keys(record).some((key) => !allowed.has(key)) || record.version !== 1 ||
-    !oneOf(record.provider, ['gemini', 'openai', 'local']) || typeof record.language !== 'string' ||
+    !oneOf(record.provider, ['gemini', 'openai', 'local', 'gemini-gateway']) || typeof record.language !== 'string' ||
     (record.serverUrl !== undefined && typeof record.serverUrl !== 'string')) {
     throw new Error('Bộ nhớ thị trường chứa trường không hợp lệ.')
   }

@@ -379,6 +379,21 @@ test('transient provider failure honors bounded Retry-After before one recovery 
   assert.equal(result.assessment.disposition, 'validated')
 })
 
+test('gateway-owned retry never creates a second outer provider request', async () => {
+  let calls = 0
+  const result = await translateWithAdapter(input, {
+    capability: { ...capability, transportRetryOwner: 'gateway' },
+    async requestOnce() {
+      calls++
+      throw Object.assign(new Error('gateway exhausted its bounded internal retry'), { status: 503, providerCode: 'provider-transient' })
+    }
+  }, new AbortController().signal, { sleep: async () => { throw new Error('outer retry must not sleep') } })
+  assert.equal(calls, 1)
+  assert.equal(result.assessment.disposition, 'needs-review')
+  assert.ok(result.assessment.issues.some((item) => item.code === 'provider-transient'))
+  assert.match(result.assessment.issues.find((item) => item.code === 'provider-transient')?.message || '', /thử lại thủ công/u)
+})
+
 test('a charged batch resumes as recovery work instead of bypassing the quota', async () => {
   const first = await translateWithAdapter(input, {
     capability,

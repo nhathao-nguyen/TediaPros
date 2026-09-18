@@ -184,6 +184,16 @@ export interface DubbingSpeechGroupingOptions {
   reviewedTargetBoundaries?: boolean
 }
 
+/**
+ * Timing budgets created by the Gateway are source-anchored. The TTS consumer
+ * must therefore reuse the same deterministic source partition: reviewed
+ * target punctuation may improve text, but it must not silently introduce
+ * extra protected gaps and invalidate that budget.
+ */
+export function groupDubbingPlanForSourceAnchoredSpeech(plan: DubbingPlan, locale: string): DubbingPlan {
+  return groupDubbingPlanForSpeech(plan, locale, { reviewedTargetBoundaries: false })
+}
+
 function groupByReviewedTargetBoundaries(cues: readonly DubbingPlanCue[]): DubbingPlanCue[][] {
   const groups: DubbingPlanCue[][] = []
   let current: DubbingPlanCue[] = []

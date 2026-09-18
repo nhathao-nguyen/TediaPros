@@ -17,6 +17,7 @@ import {
   getGlobalResourceManager,
   setGlobalResourceManager
 } from '../src/main/autoShortResourceManager'
+import gatewayMetadataFixture from './fixtures/gemini-gateway-v2-metadata.json'
 
 test('rephrase parser accepts at most three grounded candidates', () => {
   const result = parseRephraseResponse('[c1:1] Do not touch it.\n[c1:2] Please do not touch it.', 'c1')
@@ -96,6 +97,44 @@ test('local measured-overflow batches are capped at eight cues and carry measure
     assert.equal(received[0].rows[0].source_text, 'Nguồn 0')
     assert.deepEqual([...result.keys()], requests.map((request) => request.cueId))
   } finally { globalThis.fetch = previousFetch }
+})
+
+test('Gemini Gateway sends one measured-overflow batch instead of one request per cue', async () => {
+  const { rephraseDubbingCues } = await import('../src/main/autoshort') as any
+  const previousFetch = globalThis.fetch
+  const received: string[][] = []
+  globalThis.fetch = async (_url, init) => {
+    const body = JSON.parse(String(init?.body || '{}'))
+    const rows = body.messages[1].content.split('\n')
+      .filter((line: string) => line.startsWith('{'))
+      .map((line: string) => JSON.parse(line))
+    received.push(rows.map((row: { id: string }) => row.id))
+    const content = rows.flatMap((row: { id: string }) => [1, 2, 3]
+      .map((choice) => `[${row.id}:${choice}] Bản rút gọn ${choice}.`)).join('\n')
+    return new Response(JSON.stringify({
+      model: 'gemini-advanced',
+      gateway_metadata: gatewayMetadataFixture,
+      choices: [{ message: { content }, finish_reason: 'stop' }]
+    }))
+  }
+  try {
+    const requests = Array.from({ length: 6 }, (_, index) => ({
+      cueId: `overflow-${index}`,
+      currentText: `Bản dịch dài ${index}.`,
+      sourceText: `Nguồn ${index}`,
+      targetDuration: 1,
+      measuredDuration: 2,
+      maxDuration: 1.8
+    }))
+    const result = await rephraseDubbingCues({
+      translateProvider: 'gemini-gateway',
+      translateServerUrl: 'http://127.0.0.1:4982/openai/v1'
+    }, requests, 'vi')
+    assert.deepEqual(received, [requests.map((request) => request.cueId)])
+    assert.deepEqual([...result.keys()], requests.map((request) => request.cueId))
+  } finally {
+    globalThis.fetch = previousFetch
+  }
 })
 
 test('local batch rephrase retains the inference lease until every response body is consumed', async () => {

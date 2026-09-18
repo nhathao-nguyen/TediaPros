@@ -1,0 +1,30 @@
+{
+  "schemaVersion": 2,
+  "state": "draft-validated",
+  "identity": "gemini-gateway:gemini-advanced:gemini-gateway-two-pass-v10:ai-output-parser-v1:gateway-draft-v2:cue-lines-v1:vi:12",
+  "raw": "{\"translations\":{\"cue-68-167300\":\"Về chiếc bánh này, chúng ta đã trách lầm rồi.\",\"cue-69-169360\":\"Bánh làm thực sự vừa rẻ lại vừa ngon.\",\"cue-70-171800\":\"Đúng là loại bánh trung thu thập cẩm ngũ nhân ngày xưa mà chúng ta đang tìm kiếm.\",\"cue-71-174960\":\"Nhưng tôi thấy họ đã cải tiến đi một chút.\",\"cue-72-177880\":\"Bánh chúng ta ăn hồi nhỏ hơi cứng một chút.\",\"cue-73-179620\":\"Còn loại này thực sự rất mềm.\",\"cue-74-181860\":\"Hơn nữa nhân bánh lại vô cùng đầy đặn.\",\"cue-75-184000\":\"Mức giá này mà đạt được chất lượng như thế này.\",\"cue-76-186180\":\"Tôi thấy vẫn là rất tuyệt vời.\",\"cue-77-187540\":\"Giờ đây chất lượng cũng coi như là rất cao rồi.\",\"cue-78-188900\":\"Bạn nào cần thì cứ yên tâm mua nhé.\",\"cue-79-190340\":\"Xin mời thưởng thức.\"}}",
+  "rawSha256": "e7dba3e04b84f25fb73c472c01e958b462ad95a87b042d6c1f0545e66c3de2fe",
+  "observedModelId": "8c46e95b1a07cecc",
+  "observedModel": "3.5 Flash-Lite",
+  "routeFingerprint": "29ed9729dbdd53e76081fc89bd7f7991b6a6e2c770e964fd8fa2ceaa0c22c646",
+  "sourceDigest": "ea161a80f1b4481d2831e6bb6a88d6ced978c612983b719585f4be1e748311c5",
+  "expectedIds": [
+    "cue-68-167300",
+    "cue-69-169360",
+    "cue-70-171800",
+    "cue-71-174960",
+    "cue-72-177880",
+    "cue-73-179620",
+    "cue-74-181860",
+    "cue-75-184000",
+    "cue-76-186180",
+    "cue-77-187540",
+    "cue-78-188900",
+    "cue-79-190340"
+  ],
+  "targetLocale": "vi",
+  "draftPromptVersion": "gemini-gateway-two-pass-v10",
+  "reviewPromptVersion": "gemini-gateway-two-pass-v10",
+  "parserVersion": "ai-output-parser-v1:gateway-draft-v2",
+  "savedAtUtc": "2026-09-16T17:07:28.445Z"
+}

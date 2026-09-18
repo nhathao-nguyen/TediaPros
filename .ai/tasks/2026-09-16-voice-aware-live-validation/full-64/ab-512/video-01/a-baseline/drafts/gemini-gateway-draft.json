@@ -1,0 +1,25 @@
+{
+  "schemaVersion": 2,
+  "state": "draft-validated",
+  "identity": "gemini-gateway:gemini-advanced:gemini-gateway-two-pass-v10:ai-output-parser-v1:gateway-draft-v2:cue-lines-v1:vi:7",
+  "raw": "{\"translations\":{\"cue-0-0\":\"Cho nhiều gừng vào cá để khử mùi tanh và tăng hương thơm.\",\"cue-1-2780\":\"Cho nhiều cà chua vào thịt bò giúp thịt mềm nhừ hơn.\",\"cue-2-6080\":\"Cho nhiều tỏi vào thịt gà làm nổi bật hương vị.\",\"cue-3-8940\":\"Cho nhiều củ cải vào thịt cừu giúp khử mùi hôi.\",\"cue-4-12220\":\"Cho nhiều hoa hồi vào thịt lợn để tăng hương thơm đậm đà.\",\"cue-5-15580\":\"Cho nhiều giấm vào khoai tây để khoai giòn ngon hơn.\",\"cue-6-18980\":\"Cho nhiều hành lá vào đậu phụ để tăng vị tươi ngon.\"}}",
+  "rawSha256": "2838c866a60d2babd53249083676924be3fe7975cc29ad88b363523c758819d9",
+  "observedModelId": "8c46e95b1a07cecc",
+  "observedModel": "3.5 Flash-Lite",
+  "routeFingerprint": "29ed9729dbdd53e76081fc89bd7f7991b6a6e2c770e964fd8fa2ceaa0c22c646",
+  "sourceDigest": "0dd36f9ba35866dc465626127194e1c49316d71545d37fb9840231ac13924384",
+  "expectedIds": [
+    "cue-0-0",
+    "cue-1-2780",
+    "cue-2-6080",
+    "cue-3-8940",
+    "cue-4-12220",
+    "cue-5-15580",
+    "cue-6-18980"
+  ],
+  "targetLocale": "vi",
+  "draftPromptVersion": "gemini-gateway-two-pass-v10",
+  "reviewPromptVersion": "gemini-gateway-two-pass-v10",
+  "parserVersion": "ai-output-parser-v1:gateway-draft-v2",
+  "savedAtUtc": "2026-09-16T17:05:17.732Z"
+}

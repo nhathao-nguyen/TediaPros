@@ -121,6 +121,7 @@ export default function VideoEditor({ draft, active = true }: Props): JSX.Elemen
   const [activeBlurId, setActiveBlurId] = useState<string | null>(null)
 
   const [fontId, setFontId] = usePersistedState('tblao.burn.fontId', 'auto')
+  const [fontWeight, setFontWeight] = usePersistedState('tblao.burn.fontWeight', 400)
   const [fonts, setFonts] = useState<BurnFontEntry[]>([])
   const [fontsLoaded, setFontsLoaded] = useState(false)
   const [previewFontFamily, setPreviewFontFamily] = useState('')
@@ -516,6 +517,7 @@ export default function VideoEditor({ draft, active = true }: Props): JSX.Elemen
           videoHeight: videoH,
           subRegion: subtitleRegion,
           fontId,
+          fontWeight,
           bgEnabled,
           profile: layoutProfile,
           autoOptimize
@@ -542,6 +544,7 @@ export default function VideoEditor({ draft, active = true }: Props): JSX.Elemen
     autoOptimize,
     bgEnabled,
     fontId,
+    fontWeight,
     layoutProfile,
     previewFile.cues.length,
     subtitleEnabled,
@@ -580,7 +583,7 @@ export default function VideoEditor({ draft, active = true }: Props): JSX.Elemen
         const result = await api.loadBurnFontData(entry.id)
         if (cancelled) return
 
-        const face = new FontFace(family, result.data)
+        const face = new FontFace(family, result.data, { weight: '100 900' })
         loadedFace = await face.load()
         if (cancelled) return
         document.fonts.add(loadedFace)
@@ -833,6 +836,7 @@ export default function VideoEditor({ draft, active = true }: Props): JSX.Elemen
       amThanhFile: audioEnabled ? audioFile : null,
       amLuongGoc: sourceVolume,
       fontId: fontId || 'auto',
+      subtitleFontWeight: fontWeight,
       textColor,
       outlineColor,
       outlinePx,
@@ -1045,6 +1049,7 @@ export default function VideoEditor({ draft, active = true }: Props): JSX.Elemen
                     subtitleTime={currentTime}
                     subtitleDisplayStyle={displayStyle}
                     subtitleFontSize={layoutPlan?.options.fontSize}
+                    subtitleFontWeight={fontWeight}
                     scaleSubtitleToVideo={portraitBlur}
                     highlightColor={highlightColor}
                     highlightPop={highlightPop}
@@ -1376,6 +1381,23 @@ export default function VideoEditor({ draft, active = true }: Props): JSX.Elemen
                     )}
                 </div>
                 {fontMutationNotice && <div className="dy-err small">{fontMutationNotice}</div>}
+
+                <label className="field editor-field">
+                  <span>Độ đậm chữ</span>
+                  <select
+                    value={fontWeight}
+                    disabled={burnState === 'running'}
+                    onChange={(event) => setFontWeight(Number(event.target.value))}
+                  >
+                    <option value={300}>300 · Mảnh (Light)</option>
+                    <option value={400}>400 · Thường (Regular)</option>
+                    <option value={500}>500 · Vừa (Medium)</option>
+                    <option value={600}>600 · Bán đậm (Semi-Bold)</option>
+                    <option value={700}>700 · Đậm (Bold)</option>
+                    <option value={800}>800 · Rất đậm (Extra Bold)</option>
+                    <option value={900}>900 · Cực đậm (Black)</option>
+                  </select>
+                </label>
 
                 <div className="editor-color-grid">
                   <label className="field editor-field">

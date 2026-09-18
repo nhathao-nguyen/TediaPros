@@ -1,10 +1,26 @@
 import assert from 'node:assert/strict'
 import test from 'node:test'
-import { assessContentQuality, validateAutoShortContentQuality, validateRephraseSemanticPreservation } from '../src/main/autoShortContentQuality'
+import { assessContentQuality, validateAutoShortContentQuality, validateRephraseSemanticPreservation, validateSourceRepairNumericPreservation } from '../src/main/autoShortContentQuality'
 import type { SubtitleCue } from '../src/shared/types'
 
 const cue = (id: string, text: string, sourceIndex: number): SubtitleCue => ({
   id, text, sourceIndex, start: sourceIndex, end: sourceIndex + 1
+})
+
+test('source-repair numeric evidence does not double-count an Arabic digit span', () => {
+  const result = validateSourceRepairNumericPreservation('加入2勺盐。', 'Thêm 2 thìa muối.')
+  assert.equal(result.ok, true)
+  assert.equal(result.checkedNumbers, true)
+})
+
+test('source-repair numeric evidence still counts repeated quantity spans independently', () => {
+  const result = validateSourceRepairNumericPreservation(
+    '加入2勺盐和2勺糖。',
+    'Thêm 2 thìa muối và 2 thìa đường.'
+  )
+  assert.equal(result.ok, true)
+  assert.equal(result.checkedNumbers, true)
+  assert.equal(validateSourceRepairNumericPreservation('加入2勺盐。', 'Thêm 20 thìa muối.').ok, false)
 })
 
 test('rephrase gate rejects candidates that lose protected meaning', () => {
@@ -40,6 +56,30 @@ test('rephrase gate rejects a dropped object and swapped people', () => {
   assert.equal(validateRephraseSemanticPreservation(
     'Please give Alice the key.', 'Please give Bob the key.', 'en'
   ).ok, false)
+})
+
+test('rephrase gate rejects a quantified object swap and a reversed temporal action order', () => {
+  const ingredient = validateRephraseSemanticPreservation(
+    'Cho 2 thìa muối vào nước.', 'Cho 2 thìa đường vào nước.', 'vi-VN'
+  )
+  assert.equal(ingredient.ok, false)
+  assert.ok(ingredient.reasons.includes('quantified-object'))
+
+  const sequence = validateRephraseSemanticPreservation(
+    'Rút phích cắm trước khi vệ sinh máy.', 'Vệ sinh máy trước khi rút phích cắm.', 'vi-VN'
+  )
+  assert.equal(sequence.ok, false)
+  assert.ok(sequence.reasons.includes('action-order'))
+})
+
+test('rephrase gate accepts a reordered inventory with repeated quantity and measure', () => {
+  const reordered = validateRephraseSemanticPreservation(
+    'Cho 2 thìa muối và 2 thìa đường vào nước.',
+    'Cho 2 thìa đường và 2 thìa muối vào nước.',
+    'vi-VN'
+  )
+  assert.equal(reordered.ok, true)
+  assert.equal(reordered.reasons.includes('quantified-object'), false)
 })
 test('content QA rejects duplicate/missing/unexpected cue mappings and protected number changes', () => {
   const result = validateAutoShortContentQuality({

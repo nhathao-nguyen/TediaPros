@@ -1,0 +1,5230 @@
+{
+  "duration": 61.2324375,
+  "language": "zh",
+  "segments": [
+    {
+      "start": 0.0,
+      "end": 1.48,
+      "text": "亲爱的观众朋友们一起来看看",
+      "words": [
+        {
+          "text": "亲",
+          "start": 0.0,
+          "end": 0.24,
+          "probability": 0.693359375
+        },
+        {
+          "text": "爱",
+          "start": 0.24,
+          "end": 0.32,
+          "probability": 0.994140625
+        },
+        {
+          "text": "的",
+          "start": 0.32,
+          "end": 0.42,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "观",
+          "start": 0.42,
+          "end": 0.52,
+          "probability": 0.98828125
+        },
+        {
+          "text": "众",
+          "start": 0.52,
+          "end": 0.58,
+          "probability": 0.999267578125
+        },
+        {
+          "text": "朋友",
+          "start": 0.58,
+          "end": 0.72,
+          "probability": 0.99658203125
+        },
+        {
+          "text": "们",
+          "start": 0.72,
+          "end": 0.88,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "一起",
+          "start": 0.88,
+          "end": 1.12,
+          "probability": 0.5458984375
+        },
+        {
+          "text": "来",
+          "start": 1.12,
+          "end": 1.28,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "看看",
+          "start": 1.28,
+          "end": 1.48,
+          "probability": 0.98876953125
+        }
+      ]
+    },
+    {
+      "start": 1.48,
+      "end": 3.82,
+      "text": "今日份实用又简单的生活小技巧吧",
+      "words": [
+        {
+          "text": "今日",
+          "start": 1.48,
+          "end": 1.86,
+          "probability": 0.85302734375
+        },
+        {
+          "text": "份",
+          "start": 1.86,
+          "end": 2.06,
+          "probability": 0.85107421875
+        },
+        {
+          "text": "实",
+          "start": 2.06,
+          "end": 2.28,
+          "probability": 0.56396484375
+        },
+        {
+          "text": "用",
+          "start": 2.28,
+          "end": 2.38,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "又",
+          "start": 2.38,
+          "end": 2.52,
+          "probability": 0.94677734375
+        },
+        {
+          "text": "简",
+          "start": 2.52,
+          "end": 2.7,
+          "probability": 0.999755859375
+        },
+        {
+          "text": "单",
+          "start": 2.7,
+          "end": 2.84,
+          "probability": 1.0
+        },
+        {
+          "text": "的",
+          "start": 2.84,
+          "end": 2.94,
+          "probability": 0.97216796875
+        },
+        {
+          "text": "生活",
+          "start": 2.94,
+          "end": 3.12,
+          "probability": 0.98583984375
+        },
+        {
+          "text": "小",
+          "start": 3.12,
+          "end": 3.34,
+          "probability": 0.9912109375
+        },
+        {
+          "text": "技",
+          "start": 3.34,
+          "end": 3.5,
+          "probability": 0.9921875
+        },
+        {
+          "text": "巧",
+          "start": 3.5,
+          "end": 3.66,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "吧",
+          "start": 3.66,
+          "end": 3.82,
+          "probability": 0.974609375
+        }
+      ]
+    },
+    {
+      "start": 3.82,
+      "end": 5.18,
+      "text": "步骤清晰一看就懂",
+      "words": [
+        {
+          "text": "步",
+          "start": 3.82,
+          "end": 4.2,
+          "probability": 0.81298828125
+        },
+        {
+          "text": "骤",
+          "start": 4.2,
+          "end": 4.26,
+          "probability": 0.77978515625
+        },
+        {
+          "text": "清",
+          "start": 4.26,
+          "end": 4.46,
+          "probability": 0.97314453125
+        },
+        {
+          "text": "晰",
+          "start": 4.46,
+          "end": 4.6,
+          "probability": 0.974365234375
+        },
+        {
+          "text": "一",
+          "start": 4.6,
+          "end": 4.74,
+          "probability": 0.9931640625
+        },
+        {
+          "text": "看",
+          "start": 4.74,
+          "end": 4.92,
+          "probability": 0.998046875
+        },
+        {
+          "text": "就",
+          "start": 4.92,
+          "end": 5.04,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "懂",
+          "start": 5.04,
+          "end": 5.18,
+          "probability": 0.99951171875
+        }
+      ]
+    },
+    {
+      "start": 5.18,
+      "end": 7.06,
+      "text": "轻松解决日常生活中的难题",
+      "words": [
+        {
+          "text": "轻",
+          "start": 5.18,
+          "end": 5.52,
+          "probability": 0.953857421875
+        },
+        {
+          "text": "松",
+          "start": 5.52,
+          "end": 5.66,
+          "probability": 0.962890625
+        },
+        {
+          "text": "解",
+          "start": 5.66,
+          "end": 5.82,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "决",
+          "start": 5.82,
+          "end": 5.94,
+          "probability": 0.9931640625
+        },
+        {
+          "text": "日",
+          "start": 5.94,
+          "end": 6.14,
+          "probability": 0.99169921875
+        },
+        {
+          "text": "常",
+          "start": 6.14,
+          "end": 6.28,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "生活",
+          "start": 6.28,
+          "end": 6.52,
+          "probability": 1.0
+        },
+        {
+          "text": "中",
+          "start": 6.52,
+          "end": 6.68,
+          "probability": 0.998046875
+        },
+        {
+          "text": "的",
+          "start": 6.68,
+          "end": 6.76,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "难",
+          "start": 6.76,
+          "end": 6.88,
+          "probability": 0.990234375
+        },
+        {
+          "text": "题",
+          "start": 6.88,
+          "end": 7.06,
+          "probability": 0.9951171875
+        }
+      ]
+    },
+    {
+      "start": 7.06,
+      "end": 8.2,
+      "text": "将一节软管剪下来",
+      "words": [
+        {
+          "text": "将",
+          "start": 7.06,
+          "end": 7.3,
+          "probability": 0.97509765625
+        },
+        {
+          "text": "一",
+          "start": 7.3,
+          "end": 7.44,
+          "probability": 0.98046875
+        },
+        {
+          "text": "节",
+          "start": 7.44,
+          "end": 7.52,
+          "probability": 0.53369140625
+        },
+        {
+          "text": "软",
+          "start": 7.52,
+          "end": 7.64,
+          "probability": 0.972412109375
+        },
+        {
+          "text": "管",
+          "start": 7.64,
+          "end": 7.78,
+          "probability": 0.95068359375
+        },
+        {
+          "text": "剪",
+          "start": 7.78,
+          "end": 7.9,
+          "probability": 0.947021484375
+        },
+        {
+          "text": "下",
+          "start": 7.9,
+          "end": 8.02,
+          "probability": 0.99609375
+        },
+        {
+          "text": "来",
+          "start": 8.02,
+          "end": 8.2,
+          "probability": 1.0
+        }
+      ]
+    },
+    {
+      "start": 8.2,
+      "end": 9.52,
+      "text": "把中间部分剪掉卷起来",
+      "words": [
+        {
+          "text": "把",
+          "start": 8.2,
+          "end": 8.36,
+          "probability": 0.9580078125
+        },
+        {
+          "text": "中",
+          "start": 8.36,
+          "end": 8.5,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "间",
+          "start": 8.5,
+          "end": 8.62,
+          "probability": 0.994140625
+        },
+        {
+          "text": "部分",
+          "start": 8.62,
+          "end": 8.8,
+          "probability": 0.9912109375
+        },
+        {
+          "text": "剪",
+          "start": 8.8,
+          "end": 9.0,
+          "probability": 0.987060546875
+        },
+        {
+          "text": "掉",
+          "start": 9.0,
+          "end": 9.14,
+          "probability": 0.78466796875
+        },
+        {
+          "text": "卷",
+          "start": 9.14,
+          "end": 9.24,
+          "probability": 0.965576171875
+        },
+        {
+          "text": "起",
+          "start": 9.24,
+          "end": 9.36,
+          "probability": 0.9951171875
+        },
+        {
+          "text": "来",
+          "start": 9.36,
+          "end": 9.52,
+          "probability": 1.0
+        }
+      ]
+    },
+    {
+      "start": 9.52,
+      "end": 11.04,
+      "text": "套入其中一节软管断口处",
+      "words": [
+        {
+          "text": "套",
+          "start": 9.52,
+          "end": 9.7,
+          "probability": 0.98828125
+        },
+        {
+          "text": "入",
+          "start": 9.7,
+          "end": 9.82,
+          "probability": 0.974609375
+        },
+        {
+          "text": "其",
+          "start": 9.82,
+          "end": 9.94,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "中",
+          "start": 9.94,
+          "end": 10.04,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "一",
+          "start": 10.04,
+          "end": 10.16,
+          "probability": 0.99169921875
+        },
+        {
+          "text": "节",
+          "start": 10.16,
+          "end": 10.26,
+          "probability": 0.9873046875
+        },
+        {
+          "text": "软",
+          "start": 10.26,
+          "end": 10.42,
+          "probability": 0.98779296875
+        },
+        {
+          "text": "管",
+          "start": 10.42,
+          "end": 10.6,
+          "probability": 0.98828125
+        },
+        {
+          "text": "断",
+          "start": 10.6,
+          "end": 10.7,
+          "probability": 0.9580078125
+        },
+        {
+          "text": "口",
+          "start": 10.7,
+          "end": 10.88,
+          "probability": 0.9951171875
+        },
+        {
+          "text": "处",
+          "start": 10.88,
+          "end": 11.04,
+          "probability": 0.992431640625
+        }
+      ]
+    },
+    {
+      "start": 11.04,
+      "end": 12.28,
+      "text": "再把另外一节软管",
+      "words": [
+        {
+          "text": "再",
+          "start": 11.04,
+          "end": 11.38,
+          "probability": 0.9638671875
+        },
+        {
+          "text": "把",
+          "start": 11.38,
+          "end": 11.48,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "另外",
+          "start": 11.48,
+          "end": 11.68,
+          "probability": 0.974609375
+        },
+        {
+          "text": "一",
+          "start": 11.68,
+          "end": 11.86,
+          "probability": 0.99609375
+        },
+        {
+          "text": "节",
+          "start": 11.86,
+          "end": 11.94,
+          "probability": 0.98095703125
+        },
+        {
+          "text": "软",
+          "start": 11.94,
+          "end": 12.08,
+          "probability": 0.9951171875
+        },
+        {
+          "text": "管",
+          "start": 12.08,
+          "end": 12.28,
+          "probability": 0.99755859375
+        }
+      ]
+    },
+    {
+      "start": 12.28,
+      "end": 13.86,
+      "text": "对准插紧用胶带进行固定",
+      "words": [
+        {
+          "text": "对",
+          "start": 12.28,
+          "end": 12.46,
+          "probability": 0.96826171875
+        },
+        {
+          "text": "准",
+          "start": 12.46,
+          "end": 12.62,
+          "probability": 0.999755859375
+        },
+        {
+          "text": "插",
+          "start": 12.62,
+          "end": 12.78,
+          "probability": 0.98095703125
+        },
+        {
+          "text": "紧",
+          "start": 12.78,
+          "end": 12.9,
+          "probability": 0.75048828125
+        },
+        {
+          "text": "用",
+          "start": 12.9,
+          "end": 13.02,
+          "probability": 0.99462890625
+        },
+        {
+          "text": "胶",
+          "start": 13.02,
+          "end": 13.2,
+          "probability": 0.97998046875
+        },
+        {
+          "text": "带",
+          "start": 13.2,
+          "end": 13.34,
+          "probability": 0.98779296875
+        },
+        {
+          "text": "进",
+          "start": 13.34,
+          "end": 13.52,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "行",
+          "start": 13.52,
+          "end": 13.66,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "固",
+          "start": 13.66,
+          "end": 13.76,
+          "probability": 0.997314453125
+        },
+        {
+          "text": "定",
+          "start": 13.76,
+          "end": 13.86,
+          "probability": 0.9990234375
+        }
+      ]
+    },
+    {
+      "start": 13.86,
+      "end": 14.92,
+      "text": "这样两节软管",
+      "words": [
+        {
+          "text": "这样",
+          "start": 13.86,
+          "end": 14.32,
+          "probability": 0.98046875
+        },
+        {
+          "text": "两",
+          "start": 14.32,
+          "end": 14.46,
+          "probability": 0.98828125
+        },
+        {
+          "text": "节",
+          "start": 14.46,
+          "end": 14.58,
+          "probability": 0.927734375
+        },
+        {
+          "text": "软",
+          "start": 14.58,
+          "end": 14.7,
+          "probability": 0.995361328125
+        },
+        {
+          "text": "管",
+          "start": 14.7,
+          "end": 14.92,
+          "probability": 0.9951171875
+        }
+      ]
+    },
+    {
+      "start": 14.92,
+      "end": 16.36,
+      "text": "即使在没有胶水的前提下",
+      "words": [
+        {
+          "text": "即",
+          "start": 14.92,
+          "end": 15.12,
+          "probability": 0.9677734375
+        },
+        {
+          "text": "使",
+          "start": 15.12,
+          "end": 15.24,
+          "probability": 0.98876953125
+        },
+        {
+          "text": "在",
+          "start": 15.24,
+          "end": 15.36,
+          "probability": 0.99365234375
+        },
+        {
+          "text": "没有",
+          "start": 15.36,
+          "end": 15.5,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "胶",
+          "start": 15.5,
+          "end": 15.72,
+          "probability": 0.923583984375
+        },
+        {
+          "text": "水",
+          "start": 15.72,
+          "end": 15.86,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "的",
+          "start": 15.86,
+          "end": 15.96,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "前",
+          "start": 15.96,
+          "end": 16.08,
+          "probability": 0.9951171875
+        },
+        {
+          "text": "提",
+          "start": 16.08,
+          "end": 16.2,
+          "probability": 0.98095703125
+        },
+        {
+          "text": "下",
+          "start": 16.2,
+          "end": 16.36,
+          "probability": 0.9990234375
+        }
+      ]
+    },
+    {
+      "start": 16.36,
+      "end": 17.34,
+      "text": "也能轻松修复好",
+      "words": [
+        {
+          "text": "也",
+          "start": 16.36,
+          "end": 16.54,
+          "probability": 0.99560546875
+        },
+        {
+          "text": "能",
+          "start": 16.54,
+          "end": 16.62,
+          "probability": 0.998046875
+        },
+        {
+          "text": "轻",
+          "start": 16.62,
+          "end": 16.76,
+          "probability": 0.999267578125
+        },
+        {
+          "text": "松",
+          "start": 16.76,
+          "end": 16.9,
+          "probability": 0.998046875
+        },
+        {
+          "text": "修",
+          "start": 16.9,
+          "end": 17.04,
+          "probability": 0.999267578125
+        },
+        {
+          "text": "复",
+          "start": 17.04,
+          "end": 17.12,
+          "probability": 0.99169921875
+        },
+        {
+          "text": "好",
+          "start": 17.12,
+          "end": 17.34,
+          "probability": 0.9990234375
+        }
+      ]
+    },
+    {
+      "start": 17.34,
+      "end": 18.2,
+      "text": "将半截塑料",
+      "words": [
+        {
+          "text": "将",
+          "start": 17.34,
+          "end": 17.58,
+          "probability": 0.99462890625
+        },
+        {
+          "text": "半",
+          "start": 17.58,
+          "end": 17.78,
+          "probability": 0.85986328125
+        },
+        {
+          "text": "截",
+          "start": 17.78,
+          "end": 17.92,
+          "probability": 0.76416015625
+        },
+        {
+          "text": "塑",
+          "start": 17.92,
+          "end": 18.04,
+          "probability": 0.989501953125
+        },
+        {
+          "text": "料",
+          "start": 18.04,
+          "end": 18.2,
+          "probability": 1.0
+        }
+      ]
+    },
+    {
+      "start": 18.2,
+      "end": 19.12,
+      "text": "平套入水管出",
+      "words": [
+        {
+          "text": "平",
+          "start": 18.2,
+          "end": 18.42,
+          "probability": 0.67529296875
+        },
+        {
+          "text": "套",
+          "start": 18.42,
+          "end": 18.58,
+          "probability": 0.99462890625
+        },
+        {
+          "text": "入",
+          "start": 18.58,
+          "end": 18.72,
+          "probability": 0.99560546875
+        },
+        {
+          "text": "水",
+          "start": 18.72,
+          "end": 18.84,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "管",
+          "start": 18.84,
+          "end": 18.96,
+          "probability": 0.9921875
+        },
+        {
+          "text": "出",
+          "start": 18.96,
+          "end": 19.12,
+          "probability": 0.4599609375
+        }
+      ]
+    },
+    {
+      "start": 19.12,
+      "end": 21.16,
+      "text": "水口处用胶带一圈圈进行缠绕",
+      "words": [
+        {
+          "text": "水",
+          "start": 19.12,
+          "end": 19.42,
+          "probability": 0.974609375
+        },
+        {
+          "text": "口",
+          "start": 19.42,
+          "end": 19.58,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "处",
+          "start": 19.58,
+          "end": 19.74,
+          "probability": 0.997314453125
+        },
+        {
+          "text": "用",
+          "start": 19.74,
+          "end": 19.88,
+          "probability": 0.99658203125
+        },
+        {
+          "text": "胶",
+          "start": 19.88,
+          "end": 20.06,
+          "probability": 0.997314453125
+        },
+        {
+          "text": "带",
+          "start": 20.06,
+          "end": 20.2,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "一",
+          "start": 20.2,
+          "end": 20.36,
+          "probability": 0.97412109375
+        },
+        {
+          "text": "圈",
+          "start": 20.36,
+          "end": 20.48,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "圈",
+          "start": 20.48,
+          "end": 20.62,
+          "probability": 0.995361328125
+        },
+        {
+          "text": "进",
+          "start": 20.62,
+          "end": 20.74,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "行",
+          "start": 20.74,
+          "end": 20.88,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "缠",
+          "start": 20.88,
+          "end": 21.0,
+          "probability": 0.864013671875
+        },
+        {
+          "text": "绕",
+          "start": 21.0,
+          "end": 21.16,
+          "probability": 0.997314453125
+        }
+      ]
+    },
+    {
+      "start": 21.16,
+      "end": 23.2,
+      "text": "使得瓶子能受力收缩紧贴管币",
+      "words": [
+        {
+          "text": "使",
+          "start": 21.16,
+          "end": 21.4,
+          "probability": 0.9931640625
+        },
+        {
+          "text": "得",
+          "start": 21.4,
+          "end": 21.5,
+          "probability": 0.978515625
+        },
+        {
+          "text": "瓶",
+          "start": 21.5,
+          "end": 21.6,
+          "probability": 0.98681640625
+        },
+        {
+          "text": "子",
+          "start": 21.6,
+          "end": 21.76,
+          "probability": 1.0
+        },
+        {
+          "text": "能",
+          "start": 21.76,
+          "end": 21.86,
+          "probability": 0.998046875
+        },
+        {
+          "text": "受",
+          "start": 21.86,
+          "end": 22.0,
+          "probability": 0.7421875
+        },
+        {
+          "text": "力",
+          "start": 22.0,
+          "end": 22.12,
+          "probability": 0.9912109375
+        },
+        {
+          "text": "收",
+          "start": 22.12,
+          "end": 22.28,
+          "probability": 0.705078125
+        },
+        {
+          "text": "缩",
+          "start": 22.28,
+          "end": 22.42,
+          "probability": 0.97900390625
+        },
+        {
+          "text": "紧",
+          "start": 22.42,
+          "end": 22.58,
+          "probability": 0.890625
+        },
+        {
+          "text": "贴",
+          "start": 22.58,
+          "end": 22.72,
+          "probability": 0.981201171875
+        },
+        {
+          "text": "管",
+          "start": 22.72,
+          "end": 22.88,
+          "probability": 0.89111328125
+        },
+        {
+          "text": "币",
+          "start": 22.88,
+          "end": 23.2,
+          "probability": 0.686767578125
+        }
+      ]
+    },
+    {
+      "start": 23.2,
+      "end": 24.28,
+      "text": "再用铁丝进行固定",
+      "words": [
+        {
+          "text": "再",
+          "start": 23.2,
+          "end": 23.34,
+          "probability": 0.9580078125
+        },
+        {
+          "text": "用",
+          "start": 23.34,
+          "end": 23.44,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "铁",
+          "start": 23.44,
+          "end": 23.6,
+          "probability": 0.8873697916666666
+        },
+        {
+          "text": "丝",
+          "start": 23.6,
+          "end": 23.74,
+          "probability": 0.990966796875
+        },
+        {
+          "text": "进",
+          "start": 23.74,
+          "end": 23.92,
+          "probability": 0.9951171875
+        },
+        {
+          "text": "行",
+          "start": 23.92,
+          "end": 24.02,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "固",
+          "start": 24.02,
+          "end": 24.16,
+          "probability": 0.98486328125
+        },
+        {
+          "text": "定",
+          "start": 24.16,
+          "end": 24.28,
+          "probability": 0.9990234375
+        }
+      ]
+    },
+    {
+      "start": 24.28,
+      "end": 25.3,
+      "text": "把瓶盖拧上去",
+      "words": [
+        {
+          "text": "把",
+          "start": 24.28,
+          "end": 24.5,
+          "probability": 0.830078125
+        },
+        {
+          "text": "瓶",
+          "start": 24.5,
+          "end": 24.68,
+          "probability": 0.97509765625
+        },
+        {
+          "text": "盖",
+          "start": 24.68,
+          "end": 24.86,
+          "probability": 0.998291015625
+        },
+        {
+          "text": "拧",
+          "start": 24.86,
+          "end": 24.98,
+          "probability": 0.98779296875
+        },
+        {
+          "text": "上",
+          "start": 24.98,
+          "end": 25.14,
+          "probability": 0.99560546875
+        },
+        {
+          "text": "去",
+          "start": 25.14,
+          "end": 25.3,
+          "probability": 0.9990234375
+        }
+      ]
+    },
+    {
+      "start": 25.3,
+      "end": 27.16,
+      "text": "这样即使在没有堵头的情况下",
+      "words": [
+        {
+          "text": "这样",
+          "start": 25.3,
+          "end": 25.7,
+          "probability": 0.96484375
+        },
+        {
+          "text": "即",
+          "start": 25.7,
+          "end": 25.96,
+          "probability": 0.93603515625
+        },
+        {
+          "text": "使",
+          "start": 25.96,
+          "end": 26.1,
+          "probability": 0.9658203125
+        },
+        {
+          "text": "在",
+          "start": 26.1,
+          "end": 26.22,
+          "probability": 0.9873046875
+        },
+        {
+          "text": "没有",
+          "start": 26.22,
+          "end": 26.38,
+          "probability": 0.99560546875
+        },
+        {
+          "text": "堵",
+          "start": 26.38,
+          "end": 26.58,
+          "probability": 0.78271484375
+        },
+        {
+          "text": "头",
+          "start": 26.58,
+          "end": 26.72,
+          "probability": 0.99658203125
+        },
+        {
+          "text": "的",
+          "start": 26.72,
+          "end": 26.8,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "情况",
+          "start": 26.8,
+          "end": 26.94,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "下",
+          "start": 26.94,
+          "end": 27.16,
+          "probability": 0.9990234375
+        }
+      ]
+    },
+    {
+      "start": 27.16,
+      "end": 28.1,
+      "text": "也能轻松直水",
+      "words": [
+        {
+          "text": "也",
+          "start": 27.16,
+          "end": 27.38,
+          "probability": 0.99072265625
+        },
+        {
+          "text": "能",
+          "start": 27.38,
+          "end": 27.5,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "轻",
+          "start": 27.5,
+          "end": 27.66,
+          "probability": 0.983154296875
+        },
+        {
+          "text": "松",
+          "start": 27.66,
+          "end": 27.8,
+          "probability": 0.97119140625
+        },
+        {
+          "text": "直",
+          "start": 27.8,
+          "end": 27.94,
+          "probability": 0.83251953125
+        },
+        {
+          "text": "水",
+          "start": 27.94,
+          "end": 28.1,
+          "probability": 0.9921875
+        }
+      ]
+    },
+    {
+      "start": 28.1,
+      "end": 30.4,
+      "text": "将玻璃珠放入中心开孔的水管堵头中",
+      "words": [
+        {
+          "text": "将",
+          "start": 28.1,
+          "end": 28.34,
+          "probability": 0.99609375
+        },
+        {
+          "text": "玻",
+          "start": 28.34,
+          "end": 28.48,
+          "probability": 0.9453125
+        },
+        {
+          "text": "璃",
+          "start": 28.48,
+          "end": 28.6,
+          "probability": 0.967041015625
+        },
+        {
+          "text": "珠",
+          "start": 28.6,
+          "end": 28.7,
+          "probability": 0.82275390625
+        },
+        {
+          "text": "放",
+          "start": 28.7,
+          "end": 28.86,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "入",
+          "start": 28.86,
+          "end": 28.98,
+          "probability": 0.99609375
+        },
+        {
+          "text": "中",
+          "start": 28.98,
+          "end": 29.1,
+          "probability": 0.9912109375
+        },
+        {
+          "text": "心",
+          "start": 29.1,
+          "end": 29.2,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "开",
+          "start": 29.2,
+          "end": 29.4,
+          "probability": 0.990234375
+        },
+        {
+          "text": "孔",
+          "start": 29.4,
+          "end": 29.54,
+          "probability": 0.981689453125
+        },
+        {
+          "text": "的",
+          "start": 29.54,
+          "end": 29.68,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "水",
+          "start": 29.68,
+          "end": 29.82,
+          "probability": 0.9873046875
+        },
+        {
+          "text": "管",
+          "start": 29.82,
+          "end": 29.96,
+          "probability": 0.99267578125
+        },
+        {
+          "text": "堵",
+          "start": 29.96,
+          "end": 30.06,
+          "probability": 0.98974609375
+        },
+        {
+          "text": "头",
+          "start": 30.06,
+          "end": 30.22,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "中",
+          "start": 30.22,
+          "end": 30.4,
+          "probability": 0.998046875
+        }
+      ]
+    },
+    {
+      "start": 30.4,
+      "end": 31.46,
+      "text": "并套在水管一端",
+      "words": [
+        {
+          "text": "并",
+          "start": 30.4,
+          "end": 30.6,
+          "probability": 0.98779296875
+        },
+        {
+          "text": "套",
+          "start": 30.6,
+          "end": 30.76,
+          "probability": 0.9931640625
+        },
+        {
+          "text": "在",
+          "start": 30.76,
+          "end": 30.88,
+          "probability": 0.99658203125
+        },
+        {
+          "text": "水",
+          "start": 30.88,
+          "end": 31.06,
+          "probability": 0.9873046875
+        },
+        {
+          "text": "管",
+          "start": 31.06,
+          "end": 31.22,
+          "probability": 0.998046875
+        },
+        {
+          "text": "一",
+          "start": 31.22,
+          "end": 31.34,
+          "probability": 0.857421875
+        },
+        {
+          "text": "端",
+          "start": 31.34,
+          "end": 31.46,
+          "probability": 1.0
+        }
+      ]
+    },
+    {
+      "start": 31.46,
+      "end": 32.62,
+      "text": "拧入螺丝进行固定",
+      "words": [
+        {
+          "text": "拧",
+          "start": 31.46,
+          "end": 31.66,
+          "probability": 0.682861328125
+        },
+        {
+          "text": "入",
+          "start": 31.66,
+          "end": 31.78,
+          "probability": 0.998046875
+        },
+        {
+          "text": "螺",
+          "start": 31.78,
+          "end": 31.88,
+          "probability": 0.988037109375
+        },
+        {
+          "text": "丝",
+          "start": 31.88,
+          "end": 32.06,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "进",
+          "start": 32.06,
+          "end": 32.22,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "行",
+          "start": 32.22,
+          "end": 32.34,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "固",
+          "start": 32.34,
+          "end": 32.46,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "定",
+          "start": 32.46,
+          "end": 32.62,
+          "probability": 0.99853515625
+        }
+      ]
+    },
+    {
+      "start": 32.62,
+      "end": 34.76,
+      "text": "再把水管另一端塞入软管接口处",
+      "words": [
+        {
+          "text": "再",
+          "start": 32.62,
+          "end": 32.94,
+          "probability": 0.99609375
+        },
+        {
+          "text": "把",
+          "start": 32.94,
+          "end": 33.04,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "水",
+          "start": 33.04,
+          "end": 33.2,
+          "probability": 0.998046875
+        },
+        {
+          "text": "管",
+          "start": 33.2,
+          "end": 33.36,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "另",
+          "start": 33.36,
+          "end": 33.5,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "一",
+          "start": 33.5,
+          "end": 33.58,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "端",
+          "start": 33.58,
+          "end": 33.72,
+          "probability": 1.0
+        },
+        {
+          "text": "塞",
+          "start": 33.72,
+          "end": 33.92,
+          "probability": 0.968505859375
+        },
+        {
+          "text": "入",
+          "start": 33.92,
+          "end": 34.04,
+          "probability": 0.9951171875
+        },
+        {
+          "text": "软",
+          "start": 34.04,
+          "end": 34.16,
+          "probability": 0.974853515625
+        },
+        {
+          "text": "管",
+          "start": 34.16,
+          "end": 34.32,
+          "probability": 0.98828125
+        },
+        {
+          "text": "接",
+          "start": 34.32,
+          "end": 34.46,
+          "probability": 0.97802734375
+        },
+        {
+          "text": "口",
+          "start": 34.46,
+          "end": 34.62,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "处",
+          "start": 34.62,
+          "end": 34.76,
+          "probability": 0.997314453125
+        }
+      ]
+    },
+    {
+      "start": 34.76,
+      "end": 36.24,
+      "text": "放入水桶中上下摇晃",
+      "words": [
+        {
+          "text": "放",
+          "start": 34.76,
+          "end": 35.04,
+          "probability": 0.9794921875
+        },
+        {
+          "text": "入",
+          "start": 35.04,
+          "end": 35.16,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "水",
+          "start": 35.16,
+          "end": 35.32,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "桶",
+          "start": 35.32,
+          "end": 35.44,
+          "probability": 0.96826171875
+        },
+        {
+          "text": "中",
+          "start": 35.44,
+          "end": 35.6,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "上",
+          "start": 35.6,
+          "end": 35.78,
+          "probability": 0.9951171875
+        },
+        {
+          "text": "下",
+          "start": 35.78,
+          "end": 35.92,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "摇",
+          "start": 35.92,
+          "end": 36.08,
+          "probability": 0.94287109375
+        },
+        {
+          "text": "晃",
+          "start": 36.08,
+          "end": 36.24,
+          "probability": 0.99169921875
+        }
+      ]
+    },
+    {
+      "start": 36.24,
+      "end": 37.6,
+      "text": "这样就能利用红溪原理",
+      "words": [
+        {
+          "text": "这样",
+          "start": 36.24,
+          "end": 36.52,
+          "probability": 0.990234375
+        },
+        {
+          "text": "就",
+          "start": 36.52,
+          "end": 36.7,
+          "probability": 0.998046875
+        },
+        {
+          "text": "能",
+          "start": 36.7,
+          "end": 36.8,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "利",
+          "start": 36.8,
+          "end": 36.9,
+          "probability": 0.998046875
+        },
+        {
+          "text": "用",
+          "start": 36.9,
+          "end": 37.02,
+          "probability": 1.0
+        },
+        {
+          "text": "红",
+          "start": 37.02,
+          "end": 37.16,
+          "probability": 0.9140625
+        },
+        {
+          "text": "溪",
+          "start": 37.16,
+          "end": 37.3,
+          "probability": 0.584228515625
+        },
+        {
+          "text": "原",
+          "start": 37.3,
+          "end": 37.44,
+          "probability": 0.62255859375
+        },
+        {
+          "text": "理",
+          "start": 37.44,
+          "end": 37.6,
+          "probability": 0.9931640625
+        }
+      ]
+    },
+    {
+      "start": 37.6,
+      "end": 39.66,
+      "text": "让水桶中的水能顺着软管流出来",
+      "words": [
+        {
+          "text": "让",
+          "start": 37.6,
+          "end": 37.82,
+          "probability": 0.98876953125
+        },
+        {
+          "text": "水",
+          "start": 37.82,
+          "end": 38.02,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "桶",
+          "start": 38.02,
+          "end": 38.14,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "中",
+          "start": 38.14,
+          "end": 38.3,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "的",
+          "start": 38.3,
+          "end": 38.38,
+          "probability": 0.998046875
+        },
+        {
+          "text": "水",
+          "start": 38.38,
+          "end": 38.52,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "能",
+          "start": 38.52,
+          "end": 38.68,
+          "probability": 0.9951171875
+        },
+        {
+          "text": "顺",
+          "start": 38.68,
+          "end": 38.94,
+          "probability": 0.992919921875
+        },
+        {
+          "text": "着",
+          "start": 38.94,
+          "end": 39.06,
+          "probability": 0.98828125
+        },
+        {
+          "text": "软",
+          "start": 39.06,
+          "end": 39.16,
+          "probability": 0.997314453125
+        },
+        {
+          "text": "管",
+          "start": 39.16,
+          "end": 39.32,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "流",
+          "start": 39.32,
+          "end": 39.44,
+          "probability": 0.935546875
+        },
+        {
+          "text": "出来",
+          "start": 39.44,
+          "end": 39.66,
+          "probability": 0.99462890625
+        }
+      ]
+    },
+    {
+      "start": 39.66,
+      "end": 41.02,
+      "text": "轻松完成换水工作",
+      "words": [
+        {
+          "text": "轻",
+          "start": 39.66,
+          "end": 39.92,
+          "probability": 0.99267578125
+        },
+        {
+          "text": "松",
+          "start": 39.92,
+          "end": 40.08,
+          "probability": 0.998046875
+        },
+        {
+          "text": "完成",
+          "start": 40.08,
+          "end": 40.3,
+          "probability": 0.998046875
+        },
+        {
+          "text": "换",
+          "start": 40.3,
+          "end": 40.56,
+          "probability": 0.7301025390625
+        },
+        {
+          "text": "水",
+          "start": 40.56,
+          "end": 40.74,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "工作",
+          "start": 40.74,
+          "end": 41.02,
+          "probability": 0.9833984375
+        }
+      ]
+    },
+    {
+      "start": 41.02,
+      "end": 42.6,
+      "text": "将螺丝烧制一定温度后",
+      "words": [
+        {
+          "text": "将",
+          "start": 41.02,
+          "end": 41.44,
+          "probability": 0.99658203125
+        },
+        {
+          "text": "螺",
+          "start": 41.44,
+          "end": 41.56,
+          "probability": 0.99169921875
+        },
+        {
+          "text": "丝",
+          "start": 41.56,
+          "end": 41.68,
+          "probability": 0.7548828125
+        },
+        {
+          "text": "烧",
+          "start": 41.68,
+          "end": 41.84,
+          "probability": 0.995361328125
+        },
+        {
+          "text": "制",
+          "start": 41.84,
+          "end": 41.96,
+          "probability": 0.6572265625
+        },
+        {
+          "text": "一定",
+          "start": 41.96,
+          "end": 42.16,
+          "probability": 0.9755859375
+        },
+        {
+          "text": "温",
+          "start": 42.16,
+          "end": 42.3,
+          "probability": 0.998046875
+        },
+        {
+          "text": "度",
+          "start": 42.3,
+          "end": 42.42,
+          "probability": 1.0
+        },
+        {
+          "text": "后",
+          "start": 42.42,
+          "end": 42.6,
+          "probability": 0.99072265625
+        }
+      ]
+    },
+    {
+      "start": 42.6,
+      "end": 43.94,
+      "text": "趁热压入水管断丝内",
+      "words": [
+        {
+          "text": "趁",
+          "start": 42.6,
+          "end": 42.84,
+          "probability": 0.932373046875
+        },
+        {
+          "text": "热",
+          "start": 42.84,
+          "end": 42.98,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "压",
+          "start": 42.98,
+          "end": 43.1,
+          "probability": 0.96923828125
+        },
+        {
+          "text": "入",
+          "start": 43.1,
+          "end": 43.24,
+          "probability": 0.99658203125
+        },
+        {
+          "text": "水",
+          "start": 43.24,
+          "end": 43.38,
+          "probability": 0.99609375
+        },
+        {
+          "text": "管",
+          "start": 43.38,
+          "end": 43.54,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "断",
+          "start": 43.54,
+          "end": 43.64,
+          "probability": 0.9658203125
+        },
+        {
+          "text": "丝",
+          "start": 43.64,
+          "end": 43.76,
+          "probability": 0.91796875
+        },
+        {
+          "text": "内",
+          "start": 43.76,
+          "end": 43.94,
+          "probability": 0.99658203125
+        }
+      ]
+    },
+    {
+      "start": 43.94,
+      "end": 44.98,
+      "text": "使其能刚好烫出",
+      "words": [
+        {
+          "text": "使",
+          "start": 43.94,
+          "end": 44.16,
+          "probability": 0.9814453125
+        },
+        {
+          "text": "其",
+          "start": 44.16,
+          "end": 44.26,
+          "probability": 0.99365234375
+        },
+        {
+          "text": "能",
+          "start": 44.26,
+          "end": 44.38,
+          "probability": 0.99658203125
+        },
+        {
+          "text": "刚",
+          "start": 44.38,
+          "end": 44.54,
+          "probability": 0.98876953125
+        },
+        {
+          "text": "好",
+          "start": 44.54,
+          "end": 44.68,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "烫",
+          "start": 44.68,
+          "end": 44.78,
+          "probability": 0.94189453125
+        },
+        {
+          "text": "出",
+          "start": 44.78,
+          "end": 44.98,
+          "probability": 0.998046875
+        }
+      ]
+    },
+    {
+      "start": 44.98,
+      "end": 46.38,
+      "text": "足以卡住断丝的缺口",
+      "words": [
+        {
+          "text": "足",
+          "start": 44.98,
+          "end": 45.22,
+          "probability": 0.85205078125
+        },
+        {
+          "text": "以",
+          "start": 45.22,
+          "end": 45.36,
+          "probability": 0.98974609375
+        },
+        {
+          "text": "卡",
+          "start": 45.36,
+          "end": 45.5,
+          "probability": 0.986328125
+        },
+        {
+          "text": "住",
+          "start": 45.5,
+          "end": 45.66,
+          "probability": 0.99658203125
+        },
+        {
+          "text": "断",
+          "start": 45.66,
+          "end": 45.82,
+          "probability": 0.9140625
+        },
+        {
+          "text": "丝",
+          "start": 45.82,
+          "end": 45.96,
+          "probability": 0.87646484375
+        },
+        {
+          "text": "的",
+          "start": 45.96,
+          "end": 46.06,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "缺",
+          "start": 46.06,
+          "end": 46.2,
+          "probability": 0.998046875
+        },
+        {
+          "text": "口",
+          "start": 46.2,
+          "end": 46.38,
+          "probability": 0.99853515625
+        }
+      ]
+    },
+    {
+      "start": 46.38,
+      "end": 47.54,
+      "text": "等到喷水冷却后",
+      "words": [
+        {
+          "text": "等",
+          "start": 46.38,
+          "end": 46.74,
+          "probability": 0.984375
+        },
+        {
+          "text": "到",
+          "start": 46.74,
+          "end": 46.9,
+          "probability": 0.99462890625
+        },
+        {
+          "text": "喷",
+          "start": 46.9,
+          "end": 47.0,
+          "probability": 0.986083984375
+        },
+        {
+          "text": "水",
+          "start": 47.0,
+          "end": 47.14,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "冷",
+          "start": 47.14,
+          "end": 47.26,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "却",
+          "start": 47.26,
+          "end": 47.4,
+          "probability": 0.971923828125
+        },
+        {
+          "text": "后",
+          "start": 47.4,
+          "end": 47.54,
+          "probability": 0.99755859375
+        }
+      ]
+    },
+    {
+      "start": 47.54,
+      "end": 49.2,
+      "text": "螺丝就会和断丝咬合成一体",
+      "words": [
+        {
+          "text": "螺",
+          "start": 47.54,
+          "end": 47.76,
+          "probability": 0.84521484375
+        },
+        {
+          "text": "丝",
+          "start": 47.76,
+          "end": 47.88,
+          "probability": 0.16400146484375
+        },
+        {
+          "text": "就",
+          "start": 47.88,
+          "end": 48.04,
+          "probability": 0.919921875
+        },
+        {
+          "text": "会",
+          "start": 48.04,
+          "end": 48.14,
+          "probability": 0.99609375
+        },
+        {
+          "text": "和",
+          "start": 48.14,
+          "end": 48.24,
+          "probability": 0.9951171875
+        },
+        {
+          "text": "断",
+          "start": 48.24,
+          "end": 48.38,
+          "probability": 0.998046875
+        },
+        {
+          "text": "丝",
+          "start": 48.38,
+          "end": 48.54,
+          "probability": 1.0
+        },
+        {
+          "text": "咬",
+          "start": 48.54,
+          "end": 48.68,
+          "probability": 0.828369140625
+        },
+        {
+          "text": "合",
+          "start": 48.68,
+          "end": 48.8,
+          "probability": 0.99658203125
+        },
+        {
+          "text": "成",
+          "start": 48.8,
+          "end": 48.92,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "一",
+          "start": 48.92,
+          "end": 49.04,
+          "probability": 0.55029296875
+        },
+        {
+          "text": "体",
+          "start": 49.04,
+          "end": 49.2,
+          "probability": 0.98974609375
+        }
+      ]
+    },
+    {
+      "start": 49.2,
+      "end": 50.64,
+      "text": "这样只需逆时针旋转",
+      "words": [
+        {
+          "text": "这样",
+          "start": 49.2,
+          "end": 49.5,
+          "probability": 0.9599609375
+        },
+        {
+          "text": "只",
+          "start": 49.5,
+          "end": 49.8,
+          "probability": 0.8369140625
+        },
+        {
+          "text": "需",
+          "start": 49.8,
+          "end": 49.94,
+          "probability": 0.98486328125
+        },
+        {
+          "text": "逆",
+          "start": 49.94,
+          "end": 50.04,
+          "probability": 0.994384765625
+        },
+        {
+          "text": "时",
+          "start": 50.04,
+          "end": 50.2,
+          "probability": 0.94140625
+        },
+        {
+          "text": "针",
+          "start": 50.2,
+          "end": 50.32,
+          "probability": 0.972900390625
+        },
+        {
+          "text": "旋",
+          "start": 50.32,
+          "end": 50.46,
+          "probability": 0.998291015625
+        },
+        {
+          "text": "转",
+          "start": 50.46,
+          "end": 50.64,
+          "probability": 0.99462890625
+        }
+      ]
+    },
+    {
+      "start": 50.64,
+      "end": 52.32,
+      "text": "就能轻松将卡在里面的断丝",
+      "words": [
+        {
+          "text": "就",
+          "start": 50.64,
+          "end": 50.86,
+          "probability": 0.99560546875
+        },
+        {
+          "text": "能",
+          "start": 50.86,
+          "end": 50.96,
+          "probability": 0.99609375
+        },
+        {
+          "text": "轻",
+          "start": 50.96,
+          "end": 51.12,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "松",
+          "start": 51.12,
+          "end": 51.24,
+          "probability": 0.978515625
+        },
+        {
+          "text": "将",
+          "start": 51.24,
+          "end": 51.36,
+          "probability": 0.9853515625
+        },
+        {
+          "text": "卡",
+          "start": 51.36,
+          "end": 51.56,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "在",
+          "start": 51.56,
+          "end": 51.66,
+          "probability": 0.99609375
+        },
+        {
+          "text": "里",
+          "start": 51.66,
+          "end": 51.8,
+          "probability": 0.99658203125
+        },
+        {
+          "text": "面",
+          "start": 51.8,
+          "end": 51.9,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "的",
+          "start": 51.9,
+          "end": 51.98,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "断",
+          "start": 51.98,
+          "end": 52.12,
+          "probability": 0.998779296875
+        },
+        {
+          "text": "丝",
+          "start": 52.12,
+          "end": 52.32,
+          "probability": 0.999755859375
+        }
+      ]
+    },
+    {
+      "start": 52.32,
+      "end": 53.04,
+      "text": "完整拧出来",
+      "words": [
+        {
+          "text": "完",
+          "start": 52.32,
+          "end": 52.52,
+          "probability": 0.96435546875
+        },
+        {
+          "text": "整",
+          "start": 52.52,
+          "end": 52.7,
+          "probability": 1.0
+        },
+        {
+          "text": "拧",
+          "start": 52.7,
+          "end": 52.82,
+          "probability": 0.7548828125
+        },
+        {
+          "text": "出来",
+          "start": 52.82,
+          "end": 53.04,
+          "probability": 0.99462890625
+        }
+      ]
+    },
+    {
+      "start": 53.04,
+      "end": 54.64,
+      "text": "将塑料盖套在铁门上",
+      "words": [
+        {
+          "text": "将",
+          "start": 53.04,
+          "end": 53.38,
+          "probability": 0.99365234375
+        },
+        {
+          "text": "塑",
+          "start": 53.38,
+          "end": 53.54,
+          "probability": 0.9873046875
+        },
+        {
+          "text": "料",
+          "start": 53.54,
+          "end": 53.68,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "盖",
+          "start": 53.68,
+          "end": 53.8,
+          "probability": 0.965576171875
+        },
+        {
+          "text": "套",
+          "start": 53.8,
+          "end": 54.02,
+          "probability": 0.994384765625
+        },
+        {
+          "text": "在",
+          "start": 54.02,
+          "end": 54.16,
+          "probability": 0.98095703125
+        },
+        {
+          "text": "铁",
+          "start": 54.16,
+          "end": 54.34,
+          "probability": 0.9964192708333334
+        },
+        {
+          "text": "门",
+          "start": 54.34,
+          "end": 54.48,
+          "probability": 0.98876953125
+        },
+        {
+          "text": "上",
+          "start": 54.48,
+          "end": 54.64,
+          "probability": 0.9970703125
+        }
+      ]
+    },
+    {
+      "start": 54.64,
+      "end": 56.04,
+      "text": "并挂上铁锁拧上罐子",
+      "words": [
+        {
+          "text": "并",
+          "start": 54.64,
+          "end": 54.88,
+          "probability": 0.996337890625
+        },
+        {
+          "text": "挂",
+          "start": 54.88,
+          "end": 54.98,
+          "probability": 0.98974609375
+        },
+        {
+          "text": "上",
+          "start": 54.98,
+          "end": 55.12,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "铁",
+          "start": 55.12,
+          "end": 55.3,
+          "probability": 0.9513346354166666
+        },
+        {
+          "text": "锁",
+          "start": 55.3,
+          "end": 55.48,
+          "probability": 0.9765625
+        },
+        {
+          "text": "拧",
+          "start": 55.48,
+          "end": 55.6,
+          "probability": 0.985107421875
+        },
+        {
+          "text": "上",
+          "start": 55.6,
+          "end": 55.74,
+          "probability": 0.9677734375
+        },
+        {
+          "text": "罐",
+          "start": 55.74,
+          "end": 55.9,
+          "probability": 0.96435546875
+        },
+        {
+          "text": "子",
+          "start": 55.9,
+          "end": 56.04,
+          "probability": 0.9990234375
+        }
+      ]
+    },
+    {
+      "start": 56.04,
+      "end": 57.72,
+      "text": "就能形成一个简易的防水罩",
+      "words": [
+        {
+          "text": "就",
+          "start": 56.04,
+          "end": 56.24,
+          "probability": 0.994140625
+        },
+        {
+          "text": "能",
+          "start": 56.24,
+          "end": 56.36,
+          "probability": 0.99365234375
+        },
+        {
+          "text": "形",
+          "start": 56.36,
+          "end": 56.48,
+          "probability": 0.98974609375
+        },
+        {
+          "text": "成",
+          "start": 56.48,
+          "end": 56.64,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "一个",
+          "start": 56.64,
+          "end": 56.8,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "简",
+          "start": 56.8,
+          "end": 57.0,
+          "probability": 0.96435546875
+        },
+        {
+          "text": "易",
+          "start": 57.0,
+          "end": 57.14,
+          "probability": 0.96728515625
+        },
+        {
+          "text": "的",
+          "start": 57.14,
+          "end": 57.22,
+          "probability": 0.984375
+        },
+        {
+          "text": "防",
+          "start": 57.22,
+          "end": 57.34,
+          "probability": 0.99560546875
+        },
+        {
+          "text": "水",
+          "start": 57.34,
+          "end": 57.5,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "罩",
+          "start": 57.5,
+          "end": 57.72,
+          "probability": 0.954833984375
+        }
+      ]
+    },
+    {
+      "start": 57.72,
+      "end": 58.48,
+      "text": "这样在下雨时",
+      "words": [
+        {
+          "text": "这样",
+          "start": 57.72,
+          "end": 57.92,
+          "probability": 0.994140625
+        },
+        {
+          "text": "在",
+          "start": 57.92,
+          "end": 58.06,
+          "probability": 0.98779296875
+        },
+        {
+          "text": "下",
+          "start": 58.06,
+          "end": 58.2,
+          "probability": 0.97412109375
+        },
+        {
+          "text": "雨",
+          "start": 58.2,
+          "end": 58.32,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "时",
+          "start": 58.32,
+          "end": 58.48,
+          "probability": 0.99853515625
+        }
+      ]
+    },
+    {
+      "start": 58.48,
+      "end": 59.24,
+      "text": "就不用担心",
+      "words": [
+        {
+          "text": "就",
+          "start": 58.48,
+          "end": 58.7,
+          "probability": 0.98779296875
+        },
+        {
+          "text": "不用",
+          "start": 58.7,
+          "end": 58.88,
+          "probability": 0.998046875
+        },
+        {
+          "text": "担",
+          "start": 58.88,
+          "end": 59.06,
+          "probability": 0.998291015625
+        },
+        {
+          "text": "心",
+          "start": 59.06,
+          "end": 59.24,
+          "probability": 1.0
+        }
+      ]
+    },
+    {
+      "start": 59.24,
+      "end": 61.02,
+      "text": "所心会被临时导致生锈了",
+      "words": [
+        {
+          "text": "所",
+          "start": 59.24,
+          "end": 59.5,
+          "probability": 0.3935546875
+        },
+        {
+          "text": "心",
+          "start": 59.5,
+          "end": 59.64,
+          "probability": 0.09063720703125
+        },
+        {
+          "text": "会",
+          "start": 59.64,
+          "end": 59.78,
+          "probability": 0.98681640625
+        },
+        {
+          "text": "被",
+          "start": 59.78,
+          "end": 59.92,
+          "probability": 0.99365234375
+        },
+        {
+          "text": "临",
+          "start": 59.92,
+          "end": 60.04,
+          "probability": 0.789306640625
+        },
+        {
+          "text": "时",
+          "start": 60.04,
+          "end": 60.2,
+          "probability": 0.9892578125
+        },
+        {
+          "text": "导",
+          "start": 60.2,
+          "end": 60.46,
+          "probability": 0.9921875
+        },
+        {
+          "text": "致",
+          "start": 60.46,
+          "end": 60.62,
+          "probability": 0.997802734375
+        },
+        {
+          "text": "生",
+          "start": 60.62,
+          "end": 60.76,
+          "probability": 0.947265625
+        },
+        {
+          "text": "锈",
+          "start": 60.76,
+          "end": 60.88,
+          "probability": 0.7120361328125
+        },
+        {
+          "text": "了",
+          "start": 60.88,
+          "end": 61.02,
+          "probability": 0.99658203125
+        }
+      ]
+    }
+  ],
+  "cues": [
+    {
+      "start": 0.0,
+      "end": 1.48,
+      "text": "亲爱的观众朋友们一起来看看",
+      "words": [
+        {
+          "text": "亲",
+          "start": 0.0,
+          "end": 0.24,
+          "probability": 0.693359375
+        },
+        {
+          "text": "爱",
+          "start": 0.24,
+          "end": 0.32,
+          "probability": 0.994140625
+        },
+        {
+          "text": "的",
+          "start": 0.32,
+          "end": 0.42,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "观",
+          "start": 0.42,
+          "end": 0.52,
+          "probability": 0.98828125
+        },
+        {
+          "text": "众",
+          "start": 0.52,
+          "end": 0.58,
+          "probability": 0.999267578125
+        },
+        {
+          "text": "朋友",
+          "start": 0.58,
+          "end": 0.72,
+          "probability": 0.99658203125
+        },
+        {
+          "text": "们",
+          "start": 0.72,
+          "end": 0.88,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "一起",
+          "start": 0.88,
+          "end": 1.12,
+          "probability": 0.5458984375
+        },
+        {
+          "text": "来",
+          "start": 1.12,
+          "end": 1.28,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "看看",
+          "start": 1.28,
+          "end": 1.48,
+          "probability": 0.98876953125
+        }
+      ]
+    },
+    {
+      "start": 1.48,
+      "end": 3.82,
+      "text": "今日份实用又简单的生活小技巧吧",
+      "words": [
+        {
+          "text": "今日",
+          "start": 1.48,
+          "end": 1.86,
+          "probability": 0.85302734375
+        },
+        {
+          "text": "份",
+          "start": 1.86,
+          "end": 2.06,
+          "probability": 0.85107421875
+        },
+        {
+          "text": "实",
+          "start": 2.06,
+          "end": 2.28,
+          "probability": 0.56396484375
+        },
+        {
+          "text": "用",
+          "start": 2.28,
+          "end": 2.38,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "又",
+          "start": 2.38,
+          "end": 2.52,
+          "probability": 0.94677734375
+        },
+        {
+          "text": "简",
+          "start": 2.52,
+          "end": 2.7,
+          "probability": 0.999755859375
+        },
+        {
+          "text": "单",
+          "start": 2.7,
+          "end": 2.84,
+          "probability": 1.0
+        },
+        {
+          "text": "的",
+          "start": 2.84,
+          "end": 2.94,
+          "probability": 0.97216796875
+        },
+        {
+          "text": "生活",
+          "start": 2.94,
+          "end": 3.12,
+          "probability": 0.98583984375
+        },
+        {
+          "text": "小",
+          "start": 3.12,
+          "end": 3.34,
+          "probability": 0.9912109375
+        },
+        {
+          "text": "技",
+          "start": 3.34,
+          "end": 3.5,
+          "probability": 0.9921875
+        },
+        {
+          "text": "巧",
+          "start": 3.5,
+          "end": 3.66,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "吧",
+          "start": 3.66,
+          "end": 3.82,
+          "probability": 0.974609375
+        }
+      ]
+    },
+    {
+      "start": 3.82,
+      "end": 5.18,
+      "text": "步骤清晰一看就懂",
+      "words": [
+        {
+          "text": "步",
+          "start": 3.82,
+          "end": 4.2,
+          "probability": 0.81298828125
+        },
+        {
+          "text": "骤",
+          "start": 4.2,
+          "end": 4.26,
+          "probability": 0.77978515625
+        },
+        {
+          "text": "清",
+          "start": 4.26,
+          "end": 4.46,
+          "probability": 0.97314453125
+        },
+        {
+          "text": "晰",
+          "start": 4.46,
+          "end": 4.6,
+          "probability": 0.974365234375
+        },
+        {
+          "text": "一",
+          "start": 4.6,
+          "end": 4.74,
+          "probability": 0.9931640625
+        },
+        {
+          "text": "看",
+          "start": 4.74,
+          "end": 4.92,
+          "probability": 0.998046875
+        },
+        {
+          "text": "就",
+          "start": 4.92,
+          "end": 5.04,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "懂",
+          "start": 5.04,
+          "end": 5.18,
+          "probability": 0.99951171875
+        }
+      ]
+    },
+    {
+      "start": 5.18,
+      "end": 7.06,
+      "text": "轻松解决日常生活中的难题",
+      "words": [
+        {
+          "text": "轻",
+          "start": 5.18,
+          "end": 5.52,
+          "probability": 0.953857421875
+        },
+        {
+          "text": "松",
+          "start": 5.52,
+          "end": 5.66,
+          "probability": 0.962890625
+        },
+        {
+          "text": "解",
+          "start": 5.66,
+          "end": 5.82,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "决",
+          "start": 5.82,
+          "end": 5.94,
+          "probability": 0.9931640625
+        },
+        {
+          "text": "日",
+          "start": 5.94,
+          "end": 6.14,
+          "probability": 0.99169921875
+        },
+        {
+          "text": "常",
+          "start": 6.14,
+          "end": 6.28,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "生活",
+          "start": 6.28,
+          "end": 6.52,
+          "probability": 1.0
+        },
+        {
+          "text": "中",
+          "start": 6.52,
+          "end": 6.68,
+          "probability": 0.998046875
+        },
+        {
+          "text": "的",
+          "start": 6.68,
+          "end": 6.76,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "难",
+          "start": 6.76,
+          "end": 6.88,
+          "probability": 0.990234375
+        },
+        {
+          "text": "题",
+          "start": 6.88,
+          "end": 7.06,
+          "probability": 0.9951171875
+        }
+      ]
+    },
+    {
+      "start": 7.06,
+      "end": 8.2,
+      "text": "将一节软管剪下来",
+      "words": [
+        {
+          "text": "将",
+          "start": 7.06,
+          "end": 7.3,
+          "probability": 0.97509765625
+        },
+        {
+          "text": "一",
+          "start": 7.3,
+          "end": 7.44,
+          "probability": 0.98046875
+        },
+        {
+          "text": "节",
+          "start": 7.44,
+          "end": 7.52,
+          "probability": 0.53369140625
+        },
+        {
+          "text": "软",
+          "start": 7.52,
+          "end": 7.64,
+          "probability": 0.972412109375
+        },
+        {
+          "text": "管",
+          "start": 7.64,
+          "end": 7.78,
+          "probability": 0.95068359375
+        },
+        {
+          "text": "剪",
+          "start": 7.78,
+          "end": 7.9,
+          "probability": 0.947021484375
+        },
+        {
+          "text": "下",
+          "start": 7.9,
+          "end": 8.02,
+          "probability": 0.99609375
+        },
+        {
+          "text": "来",
+          "start": 8.02,
+          "end": 8.2,
+          "probability": 1.0
+        }
+      ]
+    },
+    {
+      "start": 8.2,
+      "end": 9.52,
+      "text": "把中间部分剪掉卷起来",
+      "words": [
+        {
+          "text": "把",
+          "start": 8.2,
+          "end": 8.36,
+          "probability": 0.9580078125
+        },
+        {
+          "text": "中",
+          "start": 8.36,
+          "end": 8.5,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "间",
+          "start": 8.5,
+          "end": 8.62,
+          "probability": 0.994140625
+        },
+        {
+          "text": "部分",
+          "start": 8.62,
+          "end": 8.8,
+          "probability": 0.9912109375
+        },
+        {
+          "text": "剪",
+          "start": 8.8,
+          "end": 9.0,
+          "probability": 0.987060546875
+        },
+        {
+          "text": "掉",
+          "start": 9.0,
+          "end": 9.14,
+          "probability": 0.78466796875
+        },
+        {
+          "text": "卷",
+          "start": 9.14,
+          "end": 9.24,
+          "probability": 0.965576171875
+        },
+        {
+          "text": "起",
+          "start": 9.24,
+          "end": 9.36,
+          "probability": 0.9951171875
+        },
+        {
+          "text": "来",
+          "start": 9.36,
+          "end": 9.52,
+          "probability": 1.0
+        }
+      ]
+    },
+    {
+      "start": 9.52,
+      "end": 11.04,
+      "text": "套入其中一节软管断口处",
+      "words": [
+        {
+          "text": "套",
+          "start": 9.52,
+          "end": 9.7,
+          "probability": 0.98828125
+        },
+        {
+          "text": "入",
+          "start": 9.7,
+          "end": 9.82,
+          "probability": 0.974609375
+        },
+        {
+          "text": "其",
+          "start": 9.82,
+          "end": 9.94,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "中",
+          "start": 9.94,
+          "end": 10.04,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "一",
+          "start": 10.04,
+          "end": 10.16,
+          "probability": 0.99169921875
+        },
+        {
+          "text": "节",
+          "start": 10.16,
+          "end": 10.26,
+          "probability": 0.9873046875
+        },
+        {
+          "text": "软",
+          "start": 10.26,
+          "end": 10.42,
+          "probability": 0.98779296875
+        },
+        {
+          "text": "管",
+          "start": 10.42,
+          "end": 10.6,
+          "probability": 0.98828125
+        },
+        {
+          "text": "断",
+          "start": 10.6,
+          "end": 10.7,
+          "probability": 0.9580078125
+        },
+        {
+          "text": "口",
+          "start": 10.7,
+          "end": 10.88,
+          "probability": 0.9951171875
+        },
+        {
+          "text": "处",
+          "start": 10.88,
+          "end": 11.04,
+          "probability": 0.992431640625
+        }
+      ]
+    },
+    {
+      "start": 11.04,
+      "end": 12.28,
+      "text": "再把另外一节软管",
+      "words": [
+        {
+          "text": "再",
+          "start": 11.04,
+          "end": 11.38,
+          "probability": 0.9638671875
+        },
+        {
+          "text": "把",
+          "start": 11.38,
+          "end": 11.48,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "另外",
+          "start": 11.48,
+          "end": 11.68,
+          "probability": 0.974609375
+        },
+        {
+          "text": "一",
+          "start": 11.68,
+          "end": 11.86,
+          "probability": 0.99609375
+        },
+        {
+          "text": "节",
+          "start": 11.86,
+          "end": 11.94,
+          "probability": 0.98095703125
+        },
+        {
+          "text": "软",
+          "start": 11.94,
+          "end": 12.08,
+          "probability": 0.9951171875
+        },
+        {
+          "text": "管",
+          "start": 12.08,
+          "end": 12.28,
+          "probability": 0.99755859375
+        }
+      ]
+    },
+    {
+      "start": 12.28,
+      "end": 13.86,
+      "text": "对准插紧用胶带进行固定",
+      "words": [
+        {
+          "text": "对",
+          "start": 12.28,
+          "end": 12.46,
+          "probability": 0.96826171875
+        },
+        {
+          "text": "准",
+          "start": 12.46,
+          "end": 12.62,
+          "probability": 0.999755859375
+        },
+        {
+          "text": "插",
+          "start": 12.62,
+          "end": 12.78,
+          "probability": 0.98095703125
+        },
+        {
+          "text": "紧",
+          "start": 12.78,
+          "end": 12.9,
+          "probability": 0.75048828125
+        },
+        {
+          "text": "用",
+          "start": 12.9,
+          "end": 13.02,
+          "probability": 0.99462890625
+        },
+        {
+          "text": "胶",
+          "start": 13.02,
+          "end": 13.2,
+          "probability": 0.97998046875
+        },
+        {
+          "text": "带",
+          "start": 13.2,
+          "end": 13.34,
+          "probability": 0.98779296875
+        },
+        {
+          "text": "进",
+          "start": 13.34,
+          "end": 13.52,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "行",
+          "start": 13.52,
+          "end": 13.66,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "固",
+          "start": 13.66,
+          "end": 13.76,
+          "probability": 0.997314453125
+        },
+        {
+          "text": "定",
+          "start": 13.76,
+          "end": 13.86,
+          "probability": 0.9990234375
+        }
+      ]
+    },
+    {
+      "start": 13.86,
+      "end": 14.92,
+      "text": "这样两节软管",
+      "words": [
+        {
+          "text": "这样",
+          "start": 13.86,
+          "end": 14.32,
+          "probability": 0.98046875
+        },
+        {
+          "text": "两",
+          "start": 14.32,
+          "end": 14.46,
+          "probability": 0.98828125
+        },
+        {
+          "text": "节",
+          "start": 14.46,
+          "end": 14.58,
+          "probability": 0.927734375
+        },
+        {
+          "text": "软",
+          "start": 14.58,
+          "end": 14.7,
+          "probability": 0.995361328125
+        },
+        {
+          "text": "管",
+          "start": 14.7,
+          "end": 14.92,
+          "probability": 0.9951171875
+        }
+      ]
+    },
+    {
+      "start": 14.92,
+      "end": 16.36,
+      "text": "即使在没有胶水的前提下",
+      "words": [
+        {
+          "text": "即",
+          "start": 14.92,
+          "end": 15.12,
+          "probability": 0.9677734375
+        },
+        {
+          "text": "使",
+          "start": 15.12,
+          "end": 15.24,
+          "probability": 0.98876953125
+        },
+        {
+          "text": "在",
+          "start": 15.24,
+          "end": 15.36,
+          "probability": 0.99365234375
+        },
+        {
+          "text": "没有",
+          "start": 15.36,
+          "end": 15.5,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "胶",
+          "start": 15.5,
+          "end": 15.72,
+          "probability": 0.923583984375
+        },
+        {
+          "text": "水",
+          "start": 15.72,
+          "end": 15.86,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "的",
+          "start": 15.86,
+          "end": 15.96,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "前",
+          "start": 15.96,
+          "end": 16.08,
+          "probability": 0.9951171875
+        },
+        {
+          "text": "提",
+          "start": 16.08,
+          "end": 16.2,
+          "probability": 0.98095703125
+        },
+        {
+          "text": "下",
+          "start": 16.2,
+          "end": 16.36,
+          "probability": 0.9990234375
+        }
+      ]
+    },
+    {
+      "start": 16.36,
+      "end": 17.34,
+      "text": "也能轻松修复好",
+      "words": [
+        {
+          "text": "也",
+          "start": 16.36,
+          "end": 16.54,
+          "probability": 0.99560546875
+        },
+        {
+          "text": "能",
+          "start": 16.54,
+          "end": 16.62,
+          "probability": 0.998046875
+        },
+        {
+          "text": "轻",
+          "start": 16.62,
+          "end": 16.76,
+          "probability": 0.999267578125
+        },
+        {
+          "text": "松",
+          "start": 16.76,
+          "end": 16.9,
+          "probability": 0.998046875
+        },
+        {
+          "text": "修",
+          "start": 16.9,
+          "end": 17.04,
+          "probability": 0.999267578125
+        },
+        {
+          "text": "复",
+          "start": 17.04,
+          "end": 17.12,
+          "probability": 0.99169921875
+        },
+        {
+          "text": "好",
+          "start": 17.12,
+          "end": 17.34,
+          "probability": 0.9990234375
+        }
+      ]
+    },
+    {
+      "start": 17.34,
+      "end": 18.2,
+      "text": "将半截塑料",
+      "words": [
+        {
+          "text": "将",
+          "start": 17.34,
+          "end": 17.58,
+          "probability": 0.99462890625
+        },
+        {
+          "text": "半",
+          "start": 17.58,
+          "end": 17.78,
+          "probability": 0.85986328125
+        },
+        {
+          "text": "截",
+          "start": 17.78,
+          "end": 17.92,
+          "probability": 0.76416015625
+        },
+        {
+          "text": "塑",
+          "start": 17.92,
+          "end": 18.04,
+          "probability": 0.989501953125
+        },
+        {
+          "text": "料",
+          "start": 18.04,
+          "end": 18.2,
+          "probability": 1.0
+        }
+      ]
+    },
+    {
+      "start": 18.2,
+      "end": 19.12,
+      "text": "平套入水管出",
+      "words": [
+        {
+          "text": "平",
+          "start": 18.2,
+          "end": 18.42,
+          "probability": 0.67529296875
+        },
+        {
+          "text": "套",
+          "start": 18.42,
+          "end": 18.58,
+          "probability": 0.99462890625
+        },
+        {
+          "text": "入",
+          "start": 18.58,
+          "end": 18.72,
+          "probability": 0.99560546875
+        },
+        {
+          "text": "水",
+          "start": 18.72,
+          "end": 18.84,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "管",
+          "start": 18.84,
+          "end": 18.96,
+          "probability": 0.9921875
+        },
+        {
+          "text": "出",
+          "start": 18.96,
+          "end": 19.12,
+          "probability": 0.4599609375
+        }
+      ]
+    },
+    {
+      "start": 19.12,
+      "end": 21.16,
+      "text": "水口处用胶带一圈圈进行缠绕",
+      "words": [
+        {
+          "text": "水",
+          "start": 19.12,
+          "end": 19.42,
+          "probability": 0.974609375
+        },
+        {
+          "text": "口",
+          "start": 19.42,
+          "end": 19.58,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "处",
+          "start": 19.58,
+          "end": 19.74,
+          "probability": 0.997314453125
+        },
+        {
+          "text": "用",
+          "start": 19.74,
+          "end": 19.88,
+          "probability": 0.99658203125
+        },
+        {
+          "text": "胶",
+          "start": 19.88,
+          "end": 20.06,
+          "probability": 0.997314453125
+        },
+        {
+          "text": "带",
+          "start": 20.06,
+          "end": 20.2,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "一",
+          "start": 20.2,
+          "end": 20.36,
+          "probability": 0.97412109375
+        },
+        {
+          "text": "圈",
+          "start": 20.36,
+          "end": 20.48,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "圈",
+          "start": 20.48,
+          "end": 20.62,
+          "probability": 0.995361328125
+        },
+        {
+          "text": "进",
+          "start": 20.62,
+          "end": 20.74,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "行",
+          "start": 20.74,
+          "end": 20.88,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "缠",
+          "start": 20.88,
+          "end": 21.0,
+          "probability": 0.864013671875
+        },
+        {
+          "text": "绕",
+          "start": 21.0,
+          "end": 21.16,
+          "probability": 0.997314453125
+        }
+      ]
+    },
+    {
+      "start": 21.16,
+      "end": 23.2,
+      "text": "使得瓶子能受力收缩紧贴管币",
+      "words": [
+        {
+          "text": "使",
+          "start": 21.16,
+          "end": 21.4,
+          "probability": 0.9931640625
+        },
+        {
+          "text": "得",
+          "start": 21.4,
+          "end": 21.5,
+          "probability": 0.978515625
+        },
+        {
+          "text": "瓶",
+          "start": 21.5,
+          "end": 21.6,
+          "probability": 0.98681640625
+        },
+        {
+          "text": "子",
+          "start": 21.6,
+          "end": 21.76,
+          "probability": 1.0
+        },
+        {
+          "text": "能",
+          "start": 21.76,
+          "end": 21.86,
+          "probability": 0.998046875
+        },
+        {
+          "text": "受",
+          "start": 21.86,
+          "end": 22.0,
+          "probability": 0.7421875
+        },
+        {
+          "text": "力",
+          "start": 22.0,
+          "end": 22.12,
+          "probability": 0.9912109375
+        },
+        {
+          "text": "收",
+          "start": 22.12,
+          "end": 22.28,
+          "probability": 0.705078125
+        },
+        {
+          "text": "缩",
+          "start": 22.28,
+          "end": 22.42,
+          "probability": 0.97900390625
+        },
+        {
+          "text": "紧",
+          "start": 22.42,
+          "end": 22.58,
+          "probability": 0.890625
+        },
+        {
+          "text": "贴",
+          "start": 22.58,
+          "end": 22.72,
+          "probability": 0.981201171875
+        },
+        {
+          "text": "管",
+          "start": 22.72,
+          "end": 22.88,
+          "probability": 0.89111328125
+        },
+        {
+          "text": "币",
+          "start": 22.88,
+          "end": 23.2,
+          "probability": 0.686767578125
+        }
+      ]
+    },
+    {
+      "start": 23.2,
+      "end": 24.28,
+      "text": "再用铁丝进行固定",
+      "words": [
+        {
+          "text": "再",
+          "start": 23.2,
+          "end": 23.34,
+          "probability": 0.9580078125
+        },
+        {
+          "text": "用",
+          "start": 23.34,
+          "end": 23.44,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "铁",
+          "start": 23.44,
+          "end": 23.6,
+          "probability": 0.8873697916666666
+        },
+        {
+          "text": "丝",
+          "start": 23.6,
+          "end": 23.74,
+          "probability": 0.990966796875
+        },
+        {
+          "text": "进",
+          "start": 23.74,
+          "end": 23.92,
+          "probability": 0.9951171875
+        },
+        {
+          "text": "行",
+          "start": 23.92,
+          "end": 24.02,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "固",
+          "start": 24.02,
+          "end": 24.16,
+          "probability": 0.98486328125
+        },
+        {
+          "text": "定",
+          "start": 24.16,
+          "end": 24.28,
+          "probability": 0.9990234375
+        }
+      ]
+    },
+    {
+      "start": 24.28,
+      "end": 25.3,
+      "text": "把瓶盖拧上去",
+      "words": [
+        {
+          "text": "把",
+          "start": 24.28,
+          "end": 24.5,
+          "probability": 0.830078125
+        },
+        {
+          "text": "瓶",
+          "start": 24.5,
+          "end": 24.68,
+          "probability": 0.97509765625
+        },
+        {
+          "text": "盖",
+          "start": 24.68,
+          "end": 24.86,
+          "probability": 0.998291015625
+        },
+        {
+          "text": "拧",
+          "start": 24.86,
+          "end": 24.98,
+          "probability": 0.98779296875
+        },
+        {
+          "text": "上",
+          "start": 24.98,
+          "end": 25.14,
+          "probability": 0.99560546875
+        },
+        {
+          "text": "去",
+          "start": 25.14,
+          "end": 25.3,
+          "probability": 0.9990234375
+        }
+      ]
+    },
+    {
+      "start": 25.3,
+      "end": 27.16,
+      "text": "这样即使在没有堵头的情况下",
+      "words": [
+        {
+          "text": "这样",
+          "start": 25.3,
+          "end": 25.7,
+          "probability": 0.96484375
+        },
+        {
+          "text": "即",
+          "start": 25.7,
+          "end": 25.96,
+          "probability": 0.93603515625
+        },
+        {
+          "text": "使",
+          "start": 25.96,
+          "end": 26.1,
+          "probability": 0.9658203125
+        },
+        {
+          "text": "在",
+          "start": 26.1,
+          "end": 26.22,
+          "probability": 0.9873046875
+        },
+        {
+          "text": "没有",
+          "start": 26.22,
+          "end": 26.38,
+          "probability": 0.99560546875
+        },
+        {
+          "text": "堵",
+          "start": 26.38,
+          "end": 26.58,
+          "probability": 0.78271484375
+        },
+        {
+          "text": "头",
+          "start": 26.58,
+          "end": 26.72,
+          "probability": 0.99658203125
+        },
+        {
+          "text": "的",
+          "start": 26.72,
+          "end": 26.8,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "情况",
+          "start": 26.8,
+          "end": 26.94,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "下",
+          "start": 26.94,
+          "end": 27.16,
+          "probability": 0.9990234375
+        }
+      ]
+    },
+    {
+      "start": 27.16,
+      "end": 28.1,
+      "text": "也能轻松直水",
+      "words": [
+        {
+          "text": "也",
+          "start": 27.16,
+          "end": 27.38,
+          "probability": 0.99072265625
+        },
+        {
+          "text": "能",
+          "start": 27.38,
+          "end": 27.5,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "轻",
+          "start": 27.5,
+          "end": 27.66,
+          "probability": 0.983154296875
+        },
+        {
+          "text": "松",
+          "start": 27.66,
+          "end": 27.8,
+          "probability": 0.97119140625
+        },
+        {
+          "text": "直",
+          "start": 27.8,
+          "end": 27.94,
+          "probability": 0.83251953125
+        },
+        {
+          "text": "水",
+          "start": 27.94,
+          "end": 28.1,
+          "probability": 0.9921875
+        }
+      ]
+    },
+    {
+      "start": 28.1,
+      "end": 30.4,
+      "text": "将玻璃珠放入中心开孔的水管堵头中",
+      "words": [
+        {
+          "text": "将",
+          "start": 28.1,
+          "end": 28.34,
+          "probability": 0.99609375
+        },
+        {
+          "text": "玻",
+          "start": 28.34,
+          "end": 28.48,
+          "probability": 0.9453125
+        },
+        {
+          "text": "璃",
+          "start": 28.48,
+          "end": 28.6,
+          "probability": 0.967041015625
+        },
+        {
+          "text": "珠",
+          "start": 28.6,
+          "end": 28.7,
+          "probability": 0.82275390625
+        },
+        {
+          "text": "放",
+          "start": 28.7,
+          "end": 28.86,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "入",
+          "start": 28.86,
+          "end": 28.98,
+          "probability": 0.99609375
+        },
+        {
+          "text": "中",
+          "start": 28.98,
+          "end": 29.1,
+          "probability": 0.9912109375
+        },
+        {
+          "text": "心",
+          "start": 29.1,
+          "end": 29.2,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "开",
+          "start": 29.2,
+          "end": 29.4,
+          "probability": 0.990234375
+        },
+        {
+          "text": "孔",
+          "start": 29.4,
+          "end": 29.54,
+          "probability": 0.981689453125
+        },
+        {
+          "text": "的",
+          "start": 29.54,
+          "end": 29.68,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "水",
+          "start": 29.68,
+          "end": 29.82,
+          "probability": 0.9873046875
+        },
+        {
+          "text": "管",
+          "start": 29.82,
+          "end": 29.96,
+          "probability": 0.99267578125
+        },
+        {
+          "text": "堵",
+          "start": 29.96,
+          "end": 30.06,
+          "probability": 0.98974609375
+        },
+        {
+          "text": "头",
+          "start": 30.06,
+          "end": 30.22,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "中",
+          "start": 30.22,
+          "end": 30.4,
+          "probability": 0.998046875
+        }
+      ]
+    },
+    {
+      "start": 30.4,
+      "end": 31.46,
+      "text": "并套在水管一端",
+      "words": [
+        {
+          "text": "并",
+          "start": 30.4,
+          "end": 30.6,
+          "probability": 0.98779296875
+        },
+        {
+          "text": "套",
+          "start": 30.6,
+          "end": 30.76,
+          "probability": 0.9931640625
+        },
+        {
+          "text": "在",
+          "start": 30.76,
+          "end": 30.88,
+          "probability": 0.99658203125
+        },
+        {
+          "text": "水",
+          "start": 30.88,
+          "end": 31.06,
+          "probability": 0.9873046875
+        },
+        {
+          "text": "管",
+          "start": 31.06,
+          "end": 31.22,
+          "probability": 0.998046875
+        },
+        {
+          "text": "一",
+          "start": 31.22,
+          "end": 31.34,
+          "probability": 0.857421875
+        },
+        {
+          "text": "端",
+          "start": 31.34,
+          "end": 31.46,
+          "probability": 1.0
+        }
+      ]
+    },
+    {
+      "start": 31.46,
+      "end": 32.62,
+      "text": "拧入螺丝进行固定",
+      "words": [
+        {
+          "text": "拧",
+          "start": 31.46,
+          "end": 31.66,
+          "probability": 0.682861328125
+        },
+        {
+          "text": "入",
+          "start": 31.66,
+          "end": 31.78,
+          "probability": 0.998046875
+        },
+        {
+          "text": "螺",
+          "start": 31.78,
+          "end": 31.88,
+          "probability": 0.988037109375
+        },
+        {
+          "text": "丝",
+          "start": 31.88,
+          "end": 32.06,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "进",
+          "start": 32.06,
+          "end": 32.22,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "行",
+          "start": 32.22,
+          "end": 32.34,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "固",
+          "start": 32.34,
+          "end": 32.46,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "定",
+          "start": 32.46,
+          "end": 32.62,
+          "probability": 0.99853515625
+        }
+      ]
+    },
+    {
+      "start": 32.62,
+      "end": 34.76,
+      "text": "再把水管另一端塞入软管接口处",
+      "words": [
+        {
+          "text": "再",
+          "start": 32.62,
+          "end": 32.94,
+          "probability": 0.99609375
+        },
+        {
+          "text": "把",
+          "start": 32.94,
+          "end": 33.04,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "水",
+          "start": 33.04,
+          "end": 33.2,
+          "probability": 0.998046875
+        },
+        {
+          "text": "管",
+          "start": 33.2,
+          "end": 33.36,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "另",
+          "start": 33.36,
+          "end": 33.5,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "一",
+          "start": 33.5,
+          "end": 33.58,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "端",
+          "start": 33.58,
+          "end": 33.72,
+          "probability": 1.0
+        },
+        {
+          "text": "塞",
+          "start": 33.72,
+          "end": 33.92,
+          "probability": 0.968505859375
+        },
+        {
+          "text": "入",
+          "start": 33.92,
+          "end": 34.04,
+          "probability": 0.9951171875
+        },
+        {
+          "text": "软",
+          "start": 34.04,
+          "end": 34.16,
+          "probability": 0.974853515625
+        },
+        {
+          "text": "管",
+          "start": 34.16,
+          "end": 34.32,
+          "probability": 0.98828125
+        },
+        {
+          "text": "接",
+          "start": 34.32,
+          "end": 34.46,
+          "probability": 0.97802734375
+        },
+        {
+          "text": "口",
+          "start": 34.46,
+          "end": 34.62,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "处",
+          "start": 34.62,
+          "end": 34.76,
+          "probability": 0.997314453125
+        }
+      ]
+    },
+    {
+      "start": 34.76,
+      "end": 36.24,
+      "text": "放入水桶中上下摇晃",
+      "words": [
+        {
+          "text": "放",
+          "start": 34.76,
+          "end": 35.04,
+          "probability": 0.9794921875
+        },
+        {
+          "text": "入",
+          "start": 35.04,
+          "end": 35.16,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "水",
+          "start": 35.16,
+          "end": 35.32,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "桶",
+          "start": 35.32,
+          "end": 35.44,
+          "probability": 0.96826171875
+        },
+        {
+          "text": "中",
+          "start": 35.44,
+          "end": 35.6,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "上",
+          "start": 35.6,
+          "end": 35.78,
+          "probability": 0.9951171875
+        },
+        {
+          "text": "下",
+          "start": 35.78,
+          "end": 35.92,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "摇",
+          "start": 35.92,
+          "end": 36.08,
+          "probability": 0.94287109375
+        },
+        {
+          "text": "晃",
+          "start": 36.08,
+          "end": 36.24,
+          "probability": 0.99169921875
+        }
+      ]
+    },
+    {
+      "start": 36.24,
+      "end": 37.6,
+      "text": "这样就能利用红溪原理",
+      "words": [
+        {
+          "text": "这样",
+          "start": 36.24,
+          "end": 36.52,
+          "probability": 0.990234375
+        },
+        {
+          "text": "就",
+          "start": 36.52,
+          "end": 36.7,
+          "probability": 0.998046875
+        },
+        {
+          "text": "能",
+          "start": 36.7,
+          "end": 36.8,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "利",
+          "start": 36.8,
+          "end": 36.9,
+          "probability": 0.998046875
+        },
+        {
+          "text": "用",
+          "start": 36.9,
+          "end": 37.02,
+          "probability": 1.0
+        },
+        {
+          "text": "红",
+          "start": 37.02,
+          "end": 37.16,
+          "probability": 0.9140625
+        },
+        {
+          "text": "溪",
+          "start": 37.16,
+          "end": 37.3,
+          "probability": 0.584228515625
+        },
+        {
+          "text": "原",
+          "start": 37.3,
+          "end": 37.44,
+          "probability": 0.62255859375
+        },
+        {
+          "text": "理",
+          "start": 37.44,
+          "end": 37.6,
+          "probability": 0.9931640625
+        }
+      ]
+    },
+    {
+      "start": 37.6,
+      "end": 39.66,
+      "text": "让水桶中的水能顺着软管流出来",
+      "words": [
+        {
+          "text": "让",
+          "start": 37.6,
+          "end": 37.82,
+          "probability": 0.98876953125
+        },
+        {
+          "text": "水",
+          "start": 37.82,
+          "end": 38.02,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "桶",
+          "start": 38.02,
+          "end": 38.14,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "中",
+          "start": 38.14,
+          "end": 38.3,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "的",
+          "start": 38.3,
+          "end": 38.38,
+          "probability": 0.998046875
+        },
+        {
+          "text": "水",
+          "start": 38.38,
+          "end": 38.52,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "能",
+          "start": 38.52,
+          "end": 38.68,
+          "probability": 0.9951171875
+        },
+        {
+          "text": "顺",
+          "start": 38.68,
+          "end": 38.94,
+          "probability": 0.992919921875
+        },
+        {
+          "text": "着",
+          "start": 38.94,
+          "end": 39.06,
+          "probability": 0.98828125
+        },
+        {
+          "text": "软",
+          "start": 39.06,
+          "end": 39.16,
+          "probability": 0.997314453125
+        },
+        {
+          "text": "管",
+          "start": 39.16,
+          "end": 39.32,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "流",
+          "start": 39.32,
+          "end": 39.44,
+          "probability": 0.935546875
+        },
+        {
+          "text": "出来",
+          "start": 39.44,
+          "end": 39.66,
+          "probability": 0.99462890625
+        }
+      ]
+    },
+    {
+      "start": 39.66,
+      "end": 41.02,
+      "text": "轻松完成换水工作",
+      "words": [
+        {
+          "text": "轻",
+          "start": 39.66,
+          "end": 39.92,
+          "probability": 0.99267578125
+        },
+        {
+          "text": "松",
+          "start": 39.92,
+          "end": 40.08,
+          "probability": 0.998046875
+        },
+        {
+          "text": "完成",
+          "start": 40.08,
+          "end": 40.3,
+          "probability": 0.998046875
+        },
+        {
+          "text": "换",
+          "start": 40.3,
+          "end": 40.56,
+          "probability": 0.7301025390625
+        },
+        {
+          "text": "水",
+          "start": 40.56,
+          "end": 40.74,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "工作",
+          "start": 40.74,
+          "end": 41.02,
+          "probability": 0.9833984375
+        }
+      ]
+    },
+    {
+      "start": 41.02,
+      "end": 42.6,
+      "text": "将螺丝烧制一定温度后",
+      "words": [
+        {
+          "text": "将",
+          "start": 41.02,
+          "end": 41.44,
+          "probability": 0.99658203125
+        },
+        {
+          "text": "螺",
+          "start": 41.44,
+          "end": 41.56,
+          "probability": 0.99169921875
+        },
+        {
+          "text": "丝",
+          "start": 41.56,
+          "end": 41.68,
+          "probability": 0.7548828125
+        },
+        {
+          "text": "烧",
+          "start": 41.68,
+          "end": 41.84,
+          "probability": 0.995361328125
+        },
+        {
+          "text": "制",
+          "start": 41.84,
+          "end": 41.96,
+          "probability": 0.6572265625
+        },
+        {
+          "text": "一定",
+          "start": 41.96,
+          "end": 42.16,
+          "probability": 0.9755859375
+        },
+        {
+          "text": "温",
+          "start": 42.16,
+          "end": 42.3,
+          "probability": 0.998046875
+        },
+        {
+          "text": "度",
+          "start": 42.3,
+          "end": 42.42,
+          "probability": 1.0
+        },
+        {
+          "text": "后",
+          "start": 42.42,
+          "end": 42.6,
+          "probability": 0.99072265625
+        }
+      ]
+    },
+    {
+      "start": 42.6,
+      "end": 43.94,
+      "text": "趁热压入水管断丝内",
+      "words": [
+        {
+          "text": "趁",
+          "start": 42.6,
+          "end": 42.84,
+          "probability": 0.932373046875
+        },
+        {
+          "text": "热",
+          "start": 42.84,
+          "end": 42.98,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "压",
+          "start": 42.98,
+          "end": 43.1,
+          "probability": 0.96923828125
+        },
+        {
+          "text": "入",
+          "start": 43.1,
+          "end": 43.24,
+          "probability": 0.99658203125
+        },
+        {
+          "text": "水",
+          "start": 43.24,
+          "end": 43.38,
+          "probability": 0.99609375
+        },
+        {
+          "text": "管",
+          "start": 43.38,
+          "end": 43.54,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "断",
+          "start": 43.54,
+          "end": 43.64,
+          "probability": 0.9658203125
+        },
+        {
+          "text": "丝",
+          "start": 43.64,
+          "end": 43.76,
+          "probability": 0.91796875
+        },
+        {
+          "text": "内",
+          "start": 43.76,
+          "end": 43.94,
+          "probability": 0.99658203125
+        }
+      ]
+    },
+    {
+      "start": 43.94,
+      "end": 44.98,
+      "text": "使其能刚好烫出",
+      "words": [
+        {
+          "text": "使",
+          "start": 43.94,
+          "end": 44.16,
+          "probability": 0.9814453125
+        },
+        {
+          "text": "其",
+          "start": 44.16,
+          "end": 44.26,
+          "probability": 0.99365234375
+        },
+        {
+          "text": "能",
+          "start": 44.26,
+          "end": 44.38,
+          "probability": 0.99658203125
+        },
+        {
+          "text": "刚",
+          "start": 44.38,
+          "end": 44.54,
+          "probability": 0.98876953125
+        },
+        {
+          "text": "好",
+          "start": 44.54,
+          "end": 44.68,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "烫",
+          "start": 44.68,
+          "end": 44.78,
+          "probability": 0.94189453125
+        },
+        {
+          "text": "出",
+          "start": 44.78,
+          "end": 44.98,
+          "probability": 0.998046875
+        }
+      ]
+    },
+    {
+      "start": 44.98,
+      "end": 46.38,
+      "text": "足以卡住断丝的缺口",
+      "words": [
+        {
+          "text": "足",
+          "start": 44.98,
+          "end": 45.22,
+          "probability": 0.85205078125
+        },
+        {
+          "text": "以",
+          "start": 45.22,
+          "end": 45.36,
+          "probability": 0.98974609375
+        },
+        {
+          "text": "卡",
+          "start": 45.36,
+          "end": 45.5,
+          "probability": 0.986328125
+        },
+        {
+          "text": "住",
+          "start": 45.5,
+          "end": 45.66,
+          "probability": 0.99658203125
+        },
+        {
+          "text": "断",
+          "start": 45.66,
+          "end": 45.82,
+          "probability": 0.9140625
+        },
+        {
+          "text": "丝",
+          "start": 45.82,
+          "end": 45.96,
+          "probability": 0.87646484375
+        },
+        {
+          "text": "的",
+          "start": 45.96,
+          "end": 46.06,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "缺",
+          "start": 46.06,
+          "end": 46.2,
+          "probability": 0.998046875
+        },
+        {
+          "text": "口",
+          "start": 46.2,
+          "end": 46.38,
+          "probability": 0.99853515625
+        }
+      ]
+    },
+    {
+      "start": 46.38,
+      "end": 47.54,
+      "text": "等到喷水冷却后",
+      "words": [
+        {
+          "text": "等",
+          "start": 46.38,
+          "end": 46.74,
+          "probability": 0.984375
+        },
+        {
+          "text": "到",
+          "start": 46.74,
+          "end": 46.9,
+          "probability": 0.99462890625
+        },
+        {
+          "text": "喷",
+          "start": 46.9,
+          "end": 47.0,
+          "probability": 0.986083984375
+        },
+        {
+          "text": "水",
+          "start": 47.0,
+          "end": 47.14,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "冷",
+          "start": 47.14,
+          "end": 47.26,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "却",
+          "start": 47.26,
+          "end": 47.4,
+          "probability": 0.971923828125
+        },
+        {
+          "text": "后",
+          "start": 47.4,
+          "end": 47.54,
+          "probability": 0.99755859375
+        }
+      ]
+    },
+    {
+      "start": 47.54,
+      "end": 49.2,
+      "text": "螺丝就会和断丝咬合成一体",
+      "words": [
+        {
+          "text": "螺",
+          "start": 47.54,
+          "end": 47.76,
+          "probability": 0.84521484375
+        },
+        {
+          "text": "丝",
+          "start": 47.76,
+          "end": 47.88,
+          "probability": 0.16400146484375
+        },
+        {
+          "text": "就",
+          "start": 47.88,
+          "end": 48.04,
+          "probability": 0.919921875
+        },
+        {
+          "text": "会",
+          "start": 48.04,
+          "end": 48.14,
+          "probability": 0.99609375
+        },
+        {
+          "text": "和",
+          "start": 48.14,
+          "end": 48.24,
+          "probability": 0.9951171875
+        },
+        {
+          "text": "断",
+          "start": 48.24,
+          "end": 48.38,
+          "probability": 0.998046875
+        },
+        {
+          "text": "丝",
+          "start": 48.38,
+          "end": 48.54,
+          "probability": 1.0
+        },
+        {
+          "text": "咬",
+          "start": 48.54,
+          "end": 48.68,
+          "probability": 0.828369140625
+        },
+        {
+          "text": "合",
+          "start": 48.68,
+          "end": 48.8,
+          "probability": 0.99658203125
+        },
+        {
+          "text": "成",
+          "start": 48.8,
+          "end": 48.92,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "一",
+          "start": 48.92,
+          "end": 49.04,
+          "probability": 0.55029296875
+        },
+        {
+          "text": "体",
+          "start": 49.04,
+          "end": 49.2,
+          "probability": 0.98974609375
+        }
+      ]
+    },
+    {
+      "start": 49.2,
+      "end": 50.64,
+      "text": "这样只需逆时针旋转",
+      "words": [
+        {
+          "text": "这样",
+          "start": 49.2,
+          "end": 49.5,
+          "probability": 0.9599609375
+        },
+        {
+          "text": "只",
+          "start": 49.5,
+          "end": 49.8,
+          "probability": 0.8369140625
+        },
+        {
+          "text": "需",
+          "start": 49.8,
+          "end": 49.94,
+          "probability": 0.98486328125
+        },
+        {
+          "text": "逆",
+          "start": 49.94,
+          "end": 50.04,
+          "probability": 0.994384765625
+        },
+        {
+          "text": "时",
+          "start": 50.04,
+          "end": 50.2,
+          "probability": 0.94140625
+        },
+        {
+          "text": "针",
+          "start": 50.2,
+          "end": 50.32,
+          "probability": 0.972900390625
+        },
+        {
+          "text": "旋",
+          "start": 50.32,
+          "end": 50.46,
+          "probability": 0.998291015625
+        },
+        {
+          "text": "转",
+          "start": 50.46,
+          "end": 50.64,
+          "probability": 0.99462890625
+        }
+      ]
+    },
+    {
+      "start": 50.64,
+      "end": 52.32,
+      "text": "就能轻松将卡在里面的断丝",
+      "words": [
+        {
+          "text": "就",
+          "start": 50.64,
+          "end": 50.86,
+          "probability": 0.99560546875
+        },
+        {
+          "text": "能",
+          "start": 50.86,
+          "end": 50.96,
+          "probability": 0.99609375
+        },
+        {
+          "text": "轻",
+          "start": 50.96,
+          "end": 51.12,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "松",
+          "start": 51.12,
+          "end": 51.24,
+          "probability": 0.978515625
+        },
+        {
+          "text": "将",
+          "start": 51.24,
+          "end": 51.36,
+          "probability": 0.9853515625
+        },
+        {
+          "text": "卡",
+          "start": 51.36,
+          "end": 51.56,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "在",
+          "start": 51.56,
+          "end": 51.66,
+          "probability": 0.99609375
+        },
+        {
+          "text": "里",
+          "start": 51.66,
+          "end": 51.8,
+          "probability": 0.99658203125
+        },
+        {
+          "text": "面",
+          "start": 51.8,
+          "end": 51.9,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "的",
+          "start": 51.9,
+          "end": 51.98,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "断",
+          "start": 51.98,
+          "end": 52.12,
+          "probability": 0.998779296875
+        },
+        {
+          "text": "丝",
+          "start": 52.12,
+          "end": 52.32,
+          "probability": 0.999755859375
+        }
+      ]
+    },
+    {
+      "start": 52.32,
+      "end": 53.04,
+      "text": "完整拧出来",
+      "words": [
+        {
+          "text": "完",
+          "start": 52.32,
+          "end": 52.52,
+          "probability": 0.96435546875
+        },
+        {
+          "text": "整",
+          "start": 52.52,
+          "end": 52.7,
+          "probability": 1.0
+        },
+        {
+          "text": "拧",
+          "start": 52.7,
+          "end": 52.82,
+          "probability": 0.7548828125
+        },
+        {
+          "text": "出来",
+          "start": 52.82,
+          "end": 53.04,
+          "probability": 0.99462890625
+        }
+      ]
+    },
+    {
+      "start": 53.04,
+      "end": 54.64,
+      "text": "将塑料盖套在铁门上",
+      "words": [
+        {
+          "text": "将",
+          "start": 53.04,
+          "end": 53.38,
+          "probability": 0.99365234375
+        },
+        {
+          "text": "塑",
+          "start": 53.38,
+          "end": 53.54,
+          "probability": 0.9873046875
+        },
+        {
+          "text": "料",
+          "start": 53.54,
+          "end": 53.68,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "盖",
+          "start": 53.68,
+          "end": 53.8,
+          "probability": 0.965576171875
+        },
+        {
+          "text": "套",
+          "start": 53.8,
+          "end": 54.02,
+          "probability": 0.994384765625
+        },
+        {
+          "text": "在",
+          "start": 54.02,
+          "end": 54.16,
+          "probability": 0.98095703125
+        },
+        {
+          "text": "铁",
+          "start": 54.16,
+          "end": 54.34,
+          "probability": 0.9964192708333334
+        },
+        {
+          "text": "门",
+          "start": 54.34,
+          "end": 54.48,
+          "probability": 0.98876953125
+        },
+        {
+          "text": "上",
+          "start": 54.48,
+          "end": 54.64,
+          "probability": 0.9970703125
+        }
+      ]
+    },
+    {
+      "start": 54.64,
+      "end": 56.04,
+      "text": "并挂上铁锁拧上罐子",
+      "words": [
+        {
+          "text": "并",
+          "start": 54.64,
+          "end": 54.88,
+          "probability": 0.996337890625
+        },
+        {
+          "text": "挂",
+          "start": 54.88,
+          "end": 54.98,
+          "probability": 0.98974609375
+        },
+        {
+          "text": "上",
+          "start": 54.98,
+          "end": 55.12,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "铁",
+          "start": 55.12,
+          "end": 55.3,
+          "probability": 0.9513346354166666
+        },
+        {
+          "text": "锁",
+          "start": 55.3,
+          "end": 55.48,
+          "probability": 0.9765625
+        },
+        {
+          "text": "拧",
+          "start": 55.48,
+          "end": 55.6,
+          "probability": 0.985107421875
+        },
+        {
+          "text": "上",
+          "start": 55.6,
+          "end": 55.74,
+          "probability": 0.9677734375
+        },
+        {
+          "text": "罐",
+          "start": 55.74,
+          "end": 55.9,
+          "probability": 0.96435546875
+        },
+        {
+          "text": "子",
+          "start": 55.9,
+          "end": 56.04,
+          "probability": 0.9990234375
+        }
+      ]
+    },
+    {
+      "start": 56.04,
+      "end": 57.72,
+      "text": "就能形成一个简易的防水罩",
+      "words": [
+        {
+          "text": "就",
+          "start": 56.04,
+          "end": 56.24,
+          "probability": 0.994140625
+        },
+        {
+          "text": "能",
+          "start": 56.24,
+          "end": 56.36,
+          "probability": 0.99365234375
+        },
+        {
+          "text": "形",
+          "start": 56.36,
+          "end": 56.48,
+          "probability": 0.98974609375
+        },
+        {
+          "text": "成",
+          "start": 56.48,
+          "end": 56.64,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "一个",
+          "start": 56.64,
+          "end": 56.8,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "简",
+          "start": 56.8,
+          "end": 57.0,
+          "probability": 0.96435546875
+        },
+        {
+          "text": "易",
+          "start": 57.0,
+          "end": 57.14,
+          "probability": 0.96728515625
+        },
+        {
+          "text": "的",
+          "start": 57.14,
+          "end": 57.22,
+          "probability": 0.984375
+        },
+        {
+          "text": "防",
+          "start": 57.22,
+          "end": 57.34,
+          "probability": 0.99560546875
+        },
+        {
+          "text": "水",
+          "start": 57.34,
+          "end": 57.5,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "罩",
+          "start": 57.5,
+          "end": 57.72,
+          "probability": 0.954833984375
+        }
+      ]
+    },
+    {
+      "start": 57.72,
+      "end": 58.48,
+      "text": "这样在下雨时",
+      "words": [
+        {
+          "text": "这样",
+          "start": 57.72,
+          "end": 57.92,
+          "probability": 0.994140625
+        },
+        {
+          "text": "在",
+          "start": 57.92,
+          "end": 58.06,
+          "probability": 0.98779296875
+        },
+        {
+          "text": "下",
+          "start": 58.06,
+          "end": 58.2,
+          "probability": 0.97412109375
+        },
+        {
+          "text": "雨",
+          "start": 58.2,
+          "end": 58.32,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "时",
+          "start": 58.32,
+          "end": 58.48,
+          "probability": 0.99853515625
+        }
+      ]
+    },
+    {
+      "start": 58.48,
+      "end": 59.24,
+      "text": "就不用担心",
+      "words": [
+        {
+          "text": "就",
+          "start": 58.48,
+          "end": 58.7,
+          "probability": 0.98779296875
+        },
+        {
+          "text": "不用",
+          "start": 58.7,
+          "end": 58.88,
+          "probability": 0.998046875
+        },
+        {
+          "text": "担",
+          "start": 58.88,
+          "end": 59.06,
+          "probability": 0.998291015625
+        },
+        {
+          "text": "心",
+          "start": 59.06,
+          "end": 59.24,
+          "probability": 1.0
+        }
+      ]
+    },
+    {
+      "start": 59.24,
+      "end": 61.02,
+      "text": "所心会被临时导致生锈了",
+      "words": [
+        {
+          "text": "所",
+          "start": 59.24,
+          "end": 59.5,
+          "probability": 0.3935546875
+        },
+        {
+          "text": "心",
+          "start": 59.5,
+          "end": 59.64,
+          "probability": 0.09063720703125
+        },
+        {
+          "text": "会",
+          "start": 59.64,
+          "end": 59.78,
+          "probability": 0.98681640625
+        },
+        {
+          "text": "被",
+          "start": 59.78,
+          "end": 59.92,
+          "probability": 0.99365234375
+        },
+        {
+          "text": "临",
+          "start": 59.92,
+          "end": 60.04,
+          "probability": 0.789306640625
+        },
+        {
+          "text": "时",
+          "start": 60.04,
+          "end": 60.2,
+          "probability": 0.9892578125
+        },
+        {
+          "text": "导",
+          "start": 60.2,
+          "end": 60.46,
+          "probability": 0.9921875
+        },
+        {
+          "text": "致",
+          "start": 60.46,
+          "end": 60.62,
+          "probability": 0.997802734375
+        },
+        {
+          "text": "生",
+          "start": 60.62,
+          "end": 60.76,
+          "probability": 0.947265625
+        },
+        {
+          "text": "锈",
+          "start": 60.76,
+          "end": 60.88,
+          "probability": 0.7120361328125
+        },
+        {
+          "text": "了",
+          "start": 60.88,
+          "end": 61.02,
+          "probability": 0.99658203125
+        }
+      ]
+    }
+  ]
+}

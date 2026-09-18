@@ -1,6 +1,6 @@
 import { app, dialog } from 'electron'
 import { spawn, type ChildProcess } from 'node:child_process'
-import { access, copyFile, mkdir, readFile, rename, rm, stat, writeFile } from 'node:fs/promises'
+import { access, copyFile, mkdir, readFile, readdir, rename, rm, stat, writeFile } from 'node:fs/promises'
 import { basename, dirname, join } from 'node:path'
 import { createHash, randomUUID } from 'node:crypto'
 import { resolveFfmpeg, installFfmpeg } from './deps'
@@ -27,12 +27,14 @@ import {
 import { buildSemanticGroups, joinGroupText, type SemanticGroup } from './semanticGrouping'
 import { createDurationPredictor, durationProfileKey } from './dubbingDuration'
 import { loadDurationProfile, saveDurationProfile } from './dubbing/profileStore'
+import { addVoiceMeasurement, createVoiceMeasurementProfile, loadVoiceMeasurementProfile, saveVoiceMeasurementProfile } from './dubbing/voiceMeasurements'
+import { voicePromptHintFromProfile, type VoicePromptHint } from './dubbing/voiceMeasurements'
 import { applyDubbingTranslations, dubbingSpeakingDurations } from './dubbing/translation'
 import { buildTtsCacheKey, getTtsCacheStore } from './dubbing/cache'
-import { synthesizeDubbingPlan } from './dubbing/synthesis'
+import { createDubbingFeedbackJournal, synthesizeDubbingPlan } from './dubbing/synthesis'
 import type { DubbingTimeMap } from './dubbing/timeMap'
 import { buildStageKey, canonicalJson, hashFileSha256 } from './autoShortStageKeys'
-import { DUBBING_MAX_EARLY_START_SECONDS, DUBBING_PLAN_VERSION, buildDubbingPlan as buildPlan, groupDubbingPlanForSpeech, validateDubbingPlan, type DubbingPlan } from './dubbing/plan'
+import { DUBBING_MAX_EARLY_START_SECONDS, DUBBING_PLAN_VERSION, buildDubbingPlan as buildPlan, groupDubbingPlanForSourceAnchoredSpeech, validateDubbingPlan, type DubbingPlan } from './dubbing/plan'
 import { huongDan, stripOuterQuotes } from './translate-shared'
 import { resolveTranslationSourceLanguage } from './localTranslatePolicy'
 import { debugRaw, logInfo, logWarn, logError, errLabel } from './logger'
@@ -55,6 +57,9 @@ import {
   checkGeminiGateway,
   createGeminiGatewayTranslationAdapter,
   isPermanentGatewayError,
+  isProviderThrottledError,
+  probeGeminiGatewayGeneration,
+  readGatewayCapabilitiesInfo,
   rephraseGeminiGateway
 } from './geminiGateway'
 import { generateSpeech, generateVoiceClone, getTtsModels, checkTtsServerHealth, getEdgeTtsModelInfo, fetchEdgeVoices } from './tts'
@@ -107,7 +112,9 @@ import { separateSourceAudio, type SeparatorProviderState } from './separation/p
 import { requiredSeparationWorkspaceBytes } from './separation/disk'
 import { composeAutoShortNarratedAudio } from './autoShortNarratedAudio'
 import type { InstalledSeparatorModel } from './separation/modelStore'
-import { reserveVideoTitleOutputDir } from './videoTitle'
+import { generateVideoSeoMetadata, reserveVideoTitleOutputDir, writeVideoSeoMetadata } from './videoTitle'
+import { formatVideoSeoMetadata } from '../shared/videoSeo'
+import { validateVideoTitleConfig } from '../shared/videoTitle'
 import { createAutoShortArtifactCache, type ArtifactCache } from './autoShortArtifactCache'
 import { assertContainedParentDirectory, assertContainedRegularFile } from './safeContainedPath'
 import { createAutoShortBatchStore, type AutoShortBatchStore } from './autoShortBatchStore'
@@ -131,7 +138,7 @@ import {
   type BatchItemState,
   type BatchSnapshot
 } from '../shared/autoShortBatchJournal'
-import { buildRephraseMessages } from './translation/prompts'
+import { buildRephraseMessages, modelMessageText } from './translation/prompts'
 import { resolveTranslationReadiness } from './translation/language'
 import type {
   AutoShortBatchStatusResult,
@@ -153,6 +160,8 @@ import {
   AutoShortNormalizedRegion,
   AutoShortProgress,
   AutoShortRequestSpan,
+  AutoShortRetryTitleRequest,
+  AutoShortRetryTitleResult,
   AutoShortQueueItemInput,
   AutoShortStartRequest,
   AutoShortResumeRequest,
@@ -163,6 +172,7 @@ import {
   DichKeyStatus,
   TtsModelInfo,
   TtsServerHealth,
+  VideoTitleConfig,
   WhisperProgress
 } from '../shared/types'
 
@@ -175,23 +185,35 @@ export interface PreparedAutoShortSeparation {
   presetConfig: SeparationPresetConfig
 }
 
-interface AutoShortJob {
+/** Minimal job surface consumed by the source-anchored TTS pipeline. */
+export interface AutoShortTtsJobAdapter {
+  id: string
+  controller: { signal: AbortSignal }
+  emit: (event: AutoShortEvent) => void
+  ttsCapabilities?: Awaited<ReturnType<typeof getTtsModels>>
+  ttsCapabilitiesUrl?: string
+  resourceManager?: AutoShortResourceManager
+  artifactCache?: ArtifactCache
+  /** Job-scoped only; it never enters a checkpoint or renderer payload. */
+  feedbackJournal: ReturnType<typeof createDubbingFeedbackJournal>
+  /** Explicit coordinator identity; falls back to the current queue item for legacy callers. */
+  feedbackJournalItemId?: string
+  /** App-owned directory that survives a bounded item retry; never user supplied. */
+  acceptedCueStoreDir?: string
+}
+
+interface AutoShortJob extends AutoShortTtsJobAdapter {
   id: string
   request: AutoShortStartRequest
   controller: AbortController
-  emit: (event: AutoShortEvent) => void
   done: Promise<AutoShortBatchResult>
   cancelled: boolean
   shutdownRequested?: boolean
   batchStore: AutoShortBatchStore
   batchSnapshot?: BatchSnapshot
   batchWrite: Promise<void>
-  ttsCapabilities?: Awaited<ReturnType<typeof getTtsModels>>
-  ttsCapabilitiesUrl?: string
   separation?: PreparedAutoShortSeparation
   separationProviderState: SeparatorProviderState
-  resourceManager?: AutoShortResourceManager
-  artifactCache?: ArtifactCache
   telemetryBudget?: AutoShortTelemetryJobBudget
 }
 
@@ -967,7 +989,7 @@ export async function installAutoShortDependencies(
   return readiness
 }
 
-function safeEmit(job: AutoShortJob, event: AutoShortEvent): void {
+function safeEmit(job: Pick<AutoShortTtsJobAdapter, 'emit'>, event: AutoShortEvent): void {
   try {
     job.emit(event)
   } catch (error) {
@@ -1089,7 +1111,7 @@ export async function uniqueOutputName(outputDir: string, sourcePath: string): P
 }
 
 function emitProgress(
-  job: AutoShortJob,
+  job: Pick<AutoShortTtsJobAdapter, 'id' | 'emit'>,
   item: AutoShortQueueItemInput,
   status: AutoShortProgress['itemStatus'],
   percent: number,
@@ -1102,7 +1124,7 @@ function emitProgress(
   safeEmit(job, {
     type: 'item-progress',
     jobId: job.id,
-     taskId: item.id,
+    taskId: item.id,
     itemId: item.id,
     itemStatus: status,
     itemPercent: Math.max(0, Math.min(100, Math.round(percent))),
@@ -1287,7 +1309,9 @@ async function requestTranslation(
   resumeItems: readonly TranslationItem[] = [],
   restoredBudget?: TranslationBudgetSnapshot,
   videoDuration?: number,
-  geminiGatewayAuditPath?: string
+  geminiGatewayAuditPath?: string,
+  voiceHint?: VoicePromptHint,
+  geminiGatewayDraftDir?: string
 ): Promise<{ assessment?: TranslationAssessment; budget?: TranslationBudgetSnapshot }> {
   // AutoShort uses one provider-neutral scheduler. Provider modules only make
   // one request and expose the canonical prompt/response contract; this
@@ -1333,6 +1357,7 @@ async function requestTranslation(
     sourceLanguage: sourceLocale,
     targetLocale,
     mode,
+    ...(videoDuration !== undefined && Number.isFinite(videoDuration) && videoDuration > 0 ? { sourceVideoDuration: videoDuration } : {}),
     // Keep the complete source in the planner. Resume filtering happens by
     // canonical ID inside the orchestrator, so batch IDs and per-batch quota
     // remain stable when only a tail or an interior cue is missing.
@@ -1386,7 +1411,11 @@ async function requestTranslation(
   if (config.translateProvider === 'local') {
     adapter = createLocalTranslationAdapter(await loadLocalKey(), config.translateServerUrl)
   } else if (config.translateProvider === 'gemini-gateway') {
-    adapter = createGeminiGatewayTranslationAdapter(config.translateServerUrl, { auditPath: geminiGatewayAuditPath })
+    adapter = createGeminiGatewayTranslationAdapter(config.translateServerUrl, {
+      auditPath: geminiGatewayAuditPath,
+      draftDir: geminiGatewayDraftDir,
+      voiceHint
+    })
   } else if (config.translateProvider === 'openai') {
     const key = await loadOpenAiKey()
     if (!key.trim()) throw new Error('Chưa có API key OpenAI.')
@@ -1490,6 +1519,48 @@ function assertTranslatedLanguageShift(
     // Unknown/unsupported locale tags should not block a valid translation.
   }
 }
+
+export async function loadAutoShortVoiceHint(
+  job: Pick<AutoShortTtsJobAdapter, 'ttsCapabilities' | 'ttsCapabilitiesUrl'>,
+  config: AutoShortConfig,
+  detectedLanguage?: string | null
+): Promise<VoicePromptHint | undefined> {
+  if (!config.ttsEnabled || config.translateTarget === 'none') return undefined
+  const language = resolveAutoShortTtsLanguage(config, detectedLanguage)
+  if (!language || language === 'auto') return undefined
+  const isEdgeTts = config.ttsProvider === 'edge-tts'
+  const capabilityUrl = isEdgeTts ? EDGE_TTS_ENDPOINT_ID : (config.ttsServerUrl || '')
+  const models = job.ttsCapabilities && job.ttsCapabilitiesUrl === capabilityUrl ? job.ttsCapabilities : undefined
+  if (!models?.models?.length) return undefined
+  const selectedModel = selectCompatibleAutoShortTtsModel(models.models, config.ttsModel, language)
+  if (!selectedModel) return undefined
+  const effectiveVoice = selectedModel.supports_named_voice === false
+    ? undefined
+    : config.ttsVoice && config.ttsVoice !== 'default'
+      ? config.ttsVoice
+      : selectedModel.default_voice
+  const referenceInfo = config.ttsRefAudioPath
+    ? await stat(config.ttsRefAudioPath).then((info) => ({ path: config.ttsRefAudioPath, size: info.size, mtimeMs: info.mtimeMs })).catch(() => ({ path: config.ttsRefAudioPath, size: 0, mtimeMs: 0 }))
+    : null
+  const referenceBuffer = config.ttsRefAudioPath ? await readFile(config.ttsRefAudioPath).catch(() => null) : null
+  const referenceContentHash = referenceBuffer ? createHash('sha256').update(referenceBuffer).digest('hex') : undefined
+  const modelRevision = typeof selectedModel.revision === 'string'
+    ? selectedModel.revision
+    : typeof selectedModel.model_revision === 'string' ? selectedModel.model_revision : undefined
+  const key = durationProfileKey({
+    endpoint: isEdgeTts ? EDGE_TTS_ENDPOINT_ID : config.ttsServerUrl,
+    model: selectedModel.id,
+    voice: effectiveVoice,
+    language,
+    options: config.ttsOptions,
+    referenceAudio: referenceInfo,
+    referenceContentHash,
+    modelRevision
+  })
+  const profile = await loadVoiceMeasurementProfile(join(app.getPath('userData'), 'voice-measurements'), key)
+  return voicePromptHintFromProfile(profile, language)
+}
+
 export async function translateStrict(
   config: AutoShortConfig,
   input: string,
@@ -1502,9 +1573,11 @@ export async function translateStrict(
   resumeItems: readonly TranslationItem[] = [],
   restoredBudget?: TranslationBudgetSnapshot,
   videoDuration?: number,
-  geminiGatewayAuditPath?: string
+  geminiGatewayAuditPath?: string,
+  voiceHint?: VoicePromptHint,
+  geminiGatewayDraftDir?: string
 ): Promise<{ assessment?: TranslationAssessment; budget?: TranslationBudgetSnapshot }> {
-  const result = await requestTranslation(config, input, output, onProgress, signal, sourceLanguage, onBatch, onBudget, resumeItems, restoredBudget, videoDuration, geminiGatewayAuditPath)
+  const result = await requestTranslation(config, input, output, onProgress, signal, sourceLanguage, onBatch, onBudget, resumeItems, restoredBudget, videoDuration, geminiGatewayAuditPath, voiceHint, geminiGatewayDraftDir)
   const source = parseSrt(await readFile(input, 'utf8')).cues
   const translated = parseSrt(await readFile(output, 'utf8')).cues
   // Never infer identity by position or silently copy source text. A
@@ -1656,8 +1729,8 @@ export async function rephraseDubbingCue(
         recoveryAttempt
       }))
     })
-    const systemPrompt = messages[0].content
-    const userPrompt = messages[1].content
+    const systemPrompt = modelMessageText(messages[0].content)
+    const userPrompt = modelMessageText(messages[1].content)
 
     if (config.translateProvider === 'local') {
       const localKey = await loadLocalKey()
@@ -1734,9 +1807,9 @@ interface DubbingRephraseRequest {
 }
 
 /**
- * Rephrase all predictor outliers in one supplemental translation pass. The
- * local server is commonly CPU-bound, so issuing one request per cue can
- * serialize dozens of expensive calls and make the job appear stuck.
+ * Rephrase all predictor outliers in bounded supplemental batches. Local and
+ * Gemini Gateway providers share the batch contract so measured overflow does
+ * not become one expensive provider request per cue.
  */
 export async function rephraseDubbingCues(
   config: AutoShortConfig,
@@ -1748,7 +1821,7 @@ export async function rephraseDubbingCues(
   const result = new Map<string, string[]>()
   if (requests.length === 0) return result
 
-  if (config.translateProvider !== 'local') {
+  if (config.translateProvider !== 'local' && config.translateProvider !== 'gemini-gateway') {
     for (const request of requests) {
       result.set(request.cueId, await rephraseDubbingCue(
         config,
@@ -1771,7 +1844,8 @@ export async function rephraseDubbingCues(
   }
 
   try {
-    const localKey = await loadLocalKey()
+    const isGeminiGateway = config.translateProvider === 'gemini-gateway'
+    const localKey = isGeminiGateway ? '' : await loadLocalKey()
     const base = (config.translateServerUrl || DEFAULT_AI_SERVER_URL).replace(/\/+$/u, '')
     const deadline = AbortSignal.timeout(90_000)
     const requestSignal = signal ? AbortSignal.any([signal, deadline]) : deadline
@@ -1791,20 +1865,26 @@ export async function rephraseDubbingCues(
           recoveryAttempt: request.recoveryAttempt
         }))
       })
-      const res = await fetch(`${base}/v1/chat/completions`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', ...(localKey ? { Authorization: `Bearer ${localKey}` } : {}) },
-        body: JSON.stringify({ model: 'llm-default', messages, temperature: 0.3 }),
-        signal: requestSignal
-      })
-      if (!res.ok) {
-        await res.body?.cancel().catch(() => undefined)
-        throw new Error(`Rephrase HTTP ${res.status}`)
+      let content = ''
+      let truncated = false
+      if (isGeminiGateway) {
+        content = (await rephraseGeminiGateway(config.translateServerUrl, messages, requestSignal)).trim()
+      } else {
+        const res = await fetch(`${base}/v1/chat/completions`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', ...(localKey ? { Authorization: `Bearer ${localKey}` } : {}) },
+          body: JSON.stringify({ model: 'llm-default', messages, temperature: 0.3 }),
+          signal: requestSignal
+        })
+        if (!res.ok) {
+          await res.body?.cancel().catch(() => undefined)
+          throw new Error(`Rephrase HTTP ${res.status}`)
+        }
+        const data = await res.json() as { choices?: Array<{ message?: { content?: string }; finish_reason?: string }> }
+        content = data.choices?.[0]?.message?.content?.trim() || ''
+        truncated = data.choices?.[0]?.finish_reason === 'length'
       }
-      const data = await res.json() as { choices?: Array<{ message?: { content?: string }; finish_reason?: string }> }
-      const content = data.choices?.[0]?.message?.content?.trim() || ''
       const parsed = recoverBatchRephraseResponse(content, batch.map((request) => request.cueId))
-      const truncated = data.choices?.[0]?.finish_reason === 'length'
       const usable = truncated ? [] : parsed.items
       if (!parsed.complete || !usable.length) {
         const badLabels = [...new Set(parsed.issues.flatMap((item) => item.cueIds))].slice(0, 5).map((id) => safeArtifactSegment(id).slice(0, 80))
@@ -1817,8 +1897,8 @@ export async function rephraseDubbingCues(
         if (candidates.length) result.set(request.cueId, candidates)
       }
     }
-    await getGlobalResourceManager().withLease(['server-inference'], requestSignal, async () => {
-      const initialBatchLimit = isMeasuredOverflow ? 8 : requests.length
+    const runBatches = async (): Promise<void> => {
+      const initialBatchLimit = isMeasuredOverflow || isGeminiGateway ? 8 : requests.length
       for (let offset = 0; offset < requests.length; offset += initialBatchLimit) {
         requestSignal.throwIfAborted()
         await requestBatch(requests.slice(offset, offset + initialBatchLimit), false)
@@ -1831,7 +1911,12 @@ export async function rephraseDubbingCues(
         requestSignal.throwIfAborted()
         await requestBatch(missing.slice(offset, offset + 8), true)
       }
-    })
+    }
+    if (isGeminiGateway) {
+      await getGlobalResourceManager().withLease(['external-title'], requestSignal, runBatches)
+    } else {
+      await getGlobalResourceManager().withLease(['server-inference'], requestSignal, runBatches)
+    }
   } catch (error) {
     if (isAbortError(error) && signal?.aborted) throw error
     logWarn(`[AutoShort] Batch rephrase ${requests.length} cue không thành công: ${errLabel(error)}`)
@@ -2100,8 +2185,10 @@ async function legacySynthesizeVoice(
         cachedPathForAttempt = cachedPath
         let savedPath = clipPath
         let resultVoice: string | undefined
+        let cacheHit = false
         if (await fileExists(cachedPath)) {
           await copyFile(cachedPath, clipPath)
+          cacheHit = true
         } else {
           await mkdir(cacheRoot, { recursive: true })
           const result = config.ttsRefAudioPath
@@ -2116,7 +2203,7 @@ async function legacySynthesizeVoice(
         const rawDuration = await probeDuration(ffmpeg, savedPath, job.controller.signal)
         const completeness = validateVoiceAudioCompleteness(groupText, rawDuration)
         if (!completeness.ok) throw new Error(completeness.error || 'Audio phát âm không đầy đủ nội dung')
-        return { group, path: savedPath, rawDuration, text: groupText }
+        return { group, path: savedPath, rawDuration, text: groupText, cacheHit }
       } catch (error) {
         lastError = errLabel(error)
         // Never retry a corrupt cache entry forever. A server can return a
@@ -2223,7 +2310,6 @@ async function legacySynthesizeVoice(
     // Calibrate with the duration that will actually enter the timeline after
     // conservative silence handling, not the server's untrimmed response.
     predictor.addSample(finalSpokenText, naturalDuration)
-
     return {
       group: current.group,
       path: finalPath,
@@ -2553,7 +2639,7 @@ async function legacySynthesizeVoice(
 
 /** The coordinator adapter for the source-anchored dubbing modules. */
 export async function synthesizeVoice(
-  job: AutoShortJob,
+  job: AutoShortTtsJobAdapter,
   item: AutoShortQueueItemInput,
   config: AutoShortConfig,
   cues: SubtitleCue[],
@@ -2644,10 +2730,9 @@ export async function synthesizeVoice(
     if (!target || !target.text.trim()) throw new Error(`Không tìm thấy text dịch cho cue ${cue.id}.`)
     return { id: cue.id, text: spokenTextWithoutSpeakerLabel(target.text) }
   })
-  const translatedPlan = groupDubbingPlanForSpeech(
+  const translatedPlan = groupDubbingPlanForSourceAnchoredSpeech(
     applyDubbingTranslations(sourcePlan, targetItems),
-    language,
-    { reviewedTargetBoundaries: config.translateProvider === 'gemini-gateway' }
+    language
   )
   logInfo(`[AutoShort] Gom ${sourcePlan.cues.length} mảnh phụ đề thành ${translatedPlan.cues.length} đoạn thoại; giữ đủ source cue ID và khoảng nghỉ giữa các đoạn.`)
   const referenceInfo = config.ttsRefAudioPath
@@ -2676,8 +2761,17 @@ export async function synthesizeVoice(
   })
   const profileRoot = join(app.getPath('userData'), 'autoshort-duration-profiles')
   const predictor = createDurationPredictor(await loadDurationProfile(profileRoot, profileKey))
+  const voiceMeasurementRoot = join(app.getPath('userData'), 'voice-measurements')
+  const voiceMeasurementProfile = await loadVoiceMeasurementProfile(voiceMeasurementRoot, profileKey) || createVoiceMeasurementProfile({
+    profileKey,
+    provider: config.ttsProvider || 'local-tts',
+    model: selectedModel.id,
+    voice: effectiveVoice || 'default',
+    locale: language
+  })
   const cacheRoot = join(app.getPath('userData'), 'autoshort-tts-cache-v2')
   const ttsCache = getTtsCacheStore(cacheRoot)
+  const ttsCacheHitByCue = new Map<string, boolean>()
   const attemptByCue = new Map<string, number>()
   const requestSpans: AutoShortRequestSpan[] = []
   const adapter: Parameters<typeof synthesizeDubbingPlan>[0]['tts'] = {
@@ -2732,10 +2826,11 @@ export async function synthesizeVoice(
       }, { bypass: request.cacheMode === 'bypass' })
       await copyFile(cacheValue.path, outputPath)
       logInfo(`[AutoShort:timing] stage=tts cue=${safeId} cache=${cacheValue.fromCache ? 'hit' : 'miss'} elapsedMs=${Math.round(performance.now() - started)}`)
+      ttsCacheHitByCue.set(request.cueId, cacheValue.fromCache)
       return { path: outputPath, voice: cacheValue.voice || effectiveVoice, fromCache: cacheValue.fromCache }
     }
   }
-  const resourceManager = (job as any).resourceManager || getGlobalResourceManager()
+  const resourceManager = job.resourceManager || getGlobalResourceManager()
   const audioAdapter: Parameters<typeof synthesizeDubbingPlan>[0]['audio'] = {
     async trim(inputPath, outputHint, signal) {
       const started = performance.now()
@@ -2822,6 +2917,26 @@ export async function synthesizeVoice(
       ? DUBBING_MAX_EARLY_START_SECONDS
       : 0,
     predictor,
+    feedbackJournal: job.feedbackJournal,
+    feedbackJournalItemId: job.feedbackJournalItemId || item.id,
+    persistAcceptedCue: async (cue, candidate, persistenceSignal) => {
+      if (!job.acceptedCueStoreDir) return candidate
+      if (persistenceSignal.aborted) {
+        throw persistenceSignal.reason instanceof Error ? persistenceSignal.reason : new Error('Đã hủy lưu audio cue đã chấp nhận.')
+      }
+      await mkdir(job.acceptedCueStoreDir, { recursive: true })
+      const key = createHash('sha256').update(canonicalJson({
+        sourceCueIds: cue.sourceCueIds,
+        text: candidate.text,
+        naturalDuration: candidate.naturalDuration,
+        model: selectedModel.id,
+        voice: effectiveVoice || null,
+        options: config.ttsOptions || {}
+      })).digest('hex')
+      const retainedPath = join(job.acceptedCueStoreDir, `${key}.wav`)
+      await copyFile(candidate.trimmedPath, retainedPath)
+      return { ...candidate, rawPath: retainedPath, trimmedPath: retainedPath }
+    },
     tts: adapter,
     audio: audioAdapter,
     rephraseBatch: async (requests, signal) => {
@@ -2847,7 +2962,8 @@ export async function synthesizeVoice(
       const measured = event.previousSeconds == null ? ''
         : ` previousSeconds=${event.previousSeconds.toFixed(3)} candidateSeconds=${event.candidateSeconds?.toFixed(3) ?? 'unknown'}`
       const batch = event.batchSize == null ? '' : ` batchSize=${event.batchSize}`
-      logInfo(`[AutoShort:rephrase] cue=${safeArtifactSegment(event.cueId)} phase=${event.phase} outcome=${event.outcome} candidates=${event.candidateCount}${batch}${measured}`)
+      const semanticEvidence = event.semanticEvidence ? ` semanticEvidence=${event.semanticEvidence}` : ''
+      logInfo(`[AutoShort:rephrase] cue=${safeArtifactSegment(event.cueId)} phase=${event.phase} outcome=${event.outcome} candidates=${event.candidateCount}${batch}${measured}${semanticEvidence}`)
     },
     onStructuralSplit: (event) => {
       logInfo(`[AutoShort:timing] cue=${safeArtifactSegment(event.cueId)} measured-overflow split=${event.partCount} sourceCues=${event.sourceCueIds.length}`)
@@ -2875,8 +2991,29 @@ export async function synthesizeVoice(
       logInfo(`[AutoShort:timing] cue=${safeArtifactSegment(cue.id)} dùng ${leadIn.toFixed(3)}s khoảng lặng dẫn trước; sourceStart=${cue.sourceStart.toFixed(3)} plannedStart=${cue.start.toFixed(3)}`)
     }
   }
+  for (const cue of synthesized.plan.cues) {
+    if (!cue.audioPath || cue.naturalDuration == null || !(cue.naturalDuration > 0)) continue
+    const audioFingerprint = await hashFileSha256(cue.audioPath, job.controller.signal).catch(() => undefined)
+    addVoiceMeasurement(voiceMeasurementProfile, {
+      profileKey,
+      provider: config.ttsProvider || 'local-tts',
+      model: selectedModel.id,
+      voice: effectiveVoice || 'default',
+      locale: language,
+      text: cue.finalSpokenText,
+      durationNaturalMs: cue.naturalDuration * 1000,
+      durationSource: 'probed-trimmed-audio',
+      speed: 1,
+      audioFingerprint,
+      origin: 'autoshort',
+      cacheHit: ttsCacheHitByCue.get(cue.id) === true
+    })
+  }
   await saveDurationProfile(profileRoot, profileKey, predictor.profile).catch((error) => {
     logWarn(`[AutoShort] Không lưu được duration profile: ${errLabel(error)}`)
+  })
+  await saveVoiceMeasurementProfile(voiceMeasurementRoot, voiceMeasurementProfile).catch((error) => {
+    logWarn(`[AutoShort] Không lưu được voice measurement profile: ${errLabel(error)}`)
   })
   const validation = validateDubbingPlan(synthesized.plan)
   if (!validation.ok) throw new Error(`DubbingPlan không hợp lệ: ${validation.violations[0]}`)
@@ -3067,6 +3204,7 @@ async function processSingleVideo(
     policy,
     resourceManager: job.resourceManager || getGlobalResourceManager(),
     artifactCache: job.artifactCache,
+    feedbackJournal: job.feedbackJournal,
     telemetryBudget: job.telemetryBudget
   })
   if (result.translationIdentity && result.translationAssessment?.disposition === 'needs-review') {
@@ -3186,6 +3324,140 @@ export async function retryAutoShortTranslation(
   }
 }
 
+export async function retryAutoShortTitle(
+  request: AutoShortRetryTitleRequest
+): Promise<AutoShortRetryTitleResult> {
+  if (!request || typeof request.itemId !== 'string' || !request.itemId.trim()) {
+    return { ok: false, error: 'Yêu cầu thử lại tiêu đề không hợp lệ.' }
+  }
+
+  let outputPath = request.outputPath
+  let artifactDir = request.artifactDir
+  let reservedOutputDir: string | undefined
+
+  if (!outputPath || !artifactDir) {
+    const activeItem = activeJob?.batchSnapshot?.items.find((i) => i.itemId === request.itemId)
+    if (activeItem) {
+      outputPath = outputPath || activeItem.outputReceipt?.path
+      artifactDir = artifactDir || activeItem.artifactDir
+      reservedOutputDir = activeItem.reservedOutputDir
+    }
+  }
+
+  if (!outputPath || !artifactDir) {
+    try {
+      const batchRoot = join(app.getPath('userData'), 'autoshort-batches-v1')
+      const entries = await readdir(batchRoot, { withFileTypes: true }).catch(() => [])
+      const dirs = entries.filter((e) => e.isDirectory())
+      for (const dir of dirs) {
+        const snapPath = join(batchRoot, dir.name, 'snapshot.json')
+        try {
+          const raw = await readFile(snapPath, 'utf8')
+          const snap = JSON.parse(raw) as BatchSnapshot
+          const item = snap.items?.find((i) => i.itemId === request.itemId)
+          if (item) {
+            outputPath = outputPath || item.outputReceipt?.path
+            artifactDir = artifactDir || item.artifactDir
+            reservedOutputDir = reservedOutputDir || item.reservedOutputDir
+            break
+          }
+        } catch {}
+      }
+    } catch {}
+  }
+
+  const candidateDirs = [artifactDir, outputPath ? dirname(outputPath) : undefined, reservedOutputDir].filter((d): d is string => Boolean(d))
+  if (candidateDirs.length === 0) {
+    return { ok: false, error: 'Không tìm thấy thư mục lưu video hoặc artifact của tác vụ này.' }
+  }
+
+  let srtContent = ''
+  for (const name of ['translated.srt', 'timed.srt', 'source.srt']) {
+    for (const dir of candidateDirs) {
+      const p = join(dir, name)
+      try {
+        const content = await readFile(p, 'utf8')
+        if (content.trim().length > 0) {
+          srtContent = content
+          logInfo(`[AutoShort:retryTitle] Sử dụng ${name} từ ${dir} để tạo tiêu đề.`)
+          break
+        }
+      } catch {}
+    }
+    if (srtContent) break
+  }
+
+  if (!srtContent) {
+    return { ok: false, error: 'Không tìm thấy tệp phụ đề SRT nào để tạo tiêu đề.' }
+  }
+
+  const { cues } = parseSrt(srtContent)
+  if (cues.length === 0) {
+    return { ok: false, error: 'Phụ đề SRT không chứa câu hợp lệ nào để tạo tiêu đề.' }
+  }
+
+  let config: VideoTitleConfig
+  if (request.config) {
+    const error = validateVideoTitleConfig(request.config)
+    if (error) return { ok: false, error }
+    config = request.config
+  } else {
+    config = {
+      provider: 'gemini-gateway',
+      language: 'auto'
+    }
+  }
+
+  const targetDir = outputPath ? dirname(outputPath) : (reservedOutputDir || (artifactDir ? dirname(artifactDir) : ''))
+  if (!outputPath && targetDir) {
+    try {
+      const files = await readdir(targetDir)
+      const mp4 = files.find((f) => f.endsWith('-phude.mp4') || (f.endsWith('.mp4') && !f.startsWith('.')))
+      if (mp4) {
+        outputPath = join(targetDir, mp4)
+      }
+    } catch {}
+  }
+
+  if (!outputPath) {
+    return { ok: false, error: 'Không tìm thấy video đầu ra để gắn tieude.txt.' }
+  }
+
+  try {
+    const controller = new AbortController()
+    const metadata = await generateVideoSeoMetadata(cues, config, controller.signal)
+
+    const titlePath = await writeVideoSeoMetadata(outputPath, metadata, targetDir, controller.signal, true)
+
+    if (artifactDir) {
+      try {
+        const artifactTitlePath = join(artifactDir, 'tieude.txt')
+        await writeFile(artifactTitlePath, formatVideoSeoMetadata(metadata), 'utf8')
+        const manifestPath = join(artifactDir, 'manifest.json')
+        try {
+          const manifestRaw = await readFile(manifestPath, 'utf8')
+          const manifest = JSON.parse(manifestRaw) as Record<string, unknown>
+          manifest.titleFile = 'tieude.txt'
+          manifest.titleError = undefined
+          await writeFile(manifestPath, JSON.stringify(manifest, null, 2), 'utf8')
+        } catch {}
+      } catch {}
+    }
+
+    return {
+      ok: true,
+      title: metadata.title,
+      titlePath,
+      seoMetadata: metadata
+    }
+  } catch (error) {
+    return {
+      ok: false,
+      error: error instanceof Error ? error.message : String(error)
+    }
+  }
+}
+
 const AUTOSHORT_MIN_FUTURE_BYTES = 512 * 1024 * 1024
 const AUTOSHORT_INPUT_WORKING_SET_MULTIPLIER = 3
 const AUTOSHORT_FIXED_FUTURE_BYTES = 256 * 1024 * 1024
@@ -3264,6 +3536,12 @@ async function preflight(job: AutoShortJob): Promise<void> {
   if (config.translateTarget !== 'none' && config.translateProvider === 'gemini-gateway') {
     const health = await preflightStep<DichKeyStatus>('kiểm tra Gemini Gateway', () => checkGeminiGateway(config.translateServerUrl))
     if (!health.ok) throw new Error(health.message || 'Không kết nối được Gemini Gateway')
+    const baseUrl = config.translateServerUrl || 'http://127.0.0.1:8000'
+    const capabilities = await readGatewayCapabilitiesInfo(baseUrl, job.controller.signal).catch(() => null)
+    if (!capabilities?.schedulerSupported) {
+      const genProbe = await preflightStep<{ ok: boolean; message?: string }>('kiểm tra kênh dịch Gemini Web', () => probeGeminiGatewayGeneration(config.translateServerUrl, job.controller.signal))
+      if (!genProbe.ok) throw new Error(genProbe.message || 'Kênh dịch Gemini Gateway chưa sẵn sàng')
+    }
   }
   if (config.ttsEnabled) {
     if (config.ttsProvider === 'edge-tts') {
@@ -3355,6 +3633,15 @@ async function executeJob(job: AutoShortJob): Promise<AutoShortBatchResult> {
         return processSingleVideo(job, item, job.request.config, index, totalCount, policy, reservation,
           attempt, itemOutputDir)
       },
+      circuitBreakerThreshold: 2,
+      isThrottledError: (result) => {
+        if (result.translationAssessment?.issues?.some((i) => i.code === 'provider-throttled')) return true
+        if (result.recovery?.kind === 'provider-throttled') return true
+        return isProviderThrottledError(result.error)
+      },
+      onCircuitTrip: (reason) => {
+        logWarn(`[AutoShort] ${reason}`)
+      },
       shouldRetry: (result) => {
         if (result.status !== 'error' || result.recovery?.retryable !== true) return false
         if (isPermanentGatewayError(result.error)) return false
@@ -3436,6 +3723,7 @@ function launchAutoShortJob(
     batchWrite: Promise.resolve(),
     separationProviderState: { mode: 'auto' },
     artifactCache: getAutoShortArtifactCache(),
+    feedbackJournal: createDubbingFeedbackJournal(),
     done: Promise.resolve({ ok: false, completedCount: 0, totalCount: request.items.length })
   }
   job.done = executeJob(job).finally(() => {

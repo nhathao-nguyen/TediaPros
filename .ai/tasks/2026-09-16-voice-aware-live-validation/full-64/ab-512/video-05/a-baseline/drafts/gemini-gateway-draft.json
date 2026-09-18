@@ -1,0 +1,33 @@
+{
+  "schemaVersion": 2,
+  "state": "draft-validated",
+  "identity": "gemini-gateway:gemini-advanced:gemini-gateway-two-pass-v10:ai-output-parser-v1:gateway-draft-v2:cue-lines-v1:vi:15",
+  "raw": "{\"translations\":{\"cue-47-152900\":\"Tôi đã ăn rồi.\",\"cue-48-157520\":\"ốc nón luộc xong bị teo lại.\",\"cue-49-159060\":\"Chỉ teo lại một chút thế này.\",\"cue-50-161040\":\"Hương vị rất giống bào ngư.\",\"cue-51-162600\":\"Chỉ nhỏ hơn một chút.\",\"cue-52-163480\":\"Cho nên mới gọi là bào ngư giả.\",\"cue-53-165200\":\"Một bát này bày bán ở ngoài.\",\"cue-54-166580\":\"Chắc thế nào cũng phải 100.\",\"cue-55-167780\":\"Vấn đề là chẳng có ai bán cả.\",\"cue-56-170160\":\"Quan trọng chủ yếu là không làm thế này.\",\"cue-57-172880\":\"Toàn món chất lượng.\",\"cue-58-173760\":\"Siêu cấp vô địch xa xỉ.\",\"cue-59-175540\":\"Bún ốc hải sản tôm lớn.\",\"cue-60-177980\":\"Bát của tôi đến nước dùng cũng húp sạch.\",\"cue-61-180080\":\"Đã miệng.\"}}",
+  "rawSha256": "e9cc459e98b3a3952c34238a7fdfccc39a167806075e8f7020f4f6d2a04f7110",
+  "observedModelId": "8c46e95b1a07cecc",
+  "observedModel": "3.5 Flash-Lite",
+  "routeFingerprint": "29ed9729dbdd53e76081fc89bd7f7991b6a6e2c770e964fd8fa2ceaa0c22c646",
+  "sourceDigest": "4b9e67d2cccd5d091031ac6b438fd4925228ebc7ba05794e322e57a3cac75d60",
+  "expectedIds": [
+    "cue-47-152900",
+    "cue-48-157520",
+    "cue-49-159060",
+    "cue-50-161040",
+    "cue-51-162600",
+    "cue-52-163480",
+    "cue-53-165200",
+    "cue-54-166580",
+    "cue-55-167780",
+    "cue-56-170160",
+    "cue-57-172880",
+    "cue-58-173760",
+    "cue-59-175540",
+    "cue-60-177980",
+    "cue-61-180080"
+  ],
+  "targetLocale": "vi",
+  "draftPromptVersion": "gemini-gateway-two-pass-v10",
+  "reviewPromptVersion": "gemini-gateway-two-pass-v10",
+  "parserVersion": "ai-output-parser-v1:gateway-draft-v2",
+  "savedAtUtc": "2026-09-16T17:09:11.643Z"
+}

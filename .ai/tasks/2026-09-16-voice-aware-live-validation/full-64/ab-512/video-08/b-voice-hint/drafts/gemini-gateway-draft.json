@@ -1,0 +1,19 @@
+{
+  "schemaVersion": 2,
+  "state": "draft-validated",
+  "identity": "gemini-gateway:gemini-advanced:gemini-gateway-two-pass-v10:ai-output-parser-v1:gateway-draft-v2:cue-lines-v1:vi:1",
+  "raw": "{\"translations\":{\"cue-0-140\":\"Phụ đề bởi Solanya\"}}",
+  "rawSha256": "3d28198058426023102ed252c3e932b8a3b7dee2b6f88908f0e60aa2b59a62fc",
+  "observedModelId": "8c46e95b1a07cecc",
+  "observedModel": "3.5 Flash-Lite",
+  "routeFingerprint": "29ed9729dbdd53e76081fc89bd7f7991b6a6e2c770e964fd8fa2ceaa0c22c646",
+  "sourceDigest": "11ea96a9a7694a5bef1a58c753693b40365c8fa75681a84e4faac61a7a489245",
+  "expectedIds": [
+    "cue-0-140"
+  ],
+  "targetLocale": "vi",
+  "draftPromptVersion": "gemini-gateway-two-pass-v10",
+  "reviewPromptVersion": "gemini-gateway-two-pass-v10",
+  "parserVersion": "ai-output-parser-v1:gateway-draft-v2",
+  "savedAtUtc": "2026-09-16T17:12:06.276Z"
+}

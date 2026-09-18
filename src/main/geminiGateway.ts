@@ -6,7 +6,7 @@ import { DEFAULT_GEMINI_GATEWAY_URL, GEMINI_GATEWAY_MODEL } from '../shared/type
 import type { TranslationAssessment } from '../shared/translation'
 import type { PlannedTranslationBatch } from './translation/planner'
 import type { TranslationAdapter } from './translation/orchestrator'
-import { buildTranslationBatchMessages, buildRephraseMessages, type ModelMessage } from './translation/prompts'
+import { buildRephraseMessages, type ModelMessage } from './translation/prompts'
 import { parseTranslationResponse } from './translation/response'
 import { readBoundedAiResponseJson, readBoundedAiResponseText } from './aiResponseBody'
 import { translateFileWithAdapter, type TranslationFileRunnerOptions } from './translation/fileRunner'
@@ -23,10 +23,12 @@ import {
   readGatewayDraft,
   writeGatewayDraft
 } from './geminiGatewayDraftCheckpoint'
+import type { VoicePromptHint } from './dubbing/voiceMeasurements'
 
 export { GEMINI_GATEWAY_PROMPT_VERSION } from './geminiGatewayPrompts'
 
 const MAX_AUDIT_BYTES = 16 * 1024 * 1024
+export const GATEWAY_STAGE_TIMEOUT_MS = 360_000
 
 const TRANSLATION_RESPONSE_FORMAT = {
   type: 'json_schema',
@@ -47,7 +49,7 @@ const TRANSLATION_RESPONSE_FORMAT = {
   }
 } as const
 
-interface GatewayCompletion {
+export interface GatewayCompletion {
   raw: string
   truncated: boolean
   modelIdentity: string
@@ -82,7 +84,6 @@ function canonicalizeCompactTranslation(raw: string, expectedCount: number): str
   })
   return JSON.stringify({ items })
 }
-
 
 interface GatewayAuditRecord {
   stage: 'restore-translate' | 'independent-review'
@@ -136,6 +137,29 @@ export interface GeminiGatewayTranslationOptions {
   auditPath?: string
   /** Directory inside current AutoShort item scope where draft is saved/resumed. Defaults to dirname(auditPath) if provided. */
   draftDir?: string
+  /** Frozen advisory aggregate; never include raw text/audio/path in this option. */
+  voiceHint?: VoicePromptHint
+  /** Optional per-run output reservation override. */
+  outputTokens?: number
+  /** Deterministic test override; each draft/review HTTP request gets a fresh deadline. */
+  stageTimeoutMs?: number
+}
+
+function createGatewayDeadline(parent: AbortSignal, timeoutMs: number): { signal: AbortSignal; dispose: () => void } {
+  const controller = new AbortController()
+  const onParentAbort = (): void => controller.abort(parent.reason)
+  if (parent.aborted) onParentAbort()
+  else parent.addEventListener('abort', onParentAbort, { once: true })
+  const timer = setTimeout(() => {
+    controller.abort(new DOMException('Gemini Gateway request timed out.', 'TimeoutError'))
+  }, Math.max(1, Math.ceil(timeoutMs)))
+  return {
+    signal: controller.signal,
+    dispose: () => {
+      clearTimeout(timer)
+      parent.removeEventListener('abort', onParentAbort)
+    }
+  }
 }
 
 function normalizeBaseUrl(value?: string): string {
@@ -147,9 +171,15 @@ function normalizeBaseUrl(value?: string): string {
   return raw
 }
 
+export function isProviderThrottledError(message?: string): boolean {
+  if (!message) return false
+  return /provider-throttled|405|429|too many requests|rate limit|quota|resource-exhausted|robot|method not allowed|anti-bot|chống bot|hạn chế tần suất|giới hạn tần suất/iu.test(message)
+}
+
 export function isPermanentGatewayError(message?: string): boolean {
   if (!message) return false
-  return /model-unavailable|model-mismatch|invalid-structured-json|chưa hỗ trợ Gemini 3.1 Pro|không khớp|hết hạn hoặc không hợp lệ|hợp đồng phiên bản 2|observed_model_id|trạng thái unverified|trạng thái mismatch/iu.test(message)
+  if (isProviderThrottledError(message)) return false
+  return /model-unavailable|model-mismatch|model-unverified|invalid-structured-json|invalid-json|ambiguous-json|duplicate-key|response-limit|upstream-incomplete|chưa hỗ trợ Gemini 3.1 Pro|không khớp|hết hạn hoặc không hợp lệ|hợp đồng phiên bản 2|observed_model_id|trạng thái unverified|trạng thái mismatch|không tự retry/iu.test(message)
 }
 
 function providerError(status: number, detail: string): Error {
@@ -161,10 +191,15 @@ function providerError(status: number, detail: string): Error {
     errorMsg = parsed?.error?.message
   } catch {}
 
-  let message = detail || `Gemini Gateway báo lỗi HTTP ${status}.`
-  let providerCode: 'provider-transient' | 'provider-auth' | 'provider-protocol' = 'provider-protocol'
+  const isThrottled = status === 429 || status === 405 || isProviderThrottledError(`${errorMsg || ''} ${detail || ''}`)
 
-  if (errorCode === 'model-unavailable') {
+  let message = detail || `Gemini Gateway báo lỗi HTTP ${status}.`
+  let providerCode: 'provider-transient' | 'provider-auth' | 'provider-protocol' | 'provider-throttled' = 'provider-protocol'
+
+  if (isThrottled) {
+    message = 'Google Gemini Web đang tạm từ chối hoặc giới hạn tần suất (HTTP 405/429 - chống bot/rate limit). Hãy tạm dừng và thử lại sau.'
+    providerCode = 'provider-throttled'
+  } else if (errorCode === 'model-unavailable') {
     message = 'Tài khoản Google của gateway chưa hỗ trợ Gemini 3.1 Pro (cần gói Google One AI Premium hoặc Gemini Advanced).'
     providerCode = 'provider-protocol'
   } else if (errorCode === 'model-mismatch') {
@@ -176,7 +211,7 @@ function providerError(status: number, detail: string): Error {
   } else if (errorCode === 'upstream-incomplete') {
     message = `Gemini Gateway phản hồi chưa hoàn tất từ upstream: ${errorMsg || detail}`
     providerCode = 'provider-transient'
-  } else if (errorCode === 'upstream-transient' || status === 408 || status === 425 || status === 429 || status >= 500) {
+  } else if (errorCode === 'upstream-transient' || status === 408 || status === 425 || status >= 500) {
     message = errorMsg ? `Gemini Gateway lỗi upstream: ${errorMsg}` : (detail || `Gemini Gateway báo lỗi HTTP ${status}.`)
     providerCode = 'provider-transient'
   } else if (status === 401 || status === 403 || errorCode === 'authentication_required') {
@@ -191,12 +226,60 @@ function providerError(status: number, detail: string): Error {
   })
 }
 
+const isTestEnv = typeof process !== 'undefined' && Boolean(
+  process.env.NODE_TEST_CONTEXT !== undefined ||
+  process.env.npm_lifecycle_event?.includes('test') ||
+  process.argv?.some((arg) => arg.includes('test'))
+)
+
+export const gatewaySchedulerConfig = {
+  spacingMs: isTestEnv ? 0 : 3_000,
+  throttleCooldownMs: isTestEnv ? 10 : 45_000
+}
+
+let lastGatewayRequestFinishedAt = 0
+
+async function enforceGatewaySpacing(signal: AbortSignal): Promise<void> {
+  const spacing = gatewaySchedulerConfig.spacingMs
+  if (spacing <= 0) return
+  const now = Date.now()
+  const wait = spacing - (now - lastGatewayRequestFinishedAt)
+  if (wait > 0) {
+    await new Promise<void>((resolve, reject) => {
+      if (signal.aborted) return reject(new Error('Đã hủy tác vụ.'))
+      const timer = setTimeout(resolve, wait)
+      const onAbort = (): void => {
+        clearTimeout(timer)
+        reject(new Error('Đã hủy tác vụ.'))
+      }
+      signal.addEventListener('abort', onAbort, { once: true })
+    })
+  }
+}
+
+async function waitForGatewayCooldown(ms: number, signal: AbortSignal, reason: string): Promise<void> {
+  logWarn(`[GeminiGateway] ${reason}. Tạm dừng ${Math.round(ms / 1000)}s chờ Google phục hồi...`)
+  await new Promise<void>((resolve, reject) => {
+    if (signal.aborted) return reject(new Error('Đã hủy tác vụ.'))
+    const timer = setTimeout(() => {
+      signal.removeEventListener('abort', onAbort)
+      resolve()
+    }, ms)
+    const onAbort = (): void => {
+      clearTimeout(timer)
+      reject(new Error('Đã hủy tác vụ.'))
+    }
+    signal.addEventListener('abort', onAbort, { once: true })
+  })
+}
+
 async function requestGateway(
   baseUrl: string,
   messages: readonly ModelMessage[],
   signal: AbortSignal,
   maxOutputTokens: number,
-  structuredJson = true
+  structuredJson = true,
+  stageTimeoutMs = GATEWAY_STAGE_TIMEOUT_MS
 ): Promise<GatewayCompletion> {
   let response: Response | undefined
   const requestBody = {
@@ -212,17 +295,37 @@ async function requestGateway(
     },
     ...(structuredJson ? { response_format: TRANSLATION_RESPONSE_FORMAT } : {})
   }
+
+  const deadline = createGatewayDeadline(signal, stageTimeoutMs)
   try {
-    response = await fetch(`${baseUrl}/chat/completions`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(requestBody),
-      signal
-    })
-    if (!response.ok) {
-      const detail = await readBoundedAiResponseText(response, signal, 64 * 1024).catch(() => '')
-      throw providerError(response.status, detail)
+    for (let attempt = 1; attempt <= 2; attempt++) {
+      await enforceGatewaySpacing(deadline.signal)
+      try {
+        response = await fetch(`${baseUrl}/chat/completions`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(requestBody),
+          signal: deadline.signal
+        })
+        if (!response.ok) {
+          const detail = await readBoundedAiResponseText(response, deadline.signal, 64 * 1024).catch(() => '')
+          const error = providerError(response.status, detail)
+          if (attempt === 1 && (error as { providerCode?: string }).providerCode === 'provider-throttled' && !deadline.signal.aborted) {
+            await waitForGatewayCooldown(gatewaySchedulerConfig.throttleCooldownMs, deadline.signal, error.message)
+            continue
+          }
+          throw error
+        }
+        break
+      } finally {
+        lastGatewayRequestFinishedAt = Date.now()
+      }
     }
+
+    if (!response || !response.ok) {
+      throw new Error('Gemini Gateway request failed.')
+    }
+
     const data = await readBoundedAiResponseJson<{
       id?: unknown
       model?: unknown
@@ -246,7 +349,8 @@ async function requestGateway(
         upstream_retry_reasons?: unknown
         error_code?: unknown
       }
-    }>(response, signal, 1024 * 1024)
+    }>(response, deadline.signal, 1024 * 1024)
+
     if (!Array.isArray(data.choices) || data.choices.length !== 1) {
       throw Object.assign(new Error('Gemini Gateway trả về số candidate không hợp lệ.'), { providerCode: 'provider-protocol' })
     }
@@ -261,7 +365,8 @@ async function requestGateway(
     if (!raw) throw Object.assign(new Error('Gemini Gateway trả về nội dung rỗng.'), { providerCode: 'provider-protocol' })
 
     const meta = data.gateway_metadata
-    if (!meta || meta.contract_version !== 2) {
+    const contractVersion = meta ? (meta.contract_version ?? (meta as any).gateway_contract_version) : undefined
+    if (!meta || contractVersion !== 2) {
       throw Object.assign(new Error('Gemini Gateway không trả về hợp đồng phiên bản 2 (contract_version: 2). Hãy nâng cấp gateway.'), { providerCode: 'provider-protocol' })
     }
     if (meta.model_verification !== 'matched') {
@@ -288,7 +393,7 @@ async function requestGateway(
       finishReason,
       requestBody,
       logicalRequestId: typeof meta.logical_request_id === 'string' ? meta.logical_request_id : undefined,
-      observedModelId: typeof meta.observed_model_id === 'string' ? meta.observed_model_id : undefined,
+      observedModelId: meta.observed_model_id,
       observedModel: typeof meta.observed_model === 'string' ? meta.observed_model : undefined,
       routeFingerprint: typeof meta.route_fingerprint === 'string' ? meta.route_fingerprint : undefined,
       completionState: typeof meta.completion_state === 'string' ? meta.completion_state : undefined,
@@ -304,9 +409,9 @@ async function requestGateway(
         : 1
     }
   } catch (error) {
-    if (signal.aborted) {
-      throw Object.assign(new Error(signal.reason instanceof Error ? signal.reason.message : 'Đã hủy dịch qua Gemini Gateway.'), {
-        providerCode: signal.reason instanceof Error && signal.reason.name === 'TimeoutError' ? 'provider-transient' : 'cancelled'
+    if (deadline.signal.aborted) {
+      throw Object.assign(new Error(deadline.signal.reason instanceof Error ? deadline.signal.reason.message : 'Đã hủy dịch qua Gemini Gateway.'), {
+        providerCode: deadline.signal.reason instanceof Error && deadline.signal.reason.name === 'TimeoutError' ? 'provider-transient' : 'cancelled'
       })
     }
     if (error instanceof TypeError && /fetch failed|failed to fetch/iu.test(error.message)) {
@@ -314,6 +419,7 @@ async function requestGateway(
     }
     throw error
   } finally {
+    deadline.dispose()
     if (response?.body && !response.bodyUsed && !response.body.locked) await response.body.cancel().catch(() => {})
   }
 }
@@ -406,7 +512,7 @@ export function createGeminiGatewayTranslationAdapter(serverUrl?: string, option
     const inputHash = createHash('sha256').update(inputContent).digest('hex')
     const inputBytes = Buffer.byteLength(inputContent, 'utf8')
     try {
-      const completion = await requestGateway(baseUrl, messages, signal, batch.maxOutputTokens)
+      const completion = await requestGateway(baseUrl, messages, signal, batch.maxOutputTokens, true, options.stageTimeoutMs)
       auditRecords.push({
         stage,
         startedAtUtc,
@@ -501,7 +607,8 @@ export function createGeminiGatewayTranslationAdapter(serverUrl?: string, option
 
       if (!canonicalDraft) {
         logInfo(`[GeminiGateway] request=1/2 stage=restore-translate cues=${expectedIds.length} model=${GEMINI_GATEWAY_MODEL}`)
-        const draft = await runStage('restore-translate', batch, buildGatewayDraftMessages(batch), signal)
+        const draftMessages = buildGatewayDraftMessages(batch, { voiceHint: options.voiceHint })
+        const draft = await runStage('restore-translate', batch, draftMessages, signal)
         logInfo(`[GeminiGateway] request=1/2 outcome=complete upstreamAttempts=${draft.upstreamAttempts} retryReasons=${draft.upstreamRetryReasons.join(',') || 'none'}`)
         canonicalDraft = canonicalizeCompactTranslation(draft.raw, expectedIds.length)
         draftTruncated = draft.truncated
@@ -535,7 +642,8 @@ export function createGeminiGatewayTranslationAdapter(serverUrl?: string, option
       const parsedDraftForReview = parseTranslationResponse(canonicalDraft, 'json-items', expectedIds, draftTruncated, contextIds)
       const reviewedDraft = JSON.stringify({ translations: Object.fromEntries(parsedDraftForReview.items.map((item) => [item.id, item.text])) })
       logInfo(`[GeminiGateway] request=2/2 stage=independent-review cues=${expectedIds.length} model=${GEMINI_GATEWAY_MODEL}`)
-      const reviewed = await runStage('independent-review', batch, buildGatewayReviewMessages(batch, reviewedDraft), signal)
+      const reviewMessages = buildGatewayReviewMessages(batch, reviewedDraft, { voiceHint: options.voiceHint })
+      const reviewed = await runStage('independent-review', batch, reviewMessages, signal)
       logInfo(`[GeminiGateway] request=2/2 outcome=complete upstreamAttempts=${reviewed.upstreamAttempts} retryReasons=${reviewed.upstreamRetryReasons.join(',') || 'none'}`)
       const canonicalReviewed = canonicalizeCompactTranslation(reviewed.raw, expectedIds.length)
       validateReviewedDubbingPunctuation(batch, canonicalReviewed)
@@ -545,6 +653,99 @@ export function createGeminiGatewayTranslationAdapter(serverUrl?: string, option
         modelIdentity: reviewed.modelIdentity
       }
     }
+  }
+}
+
+export interface GatewayServerCapabilitiesInfo {
+  routeFingerprint?: string
+  schedulerSupported: boolean
+  maxRequestBodyBytes?: number
+}
+
+export async function readGatewayCapabilitiesInfo(
+  baseUrl: string,
+  signal?: AbortSignal
+): Promise<GatewayServerCapabilitiesInfo> {
+  const url = normalizeBaseUrl(baseUrl)
+  const response = await fetch(`${url}/gateway/capabilities`, { signal: signal || AbortSignal.timeout(15_000) })
+  if (!response.ok) {
+    const detail = await readBoundedAiResponseText(response, signal, 64 * 1024).catch(() => '')
+    throw providerError(response.status, detail)
+  }
+  const data = await readBoundedAiResponseJson<{
+    gateway_contract_version?: unknown
+    provider_ready?: unknown
+    provider_error?: unknown
+    models?: unknown
+    scheduler_contract_version?: unknown
+    request_jobs?: unknown
+    max_request_body_bytes?: unknown
+  }>(response, signal, 256 * 1024)
+  if (data.provider_ready === false) {
+    const message = data.provider_error === 'authentication_required'
+      ? 'Cookie Gemini của gateway đã hết hạn hoặc không hợp lệ. Hãy cập nhật cookie rồi khởi động lại gateway.'
+      : 'Gemini Gateway chưa sẵn sàng.'
+    throw Object.assign(new Error(message), {
+      providerCode: data.provider_error === 'authentication_required' ? 'provider-auth' : 'provider-protocol'
+    })
+  }
+  if (data.gateway_contract_version !== 2) {
+    throw Object.assign(new Error('Gemini Gateway không trả về hợp đồng phiên bản 2.'), { providerCode: 'provider-protocol' })
+  }
+  const schedulerSupported = data.scheduler_contract_version === 1 && data.request_jobs === true
+  const maxRequestBodyBytes = typeof data.max_request_body_bytes === 'number' && Number.isSafeInteger(data.max_request_body_bytes) && data.max_request_body_bytes > 0
+    ? data.max_request_body_bytes
+    : undefined
+  return {
+    schedulerSupported,
+    ...(maxRequestBodyBytes ? { maxRequestBodyBytes } : {})
+  }
+}
+
+export async function probeGeminiGatewayGeneration(
+  serverUrl?: string,
+  signal?: AbortSignal
+): Promise<{ ok: boolean; message?: string }> {
+  try {
+    const baseUrl = normalizeBaseUrl(serverUrl)
+    const probeBody = {
+      model: GEMINI_GATEWAY_MODEL,
+      messages: [
+        { role: 'user', content: 'Ping' }
+      ],
+      max_tokens: 16,
+      temporary: true,
+      gateway_requirements: {
+        contract_version: 2,
+        require_verified_model: false,
+        require_complete_response: false
+      }
+    }
+    const res = await fetch(`${baseUrl}/chat/completions`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(probeBody),
+      signal: signal ? AbortSignal.any([signal, AbortSignal.timeout(15_000)]) : AbortSignal.timeout(15_000)
+    })
+    if (!res.ok) {
+      const detail = await readBoundedAiResponseText(res, signal, 32 * 1024).catch(() => '')
+      let errorMsg = detail
+      try {
+        const parsed = JSON.parse(detail)
+        errorMsg = parsed?.error?.message || parsed?.detail || detail
+      } catch {}
+      if (res.status === 405 || isProviderThrottledError(detail) || isProviderThrottledError(errorMsg)) {
+        return {
+          ok: false,
+          message: 'Google Gemini Web đang tạm từ chối hoặc giới hạn tần suất (HTTP 405/429 - chống bot/rate limit). Hãy tạm dừng và thử lại sau hoặc làm mới session.'
+        }
+      }
+      return { ok: false, message: `Gemini Gateway báo lỗi generation (HTTP ${res.status}): ${errorMsg}` }
+    }
+    return { ok: true }
+  } catch (error) {
+    if (signal?.aborted) return { ok: false, message: 'Đã hủy kiểm tra Gemini Gateway' }
+    return { ok: false, message: `Không thể kết nối generation probe tới Gemini Gateway: ${error instanceof Error ? error.message : String(error)}` }
   }
 }
 
@@ -690,13 +891,14 @@ export async function translateSrtWithGeminiGateway(
   outputPath: string,
   targetLocale: string,
   serverUrl?: string,
-  options: TranslationFileRunnerOptions = {}
+  options: TranslationFileRunnerOptions = {},
+  gatewayOptions: GeminiGatewayTranslationOptions = {}
 ): Promise<{ ok: boolean; error?: string; count?: number; assessment?: TranslationAssessment }> {
   const result = await translateFileWithAdapter(
     inputPath,
     outputPath,
     targetLocale,
-    createGeminiGatewayTranslationAdapter(serverUrl),
+    createGeminiGatewayTranslationAdapter(serverUrl, gatewayOptions),
     options
   )
   return { ok: result.ok, error: result.error, count: result.count, assessment: result.assessment }

@@ -1,0 +1,35 @@
+{
+  "schemaVersion": 1,
+  "promptVersion": "gemini-gateway-two-pass-v10",
+  "model": "gemini-advanced",
+  "records": [
+    {
+      "stage": "restore-translate",
+      "outputMode": "cue-lines-v1",
+      "startedAtUtc": "2026-09-16T17:27:39.973Z",
+      "endedAtUtc": "2026-09-16T17:27:41.230Z",
+      "expectedIds": [
+        "cue-0-0",
+        "cue-1-2780",
+        "cue-2-6080",
+        "cue-3-8940",
+        "cue-4-12220",
+        "cue-5-15580",
+        "cue-6-18980"
+      ],
+      "outcome": "failed",
+      "inputHash": "e49e4941d4a5ae3c645eb0686a678b46539d9e88071b791c3ad126144e74ecc0",
+      "inputBytes": 6639,
+      "inputTokenEstimate": 2213,
+      "inputTokenProvenance": "utf8-byte-estimate",
+      "outputTokenReserve": 512,
+      "requestBudget": "fit",
+      "contextTokens": 1000000,
+      "outputTokens": 16384,
+      "contextLimitKind": "combined",
+      "capacityProvenance": "user-confirmed",
+      "requestedModel": "gemini-advanced",
+      "error": "Gemini Gateway lỗi upstream: generate failed with status: 429"
+    }
+  ]
+}

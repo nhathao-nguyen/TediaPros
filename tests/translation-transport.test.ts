@@ -3,6 +3,7 @@ import test from 'node:test'
 import { createServer } from 'node:http'
 import { once } from 'node:events'
 import { createLocalTranslationAdapter } from '../src/main/localTranslate'
+import { readBoundedAiResponseText } from '../src/main/aiResponseBody'
 import { AutoShortResourceManager, setGlobalResourceManager } from '../src/main/autoShortResourceManager'
 import { classifyTranslationError } from '../src/main/translation/budget'
 import type { PlannedTranslationBatch } from '../src/main/translation/planner'
@@ -19,6 +20,21 @@ const payload = JSON.stringify({ choices: [{ message: { content: '[cue-0] Hello'
 const tick = (): Promise<void> => new Promise((resolve) => setImmediate(resolve))
 const adapter = () => createLocalTranslationAdapter('fixture-key', 'http://fixture.invalid')
 const signal = () => new AbortController().signal
+
+test('bounded response reader interrupts a body read that ignores the fetch signal', async () => {
+  let cancelled = false
+  const body = new ReadableStream<Uint8Array>({
+    pull: () => new Promise<void>(() => {}),
+    cancel: () => { cancelled = true }
+  })
+  const abort = new AbortController()
+  const pending = readBoundedAiResponseText(new Response(body), abort.signal).catch((error: unknown) => error)
+  await tick()
+  abort.abort(new DOMException('fixture deadline', 'TimeoutError'))
+  const error = await pending
+  assert.equal((error as Error).name, 'TimeoutError')
+  assert.equal(cancelled, true)
+})
 
 async function fixture(run: (manager: AutoShortResourceManager) => Promise<void>): Promise<void> {
   const previous = globalThis.fetch

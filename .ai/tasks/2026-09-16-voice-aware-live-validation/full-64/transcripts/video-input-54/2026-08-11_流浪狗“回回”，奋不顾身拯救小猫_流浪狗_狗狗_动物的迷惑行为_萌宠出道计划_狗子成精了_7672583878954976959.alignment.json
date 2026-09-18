@@ -1,0 +1,6782 @@
+{
+  "duration": 101.4029375,
+  "language": "zh",
+  "segments": [
+    {
+      "start": 0.0,
+      "end": 1.94,
+      "text": "还记得这只狗狗侠 回回吗",
+      "words": [
+        {
+          "text": "还",
+          "start": 0.0,
+          "end": 0.14,
+          "probability": 0.7158203125
+        },
+        {
+          "text": "记",
+          "start": 0.14,
+          "end": 0.28,
+          "probability": 0.994140625
+        },
+        {
+          "text": "得",
+          "start": 0.28,
+          "end": 0.4,
+          "probability": 0.9951171875
+        },
+        {
+          "text": "这",
+          "start": 0.4,
+          "end": 0.54,
+          "probability": 0.9658203125
+        },
+        {
+          "text": "只",
+          "start": 0.54,
+          "end": 0.66,
+          "probability": 0.96240234375
+        },
+        {
+          "text": "狗",
+          "start": 0.66,
+          "end": 0.82,
+          "probability": 0.990966796875
+        },
+        {
+          "text": "狗",
+          "start": 0.82,
+          "end": 0.96,
+          "probability": 0.9482421875
+        },
+        {
+          "text": "侠",
+          "start": 0.96,
+          "end": 1.12,
+          "probability": 0.90576171875
+        },
+        {
+          "text": "回",
+          "start": 1.38,
+          "end": 1.52,
+          "probability": 0.70166015625
+        },
+        {
+          "text": "回",
+          "start": 1.52,
+          "end": 1.76,
+          "probability": 0.84619140625
+        },
+        {
+          "text": "吗",
+          "start": 1.76,
+          "end": 1.94,
+          "probability": 0.6279296875
+        }
+      ]
+    },
+    {
+      "start": 1.94,
+      "end": 3.38,
+      "text": "它是福州大学校园里",
+      "words": [
+        {
+          "text": "它",
+          "start": 1.94,
+          "end": 2.12,
+          "probability": 0.35205078125
+        },
+        {
+          "text": "是",
+          "start": 2.12,
+          "end": 2.26,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "福",
+          "start": 2.26,
+          "end": 2.42,
+          "probability": 0.92919921875
+        },
+        {
+          "text": "州",
+          "start": 2.42,
+          "end": 2.6,
+          "probability": 0.96923828125
+        },
+        {
+          "text": "大",
+          "start": 2.6,
+          "end": 2.74,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "学",
+          "start": 2.74,
+          "end": 2.88,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "校",
+          "start": 2.88,
+          "end": 3.04,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "园",
+          "start": 3.04,
+          "end": 3.22,
+          "probability": 0.9951171875
+        },
+        {
+          "text": "里",
+          "start": 3.22,
+          "end": 3.38,
+          "probability": 0.99853515625
+        }
+      ]
+    },
+    {
+      "start": 3.38,
+      "end": 5.6,
+      "text": "一只无人照料的流浪狗",
+      "words": [
+        {
+          "text": "一",
+          "start": 3.38,
+          "end": 3.66,
+          "probability": 0.7685546875
+        },
+        {
+          "text": "只",
+          "start": 3.66,
+          "end": 3.82,
+          "probability": 0.99169921875
+        },
+        {
+          "text": "无",
+          "start": 3.82,
+          "end": 4.1,
+          "probability": 0.99462890625
+        },
+        {
+          "text": "人",
+          "start": 4.1,
+          "end": 4.3,
+          "probability": 1.0
+        },
+        {
+          "text": "照",
+          "start": 4.3,
+          "end": 4.56,
+          "probability": 0.9775390625
+        },
+        {
+          "text": "料",
+          "start": 4.56,
+          "end": 4.82,
+          "probability": 0.98828125
+        },
+        {
+          "text": "的",
+          "start": 4.82,
+          "end": 5.0,
+          "probability": 0.994140625
+        },
+        {
+          "text": "流",
+          "start": 5.0,
+          "end": 5.2,
+          "probability": 0.873046875
+        },
+        {
+          "text": "浪",
+          "start": 5.2,
+          "end": 5.38,
+          "probability": 0.995849609375
+        },
+        {
+          "text": "狗",
+          "start": 5.38,
+          "end": 5.6,
+          "probability": 0.9990234375
+        }
+      ]
+    },
+    {
+      "start": 5.6,
+      "end": 7.84,
+      "text": "平日里安静温顺 很少吵闹",
+      "words": [
+        {
+          "text": "平",
+          "start": 5.6,
+          "end": 5.84,
+          "probability": 0.31201171875
+        },
+        {
+          "text": "日",
+          "start": 5.84,
+          "end": 6.02,
+          "probability": 0.974609375
+        },
+        {
+          "text": "里",
+          "start": 6.02,
+          "end": 6.14,
+          "probability": 0.99072265625
+        },
+        {
+          "text": "安",
+          "start": 6.14,
+          "end": 6.32,
+          "probability": 0.99462890625
+        },
+        {
+          "text": "静",
+          "start": 6.32,
+          "end": 6.48,
+          "probability": 0.998291015625
+        },
+        {
+          "text": "温",
+          "start": 6.48,
+          "end": 6.68,
+          "probability": 0.94091796875
+        },
+        {
+          "text": "顺",
+          "start": 6.68,
+          "end": 6.86,
+          "probability": 0.95703125
+        },
+        {
+          "text": "很",
+          "start": 6.86,
+          "end": 7.14,
+          "probability": 0.66162109375
+        },
+        {
+          "text": "少",
+          "start": 7.14,
+          "end": 7.38,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "吵",
+          "start": 7.38,
+          "end": 7.58,
+          "probability": 0.985107421875
+        },
+        {
+          "text": "闹",
+          "start": 7.58,
+          "end": 7.84,
+          "probability": 0.9931640625
+        }
+      ]
+    },
+    {
+      "start": 7.84,
+      "end": 8.68,
+      "text": "可这天夜里",
+      "words": [
+        {
+          "text": "可",
+          "start": 7.84,
+          "end": 8.02,
+          "probability": 0.9658203125
+        },
+        {
+          "text": "这",
+          "start": 8.02,
+          "end": 8.16,
+          "probability": 0.99658203125
+        },
+        {
+          "text": "天",
+          "start": 8.16,
+          "end": 8.34,
+          "probability": 0.99365234375
+        },
+        {
+          "text": "夜",
+          "start": 8.34,
+          "end": 8.54,
+          "probability": 0.984375
+        },
+        {
+          "text": "里",
+          "start": 8.54,
+          "end": 8.68,
+          "probability": 0.97802734375
+        }
+      ]
+    },
+    {
+      "start": 8.68,
+      "end": 11.36,
+      "text": "它一反常态 不停地交集狂废",
+      "words": [
+        {
+          "text": "它",
+          "start": 8.68,
+          "end": 8.94,
+          "probability": 0.52978515625
+        },
+        {
+          "text": "一",
+          "start": 8.94,
+          "end": 9.12,
+          "probability": 0.89111328125
+        },
+        {
+          "text": "反",
+          "start": 9.12,
+          "end": 9.3,
+          "probability": 0.53515625
+        },
+        {
+          "text": "常",
+          "start": 9.3,
+          "end": 9.52,
+          "probability": 0.99462890625
+        },
+        {
+          "text": "态",
+          "start": 9.52,
+          "end": 9.72,
+          "probability": 0.995849609375
+        },
+        {
+          "text": "不",
+          "start": 9.72,
+          "end": 10.0,
+          "probability": 0.4619140625
+        },
+        {
+          "text": "停",
+          "start": 10.0,
+          "end": 10.22,
+          "probability": 0.998046875
+        },
+        {
+          "text": "地",
+          "start": 10.22,
+          "end": 10.42,
+          "probability": 0.433837890625
+        },
+        {
+          "text": "交",
+          "start": 10.42,
+          "end": 10.62,
+          "probability": 0.78173828125
+        },
+        {
+          "text": "集",
+          "start": 10.62,
+          "end": 10.86,
+          "probability": 0.9326171875
+        },
+        {
+          "text": "狂",
+          "start": 10.86,
+          "end": 11.1,
+          "probability": 0.98388671875
+        },
+        {
+          "text": "废",
+          "start": 11.1,
+          "end": 11.36,
+          "probability": 0.79931640625
+        }
+      ]
+    },
+    {
+      "start": 11.36,
+      "end": 12.86,
+      "text": "路过的同学心声疑惑",
+      "words": [
+        {
+          "text": "路",
+          "start": 11.36,
+          "end": 11.58,
+          "probability": 0.9765625
+        },
+        {
+          "text": "过",
+          "start": 11.58,
+          "end": 11.74,
+          "probability": 0.9931640625
+        },
+        {
+          "text": "的",
+          "start": 11.74,
+          "end": 11.84,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "同",
+          "start": 11.84,
+          "end": 11.96,
+          "probability": 0.998046875
+        },
+        {
+          "text": "学",
+          "start": 11.96,
+          "end": 12.14,
+          "probability": 0.99560546875
+        },
+        {
+          "text": "心",
+          "start": 12.14,
+          "end": 12.32,
+          "probability": 0.415771484375
+        },
+        {
+          "text": "声",
+          "start": 12.32,
+          "end": 12.48,
+          "probability": 0.72509765625
+        },
+        {
+          "text": "疑",
+          "start": 12.48,
+          "end": 12.66,
+          "probability": 0.90576171875
+        },
+        {
+          "text": "惑",
+          "start": 12.66,
+          "end": 12.86,
+          "probability": 0.995361328125
+        }
+      ]
+    },
+    {
+      "start": 12.86,
+      "end": 13.96,
+      "text": "走上前去查看",
+      "words": [
+        {
+          "text": "走",
+          "start": 12.86,
+          "end": 13.06,
+          "probability": 0.6015625
+        },
+        {
+          "text": "上",
+          "start": 13.06,
+          "end": 13.26,
+          "probability": 0.96484375
+        },
+        {
+          "text": "前",
+          "start": 13.26,
+          "end": 13.42,
+          "probability": 0.94775390625
+        },
+        {
+          "text": "去",
+          "start": 13.42,
+          "end": 13.56,
+          "probability": 0.9912109375
+        },
+        {
+          "text": "查",
+          "start": 13.56,
+          "end": 13.74,
+          "probability": 0.98876953125
+        },
+        {
+          "text": "看",
+          "start": 13.74,
+          "end": 13.96,
+          "probability": 0.9755859375
+        }
+      ]
+    },
+    {
+      "start": 13.96,
+      "end": 16.68,
+      "text": "只见它死死盯着一处石头缝隙",
+      "words": [
+        {
+          "text": "只",
+          "start": 13.96,
+          "end": 14.18,
+          "probability": 0.144287109375
+        },
+        {
+          "text": "见",
+          "start": 14.18,
+          "end": 14.32,
+          "probability": 0.97607421875
+        },
+        {
+          "text": "它",
+          "start": 14.32,
+          "end": 14.46,
+          "probability": 0.75732421875
+        },
+        {
+          "text": "死",
+          "start": 14.46,
+          "end": 14.76,
+          "probability": 0.94189453125
+        },
+        {
+          "text": "死",
+          "start": 14.76,
+          "end": 15.04,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "盯",
+          "start": 15.04,
+          "end": 15.24,
+          "probability": 0.99462890625
+        },
+        {
+          "text": "着",
+          "start": 15.24,
+          "end": 15.4,
+          "probability": 0.990234375
+        },
+        {
+          "text": "一",
+          "start": 15.4,
+          "end": 15.56,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "处",
+          "start": 15.56,
+          "end": 15.7,
+          "probability": 0.869873046875
+        },
+        {
+          "text": "石",
+          "start": 15.7,
+          "end": 15.98,
+          "probability": 0.990234375
+        },
+        {
+          "text": "头",
+          "start": 15.98,
+          "end": 16.2,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "缝",
+          "start": 16.2,
+          "end": 16.4,
+          "probability": 0.945068359375
+        },
+        {
+          "text": "隙",
+          "start": 16.4,
+          "end": 16.68,
+          "probability": 0.9931640625
+        }
+      ]
+    },
+    {
+      "start": 16.68,
+      "end": 18.42,
+      "text": "听命刨瓦脚下泥土",
+      "words": [
+        {
+          "text": "听",
+          "start": 16.68,
+          "end": 16.94,
+          "probability": 0.161376953125
+        },
+        {
+          "text": "命",
+          "start": 16.94,
+          "end": 17.2,
+          "probability": 0.9501953125
+        },
+        {
+          "text": "刨",
+          "start": 17.2,
+          "end": 17.44,
+          "probability": 0.836669921875
+        },
+        {
+          "text": "瓦",
+          "start": 17.44,
+          "end": 17.62,
+          "probability": 0.7676595052083334
+        },
+        {
+          "text": "脚",
+          "start": 17.62,
+          "end": 17.84,
+          "probability": 0.92919921875
+        },
+        {
+          "text": "下",
+          "start": 17.84,
+          "end": 18.06,
+          "probability": 0.99462890625
+        },
+        {
+          "text": "泥",
+          "start": 18.06,
+          "end": 18.24,
+          "probability": 0.91455078125
+        },
+        {
+          "text": "土",
+          "start": 18.24,
+          "end": 18.42,
+          "probability": 0.99853515625
+        }
+      ]
+    },
+    {
+      "start": 18.42,
+      "end": 20.52,
+      "text": "坚硬的石子磨破了它的爪子",
+      "words": [
+        {
+          "text": "坚",
+          "start": 18.42,
+          "end": 18.68,
+          "probability": 0.981201171875
+        },
+        {
+          "text": "硬",
+          "start": 18.68,
+          "end": 18.86,
+          "probability": 0.994873046875
+        },
+        {
+          "text": "的",
+          "start": 18.86,
+          "end": 18.98,
+          "probability": 0.9873046875
+        },
+        {
+          "text": "石",
+          "start": 18.98,
+          "end": 19.16,
+          "probability": 0.55712890625
+        },
+        {
+          "text": "子",
+          "start": 19.16,
+          "end": 19.38,
+          "probability": 0.9921875
+        },
+        {
+          "text": "磨",
+          "start": 19.38,
+          "end": 19.62,
+          "probability": 0.933837890625
+        },
+        {
+          "text": "破",
+          "start": 19.62,
+          "end": 19.84,
+          "probability": 0.97705078125
+        },
+        {
+          "text": "了",
+          "start": 19.84,
+          "end": 19.94,
+          "probability": 0.9931640625
+        },
+        {
+          "text": "它的",
+          "start": 19.94,
+          "end": 20.08,
+          "probability": 0.875
+        },
+        {
+          "text": "爪",
+          "start": 20.08,
+          "end": 20.32,
+          "probability": 0.986328125
+        },
+        {
+          "text": "子",
+          "start": 20.32,
+          "end": 20.52,
+          "probability": 1.0
+        }
+      ]
+    },
+    {
+      "start": 20.52,
+      "end": 22.18,
+      "text": "脸颊也被磨出了血",
+      "words": [
+        {
+          "text": "脸",
+          "start": 20.52,
+          "end": 20.82,
+          "probability": 0.859619140625
+        },
+        {
+          "text": "颊",
+          "start": 20.82,
+          "end": 21.06,
+          "probability": 0.846923828125
+        },
+        {
+          "text": "也",
+          "start": 21.06,
+          "end": 21.32,
+          "probability": 0.9951171875
+        },
+        {
+          "text": "被",
+          "start": 21.32,
+          "end": 21.46,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "磨",
+          "start": 21.46,
+          "end": 21.66,
+          "probability": 0.995849609375
+        },
+        {
+          "text": "出",
+          "start": 21.66,
+          "end": 21.86,
+          "probability": 0.9814453125
+        },
+        {
+          "text": "了",
+          "start": 21.86,
+          "end": 21.98,
+          "probability": 0.9853515625
+        },
+        {
+          "text": "血",
+          "start": 21.98,
+          "end": 22.18,
+          "probability": 0.98095703125
+        }
+      ]
+    },
+    {
+      "start": 22.18,
+      "end": 23.58,
+      "text": "可疼痛没能拦住它",
+      "words": [
+        {
+          "text": "可",
+          "start": 22.18,
+          "end": 22.4,
+          "probability": 0.95947265625
+        },
+        {
+          "text": "疼",
+          "start": 22.4,
+          "end": 22.62,
+          "probability": 0.9658203125
+        },
+        {
+          "text": "痛",
+          "start": 22.62,
+          "end": 22.82,
+          "probability": 0.99560546875
+        },
+        {
+          "text": "没",
+          "start": 22.82,
+          "end": 22.98,
+          "probability": 0.98291015625
+        },
+        {
+          "text": "能",
+          "start": 22.98,
+          "end": 23.12,
+          "probability": 0.99267578125
+        },
+        {
+          "text": "拦",
+          "start": 23.12,
+          "end": 23.26,
+          "probability": 0.983642578125
+        },
+        {
+          "text": "住",
+          "start": 23.26,
+          "end": 23.4,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "它",
+          "start": 23.4,
+          "end": 23.58,
+          "probability": 0.97607421875
+        }
+      ]
+    },
+    {
+      "start": 23.58,
+      "end": 25.68,
+      "text": "回回没有丝毫停下的念头",
+      "words": [
+        {
+          "text": "回",
+          "start": 23.58,
+          "end": 23.84,
+          "probability": 0.9677734375
+        },
+        {
+          "text": "回",
+          "start": 23.84,
+          "end": 24.04,
+          "probability": 0.998046875
+        },
+        {
+          "text": "没有",
+          "start": 24.04,
+          "end": 24.2,
+          "probability": 0.9833984375
+        },
+        {
+          "text": "丝",
+          "start": 24.2,
+          "end": 24.54,
+          "probability": 0.9052734375
+        },
+        {
+          "text": "毫",
+          "start": 24.54,
+          "end": 24.72,
+          "probability": 0.998291015625
+        },
+        {
+          "text": "停",
+          "start": 24.72,
+          "end": 24.98,
+          "probability": 0.97314453125
+        },
+        {
+          "text": "下",
+          "start": 24.98,
+          "end": 25.16,
+          "probability": 0.99658203125
+        },
+        {
+          "text": "的",
+          "start": 25.16,
+          "end": 25.28,
+          "probability": 0.95654296875
+        },
+        {
+          "text": "念",
+          "start": 25.28,
+          "end": 25.44,
+          "probability": 0.96728515625
+        },
+        {
+          "text": "头",
+          "start": 25.44,
+          "end": 25.68,
+          "probability": 0.9912109375
+        }
+      ]
+    },
+    {
+      "start": 25.68,
+      "end": 26.82,
+      "text": "一遍又一遍",
+      "words": [
+        {
+          "text": "一",
+          "start": 25.68,
+          "end": 25.94,
+          "probability": 0.98974609375
+        },
+        {
+          "text": "遍",
+          "start": 25.94,
+          "end": 26.14,
+          "probability": 0.946533203125
+        },
+        {
+          "text": "又",
+          "start": 26.14,
+          "end": 26.34,
+          "probability": 0.99169921875
+        },
+        {
+          "text": "一",
+          "start": 26.34,
+          "end": 26.52,
+          "probability": 0.9951171875
+        },
+        {
+          "text": "遍",
+          "start": 26.52,
+          "end": 26.82,
+          "probability": 0.99755859375
+        }
+      ]
+    },
+    {
+      "start": 26.82,
+      "end": 28.28,
+      "text": "奋力刨着泥土",
+      "words": [
+        {
+          "text": "奋",
+          "start": 26.82,
+          "end": 27.08,
+          "probability": 0.58941650390625
+        },
+        {
+          "text": "力",
+          "start": 27.08,
+          "end": 27.4,
+          "probability": 0.9873046875
+        },
+        {
+          "text": "刨",
+          "start": 27.4,
+          "end": 27.66,
+          "probability": 0.899169921875
+        },
+        {
+          "text": "着",
+          "start": 27.66,
+          "end": 27.86,
+          "probability": 0.9921875
+        },
+        {
+          "text": "泥",
+          "start": 27.86,
+          "end": 28.06,
+          "probability": 0.998779296875
+        },
+        {
+          "text": "土",
+          "start": 28.06,
+          "end": 28.28,
+          "probability": 0.9990234375
+        }
+      ]
+    },
+    {
+      "start": 28.28,
+      "end": 29.5,
+      "text": "狗狗情绪激动",
+      "words": [
+        {
+          "text": "狗",
+          "start": 28.28,
+          "end": 28.54,
+          "probability": 0.5260009765625
+        },
+        {
+          "text": "狗",
+          "start": 28.54,
+          "end": 28.72,
+          "probability": 0.988525390625
+        },
+        {
+          "text": "情",
+          "start": 28.72,
+          "end": 28.94,
+          "probability": 0.9853515625
+        },
+        {
+          "text": "绪",
+          "start": 28.94,
+          "end": 29.12,
+          "probability": 0.59832763671875
+        },
+        {
+          "text": "激",
+          "start": 29.12,
+          "end": 29.34,
+          "probability": 0.976806640625
+        },
+        {
+          "text": "动",
+          "start": 29.34,
+          "end": 29.5,
+          "probability": 0.9970703125
+        }
+      ]
+    },
+    {
+      "start": 29.5,
+      "end": 30.84,
+      "text": "谁都安抚不住",
+      "words": [
+        {
+          "text": "谁",
+          "start": 29.5,
+          "end": 29.84,
+          "probability": 0.4052734375
+        },
+        {
+          "text": "都",
+          "start": 29.84,
+          "end": 30.1,
+          "probability": 0.99609375
+        },
+        {
+          "text": "安",
+          "start": 30.1,
+          "end": 30.32,
+          "probability": 0.982421875
+        },
+        {
+          "text": "抚",
+          "start": 30.32,
+          "end": 30.5,
+          "probability": 0.9208984375
+        },
+        {
+          "text": "不",
+          "start": 30.5,
+          "end": 30.68,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "住",
+          "start": 30.68,
+          "end": 30.84,
+          "probability": 0.99853515625
+        }
+      ]
+    },
+    {
+      "start": 30.84,
+      "end": 32.56,
+      "text": "同学们看出事态不对劲",
+      "words": [
+        {
+          "text": "同",
+          "start": 30.84,
+          "end": 31.08,
+          "probability": 0.81982421875
+        },
+        {
+          "text": "学",
+          "start": 31.08,
+          "end": 31.22,
+          "probability": 0.990234375
+        },
+        {
+          "text": "们",
+          "start": 31.22,
+          "end": 31.34,
+          "probability": 0.99462890625
+        },
+        {
+          "text": "看",
+          "start": 31.34,
+          "end": 31.48,
+          "probability": 0.98583984375
+        },
+        {
+          "text": "出",
+          "start": 31.48,
+          "end": 31.7,
+          "probability": 0.97802734375
+        },
+        {
+          "text": "事",
+          "start": 31.7,
+          "end": 31.9,
+          "probability": 0.62939453125
+        },
+        {
+          "text": "态",
+          "start": 31.9,
+          "end": 32.04,
+          "probability": 0.99462890625
+        },
+        {
+          "text": "不对",
+          "start": 32.04,
+          "end": 32.26,
+          "probability": 0.6806640625
+        },
+        {
+          "text": "劲",
+          "start": 32.26,
+          "end": 32.56,
+          "probability": 0.99609375
+        }
+      ]
+    },
+    {
+      "start": 32.56,
+      "end": 33.58,
+      "text": "连猫喊来伙伴",
+      "words": [
+        {
+          "text": "连",
+          "start": 32.56,
+          "end": 32.8,
+          "probability": 0.9638671875
+        },
+        {
+          "text": "猫",
+          "start": 32.8,
+          "end": 32.96,
+          "probability": 0.792236328125
+        },
+        {
+          "text": "喊",
+          "start": 32.96,
+          "end": 33.14,
+          "probability": 0.99560546875
+        },
+        {
+          "text": "来",
+          "start": 33.14,
+          "end": 33.24,
+          "probability": 0.9833984375
+        },
+        {
+          "text": "伙",
+          "start": 33.24,
+          "end": 33.42,
+          "probability": 0.98583984375
+        },
+        {
+          "text": "伴",
+          "start": 33.42,
+          "end": 33.58,
+          "probability": 0.978759765625
+        }
+      ]
+    },
+    {
+      "start": 33.58,
+      "end": 34.5,
+      "text": "一同挖土",
+      "words": [
+        {
+          "text": "一",
+          "start": 33.58,
+          "end": 33.9,
+          "probability": 0.8388671875
+        },
+        {
+          "text": "同",
+          "start": 33.9,
+          "end": 34.12,
+          "probability": 0.3369140625
+        },
+        {
+          "text": "挖",
+          "start": 34.12,
+          "end": 34.32,
+          "probability": 0.990966796875
+        },
+        {
+          "text": "土",
+          "start": 34.32,
+          "end": 34.5,
+          "probability": 0.92919921875
+        }
+      ]
+    },
+    {
+      "start": 34.5,
+      "end": 36.34,
+      "text": "伴随着泥土一点点抛开",
+      "words": [
+        {
+          "text": "伴",
+          "start": 34.5,
+          "end": 34.76,
+          "probability": 0.9931640625
+        },
+        {
+          "text": "随",
+          "start": 34.76,
+          "end": 34.94,
+          "probability": 0.98828125
+        },
+        {
+          "text": "着",
+          "start": 34.94,
+          "end": 35.08,
+          "probability": 0.9892578125
+        },
+        {
+          "text": "泥",
+          "start": 35.08,
+          "end": 35.2,
+          "probability": 0.984375
+        },
+        {
+          "text": "土",
+          "start": 35.2,
+          "end": 35.38,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "一点",
+          "start": 35.38,
+          "end": 35.66,
+          "probability": 0.951171875
+        },
+        {
+          "text": "点",
+          "start": 35.66,
+          "end": 35.9,
+          "probability": 0.9921875
+        },
+        {
+          "text": "抛",
+          "start": 35.9,
+          "end": 36.1,
+          "probability": 0.80078125
+        },
+        {
+          "text": "开",
+          "start": 36.1,
+          "end": 36.34,
+          "probability": 0.99951171875
+        }
+      ]
+    },
+    {
+      "start": 36.34,
+      "end": 38.3,
+      "text": "一道微弱细碎的喵巫声",
+      "words": [
+        {
+          "text": "一",
+          "start": 36.34,
+          "end": 36.56,
+          "probability": 0.9736328125
+        },
+        {
+          "text": "道",
+          "start": 36.56,
+          "end": 36.7,
+          "probability": 0.9716796875
+        },
+        {
+          "text": "微",
+          "start": 36.7,
+          "end": 36.92,
+          "probability": 0.95751953125
+        },
+        {
+          "text": "弱",
+          "start": 36.92,
+          "end": 37.1,
+          "probability": 0.994384765625
+        },
+        {
+          "text": "细",
+          "start": 37.1,
+          "end": 37.36,
+          "probability": 0.992431640625
+        },
+        {
+          "text": "碎",
+          "start": 37.36,
+          "end": 37.54,
+          "probability": 0.888916015625
+        },
+        {
+          "text": "的",
+          "start": 37.54,
+          "end": 37.68,
+          "probability": 0.994140625
+        },
+        {
+          "text": "喵",
+          "start": 37.68,
+          "end": 37.86,
+          "probability": 0.764404296875
+        },
+        {
+          "text": "巫",
+          "start": 37.86,
+          "end": 38.1,
+          "probability": 0.7122802734375
+        },
+        {
+          "text": "声",
+          "start": 38.1,
+          "end": 38.3,
+          "probability": 0.8857421875
+        }
+      ]
+    },
+    {
+      "start": 38.3,
+      "end": 39.7,
+      "text": "从地底传了出来",
+      "words": [
+        {
+          "text": "从",
+          "start": 38.3,
+          "end": 38.58,
+          "probability": 0.97802734375
+        },
+        {
+          "text": "地",
+          "start": 38.58,
+          "end": 38.8,
+          "probability": 0.60693359375
+        },
+        {
+          "text": "底",
+          "start": 38.8,
+          "end": 39.0,
+          "probability": 0.89306640625
+        },
+        {
+          "text": "传",
+          "start": 39.0,
+          "end": 39.28,
+          "probability": 0.965576171875
+        },
+        {
+          "text": "了",
+          "start": 39.28,
+          "end": 39.44,
+          "probability": 0.9501953125
+        },
+        {
+          "text": "出来",
+          "start": 39.44,
+          "end": 39.7,
+          "probability": 0.99609375
+        }
+      ]
+    },
+    {
+      "start": 39.7,
+      "end": 41.42,
+      "text": "众人瞬间心头一阵",
+      "words": [
+        {
+          "text": "众",
+          "start": 39.7,
+          "end": 39.94,
+          "probability": 0.861328125
+        },
+        {
+          "text": "人",
+          "start": 39.94,
+          "end": 40.12,
+          "probability": 1.0
+        },
+        {
+          "text": "瞬",
+          "start": 40.12,
+          "end": 40.38,
+          "probability": 0.996826171875
+        },
+        {
+          "text": "间",
+          "start": 40.38,
+          "end": 40.66,
+          "probability": 0.998046875
+        },
+        {
+          "text": "心",
+          "start": 40.66,
+          "end": 40.9,
+          "probability": 0.9619140625
+        },
+        {
+          "text": "头",
+          "start": 40.9,
+          "end": 41.08,
+          "probability": 0.970703125
+        },
+        {
+          "text": "一",
+          "start": 41.08,
+          "end": 41.24,
+          "probability": 0.9814453125
+        },
+        {
+          "text": "阵",
+          "start": 41.24,
+          "end": 41.42,
+          "probability": 0.6669921875
+        }
+      ]
+    },
+    {
+      "start": 41.42,
+      "end": 42.18,
+      "text": "土层之下",
+      "words": [
+        {
+          "text": "土",
+          "start": 41.42,
+          "end": 41.66,
+          "probability": 0.477294921875
+        },
+        {
+          "text": "层",
+          "start": 41.66,
+          "end": 41.84,
+          "probability": 0.98193359375
+        },
+        {
+          "text": "之",
+          "start": 41.84,
+          "end": 42.04,
+          "probability": 0.99169921875
+        },
+        {
+          "text": "下",
+          "start": 42.04,
+          "end": 42.18,
+          "probability": 0.9990234375
+        }
+      ]
+    },
+    {
+      "start": 42.18,
+      "end": 44.2,
+      "text": "竟然埋着一只幼小的奶猫",
+      "words": [
+        {
+          "text": "竟",
+          "start": 42.18,
+          "end": 42.42,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "然",
+          "start": 42.42,
+          "end": 42.56,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "埋",
+          "start": 42.56,
+          "end": 42.7,
+          "probability": 0.995361328125
+        },
+        {
+          "text": "着",
+          "start": 42.7,
+          "end": 42.86,
+          "probability": 0.92724609375
+        },
+        {
+          "text": "一",
+          "start": 42.86,
+          "end": 42.98,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "只",
+          "start": 42.98,
+          "end": 43.1,
+          "probability": 0.986328125
+        },
+        {
+          "text": "幼",
+          "start": 43.1,
+          "end": 43.32,
+          "probability": 0.888427734375
+        },
+        {
+          "text": "小",
+          "start": 43.32,
+          "end": 43.54,
+          "probability": 0.9765625
+        },
+        {
+          "text": "的",
+          "start": 43.54,
+          "end": 43.7,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "奶",
+          "start": 43.7,
+          "end": 43.9,
+          "probability": 0.93310546875
+        },
+        {
+          "text": "猫",
+          "start": 43.9,
+          "end": 44.2,
+          "probability": 0.987548828125
+        }
+      ]
+    },
+    {
+      "start": 44.2,
+      "end": 45.08,
+      "text": "连日降雨",
+      "words": [
+        {
+          "text": "连",
+          "start": 44.2,
+          "end": 44.44,
+          "probability": 0.9619140625
+        },
+        {
+          "text": "日",
+          "start": 44.44,
+          "end": 44.64,
+          "probability": 0.94970703125
+        },
+        {
+          "text": "降",
+          "start": 44.64,
+          "end": 44.82,
+          "probability": 0.9755859375
+        },
+        {
+          "text": "雨",
+          "start": 44.82,
+          "end": 45.08,
+          "probability": 0.82958984375
+        }
+      ]
+    },
+    {
+      "start": 45.08,
+      "end": 46.42,
+      "text": "泥土吸水松动",
+      "words": [
+        {
+          "text": "泥",
+          "start": 45.08,
+          "end": 45.38,
+          "probability": 0.98779296875
+        },
+        {
+          "text": "土",
+          "start": 45.38,
+          "end": 45.58,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "吸",
+          "start": 45.58,
+          "end": 45.88,
+          "probability": 0.931640625
+        },
+        {
+          "text": "水",
+          "start": 45.88,
+          "end": 46.08,
+          "probability": 0.99609375
+        },
+        {
+          "text": "松",
+          "start": 46.08,
+          "end": 46.26,
+          "probability": 0.88037109375
+        },
+        {
+          "text": "动",
+          "start": 46.26,
+          "end": 46.42,
+          "probability": 0.82568359375
+        }
+      ]
+    },
+    {
+      "start": 46.42,
+      "end": 47.72,
+      "text": "小猫藏身的小窝",
+      "words": [
+        {
+          "text": "小",
+          "start": 46.42,
+          "end": 46.72,
+          "probability": 0.98486328125
+        },
+        {
+          "text": "猫",
+          "start": 46.72,
+          "end": 46.88,
+          "probability": 0.998779296875
+        },
+        {
+          "text": "藏",
+          "start": 46.88,
+          "end": 47.1,
+          "probability": 0.9912109375
+        },
+        {
+          "text": "身",
+          "start": 47.1,
+          "end": 47.24,
+          "probability": 0.9609375
+        },
+        {
+          "text": "的",
+          "start": 47.24,
+          "end": 47.34,
+          "probability": 0.99658203125
+        },
+        {
+          "text": "小",
+          "start": 47.34,
+          "end": 47.5,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "窝",
+          "start": 47.5,
+          "end": 47.72,
+          "probability": 0.94970703125
+        }
+      ]
+    },
+    {
+      "start": 47.72,
+      "end": 48.58,
+      "text": "不幸他方",
+      "words": [
+        {
+          "text": "不",
+          "start": 47.72,
+          "end": 47.92,
+          "probability": 0.95849609375
+        },
+        {
+          "text": "幸",
+          "start": 47.92,
+          "end": 48.14,
+          "probability": 0.9326171875
+        },
+        {
+          "text": "他",
+          "start": 48.14,
+          "end": 48.38,
+          "probability": 0.365234375
+        },
+        {
+          "text": "方",
+          "start": 48.38,
+          "end": 48.58,
+          "probability": 0.97705078125
+        }
+      ]
+    },
+    {
+      "start": 48.58,
+      "end": 49.58,
+      "text": "可怜的小家伙",
+      "words": [
+        {
+          "text": "可",
+          "start": 48.58,
+          "end": 48.82,
+          "probability": 0.98828125
+        },
+        {
+          "text": "怜",
+          "start": 48.82,
+          "end": 48.94,
+          "probability": 0.997314453125
+        },
+        {
+          "text": "的",
+          "start": 48.94,
+          "end": 49.08,
+          "probability": 0.99609375
+        },
+        {
+          "text": "小",
+          "start": 49.08,
+          "end": 49.22,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "家",
+          "start": 49.22,
+          "end": 49.42,
+          "probability": 0.970703125
+        },
+        {
+          "text": "伙",
+          "start": 49.42,
+          "end": 49.58,
+          "probability": 0.998046875
+        }
+      ]
+    },
+    {
+      "start": 49.58,
+      "end": 51.1,
+      "text": "被困在了泥土之下",
+      "words": [
+        {
+          "text": "被",
+          "start": 49.58,
+          "end": 49.8,
+          "probability": 0.99658203125
+        },
+        {
+          "text": "困",
+          "start": 49.8,
+          "end": 50.02,
+          "probability": 0.998779296875
+        },
+        {
+          "text": "在",
+          "start": 50.02,
+          "end": 50.24,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "了",
+          "start": 50.24,
+          "end": 50.36,
+          "probability": 0.98095703125
+        },
+        {
+          "text": "泥",
+          "start": 50.36,
+          "end": 50.52,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "土",
+          "start": 50.52,
+          "end": 50.72,
+          "probability": 1.0
+        },
+        {
+          "text": "之",
+          "start": 50.72,
+          "end": 50.92,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "下",
+          "start": 50.92,
+          "end": 51.1,
+          "probability": 0.9990234375
+        }
+      ]
+    },
+    {
+      "start": 51.1,
+      "end": 52.8,
+      "text": "原来回回不停跑土",
+      "words": [
+        {
+          "text": "原",
+          "start": 51.1,
+          "end": 51.32,
+          "probability": 0.99072265625
+        },
+        {
+          "text": "来",
+          "start": 51.32,
+          "end": 51.46,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "回",
+          "start": 51.46,
+          "end": 51.62,
+          "probability": 0.921875
+        },
+        {
+          "text": "回",
+          "start": 51.62,
+          "end": 51.86,
+          "probability": 0.9716796875
+        },
+        {
+          "text": "不",
+          "start": 51.86,
+          "end": 52.04,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "停",
+          "start": 52.04,
+          "end": 52.22,
+          "probability": 0.99658203125
+        },
+        {
+          "text": "跑",
+          "start": 52.22,
+          "end": 52.5,
+          "probability": 0.6416015625
+        },
+        {
+          "text": "土",
+          "start": 52.5,
+          "end": 52.8,
+          "probability": 0.998046875
+        }
+      ]
+    },
+    {
+      "start": 52.8,
+      "end": 55.3,
+      "text": "是想要救出深埋土中的小猫",
+      "words": [
+        {
+          "text": "是",
+          "start": 52.8,
+          "end": 53.06,
+          "probability": 0.984375
+        },
+        {
+          "text": "想",
+          "start": 53.06,
+          "end": 53.2,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "要",
+          "start": 53.2,
+          "end": 53.34,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "救",
+          "start": 53.34,
+          "end": 53.54,
+          "probability": 0.990234375
+        },
+        {
+          "text": "出",
+          "start": 53.54,
+          "end": 53.78,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "深",
+          "start": 53.78,
+          "end": 54.04,
+          "probability": 0.80419921875
+        },
+        {
+          "text": "埋",
+          "start": 54.04,
+          "end": 54.28,
+          "probability": 0.96826171875
+        },
+        {
+          "text": "土",
+          "start": 54.28,
+          "end": 54.5,
+          "probability": 0.9873046875
+        },
+        {
+          "text": "中",
+          "start": 54.5,
+          "end": 54.7,
+          "probability": 0.96923828125
+        },
+        {
+          "text": "的",
+          "start": 54.7,
+          "end": 54.82,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "小",
+          "start": 54.82,
+          "end": 55.04,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "猫",
+          "start": 55.04,
+          "end": 55.3,
+          "probability": 0.999267578125
+        }
+      ]
+    },
+    {
+      "start": 55.3,
+      "end": 57.6,
+      "text": "在回回和大家的齐心协力下",
+      "words": [
+        {
+          "text": "在",
+          "start": 55.3,
+          "end": 55.54,
+          "probability": 0.7607421875
+        },
+        {
+          "text": "回",
+          "start": 55.54,
+          "end": 55.74,
+          "probability": 0.876953125
+        },
+        {
+          "text": "回",
+          "start": 55.74,
+          "end": 55.98,
+          "probability": 0.9619140625
+        },
+        {
+          "text": "和",
+          "start": 55.98,
+          "end": 56.12,
+          "probability": 0.98046875
+        },
+        {
+          "text": "大家",
+          "start": 56.12,
+          "end": 56.38,
+          "probability": 0.984375
+        },
+        {
+          "text": "的",
+          "start": 56.38,
+          "end": 56.56,
+          "probability": 0.99365234375
+        },
+        {
+          "text": "齐",
+          "start": 56.56,
+          "end": 56.8,
+          "probability": 0.63525390625
+        },
+        {
+          "text": "心",
+          "start": 56.8,
+          "end": 57.0,
+          "probability": 0.99658203125
+        },
+        {
+          "text": "协",
+          "start": 57.0,
+          "end": 57.22,
+          "probability": 0.650390625
+        },
+        {
+          "text": "力",
+          "start": 57.22,
+          "end": 57.4,
+          "probability": 0.931640625
+        },
+        {
+          "text": "下",
+          "start": 57.4,
+          "end": 57.6,
+          "probability": 0.9931640625
+        }
+      ]
+    },
+    {
+      "start": 57.6,
+      "end": 59.46,
+      "text": "将近两个小时的挖掘",
+      "words": [
+        {
+          "text": "将",
+          "start": 57.6,
+          "end": 57.86,
+          "probability": 0.4560546875
+        },
+        {
+          "text": "近",
+          "start": 57.86,
+          "end": 58.08,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "两",
+          "start": 58.08,
+          "end": 58.34,
+          "probability": 0.78271484375
+        },
+        {
+          "text": "个",
+          "start": 58.34,
+          "end": 58.56,
+          "probability": 0.98388671875
+        },
+        {
+          "text": "小",
+          "start": 58.56,
+          "end": 58.76,
+          "probability": 0.99169921875
+        },
+        {
+          "text": "时",
+          "start": 58.76,
+          "end": 58.96,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "的",
+          "start": 58.96,
+          "end": 59.08,
+          "probability": 0.96484375
+        },
+        {
+          "text": "挖",
+          "start": 59.08,
+          "end": 59.28,
+          "probability": 0.97412109375
+        },
+        {
+          "text": "掘",
+          "start": 59.28,
+          "end": 59.46,
+          "probability": 0.98974609375
+        }
+      ]
+    },
+    {
+      "start": 59.46,
+      "end": 61.46,
+      "text": "被困小猫终于重见天日",
+      "words": [
+        {
+          "text": "被",
+          "start": 59.46,
+          "end": 59.72,
+          "probability": 0.5029296875
+        },
+        {
+          "text": "困",
+          "start": 59.72,
+          "end": 59.86,
+          "probability": 0.983642578125
+        },
+        {
+          "text": "小",
+          "start": 59.86,
+          "end": 60.08,
+          "probability": 0.98876953125
+        },
+        {
+          "text": "猫",
+          "start": 60.08,
+          "end": 60.24,
+          "probability": 0.992919921875
+        },
+        {
+          "text": "终",
+          "start": 60.24,
+          "end": 60.48,
+          "probability": 0.996337890625
+        },
+        {
+          "text": "于",
+          "start": 60.48,
+          "end": 60.62,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "重",
+          "start": 60.62,
+          "end": 60.84,
+          "probability": 0.97802734375
+        },
+        {
+          "text": "见",
+          "start": 60.84,
+          "end": 61.04,
+          "probability": 0.505859375
+        },
+        {
+          "text": "天",
+          "start": 61.04,
+          "end": 61.28,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "日",
+          "start": 61.28,
+          "end": 61.46,
+          "probability": 0.9931640625
+        }
+      ]
+    },
+    {
+      "start": 61.46,
+      "end": 62.42,
+      "text": "平安或旧",
+      "words": [
+        {
+          "text": "平",
+          "start": 61.46,
+          "end": 61.7,
+          "probability": 0.69677734375
+        },
+        {
+          "text": "安",
+          "start": 61.7,
+          "end": 61.98,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "或",
+          "start": 61.98,
+          "end": 62.22,
+          "probability": 0.537109375
+        },
+        {
+          "text": "旧",
+          "start": 62.22,
+          "end": 62.42,
+          "probability": 0.884521484375
+        }
+      ]
+    },
+    {
+      "start": 62.42,
+      "end": 64.4,
+      "text": "当小猫终于被拖出的那一刻",
+      "words": [
+        {
+          "text": "当",
+          "start": 62.42,
+          "end": 62.62,
+          "probability": 0.98046875
+        },
+        {
+          "text": "小",
+          "start": 62.62,
+          "end": 62.84,
+          "probability": 0.99462890625
+        },
+        {
+          "text": "猫",
+          "start": 62.84,
+          "end": 62.98,
+          "probability": 0.999267578125
+        },
+        {
+          "text": "终",
+          "start": 62.98,
+          "end": 63.2,
+          "probability": 0.994140625
+        },
+        {
+          "text": "于",
+          "start": 63.2,
+          "end": 63.34,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "被",
+          "start": 63.34,
+          "end": 63.48,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "拖",
+          "start": 63.48,
+          "end": 63.66,
+          "probability": 0.79541015625
+        },
+        {
+          "text": "出",
+          "start": 63.66,
+          "end": 63.86,
+          "probability": 0.9736328125
+        },
+        {
+          "text": "的",
+          "start": 63.86,
+          "end": 63.98,
+          "probability": 0.9033203125
+        },
+        {
+          "text": "那",
+          "start": 63.98,
+          "end": 64.14,
+          "probability": 0.998046875
+        },
+        {
+          "text": "一",
+          "start": 64.14,
+          "end": 64.24,
+          "probability": 0.99658203125
+        },
+        {
+          "text": "刻",
+          "start": 64.24,
+          "end": 64.4,
+          "probability": 0.99951171875
+        }
+      ]
+    },
+    {
+      "start": 64.4,
+      "end": 65.96,
+      "text": "他忘了满脸的血痕",
+      "words": [
+        {
+          "text": "他",
+          "start": 64.4,
+          "end": 64.66,
+          "probability": 0.56396484375
+        },
+        {
+          "text": "忘",
+          "start": 64.66,
+          "end": 64.82,
+          "probability": 0.96240234375
+        },
+        {
+          "text": "了",
+          "start": 64.82,
+          "end": 64.98,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "满",
+          "start": 64.98,
+          "end": 65.14,
+          "probability": 0.93212890625
+        },
+        {
+          "text": "脸",
+          "start": 65.14,
+          "end": 65.38,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "的",
+          "start": 65.38,
+          "end": 65.54,
+          "probability": 0.9951171875
+        },
+        {
+          "text": "血",
+          "start": 65.54,
+          "end": 65.74,
+          "probability": 0.96240234375
+        },
+        {
+          "text": "痕",
+          "start": 65.74,
+          "end": 65.96,
+          "probability": 0.991943359375
+        }
+      ]
+    },
+    {
+      "start": 65.96,
+      "end": 67.24,
+      "text": "兴奋的蹦跳",
+      "words": [
+        {
+          "text": "兴",
+          "start": 65.96,
+          "end": 66.34,
+          "probability": 0.954345703125
+        },
+        {
+          "text": "奋",
+          "start": 66.34,
+          "end": 66.6,
+          "probability": 0.997802734375
+        },
+        {
+          "text": "的",
+          "start": 66.6,
+          "end": 66.78,
+          "probability": 0.93994140625
+        },
+        {
+          "text": "蹦",
+          "start": 66.78,
+          "end": 66.92,
+          "probability": 0.6201171875
+        },
+        {
+          "text": "跳",
+          "start": 66.92,
+          "end": 67.24,
+          "probability": 0.99169921875
+        }
+      ]
+    },
+    {
+      "start": 67.24,
+      "end": 69.16,
+      "text": "那一言让人心碎",
+      "words": [
+        {
+          "text": "那",
+          "start": 67.24,
+          "end": 67.48,
+          "probability": 0.98681640625
+        },
+        {
+          "text": "一",
+          "start": 67.48,
+          "end": 67.7,
+          "probability": 0.8623046875
+        },
+        {
+          "text": "言",
+          "start": 67.7,
+          "end": 67.98,
+          "probability": 0.98828125
+        },
+        {
+          "text": "让",
+          "start": 67.98,
+          "end": 68.28,
+          "probability": 0.9521484375
+        },
+        {
+          "text": "人",
+          "start": 68.28,
+          "end": 68.54,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "心",
+          "start": 68.54,
+          "end": 68.82,
+          "probability": 0.98779296875
+        },
+        {
+          "text": "碎",
+          "start": 68.82,
+          "end": 69.16,
+          "probability": 0.932373046875
+        }
+      ]
+    },
+    {
+      "start": 69.16,
+      "end": 70.26,
+      "text": "也让人动容",
+      "words": [
+        {
+          "text": "也",
+          "start": 69.16,
+          "end": 69.38,
+          "probability": 0.94873046875
+        },
+        {
+          "text": "让",
+          "start": 69.38,
+          "end": 69.56,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "人",
+          "start": 69.56,
+          "end": 69.78,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "动",
+          "start": 69.78,
+          "end": 69.98,
+          "probability": 0.97412109375
+        },
+        {
+          "text": "容",
+          "start": 69.98,
+          "end": 70.26,
+          "probability": 0.7490234375
+        }
+      ]
+    },
+    {
+      "start": 70.26,
+      "end": 72.38,
+      "text": "他没有被世界温柔以待",
+      "words": [
+        {
+          "text": "他",
+          "start": 70.26,
+          "end": 70.5,
+          "probability": 0.94091796875
+        },
+        {
+          "text": "没有",
+          "start": 70.5,
+          "end": 70.72,
+          "probability": 0.99462890625
+        },
+        {
+          "text": "被",
+          "start": 70.72,
+          "end": 70.94,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "世界",
+          "start": 70.94,
+          "end": 71.4,
+          "probability": 0.935546875
+        },
+        {
+          "text": "温",
+          "start": 71.4,
+          "end": 71.76,
+          "probability": 0.998779296875
+        },
+        {
+          "text": "柔",
+          "start": 71.76,
+          "end": 72.0,
+          "probability": 0.999755859375
+        },
+        {
+          "text": "以",
+          "start": 72.0,
+          "end": 72.22,
+          "probability": 0.630859375
+        },
+        {
+          "text": "待",
+          "start": 72.22,
+          "end": 72.38,
+          "probability": 0.90283203125
+        }
+      ]
+    },
+    {
+      "start": 72.38,
+      "end": 74.14,
+      "text": "却选择把仅有的温柔",
+      "words": [
+        {
+          "text": "却",
+          "start": 72.38,
+          "end": 72.64,
+          "probability": 0.993408203125
+        },
+        {
+          "text": "选",
+          "start": 72.64,
+          "end": 72.8,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "择",
+          "start": 72.8,
+          "end": 73.0,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "把",
+          "start": 73.0,
+          "end": 73.16,
+          "probability": 0.97314453125
+        },
+        {
+          "text": "仅",
+          "start": 73.16,
+          "end": 73.36,
+          "probability": 0.93310546875
+        },
+        {
+          "text": "有",
+          "start": 73.36,
+          "end": 73.58,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "的",
+          "start": 73.58,
+          "end": 73.7,
+          "probability": 0.99560546875
+        },
+        {
+          "text": "温",
+          "start": 73.7,
+          "end": 73.9,
+          "probability": 0.999755859375
+        },
+        {
+          "text": "柔",
+          "start": 73.9,
+          "end": 74.14,
+          "probability": 1.0
+        }
+      ]
+    },
+    {
+      "start": 74.14,
+      "end": 76.76,
+      "text": "全部给了另一个更弱小的生命",
+      "words": [
+        {
+          "text": "全部",
+          "start": 74.14,
+          "end": 74.46,
+          "probability": 0.9873046875
+        },
+        {
+          "text": "给",
+          "start": 74.46,
+          "end": 74.78,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "了",
+          "start": 74.78,
+          "end": 74.9,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "另",
+          "start": 74.9,
+          "end": 75.08,
+          "probability": 0.97900390625
+        },
+        {
+          "text": "一个",
+          "start": 75.08,
+          "end": 75.42,
+          "probability": 0.9931640625
+        },
+        {
+          "text": "更",
+          "start": 75.42,
+          "end": 75.7,
+          "probability": 0.9921875
+        },
+        {
+          "text": "弱",
+          "start": 75.7,
+          "end": 75.98,
+          "probability": 0.999267578125
+        },
+        {
+          "text": "小",
+          "start": 75.98,
+          "end": 76.22,
+          "probability": 0.94970703125
+        },
+        {
+          "text": "的",
+          "start": 76.22,
+          "end": 76.38,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "生",
+          "start": 76.38,
+          "end": 76.58,
+          "probability": 0.9912109375
+        },
+        {
+          "text": "命",
+          "start": 76.58,
+          "end": 76.76,
+          "probability": 0.9990234375
+        }
+      ]
+    },
+    {
+      "start": 76.76,
+      "end": 77.48,
+      "text": "幸运的是",
+      "words": [
+        {
+          "text": "幸",
+          "start": 76.76,
+          "end": 77.06,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "运",
+          "start": 77.06,
+          "end": 77.2,
+          "probability": 0.991943359375
+        },
+        {
+          "text": "的是",
+          "start": 77.2,
+          "end": 77.48,
+          "probability": 0.99267578125
+        }
+      ]
+    },
+    {
+      "start": 77.48,
+      "end": 79.2,
+      "text": "后来回回被一个小姐姐",
+      "words": [
+        {
+          "text": "后",
+          "start": 77.48,
+          "end": 77.74,
+          "probability": 0.98095703125
+        },
+        {
+          "text": "来",
+          "start": 77.74,
+          "end": 77.88,
+          "probability": 0.998046875
+        },
+        {
+          "text": "回",
+          "start": 77.88,
+          "end": 78.04,
+          "probability": 0.99658203125
+        },
+        {
+          "text": "回",
+          "start": 78.04,
+          "end": 78.26,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "被",
+          "start": 78.26,
+          "end": 78.42,
+          "probability": 0.9921875
+        },
+        {
+          "text": "一个",
+          "start": 78.42,
+          "end": 78.58,
+          "probability": 0.99365234375
+        },
+        {
+          "text": "小",
+          "start": 78.58,
+          "end": 78.8,
+          "probability": 0.99658203125
+        },
+        {
+          "text": "姐",
+          "start": 78.8,
+          "end": 79.0,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "姐",
+          "start": 79.0,
+          "end": 79.2,
+          "probability": 0.9990234375
+        }
+      ]
+    },
+    {
+      "start": 79.2,
+      "end": 79.78,
+      "text": "领回了家",
+      "words": [
+        {
+          "text": "领",
+          "start": 79.2,
+          "end": 79.36,
+          "probability": 0.971923828125
+        },
+        {
+          "text": "回",
+          "start": 79.36,
+          "end": 79.5,
+          "probability": 0.99462890625
+        },
+        {
+          "text": "了",
+          "start": 79.5,
+          "end": 79.62,
+          "probability": 0.98974609375
+        },
+        {
+          "text": "家",
+          "start": 79.62,
+          "end": 79.78,
+          "probability": 0.9990234375
+        }
+      ]
+    },
+    {
+      "start": 79.78,
+      "end": 81.66,
+      "text": "她严重的皮肤病被治好",
+      "words": [
+        {
+          "text": "她",
+          "start": 79.78,
+          "end": 80.02,
+          "probability": 0.497802734375
+        },
+        {
+          "text": "严",
+          "start": 80.02,
+          "end": 80.24,
+          "probability": 0.996337890625
+        },
+        {
+          "text": "重",
+          "start": 80.24,
+          "end": 80.42,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "的",
+          "start": 80.42,
+          "end": 80.56,
+          "probability": 0.990234375
+        },
+        {
+          "text": "皮",
+          "start": 80.56,
+          "end": 80.74,
+          "probability": 0.955078125
+        },
+        {
+          "text": "肤",
+          "start": 80.74,
+          "end": 80.88,
+          "probability": 0.999267578125
+        },
+        {
+          "text": "病",
+          "start": 80.88,
+          "end": 81.04,
+          "probability": 0.8974609375
+        },
+        {
+          "text": "被",
+          "start": 81.04,
+          "end": 81.26,
+          "probability": 0.99072265625
+        },
+        {
+          "text": "治",
+          "start": 81.26,
+          "end": 81.4,
+          "probability": 0.98583984375
+        },
+        {
+          "text": "好",
+          "start": 81.4,
+          "end": 81.66,
+          "probability": 0.97216796875
+        }
+      ]
+    },
+    {
+      "start": 81.66,
+      "end": 82.6,
+      "text": "受血的身体",
+      "words": [
+        {
+          "text": "受",
+          "start": 81.66,
+          "end": 81.9,
+          "probability": 0.626953125
+        },
+        {
+          "text": "血",
+          "start": 81.9,
+          "end": 82.1,
+          "probability": 0.273681640625
+        },
+        {
+          "text": "的",
+          "start": 82.1,
+          "end": 82.18,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "身",
+          "start": 82.18,
+          "end": 82.36,
+          "probability": 0.994140625
+        },
+        {
+          "text": "体",
+          "start": 82.36,
+          "end": 82.6,
+          "probability": 0.99755859375
+        }
+      ]
+    },
+    {
+      "start": 82.6,
+      "end": 84.98,
+      "text": "也被爱未成了半挂卡车的模样",
+      "words": [
+        {
+          "text": "也",
+          "start": 82.6,
+          "end": 82.88,
+          "probability": 0.98486328125
+        },
+        {
+          "text": "被",
+          "start": 82.88,
+          "end": 83.04,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "爱",
+          "start": 83.04,
+          "end": 83.2,
+          "probability": 0.48828125
+        },
+        {
+          "text": "未",
+          "start": 83.2,
+          "end": 83.4,
+          "probability": 0.5244140625
+        },
+        {
+          "text": "成",
+          "start": 83.4,
+          "end": 83.58,
+          "probability": 0.98681640625
+        },
+        {
+          "text": "了",
+          "start": 83.58,
+          "end": 83.7,
+          "probability": 0.99462890625
+        },
+        {
+          "text": "半",
+          "start": 83.7,
+          "end": 83.86,
+          "probability": 0.92626953125
+        },
+        {
+          "text": "挂",
+          "start": 83.86,
+          "end": 84.04,
+          "probability": 0.982177734375
+        },
+        {
+          "text": "卡",
+          "start": 84.04,
+          "end": 84.32,
+          "probability": 0.459228515625
+        },
+        {
+          "text": "车",
+          "start": 84.32,
+          "end": 84.56,
+          "probability": 0.994140625
+        },
+        {
+          "text": "的",
+          "start": 84.56,
+          "end": 84.68,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "模",
+          "start": 84.68,
+          "end": 84.86,
+          "probability": 0.990234375
+        },
+        {
+          "text": "样",
+          "start": 84.86,
+          "end": 84.98,
+          "probability": 0.994140625
+        }
+      ]
+    },
+    {
+      "start": 84.98,
+      "end": 86.6,
+      "text": "她再也不用摇尾起连",
+      "words": [
+        {
+          "text": "她",
+          "start": 84.98,
+          "end": 85.16,
+          "probability": 0.34033203125
+        },
+        {
+          "text": "再",
+          "start": 85.16,
+          "end": 85.36,
+          "probability": 0.9677734375
+        },
+        {
+          "text": "也",
+          "start": 85.36,
+          "end": 85.56,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "不用",
+          "start": 85.56,
+          "end": 85.72,
+          "probability": 0.96484375
+        },
+        {
+          "text": "摇",
+          "start": 85.72,
+          "end": 85.96,
+          "probability": 0.901123046875
+        },
+        {
+          "text": "尾",
+          "start": 85.96,
+          "end": 86.16,
+          "probability": 0.7037353515625
+        },
+        {
+          "text": "起",
+          "start": 86.16,
+          "end": 86.36,
+          "probability": 0.8525390625
+        },
+        {
+          "text": "连",
+          "start": 86.36,
+          "end": 86.6,
+          "probability": 0.59161376953125
+        }
+      ]
+    },
+    {
+      "start": 86.6,
+      "end": 88.88,
+      "text": "不用在夜里守着冰冷的角落",
+      "words": [
+        {
+          "text": "不用",
+          "start": 86.6,
+          "end": 86.82,
+          "probability": 0.81884765625
+        },
+        {
+          "text": "在",
+          "start": 86.82,
+          "end": 87.08,
+          "probability": 0.98388671875
+        },
+        {
+          "text": "夜",
+          "start": 87.08,
+          "end": 87.3,
+          "probability": 0.9541015625
+        },
+        {
+          "text": "里",
+          "start": 87.3,
+          "end": 87.52,
+          "probability": 0.79345703125
+        },
+        {
+          "text": "守",
+          "start": 87.52,
+          "end": 87.76,
+          "probability": 0.935546875
+        },
+        {
+          "text": "着",
+          "start": 87.76,
+          "end": 87.94,
+          "probability": 0.96044921875
+        },
+        {
+          "text": "冰",
+          "start": 87.94,
+          "end": 88.12,
+          "probability": 0.990966796875
+        },
+        {
+          "text": "冷",
+          "start": 88.12,
+          "end": 88.32,
+          "probability": 0.99560546875
+        },
+        {
+          "text": "的",
+          "start": 88.32,
+          "end": 88.46,
+          "probability": 0.99462890625
+        },
+        {
+          "text": "角",
+          "start": 88.46,
+          "end": 88.64,
+          "probability": 0.97705078125
+        },
+        {
+          "text": "落",
+          "start": 88.64,
+          "end": 88.88,
+          "probability": 1.0
+        }
+      ]
+    },
+    {
+      "start": 88.88,
+      "end": 90.0,
+      "text": "她终于有了家",
+      "words": [
+        {
+          "text": "她",
+          "start": 88.88,
+          "end": 89.06,
+          "probability": 0.88037109375
+        },
+        {
+          "text": "终",
+          "start": 89.06,
+          "end": 89.34,
+          "probability": 0.990234375
+        },
+        {
+          "text": "于",
+          "start": 89.34,
+          "end": 89.54,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "有",
+          "start": 89.54,
+          "end": 89.72,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "了",
+          "start": 89.72,
+          "end": 89.84,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "家",
+          "start": 89.84,
+          "end": 90.0,
+          "probability": 0.97900390625
+        }
+      ]
+    },
+    {
+      "start": 90.0,
+      "end": 90.86,
+      "text": "而这一切",
+      "words": [
+        {
+          "text": "而",
+          "start": 90.0,
+          "end": 90.24,
+          "probability": 0.951171875
+        },
+        {
+          "text": "这",
+          "start": 90.24,
+          "end": 90.4,
+          "probability": 0.98779296875
+        },
+        {
+          "text": "一",
+          "start": 90.4,
+          "end": 90.66,
+          "probability": 0.99658203125
+        },
+        {
+          "text": "切",
+          "start": 90.66,
+          "end": 90.86,
+          "probability": 0.99951171875
+        }
+      ]
+    },
+    {
+      "start": 90.86,
+      "end": 92.12,
+      "text": "不是命运的施舍",
+      "words": [
+        {
+          "text": "不是",
+          "start": 90.86,
+          "end": 91.12,
+          "probability": 0.95458984375
+        },
+        {
+          "text": "命",
+          "start": 91.12,
+          "end": 91.4,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "运",
+          "start": 91.4,
+          "end": 91.56,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "的",
+          "start": 91.56,
+          "end": 91.68,
+          "probability": 0.99169921875
+        },
+        {
+          "text": "施",
+          "start": 91.68,
+          "end": 91.88,
+          "probability": 0.68701171875
+        },
+        {
+          "text": "舍",
+          "start": 91.88,
+          "end": 92.12,
+          "probability": 0.945556640625
+        }
+      ]
+    },
+    {
+      "start": 92.12,
+      "end": 93.58,
+      "text": "是她用自己的善良",
+      "words": [
+        {
+          "text": "是",
+          "start": 92.12,
+          "end": 92.32,
+          "probability": 0.98046875
+        },
+        {
+          "text": "她",
+          "start": 92.32,
+          "end": 92.5,
+          "probability": 0.9560546875
+        },
+        {
+          "text": "用",
+          "start": 92.5,
+          "end": 92.64,
+          "probability": 0.9931640625
+        },
+        {
+          "text": "自己",
+          "start": 92.64,
+          "end": 92.92,
+          "probability": 0.9912109375
+        },
+        {
+          "text": "的",
+          "start": 92.92,
+          "end": 93.12,
+          "probability": 0.994140625
+        },
+        {
+          "text": "善",
+          "start": 93.12,
+          "end": 93.36,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "良",
+          "start": 93.36,
+          "end": 93.58,
+          "probability": 0.998046875
+        }
+      ]
+    },
+    {
+      "start": 93.58,
+      "end": 95.54,
+      "text": "亲手挣来的余生炫烂",
+      "words": [
+        {
+          "text": "亲",
+          "start": 93.58,
+          "end": 93.88,
+          "probability": 0.578125
+        },
+        {
+          "text": "手",
+          "start": 93.88,
+          "end": 94.14,
+          "probability": 0.96142578125
+        },
+        {
+          "text": "挣",
+          "start": 94.14,
+          "end": 94.36,
+          "probability": 0.7431640625
+        },
+        {
+          "text": "来",
+          "start": 94.36,
+          "end": 94.54,
+          "probability": 0.99072265625
+        },
+        {
+          "text": "的",
+          "start": 94.54,
+          "end": 94.66,
+          "probability": 0.998046875
+        },
+        {
+          "text": "余",
+          "start": 94.66,
+          "end": 94.86,
+          "probability": 0.788818359375
+        },
+        {
+          "text": "生",
+          "start": 94.86,
+          "end": 95.04,
+          "probability": 0.77392578125
+        },
+        {
+          "text": "炫",
+          "start": 95.04,
+          "end": 95.28,
+          "probability": 0.55877685546875
+        },
+        {
+          "text": "烂",
+          "start": 95.28,
+          "end": 95.54,
+          "probability": 0.964599609375
+        }
+      ]
+    },
+    {
+      "start": 95.54,
+      "end": 96.06,
+      "text": "回回",
+      "words": [
+        {
+          "text": "回",
+          "start": 95.54,
+          "end": 95.74,
+          "probability": 0.1529541015625
+        },
+        {
+          "text": "回",
+          "start": 95.74,
+          "end": 96.06,
+          "probability": 0.263671875
+        }
+      ]
+    },
+    {
+      "start": 96.06,
+      "end": 97.8,
+      "text": "愿你往后每一个雨天",
+      "words": [
+        {
+          "text": "愿",
+          "start": 96.06,
+          "end": 96.36,
+          "probability": 0.96728515625
+        },
+        {
+          "text": "你",
+          "start": 96.36,
+          "end": 96.48,
+          "probability": 0.724609375
+        },
+        {
+          "text": "往",
+          "start": 96.48,
+          "end": 96.66,
+          "probability": 0.998046875
+        },
+        {
+          "text": "后",
+          "start": 96.66,
+          "end": 96.88,
+          "probability": 0.998046875
+        },
+        {
+          "text": "每",
+          "start": 96.88,
+          "end": 97.12,
+          "probability": 0.98681640625
+        },
+        {
+          "text": "一个",
+          "start": 97.12,
+          "end": 97.38,
+          "probability": 0.98095703125
+        },
+        {
+          "text": "雨",
+          "start": 97.38,
+          "end": 97.58,
+          "probability": 0.88330078125
+        },
+        {
+          "text": "天",
+          "start": 97.58,
+          "end": 97.8,
+          "probability": 0.9931640625
+        }
+      ]
+    },
+    {
+      "start": 97.8,
+      "end": 100.8,
+      "text": "都只有温暖的被窝和爱你的人",
+      "words": [
+        {
+          "text": "都",
+          "start": 97.8,
+          "end": 98.12,
+          "probability": 0.97265625
+        },
+        {
+          "text": "只有",
+          "start": 98.12,
+          "end": 98.44,
+          "probability": 0.9931640625
+        },
+        {
+          "text": "温",
+          "start": 98.44,
+          "end": 98.7,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "暖",
+          "start": 98.7,
+          "end": 98.94,
+          "probability": 0.998779296875
+        },
+        {
+          "text": "的",
+          "start": 98.94,
+          "end": 99.04,
+          "probability": 0.99169921875
+        },
+        {
+          "text": "被",
+          "start": 99.04,
+          "end": 99.24,
+          "probability": 0.794921875
+        },
+        {
+          "text": "窝",
+          "start": 99.24,
+          "end": 99.56,
+          "probability": 0.75146484375
+        },
+        {
+          "text": "和",
+          "start": 99.56,
+          "end": 99.9,
+          "probability": 0.9921875
+        },
+        {
+          "text": "爱",
+          "start": 99.9,
+          "end": 100.2,
+          "probability": 0.99560546875
+        },
+        {
+          "text": "你的",
+          "start": 100.2,
+          "end": 100.54,
+          "probability": 0.794921875
+        },
+        {
+          "text": "人",
+          "start": 100.54,
+          "end": 100.8,
+          "probability": 0.99755859375
+        }
+      ]
+    }
+  ],
+  "cues": [
+    {
+      "start": 0.0,
+      "end": 1.94,
+      "text": "还记得这只狗狗侠 回回吗",
+      "words": [
+        {
+          "text": "还",
+          "start": 0.0,
+          "end": 0.14,
+          "probability": 0.7158203125
+        },
+        {
+          "text": "记",
+          "start": 0.14,
+          "end": 0.28,
+          "probability": 0.994140625
+        },
+        {
+          "text": "得",
+          "start": 0.28,
+          "end": 0.4,
+          "probability": 0.9951171875
+        },
+        {
+          "text": "这",
+          "start": 0.4,
+          "end": 0.54,
+          "probability": 0.9658203125
+        },
+        {
+          "text": "只",
+          "start": 0.54,
+          "end": 0.66,
+          "probability": 0.96240234375
+        },
+        {
+          "text": "狗",
+          "start": 0.66,
+          "end": 0.82,
+          "probability": 0.990966796875
+        },
+        {
+          "text": "狗",
+          "start": 0.82,
+          "end": 0.96,
+          "probability": 0.9482421875
+        },
+        {
+          "text": "侠",
+          "start": 0.96,
+          "end": 1.12,
+          "probability": 0.90576171875
+        },
+        {
+          "text": "回",
+          "start": 1.38,
+          "end": 1.52,
+          "probability": 0.70166015625
+        },
+        {
+          "text": "回",
+          "start": 1.52,
+          "end": 1.76,
+          "probability": 0.84619140625
+        },
+        {
+          "text": "吗",
+          "start": 1.76,
+          "end": 1.94,
+          "probability": 0.6279296875
+        }
+      ]
+    },
+    {
+      "start": 1.94,
+      "end": 3.38,
+      "text": "它是福州大学校园里",
+      "words": [
+        {
+          "text": "它",
+          "start": 1.94,
+          "end": 2.12,
+          "probability": 0.35205078125
+        },
+        {
+          "text": "是",
+          "start": 2.12,
+          "end": 2.26,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "福",
+          "start": 2.26,
+          "end": 2.42,
+          "probability": 0.92919921875
+        },
+        {
+          "text": "州",
+          "start": 2.42,
+          "end": 2.6,
+          "probability": 0.96923828125
+        },
+        {
+          "text": "大",
+          "start": 2.6,
+          "end": 2.74,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "学",
+          "start": 2.74,
+          "end": 2.88,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "校",
+          "start": 2.88,
+          "end": 3.04,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "园",
+          "start": 3.04,
+          "end": 3.22,
+          "probability": 0.9951171875
+        },
+        {
+          "text": "里",
+          "start": 3.22,
+          "end": 3.38,
+          "probability": 0.99853515625
+        }
+      ]
+    },
+    {
+      "start": 3.38,
+      "end": 5.6,
+      "text": "一只无人照料的流浪狗",
+      "words": [
+        {
+          "text": "一",
+          "start": 3.38,
+          "end": 3.66,
+          "probability": 0.7685546875
+        },
+        {
+          "text": "只",
+          "start": 3.66,
+          "end": 3.82,
+          "probability": 0.99169921875
+        },
+        {
+          "text": "无",
+          "start": 3.82,
+          "end": 4.1,
+          "probability": 0.99462890625
+        },
+        {
+          "text": "人",
+          "start": 4.1,
+          "end": 4.3,
+          "probability": 1.0
+        },
+        {
+          "text": "照",
+          "start": 4.3,
+          "end": 4.56,
+          "probability": 0.9775390625
+        },
+        {
+          "text": "料",
+          "start": 4.56,
+          "end": 4.82,
+          "probability": 0.98828125
+        },
+        {
+          "text": "的",
+          "start": 4.82,
+          "end": 5.0,
+          "probability": 0.994140625
+        },
+        {
+          "text": "流",
+          "start": 5.0,
+          "end": 5.2,
+          "probability": 0.873046875
+        },
+        {
+          "text": "浪",
+          "start": 5.2,
+          "end": 5.38,
+          "probability": 0.995849609375
+        },
+        {
+          "text": "狗",
+          "start": 5.38,
+          "end": 5.6,
+          "probability": 0.9990234375
+        }
+      ]
+    },
+    {
+      "start": 5.6,
+      "end": 7.84,
+      "text": "平日里安静温顺 很少吵闹",
+      "words": [
+        {
+          "text": "平",
+          "start": 5.6,
+          "end": 5.84,
+          "probability": 0.31201171875
+        },
+        {
+          "text": "日",
+          "start": 5.84,
+          "end": 6.02,
+          "probability": 0.974609375
+        },
+        {
+          "text": "里",
+          "start": 6.02,
+          "end": 6.14,
+          "probability": 0.99072265625
+        },
+        {
+          "text": "安",
+          "start": 6.14,
+          "end": 6.32,
+          "probability": 0.99462890625
+        },
+        {
+          "text": "静",
+          "start": 6.32,
+          "end": 6.48,
+          "probability": 0.998291015625
+        },
+        {
+          "text": "温",
+          "start": 6.48,
+          "end": 6.68,
+          "probability": 0.94091796875
+        },
+        {
+          "text": "顺",
+          "start": 6.68,
+          "end": 6.86,
+          "probability": 0.95703125
+        },
+        {
+          "text": "很",
+          "start": 6.86,
+          "end": 7.14,
+          "probability": 0.66162109375
+        },
+        {
+          "text": "少",
+          "start": 7.14,
+          "end": 7.38,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "吵",
+          "start": 7.38,
+          "end": 7.58,
+          "probability": 0.985107421875
+        },
+        {
+          "text": "闹",
+          "start": 7.58,
+          "end": 7.84,
+          "probability": 0.9931640625
+        }
+      ]
+    },
+    {
+      "start": 7.84,
+      "end": 8.68,
+      "text": "可这天夜里",
+      "words": [
+        {
+          "text": "可",
+          "start": 7.84,
+          "end": 8.02,
+          "probability": 0.9658203125
+        },
+        {
+          "text": "这",
+          "start": 8.02,
+          "end": 8.16,
+          "probability": 0.99658203125
+        },
+        {
+          "text": "天",
+          "start": 8.16,
+          "end": 8.34,
+          "probability": 0.99365234375
+        },
+        {
+          "text": "夜",
+          "start": 8.34,
+          "end": 8.54,
+          "probability": 0.984375
+        },
+        {
+          "text": "里",
+          "start": 8.54,
+          "end": 8.68,
+          "probability": 0.97802734375
+        }
+      ]
+    },
+    {
+      "start": 8.68,
+      "end": 11.36,
+      "text": "它一反常态 不停地交集狂废",
+      "words": [
+        {
+          "text": "它",
+          "start": 8.68,
+          "end": 8.94,
+          "probability": 0.52978515625
+        },
+        {
+          "text": "一",
+          "start": 8.94,
+          "end": 9.12,
+          "probability": 0.89111328125
+        },
+        {
+          "text": "反",
+          "start": 9.12,
+          "end": 9.3,
+          "probability": 0.53515625
+        },
+        {
+          "text": "常",
+          "start": 9.3,
+          "end": 9.52,
+          "probability": 0.99462890625
+        },
+        {
+          "text": "态",
+          "start": 9.52,
+          "end": 9.72,
+          "probability": 0.995849609375
+        },
+        {
+          "text": "不",
+          "start": 9.72,
+          "end": 10.0,
+          "probability": 0.4619140625
+        },
+        {
+          "text": "停",
+          "start": 10.0,
+          "end": 10.22,
+          "probability": 0.998046875
+        },
+        {
+          "text": "地",
+          "start": 10.22,
+          "end": 10.42,
+          "probability": 0.433837890625
+        },
+        {
+          "text": "交",
+          "start": 10.42,
+          "end": 10.62,
+          "probability": 0.78173828125
+        },
+        {
+          "text": "集",
+          "start": 10.62,
+          "end": 10.86,
+          "probability": 0.9326171875
+        },
+        {
+          "text": "狂",
+          "start": 10.86,
+          "end": 11.1,
+          "probability": 0.98388671875
+        },
+        {
+          "text": "废",
+          "start": 11.1,
+          "end": 11.36,
+          "probability": 0.79931640625
+        }
+      ]
+    },
+    {
+      "start": 11.36,
+      "end": 12.86,
+      "text": "路过的同学心声疑惑",
+      "words": [
+        {
+          "text": "路",
+          "start": 11.36,
+          "end": 11.58,
+          "probability": 0.9765625
+        },
+        {
+          "text": "过",
+          "start": 11.58,
+          "end": 11.74,
+          "probability": 0.9931640625
+        },
+        {
+          "text": "的",
+          "start": 11.74,
+          "end": 11.84,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "同",
+          "start": 11.84,
+          "end": 11.96,
+          "probability": 0.998046875
+        },
+        {
+          "text": "学",
+          "start": 11.96,
+          "end": 12.14,
+          "probability": 0.99560546875
+        },
+        {
+          "text": "心",
+          "start": 12.14,
+          "end": 12.32,
+          "probability": 0.415771484375
+        },
+        {
+          "text": "声",
+          "start": 12.32,
+          "end": 12.48,
+          "probability": 0.72509765625
+        },
+        {
+          "text": "疑",
+          "start": 12.48,
+          "end": 12.66,
+          "probability": 0.90576171875
+        },
+        {
+          "text": "惑",
+          "start": 12.66,
+          "end": 12.86,
+          "probability": 0.995361328125
+        }
+      ]
+    },
+    {
+      "start": 12.86,
+      "end": 13.96,
+      "text": "走上前去查看",
+      "words": [
+        {
+          "text": "走",
+          "start": 12.86,
+          "end": 13.06,
+          "probability": 0.6015625
+        },
+        {
+          "text": "上",
+          "start": 13.06,
+          "end": 13.26,
+          "probability": 0.96484375
+        },
+        {
+          "text": "前",
+          "start": 13.26,
+          "end": 13.42,
+          "probability": 0.94775390625
+        },
+        {
+          "text": "去",
+          "start": 13.42,
+          "end": 13.56,
+          "probability": 0.9912109375
+        },
+        {
+          "text": "查",
+          "start": 13.56,
+          "end": 13.74,
+          "probability": 0.98876953125
+        },
+        {
+          "text": "看",
+          "start": 13.74,
+          "end": 13.96,
+          "probability": 0.9755859375
+        }
+      ]
+    },
+    {
+      "start": 13.96,
+      "end": 16.68,
+      "text": "只见它死死盯着一处石头缝隙",
+      "words": [
+        {
+          "text": "只",
+          "start": 13.96,
+          "end": 14.18,
+          "probability": 0.144287109375
+        },
+        {
+          "text": "见",
+          "start": 14.18,
+          "end": 14.32,
+          "probability": 0.97607421875
+        },
+        {
+          "text": "它",
+          "start": 14.32,
+          "end": 14.46,
+          "probability": 0.75732421875
+        },
+        {
+          "text": "死",
+          "start": 14.46,
+          "end": 14.76,
+          "probability": 0.94189453125
+        },
+        {
+          "text": "死",
+          "start": 14.76,
+          "end": 15.04,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "盯",
+          "start": 15.04,
+          "end": 15.24,
+          "probability": 0.99462890625
+        },
+        {
+          "text": "着",
+          "start": 15.24,
+          "end": 15.4,
+          "probability": 0.990234375
+        },
+        {
+          "text": "一",
+          "start": 15.4,
+          "end": 15.56,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "处",
+          "start": 15.56,
+          "end": 15.7,
+          "probability": 0.869873046875
+        },
+        {
+          "text": "石",
+          "start": 15.7,
+          "end": 15.98,
+          "probability": 0.990234375
+        },
+        {
+          "text": "头",
+          "start": 15.98,
+          "end": 16.2,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "缝",
+          "start": 16.2,
+          "end": 16.4,
+          "probability": 0.945068359375
+        },
+        {
+          "text": "隙",
+          "start": 16.4,
+          "end": 16.68,
+          "probability": 0.9931640625
+        }
+      ]
+    },
+    {
+      "start": 16.68,
+      "end": 18.42,
+      "text": "听命刨瓦脚下泥土",
+      "words": [
+        {
+          "text": "听",
+          "start": 16.68,
+          "end": 16.94,
+          "probability": 0.161376953125
+        },
+        {
+          "text": "命",
+          "start": 16.94,
+          "end": 17.2,
+          "probability": 0.9501953125
+        },
+        {
+          "text": "刨",
+          "start": 17.2,
+          "end": 17.44,
+          "probability": 0.836669921875
+        },
+        {
+          "text": "瓦",
+          "start": 17.44,
+          "end": 17.62,
+          "probability": 0.7676595052083334
+        },
+        {
+          "text": "脚",
+          "start": 17.62,
+          "end": 17.84,
+          "probability": 0.92919921875
+        },
+        {
+          "text": "下",
+          "start": 17.84,
+          "end": 18.06,
+          "probability": 0.99462890625
+        },
+        {
+          "text": "泥",
+          "start": 18.06,
+          "end": 18.24,
+          "probability": 0.91455078125
+        },
+        {
+          "text": "土",
+          "start": 18.24,
+          "end": 18.42,
+          "probability": 0.99853515625
+        }
+      ]
+    },
+    {
+      "start": 18.42,
+      "end": 20.52,
+      "text": "坚硬的石子磨破了它的爪子",
+      "words": [
+        {
+          "text": "坚",
+          "start": 18.42,
+          "end": 18.68,
+          "probability": 0.981201171875
+        },
+        {
+          "text": "硬",
+          "start": 18.68,
+          "end": 18.86,
+          "probability": 0.994873046875
+        },
+        {
+          "text": "的",
+          "start": 18.86,
+          "end": 18.98,
+          "probability": 0.9873046875
+        },
+        {
+          "text": "石",
+          "start": 18.98,
+          "end": 19.16,
+          "probability": 0.55712890625
+        },
+        {
+          "text": "子",
+          "start": 19.16,
+          "end": 19.38,
+          "probability": 0.9921875
+        },
+        {
+          "text": "磨",
+          "start": 19.38,
+          "end": 19.62,
+          "probability": 0.933837890625
+        },
+        {
+          "text": "破",
+          "start": 19.62,
+          "end": 19.84,
+          "probability": 0.97705078125
+        },
+        {
+          "text": "了",
+          "start": 19.84,
+          "end": 19.94,
+          "probability": 0.9931640625
+        },
+        {
+          "text": "它的",
+          "start": 19.94,
+          "end": 20.08,
+          "probability": 0.875
+        },
+        {
+          "text": "爪",
+          "start": 20.08,
+          "end": 20.32,
+          "probability": 0.986328125
+        },
+        {
+          "text": "子",
+          "start": 20.32,
+          "end": 20.52,
+          "probability": 1.0
+        }
+      ]
+    },
+    {
+      "start": 20.52,
+      "end": 22.18,
+      "text": "脸颊也被磨出了血",
+      "words": [
+        {
+          "text": "脸",
+          "start": 20.52,
+          "end": 20.82,
+          "probability": 0.859619140625
+        },
+        {
+          "text": "颊",
+          "start": 20.82,
+          "end": 21.06,
+          "probability": 0.846923828125
+        },
+        {
+          "text": "也",
+          "start": 21.06,
+          "end": 21.32,
+          "probability": 0.9951171875
+        },
+        {
+          "text": "被",
+          "start": 21.32,
+          "end": 21.46,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "磨",
+          "start": 21.46,
+          "end": 21.66,
+          "probability": 0.995849609375
+        },
+        {
+          "text": "出",
+          "start": 21.66,
+          "end": 21.86,
+          "probability": 0.9814453125
+        },
+        {
+          "text": "了",
+          "start": 21.86,
+          "end": 21.98,
+          "probability": 0.9853515625
+        },
+        {
+          "text": "血",
+          "start": 21.98,
+          "end": 22.18,
+          "probability": 0.98095703125
+        }
+      ]
+    },
+    {
+      "start": 22.18,
+      "end": 23.58,
+      "text": "可疼痛没能拦住它",
+      "words": [
+        {
+          "text": "可",
+          "start": 22.18,
+          "end": 22.4,
+          "probability": 0.95947265625
+        },
+        {
+          "text": "疼",
+          "start": 22.4,
+          "end": 22.62,
+          "probability": 0.9658203125
+        },
+        {
+          "text": "痛",
+          "start": 22.62,
+          "end": 22.82,
+          "probability": 0.99560546875
+        },
+        {
+          "text": "没",
+          "start": 22.82,
+          "end": 22.98,
+          "probability": 0.98291015625
+        },
+        {
+          "text": "能",
+          "start": 22.98,
+          "end": 23.12,
+          "probability": 0.99267578125
+        },
+        {
+          "text": "拦",
+          "start": 23.12,
+          "end": 23.26,
+          "probability": 0.983642578125
+        },
+        {
+          "text": "住",
+          "start": 23.26,
+          "end": 23.4,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "它",
+          "start": 23.4,
+          "end": 23.58,
+          "probability": 0.97607421875
+        }
+      ]
+    },
+    {
+      "start": 23.58,
+      "end": 25.68,
+      "text": "回回没有丝毫停下的念头",
+      "words": [
+        {
+          "text": "回",
+          "start": 23.58,
+          "end": 23.84,
+          "probability": 0.9677734375
+        },
+        {
+          "text": "回",
+          "start": 23.84,
+          "end": 24.04,
+          "probability": 0.998046875
+        },
+        {
+          "text": "没有",
+          "start": 24.04,
+          "end": 24.2,
+          "probability": 0.9833984375
+        },
+        {
+          "text": "丝",
+          "start": 24.2,
+          "end": 24.54,
+          "probability": 0.9052734375
+        },
+        {
+          "text": "毫",
+          "start": 24.54,
+          "end": 24.72,
+          "probability": 0.998291015625
+        },
+        {
+          "text": "停",
+          "start": 24.72,
+          "end": 24.98,
+          "probability": 0.97314453125
+        },
+        {
+          "text": "下",
+          "start": 24.98,
+          "end": 25.16,
+          "probability": 0.99658203125
+        },
+        {
+          "text": "的",
+          "start": 25.16,
+          "end": 25.28,
+          "probability": 0.95654296875
+        },
+        {
+          "text": "念",
+          "start": 25.28,
+          "end": 25.44,
+          "probability": 0.96728515625
+        },
+        {
+          "text": "头",
+          "start": 25.44,
+          "end": 25.68,
+          "probability": 0.9912109375
+        }
+      ]
+    },
+    {
+      "start": 25.68,
+      "end": 26.82,
+      "text": "一遍又一遍",
+      "words": [
+        {
+          "text": "一",
+          "start": 25.68,
+          "end": 25.94,
+          "probability": 0.98974609375
+        },
+        {
+          "text": "遍",
+          "start": 25.94,
+          "end": 26.14,
+          "probability": 0.946533203125
+        },
+        {
+          "text": "又",
+          "start": 26.14,
+          "end": 26.34,
+          "probability": 0.99169921875
+        },
+        {
+          "text": "一",
+          "start": 26.34,
+          "end": 26.52,
+          "probability": 0.9951171875
+        },
+        {
+          "text": "遍",
+          "start": 26.52,
+          "end": 26.82,
+          "probability": 0.99755859375
+        }
+      ]
+    },
+    {
+      "start": 26.82,
+      "end": 28.28,
+      "text": "奋力刨着泥土",
+      "words": [
+        {
+          "text": "奋",
+          "start": 26.82,
+          "end": 27.08,
+          "probability": 0.58941650390625
+        },
+        {
+          "text": "力",
+          "start": 27.08,
+          "end": 27.4,
+          "probability": 0.9873046875
+        },
+        {
+          "text": "刨",
+          "start": 27.4,
+          "end": 27.66,
+          "probability": 0.899169921875
+        },
+        {
+          "text": "着",
+          "start": 27.66,
+          "end": 27.86,
+          "probability": 0.9921875
+        },
+        {
+          "text": "泥",
+          "start": 27.86,
+          "end": 28.06,
+          "probability": 0.998779296875
+        },
+        {
+          "text": "土",
+          "start": 28.06,
+          "end": 28.28,
+          "probability": 0.9990234375
+        }
+      ]
+    },
+    {
+      "start": 28.28,
+      "end": 29.5,
+      "text": "狗狗情绪激动",
+      "words": [
+        {
+          "text": "狗",
+          "start": 28.28,
+          "end": 28.54,
+          "probability": 0.5260009765625
+        },
+        {
+          "text": "狗",
+          "start": 28.54,
+          "end": 28.72,
+          "probability": 0.988525390625
+        },
+        {
+          "text": "情",
+          "start": 28.72,
+          "end": 28.94,
+          "probability": 0.9853515625
+        },
+        {
+          "text": "绪",
+          "start": 28.94,
+          "end": 29.12,
+          "probability": 0.59832763671875
+        },
+        {
+          "text": "激",
+          "start": 29.12,
+          "end": 29.34,
+          "probability": 0.976806640625
+        },
+        {
+          "text": "动",
+          "start": 29.34,
+          "end": 29.5,
+          "probability": 0.9970703125
+        }
+      ]
+    },
+    {
+      "start": 29.5,
+      "end": 30.84,
+      "text": "谁都安抚不住",
+      "words": [
+        {
+          "text": "谁",
+          "start": 29.5,
+          "end": 29.84,
+          "probability": 0.4052734375
+        },
+        {
+          "text": "都",
+          "start": 29.84,
+          "end": 30.1,
+          "probability": 0.99609375
+        },
+        {
+          "text": "安",
+          "start": 30.1,
+          "end": 30.32,
+          "probability": 0.982421875
+        },
+        {
+          "text": "抚",
+          "start": 30.32,
+          "end": 30.5,
+          "probability": 0.9208984375
+        },
+        {
+          "text": "不",
+          "start": 30.5,
+          "end": 30.68,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "住",
+          "start": 30.68,
+          "end": 30.84,
+          "probability": 0.99853515625
+        }
+      ]
+    },
+    {
+      "start": 30.84,
+      "end": 32.56,
+      "text": "同学们看出事态不对劲",
+      "words": [
+        {
+          "text": "同",
+          "start": 30.84,
+          "end": 31.08,
+          "probability": 0.81982421875
+        },
+        {
+          "text": "学",
+          "start": 31.08,
+          "end": 31.22,
+          "probability": 0.990234375
+        },
+        {
+          "text": "们",
+          "start": 31.22,
+          "end": 31.34,
+          "probability": 0.99462890625
+        },
+        {
+          "text": "看",
+          "start": 31.34,
+          "end": 31.48,
+          "probability": 0.98583984375
+        },
+        {
+          "text": "出",
+          "start": 31.48,
+          "end": 31.7,
+          "probability": 0.97802734375
+        },
+        {
+          "text": "事",
+          "start": 31.7,
+          "end": 31.9,
+          "probability": 0.62939453125
+        },
+        {
+          "text": "态",
+          "start": 31.9,
+          "end": 32.04,
+          "probability": 0.99462890625
+        },
+        {
+          "text": "不对",
+          "start": 32.04,
+          "end": 32.26,
+          "probability": 0.6806640625
+        },
+        {
+          "text": "劲",
+          "start": 32.26,
+          "end": 32.56,
+          "probability": 0.99609375
+        }
+      ]
+    },
+    {
+      "start": 32.56,
+      "end": 33.58,
+      "text": "连猫喊来伙伴",
+      "words": [
+        {
+          "text": "连",
+          "start": 32.56,
+          "end": 32.8,
+          "probability": 0.9638671875
+        },
+        {
+          "text": "猫",
+          "start": 32.8,
+          "end": 32.96,
+          "probability": 0.792236328125
+        },
+        {
+          "text": "喊",
+          "start": 32.96,
+          "end": 33.14,
+          "probability": 0.99560546875
+        },
+        {
+          "text": "来",
+          "start": 33.14,
+          "end": 33.24,
+          "probability": 0.9833984375
+        },
+        {
+          "text": "伙",
+          "start": 33.24,
+          "end": 33.42,
+          "probability": 0.98583984375
+        },
+        {
+          "text": "伴",
+          "start": 33.42,
+          "end": 33.58,
+          "probability": 0.978759765625
+        }
+      ]
+    },
+    {
+      "start": 33.58,
+      "end": 34.5,
+      "text": "一同挖土",
+      "words": [
+        {
+          "text": "一",
+          "start": 33.58,
+          "end": 33.9,
+          "probability": 0.8388671875
+        },
+        {
+          "text": "同",
+          "start": 33.9,
+          "end": 34.12,
+          "probability": 0.3369140625
+        },
+        {
+          "text": "挖",
+          "start": 34.12,
+          "end": 34.32,
+          "probability": 0.990966796875
+        },
+        {
+          "text": "土",
+          "start": 34.32,
+          "end": 34.5,
+          "probability": 0.92919921875
+        }
+      ]
+    },
+    {
+      "start": 34.5,
+      "end": 36.34,
+      "text": "伴随着泥土一点点抛开",
+      "words": [
+        {
+          "text": "伴",
+          "start": 34.5,
+          "end": 34.76,
+          "probability": 0.9931640625
+        },
+        {
+          "text": "随",
+          "start": 34.76,
+          "end": 34.94,
+          "probability": 0.98828125
+        },
+        {
+          "text": "着",
+          "start": 34.94,
+          "end": 35.08,
+          "probability": 0.9892578125
+        },
+        {
+          "text": "泥",
+          "start": 35.08,
+          "end": 35.2,
+          "probability": 0.984375
+        },
+        {
+          "text": "土",
+          "start": 35.2,
+          "end": 35.38,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "一点",
+          "start": 35.38,
+          "end": 35.66,
+          "probability": 0.951171875
+        },
+        {
+          "text": "点",
+          "start": 35.66,
+          "end": 35.9,
+          "probability": 0.9921875
+        },
+        {
+          "text": "抛",
+          "start": 35.9,
+          "end": 36.1,
+          "probability": 0.80078125
+        },
+        {
+          "text": "开",
+          "start": 36.1,
+          "end": 36.34,
+          "probability": 0.99951171875
+        }
+      ]
+    },
+    {
+      "start": 36.34,
+      "end": 38.3,
+      "text": "一道微弱细碎的喵巫声",
+      "words": [
+        {
+          "text": "一",
+          "start": 36.34,
+          "end": 36.56,
+          "probability": 0.9736328125
+        },
+        {
+          "text": "道",
+          "start": 36.56,
+          "end": 36.7,
+          "probability": 0.9716796875
+        },
+        {
+          "text": "微",
+          "start": 36.7,
+          "end": 36.92,
+          "probability": 0.95751953125
+        },
+        {
+          "text": "弱",
+          "start": 36.92,
+          "end": 37.1,
+          "probability": 0.994384765625
+        },
+        {
+          "text": "细",
+          "start": 37.1,
+          "end": 37.36,
+          "probability": 0.992431640625
+        },
+        {
+          "text": "碎",
+          "start": 37.36,
+          "end": 37.54,
+          "probability": 0.888916015625
+        },
+        {
+          "text": "的",
+          "start": 37.54,
+          "end": 37.68,
+          "probability": 0.994140625
+        },
+        {
+          "text": "喵",
+          "start": 37.68,
+          "end": 37.86,
+          "probability": 0.764404296875
+        },
+        {
+          "text": "巫",
+          "start": 37.86,
+          "end": 38.1,
+          "probability": 0.7122802734375
+        },
+        {
+          "text": "声",
+          "start": 38.1,
+          "end": 38.3,
+          "probability": 0.8857421875
+        }
+      ]
+    },
+    {
+      "start": 38.3,
+      "end": 39.7,
+      "text": "从地底传了出来",
+      "words": [
+        {
+          "text": "从",
+          "start": 38.3,
+          "end": 38.58,
+          "probability": 0.97802734375
+        },
+        {
+          "text": "地",
+          "start": 38.58,
+          "end": 38.8,
+          "probability": 0.60693359375
+        },
+        {
+          "text": "底",
+          "start": 38.8,
+          "end": 39.0,
+          "probability": 0.89306640625
+        },
+        {
+          "text": "传",
+          "start": 39.0,
+          "end": 39.28,
+          "probability": 0.965576171875
+        },
+        {
+          "text": "了",
+          "start": 39.28,
+          "end": 39.44,
+          "probability": 0.9501953125
+        },
+        {
+          "text": "出来",
+          "start": 39.44,
+          "end": 39.7,
+          "probability": 0.99609375
+        }
+      ]
+    },
+    {
+      "start": 39.7,
+      "end": 41.42,
+      "text": "众人瞬间心头一阵",
+      "words": [
+        {
+          "text": "众",
+          "start": 39.7,
+          "end": 39.94,
+          "probability": 0.861328125
+        },
+        {
+          "text": "人",
+          "start": 39.94,
+          "end": 40.12,
+          "probability": 1.0
+        },
+        {
+          "text": "瞬",
+          "start": 40.12,
+          "end": 40.38,
+          "probability": 0.996826171875
+        },
+        {
+          "text": "间",
+          "start": 40.38,
+          "end": 40.66,
+          "probability": 0.998046875
+        },
+        {
+          "text": "心",
+          "start": 40.66,
+          "end": 40.9,
+          "probability": 0.9619140625
+        },
+        {
+          "text": "头",
+          "start": 40.9,
+          "end": 41.08,
+          "probability": 0.970703125
+        },
+        {
+          "text": "一",
+          "start": 41.08,
+          "end": 41.24,
+          "probability": 0.9814453125
+        },
+        {
+          "text": "阵",
+          "start": 41.24,
+          "end": 41.42,
+          "probability": 0.6669921875
+        }
+      ]
+    },
+    {
+      "start": 41.42,
+      "end": 42.18,
+      "text": "土层之下",
+      "words": [
+        {
+          "text": "土",
+          "start": 41.42,
+          "end": 41.66,
+          "probability": 0.477294921875
+        },
+        {
+          "text": "层",
+          "start": 41.66,
+          "end": 41.84,
+          "probability": 0.98193359375
+        },
+        {
+          "text": "之",
+          "start": 41.84,
+          "end": 42.04,
+          "probability": 0.99169921875
+        },
+        {
+          "text": "下",
+          "start": 42.04,
+          "end": 42.18,
+          "probability": 0.9990234375
+        }
+      ]
+    },
+    {
+      "start": 42.18,
+      "end": 44.2,
+      "text": "竟然埋着一只幼小的奶猫",
+      "words": [
+        {
+          "text": "竟",
+          "start": 42.18,
+          "end": 42.42,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "然",
+          "start": 42.42,
+          "end": 42.56,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "埋",
+          "start": 42.56,
+          "end": 42.7,
+          "probability": 0.995361328125
+        },
+        {
+          "text": "着",
+          "start": 42.7,
+          "end": 42.86,
+          "probability": 0.92724609375
+        },
+        {
+          "text": "一",
+          "start": 42.86,
+          "end": 42.98,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "只",
+          "start": 42.98,
+          "end": 43.1,
+          "probability": 0.986328125
+        },
+        {
+          "text": "幼",
+          "start": 43.1,
+          "end": 43.32,
+          "probability": 0.888427734375
+        },
+        {
+          "text": "小",
+          "start": 43.32,
+          "end": 43.54,
+          "probability": 0.9765625
+        },
+        {
+          "text": "的",
+          "start": 43.54,
+          "end": 43.7,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "奶",
+          "start": 43.7,
+          "end": 43.9,
+          "probability": 0.93310546875
+        },
+        {
+          "text": "猫",
+          "start": 43.9,
+          "end": 44.2,
+          "probability": 0.987548828125
+        }
+      ]
+    },
+    {
+      "start": 44.2,
+      "end": 45.08,
+      "text": "连日降雨",
+      "words": [
+        {
+          "text": "连",
+          "start": 44.2,
+          "end": 44.44,
+          "probability": 0.9619140625
+        },
+        {
+          "text": "日",
+          "start": 44.44,
+          "end": 44.64,
+          "probability": 0.94970703125
+        },
+        {
+          "text": "降",
+          "start": 44.64,
+          "end": 44.82,
+          "probability": 0.9755859375
+        },
+        {
+          "text": "雨",
+          "start": 44.82,
+          "end": 45.08,
+          "probability": 0.82958984375
+        }
+      ]
+    },
+    {
+      "start": 45.08,
+      "end": 46.42,
+      "text": "泥土吸水松动",
+      "words": [
+        {
+          "text": "泥",
+          "start": 45.08,
+          "end": 45.38,
+          "probability": 0.98779296875
+        },
+        {
+          "text": "土",
+          "start": 45.38,
+          "end": 45.58,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "吸",
+          "start": 45.58,
+          "end": 45.88,
+          "probability": 0.931640625
+        },
+        {
+          "text": "水",
+          "start": 45.88,
+          "end": 46.08,
+          "probability": 0.99609375
+        },
+        {
+          "text": "松",
+          "start": 46.08,
+          "end": 46.26,
+          "probability": 0.88037109375
+        },
+        {
+          "text": "动",
+          "start": 46.26,
+          "end": 46.42,
+          "probability": 0.82568359375
+        }
+      ]
+    },
+    {
+      "start": 46.42,
+      "end": 47.72,
+      "text": "小猫藏身的小窝",
+      "words": [
+        {
+          "text": "小",
+          "start": 46.42,
+          "end": 46.72,
+          "probability": 0.98486328125
+        },
+        {
+          "text": "猫",
+          "start": 46.72,
+          "end": 46.88,
+          "probability": 0.998779296875
+        },
+        {
+          "text": "藏",
+          "start": 46.88,
+          "end": 47.1,
+          "probability": 0.9912109375
+        },
+        {
+          "text": "身",
+          "start": 47.1,
+          "end": 47.24,
+          "probability": 0.9609375
+        },
+        {
+          "text": "的",
+          "start": 47.24,
+          "end": 47.34,
+          "probability": 0.99658203125
+        },
+        {
+          "text": "小",
+          "start": 47.34,
+          "end": 47.5,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "窝",
+          "start": 47.5,
+          "end": 47.72,
+          "probability": 0.94970703125
+        }
+      ]
+    },
+    {
+      "start": 47.72,
+      "end": 48.58,
+      "text": "不幸他方",
+      "words": [
+        {
+          "text": "不",
+          "start": 47.72,
+          "end": 47.92,
+          "probability": 0.95849609375
+        },
+        {
+          "text": "幸",
+          "start": 47.92,
+          "end": 48.14,
+          "probability": 0.9326171875
+        },
+        {
+          "text": "他",
+          "start": 48.14,
+          "end": 48.38,
+          "probability": 0.365234375
+        },
+        {
+          "text": "方",
+          "start": 48.38,
+          "end": 48.58,
+          "probability": 0.97705078125
+        }
+      ]
+    },
+    {
+      "start": 48.58,
+      "end": 49.58,
+      "text": "可怜的小家伙",
+      "words": [
+        {
+          "text": "可",
+          "start": 48.58,
+          "end": 48.82,
+          "probability": 0.98828125
+        },
+        {
+          "text": "怜",
+          "start": 48.82,
+          "end": 48.94,
+          "probability": 0.997314453125
+        },
+        {
+          "text": "的",
+          "start": 48.94,
+          "end": 49.08,
+          "probability": 0.99609375
+        },
+        {
+          "text": "小",
+          "start": 49.08,
+          "end": 49.22,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "家",
+          "start": 49.22,
+          "end": 49.42,
+          "probability": 0.970703125
+        },
+        {
+          "text": "伙",
+          "start": 49.42,
+          "end": 49.58,
+          "probability": 0.998046875
+        }
+      ]
+    },
+    {
+      "start": 49.58,
+      "end": 51.1,
+      "text": "被困在了泥土之下",
+      "words": [
+        {
+          "text": "被",
+          "start": 49.58,
+          "end": 49.8,
+          "probability": 0.99658203125
+        },
+        {
+          "text": "困",
+          "start": 49.8,
+          "end": 50.02,
+          "probability": 0.998779296875
+        },
+        {
+          "text": "在",
+          "start": 50.02,
+          "end": 50.24,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "了",
+          "start": 50.24,
+          "end": 50.36,
+          "probability": 0.98095703125
+        },
+        {
+          "text": "泥",
+          "start": 50.36,
+          "end": 50.52,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "土",
+          "start": 50.52,
+          "end": 50.72,
+          "probability": 1.0
+        },
+        {
+          "text": "之",
+          "start": 50.72,
+          "end": 50.92,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "下",
+          "start": 50.92,
+          "end": 51.1,
+          "probability": 0.9990234375
+        }
+      ]
+    },
+    {
+      "start": 51.1,
+      "end": 52.8,
+      "text": "原来回回不停跑土",
+      "words": [
+        {
+          "text": "原",
+          "start": 51.1,
+          "end": 51.32,
+          "probability": 0.99072265625
+        },
+        {
+          "text": "来",
+          "start": 51.32,
+          "end": 51.46,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "回",
+          "start": 51.46,
+          "end": 51.62,
+          "probability": 0.921875
+        },
+        {
+          "text": "回",
+          "start": 51.62,
+          "end": 51.86,
+          "probability": 0.9716796875
+        },
+        {
+          "text": "不",
+          "start": 51.86,
+          "end": 52.04,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "停",
+          "start": 52.04,
+          "end": 52.22,
+          "probability": 0.99658203125
+        },
+        {
+          "text": "跑",
+          "start": 52.22,
+          "end": 52.5,
+          "probability": 0.6416015625
+        },
+        {
+          "text": "土",
+          "start": 52.5,
+          "end": 52.8,
+          "probability": 0.998046875
+        }
+      ]
+    },
+    {
+      "start": 52.8,
+      "end": 55.3,
+      "text": "是想要救出深埋土中的小猫",
+      "words": [
+        {
+          "text": "是",
+          "start": 52.8,
+          "end": 53.06,
+          "probability": 0.984375
+        },
+        {
+          "text": "想",
+          "start": 53.06,
+          "end": 53.2,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "要",
+          "start": 53.2,
+          "end": 53.34,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "救",
+          "start": 53.34,
+          "end": 53.54,
+          "probability": 0.990234375
+        },
+        {
+          "text": "出",
+          "start": 53.54,
+          "end": 53.78,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "深",
+          "start": 53.78,
+          "end": 54.04,
+          "probability": 0.80419921875
+        },
+        {
+          "text": "埋",
+          "start": 54.04,
+          "end": 54.28,
+          "probability": 0.96826171875
+        },
+        {
+          "text": "土",
+          "start": 54.28,
+          "end": 54.5,
+          "probability": 0.9873046875
+        },
+        {
+          "text": "中",
+          "start": 54.5,
+          "end": 54.7,
+          "probability": 0.96923828125
+        },
+        {
+          "text": "的",
+          "start": 54.7,
+          "end": 54.82,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "小",
+          "start": 54.82,
+          "end": 55.04,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "猫",
+          "start": 55.04,
+          "end": 55.3,
+          "probability": 0.999267578125
+        }
+      ]
+    },
+    {
+      "start": 55.3,
+      "end": 57.6,
+      "text": "在回回和大家的齐心协力下",
+      "words": [
+        {
+          "text": "在",
+          "start": 55.3,
+          "end": 55.54,
+          "probability": 0.7607421875
+        },
+        {
+          "text": "回",
+          "start": 55.54,
+          "end": 55.74,
+          "probability": 0.876953125
+        },
+        {
+          "text": "回",
+          "start": 55.74,
+          "end": 55.98,
+          "probability": 0.9619140625
+        },
+        {
+          "text": "和",
+          "start": 55.98,
+          "end": 56.12,
+          "probability": 0.98046875
+        },
+        {
+          "text": "大家",
+          "start": 56.12,
+          "end": 56.38,
+          "probability": 0.984375
+        },
+        {
+          "text": "的",
+          "start": 56.38,
+          "end": 56.56,
+          "probability": 0.99365234375
+        },
+        {
+          "text": "齐",
+          "start": 56.56,
+          "end": 56.8,
+          "probability": 0.63525390625
+        },
+        {
+          "text": "心",
+          "start": 56.8,
+          "end": 57.0,
+          "probability": 0.99658203125
+        },
+        {
+          "text": "协",
+          "start": 57.0,
+          "end": 57.22,
+          "probability": 0.650390625
+        },
+        {
+          "text": "力",
+          "start": 57.22,
+          "end": 57.4,
+          "probability": 0.931640625
+        },
+        {
+          "text": "下",
+          "start": 57.4,
+          "end": 57.6,
+          "probability": 0.9931640625
+        }
+      ]
+    },
+    {
+      "start": 57.6,
+      "end": 59.46,
+      "text": "将近两个小时的挖掘",
+      "words": [
+        {
+          "text": "将",
+          "start": 57.6,
+          "end": 57.86,
+          "probability": 0.4560546875
+        },
+        {
+          "text": "近",
+          "start": 57.86,
+          "end": 58.08,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "两",
+          "start": 58.08,
+          "end": 58.34,
+          "probability": 0.78271484375
+        },
+        {
+          "text": "个",
+          "start": 58.34,
+          "end": 58.56,
+          "probability": 0.98388671875
+        },
+        {
+          "text": "小",
+          "start": 58.56,
+          "end": 58.76,
+          "probability": 0.99169921875
+        },
+        {
+          "text": "时",
+          "start": 58.76,
+          "end": 58.96,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "的",
+          "start": 58.96,
+          "end": 59.08,
+          "probability": 0.96484375
+        },
+        {
+          "text": "挖",
+          "start": 59.08,
+          "end": 59.28,
+          "probability": 0.97412109375
+        },
+        {
+          "text": "掘",
+          "start": 59.28,
+          "end": 59.46,
+          "probability": 0.98974609375
+        }
+      ]
+    },
+    {
+      "start": 59.46,
+      "end": 61.46,
+      "text": "被困小猫终于重见天日",
+      "words": [
+        {
+          "text": "被",
+          "start": 59.46,
+          "end": 59.72,
+          "probability": 0.5029296875
+        },
+        {
+          "text": "困",
+          "start": 59.72,
+          "end": 59.86,
+          "probability": 0.983642578125
+        },
+        {
+          "text": "小",
+          "start": 59.86,
+          "end": 60.08,
+          "probability": 0.98876953125
+        },
+        {
+          "text": "猫",
+          "start": 60.08,
+          "end": 60.24,
+          "probability": 0.992919921875
+        },
+        {
+          "text": "终",
+          "start": 60.24,
+          "end": 60.48,
+          "probability": 0.996337890625
+        },
+        {
+          "text": "于",
+          "start": 60.48,
+          "end": 60.62,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "重",
+          "start": 60.62,
+          "end": 60.84,
+          "probability": 0.97802734375
+        },
+        {
+          "text": "见",
+          "start": 60.84,
+          "end": 61.04,
+          "probability": 0.505859375
+        },
+        {
+          "text": "天",
+          "start": 61.04,
+          "end": 61.28,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "日",
+          "start": 61.28,
+          "end": 61.46,
+          "probability": 0.9931640625
+        }
+      ]
+    },
+    {
+      "start": 61.46,
+      "end": 62.42,
+      "text": "平安或旧",
+      "words": [
+        {
+          "text": "平",
+          "start": 61.46,
+          "end": 61.7,
+          "probability": 0.69677734375
+        },
+        {
+          "text": "安",
+          "start": 61.7,
+          "end": 61.98,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "或",
+          "start": 61.98,
+          "end": 62.22,
+          "probability": 0.537109375
+        },
+        {
+          "text": "旧",
+          "start": 62.22,
+          "end": 62.42,
+          "probability": 0.884521484375
+        }
+      ]
+    },
+    {
+      "start": 62.42,
+      "end": 64.4,
+      "text": "当小猫终于被拖出的那一刻",
+      "words": [
+        {
+          "text": "当",
+          "start": 62.42,
+          "end": 62.62,
+          "probability": 0.98046875
+        },
+        {
+          "text": "小",
+          "start": 62.62,
+          "end": 62.84,
+          "probability": 0.99462890625
+        },
+        {
+          "text": "猫",
+          "start": 62.84,
+          "end": 62.98,
+          "probability": 0.999267578125
+        },
+        {
+          "text": "终",
+          "start": 62.98,
+          "end": 63.2,
+          "probability": 0.994140625
+        },
+        {
+          "text": "于",
+          "start": 63.2,
+          "end": 63.34,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "被",
+          "start": 63.34,
+          "end": 63.48,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "拖",
+          "start": 63.48,
+          "end": 63.66,
+          "probability": 0.79541015625
+        },
+        {
+          "text": "出",
+          "start": 63.66,
+          "end": 63.86,
+          "probability": 0.9736328125
+        },
+        {
+          "text": "的",
+          "start": 63.86,
+          "end": 63.98,
+          "probability": 0.9033203125
+        },
+        {
+          "text": "那",
+          "start": 63.98,
+          "end": 64.14,
+          "probability": 0.998046875
+        },
+        {
+          "text": "一",
+          "start": 64.14,
+          "end": 64.24,
+          "probability": 0.99658203125
+        },
+        {
+          "text": "刻",
+          "start": 64.24,
+          "end": 64.4,
+          "probability": 0.99951171875
+        }
+      ]
+    },
+    {
+      "start": 64.4,
+      "end": 65.96,
+      "text": "他忘了满脸的血痕",
+      "words": [
+        {
+          "text": "他",
+          "start": 64.4,
+          "end": 64.66,
+          "probability": 0.56396484375
+        },
+        {
+          "text": "忘",
+          "start": 64.66,
+          "end": 64.82,
+          "probability": 0.96240234375
+        },
+        {
+          "text": "了",
+          "start": 64.82,
+          "end": 64.98,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "满",
+          "start": 64.98,
+          "end": 65.14,
+          "probability": 0.93212890625
+        },
+        {
+          "text": "脸",
+          "start": 65.14,
+          "end": 65.38,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "的",
+          "start": 65.38,
+          "end": 65.54,
+          "probability": 0.9951171875
+        },
+        {
+          "text": "血",
+          "start": 65.54,
+          "end": 65.74,
+          "probability": 0.96240234375
+        },
+        {
+          "text": "痕",
+          "start": 65.74,
+          "end": 65.96,
+          "probability": 0.991943359375
+        }
+      ]
+    },
+    {
+      "start": 65.96,
+      "end": 67.24,
+      "text": "兴奋的蹦跳",
+      "words": [
+        {
+          "text": "兴",
+          "start": 65.96,
+          "end": 66.34,
+          "probability": 0.954345703125
+        },
+        {
+          "text": "奋",
+          "start": 66.34,
+          "end": 66.6,
+          "probability": 0.997802734375
+        },
+        {
+          "text": "的",
+          "start": 66.6,
+          "end": 66.78,
+          "probability": 0.93994140625
+        },
+        {
+          "text": "蹦",
+          "start": 66.78,
+          "end": 66.92,
+          "probability": 0.6201171875
+        },
+        {
+          "text": "跳",
+          "start": 66.92,
+          "end": 67.24,
+          "probability": 0.99169921875
+        }
+      ]
+    },
+    {
+      "start": 67.24,
+      "end": 69.16,
+      "text": "那一言让人心碎",
+      "words": [
+        {
+          "text": "那",
+          "start": 67.24,
+          "end": 67.48,
+          "probability": 0.98681640625
+        },
+        {
+          "text": "一",
+          "start": 67.48,
+          "end": 67.7,
+          "probability": 0.8623046875
+        },
+        {
+          "text": "言",
+          "start": 67.7,
+          "end": 67.98,
+          "probability": 0.98828125
+        },
+        {
+          "text": "让",
+          "start": 67.98,
+          "end": 68.28,
+          "probability": 0.9521484375
+        },
+        {
+          "text": "人",
+          "start": 68.28,
+          "end": 68.54,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "心",
+          "start": 68.54,
+          "end": 68.82,
+          "probability": 0.98779296875
+        },
+        {
+          "text": "碎",
+          "start": 68.82,
+          "end": 69.16,
+          "probability": 0.932373046875
+        }
+      ]
+    },
+    {
+      "start": 69.16,
+      "end": 70.26,
+      "text": "也让人动容",
+      "words": [
+        {
+          "text": "也",
+          "start": 69.16,
+          "end": 69.38,
+          "probability": 0.94873046875
+        },
+        {
+          "text": "让",
+          "start": 69.38,
+          "end": 69.56,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "人",
+          "start": 69.56,
+          "end": 69.78,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "动",
+          "start": 69.78,
+          "end": 69.98,
+          "probability": 0.97412109375
+        },
+        {
+          "text": "容",
+          "start": 69.98,
+          "end": 70.26,
+          "probability": 0.7490234375
+        }
+      ]
+    },
+    {
+      "start": 70.26,
+      "end": 72.38,
+      "text": "他没有被世界温柔以待",
+      "words": [
+        {
+          "text": "他",
+          "start": 70.26,
+          "end": 70.5,
+          "probability": 0.94091796875
+        },
+        {
+          "text": "没有",
+          "start": 70.5,
+          "end": 70.72,
+          "probability": 0.99462890625
+        },
+        {
+          "text": "被",
+          "start": 70.72,
+          "end": 70.94,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "世界",
+          "start": 70.94,
+          "end": 71.4,
+          "probability": 0.935546875
+        },
+        {
+          "text": "温",
+          "start": 71.4,
+          "end": 71.76,
+          "probability": 0.998779296875
+        },
+        {
+          "text": "柔",
+          "start": 71.76,
+          "end": 72.0,
+          "probability": 0.999755859375
+        },
+        {
+          "text": "以",
+          "start": 72.0,
+          "end": 72.22,
+          "probability": 0.630859375
+        },
+        {
+          "text": "待",
+          "start": 72.22,
+          "end": 72.38,
+          "probability": 0.90283203125
+        }
+      ]
+    },
+    {
+      "start": 72.38,
+      "end": 74.14,
+      "text": "却选择把仅有的温柔",
+      "words": [
+        {
+          "text": "却",
+          "start": 72.38,
+          "end": 72.64,
+          "probability": 0.993408203125
+        },
+        {
+          "text": "选",
+          "start": 72.64,
+          "end": 72.8,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "择",
+          "start": 72.8,
+          "end": 73.0,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "把",
+          "start": 73.0,
+          "end": 73.16,
+          "probability": 0.97314453125
+        },
+        {
+          "text": "仅",
+          "start": 73.16,
+          "end": 73.36,
+          "probability": 0.93310546875
+        },
+        {
+          "text": "有",
+          "start": 73.36,
+          "end": 73.58,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "的",
+          "start": 73.58,
+          "end": 73.7,
+          "probability": 0.99560546875
+        },
+        {
+          "text": "温",
+          "start": 73.7,
+          "end": 73.9,
+          "probability": 0.999755859375
+        },
+        {
+          "text": "柔",
+          "start": 73.9,
+          "end": 74.14,
+          "probability": 1.0
+        }
+      ]
+    },
+    {
+      "start": 74.14,
+      "end": 76.76,
+      "text": "全部给了另一个更弱小的生命",
+      "words": [
+        {
+          "text": "全部",
+          "start": 74.14,
+          "end": 74.46,
+          "probability": 0.9873046875
+        },
+        {
+          "text": "给",
+          "start": 74.46,
+          "end": 74.78,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "了",
+          "start": 74.78,
+          "end": 74.9,
+          "probability": 0.9970703125
+        },
+        {
+          "text": "另",
+          "start": 74.9,
+          "end": 75.08,
+          "probability": 0.97900390625
+        },
+        {
+          "text": "一个",
+          "start": 75.08,
+          "end": 75.42,
+          "probability": 0.9931640625
+        },
+        {
+          "text": "更",
+          "start": 75.42,
+          "end": 75.7,
+          "probability": 0.9921875
+        },
+        {
+          "text": "弱",
+          "start": 75.7,
+          "end": 75.98,
+          "probability": 0.999267578125
+        },
+        {
+          "text": "小",
+          "start": 75.98,
+          "end": 76.22,
+          "probability": 0.94970703125
+        },
+        {
+          "text": "的",
+          "start": 76.22,
+          "end": 76.38,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "生",
+          "start": 76.38,
+          "end": 76.58,
+          "probability": 0.9912109375
+        },
+        {
+          "text": "命",
+          "start": 76.58,
+          "end": 76.76,
+          "probability": 0.9990234375
+        }
+      ]
+    },
+    {
+      "start": 76.76,
+      "end": 77.48,
+      "text": "幸运的是",
+      "words": [
+        {
+          "text": "幸",
+          "start": 76.76,
+          "end": 77.06,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "运",
+          "start": 77.06,
+          "end": 77.2,
+          "probability": 0.991943359375
+        },
+        {
+          "text": "的是",
+          "start": 77.2,
+          "end": 77.48,
+          "probability": 0.99267578125
+        }
+      ]
+    },
+    {
+      "start": 77.48,
+      "end": 79.2,
+      "text": "后来回回被一个小姐姐",
+      "words": [
+        {
+          "text": "后",
+          "start": 77.48,
+          "end": 77.74,
+          "probability": 0.98095703125
+        },
+        {
+          "text": "来",
+          "start": 77.74,
+          "end": 77.88,
+          "probability": 0.998046875
+        },
+        {
+          "text": "回",
+          "start": 77.88,
+          "end": 78.04,
+          "probability": 0.99658203125
+        },
+        {
+          "text": "回",
+          "start": 78.04,
+          "end": 78.26,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "被",
+          "start": 78.26,
+          "end": 78.42,
+          "probability": 0.9921875
+        },
+        {
+          "text": "一个",
+          "start": 78.42,
+          "end": 78.58,
+          "probability": 0.99365234375
+        },
+        {
+          "text": "小",
+          "start": 78.58,
+          "end": 78.8,
+          "probability": 0.99658203125
+        },
+        {
+          "text": "姐",
+          "start": 78.8,
+          "end": 79.0,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "姐",
+          "start": 79.0,
+          "end": 79.2,
+          "probability": 0.9990234375
+        }
+      ]
+    },
+    {
+      "start": 79.2,
+      "end": 79.78,
+      "text": "领回了家",
+      "words": [
+        {
+          "text": "领",
+          "start": 79.2,
+          "end": 79.36,
+          "probability": 0.971923828125
+        },
+        {
+          "text": "回",
+          "start": 79.36,
+          "end": 79.5,
+          "probability": 0.99462890625
+        },
+        {
+          "text": "了",
+          "start": 79.5,
+          "end": 79.62,
+          "probability": 0.98974609375
+        },
+        {
+          "text": "家",
+          "start": 79.62,
+          "end": 79.78,
+          "probability": 0.9990234375
+        }
+      ]
+    },
+    {
+      "start": 79.78,
+      "end": 81.66,
+      "text": "她严重的皮肤病被治好",
+      "words": [
+        {
+          "text": "她",
+          "start": 79.78,
+          "end": 80.02,
+          "probability": 0.497802734375
+        },
+        {
+          "text": "严",
+          "start": 80.02,
+          "end": 80.24,
+          "probability": 0.996337890625
+        },
+        {
+          "text": "重",
+          "start": 80.24,
+          "end": 80.42,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "的",
+          "start": 80.42,
+          "end": 80.56,
+          "probability": 0.990234375
+        },
+        {
+          "text": "皮",
+          "start": 80.56,
+          "end": 80.74,
+          "probability": 0.955078125
+        },
+        {
+          "text": "肤",
+          "start": 80.74,
+          "end": 80.88,
+          "probability": 0.999267578125
+        },
+        {
+          "text": "病",
+          "start": 80.88,
+          "end": 81.04,
+          "probability": 0.8974609375
+        },
+        {
+          "text": "被",
+          "start": 81.04,
+          "end": 81.26,
+          "probability": 0.99072265625
+        },
+        {
+          "text": "治",
+          "start": 81.26,
+          "end": 81.4,
+          "probability": 0.98583984375
+        },
+        {
+          "text": "好",
+          "start": 81.4,
+          "end": 81.66,
+          "probability": 0.97216796875
+        }
+      ]
+    },
+    {
+      "start": 81.66,
+      "end": 82.6,
+      "text": "受血的身体",
+      "words": [
+        {
+          "text": "受",
+          "start": 81.66,
+          "end": 81.9,
+          "probability": 0.626953125
+        },
+        {
+          "text": "血",
+          "start": 81.9,
+          "end": 82.1,
+          "probability": 0.273681640625
+        },
+        {
+          "text": "的",
+          "start": 82.1,
+          "end": 82.18,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "身",
+          "start": 82.18,
+          "end": 82.36,
+          "probability": 0.994140625
+        },
+        {
+          "text": "体",
+          "start": 82.36,
+          "end": 82.6,
+          "probability": 0.99755859375
+        }
+      ]
+    },
+    {
+      "start": 82.6,
+      "end": 84.98,
+      "text": "也被爱未成了半挂卡车的模样",
+      "words": [
+        {
+          "text": "也",
+          "start": 82.6,
+          "end": 82.88,
+          "probability": 0.98486328125
+        },
+        {
+          "text": "被",
+          "start": 82.88,
+          "end": 83.04,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "爱",
+          "start": 83.04,
+          "end": 83.2,
+          "probability": 0.48828125
+        },
+        {
+          "text": "未",
+          "start": 83.2,
+          "end": 83.4,
+          "probability": 0.5244140625
+        },
+        {
+          "text": "成",
+          "start": 83.4,
+          "end": 83.58,
+          "probability": 0.98681640625
+        },
+        {
+          "text": "了",
+          "start": 83.58,
+          "end": 83.7,
+          "probability": 0.99462890625
+        },
+        {
+          "text": "半",
+          "start": 83.7,
+          "end": 83.86,
+          "probability": 0.92626953125
+        },
+        {
+          "text": "挂",
+          "start": 83.86,
+          "end": 84.04,
+          "probability": 0.982177734375
+        },
+        {
+          "text": "卡",
+          "start": 84.04,
+          "end": 84.32,
+          "probability": 0.459228515625
+        },
+        {
+          "text": "车",
+          "start": 84.32,
+          "end": 84.56,
+          "probability": 0.994140625
+        },
+        {
+          "text": "的",
+          "start": 84.56,
+          "end": 84.68,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "模",
+          "start": 84.68,
+          "end": 84.86,
+          "probability": 0.990234375
+        },
+        {
+          "text": "样",
+          "start": 84.86,
+          "end": 84.98,
+          "probability": 0.994140625
+        }
+      ]
+    },
+    {
+      "start": 84.98,
+      "end": 86.6,
+      "text": "她再也不用摇尾起连",
+      "words": [
+        {
+          "text": "她",
+          "start": 84.98,
+          "end": 85.16,
+          "probability": 0.34033203125
+        },
+        {
+          "text": "再",
+          "start": 85.16,
+          "end": 85.36,
+          "probability": 0.9677734375
+        },
+        {
+          "text": "也",
+          "start": 85.36,
+          "end": 85.56,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "不用",
+          "start": 85.56,
+          "end": 85.72,
+          "probability": 0.96484375
+        },
+        {
+          "text": "摇",
+          "start": 85.72,
+          "end": 85.96,
+          "probability": 0.901123046875
+        },
+        {
+          "text": "尾",
+          "start": 85.96,
+          "end": 86.16,
+          "probability": 0.7037353515625
+        },
+        {
+          "text": "起",
+          "start": 86.16,
+          "end": 86.36,
+          "probability": 0.8525390625
+        },
+        {
+          "text": "连",
+          "start": 86.36,
+          "end": 86.6,
+          "probability": 0.59161376953125
+        }
+      ]
+    },
+    {
+      "start": 86.6,
+      "end": 88.88,
+      "text": "不用在夜里守着冰冷的角落",
+      "words": [
+        {
+          "text": "不用",
+          "start": 86.6,
+          "end": 86.82,
+          "probability": 0.81884765625
+        },
+        {
+          "text": "在",
+          "start": 86.82,
+          "end": 87.08,
+          "probability": 0.98388671875
+        },
+        {
+          "text": "夜",
+          "start": 87.08,
+          "end": 87.3,
+          "probability": 0.9541015625
+        },
+        {
+          "text": "里",
+          "start": 87.3,
+          "end": 87.52,
+          "probability": 0.79345703125
+        },
+        {
+          "text": "守",
+          "start": 87.52,
+          "end": 87.76,
+          "probability": 0.935546875
+        },
+        {
+          "text": "着",
+          "start": 87.76,
+          "end": 87.94,
+          "probability": 0.96044921875
+        },
+        {
+          "text": "冰",
+          "start": 87.94,
+          "end": 88.12,
+          "probability": 0.990966796875
+        },
+        {
+          "text": "冷",
+          "start": 88.12,
+          "end": 88.32,
+          "probability": 0.99560546875
+        },
+        {
+          "text": "的",
+          "start": 88.32,
+          "end": 88.46,
+          "probability": 0.99462890625
+        },
+        {
+          "text": "角",
+          "start": 88.46,
+          "end": 88.64,
+          "probability": 0.97705078125
+        },
+        {
+          "text": "落",
+          "start": 88.64,
+          "end": 88.88,
+          "probability": 1.0
+        }
+      ]
+    },
+    {
+      "start": 88.88,
+      "end": 90.0,
+      "text": "她终于有了家",
+      "words": [
+        {
+          "text": "她",
+          "start": 88.88,
+          "end": 89.06,
+          "probability": 0.88037109375
+        },
+        {
+          "text": "终",
+          "start": 89.06,
+          "end": 89.34,
+          "probability": 0.990234375
+        },
+        {
+          "text": "于",
+          "start": 89.34,
+          "end": 89.54,
+          "probability": 0.9990234375
+        },
+        {
+          "text": "有",
+          "start": 89.54,
+          "end": 89.72,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "了",
+          "start": 89.72,
+          "end": 89.84,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "家",
+          "start": 89.84,
+          "end": 90.0,
+          "probability": 0.97900390625
+        }
+      ]
+    },
+    {
+      "start": 90.0,
+      "end": 90.86,
+      "text": "而这一切",
+      "words": [
+        {
+          "text": "而",
+          "start": 90.0,
+          "end": 90.24,
+          "probability": 0.951171875
+        },
+        {
+          "text": "这",
+          "start": 90.24,
+          "end": 90.4,
+          "probability": 0.98779296875
+        },
+        {
+          "text": "一",
+          "start": 90.4,
+          "end": 90.66,
+          "probability": 0.99658203125
+        },
+        {
+          "text": "切",
+          "start": 90.66,
+          "end": 90.86,
+          "probability": 0.99951171875
+        }
+      ]
+    },
+    {
+      "start": 90.86,
+      "end": 92.12,
+      "text": "不是命运的施舍",
+      "words": [
+        {
+          "text": "不是",
+          "start": 90.86,
+          "end": 91.12,
+          "probability": 0.95458984375
+        },
+        {
+          "text": "命",
+          "start": 91.12,
+          "end": 91.4,
+          "probability": 0.99853515625
+        },
+        {
+          "text": "运",
+          "start": 91.4,
+          "end": 91.56,
+          "probability": 0.99951171875
+        },
+        {
+          "text": "的",
+          "start": 91.56,
+          "end": 91.68,
+          "probability": 0.99169921875
+        },
+        {
+          "text": "施",
+          "start": 91.68,
+          "end": 91.88,
+          "probability": 0.68701171875
+        },
+        {
+          "text": "舍",
+          "start": 91.88,
+          "end": 92.12,
+          "probability": 0.945556640625
+        }
+      ]
+    },
+    {
+      "start": 92.12,
+      "end": 93.58,
+      "text": "是她用自己的善良",
+      "words": [
+        {
+          "text": "是",
+          "start": 92.12,
+          "end": 92.32,
+          "probability": 0.98046875
+        },
+        {
+          "text": "她",
+          "start": 92.32,
+          "end": 92.5,
+          "probability": 0.9560546875
+        },
+        {
+          "text": "用",
+          "start": 92.5,
+          "end": 92.64,
+          "probability": 0.9931640625
+        },
+        {
+          "text": "自己",
+          "start": 92.64,
+          "end": 92.92,
+          "probability": 0.9912109375
+        },
+        {
+          "text": "的",
+          "start": 92.92,
+          "end": 93.12,
+          "probability": 0.994140625
+        },
+        {
+          "text": "善",
+          "start": 93.12,
+          "end": 93.36,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "良",
+          "start": 93.36,
+          "end": 93.58,
+          "probability": 0.998046875
+        }
+      ]
+    },
+    {
+      "start": 93.58,
+      "end": 95.54,
+      "text": "亲手挣来的余生炫烂",
+      "words": [
+        {
+          "text": "亲",
+          "start": 93.58,
+          "end": 93.88,
+          "probability": 0.578125
+        },
+        {
+          "text": "手",
+          "start": 93.88,
+          "end": 94.14,
+          "probability": 0.96142578125
+        },
+        {
+          "text": "挣",
+          "start": 94.14,
+          "end": 94.36,
+          "probability": 0.7431640625
+        },
+        {
+          "text": "来",
+          "start": 94.36,
+          "end": 94.54,
+          "probability": 0.99072265625
+        },
+        {
+          "text": "的",
+          "start": 94.54,
+          "end": 94.66,
+          "probability": 0.998046875
+        },
+        {
+          "text": "余",
+          "start": 94.66,
+          "end": 94.86,
+          "probability": 0.788818359375
+        },
+        {
+          "text": "生",
+          "start": 94.86,
+          "end": 95.04,
+          "probability": 0.77392578125
+        },
+        {
+          "text": "炫",
+          "start": 95.04,
+          "end": 95.28,
+          "probability": 0.55877685546875
+        },
+        {
+          "text": "烂",
+          "start": 95.28,
+          "end": 95.54,
+          "probability": 0.964599609375
+        }
+      ]
+    },
+    {
+      "start": 95.54,
+      "end": 96.06,
+      "text": "回回",
+      "words": [
+        {
+          "text": "回",
+          "start": 95.54,
+          "end": 95.74,
+          "probability": 0.1529541015625
+        },
+        {
+          "text": "回",
+          "start": 95.74,
+          "end": 96.06,
+          "probability": 0.263671875
+        }
+      ]
+    },
+    {
+      "start": 96.06,
+      "end": 97.8,
+      "text": "愿你往后每一个雨天",
+      "words": [
+        {
+          "text": "愿",
+          "start": 96.06,
+          "end": 96.36,
+          "probability": 0.96728515625
+        },
+        {
+          "text": "你",
+          "start": 96.36,
+          "end": 96.48,
+          "probability": 0.724609375
+        },
+        {
+          "text": "往",
+          "start": 96.48,
+          "end": 96.66,
+          "probability": 0.998046875
+        },
+        {
+          "text": "后",
+          "start": 96.66,
+          "end": 96.88,
+          "probability": 0.998046875
+        },
+        {
+          "text": "每",
+          "start": 96.88,
+          "end": 97.12,
+          "probability": 0.98681640625
+        },
+        {
+          "text": "一个",
+          "start": 97.12,
+          "end": 97.38,
+          "probability": 0.98095703125
+        },
+        {
+          "text": "雨",
+          "start": 97.38,
+          "end": 97.58,
+          "probability": 0.88330078125
+        },
+        {
+          "text": "天",
+          "start": 97.58,
+          "end": 97.8,
+          "probability": 0.9931640625
+        }
+      ]
+    },
+    {
+      "start": 97.8,
+      "end": 100.8,
+      "text": "都只有温暖的被窝和爱你的人",
+      "words": [
+        {
+          "text": "都",
+          "start": 97.8,
+          "end": 98.12,
+          "probability": 0.97265625
+        },
+        {
+          "text": "只有",
+          "start": 98.12,
+          "end": 98.44,
+          "probability": 0.9931640625
+        },
+        {
+          "text": "温",
+          "start": 98.44,
+          "end": 98.7,
+          "probability": 0.99755859375
+        },
+        {
+          "text": "暖",
+          "start": 98.7,
+          "end": 98.94,
+          "probability": 0.998779296875
+        },
+        {
+          "text": "的",
+          "start": 98.94,
+          "end": 99.04,
+          "probability": 0.99169921875
+        },
+        {
+          "text": "被",
+          "start": 99.04,
+          "end": 99.24,
+          "probability": 0.794921875
+        },
+        {
+          "text": "窝",
+          "start": 99.24,
+          "end": 99.56,
+          "probability": 0.75146484375
+        },
+        {
+          "text": "和",
+          "start": 99.56,
+          "end": 99.9,
+          "probability": 0.9921875
+        },
+        {
+          "text": "爱",
+          "start": 99.9,
+          "end": 100.2,
+          "probability": 0.99560546875
+        },
+        {
+          "text": "你的",
+          "start": 100.2,
+          "end": 100.54,
+          "probability": 0.794921875
+        },
+        {
+          "text": "人",
+          "start": 100.54,
+          "end": 100.8,
+          "probability": 0.99755859375
+        }
+      ]
+    }
+  ]
+}
