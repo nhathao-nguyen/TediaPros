@@ -2,7 +2,7 @@ import { createHash } from 'node:crypto'
 import { createReadStream, createWriteStream, constants } from 'node:fs'
 import { access, mkdir, rm, chmod, stat } from 'node:fs/promises'
 import { join, basename, dirname } from 'node:path'
-import { Readable } from 'node:stream'
+import { Readable, Transform } from 'node:stream'
 import { pipeline } from 'node:stream/promises'
 import { createDistributionFetch, getDistributionConfig } from './distributionConfig'
 import { validateRuntimeDistributionManifest, type RuntimeAssetSpec, type RuntimeDistributionManifest } from './runtimeManifest'
@@ -33,6 +33,50 @@ async function fileBytes(path: string): Promise<number> {
   const info = await stat(path)
   if (!info.isFile()) throw new Error(`Không phải file: ${path}`)
   return info.size
+}
+
+async function downloadArchive(
+  spec: RuntimeAssetSpec,
+  archivePath: string,
+  getAssetUrl: (assetName: string) => string,
+  fetchImpl: typeof fetch,
+  onProgress: (percent: number, message: string) => void
+): Promise<void> {
+  const downloads = spec.parts?.length
+    ? spec.parts
+    : [{ asset: spec.asset, sha256: spec.sha256, bytes: spec.bytes }]
+  const multipart = Boolean(spec.parts?.length)
+  let completedBytes = 0
+
+  for (const [index, part] of downloads.entries()) {
+    const assetUrl = getAssetUrl(part.asset)
+    if (!assetUrl) throw new Error(`Không có URL cho asset ${part.asset}.`)
+    const label = downloads.length > 1 ? `phần ${index + 1}/${downloads.length}` : `gói ${spec.asset}`
+    onProgress(5 + Math.floor((completedBytes / spec.bytes) * 45), `Đang tải ${label}…`)
+    const response = await fetchImpl(assetUrl, { redirect: 'follow' })
+    if (!response.ok || !response.body) throw new Error(`Tải asset ${part.asset} thất bại (${response.status}).`)
+
+    const partHash = createHash('sha256')
+    let partBytes = 0
+    const verifier = new Transform({
+      transform(chunk: Buffer, _encoding, callback) {
+        partHash.update(chunk)
+        partBytes += chunk.length
+        callback(null, chunk)
+      }
+    })
+    await pipeline(
+      Readable.fromWeb(response.body as import('stream/web').ReadableStream),
+      verifier,
+      createWriteStream(archivePath, { flags: index === 0 ? 'w' : 'a' })
+    )
+    const integrityLabel = multipart ? `part ${part.asset}` : `archive ${spec.asset}`
+    if (partBytes !== part.bytes) throw new Error(`Kích thước ${integrityLabel} không khớp manifest.`)
+    if (partHash.digest('hex').toLowerCase() !== part.sha256.toLowerCase()) {
+      throw new Error(`Checksum SHA-256 của ${integrityLabel} không khớp.`)
+    }
+    completedBytes += partBytes
+  }
 }
 
 function platform(): 'win32' | 'darwin' | 'linux' {
@@ -104,8 +148,6 @@ export async function downloadRuntimeEngineFromManifest(
   const spec = manifest?.assets[kind]
   if (!manifest || !spec) return false
 
-  const assetUrl = config.getAssetUrl(spec.asset)
-  if (!assetUrl) return false
   const targetDir = runtimeKindDir(kind)
   const stagingDir = `${targetDir}.staging`
   const archivePath = join(stagingDir, spec.asset)
@@ -114,10 +156,7 @@ export async function downloadRuntimeEngineFromManifest(
   await rm(stagingDir, { recursive: true, force: true })
   await mkdir(extractDir, { recursive: true })
   try {
-    onProgress(5, `Đang tải gói ${kind}…`)
-    const response = await fetchImpl(assetUrl, { redirect: 'follow' })
-    if (!response.ok || !response.body) throw new Error(`Tải asset ${spec.asset} thất bại (${response.status}).`)
-    await pipeline(Readable.fromWeb(response.body as import('stream/web').ReadableStream), createWriteStream(archivePath))
+    await downloadArchive(spec, archivePath, config.getAssetUrl, fetchImpl, onProgress)
     const bytes = await fileBytes(archivePath)
     if (bytes !== spec.bytes) throw new Error(`Kích thước archive ${kind} không khớp manifest.`)
     onProgress(55, `Đang kiểm tra checksum ${kind}…`)

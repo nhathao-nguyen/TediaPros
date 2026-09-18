@@ -1,6 +1,6 @@
 import { createHash } from 'node:crypto'
 import { createReadStream } from 'node:fs'
-import { access, readFile, stat } from 'node:fs/promises'
+import { access, stat } from 'node:fs/promises'
 import { constants } from 'node:fs'
 import { join, resolve } from 'node:path'
 import { Readable } from 'node:stream'
@@ -8,7 +8,7 @@ import { verifyRuntimeReleaseDirectory } from './verify-runtime-release.mjs'
 
 const owner = process.env.TEDIAPROS_DISTRIBUTION_OWNER?.trim() || 'nhathao-nguyen'
 const repo = process.env.TEDIAPROS_DISTRIBUTION_REPO?.trim() || 'TediaPros'
-const DEFAULT_RUNTIME_CHANNEL = 'runtime-v5'
+const DEFAULT_RUNTIME_CHANNEL = 'runtime-v6'
 const requestedTag = process.env.TEDIAPROS_RUNTIME_CHANNEL?.trim() || process.env.RUNTIME_VERSION?.trim() || DEFAULT_RUNTIME_CHANNEL
 let tag = null
 const tokenArg = process.argv.indexOf('--token')
@@ -90,12 +90,12 @@ async function assertExistingReleaseMatches(release, expected) {
 
 async function uploadAsset(uploadUrl, file, fileName) {
   const info = await stat(file)
-  const body = await readFile(file)
   const url = uploadUrl.replace(/\{.*\}$/, '') + `?name=${encodeURIComponent(fileName)}`
   const response = await fetch(url, {
     method: 'POST',
     headers: { ...apiHeaders(), 'Content-Type': fileName.endsWith('.json') ? 'application/json' : 'application/zip', 'Content-Length': String(info.size) },
-    body
+    body: createReadStream(file),
+    duplex: 'half'
   })
   if (!response.ok) throw new Error(`Upload failed for ${fileName} (${response.status}): ${await response.text()}`)
 }
@@ -123,10 +123,15 @@ async function main() {
   }
   tag = manifestTag
 
+  const runtimeAssetFiles = Object.values(verification.manifest.assets).flatMap((spec) =>
+    spec.parts?.length
+      ? spec.parts.map((part) => ({ name: part.asset, path: join(artifactsDir, part.asset) }))
+      : [{ name: spec.asset, path: join(artifactsDir, spec.asset) }]
+  )
   const expected = [
     { name: 'runtime-manifest.json', path: join(artifactsDir, 'runtime-manifest.json') },
     { name: 'runtime-provenance.json', path: join(artifactsDir, 'runtime-provenance.json') },
-    ...Object.values(verification.manifest.assets).map((spec) => ({ name: spec.asset, path: join(artifactsDir, spec.asset) }))
+    ...runtimeAssetFiles
   ]
   for (const file of expected) if (!(await fileExists(file.path))) throw new Error(`Missing release file ${file.path}`)
 

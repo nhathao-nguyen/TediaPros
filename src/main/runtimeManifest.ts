@@ -3,6 +3,12 @@ import type { RuntimeEngineKind } from './runtimeResolver'
 export type SupportedPlatform = 'win32' | 'darwin' | 'linux'
 export type SupportedArch = 'x64' | 'arm64' | 'ia32'
 
+export interface RuntimeAssetPart {
+  asset: string
+  sha256: string
+  bytes: number
+}
+
 export interface RuntimeAssetSpec {
   version: string
   platform: SupportedPlatform
@@ -15,6 +21,7 @@ export interface RuntimeAssetSpec {
   implementationFingerprint?: string
   capabilities: string[]
   files: string[]
+  parts?: RuntimeAssetPart[]
 }
 
 export interface RuntimeDistributionManifest {
@@ -103,15 +110,52 @@ export function validateRuntimeDistributionManifest(
     if (typeof item.asset !== 'string' || !/^[A-Za-z0-9][A-Za-z0-9._-]*$/u.test(item.asset.trim())) {
       return { ok: false, error: `Asset ${kind} thiếu tên archive hợp lệ.` }
     }
-    if (assetNames.has(item.asset.trim())) {
+    const archiveName = item.asset.trim()
+    if (assetNames.has(archiveName)) {
       return { ok: false, error: `Asset ${kind} dùng trùng tên archive.` }
     }
-    assetNames.add(item.asset.trim())
+    assetNames.add(archiveName)
     if (!isValidSha256(item.sha256)) {
       return { ok: false, error: `Asset ${kind} thiếu SHA-256 hợp lệ.` }
     }
     if (typeof item.bytes !== 'number' || !Number.isSafeInteger(item.bytes) || item.bytes <= 0) {
       return { ok: false, error: `Asset ${kind} phải khai báo bytes dương.` }
+    }
+    let parts: RuntimeAssetPart[] | undefined
+    if (item.parts !== undefined) {
+      if (!Array.isArray(item.parts) || item.parts.length === 0) {
+        return { ok: false, error: `Asset ${kind} có danh sách parts không hợp lệ.` }
+      }
+      parts = []
+      let totalPartBytes = 0
+      for (const [index, rawPart] of item.parts.entries()) {
+        if (!rawPart || typeof rawPart !== 'object' || Array.isArray(rawPart)) {
+          return { ok: false, error: `Asset ${kind} có part ${index + 1} không hợp lệ.` }
+        }
+        const part = rawPart as Record<string, unknown>
+        if (typeof part.asset !== 'string' || !/^[A-Za-z0-9][A-Za-z0-9._-]*$/u.test(part.asset.trim())) {
+          return { ok: false, error: `Asset ${kind} có tên part ${index + 1} không hợp lệ.` }
+        }
+        const partName = part.asset.trim()
+        if (assetNames.has(partName)) {
+          return { ok: false, error: `Asset ${kind} dùng trùng tên part ${partName}.` }
+        }
+        if (!isValidSha256(part.sha256)) {
+          return { ok: false, error: `Asset ${kind} có SHA-256 part ${index + 1} không hợp lệ.` }
+        }
+        if (typeof part.bytes !== 'number' || !Number.isSafeInteger(part.bytes) || part.bytes <= 0) {
+          return { ok: false, error: `Asset ${kind} có bytes part ${index + 1} không hợp lệ.` }
+        }
+        assetNames.add(partName)
+        totalPartBytes += part.bytes
+        if (!Number.isSafeInteger(totalPartBytes)) {
+          return { ok: false, error: `Asset ${kind} có tổng bytes parts quá lớn.` }
+        }
+        parts.push({ asset: partName, sha256: part.sha256.toLowerCase(), bytes: part.bytes })
+      }
+      if (totalPartBytes !== item.bytes) {
+        return { ok: false, error: `Asset ${kind} có tổng bytes parts không khớp archive.` }
+      }
     }
     if (!isSafeRelativePath(item.entrypoint)) {
       return { ok: false, error: `Asset ${kind} có entrypoint không an toàn.` }
@@ -146,7 +190,7 @@ export function validateRuntimeDistributionManifest(
       version: item.version.trim(),
       platform: item.platform as SupportedPlatform,
       arch: item.arch as SupportedArch,
-      asset: item.asset.trim(),
+      asset: archiveName,
       sha256: (item.sha256 as string).toLowerCase(),
       bytes: item.bytes,
       entrypoint,
@@ -155,7 +199,8 @@ export function validateRuntimeDistributionManifest(
         ? item.implementationFingerprint.toLowerCase()
         : undefined,
       capabilities,
-      files
+      files,
+      ...(parts ? { parts } : {})
     }
   }
 

@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "runtimeChannel": "runtime-v5",
+  "runtimeChannel": "runtime-v6",
   "models": {
     "separator-fast-balanced-v1": {
       "id": "separator-fast-balanced-v1",

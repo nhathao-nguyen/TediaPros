@@ -14,7 +14,7 @@ on:
       runtime_version:
         description: Immutable runtime release tag
         required: true
-        default: runtime-v5
+        default: runtime-v6
       publish:
         description: Publish the verified bundle as a GitHub release
         required: true
@@ -30,7 +30,7 @@ concurrency:
 
 env:
   PYTHON_VERSION: '3.12.10'
-  RUNTIME_VERSION: ${{ github.event_name == 'workflow_dispatch' && inputs.runtime_version || 'runtime-v5' }}
+  RUNTIME_VERSION: ${{ github.event_name == 'workflow_dispatch' && inputs.runtime_version || 'runtime-v6' }}
 
 jobs:
   build:
@@ -202,13 +202,14 @@ jobs:
           if ($LASTEXITCODE -ne 0) { throw 'STTN build virtual environment creation failed.' }
           $python = Join-Path $env:RUNNER_TEMP 'sttn-build-venv\Scripts\python.exe'
           if (-not (Test-Path -LiteralPath $python -PathType Leaf)) { throw "STTN build Python was not created: $python" }
-          # The CUDA PyTorch tree compresses to more than GitHub's 2 GiB
-          # per-asset limit. Publish the portable CPU engine; CUDA builds remain
-          # available through the local build script for dedicated machines.
-          & $python -m pip install --disable-pip-version-check --no-cache-dir torch==2.7.1 --index-url https://download.pytorch.org/whl/cpu
+          # The verified release packer splits archives above GitHub's per-asset
+          # limit and records SHA-256 for every part plus the assembled archive.
+          & $python -m pip install --disable-pip-version-check --no-cache-dir torch==2.7.1 --index-url https://download.pytorch.org/whl/cu118
           if ($LASTEXITCODE -ne 0) { throw 'STTN PyTorch installation failed.' }
           & $python -m pip install --disable-pip-version-check --no-cache-dir -r engines/sttn-engine/requirements.txt
           if ($LASTEXITCODE -ne 0) { throw 'STTN dependency installation failed.' }
+          & $python -c "import torch; assert torch.__version__ == '2.7.1+cu118'; assert torch.version.cuda == '11.8'; print(torch.__version__, torch.version.cuda)"
+          if ($LASTEXITCODE -ne 0) { throw 'STTN CUDA PyTorch verification failed.' }
           $env:STTN_TEST_FFMPEG = Join-Path $env:RUNTIME_INPUT_ROOT 'ffmpeg\ffmpeg.exe'
           & $python -m unittest discover -s engines\sttn-engine\tests -p 'test_*.py' -v
           if ($LASTEXITCODE -ne 0) { throw 'STTN engine tests failed.' }
@@ -219,6 +220,9 @@ jobs:
           $target = Join-Path $env:RUNTIME_INPUT_ROOT 'sttn-engine'
           New-Item -ItemType Directory -Force -Path $target | Out-Null
           Copy-Item -Path (Join-Path $sttnOutput '*') -Destination $target -Recurse -Force
+          Remove-Item -LiteralPath (Join-Path $env:RUNNER_TEMP 'sttn-build-venv') -Recurse -Force
+          Remove-Item -LiteralPath (Join-Path $env:RUNNER_TEMP 'sttn-dist') -Recurse -Force
+          Remove-Item -LiteralPath (Join-Path $env:RUNNER_TEMP 'sttn-work') -Recurse -Force
 
       - name: Run native capability probes before packaging
         shell: pwsh
@@ -245,7 +249,12 @@ jobs:
           Invoke-NativeProbe (Join-Path $root 'separator-engine\separator-engine.exe') @('--version')
           # The STTN checkpoint is downloaded separately by the application,
           # so release packaging can probe the engine version without model I/O.
-          Invoke-NativeProbe (Join-Path $root 'sttn-engine\sttn-engine.exe') @('--version')
+          $sttnVersionOutput = & (Join-Path $root 'sttn-engine\sttn-engine.exe') --version
+          if ($LASTEXITCODE -ne 0) { throw 'STTN version probe failed.' }
+          $sttnVersion = $sttnVersionOutput | ConvertFrom-Json
+          if ($sttnVersion.engine -ne 'sttn' -or $sttnVersion.version -ne '1.1.1' -or $sttnVersion.protocol -ne 'sttn-engine/1' -or $sttnVersion.features -notcontains 'cuda') {
+            throw 'Packaged STTN engine does not advertise the required CUDA capability.'
+          }
 
       - name: Create and verify runtime manifest from clean artifacts
         shell: pwsh

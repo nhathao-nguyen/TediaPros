@@ -72,7 +72,7 @@ export function createDistributionFetch(config: DistributionConfig): typeof fetc
 export function getDistributionConfig(): DistributionConfig {
   const owner = process.env.TEDIAPROS_DISTRIBUTION_OWNER?.trim() || 'nhathao-nguyen'
   const repo = process.env.TEDIAPROS_DISTRIBUTION_REPO?.trim() || 'TediaPros'
-  const runtimeChannel = process.env.TEDIAPROS_RUNTIME_CHANNEL?.trim() || 'runtime-v5'
+  const runtimeChannel = process.env.TEDIAPROS_RUNTIME_CHANNEL?.trim() || 'runtime-v6'
   const localCandidate = process.env.TEDIAPROS_LOCAL_RUNTIME_DIR?.trim()
   const localRuntimeDir = app.isPackaged === false && localCandidate && isAbsolute(localCandidate) ? resolve(localCandidate) : undefined
   const runtimeSource: DistributionConfig['runtimeSource'] = localRuntimeDir ? 'local' : 'remote'

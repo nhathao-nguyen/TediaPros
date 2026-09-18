@@ -32,7 +32,7 @@ export interface SeparatorModelReleaseSpec {
 
 export interface SeparatorModelReleaseManifest {
   schemaVersion: 1
-  runtimeChannel: 'runtime-v4' | 'runtime-v5'
+  runtimeChannel: 'runtime-v4' | 'runtime-v5' | 'runtime-v6'
   models: Record<SeparatorModelId, SeparatorModelReleaseSpec>
 }
 
@@ -70,8 +70,8 @@ export function validateSeparatorModelReleaseManifest(raw: unknown):
   if (obj.schemaVersion !== 1) {
     return { ok: false, error: 'schemaVersion của model manifest phải là 1.' }
   }
-  if (obj.runtimeChannel !== 'runtime-v4' && obj.runtimeChannel !== 'runtime-v5') {
-    return { ok: false, error: 'runtimeChannel của model manifest phải là runtime-v4 hoặc runtime-v5.' }
+  if (obj.runtimeChannel !== 'runtime-v4' && obj.runtimeChannel !== 'runtime-v5' && obj.runtimeChannel !== 'runtime-v6') {
+    return { ok: false, error: 'runtimeChannel của model manifest phải là runtime-v4, runtime-v5 hoặc runtime-v6.' }
   }
   if (!obj.models || typeof obj.models !== 'object' || Array.isArray(obj.models)) {
     return { ok: false, error: 'models trong manifest không hợp lệ.' }
@@ -170,7 +170,7 @@ export function validateSeparatorModelReleaseManifest(raw: unknown):
     ok: true,
     manifest: {
       schemaVersion: 1,
-      runtimeChannel: obj.runtimeChannel as 'runtime-v4' | 'runtime-v5',
+      runtimeChannel: obj.runtimeChannel as 'runtime-v4' | 'runtime-v5' | 'runtime-v6',
       models: validatedModels
     }
   }

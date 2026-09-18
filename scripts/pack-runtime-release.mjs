@@ -1,6 +1,6 @@
 import { createHash } from 'node:crypto'
 import { createReadStream } from 'node:fs'
-import { access, mkdir, readdir, rm, stat, readFile, writeFile } from 'node:fs/promises'
+import { access, mkdir, open, readdir, rm, stat, readFile, writeFile } from 'node:fs/promises'
 import { constants } from 'node:fs'
 import { join, relative, resolve, sep } from 'node:path'
 import { execFile } from 'node:child_process'
@@ -14,6 +14,7 @@ import { sha256ArchiveEntry } from './verify-runtime-release.mjs'
 const execFileAsync = promisify(execFile)
 const REQUIRED_KINDS = ['ffmpeg', 'whisper-engine', 'whisper-cuda', 'ocr-engine', 'video2x', 'douyin', 'separator-engine']
 const OPTIONAL_KINDS = ['sttn-engine']
+export const MAX_GITHUB_RELEASE_ASSET_BYTES = 1_500_000_000
 const LEGACY_INPUT_ENV = [
   'TEDIAPROS_RUNTIME_DIR',
   'WHISPER_RUNTIME_DIR',
@@ -169,6 +170,45 @@ async function archiveDirectory(sourceDir, archivePath) {
   }
 }
 
+async function splitArchive(archivePath, stagingDir, assetName, maxAssetBytes) {
+  const archiveInfo = await stat(archivePath)
+  if (archiveInfo.size <= maxAssetBytes) return undefined
+
+  const source = await open(archivePath, 'r')
+  const parts = []
+  const buffer = Buffer.allocUnsafe(8 * 1024 * 1024)
+  let sourceOffset = 0
+  try {
+    for (let index = 0; sourceOffset < archiveInfo.size; index += 1) {
+      const partName = `${assetName}.part${String(index + 1).padStart(3, '0')}`
+      const partPath = join(stagingDir, partName)
+      const part = await open(partPath, 'wx')
+      const partHash = createHash('sha256')
+      let partBytes = 0
+      try {
+        const expectedPartBytes = Math.min(maxAssetBytes, archiveInfo.size - sourceOffset)
+        while (partBytes < expectedPartBytes) {
+          const readLength = Math.min(buffer.length, expectedPartBytes - partBytes)
+          const { bytesRead } = await source.read(buffer, 0, readLength, sourceOffset)
+          if (bytesRead <= 0) throw new Error(`Unexpected EOF while splitting ${assetName}`)
+          const chunk = buffer.subarray(0, bytesRead)
+          await part.write(chunk, 0, bytesRead, partBytes)
+          partHash.update(chunk)
+          partBytes += bytesRead
+          sourceOffset += bytesRead
+        }
+      } finally {
+        await part.close()
+      }
+      parts.push({ asset: partName, sha256: partHash.digest('hex'), bytes: partBytes })
+    }
+  } finally {
+    await source.close()
+  }
+  await rm(archivePath, { force: true })
+  return parts
+}
+
 async function loadInputSpec(path) {
   const parsed = JSON.parse(await readFile(path, 'utf8'))
   if (!parsed || parsed.schemaVersion !== 1 || !parsed.assets || typeof parsed.assets !== 'object') {
@@ -211,11 +251,13 @@ export async function buildRuntimeRelease({
   arch = currentArch(),
   inputSpecPath = resolve('distribution/runtime-inputs.json'),
   probeFfmpegOcrMask = runNativeFfmpegOcrMaskProbe,
+  maxAssetBytes = MAX_GITHUB_RELEASE_ASSET_BYTES,
   now = () => new Date().toISOString()
 }) {
   ensureCleanInputEnvironment()
   if (!inputDir) throw new Error('An explicit --input-dir is required; no developer or APPDATA discovery is allowed.')
   if (!runtimeVersion) throw new Error('An explicit --runtime-version is required.')
+  if (!Number.isSafeInteger(maxAssetBytes) || maxAssetBytes <= 0) throw new Error('maxAssetBytes must be a positive safe integer.')
   const inputRoot = resolve(inputDir)
   const outputRoot = resolve(outputDir || 'release-artifacts')
   if (!(await stat(inputRoot).catch(() => null))?.isDirectory()) throw new Error(`Input directory does not exist: ${inputRoot}`)
@@ -283,6 +325,7 @@ export async function buildRuntimeRelease({
       const archivePath = join(stagingDir, asset)
       await archiveDirectory(sourceDir, archivePath)
       const info = await stat(archivePath)
+      const archiveSha256 = await sha256File(archivePath)
 
       if (kind === 'ffmpeg' && ffmpegProof) {
         const archivedEntrySha256 = sha256ArchiveEntry(archivePath, metadata.entrypoint)
@@ -291,18 +334,20 @@ export async function buildRuntimeRelease({
         }
       }
 
+      const parts = await splitArchive(archivePath, stagingDir, asset, maxAssetBytes)
       assets[kind] = {
         version: metadata.version,
         platform,
         arch,
         asset,
-        sha256: await sha256File(archivePath),
+        sha256: archiveSha256,
         bytes: info.size,
         entrypoint: metadata.entrypoint,
         ...(metadata.protocol ? { protocol: metadata.protocol } : {}),
         ...(metadata.implementationFingerprint ? { implementationFingerprint: metadata.implementationFingerprint } : {}),
         capabilities: finalCapabilities,
-        files
+        files,
+        ...(parts ? { parts } : {})
       }
       provenanceAssets[kind] = metadata.source || null
     }

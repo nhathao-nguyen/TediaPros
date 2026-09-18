@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "runtimeVersion": "runtime-v5",
+  "runtimeVersion": "runtime-v6",
   "platform": "win32",
   "arch": "x64",
   "assets": {
@@ -92,18 +92,19 @@
       "version": "1.1.1",
       "entrypoint": "sttn-engine.exe",
       "protocol": "sttn-engine/1",
-      "capabilities": ["cpu", "timed-mask", "ffv1", "preview"],
+      "capabilities": ["cpu", "cuda", "timed-mask", "ffv1", "preview"],
       "source": {
         "kind": "repository-build",
         "path": "engines/sttn-engine",
         "python": "3.12.10",
-        "torch": "2.7.1+cpu"
+        "torch": "2.7.1+cu118"
       }
     }
   },
   "externalInputs": {
     "python": "3.12.10",
     "pyinstaller": "6.22.2",
+    "sttnTorch": "torch==2.7.1 from the pinned cu118 PyTorch wheel index; packaged version must report 2.7.1+cu118 and CUDA 11.8.",
     "ffmpeg": "Use the exact URL and SHA-256 under assets.ffmpeg.source; never resolve latest.",
     "video2x": "Use the exact 6.4.0 release asset; do not use the GUI installer."
   }

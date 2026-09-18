@@ -111,6 +111,37 @@ test('runtime manifest requires at least one declared capability', () => {
   assert.equal(result.ok, false)
 })
 
+test('runtime manifest accepts checksum-pinned multipart archives and rejects mismatched totals', () => {
+  const base = {
+    schemaVersion: 1,
+    runtimeVersion: 'runtime-v6',
+    platform: 'win32',
+    arch: 'x64',
+    assets: {
+      'sttn-engine': {
+        version: '1.1.1',
+        platform: 'win32',
+        arch: 'x64',
+        asset: 'sttn.zip',
+        sha256: 'a'.repeat(64),
+        bytes: 9,
+        entrypoint: 'sttn-engine.exe',
+        protocol: 'sttn-engine/1',
+        capabilities: ['cpu', 'cuda'],
+        files: ['sttn-engine.exe'],
+        parts: [
+          { asset: 'sttn.zip.part001', sha256: 'b'.repeat(64), bytes: 4 },
+          { asset: 'sttn.zip.part002', sha256: 'c'.repeat(64), bytes: 5 }
+        ]
+      }
+    }
+  }
+  assert.equal(validateRuntimeDistributionManifest(base).ok, true)
+  const invalid = structuredClone(base)
+  invalid.assets['sttn-engine'].parts[1].bytes = 6
+  assert.equal(validateRuntimeDistributionManifest(invalid).ok, false)
+})
+
 test('Whisper version validation rejects legacy whisper.cpp protocol and backend', () => {
   assert.equal(isWhisperVersionEvent({
     type: 'version',
@@ -213,6 +244,51 @@ test('runtime installer promotes only a checksum-verified and probed staging tre
   assert.equal(await readFile(join(app.getPath('userData'), 'runtime-state', 'installed-runtime.json'), 'utf8').then((raw) => JSON.parse(raw).video2x.version), '6.4.0')
   assert.equal(await readFile(`${target}.staging\video2x.zip`, 'utf8').catch(() => null), null)
   await rm(target, { recursive: true, force: true })
+})
+
+test('runtime installer downloads, verifies, and assembles multipart archives in order', async () => {
+  const { downloadRuntimeEngineFromManifest } = await import('../src/main/runtimeInstaller')
+  const target = runtimeKindDir('sttn-engine')
+  await rm(target, { recursive: true, force: true })
+  const complete = Buffer.from('multipart-runtime-archive')
+  const parts = [complete.subarray(0, 9), complete.subarray(9)]
+  const platform = process.platform === 'darwin' ? 'darwin' : process.platform === 'win32' ? 'win32' : 'linux'
+  const arch = process.arch === 'arm64' ? 'arm64' : process.arch === 'ia32' ? 'ia32' : 'x64'
+  const manifest = {
+    schemaVersion: 1,
+    runtimeVersion: 'runtime-v6',
+    platform,
+    arch,
+    assets: {
+      'sttn-engine': {
+        version: '1.1.1', platform, arch, asset: 'sttn.zip',
+        sha256: createHash('sha256').update(complete).digest('hex'), bytes: complete.length,
+        entrypoint: 'sttn-engine.exe', protocol: 'sttn-engine/1', capabilities: ['cpu', 'cuda'], files: ['sttn-engine.exe'],
+        parts: parts.map((part, index) => ({
+          asset: `sttn.zip.part00${index + 1}`,
+          sha256: createHash('sha256').update(part).digest('hex'),
+          bytes: part.length
+        }))
+      }
+    }
+  }
+  const responses = [new Response(JSON.stringify(manifest), { status: 200 }), ...parts.map((part) => new Response(part, { status: 200 }))]
+  let request = 0
+  try {
+    const result = await downloadRuntimeEngineFromManifest('sttn-engine', () => {}, {
+      fetch: async () => responses[request++],
+      extract: async (archive, destination) => {
+        assert.deepEqual(await readFile(archive), complete)
+        await writeFile(join(destination, 'sttn-engine.exe'), 'verified multipart runtime')
+      },
+      probe: async () => ({ healthy: true, version: '1.1.1', protocol: 'sttn-engine/1', features: ['cpu', 'cuda'] })
+    })
+    assert.equal(result, true)
+    assert.equal(request, 3)
+    assert.equal(await readFile(join(target, 'sttn-engine.exe'), 'utf8'), 'verified multipart runtime')
+  } finally {
+    await rm(target, { recursive: true, force: true })
+  }
 })
 
 test('runtime installer accepts declared zero-byte package data files', async () => {
