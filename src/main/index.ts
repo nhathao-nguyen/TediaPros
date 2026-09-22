@@ -74,7 +74,7 @@ import {
 import { invalidateYtDlpCapabilities, ytdlpCapabilityStatus } from './sitePolicy'
 import { testProxy } from './proxy'
 import { initAutoUpdate, checkForUpdates, quitAndInstall } from './updater'
-import { dyEngineStatus, installDyEngine, downloadDouyin, getChannels, removeChannel } from './douyin'
+import { dyEngineStatus, installDyEngine, downloadDouyin, getChannels, removeChannel, updateChannelFolder } from './douyin'
 import {
   whisperEngineStatus,
   installWhisperEngine,
@@ -676,6 +676,9 @@ function registerIpc(): void {
   })
   ipcMain.handle('douyin:channels', async () => getChannels())
   ipcMain.handle('douyin:removeChannel', async (_e, url: string) => removeChannel(url))
+  ipcMain.handle('douyin:updateChannelFolder', async (_e, url: string, folderPath: string) =>
+    updateChannelFolder(url, folderPath)
+  )
 
   // ---- Audio -> Text (whisper) ----
   ipcMain.handle('whisper:engineStatus', async () => whisperEngineStatus())

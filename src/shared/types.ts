@@ -196,6 +196,7 @@ export interface DyChannel {
   name: string
   lastRun: string // ISO
   count: number // tong so video da tai tu kenh
+  folderPath?: string // thu muc rieng luu video cua kenh
 }
 
 // ---- Audio -> Text (whisper) ----

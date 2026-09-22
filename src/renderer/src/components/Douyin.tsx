@@ -18,6 +18,7 @@ interface DyItem {
   success: number
   lastFile: string | null
   error: string | null
+  outputDir?: string
 }
 
 const isChannelUrl = (u: string): boolean => /\/user\//i.test(u)
@@ -151,23 +152,28 @@ export default function Douyin(): JSX.Element {
       .map((u) => u.trim())
       .filter((u) => /douyin\.com|iesdouyin\.com/i.test(u))
     if (!urls.length) return
-    const newItems: DyItem[] = urls.map((url) => ({
-      id: crypto.randomUUID(),
-      url,
-      isChannel: isChannelUrl(url),
-      mode: isChannelUrl(url) ? mode : 'all',
-      status: 'queued',
-      success: 0,
-      lastFile: null,
-      error: null
-    }))
+    const newItems: DyItem[] = urls.map((url) => {
+      const isCh = isChannelUrl(url)
+      const matchedChan = isCh ? channels.find((c) => c.url === url) : null
+      return {
+        id: crypto.randomUUID(),
+        url,
+        isChannel: isCh,
+        mode: isCh ? mode : 'all',
+        status: 'queued',
+        success: 0,
+        lastFile: null,
+        error: null,
+        outputDir: matchedChan?.folderPath || outputDir
+      }
+    })
     setItems((prev) => [...prev, ...newItems])
     setUrlInput('')
   }
 
   const buildReq = (it: DyItem): DouyinRequest => ({
     url: it.url,
-    outputDir,
+    outputDir: it.outputDir || outputDir,
     isChannel: it.isChannel,
     mode: it.mode,
     batchSize,
@@ -213,9 +219,24 @@ export default function Douyin(): JSX.Element {
       status: 'queued',
       success: 0,
       lastFile: null,
-      error: null
+      error: null,
+      outputDir: ch.folderPath || outputDir
     }
     setItems((prev) => [...prev, it])
+  }
+
+  const changeChannelFolder = async (ch: DyChannel): Promise<void> => {
+    const dir = await window.api.chooseFolder()
+    if (dir) {
+      const updated = await window.api.dyUpdateChannelFolder(ch.url, dir)
+      setChannels(updated)
+    }
+  }
+
+  const openFolder = (folderPath?: string): void => {
+    if (folderPath) {
+      void window.api.openPath(folderPath)
+    }
   }
 
   const removeChannel = async (url: string): Promise<void> => {
@@ -465,6 +486,11 @@ export default function Douyin(): JSX.Element {
                         Lỗi: {it.error}
                       </span>
                     )}
+                    {it.outputDir && (
+                      <div className="dy-q-folder muted small" title={`Lưu tại: ${it.outputDir}`}>
+                        📁 {it.outputDir}
+                      </div>
+                    )}
                   </div>
                 </div>
                 <div className="qside">
@@ -513,14 +539,36 @@ export default function Douyin(): JSX.Element {
                   <div className="muted small">
                     {ch.count} video · cập nhật {new Date(ch.lastRun).toLocaleDateString('vi-VN')}
                   </div>
+                  <div
+                    className="dy-chan-folder muted small"
+                    title={ch.folderPath ? `Thư mục: ${ch.folderPath}` : 'Chưa lưu thư mục riêng'}
+                  >
+                    📁 {ch.folderPath || 'Chưa lưu thư mục riêng'}
+                  </div>
                 </div>
                 <div className="dy-chan-actions">
                   <button
                     className="btn small-btn"
                     onClick={() => addChannelUpdate(ch)}
-                    title="Thêm vào hàng đợi ở chế độ chỉ video mới"
+                    title="Thêm vào hàng đợi tải về đúng thư mục của kênh"
                   >
                     🔔 Lấy video mới
+                  </button>
+                  {ch.folderPath && (
+                    <button
+                      className="ibtn"
+                      onClick={() => openFolder(ch.folderPath)}
+                      title="Mở thư mục lưu video của kênh trên máy tính"
+                    >
+                      📂
+                    </button>
+                  )}
+                  <button
+                    className="ibtn"
+                    onClick={() => void changeChannelFolder(ch)}
+                    title="Chọn hoặc đổi thư mục lưu cho kênh này"
+                  >
+                    ✏️
                   </button>
                   <button className="ibtn" title="Bỏ theo dõi" onClick={() => removeChannel(ch.url)}>
                     ✕

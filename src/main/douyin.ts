@@ -1,8 +1,8 @@
 import { app } from 'electron'
 import { spawn } from 'node:child_process'
-import { chmod, readFile, writeFile, rm, access } from 'node:fs/promises'
+import { chmod, readFile, writeFile, rm, access, readdir, stat, mkdir, appendFile } from 'node:fs/promises'
 import { constants } from 'node:fs'
-import { join } from 'node:path'
+import { join, extname } from 'node:path'
 import { resolveRuntimeExecutable, runtimeKindDir } from './runtimeResolver'
 import { probeRuntimeExecutable } from './runtimeProbes'
 import { readDyCookies } from './douyinCookies'
@@ -190,6 +190,11 @@ export async function downloadDouyin(
   const cfgPath = await writeConfig(req, cookies)
   logInfo(`Douyin: bắt đầu tải (kiểu: ${req.mode})`)
 
+  if (req.outputDir) {
+    await mkdir(req.outputDir, { recursive: true }).catch(() => {})
+    await syncChannelDownloadedIds(req.outputDir).catch(() => {})
+  }
+
   try {
     return await new Promise<DouyinResult>((resolve) => {
       const child = trackChildProcess(spawn(engine.command, [...engine.argsPrefix, '-c', cfgPath, '--verbose'], {
@@ -221,6 +226,10 @@ export async function downloadDouyin(
         if (mDl) {
           success++
           lastFile = mDl[1]
+          const awemeId = extractAwemeId(lastFile)
+          if (awemeId && req.outputDir) {
+            void appendDownloadedId(req.outputDir, awemeId)
+          }
           onProgress({ id, status: 'downloading', line: t, lastFile, success })
           return
         }
@@ -283,11 +292,146 @@ export async function downloadDouyin(
   }
 }
 
+// ---- Trích xuất ID & đồng bộ file ID ----
+export function extractAwemeId(str: string): string | null {
+  const m = /(?<!\d)(\d{15,20})(?!\d)/.exec(str)
+  return m ? m[1] : null
+}
+
+async function appendDownloadedId(folderPath: string, awemeId: string): Promise<void> {
+  try {
+    const idsFile = join(folderPath, 'downloaded_ids.txt')
+    await appendFile(idsFile, `${awemeId}\n`, 'utf-8')
+  } catch {
+    /* bỏ qua lỗi append */
+  }
+}
+
+/** Quét danh sách các file video trong thư mục kênh và đồng bộ vào file downloaded_ids.txt. */
+export async function syncChannelDownloadedIds(folderPath: string): Promise<Set<string>> {
+  const ids = new Set<string>()
+  if (!folderPath || !(await fileExists(folderPath))) return ids
+
+  const idsFile = join(folderPath, 'downloaded_ids.txt')
+  const manifestFile = join(folderPath, 'download_manifest.jsonl')
+
+  // 1. Đọc từ downloaded_ids.txt nếu đã có
+  try {
+    const content = await readFile(idsFile, 'utf-8')
+    for (const line of content.split(/\r?\n/)) {
+      const id = extractAwemeId(line.trim())
+      if (id) ids.add(id)
+    }
+  } catch {
+    /* chưa có file */
+  }
+
+  // 2. Đọc từ download_manifest.jsonl nếu có
+  try {
+    const text = await readFile(manifestFile, 'utf-8')
+    for (const line of text.split(/\r?\n/)) {
+      if (!line.trim()) continue
+      try {
+        const rec = JSON.parse(line) as { aweme_id?: string }
+        if (rec.aweme_id) {
+          const id = extractAwemeId(String(rec.aweme_id))
+          if (id) ids.add(id)
+        }
+      } catch {
+        /* bỏ qua dòng hỏng */
+      }
+    }
+  } catch {
+    /* chưa có manifest */
+  }
+
+  // 3. Quét CHỈ CÁC FILE VIDEO THỰC TẾ đang có trong thư mục (đệ quy tất cả các folder con nhiều cấp)
+  const videoExts = new Set(['.mp4', '.mkv', '.mov', '.webm', '.avi', '.flv', '.ts', '.m4v'])
+  const visitedDirs = new Set<string>()
+
+  async function scanDir(dir: string): Promise<void> {
+    const normalized = dir.toLowerCase()
+    if (visitedDirs.has(normalized)) return
+    visitedDirs.add(normalized)
+
+    try {
+      const entries = await readdir(dir, { withFileTypes: true })
+      for (const entry of entries) {
+        const full = join(dir, entry.name)
+        if (entry.isDirectory()) {
+          await scanDir(full)
+        } else if (entry.isFile()) {
+          const ext = extname(entry.name).toLowerCase()
+          if (videoExts.has(ext)) {
+            const st = await stat(full).catch(() => null)
+            if (st && st.size > 0) {
+              const id = extractAwemeId(entry.name)
+              if (id) ids.add(id)
+            }
+          }
+        }
+      }
+    } catch {
+      /* bỏ qua lỗi đọc thư mục */
+    }
+  }
+
+  await scanDir(folderPath)
+
+  // 4. Ghi lại file downloaded_ids.txt nếu có ID
+  if (ids.size > 0) {
+    try {
+      await mkdir(folderPath, { recursive: true })
+      const lines = Array.from(ids).sort().join('\n') + '\n'
+      await writeFile(idsFile, lines, 'utf-8')
+    } catch {
+      /* bỏ qua lỗi ghi */
+    }
+  }
+
+  return ids
+}
+
 // ---- Thu vien kenh ----
+let migratedChannelFolders = false
+
+async function querySavedFoldersFromDb(): Promise<Record<string, string>> {
+  const db = libraryDbPath()
+  if (!(await fileExists(db))) return {}
+  try {
+    const pyCode = `import sqlite3, json; c=sqlite3.connect(r'''${db}'''); cur=c.cursor(); cur.execute('SELECT author_name, file_path FROM awemes WHERE author_name IS NOT NULL AND file_path IS NOT NULL GROUP BY author_name ORDER BY MAX(downloaded_at) DESC'); print(json.dumps(dict(cur.fetchall())))`
+    const { exec } = await import('node:child_process')
+    const { promisify } = await import('node:util')
+    const execAsync = promisify(exec)
+    const { stdout } = await execAsync(`python -c "${pyCode}"`, { windowsHide: true, encoding: 'utf-8' })
+    return JSON.parse(stdout.trim()) as Record<string, string>
+  } catch {
+    return {}
+  }
+}
+
 export async function getChannels(): Promise<DyChannel[]> {
   try {
     const list = JSON.parse(await readFile(channelsPath(), 'utf-8')) as DyChannel[]
-    return Array.isArray(list) ? list : []
+    if (!Array.isArray(list)) return []
+
+    // Tự động khôi phục folderPath cho các kênh cũ nếu chưa có
+    if (!migratedChannelFolders) {
+      migratedChannelFolders = true
+      let hasUpdate = false
+      const dbFolders = await querySavedFoldersFromDb().catch(() => ({} as Record<string, string>))
+      for (const ch of list) {
+        if (!ch.folderPath && ch.name && dbFolders[ch.name]) {
+          ch.folderPath = dbFolders[ch.name]
+          hasUpdate = true
+        }
+      }
+      if (hasUpdate) {
+        await saveChannels(list).catch(() => {})
+      }
+    }
+
+    return list
   } catch {
     return []
   }
@@ -296,6 +440,7 @@ export async function getChannels(): Promise<DyChannel[]> {
 async function saveChannels(list: DyChannel[]): Promise<void> {
   await writeFile(channelsPath(), JSON.stringify(list, null, 2), 'utf-8')
 }
+
 /** Doc ten kenh (author_name) tu manifest cua lan tai. */
 async function channelNameFromManifest(outputDir: string): Promise<string | null> {
   try {
@@ -324,14 +469,27 @@ async function recordChannel(url: string, outputDir: string, added: number): Pro
     existing.name = name || existing.name
     existing.lastRun = now
     existing.count += added
+    existing.folderPath = outputDir
   } else {
-    list.unshift({ url, name, lastRun: now, count: added })
+    list.unshift({ url, name, lastRun: now, count: added, folderPath: outputDir })
   }
   await saveChannels(list)
+  void syncChannelDownloadedIds(outputDir).catch(() => {})
 }
 
 export async function removeChannel(url: string): Promise<DyChannel[]> {
   const list = (await getChannels()).filter((c) => c.url !== url)
   await saveChannels(list)
+  return list
+}
+
+export async function updateChannelFolder(url: string, folderPath: string): Promise<DyChannel[]> {
+  const list = await getChannels()
+  const existing = list.find((c) => c.url === url)
+  if (existing) {
+    existing.folderPath = folderPath
+    await saveChannels(list)
+    void syncChannelDownloadedIds(folderPath).catch(() => {})
+  }
   return list
 }

@@ -68,17 +68,20 @@ class BaseDownloader(ABC):
             self.config, self.file_manager, self.database
         )
         self._local_aweme_ids: Optional[set[str]] = None
+        self._recorded_aweme_ids: Optional[set[str]] = None
+        self._existing_media_ids: Optional[set[str]] = None
         self._aweme_id_pattern = re.compile(r"(?<!\d)(\d{15,20})(?!\d)")
-        self._local_media_suffixes = {
+        self._local_video_suffixes = {
             ".mp4",
-            ".jpg",
-            ".jpeg",
-            ".png",
-            ".webp",
-            ".gif",
-            ".mp3",
-            ".m4a",
+            ".mkv",
+            ".mov",
+            ".webm",
+            ".avi",
+            ".flv",
+            ".ts",
+            ".m4v",
         }
+        self._local_media_suffixes = self._local_video_suffixes
         # 控制终端错误日志量，避免进度条被大量日志打断后出现重复重绘。
         self._download_error_log_count = 0
         self._download_error_log_limit = 5
@@ -133,25 +136,49 @@ class BaseDownloader(ABC):
         pass
 
     async def _should_download(self, aweme_id: str) -> bool:
-        in_local = self._is_locally_downloaded(aweme_id)
-        in_db = False
-        if self.database:
-            in_db = await self.database.is_downloaded(aweme_id)
+        if not aweme_id:
+            return True
 
-        if in_db and in_local:
+        if self._existing_media_ids is None or self._recorded_aweme_ids is None:
+            self._build_local_aweme_index()
+
+        exists_in_folder = (
+            self._existing_media_ids is not None
+            and aweme_id in self._existing_media_ids
+        )
+        recorded_in_ids = (
+            self._recorded_aweme_ids is not None
+            and aweme_id in self._recorded_aweme_ids
+        )
+
+        # 1. Video đã thực sự tồn tại trong thư mục -> Bỏ qua
+        if exists_in_folder:
+            if not recorded_in_ids:
+                self._mark_local_aweme_downloaded(aweme_id)
+            logger.info("Aweme %s already exists in folder, skipping", aweme_id)
             return False
 
-        if in_db and not in_local:
+        # 2. Có trong file lưu ID nhưng file video thực tế KHÔNG có trong folder (đã bị xóa để tải lại)
+        if recorded_in_ids and not exists_in_folder:
             logger.info(
-                "Aweme %s exists in database but media file not found locally, retry download",
+                "Aweme %s recorded in ID file but media file missing from folder, will re-download",
                 aweme_id,
             )
             return True
 
-        if in_local:
-            logger.info("Aweme %s already exists locally, skipping", aweme_id)
-            return False
+        # 3. Database check
+        if self.database:
+            in_db = await self.database.is_downloaded(aweme_id)
+            if in_db and exists_in_folder:
+                return False
+            if in_db and not exists_in_folder:
+                logger.info(
+                    "Aweme %s exists in database but media file not found locally, retry download",
+                    aweme_id,
+                )
+                return True
 
+        # 4. Chưa tồn tại -> tải về
         return True
 
     def _is_locally_downloaded(self, aweme_id: str) -> bool:
@@ -167,13 +194,44 @@ class BaseDownloader(ABC):
 
     def _build_local_aweme_index(self):
         base_path = self.file_manager.base_path
-        aweme_ids: set[str] = set()
+        file_ids: set[str] = set()
+        recorded_ids: set[str] = set()
 
         if base_path.exists():
+            # 1. Đọc từ downloaded_ids.txt nếu có
+            ids_file = base_path / "downloaded_ids.txt"
+            if ids_file.is_file():
+                try:
+                    for line in ids_file.read_text(encoding="utf-8", errors="ignore").splitlines():
+                        match = self._aweme_id_pattern.search(line)
+                        if match:
+                            recorded_ids.add(match.group(1))
+                except OSError:
+                    pass
+
+            # 2. Đọc từ download_manifest.jsonl nếu có
+            manifest_file = base_path / "download_manifest.jsonl"
+            if manifest_file.is_file():
+                try:
+                    for line in manifest_file.read_text(encoding="utf-8", errors="ignore").splitlines():
+                        if not line.strip():
+                            continue
+                        try:
+                            rec = json.loads(line)
+                            m_id = str(rec.get("aweme_id") or "").strip()
+                            match = self._aweme_id_pattern.search(m_id)
+                            if match:
+                                recorded_ids.add(match.group(1))
+                        except Exception:
+                            pass
+                except OSError:
+                    pass
+
+            # 3. Quét các file video thực tế trên đĩa (đệ quy tất cả các folder con)
             for path in base_path.rglob("*"):
                 if not path.is_file():
                     continue
-                if path.suffix.lower() not in self._local_media_suffixes:
+                if path.suffix.lower() not in self._local_video_suffixes:
                     continue
                 try:
                     if path.stat().st_size <= 0:
@@ -181,17 +239,42 @@ class BaseDownloader(ABC):
                 except OSError:
                     continue
                 for match in self._aweme_id_pattern.finditer(path.name):
-                    aweme_ids.add(match.group(1))
+                    file_ids.add(match.group(1))
 
-        self._local_aweme_ids = aweme_ids
+            # 4. Đồng bộ bổ sung các ID từ file thực tế vào downloaded_ids.txt nếu còn thiếu
+            missing_in_file = file_ids - recorded_ids
+            if missing_in_file or (file_ids and not ids_file.exists()):
+                try:
+                    merged = sorted(recorded_ids | file_ids)
+                    ids_file.write_text("\n".join(merged) + "\n", encoding="utf-8")
+                    recorded_ids.update(file_ids)
+                except OSError:
+                    pass
+
+        self._recorded_aweme_ids = recorded_ids
+        self._existing_media_ids = file_ids
+        self._local_aweme_ids = file_ids | recorded_ids
 
     def _mark_local_aweme_downloaded(self, aweme_id: str):
         if not aweme_id:
             return
 
         if self._local_aweme_ids is None:
-            self._local_aweme_ids = set()
+            self._build_local_aweme_index()
+
         self._local_aweme_ids.add(aweme_id)
+        if self._existing_media_ids is not None:
+            self._existing_media_ids.add(aweme_id)
+        if self._recorded_aweme_ids is not None:
+            self._recorded_aweme_ids.add(aweme_id)
+
+        # Ghi ngay vào file downloaded_ids.txt
+        try:
+            ids_file = self.file_manager.base_path / "downloaded_ids.txt"
+            with ids_file.open("a", encoding="utf-8") as f:
+                f.write(f"{aweme_id}\n")
+        except OSError:
+            pass
 
     def _filter_by_time(self, aweme_list: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
         start_time = self.config.get("start_time")
