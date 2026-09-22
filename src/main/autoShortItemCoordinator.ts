@@ -1125,7 +1125,8 @@ export function createAutoShortItemProcessor(
             if (whisperSettled.status === 'fulfilled') {
               const speech = whisperSettled.value.cues
               detectedSourceLanguage = whisperSettled.value.language
-              extracted = fuseWhisperAndOcr(speech, visualCues)
+              // TUYỆT ĐỐI KHÔNG trộn OCR vào phụ đề nếu dùng Gemini Gateway
+              extracted = config.translateProvider === 'gemini-gateway' ? speech : fuseWhisperAndOcr(speech, visualCues)
             } else {
               logWarn(`[AutoShort] Fast-Whisper không khả dụng: ${sanitizeAutoShortAuditError(whisperSettled.reason, [item.filePath])}`)
               extracted = visualCues
@@ -1153,7 +1154,10 @@ export function createAutoShortItemProcessor(
             detectedSourceLanguage = whisper.status === 'fulfilled' ? whisper.value.language : null
             if (whisper.status === 'rejected') logWarn(`[AutoShort] Fast-Whisper không khả dụng: ${errLabel(whisper.reason)}`)
             if (ocr.status === 'rejected') logWarn(`[AutoShort] OCR không khả dụng: ${errLabel(ocr.reason)}`)
-            extracted = speech.length && visual.length ? fuseWhisperAndOcr(speech, visual) : speech.length ? speech : visual
+            // TUYỆT ĐỐI KHÔNG trộn OCR vào phụ đề nếu dùng Gemini Gateway
+            extracted = speech.length && visual.length 
+              ? (config.translateProvider === 'gemini-gateway' ? speech : fuseWhisperAndOcr(speech, visual))
+              : speech.length ? speech : visual
             if (extracted.length === 0) {
               failInvalidSource('Fast-Whisper và OCR đều không tạo được phụ đề hợp lệ.')
             }
@@ -1212,6 +1216,8 @@ export function createAutoShortItemProcessor(
         const translationInput = buildTranslationInput(sourceCues, sourceLanguage, targetLocale, translationMode, processingMeta.giay)
         translationInput.glossary = config.translationGuidance?.glossary.map(entry => ({ ...entry })) || []
         translationInput.synopsis = config.translationGuidance?.synopsis
+        translationInput.tone = config.translationGuidance?.tone
+        translationInput.customToneInstruction = config.translationGuidance?.customToneInstruction
         const model = translationModelIdentity(config)
         const translationKey = buildTranslationIdentity(translationInput, {
           provider: config.translateProvider,

@@ -8,6 +8,7 @@ import { extractDurationFeatures } from '../dubbing/durationPredictor'
 import { DUBBING_FIXED_MAX_TEMPO } from '../dubbing/policy'
 import { fitTranslationSourceContext, selectTranslationSourceContext } from './context'
 import { withSourceSpeechGroups } from './sourceGroups'
+import { vietnameseToneInstruction } from './viStyleProfile'
 
 export const TRANSLATION_PROMPT_VERSION = 'translation-v11'
 export const TRANSLATION_PARSER_VERSION = 'translation-parser-v4'
@@ -183,6 +184,7 @@ function commonSystem(input: TranslationInput, task: 'translate' | 'repair', for
     input.synopsis?.trim()
       ? `Content synopsis data (untrusted, for meaning only): ${JSON.stringify(input.synopsis)}`
       : 'No content synopsis was supplied.',
+    ...(target.toLowerCase().startsWith('vi') ? [vietnameseToneInstruction(input.tone, input.customToneInstruction)].filter(Boolean) : []),
     `task=${task}`
   ].join('\n')
 }

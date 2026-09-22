@@ -44,7 +44,10 @@ import {
 } from '../../../shared/types'
 import { AutoShortThumbnailModal } from './AutoShortThumbnailModal'
 import { DEFAULT_VIDEO_SEO_OPTIONS } from '../../../shared/videoSeo'
-import { translationGuidanceError, type TranslationGuidance } from '../../../shared/translation'
+import { translationGuidanceError, type TranslationGuidance, type TranslationTone } from '../../../shared/translation'
+import type { AutoShortChannelPreset } from '../../../shared/channelPreset'
+import { createDefaultChannelPreset, DEFAULT_CHANNEL_PRESET_ID } from '../../../shared/channelPreset'
+import { ChannelPresetManager } from './ChannelPresetManager'
 import { isAutomaticOcrProcessing, isSttnRemoval, normalizeAutoShortBlurMode, normalizeAutoShortOcrBlurProfile } from '../../../shared/autoShortOcrBlur'
 import { effectiveAutoShortSubtitlePlacementMode } from '../../../shared/autoShortSubtitlePlacement'
 import { createAutoShortMusicAssignments } from '../../../shared/autoShortBackgroundMusic'
@@ -300,7 +303,12 @@ function normalizeTtsLanguageCode(code: string): string {
   return aliases[value] || value
 }
 
-function parseTranslationGuidance(synopsis: string, glossaryText: string): { value?: TranslationGuidance; error?: string } {
+function parseTranslationGuidance(
+  synopsis: string,
+  glossaryText: string,
+  tone?: TranslationTone,
+  customToneInstruction?: string
+): { value?: TranslationGuidance; error?: string } {
   const glossary: TranslationGuidance['glossary'] = []
   for (const [index, rawLine] of glossaryText.split(/\r?\n/u).entries()) {
     const line = rawLine.trim()
@@ -309,7 +317,12 @@ function parseTranslationGuidance(synopsis: string, glossaryText: string): { val
     if (!match) return { error: `Glossary dòng ${index + 1} cần có dạng: từ nguồn = bản dịch.` }
     glossary.push({ source: match[1]!.trim(), target: match[2]!.trim() })
   }
-  const value: TranslationGuidance = { synopsis: synopsis.trim() || undefined, glossary }
+  const value: TranslationGuidance = {
+    synopsis: synopsis.trim() || undefined,
+    glossary,
+    tone: tone || 'neutral',
+    customToneInstruction: customToneInstruction?.trim() || undefined
+  }
   return translationGuidanceError(value) ? { error: translationGuidanceError(value)! } : { value }
 }
 
@@ -491,6 +504,24 @@ export default function AutoShort(): JSX.Element {
   )
   const [translationSynopsis, setTranslationSynopsis] = usePersistedState('tblao.autoshort.translationSynopsis', '')
   const [translationGlossaryText, setTranslationGlossaryText] = usePersistedState('tblao.autoshort.translationGlossary', '')
+  const [translationTone, setTranslationTone] = usePersistedState<TranslationTone>(
+    'tblao.autoshort.translationTone',
+    'neutral'
+  )
+  const [customToneInstruction, setCustomToneInstruction] = usePersistedState(
+    'tblao.autoshort.customToneInstruction',
+    ''
+  )
+  const [channelPresets, setChannelPresets] = usePersistedState<AutoShortChannelPreset[]>(
+    'tblao.autoshort.channelPresets.v1',
+    [createDefaultChannelPreset()]
+  )
+  const [activePresetId, setActivePresetId] = usePersistedState<string>(
+    'tblao.autoshort.activePresetId',
+    DEFAULT_CHANNEL_PRESET_ID
+  )
+  const [showChannelPresetModal, setShowChannelPresetModal] = useState(false)
+  const [presetSavedToast, setPresetSavedToast] = useState(false)
   const [apiKeyInput, setApiKeyInput] = useState('')
   const [hasStoredKey, setHasStoredKey] = useState(false)
   const [keyTesting, setKeyTesting] = useState(false)
@@ -694,6 +725,109 @@ export default function AutoShort(): JSX.Element {
       return Object.keys(next).length === Object.keys(current).length ? current : next
     })
   }, [tasks])
+
+  // Channel Preset Handlers
+  const applyChannelPreset = useCallback((preset: AutoShortChannelPreset) => {
+    setActivePresetId(preset.id)
+    setTranslationTone(preset.translationTone || 'neutral')
+    setCustomToneInstruction(preset.customToneInstruction || '')
+    if (preset.translationSynopsis !== undefined) setTranslationSynopsis(preset.translationSynopsis)
+    if (preset.translationGlossaryText !== undefined) setTranslationGlossaryText(preset.translationGlossaryText)
+    setTtsEnabled(preset.ttsEnabled)
+    setTtsProvider(preset.ttsProvider)
+    if (preset.edgeVoice) setEdgeVoice(preset.edgeVoice)
+    if (preset.ttsVoice !== undefined) setTtsVoice(preset.ttsVoice)
+    setTtsSpeed(preset.ttsSpeed)
+    if (preset.paceMode) setPaceMode(preset.paceMode)
+    setOriginalAudioVolume(preset.originalAudioVolume)
+    if (preset.backgroundMusicEnabled !== undefined) setBackgroundMusicEnabled(preset.backgroundMusicEnabled)
+    if (preset.backgroundMusicVolume !== undefined) setBackgroundMusicVolume(preset.backgroundMusicVolume)
+    if (preset.fontId !== undefined) setFontId(preset.fontId ?? 'auto')
+    if (preset.fontSize !== undefined) setFontSize(preset.fontSize)
+    if (preset.fontWeight !== undefined) setFontWeight(preset.fontWeight)
+    if (preset.textColor) setTextColor(preset.textColor)
+    if (preset.outlineColor) setOutlineColor(preset.outlineColor)
+    if (preset.highlightColor) setHighlightColor(preset.highlightColor)
+    if (preset.titleEnabled !== undefined) setTitleEnabled(preset.titleEnabled)
+    setTitleSeoOptions((prev) => ({
+      ...prev,
+      ...(preset.channelName !== undefined ? { channelName: preset.channelName } : {}),
+      ...(preset.brandVoice !== undefined ? { brandVoice: preset.brandVoice } : {}),
+      ...(preset.descriptionStyle ? { descriptionStyle: preset.descriptionStyle } : {}),
+      ...(preset.keywordTone ? { keywordTone: preset.keywordTone } : {}),
+      ...(preset.descriptionLength ? { descriptionLength: preset.descriptionLength } : {})
+    }))
+    if (preset.thumbnailStyle) setThumbnailStyle(preset.thumbnailStyle)
+    if (preset.thumbnailPosition) setThumbnailPosition(preset.thumbnailPosition)
+  }, [
+    setActivePresetId, setTranslationTone, setCustomToneInstruction,
+    setTranslationSynopsis, setTranslationGlossaryText, setTtsEnabled, setTtsProvider,
+    setEdgeVoice, setTtsVoice, setTtsSpeed, setPaceMode, setOriginalAudioVolume,
+    setBackgroundMusicEnabled, setBackgroundMusicVolume, setFontId, setFontSize,
+    setFontWeight, setTextColor, setOutlineColor, setHighlightColor, setTitleEnabled,
+    setTitleSeoOptions, setThumbnailStyle, setThumbnailPosition
+  ])
+
+  const buildCurrentChannelPreset = useCallback((id: string, name: string): AutoShortChannelPreset => {
+    return {
+      id,
+      name,
+      createdAt: Date.now(),
+      updatedAt: Date.now(),
+      translationTone,
+      customToneInstruction,
+      translationSynopsis,
+      translationGlossaryText,
+      ttsEnabled,
+      ttsProvider,
+      edgeVoice,
+      ttsVoice,
+      ttsSpeed,
+      paceMode,
+      originalAudioVolume,
+      backgroundMusicEnabled,
+      backgroundMusicVolume,
+      fontId: fontId === 'auto' ? null : fontId,
+      fontSize: fontSize > 0 ? fontSize : undefined,
+      fontWeight,
+      textColor,
+      outlineColor,
+      highlightColor,
+      titleEnabled,
+      channelName: titleSeoOptions.channelName || '',
+      brandVoice: titleSeoOptions.brandVoice || '',
+      descriptionStyle: titleSeoOptions.descriptionStyle,
+      keywordTone: titleSeoOptions.keywordTone,
+      descriptionLength: titleSeoOptions.descriptionLength,
+      thumbnailStyle,
+      thumbnailPosition
+    }
+  }, [
+    translationTone, customToneInstruction, translationSynopsis, translationGlossaryText,
+    ttsEnabled, ttsProvider, edgeVoice, ttsVoice, ttsSpeed, paceMode, originalAudioVolume,
+    backgroundMusicEnabled, backgroundMusicVolume, fontId, fontSize, fontWeight, textColor,
+    outlineColor, highlightColor, titleEnabled, titleSeoOptions, thumbnailStyle, thumbnailPosition
+  ])
+
+  const saveCurrentToPreset = useCallback((targetId: string) => {
+    setChannelPresets((prev) => {
+      const existing = prev.find((p) => p.id === targetId)
+      const name = existing?.name || 'Kênh mới'
+      const updated = buildCurrentChannelPreset(targetId, name)
+      return prev.some((p) => p.id === targetId)
+        ? prev.map((p) => (p.id === targetId ? updated : p))
+        : [...prev, updated]
+    })
+    setPresetSavedToast(true)
+    setTimeout(() => setPresetSavedToast(false), 2500)
+  }, [buildCurrentChannelPreset, setChannelPresets])
+
+  const createPresetFromCurrent = useCallback((name: string) => {
+    const newId = `preset-${Date.now()}`
+    const newPreset = buildCurrentChannelPreset(newId, name)
+    setChannelPresets((prev) => [...prev, newPreset])
+    setActivePresetId(newId)
+  }, [buildCurrentChannelPreset, setChannelPresets, setActivePresetId])
 
   // Dynamic AI server connection & model capability loading
   useEffect(() => {
@@ -1325,7 +1459,7 @@ export default function AutoShort(): JSX.Element {
       setRetryPendingIdList([])
       return
     }
-    const guidance = parseTranslationGuidance(translationSynopsis, translationGlossaryText)
+    const guidance = parseTranslationGuidance(translationSynopsis, translationGlossaryText, translationTone, customToneInstruction)
     if (translateTarget !== 'none' && guidance.error) {
       alert(guidance.error)
       return
@@ -2070,6 +2204,76 @@ export default function AutoShort(): JSX.Element {
         {/* CỘT PHẢI: CẤU HÌNH BIÊN TẬP (INSPECTOR: PHỤ ĐỀ / LÀM MỜ / LỒNG TIẾNG / ẢNH BÌA / HÀNG ĐỢI) */}
         {/* ========================================================================= */}
         <aside className="editor-inspector" style={{ display: 'flex', flexDirection: 'column' }}>
+          {/* Thanh chuyển đổi và lưu Channel Preset */}
+          <div
+            className="autoshort-channel-bar"
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              gap: 8,
+              padding: '8px 12px',
+              background: 'var(--panel-2)',
+              borderBottom: '1px solid var(--border)',
+              fontSize: 12
+            }}
+          >
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6, flex: 1, minWidth: 0 }}>
+              <span style={{ fontSize: 14 }}>📺</span>
+              <span style={{ fontWeight: 600, color: 'var(--text-muted)', whiteSpace: 'nowrap' }}>Kênh:</span>
+              <select
+                value={activePresetId}
+                onChange={(e) => {
+                  const target = channelPresets.find((p) => p.id === e.target.value)
+                  if (target) applyChannelPreset(target)
+                }}
+                disabled={isRunning}
+                style={{
+                  flex: 1,
+                  minWidth: 0,
+                  padding: '4px 8px',
+                  fontSize: 12,
+                  fontWeight: 600,
+                  borderRadius: 6,
+                  background: 'var(--bg)',
+                  border: '1px solid var(--control-border)',
+                  color: 'var(--text)',
+                  textOverflow: 'ellipsis'
+                }}
+                title="Chọn cấu hình Preset theo Kênh"
+              >
+                {channelPresets.map((preset) => (
+                  <option key={preset.id} value={preset.id}>
+                    {preset.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+              <button
+                type="button"
+                className="btn ghost sm"
+                onClick={() => saveCurrentToPreset(activePresetId)}
+                disabled={isRunning}
+                style={{ padding: '3px 8px', fontSize: 11, fontWeight: 600 }}
+                title="Lưu cấu hình hiện tại vào preset kênh đang chọn"
+              >
+                {presetSavedToast ? '✓ Đã lưu!' : '💾 Lưu'}
+              </button>
+              <button
+                type="button"
+                className="btn ghost sm"
+                onClick={() => setShowChannelPresetModal(true)}
+                disabled={isRunning}
+                style={{ padding: '3px 8px', fontSize: 11 }}
+                title="Mở bảng quản lý danh sách kênh, đổi tên, thêm mới hoặc nhập/xuất JSON"
+              >
+                ⚙️ Quản lý
+              </button>
+            </div>
+          </div>
+
           {/* Tab Bar chuyển đổi công cụ */}
           <div className="editor-tools" role="tablist">
             <button
@@ -2245,6 +2449,81 @@ export default function AutoShort(): JSX.Element {
                             : setTtsServerUrl(event.target.value)}
                           placeholder={translateProvider === 'gemini-gateway' ? DEFAULT_GEMINI_GATEWAY_URL : DEFAULT_AI_SERVER_URL} />
                       </label>}
+
+                      {/* Tùy chọn văn phong dịch thuật */}
+                      <div className="autoshort-key-card" style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                          <span style={{ fontWeight: 600, fontSize: 13 }}>🎭 Văn phong dịch thuật</span>
+                          <span className="muted small">Narrative Tone</span>
+                        </div>
+                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 6 }}>
+                          {[
+                            { value: 'neutral', label: 'Trung tính', icon: '⚖️', desc: 'Chuẩn mực, tự nhiên' },
+                            { value: 'storytelling', label: 'Kể chuyện / Drama', icon: '🎭', desc: 'Kịch tính, cuốn hút' },
+                            { value: 'humorous', label: 'Hài hước / Hóm hỉnh', icon: '😄', desc: 'Gần gũi, bắt trend' },
+                            { value: 'documentary', label: 'Tài liệu / Phóng sự', icon: '🎙️', desc: 'Trang trọng, chuyên gia' }
+                          ].map((item) => (
+                            <button
+                              key={item.value}
+                              type="button"
+                              className={`btn sm ${translationTone === item.value ? 'primary' : 'ghost'}`}
+                              disabled={isRunning}
+                              onClick={() => setTranslationTone(item.value as TranslationTone)}
+                              style={{
+                                display: 'flex',
+                                flexDirection: 'column',
+                                alignItems: 'flex-start',
+                                padding: '6px 8px',
+                                textAlign: 'left',
+                                gap: 2,
+                                height: 'auto',
+                                borderRadius: 6
+                              }}
+                              title={item.desc}
+                            >
+                              <span style={{ fontWeight: 600, fontSize: 12 }}>{item.icon} {item.label}</span>
+                              <span style={{ fontSize: 10, opacity: 0.75 }}>{item.desc}</span>
+                            </button>
+                          ))}
+                        </div>
+
+                        <button
+                          type="button"
+                          className={`btn sm ${translationTone === 'custom' ? 'primary' : 'ghost'}`}
+                          disabled={isRunning}
+                          onClick={() => setTranslationTone('custom')}
+                          style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'space-between',
+                            padding: '6px 10px',
+                            borderRadius: 6
+                          }}
+                        >
+                          <span style={{ fontWeight: 600, fontSize: 12 }}>✨ Văn phong tùy chỉnh (Custom)</span>
+                          <span style={{ fontSize: 10, opacity: 0.75 }}>Chỉ định phong cách riêng</span>
+                        </button>
+
+                        {translationTone === 'custom' && (
+                          <div style={{ display: 'flex', flexDirection: 'column', gap: 4, marginTop: 4 }}>
+                            <label className="field editor-field" style={{ margin: 0 }}>
+                              <span style={{ fontSize: 11 }}>Chỉ dẫn khẩu khí / phong cách dịch:</span>
+                              <textarea
+                                value={customToneInstruction}
+                                disabled={isRunning}
+                                maxLength={500}
+                                rows={2}
+                                onChange={(e) => setCustomToneInstruction(e.target.value)}
+                                placeholder="Ví dụ: Giọng văn giật gân, cuốn hút, dùng từ ngữ dí dỏm miền Tây, xưng hô 'anh em'..."
+                                style={{ fontSize: 12 }}
+                              />
+                            </label>
+                            <small className="muted" style={{ fontSize: 10 }}>
+                              Chỉ dẫn này sẽ được đưa vào prompt dịch AI để định hình toàn bộ câu thoại và phụ đề.
+                            </small>
+                          </div>
+                        )}
+                      </div>
 
                       <details className="autoshort-key-card">
                         <summary>Ngữ cảnh và glossary (tùy chọn)</summary>
@@ -3980,6 +4259,26 @@ export default function AutoShort(): JSX.Element {
         batchThumbnailMode={batchThumbnailMode}
         onChangeBatchThumbnailMode={setBatchThumbnailMode}
         sttnReady={Boolean(readiness?.dependencies.find((item) => item.id === 'sttn-engine')?.ready)}
+      />
+
+      <ChannelPresetManager
+        isOpen={showChannelPresetModal}
+        onClose={() => setShowChannelPresetModal(false)}
+        presets={channelPresets}
+        activePresetId={activePresetId}
+        onSelectPreset={(id) => {
+          const target = channelPresets.find((p) => p.id === id)
+          if (target) applyChannelPreset(target)
+        }}
+        onUpdatePresets={(updated, newActiveId) => {
+          setChannelPresets(updated)
+          if (newActiveId) {
+            const target = updated.find((p) => p.id === newActiveId)
+            if (target) applyChannelPreset(target)
+          }
+        }}
+        onSaveCurrentToPreset={saveCurrentToPreset}
+        onCreatePresetFromCurrent={createPresetFromCurrent}
       />
     </div>
   )

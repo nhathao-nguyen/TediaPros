@@ -264,7 +264,18 @@ function createWindow(): void {
     }
   })
 
-  mainWindow.on('ready-to-show', () => mainWindow?.show())
+  mainWindow.on('ready-to-show', () => {
+    logInfo('Cửa sổ chính sẵn sàng hiển thị (ready-to-show)')
+    mainWindow?.show()
+    mainWindow?.focus()
+  })
+  setTimeout(() => {
+    if (mainWindow && !mainWindow.isDestroyed() && !mainWindow.isVisible()) {
+      logWarn('Fallback hiển thị cửa sổ chính sau timeout')
+      mainWindow.show()
+      mainWindow.focus()
+    }
+  }, 2500)
   mainWindow.on('closed', () => {
     mainWindow = null
   })

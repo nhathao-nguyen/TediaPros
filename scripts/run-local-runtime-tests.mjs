@@ -160,7 +160,8 @@ const knownTests = [
   'autoshort-item-scope.test',
   'standalone-engine-results.test',
   'ipc-origin-validation.test',
-  'douyin-channel-folder.test'
+  'douyin-channel-folder.test',
+  'autoshort-channel-preset-and-tone.test'
 ]
 
 const requestedTests = process.argv.slice(2).map((name) => name.replace(/\.(ts|js)$/, ''))

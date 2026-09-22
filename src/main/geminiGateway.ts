@@ -355,19 +355,24 @@ function providerError(status: number, detail: string): Error {
   } else if (errorCode === 'model-mismatch') {
     message = `Gemini Gateway trả về model không khớp: ${errorMsg || detail}`
     providerCode = 'provider-protocol'
-  } else if (errorCode === 'invalid-structured-json' || errorCode === 'invalid-json' || errorCode === 'ambiguous-json' || errorCode === 'duplicate-key') {
-    message = `Gemini Gateway không thể chuẩn hóa JSON có cấu trúc: ${errorMsg || detail}`
+  } else if (errorCode && ['invalid-structured-json', 'invalid-json', 'ambiguous-json', 'duplicate-key', 'response-limit'].includes(errorCode)) {
+    const reason = errorCode === 'response-limit' ? 'vượt giới hạn phản hồi' : 'trả bản dịch sai định dạng JSON'
+    const attempts = upstreamAttempts ? `; đã thử ${upstreamAttempts} lần` : ''
+    message = `Gemini Gateway ${reason} (${errorCode}${attempts}). Hãy thử lại dịch.`
     providerCode = 'provider-protocol'
   } else if (errorCode === 'model-unverified') {
     message = `Gemini Gateway không xác thực được model Gemini 3.1 Pro: ${errorMsg || detail}`
     providerCode = 'provider-protocol'
-  } else if (errorCode === 'upstream-incomplete' || errorCode === 'response-limit') {
+  } else if (errorCode === 'upstream-incomplete') {
     message = `Gemini Gateway phản hồi chưa hoàn tất từ upstream: ${errorMsg || detail}`
     providerCode = 'provider-protocol'
+  } else if (errorCode === 'gemini-transient-message') {
+    const attempts = upstreamAttempts ? ` sau ${upstreamAttempts} lần thử` : ''
+    message = `Google Gemini tạm thời không xử lý được yêu cầu${attempts} (gemini-transient-message). Hãy đợi rồi thử lại dịch.`
+    providerCode = 'provider-transient'
   } else if (errorCode && [
-    'upstream-http-5xx', 'gemini-transient-message', 'upstream-generation-error',
-    'upstream-parse-error', 'upstream-timeout', 'invalid-payload', 'invalid-json',
-    'ambiguous-json', 'duplicate-key', 'wrong-root'
+    'upstream-http-5xx', 'upstream-generation-error',
+    'upstream-parse-error', 'upstream-timeout', 'invalid-payload', 'wrong-root'
   ].includes(errorCode)) {
     const attemptText = upstreamAttempts ? `${upstreamAttempts} lượt thử` : '1 lượt thử'
     message = `Gemini Gateway báo lỗi upstream (${errorCode}, ${attemptText}): ${errorMsg || detail || 'không có chi tiết'}. Hãy thử lại thủ công để mở một lượt gateway mới.`
