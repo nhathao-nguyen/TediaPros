@@ -8,6 +8,9 @@ import {
   extractProminentOcrRegion,
   calculateThumbnailFontSize,
   generateThumbnailAssDocument,
+  resolveThumbnailStyle,
+  resolveUniqueThumbnailFilename,
+  THUMBNAIL_STYLES,
   type AutoShortThumbnailHooks
 } from '../src/main/autoShortThumbnail'
 import type { OcrVisualTimeline } from '../src/shared/types'
@@ -138,7 +141,7 @@ test('createAutoShortThumbnail creates first_frame thumbnail with STTN cleaning 
       assert.equal(result.timestamp, 0)
       assert.equal(result.cleaned, true)
       assert.equal(result.provider, 'cuda')
-      assert.equal(result.thumbnailPath, join(outputDir, 'video1_thumb.jpg'))
+      assert.equal(result.thumbnailPath, join(outputDir, 'Thumbnail.jpg'))
       assert.equal((await stat(result.thumbnailPath)).size > 0, true)
     }
 
@@ -147,7 +150,7 @@ test('createAutoShortThumbnail creates first_frame thumbnail with STTN cleaning 
 
     // Check that temporary directory .thumb-* was cleaned up
     const remainingInOutputDir = await readdir(outputDir)
-    assert.equal(remainingInOutputDir.includes('video1_thumb.jpg'), true)
+    assert.equal(remainingInOutputDir.includes('Thumbnail.jpg'), true)
     assert.equal(remainingInOutputDir.some((name) => name.startsWith('.thumb-')), false)
   } finally {
     await rm(root, { recursive: true, force: true }).catch(() => {})
@@ -220,7 +223,7 @@ test('createAutoShortThumbnail creates current_frame thumbnail and skips STTN if
     if (result.ok) {
       assert.equal(result.timestamp, 24.5)
       assert.equal(result.cleaned, false) // No text to clean
-      assert.equal(result.thumbnailPath, join(outputDir, 'video2_thumb.jpg'))
+      assert.equal(result.thumbnailPath, join(outputDir, 'Thumbnail.jpg'))
     }
 
     // STTN should be skipped because OCR found no text!
@@ -626,4 +629,102 @@ test('calculateThumbnailFontSize and generateThumbnailAssDocument support dynami
   assert.ok(doc.assContent.includes('&H0000F5FF'), 'Should contain vibrant yellow primary color')
   assert.ok(doc.assContent.includes('&H20000000'), 'Should contain deep 3D drop shadow')
   assert.ok(doc.assContent.includes('\\an5\\b1\\fsp4\\pos(540,384)'), 'Should contain bold extra spacing and pos')
+})
+
+test('resolveThumbnailStyle supports 12 styles, random rotation, and fallback', () => {
+  assert.equal(THUMBNAIL_STYLES.length, 12)
+
+  // Direct styles
+  assert.equal(resolveThumbnailStyle('neon_cyan'), 'neon_cyan')
+  assert.equal(resolveThumbnailStyle('fire_orange'), 'fire_orange')
+  assert.equal(resolveThumbnailStyle('luxury_gold'), 'luxury_gold')
+  assert.equal(resolveThumbnailStyle('electric_lime'), 'electric_lime')
+
+  // Random with index rotates evenly
+  assert.equal(resolveThumbnailStyle('random', 0), THUMBNAIL_STYLES[0])
+  assert.equal(resolveThumbnailStyle('random', 1), THUMBNAIL_STYLES[1])
+  assert.equal(resolveThumbnailStyle('random', 4), 'neon_cyan')
+  assert.equal(resolveThumbnailStyle('random', 5), 'fire_orange')
+  assert.equal(resolveThumbnailStyle('random', 12), THUMBNAIL_STYLES[0]) // Modulo wraps
+
+  // Random without index returns a valid style
+  const randomStyle = resolveThumbnailStyle('random')
+  assert.ok(THUMBNAIL_STYLES.includes(randomStyle))
+
+  // Fallback on invalid style
+  assert.equal(resolveThumbnailStyle('invalid_style' as any), 'douyin_yellow')
+})
+
+test('resolveUniqueThumbnailFilename creates clean Thumbnail.jpg and increments on collision', async () => {
+  const root = await mkdtemp(join(tmpdir(), 'tedia-unique-thumb-test-'))
+  try {
+    // 1st file: Thumbnail.jpg
+    const name1 = await resolveUniqueThumbnailFilename(root)
+    assert.equal(name1, 'Thumbnail.jpg')
+    await writeFile(join(root, name1), 'dummy-image-1')
+
+    // 2nd file: Thumbnail (2).jpg
+    const name2 = await resolveUniqueThumbnailFilename(root)
+    assert.equal(name2, 'Thumbnail (2).jpg')
+    await writeFile(join(root, name2), 'dummy-image-2')
+
+    // 3rd file: Thumbnail (3).jpg
+    const name3 = await resolveUniqueThumbnailFilename(root)
+    assert.equal(name3, 'Thumbnail (3).jpg')
+
+    // Custom name with collision
+    const custom1 = await resolveUniqueThumbnailFilename(root, 'custom_thumb.jpg')
+    assert.equal(custom1, 'custom_thumb.jpg')
+    await writeFile(join(root, custom1), 'dummy-custom-1')
+
+    const custom2 = await resolveUniqueThumbnailFilename(root, 'custom_thumb.jpg')
+    assert.equal(custom2, 'custom_thumb (2).jpg')
+  } finally {
+    await rm(root, { recursive: true, force: true }).catch(() => {})
+  }
+})
+
+test('generateThumbnailAssDocument renders correct ASS colors for new modern presets', async () => {
+  // neon_cyan: #00F0FF -> &H00FFF000 primary, #051026 -> &H00261005 outline
+  const neon = await generateThumbnailAssDocument({
+    text: 'CYBERPUNK SHORT',
+    style: 'neon_cyan',
+    fontSize: 'large',
+    canvasWidth: 1080,
+    canvasHeight: 1920
+  })
+  assert.ok(neon.assContent.includes('&H00FFF000'), 'Neon Cyan primary color')
+  assert.ok(neon.assContent.includes('&H00261005'), 'Midnight Navy outline color')
+
+  // fire_orange: #FF6B00 -> &H00006BFF primary, #4D0000 -> &H0000004D outline
+  const fire = await generateThumbnailAssDocument({
+    text: 'BLAZING FIRE',
+    style: 'fire_orange',
+    fontSize: 'large',
+    canvasWidth: 1080,
+    canvasHeight: 1920
+  })
+  assert.ok(fire.assContent.includes('&H00006BFF'), 'Fire Orange primary color')
+  assert.ok(fire.assContent.includes('&H0000004D'), 'Deep Maroon outline color')
+
+  // luxury_gold: #FFD700 -> &H0000D7FF primary, #2A1602 -> &H0002162A outline
+  const gold = await generateThumbnailAssDocument({
+    text: 'HOÀNG GIA',
+    style: 'luxury_gold',
+    fontSize: 'large',
+    canvasWidth: 1080,
+    canvasHeight: 1920
+  })
+  assert.ok(gold.assContent.includes('&H0000D7FF'), 'Gold primary color')
+  assert.ok(gold.assContent.includes('&H0002162A'), 'Espresso outline color')
+
+  // random style resolves without error
+  const randDoc = await generateThumbnailAssDocument({
+    text: 'RANDOM PRESET TEST',
+    style: 'random',
+    fontSize: 'large',
+    canvasWidth: 1080,
+    canvasHeight: 1920
+  })
+  assert.ok(randDoc.assContent.includes('TitleStyle,'))
 })

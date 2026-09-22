@@ -122,7 +122,7 @@ import type { CutExecutionPlan } from '../shared/autoShortCutPlan'
 import { semanticFrameEditDigest, semanticTemporalSourceDigest } from './autoShortCutIdentity'
 import { validatePreparedCut } from './autoShortCutValidation'
 import { findCutSeamCueIssues } from '../shared/autoShortCutCues'
-import { createAutoShortThumbnail } from './autoShortThumbnail'
+import { createAutoShortThumbnail, resolveThumbnailStyle } from './autoShortThumbnail'
 import { assessTranslationLanguage, normalizeTranslationLocale } from './translation/language'
 import { mapTranslationsStrict } from './translation/response'
 import { createInvalidSourceAssessment } from './translation/orchestrator'
@@ -1395,13 +1395,16 @@ export function createAutoShortItemProcessor(
               span.updateCounters({ cacheHit: 1, cueCount: translatedCueCount })
               logInfo(`[AutoShort] Phục hồi ${translatedCueCount} câu restoration đã review từ checkpoint chính xác.`)
             } else {
-              // OCR is evidence-only here. A short without readable on-screen
-              // text can still use audio; automatic blur/STTN retains its own
-              // stricter visual-OCR failure path elsewhere in this coordinator.
-              const visual = await getVisualOcr().catch((error) => {
-                logWarn(`[AutoShort] OCR evidence không sẵn sàng cho restoration: ${errLabel(error)}`)
-                return null
-              })
+              // OCR is evidence-only here. When subtitleMethod is 'whisper',
+              // restoration uses pure audio/ASR evidence and leaves OCR frames
+              // detached even if automatic blur/STTN runs visual OCR in parallel.
+              const attachOcrEvidence = config.subtitleMethod === 'ocr' || config.subtitleMethod === 'whisper-ocr'
+              const visual = attachOcrEvidence
+                ? await getVisualOcr().catch((error) => {
+                    logWarn(`[AutoShort] OCR evidence không sẵn sàng cho restoration: ${errLabel(error)}`)
+                    return null
+                  })
+                : null
               const extractAudio = deps.extractRestorationAudio || extractGatewayRestorationAudio
               const audio = await extractAudio({
                 ffmpeg,
@@ -1761,8 +1764,7 @@ export function createAutoShortItemProcessor(
         if (synthesized.wordTimings && synthesized.wordTimings.length > 0) {
           finalWordTimings = synthesized.wordTimings
         } else if (renderDisplayStyle !== 'standard') {
-          renderDisplayStyle = 'standard'
-          logWarn('[AutoShort] Đã chuyển word effect sang standard vì độ tin cậy word timing chưa đủ.')
+          logInfo(`[AutoShort] Áp dụng hiệu ứng phụ đề '${renderDisplayStyle}' với nhịp từ ước tính tự động theo câu nói.`)
         }
       }
 
@@ -2006,6 +2008,8 @@ export function createAutoShortItemProcessor(
             }
           }
 
+          const chosenStyle = resolveThumbnailStyle(config.thumbnailConfig.style, index)
+
           const thumbRes = await createAutoShortThumbnail({
             videoPath: item.filePath,
             mode: config.thumbnailConfig.mode || 'first_frame',
@@ -2014,11 +2018,12 @@ export function createAutoShortItemProcessor(
             videoAdjustments: config.videoAdjustments,
             ocrRegion: undefined,
             outputDir: itemOutputDir,
+            outputFilename: 'Thumbnail.jpg',
             temporalEdit: item.temporalEdit,
             titleOverlay: config.thumbnailConfig.autoTitleFromAi !== false && titleForThumbnail
               ? {
                   text: titleForThumbnail,
-                  style: config.thumbnailConfig.style || 'douyin_yellow',
+                  style: chosenStyle,
                   position: config.thumbnailConfig.position || 'ocr',
                   fontSize: config.thumbnailConfig.fontSize || 'large'
                 }

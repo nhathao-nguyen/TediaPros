@@ -315,7 +315,7 @@ export function AutoShortThumbnailModal({
                   <div>
                     <strong>📦 Tự động tạo thumbnail cho tất cả video khi chạy hàng loạt</strong>
                     <small className="muted" style={{ display: 'block', marginTop: 2 }}>
-                      Mỗi video khi render xong sẽ tự động xuất thêm tệp ảnh bìa <code>_thumb.jpg</code> theo cấu hình trên.
+                      Mỗi video khi render xong sẽ tự động xuất thêm tệp ảnh bìa <code>Thumbnail.jpg</code> theo cấu hình trên.
                     </small>
                     {batchAutoThumbnail && (
                       <div style={{ marginTop: 6, display: 'flex', alignItems: 'center', gap: 8 }}>

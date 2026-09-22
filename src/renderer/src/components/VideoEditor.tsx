@@ -1216,7 +1216,8 @@ export default function VideoEditor({ draft, active = true }: Props): JSX.Elemen
                   {(
                     [
                       ['standard', 'Hiển thị cả câu', 'Ổn định và dễ đọc'],
-                      ['word-reveal', 'Hiện lần lượt từng từ', 'Từ đã hiện được giữ lại'],
+                      ['single-word', '1 chữ nhảy liên tục', 'Chỉ 1 chữ hiển thị mỗi thời điểm, nhảy liên tục'],
+                      ['word-reveal', 'Hiện tích lũy từng từ', 'Từ đã hiện được giữ lại'],
                       ['word-highlight', 'Làm nổi bật từ đang đọc', 'Toàn câu luôn hiển thị']
                     ] as const
                   ).map(([value, label, note]) => (

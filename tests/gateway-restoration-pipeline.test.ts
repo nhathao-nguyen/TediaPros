@@ -282,7 +282,7 @@ test('production coordinator sends decoded bounded audio and timestamped OCR evi
       }]
     }
     const config: AutoShortConfig = {
-      subtitleMethod: 'whisper', whisperModel: 'base', whisperDevice: 'cpu',
+      subtitleMethod: 'whisper-ocr', whisperModel: 'base', whisperDevice: 'cpu',
       blurRegions: [], lamMo: false, blurMode: 'manual',
       translateTarget: 'vi-VN', translateProvider: 'gemini-gateway', translateServerUrl: 'http://127.0.0.1:8080',
       ttsEnabled: false, voiceOverMode: false, audioMode: 'replace', originalAudioVolume: 20, outputDir
@@ -433,3 +433,184 @@ test('media restoration checks advertised scheduler body capacity before dispatc
     await rm(root, { recursive: true, force: true })
   }
 })
+
+test('coordinator with subtitleMethod="whisper" keeps OCR detached from gateway restoration even when blur needs visual OCR', async () => {
+  const root = await mkdtemp(join(tmpdir(), 'tedia-gateway-whisper-pure-'))
+  const previousFetch = globalThis.fetch
+  const outputDir = join(root, 'output')
+  const workDir = join(root, 'work')
+  const checkpointDir = join(root, 'checkpoint')
+  const artifactDir = join(root, 'artifact')
+  const video = join(root, 'source.mp4')
+  const sourceSrt = join(root, 'source.srt')
+  await Promise.all([
+    mkdir(outputDir, { recursive: true }),
+    mkdir(workDir, { recursive: true }),
+    mkdir(checkpointDir, { recursive: true }),
+    mkdir(artifactDir, { recursive: true }),
+    writeFile(video, 'fake-mp4-stream'),
+    writeFile(sourceSrt, '1\n00:00:00,000 --> 00:00:01,000\n沃尔沃\n\n2\n00:00:01,000 --> 00:00:02,000\nXC90\n')
+  ])
+
+  const audioFixture = Buffer.from('pure-audio-fixture')
+  let outgoingRestorationDraft: any = null
+  let visualOcrCalled = 0
+  let reqCount = 0
+  const clientReqMap = new Map<string, string>()
+  let draftForResponse = ''
+  let reviewForResponse = ''
+  try {
+    globalThis.fetch = async (url: RequestInfo | URL, init?: RequestInit) => {
+      const target = String(url)
+      if (target.endsWith('/gateway/capabilities')) {
+        return new Response(JSON.stringify({
+          gateway_contract_version: 2,
+          scheduler_contract_version: 1,
+          request_jobs: true,
+          provider_ready: true,
+          models: ['gemini-advanced'],
+          max_request_body_bytes: 4 * 1024 * 1024,
+          gateway_model_routes: { 'gemini-advanced': { route_fingerprint: routeFingerprint } }
+        }), { status: 200, headers: { 'Content-Type': 'application/json' } })
+      }
+      if (target.endsWith('/gateway/requests') && init?.method === 'POST') {
+        reqCount++
+        const body = JSON.parse(String(init.body))
+        if (!outgoingRestorationDraft) outgoingRestorationDraft = body.request
+        const opId = `pure-op-${reqCount}`
+        clientReqMap.set(opId, body.client_request_id)
+        const messages = body.request.messages as Array<{ content?: unknown }>
+        const userContent = messages.find((message) => Array.isArray(message.content))?.content as Array<Record<string, unknown>> | undefined
+        const evidenceText = userContent?.find((part) => part.type === 'text')?.text
+        if (typeof evidenceText === 'string' && reqCount === 1) {
+          const payload = JSON.parse(evidenceText) as { evidenceDigest: string; cues: Array<{ id: string }> }
+          const resolvedDraft = {
+            schemaVersion: 'restoration-translation-v1',
+            evidenceDigest: payload.evidenceDigest,
+            sourceEdits: [],
+            sentenceEndIds: payload.cues.map((cue) => cue.id),
+            entities: [],
+            items: payload.cues.map((cue) => ({ id: cue.id, target: `Translated ${cue.id}` }))
+          }
+          draftForResponse = JSON.stringify(resolvedDraft)
+          const candidateDigest = createHash('sha256').update(JSON.stringify(resolvedDraft)).digest('hex')
+          reviewForResponse = JSON.stringify({
+            schemaVersion: 'restoration-review-v1',
+            candidateDigest,
+            reviewedCueIds: payload.cues.map((cue) => cue.id),
+            status: 'approved',
+            confidenceScore: 0.99,
+            reviewerNotes: 'fixture independently reviewed',
+            groupAssessments: [{ groupId: 'all', cueIds: payload.cues.map((cue) => cue.id), status: 'approved', reason: 'clean' }],
+            findings: [],
+            replacements: []
+          })
+        }
+        return new Response(JSON.stringify({
+          id: opId,
+          client_request_id: body.client_request_id,
+          status: 'queued',
+          dispatch_state: 'not-dispatched',
+          upstream_attempts: 0,
+          created_at_utc: new Date().toISOString()
+        }), { status: 202, headers: { 'Content-Type': 'application/json' } })
+      }
+      const match = /\/gateway\/requests\/(pure-op-\d+)$/u.exec(target)
+      if (match) {
+        const opId = match[1]
+        const cid = clientReqMap.get(opId) || ''
+        const content = opId.endsWith('-1') ? draftForResponse : reviewForResponse
+        return new Response(JSON.stringify({
+          id: opId,
+          client_request_id: cid,
+          status: 'succeeded',
+          dispatch_state: 'dispatched',
+          upstream_attempts: 1,
+          created_at_utc: new Date().toISOString(),
+          response: {
+            choices: [{ finish_reason: 'stop', message: { content } }],
+            gateway_metadata: {
+              gateway_contract_version: 2, requested_model: 'gemini-advanced', resolved_model: 'gemini-advanced',
+              observed_model: '3.1 Pro', observed_model_id: 'e6fa609c3fa255c0', model_verification: 'matched',
+              route_fingerprint: routeFingerprint, completion_state: 'complete',
+              completion_evidence: 'observed-terminal-frame-v1', logical_request_id: `lid-${opId}`,
+              upstream_attempts: 1, usage_known: false
+            }
+          }
+        }), { status: 200, headers: { 'Content-Type': 'application/json' } })
+      }
+      if (/\/gateway\/requests\/pure-op-\d+\/ack$/u.test(target)) {
+        return new Response(null, { status: 204 })
+      }
+      return new Response('not found', { status: 404 })
+    }
+
+    const timeline: OcrVisualTimeline = {
+      schemaVersion: 1,
+      protocol: 'ocr-visual-cues/1',
+      video: { width: 1280, height: 720, durationSeconds: 2, sampleFps: 8, frameCount: 16, geometryFingerprint: 'f'.repeat(64) },
+      profile: 'accurate',
+      scanRegion: { x0: 0, y0: 480, x1: 1280, y1: 720 },
+      segments: [{
+        id: 'ocr-seg', startFrame: 0, endFrameExclusive: 8, start: 0, end: 1,
+        text: 'OCR chữ video', confidence: 0.95,
+        boxes: [{ text: 'OCR chữ video', confidence: 0.95, x0: 10, y0: 10, x1: 100, y1: 50 }]
+      }]
+    }
+
+    const config: AutoShortConfig = {
+      subtitleMethod: 'whisper', whisperModel: 'base', whisperDevice: 'cpu',
+      blurRegions: [], lamMo: true, blurMode: 'sttn',
+      translateTarget: 'vi-VN', translateProvider: 'gemini-gateway', translateServerUrl: 'http://127.0.0.1:8080',
+      ttsEnabled: false, voiceOverMode: false, audioMode: 'replace', originalAudioVolume: 20, outputDir
+    }
+
+    const deps = {
+      resolveFfmpeg: async () => 'fake-ffmpeg.exe',
+      resolveFfprobe: async () => 'fake-ffprobe.exe',
+      probeMedia: async () => ({ w: 1280, h: 720, giay: 2, hasAudio: true, frameRate: 25, geometry: {
+        codedWidth: 1280, codedHeight: 720, rotation: 0, sampleAspectRatio: { numerator: 1, denominator: 1 }, videoStart: 0,
+        displayWidth: 1280, displayHeight: 720, fingerprint: 'f'.repeat(64)
+      } }),
+      transcribeAudio: async () => ({ ok: true, outputs: [sourceSrt], language: 'zh' }),
+      runVisualOcr: async () => {
+        visualOcrCalled++
+        return { timeline, sourceSrtPath: '', sidecarPath: '', engineVersion: 'test-ocr', engineProtocol: 'ocr-local/1' as const, visualSegmentCount: 1, boxSegmentCount: 1 }
+      },
+      removeSubtitles: async () => ({ outputPath: video, provider: 'cuda' as const, elapsedMs: 10 }),
+      writeTimedMask: async () => { throw new Error('mask not needed') },
+      burn: async () => {
+        await writeFile(join(outputDir, 'final.mp4'), 'rendered-clean')
+        return { ok: true, output: join(outputDir, 'final.mp4') }
+      },
+      extractRestorationAudio: async () => ({
+        data: audioFixture, format: 'mp3' as const, durationSeconds: 2,
+        sampleRate: 16_000, channels: 1, sha256: createHash('sha256').update(audioFixture).digest('hex')
+      })
+    } as unknown as AutoShortItemCoordinatorDeps
+
+    const processor = createAutoShortItemProcessor(deps)
+    const result = await processor({
+      jobId: 'whisper-pure-job',
+      request: { config, items: [{ id: 'pure-item', filePath: video }] },
+      item: { id: 'pure-item', filePath: video }, index: 0, total: 1,
+      signal: new AbortController().signal, emit: () => {}, checkpointDir, workDir, artifactDir,
+      itemOutputDir: outputDir, separationProviderState: { mode: 'auto' }
+    })
+
+    assert.equal(result.status, 'done', result.error)
+    assert.ok(outgoingRestorationDraft, 'Phải gửi restoration draft request')
+    const multimodalUser = (outgoingRestorationDraft.messages as Array<{ content: unknown }>).find((m) => Array.isArray(m.content))!.content as Array<Record<string, unknown>>
+    const evidencePayload = JSON.parse(String(multimodalUser.find((part) => part.type === 'text')?.text)) as { evidenceItems: Array<{ type: string; text: string }> }
+    // Must NOT contain any OCR evidence items
+    const ocrItems = evidencePayload.evidenceItems.filter((item) => item.type === 'ocr' || item.text.includes('OCR chữ video'))
+    assert.equal(ocrItems.length, 0, 'Gemini Gateway draft không được chứa bất kỳ OCR evidence nào khi subtitleMethod là whisper')
+    // Audio evidence must be present
+    const audioItems = evidencePayload.evidenceItems.filter((item) => item.type === 'audio')
+    assert.equal(audioItems.length, 1, 'Audio evidence phải có mặt')
+  } finally {
+    globalThis.fetch = previousFetch
+    await rm(root, { recursive: true, force: true })
+  }
+})
+

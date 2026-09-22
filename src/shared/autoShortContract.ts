@@ -24,7 +24,7 @@ export type AutoShortValidation =
 
 const METHODS = new Set<AutoShortSubtitleMethod>(['whisper', 'ocr', 'whisper-ocr'])
 const PROVIDERS = new Set(['gemini', 'openai', 'local', 'gemini-gateway'])
-const DISPLAY_STYLES = new Set<SubtitleDisplayStyle>(['standard', 'word-reveal', 'word-highlight'])
+const DISPLAY_STYLES = new Set<SubtitleDisplayStyle>(['standard', 'word-reveal', 'word-highlight', 'single-word'])
 const LAYOUTS = new Set<SubtitleLayoutProfile>(['readable', 'social', 'vertical'])
 const MODELS = new Set(['base', 'small', 'medium'])
 const BACKGROUND_MUSIC_MODES = new Set<AutoShortBackgroundMusicMode>(['single', 'random', 'per-video'])

@@ -83,4 +83,22 @@
   gap: 8px;
   flex-shrink: 0;
 }
+.dy-chan-folder {
+  margin-top: 4px;
+  font-size: 11px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 380px;
+  color: var(--text-muted, #888);
+}
+.dy-q-folder {
+  margin-top: 3px;
+  font-size: 11px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 360px;
+  color: var(--text-muted, #888);
+}
 

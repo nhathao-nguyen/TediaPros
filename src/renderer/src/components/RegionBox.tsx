@@ -540,6 +540,30 @@ export default function RegionBox({
                   const popScale = activeBeat
                     ? subtitlePopScaleAt(activeBeat, subtitleTime, peakScale)
                     : 1
+
+                  if (subtitleDisplayStyle === 'single-word') {
+                    const activeTokens = timeline.tokens.filter(
+                      (token) => (activeBeatIndex >= 0 ? token.beatIndex === activeBeatIndex : token.beatIndex === 0) && token.kind !== 'newline'
+                    )
+                    const singleWordText = activeTokens.map((t) => t.text).join('').trim() || (timeline.tokens[0]?.text ?? '')
+                    return (
+                      <span className="sub-preview-cue" key={cue.id}>
+                        <span className="sub-preview-line" style={{ justifyContent: 'center', textAlign: 'center' }}>
+                          <span
+                            className="sub-preview-token active"
+                            style={{
+                              transform: highlightPop && activeBeat ? `scale(${popScale.toFixed(4)})` : undefined,
+                              transition: 'transform 0.05s ease',
+                              display: 'inline-block'
+                            }}
+                          >
+                            <span className="sub-preview-base-layer">{singleWordText}</span>
+                          </span>
+                        </span>
+                      </span>
+                    )
+                  }
+
                   return (
                     <span className="sub-preview-cue" key={cue.id}>
                       {splitSubtitleEffectLines(timeline.tokens).map((line, lineIndex) => (

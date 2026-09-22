@@ -242,7 +242,7 @@ const SENTENCE_END = /[.!?。！？؟]/u
 const SHORT_PAUSE = /[,;:，；：、]/u
 
 export function normalizeSubtitleDisplayStyle(value: unknown): SubtitleDisplayStyle {
-  return value === 'word-reveal' || value === 'word-highlight' ? value : 'standard'
+  return value === 'word-reveal' || value === 'word-highlight' || value === 'single-word' ? value : 'standard'
 }
 
 function detectLocale(text: string): string {
@@ -526,7 +526,7 @@ export function activeSubtitleBeatIndex(
   return null
 }
 
-function assPlainText(value: string): string {
+export function assPlainText(value: string): string {
   // Curly braces would otherwise inject ASS override tags.
   return value.replace(/[{}]/g, '').replace(/\n/g, '\\N')
 }

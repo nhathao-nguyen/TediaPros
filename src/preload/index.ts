@@ -167,6 +167,8 @@ const api = {
   dyChannels: (): Promise<DyChannel[]> => ipcRenderer.invoke('douyin:channels'),
   dyRemoveChannel: (url: string): Promise<DyChannel[]> =>
     ipcRenderer.invoke('douyin:removeChannel', url),
+  dyUpdateChannelFolder: (url: string, folderPath: string): Promise<DyChannel[]> =>
+    ipcRenderer.invoke('douyin:updateChannelFolder', url, folderPath),
 
   // ---- Audio -> Text (whisper) ----
   whisperEngineStatus: (): Promise<WhisperEngineStatus> =>

@@ -450,12 +450,17 @@ export function validateRestorationDraft(
   const idSet = new Set(ids)
   if (!Array.isArray(obj.sourceEdits)) throw new Error('Restoration draft thiếu sourceEdits.')
   const edited = new Set<string>()
-  const sourceEdits = obj.sourceEdits.map((edit, index) => {
-    const normalized = validateSourceEdit(edit, idSet, evidence, `Source edit ${index + 1}`)
-    if (edited.has(normalized.id)) throw new Error(`Source edit bị trùng cue ID ${normalized.id}.`)
-    edited.add(normalized.id)
-    return normalized
-  })
+  const sourceEdits: SourceEdit[] = []
+  for (let index = 0; index < obj.sourceEdits.length; index++) {
+    try {
+      const normalized = validateSourceEdit(obj.sourceEdits[index], idSet, evidence, `Source edit ${index + 1}`)
+      if (edited.has(normalized.id)) throw new Error(`Source edit bị trùng cue ID ${normalized.id}.`)
+      edited.add(normalized.id)
+      sourceEdits.push(normalized)
+    } catch (error) {
+      console.warn(`[AutoShort] Bỏ qua source edit không hợp lệ: ${error instanceof Error ? error.message : String(error)}`)
+    }
+  }
   if (!Array.isArray(obj.sentenceEndIds) || obj.sentenceEndIds.some((id) => !nonEmptyString(id))) throw new Error('Restoration draft có sentenceEndIds không hợp lệ.')
   const sentenceEndIds = obj.sentenceEndIds.map((id) => (id as string).trim())
   if (new Set(sentenceEndIds).size !== sentenceEndIds.length || sentenceEndIds.some((id) => !idSet.has(id))) throw new Error('Restoration draft có sentenceEndIds không thuộc cue nguồn hoặc bị trùng.')
@@ -582,9 +587,20 @@ export function validateRestorationReview(
     if (!group || replacementGroups.has(groupId) || group.status !== 'needs_adjustment') throw new Error(`Replacement ${index + 1} không thuộc nhóm needs_adjustment hợp lệ.`)
     const groupSet = new Set(group.cueIds)
     const items = validateItems(replacement.items, group.cueIds, `Replacement ${index + 1}`)
-    if (!Array.isArray(replacement.sourceEdits)) throw new Error(`Replacement ${index + 1} thiếu sourceEdits.`)
-    const sourceEdits = replacement.sourceEdits.map((edit, editIndex) => validateSourceEdit(edit, idSet, evidence, `Replacement ${index + 1} source edit ${editIndex + 1}`, groupSet))
-    if (new Set(sourceEdits.map((edit) => edit.id)).size !== sourceEdits.length) throw new Error(`Replacement ${index + 1} có source edit trùng.`)
+    const sourceEdits: SourceEdit[] = []
+    if (Array.isArray(replacement.sourceEdits)) {
+      for (let editIndex = 0; editIndex < replacement.sourceEdits.length; editIndex++) {
+        try {
+          const normalized = validateSourceEdit(replacement.sourceEdits[editIndex], idSet, evidence, `Replacement ${index + 1} source edit ${editIndex + 1}`, groupSet)
+          sourceEdits.push(normalized)
+        } catch (error) {
+          console.warn(`[AutoShort] Bỏ qua source edit không hợp lệ trong review: ${error instanceof Error ? error.message : String(error)}`)
+        }
+      }
+      if (new Set(sourceEdits.map((edit) => edit.id)).size !== sourceEdits.length) throw new Error(`Replacement ${index + 1} có source edit trùng.`)
+    } else {
+      throw new Error(`Replacement ${index + 1} thiếu sourceEdits.`)
+    }
     const sentenceEndIds = replacement.sentenceEndIds === undefined ? undefined : (() => {
       if (!Array.isArray(replacement.sentenceEndIds) || replacement.sentenceEndIds.some((id) => !nonEmptyString(id))) throw new Error(`Replacement ${index + 1} có sentenceEndIds không hợp lệ.`)
       const normalized = replacement.sentenceEndIds.map((id) => (id as string).trim())

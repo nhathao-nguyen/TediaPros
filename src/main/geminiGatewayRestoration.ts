@@ -391,13 +391,14 @@ function draftMessages(input: RunGatewayRestorationInput, evidence: SourceEviden
     cues: input.sourceCues,
     synopsis: input.synopsis
   })
+  const hasOcr = evidence.items.some((item) => item.type === 'ocr')
   const system = [
     `gateway_restoration_prompt_version=${GATEWAY_RESTORATION_PROMPT_VERSION}`,
-    `task=audio-ocr-grounded-restoration-and-translation; source_language=${input.sourceLanguage || 'auto'}; target_locale=${input.targetLocale}; mode=${input.mode}`,
+    `task=${hasOcr ? 'audio-ocr-grounded-restoration-and-translation' : 'audio-grounded-restoration-and-translation'}; source_language=${input.sourceLanguage || 'auto'}; target_locale=${input.targetLocale}; mode=${input.mode}`,
     'Return exactly one JSON object and no Markdown or prose.',
     'The local cue IDs and timestamps are immutable. Return each requested ID exactly once; never add, delete, merge, or reorder IDs.',
-    'Correct a source cue only when at least one local OCR/audio/glossary evidence reference supports that cue. Every source edit needs non-empty evidenceRefs; do not guess brands, numbers, names, units, negation, places, or facts.',
-    'Produce schemaVersion=restoration-translation-v1 with exact evidenceDigest, sourceEdits, sentenceEndIds, entities, and items. Every sourceEdits entry has exactly {id,text,kind,evidenceRefs}: use id (never cueId), kind is homophone|ocr_alignment|entity|semantic, and evidenceRefs is non-empty. Every item has exactly {id,target}, and target must be non-empty target-language text.',
+    `Correct a source cue only when at least one local ${hasOcr ? 'OCR/audio/glossary' : 'audio/glossary'} evidence reference supports that cue. Every source edit needs non-empty evidenceRefs; do not guess brands, numbers, names, units, negation, places, or facts.`,
+    `Produce schemaVersion=restoration-translation-v1 with exact evidenceDigest, sourceEdits, sentenceEndIds, entities, and items. Every sourceEdits entry has exactly {id,text,kind,evidenceRefs}: use id (never cueId), kind is homophone|${hasOcr ? 'ocr_alignment|' : ''}entity|semantic, and evidenceRefs is non-empty. Every item has exactly {id,target}, and target must be non-empty target-language text.`,
     `Requested cue IDs: ${JSON.stringify(ids)}`
   ].join('\n')
   return [
@@ -415,12 +416,13 @@ function draftMessages(input: RunGatewayRestorationInput, evidence: SourceEviden
 function reviewMessages(input: RunGatewayRestorationInput, evidence: SourceEvidencePack, draft: RestorationDraftResult): ModelMessage[] {
   const ids = input.sourceCues.map((cue) => cue.id)
   const payload = buildRestorationReviewPayload({ evidencePack: evidence, targetLang: input.targetLocale, draft, synopsis: input.synopsis })
+  const hasOcr = evidence.items.some((item) => item.type === 'ocr')
   const system = [
     `gateway_restoration_prompt_version=${GATEWAY_RESTORATION_PROMPT_VERSION}`,
-    `task=independent-audio-ocr-restoration-review; target_locale=${input.targetLocale}`,
+    `task=${hasOcr ? 'independent-audio-ocr-restoration-review' : 'independent-audio-restoration-review'}; target_locale=${input.targetLocale}`,
     'You are a fresh reviewer. Return exactly one JSON object and no Markdown or prose.',
-    'Verify the candidate against the attached source audio and timestamped OCR/glossary evidence. Do not approve an unsupported source edit.',
-    'Produce schemaVersion=restoration-review-v1 with exact candidateDigest, exact reviewedCueIds, explicit status, confidenceScore 0..1, reviewerNotes, groupAssessments, findings and replacements. Every replacement sourceEdits entry has exactly {id,text,kind,evidenceRefs}: use id (never cueId), kind is homophone|ocr_alignment|entity|semantic, and evidenceRefs is non-empty.',
+    `Verify the candidate against the attached source audio and timestamped ${hasOcr ? 'OCR/glossary ' : 'glossary '}evidence. Do not approve an unsupported source edit.`,
+    `Produce schemaVersion=restoration-review-v1 with exact candidateDigest, exact reviewedCueIds, explicit status, confidenceScore 0..1, reviewerNotes, groupAssessments, findings and replacements. Every replacement sourceEdits entry has exactly {id,text,kind,evidenceRefs}: use id (never cueId), kind is homophone|${hasOcr ? 'ocr_alignment|' : ''}entity|semantic, and evidenceRefs is non-empty.`,
     'Every cue must appear in exactly one group. A needs_adjustment group must include a full replacement for every cue in that group. A rejected group must not return a replacement.',
     `Requested cue IDs: ${JSON.stringify(ids)}`
   ].join('\n')
