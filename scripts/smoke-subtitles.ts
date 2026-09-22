@@ -236,6 +236,9 @@ const standardAss = taoAss(burnCues, meta, layout)
 const revealAss = taoAss(burnCues, meta, layout, null, null, null, {
   displayStyle: 'word-reveal'
 })
+const singleWordAss = taoAss(burnCues, meta, layout, null, null, null, {
+  displayStyle: 'single-word'
+})
 const highlightAss = taoAss(burnCues, meta, layout, null, null, null, {
   displayStyle: 'word-highlight',
   highlightColor: '#FFD166'
@@ -256,6 +259,7 @@ const wordTimedAss = taoAss([
 })
 assert.equal((standardAss.match(/^Dialogue:/gm) ?? []).length, 2)
 assert.match(standardAss, /WrapStyle: 2/)
+assert.ok((singleWordAss.match(/^Dialogue:/gm) ?? []).length > 2)
 
 const boldAss = taoAss(burnCues, meta, layout, 'Roboto', {
   textColor: '#ffffff',

@@ -349,7 +349,7 @@ export interface BurnFontMutationResult {
   error?: string
 }
 
-export type SubtitleDisplayStyle = 'standard' | 'word-reveal' | 'word-highlight'
+export type SubtitleDisplayStyle = 'standard' | 'word-reveal' | 'word-highlight' | 'single-word'
 
 export type SubtitleLayoutProfile = 'readable' | 'social' | 'vertical'
 export type SubtitleCueHealthLevel = 'good' | 'warning' | 'error'
@@ -1173,12 +1173,26 @@ export interface AutoShortSttnPreviewProgress {
 
 export type AutoShortThumbnailMode = 'first_frame' | 'current_frame'
 
-export type AutoShortThumbnailStyle = 'douyin_yellow' | 'douyin_black' | 'sticker_red' | 'tiktok_white'
+export type AutoShortThumbnailStyle =
+  | 'douyin_yellow'
+  | 'douyin_black'
+  | 'sticker_red'
+  | 'tiktok_white'
+  | 'neon_cyan'
+  | 'fire_orange'
+  | 'luxury_gold'
+  | 'electric_lime'
+  | 'hot_pink'
+  | 'purple_dream'
+  | 'emerald_green'
+  | 'sunshine_blue'
+
+export type AutoShortThumbnailStyleOrRandom = AutoShortThumbnailStyle | 'random'
 export type AutoShortThumbnailFontSize = 'standard' | 'large' | 'huge'
 
 export interface AutoShortThumbnailTitleOverlay {
   text: string
-  style?: AutoShortThumbnailStyle
+  style?: AutoShortThumbnailStyleOrRandom
   position?: 'ocr' | 'top' | 'center' | 'bottom'
   fontSize?: AutoShortThumbnailFontSize
 }
@@ -1187,7 +1201,7 @@ export interface AutoShortThumbnailConfig {
   enabled: boolean
   mode: AutoShortThumbnailMode
   cleanSubtitles: boolean
-  style?: AutoShortThumbnailStyle
+  style?: AutoShortThumbnailStyleOrRandom
   position?: 'ocr' | 'top' | 'center' | 'bottom'
   fontSize?: AutoShortThumbnailFontSize
   autoTitleFromAi?: boolean
@@ -1202,6 +1216,7 @@ export interface AutoShortThumbnailRequest {
   videoAdjustments?: VideoAdjustments
   ocrRegion?: AutoShortNormalizedRegion | null
   outputDir: string
+  outputFilename?: string
   temporalEdit?: import('./autoShortTemporalEdit').AutoShortTemporalEdit | import('./autoShortCutContract').AutoShortTemporalEditV2
   titleOverlay?: AutoShortThumbnailTitleOverlay
 }

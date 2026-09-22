@@ -185,10 +185,13 @@ export function isPermanentGatewayError(message?: string): boolean {
 function providerError(status: number, detail: string): Error {
   let errorCode: string | undefined
   let errorMsg: string | undefined
+  let upstreamAttempts: number | undefined
   try {
     const parsed = JSON.parse(detail)
     errorCode = parsed?.error?.code || parsed?.gateway_metadata?.error_code
     errorMsg = parsed?.error?.message
+    const attempts = parsed?.gateway_metadata?.upstream_attempts
+    if (Number.isSafeInteger(attempts) && attempts > 0 && attempts <= 3) upstreamAttempts = attempts
   } catch {}
 
   const isThrottled = status === 429 || status === 405 || isProviderThrottledError(`${errorMsg || ''} ${detail || ''}`)
@@ -205,11 +208,17 @@ function providerError(status: number, detail: string): Error {
   } else if (errorCode === 'model-mismatch') {
     message = `Gemini Gateway trả về model không khớp: ${errorMsg || detail}`
     providerCode = 'provider-protocol'
-  } else if (errorCode === 'invalid-structured-json') {
-    message = `Gemini Gateway không thể chuẩn hóa JSON có cấu trúc: ${errorMsg || detail}`
+  } else if (errorCode && ['invalid-structured-json', 'invalid-json', 'ambiguous-json', 'duplicate-key', 'response-limit'].includes(errorCode)) {
+    const reason = errorCode === 'response-limit' ? 'vượt giới hạn phản hồi' : 'trả bản dịch sai định dạng JSON'
+    const attempts = upstreamAttempts ? `; đã thử ${upstreamAttempts} lần` : ''
+    message = `Gemini Gateway ${reason} (${errorCode}${attempts}). Hãy thử lại dịch.`
     providerCode = 'provider-protocol'
   } else if (errorCode === 'upstream-incomplete') {
     message = `Gemini Gateway phản hồi chưa hoàn tất từ upstream: ${errorMsg || detail}`
+    providerCode = 'provider-transient'
+  } else if (errorCode === 'gemini-transient-message') {
+    const attempts = upstreamAttempts ? ` sau ${upstreamAttempts} lần thử` : ''
+    message = `Google Gemini tạm thời không xử lý được yêu cầu${attempts} (gemini-transient-message). Hãy đợi rồi thử lại dịch.`
     providerCode = 'provider-transient'
   } else if (errorCode === 'upstream-transient' || status === 408 || status === 425 || status >= 500) {
     message = errorMsg ? `Gemini Gateway lỗi upstream: ${errorMsg}` : (detail || `Gemini Gateway báo lỗi HTTP ${status}.`)
@@ -222,7 +231,8 @@ function providerError(status: number, detail: string): Error {
   return Object.assign(new Error(message), {
     status,
     providerCode,
-    errorCode
+    errorCode,
+    upstreamAttempts
   })
 }
 

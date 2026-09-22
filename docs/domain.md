@@ -88,6 +88,7 @@ Khi dịch sang ngôn ngữ mới (vd: Tiếng Trung $\rightarrow$ Tiếng Việ
 - Khi item ở `needs-review`, nút `Thử lại dịch` tăng retry generation và tự chạy lại đúng item đó trong một thao tác; không yêu cầu người dùng chuẩn bị rồi bấm nút chạy toàn bộ lần thứ hai.
 - Mỗi item lưu `gemini-gateway-translation-audit.json` trong artifacts. Tệp này ghi prompt version, request/response của hai lượt, SHA-256 nội dung trả về, model thực tế, số upstream attempt và lý do retry dạng mã an toàn; cookie xác thực không được đưa vào artifact.
 - Kiểm tra kết nối dùng endpoint capability và không tiêu thụ generation request. Rephrase do tràn thời lượng TTS là request phát sinh riêng, chỉ chạy khi đo audio thật cho thấy cue không vừa trong chính sách dubbing.
+- Lỗi JSON có cấu trúc (`invalid-json`, `ambiguous-json`, `duplicate-key`, `response-limit`, `invalid-structured-json`) hiển thị thông báo tiếng Việt cùng mã lỗi và số upstream attempt đã được kiểm tra, không đưa nguyên JSON/error body của provider ra giao diện. `gemini-transient-message` là lỗi khả dụng tạm thời của Gemini, không phải bằng chứng bản dịch sai JSON. Adapter không tự phát lại generation đã hết số lần thử chỉ để đổi định dạng thông báo.
 - Nếu một bước sau dịch thất bại, checkpoint có đủ cue, đúng identity và assessment `validated` hoặc `with-warnings` được kiểm tra cấu trúc lại rồi tái sử dụng. Chỉ `needs-review`, identity cũ hoặc nội dung không còn hợp lệ mới gọi lại provider.
 
 ### 4.1. Hiệu Ứng Trình Diễn (Display Styles)

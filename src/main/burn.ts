@@ -40,6 +40,7 @@ import {
   type SubtitleCue
 } from '../shared/subtitles'
 import {
+  assPlainText,
   createSubtitleEffectTimeline,
   normalizeSubtitleDisplayStyle,
   planSubtitleWordOverlays,
@@ -609,6 +610,31 @@ export function taoAss(
     }, { wordTimings: suppliedWords })
     if (timeline.beats.length === 0 || (effectOptions.requireWordTimings && timeline.timingSource !== 'provided')) {
       return [...boxEvent, `Dialogue: ${layer},${a},${b},D,,0,0,0,,{${anchorPosition}}${textFormatted}`]
+    }
+
+    if (displayStyle === 'single-word') {
+      return timeline.beats.flatMap((beat, beatIndex) => {
+        const nextStart = timeline.beats[beatIndex + 1]?.start ?? cue.end
+        const wordText = timeline.tokens
+          .filter((token) => token.beatIndex === beat.index && token.kind !== 'newline')
+          .map((token) => assPlainText(token.text))
+          .join('')
+          .trim()
+        if (!wordText) return []
+        const aWord = formatAssTimestamp(beat.start)
+        const bWord = formatAssTimestamp(nextStart)
+        const popTags = highlightPop
+          ? '\\fscx112\\fscy112\\t(0,60,1.2,\\fscx100\\fscy100)'
+          : ''
+        const prefix = anchorPosition || popTags
+          ? `{${anchorPosition}${popTags}}`
+          : ''
+        const singleBox = bgOn
+          ? [`Dialogue: 0,${aWord},${bWord},Box,,0,0,0,,{${anchorPosition}\\blur${boxBlur.toFixed(1)}}${wordText}`]
+          : []
+        const singleText = `Dialogue: ${layer},${aWord},${bWord},D,,0,0,0,,${prefix}${wordText}`
+        return [...singleBox, singleText]
+      })
     }
 
     if (displayStyle === 'word-reveal') {
@@ -1936,7 +1962,8 @@ export async function validateBurnRequest(raw: unknown): Promise<BurnValidation>
     raw.subtitleDisplayStyle != null &&
     raw.subtitleDisplayStyle !== 'standard' &&
     raw.subtitleDisplayStyle !== 'word-reveal' &&
-    raw.subtitleDisplayStyle !== 'word-highlight'
+    raw.subtitleDisplayStyle !== 'word-highlight' &&
+    raw.subtitleDisplayStyle !== 'single-word'
   ) {
     return { ok: false, error: 'Kiểu hiển thị phụ đề không hợp lệ.' }
   }

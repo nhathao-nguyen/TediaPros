@@ -111,7 +111,7 @@ import type { CutExecutionPlan } from '../shared/autoShortCutPlan'
 import { semanticFrameEditDigest, semanticTemporalSourceDigest } from './autoShortCutIdentity'
 import { validatePreparedCut } from './autoShortCutValidation'
 import { findCutSeamCueIssues } from '../shared/autoShortCutCues'
-import { createAutoShortThumbnail } from './autoShortThumbnail'
+import { createAutoShortThumbnail, resolveThumbnailStyle } from './autoShortThumbnail'
 import { assessTranslationLanguage, normalizeTranslationLocale } from './translation/language'
 import { mapTranslationsStrict } from './translation/response'
 import { createInvalidSourceAssessment } from './translation/orchestrator'
@@ -1077,7 +1077,8 @@ export function createAutoShortItemProcessor(
             if (whisperSettled.status === 'fulfilled') {
               const speech = whisperSettled.value.cues
               detectedSourceLanguage = whisperSettled.value.language
-              extracted = fuseWhisperAndOcr(speech, visualCues)
+              // TUYỆT ĐỐI KHÔNG trộn OCR vào phụ đề nếu dùng Gemini Gateway
+              extracted = config.translateProvider === 'gemini-gateway' ? speech : fuseWhisperAndOcr(speech, visualCues)
             } else {
               logWarn(`[AutoShort] Fast-Whisper không khả dụng: ${sanitizeAutoShortAuditError(whisperSettled.reason, [item.filePath])}`)
               extracted = visualCues
@@ -1105,7 +1106,10 @@ export function createAutoShortItemProcessor(
             detectedSourceLanguage = whisper.status === 'fulfilled' ? whisper.value.language : null
             if (whisper.status === 'rejected') logWarn(`[AutoShort] Fast-Whisper không khả dụng: ${errLabel(whisper.reason)}`)
             if (ocr.status === 'rejected') logWarn(`[AutoShort] OCR không khả dụng: ${errLabel(ocr.reason)}`)
-            extracted = speech.length && visual.length ? fuseWhisperAndOcr(speech, visual) : speech.length ? speech : visual
+            // TUYỆT ĐỐI KHÔNG trộn OCR vào phụ đề nếu dùng Gemini Gateway
+            extracted = speech.length && visual.length 
+              ? (config.translateProvider === 'gemini-gateway' ? speech : fuseWhisperAndOcr(speech, visual))
+              : speech.length ? speech : visual
             if (extracted.length === 0) {
               failInvalidSource('Fast-Whisper và OCR đều không tạo được phụ đề hợp lệ.')
             }
@@ -1626,8 +1630,7 @@ export function createAutoShortItemProcessor(
         if (synthesized.wordTimings && synthesized.wordTimings.length > 0) {
           finalWordTimings = synthesized.wordTimings
         } else if (renderDisplayStyle !== 'standard') {
-          renderDisplayStyle = 'standard'
-          logWarn('[AutoShort] Đã chuyển word effect sang standard vì độ tin cậy word timing chưa đủ.')
+          logInfo(`[AutoShort] Áp dụng hiệu ứng phụ đề '${renderDisplayStyle}' với nhịp từ ước tính tự động theo câu nói.`)
         }
       }
 
@@ -1871,6 +1874,8 @@ export function createAutoShortItemProcessor(
             }
           }
 
+          const chosenStyle = resolveThumbnailStyle(config.thumbnailConfig.style, index)
+
           const thumbRes = await createAutoShortThumbnail({
             videoPath: item.filePath,
             mode: config.thumbnailConfig.mode || 'first_frame',
@@ -1879,11 +1884,12 @@ export function createAutoShortItemProcessor(
             videoAdjustments: config.videoAdjustments,
             ocrRegion: undefined,
             outputDir: itemOutputDir,
+            outputFilename: 'Thumbnail.jpg',
             temporalEdit: item.temporalEdit,
             titleOverlay: config.thumbnailConfig.autoTitleFromAi !== false && titleForThumbnail
               ? {
                   text: titleForThumbnail,
-                  style: config.thumbnailConfig.style || 'douyin_yellow',
+                  style: chosenStyle,
                   position: config.thumbnailConfig.position || 'ocr',
                   fontSize: config.thumbnailConfig.fontSize || 'large'
                 }
@@ -1891,7 +1897,7 @@ export function createAutoShortItemProcessor(
           }, undefined, signal)
 
           if (thumbRes.ok && thumbRes.thumbnailPath) {
-            artifactEntries.push({ source: thumbRes.thumbnailPath, name: basename(thumbRes.thumbnailPath) })
+            artifactEntries.push({ source: thumbRes.thumbnailPath, name: 'Thumbnail.jpg' })
           }
         } catch (thumbErr) {
           logWarn(`[AutoShort] Tự động tạo ảnh bìa thumbnail thất bại: ${errLabel(thumbErr)}`)

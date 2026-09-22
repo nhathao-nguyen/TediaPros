@@ -36,6 +36,7 @@ import {
   type WhisperDevice,
   type AutoShortThumbnailMode,
   type AutoShortThumbnailStyle,
+  type AutoShortThumbnailStyleOrRandom,
   type AutoShortThumbnailFontSize,
   type AutoShortThumbnailProgress,
   type AutoShortThumbnailResult,
@@ -109,6 +110,148 @@ const SEPARATION_MESSAGES = {
 } as const
 
 const baseName = (path: string): string => path.split(/[\\/]/).pop() || path
+
+export interface ThumbnailPresetOption {
+  id: AutoShortThumbnailStyleOrRandom
+  label: string
+  tag: string
+  textColor: string
+  stroke: string
+  textShadow: string
+  accentColor: string
+}
+
+export const THUMBNAIL_PRESET_OPTIONS: readonly ThumbnailPresetOption[] = [
+  {
+    id: 'random',
+    label: '🎲 NGẪU NHIÊN',
+    tag: 'Đổi kiểu mỗi video',
+    textColor: '#FFF500',
+    stroke: '2.5px #A80000',
+    textShadow: '0 0 10px rgba(67, 231, 213, 0.7), 2px 2px 0 #000',
+    accentColor: '#43e7d5'
+  },
+  {
+    id: 'douyin_yellow',
+    label: 'VÀNG ĐỎ',
+    tag: 'Douyin 3D',
+    textColor: '#FFF500',
+    stroke: '3px #A80000',
+    textShadow: '0 0 4px #A80000, 2px 2px 0 #A80000, -2px -2px 0 #A80000, 2px -2px 0 #A80000, -2px 2px 0 #A80000, 4px 4px 6px rgba(0,0,0,0.85)',
+    accentColor: '#FFF500'
+  },
+  {
+    id: 'douyin_black',
+    label: 'VÀNG ĐEN',
+    tag: 'Siêu tương phản',
+    textColor: '#FFF500',
+    stroke: '3px #000000',
+    textShadow: '0 0 4px #000000, 2px 2px 0 #000000, -2px -2px 0 #000000, 2px -2px 0 #000000, -2px 2px 0 #000000, 4px 4px 6px rgba(0,0,0,0.9)',
+    accentColor: '#FFF500'
+  },
+  {
+    id: 'sticker_red',
+    label: 'NHÃN ĐỎ',
+    tag: 'Sticker nổi',
+    textColor: '#FFFFFF',
+    stroke: '3px #E01515',
+    textShadow: '0 0 4px #E01515, 2px 2px 0 #E01515, -2px -2px 0 #E01515, 2px -2px 0 #E01515, -2px 2px 0 #E01515, 4px 4px 6px rgba(0,0,0,0.8)',
+    accentColor: '#E01515'
+  },
+  {
+    id: 'tiktok_white',
+    label: 'TRẮNG ĐEN',
+    tag: 'TikTok chuẩn',
+    textColor: '#FFFFFF',
+    stroke: '3px #000000',
+    textShadow: '0 0 4px #000000, 2px 2px 0 #000000, -2px -2px 0 #000000, 2px -2px 0 #000000, -2px 2px 0 #000000, 4px 4px 6px rgba(0,0,0,0.85)',
+    accentColor: '#FFFFFF'
+  },
+  {
+    id: 'neon_cyan',
+    label: 'XANH CYBER',
+    tag: 'Neon tương lai',
+    textColor: '#00F0FF',
+    stroke: '3px #051026',
+    textShadow: '0 0 8px rgba(0,240,255,0.75), 2px 2px 0 #051026, -2px -2px 0 #051026, 2px -2px 0 #051026, -2px 2px 0 #051026, 4px 4px 6px rgba(0,0,0,0.9)',
+    accentColor: '#00F0FF'
+  },
+  {
+    id: 'fire_orange',
+    label: 'LỬA CAM',
+    tag: 'Bùng nổ giật gân',
+    textColor: '#FF7A00',
+    stroke: '3px #4D0000',
+    textShadow: '0 0 8px rgba(255,107,0,0.7), 2px 2px 0 #4D0000, -2px -2px 0 #4D0000, 2px -2px 0 #4D0000, -2px 2px 0 #4D0000, 4px 4px 6px rgba(0,0,0,0.9)',
+    accentColor: '#FF7A00'
+  },
+  {
+    id: 'luxury_gold',
+    label: 'VÀNG KIM',
+    tag: 'Hoàng gia quý tộc',
+    textColor: '#FFD700',
+    stroke: '3px #2A1602',
+    textShadow: '0 0 7px rgba(255,215,0,0.65), 2px 2px 0 #2A1602, -2px -2px 0 #2A1602, 2px -2px 0 #2A1602, -2px 2px 0 #2A1602, 4px 4px 6px rgba(0,0,0,0.9)',
+    accentColor: '#FFD700'
+  },
+  {
+    id: 'electric_lime',
+    label: 'XANH CHANH',
+    tag: 'Gen Z phá cách',
+    textColor: '#52FF00',
+    stroke: '3px #000000',
+    textShadow: '0 0 8px rgba(82,255,0,0.7), 2px 2px 0 #000000, -2px -2px 0 #000000, 2px -2px 0 #000000, -2px 2px 0 #000000, 4px 4px 6px rgba(0,0,0,0.95)',
+    accentColor: '#52FF00'
+  },
+  {
+    id: 'hot_pink',
+    label: 'HỒNG NEON',
+    tag: 'Hot trend drama',
+    textColor: '#FF2A85',
+    stroke: '3px #26001B',
+    textShadow: '0 0 8px rgba(255,42,133,0.7), 2px 2px 0 #26001B, -2px -2px 0 #26001B, 2px -2px 0 #26001B, -2px 2px 0 #26001B, 4px 4px 6px rgba(0,0,0,0.9)',
+    accentColor: '#FF2A85'
+  },
+  {
+    id: 'purple_dream',
+    label: 'TÍM CYBER',
+    tag: 'Huyền ảo anime',
+    textColor: '#CF6BFF',
+    stroke: '3px #1E0038',
+    textShadow: '0 0 8px rgba(207,107,255,0.7), 2px 2px 0 #1E0038, -2px -2px 0 #1E0038, 2px -2px 0 #1E0038, -2px 2px 0 #1E0038, 4px 4px 6px rgba(0,0,0,0.9)',
+    accentColor: '#CF6BFF'
+  },
+  {
+    id: 'emerald_green',
+    label: 'LỤC BẢO',
+    tag: 'Tự nhiên sức sống',
+    textColor: '#00FFA3',
+    stroke: '3px #002E1B',
+    textShadow: '0 0 8px rgba(0,255,163,0.7), 2px 2px 0 #002E1B, -2px -2px 0 #002E1B, 2px -2px 0 #002E1B, -2px 2px 0 #002E1B, 4px 4px 6px rgba(0,0,0,0.9)',
+    accentColor: '#00FFA3'
+  },
+  {
+    id: 'sunshine_blue',
+    label: 'NẮNG BIỂN',
+    tag: 'Tương phản kép',
+    textColor: '#FFE600',
+    stroke: '3px #002A66',
+    textShadow: '0 0 7px rgba(255,230,0,0.65), 2px 2px 0 #002A66, -2px -2px 0 #002A66, 2px -2px 0 #002A66, -2px 2px 0 #002A66, 4px 4px 6px rgba(0,0,0,0.9)',
+    accentColor: '#FFE600'
+  }
+]
+
+export function getThumbnailPreviewStyle(style: AutoShortThumbnailStyleOrRandom): React.CSSProperties {
+  const effectiveId = style === 'random' ? 'douyin_yellow' : style
+  const preset = THUMBNAIL_PRESET_OPTIONS.find((p) => p.id === effectiveId) || THUMBNAIL_PRESET_OPTIONS[1]
+  return {
+    color: preset.textColor,
+    fontWeight: 900,
+    letterSpacing: '2.5px',
+    WebkitTextStroke: preset.stroke,
+    textShadow: preset.textShadow
+  }
+}
 
 function formatTime(seconds: number): string {
   const safe = Number.isFinite(seconds) ? Math.max(0, seconds) : 0
@@ -253,7 +396,7 @@ export default function AutoShort(): JSX.Element {
     'tblao.autoshort.batchThumbnailMode',
     'first_frame'
   )
-  const [thumbnailStyle, setThumbnailStyle] = usePersistedState<AutoShortThumbnailStyle>(
+  const [thumbnailStyle, setThumbnailStyle] = usePersistedState<AutoShortThumbnailStyleOrRandom>(
     'tblao.autoshort.thumbnail.style',
     'douyin_yellow'
   )
@@ -1382,7 +1525,7 @@ export default function AutoShort(): JSX.Element {
       bgEnabled,
       bgColor,
       bgOpacity,
-      subtitleDisplayStyle: (subtitleMethod !== 'ocr' && translateTarget === 'none' && !ttsEnabled) ? displayStyle : 'standard',
+      subtitleDisplayStyle: (subtitleMethod === 'ocr' && !ttsEnabled) ? 'standard' : displayStyle,
       subtitleFontSize: fontSize > 0 ? fontSize : undefined,
       subtitleFontWeight: fontWeight,
       subtitleFontScale: fontSize > 0 ? fontSize / SUBTITLE_STYLE_REFERENCE_HEIGHT : undefined,
@@ -1881,43 +2024,30 @@ export default function AutoShort(): JSX.Element {
                         : thumbnailPosition === 'center'
                         ? { top: '50%', transform: 'translate(-50%, -50%)' }
                         : { bottom: '16%', transform: 'translateX(-50%)' }),
-                      ...(thumbnailStyle === 'douyin_yellow'
-                        ? {
-                            color: '#FFF500',
-                            fontWeight: 900,
-                            letterSpacing: '3px',
-                            WebkitTextStroke: '3px #A80000',
-                            textShadow:
-                              '0 0 4px #A80000, 3px 3px 0 #A80000, -3px -3px 0 #A80000, 3px -3px 0 #A80000, -3px 3px 0 #A80000, 5px 5px 8px rgba(0,0,0,0.9)'
-                          }
-                        : thumbnailStyle === 'douyin_black'
-                        ? {
-                            color: '#FFF500',
-                            fontWeight: 900,
-                            letterSpacing: '3px',
-                            WebkitTextStroke: '3.5px #000000',
-                            textShadow:
-                              '0 0 4px #000000, 3px 3px 0 #000000, -3px -3px 0 #000000, 3px -3px 0 #000000, -3px 3px 0 #000000, 5px 5px 8px rgba(0,0,0,0.9)'
-                          }
-                        : thumbnailStyle === 'sticker_red'
-                        ? {
-                            color: '#FFFFFF',
-                            fontWeight: 900,
-                            letterSpacing: '2px',
-                            WebkitTextStroke: '3px #E01515',
-                            textShadow:
-                              '0 0 3px #E01515, 3px 3px 0 #E01515, -3px -3px 0 #E01515, 3px -3px 0 #E01515, -3px 3px 0 #E01515, 4px 4px 8px rgba(0,0,0,0.8)'
-                          }
-                        : {
-                            color: '#FFFFFF',
-                            fontWeight: 900,
-                            letterSpacing: '2px',
-                            WebkitTextStroke: '3px #000000',
-                            textShadow:
-                              '0 0 3px #000000, 3px 3px 0 #000000, -3px -3px 0 #000000, 3px -3px 0 #000000, -3px 3px 0 #000000, 4px 4px 8px rgba(0,0,0,0.85)'
-                          })
+                      ...getThumbnailPreviewStyle(thumbnailStyle)
                     }}
                   >
+                    {thumbnailStyle === 'random' && (
+                      <div
+                        style={{
+                          position: 'absolute',
+                          top: -24,
+                          left: '50%',
+                          transform: 'translateX(-50%)',
+                          background: 'linear-gradient(90deg, #43e7d5, #f59e0b, #ec4899)',
+                          color: '#000',
+                          padding: '2px 8px',
+                          borderRadius: 10,
+                          fontSize: 10,
+                          fontWeight: 800,
+                          whiteSpace: 'nowrap',
+                          letterSpacing: 0,
+                          boxShadow: '0 2px 6px rgba(0,0,0,0.6)'
+                        }}
+                      >
+                        🎲 MỖI VIDEO TỰ ĐỔI 1 PRESET
+                      </div>
+                    )}
                     {thumbnailCustomTitle.trim() ||
                       (selectedTask?.filePath ? baseName(selectedTask.filePath).replace(/\.[^/.]+$/, '') : 'TIÊU ĐỀ VIDEO XU HƯỚNG')}
                   </div>
@@ -2526,14 +2656,19 @@ export default function AutoShort(): JSX.Element {
                   </div>
 
                   {(() => {
-                    const supportsWordEffects = subtitleMethod !== 'ocr' && translateTarget === 'none' && !ttsEnabled
-                    const wordEffectDisabledReason = ttsEnabled
-                      ? 'Không khả dụng khi bật Lồng tiếng AI (TTS chưa hỗ trợ word timestamps)'
-                      : translateTarget !== 'none'
-                        ? 'Không khả dụng khi Dịch phụ đề (chưa có alignment từ cho bản dịch)'
-                        : subtitleMethod === 'ocr'
-                          ? 'Không khả dụng với OCR hình ảnh (OCR chỉ đọc theo khung hình)'
-                          : ''
+                    const isPureOcrWithoutAudio = subtitleMethod === 'ocr' && !ttsEnabled
+                    const supportsWordEffects = !isPureOcrWithoutAudio
+                    const wordEffectDisabledReason = isPureOcrWithoutAudio
+                      ? 'Không khả dụng với OCR hình ảnh khi không bật Lồng tiếng AI (OCR chỉ đọc theo khung hình)'
+                      : ''
+
+                    const isEstimatedTiming = ttsEnabled || translateTarget !== 'none'
+                    const wordRevealNote = isEstimatedTiming
+                      ? 'Tự động căn nhịp từ theo câu nói'
+                      : 'Đồng bộ từng từ theo âm thanh gốc'
+                    const wordHighlightNote = isEstimatedTiming
+                      ? 'Tự động căn nhịp từ theo câu nói'
+                      : 'Làm nổi bật từ theo âm thanh gốc'
 
                     return (
                       <>
@@ -2541,8 +2676,9 @@ export default function AutoShort(): JSX.Element {
                           {(
                             [
                               ['standard', 'Hiển thị cả câu', 'Ổn định và dễ đọc', true],
-                              ['word-reveal', 'Hiện lần lượt từng từ', 'Từ đã hiện được giữ lại', supportsWordEffects],
-                              ['word-highlight', 'Làm nổi bật từ đang đọc', 'Toàn câu luôn hiển thị', supportsWordEffects]
+                              ['single-word', '1 chữ nhảy liên tục', 'Chỉ 1 chữ hiển thị mỗi thời điểm, nhảy liên tục', supportsWordEffects],
+                              ['word-reveal', 'Hiện tích lũy từng từ', wordRevealNote, supportsWordEffects],
+                              ['word-highlight', 'Làm nổi bật từ đang đọc', wordHighlightNote, supportsWordEffects]
                             ] as const
                           ).map(([value, label, note, available]) => {
                             const isSelected = (supportsWordEffects ? displayStyle : 'standard') === value
@@ -2570,9 +2706,14 @@ export default function AutoShort(): JSX.Element {
                             )
                           })}
                         </div>
-                        {!supportsWordEffects && (
+                        {isPureOcrWithoutAudio && (
                           <div style={{ fontSize: '0.8rem', color: 'var(--muted)', marginTop: 4, fontStyle: 'italic' }}>
                             ℹ️ {wordEffectDisabledReason}
+                          </div>
+                        )}
+                        {!isPureOcrWithoutAudio && isEstimatedTiming && displayStyle !== 'standard' && (
+                          <div style={{ fontSize: '0.78rem', color: 'var(--primary)', marginTop: 4 }}>
+                            ✨ Đang áp dụng hiệu ứng từ tự động căn nhịp đều theo thời lượng câu lồng tiếng / bản dịch.
                           </div>
                         )}
                       </>
@@ -3510,87 +3651,78 @@ export default function AutoShort(): JSX.Element {
                   </label>
 
                   <div style={{ marginTop: 8 }}>
-                    <span style={{ fontSize: '0.82rem', fontWeight: 600, display: 'block', marginBottom: 6 }}>Phong cách chữ (Style Preset)</span>
-                    <div className="radio-pill-group" style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 8 }}>
-                      <div
-                        onClick={() => setThumbnailStyle('douyin_yellow')}
-                        style={{
-                          border: thumbnailStyle === 'douyin_yellow' ? '2px solid #FFF500' : '1px solid var(--border)',
-                          borderRadius: 8,
-                          padding: '10px 8px',
-                          textAlign: 'center',
-                          cursor: 'pointer',
-                          background: thumbnailStyle === 'douyin_yellow' ? 'rgba(255, 245, 0, 0.12)' : 'transparent',
-                          transition: 'all 0.15s ease'
-                        }}
-                      >
-                        <div style={{ fontSize: '1.05rem', fontWeight: 900, color: '#FFF500', textShadow: '1.5px 1.5px 0 #A80000, -1.5px -1.5px 0 #A80000, 1.5px -1.5px 0 #A80000, -1.5px 1.5px 0 #A80000' }}>
-                          VÀNG ĐỎ
-                        </div>
-                        <small style={{ fontSize: '0.72rem', color: 'var(--muted)', display: 'block', marginTop: 4 }}>
-                          Douyin 3D
-                        </small>
-                      </div>
-
-                      <div
-                        onClick={() => setThumbnailStyle('douyin_black')}
-                        style={{
-                          border: thumbnailStyle === 'douyin_black' ? '2px solid #FFF500' : '1px solid var(--border)',
-                          borderRadius: 8,
-                          padding: '10px 8px',
-                          textAlign: 'center',
-                          cursor: 'pointer',
-                          background: thumbnailStyle === 'douyin_black' ? 'rgba(255, 245, 0, 0.12)' : 'transparent',
-                          transition: 'all 0.15s ease'
-                        }}
-                      >
-                        <div style={{ fontSize: '1.05rem', fontWeight: 900, color: '#FFF500', textShadow: '1.5px 1.5px 0 #000000, -1.5px -1.5px 0 #000000, 1.5px -1.5px 0 #000000, -1.5px 1.5px 0 #000000' }}>
-                          VÀNG ĐEN
-                        </div>
-                        <small style={{ fontSize: '0.72rem', color: 'var(--muted)', display: 'block', marginTop: 4 }}>
-                          Siêu tương phản
-                        </small>
-                      </div>
-
-                      <div
-                        onClick={() => setThumbnailStyle('sticker_red')}
-                        style={{
-                          border: thumbnailStyle === 'sticker_red' ? '2px solid #E01515' : '1px solid var(--border)',
-                          borderRadius: 8,
-                          padding: '10px 8px',
-                          textAlign: 'center',
-                          cursor: 'pointer',
-                          background: thumbnailStyle === 'sticker_red' ? 'rgba(224, 21, 21, 0.12)' : 'transparent',
-                          transition: 'all 0.15s ease'
-                        }}
-                      >
-                        <div style={{ fontSize: '1.05rem', fontWeight: 900, color: '#FFFFFF', textShadow: '1.5px 1.5px 0 #E01515, -1.5px -1.5px 0 #E01515, 1.5px -1.5px 0 #E01515, -1.5px 1.5px 0 #E01515' }}>
-                          NHÃN ĐỎ
-                        </div>
-                        <small style={{ fontSize: '0.72rem', color: 'var(--muted)', display: 'block', marginTop: 4 }}>
-                          Sticker nổi
-                        </small>
-                      </div>
-
-                      <div
-                        onClick={() => setThumbnailStyle('tiktok_white')}
-                        style={{
-                          border: thumbnailStyle === 'tiktok_white' ? '2px solid #ffffff' : '1px solid var(--border)',
-                          borderRadius: 8,
-                          padding: '10px 8px',
-                          textAlign: 'center',
-                          cursor: 'pointer',
-                          background: thumbnailStyle === 'tiktok_white' ? 'rgba(255, 255, 255, 0.08)' : 'transparent',
-                          transition: 'all 0.15s ease'
-                        }}
-                      >
-                        <div style={{ fontSize: '1.05rem', fontWeight: 900, color: '#FFFFFF', textShadow: '1.5px 1.5px 0 #000000, -1.5px -1.5px 0 #000000, 1.5px -1.5px 0 #000000, -1.5px 1.5px 0 #000000' }}>
-                          TRẮNG ĐEN
-                        </div>
-                        <small style={{ fontSize: '0.72rem', color: 'var(--muted)', display: 'block', marginTop: 4 }}>
-                          TikTok chuẩn
-                        </small>
-                      </div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
+                      <span style={{ fontSize: '0.82rem', fontWeight: 600 }}>Phong cách chữ (Style Preset)</span>
+                      <span style={{ fontSize: '0.75rem', color: 'var(--muted)' }}>12 kiểu thịnh hành + Random</span>
+                    </div>
+                    <div
+                      className="radio-pill-group"
+                      style={{
+                        display: 'grid',
+                        gridTemplateColumns: 'repeat(auto-fill, minmax(115px, 1fr))',
+                        gap: 8
+                      }}
+                    >
+                      {THUMBNAIL_PRESET_OPTIONS.map((opt) => {
+                        const isSelected = thumbnailStyle === opt.id
+                        const isRandom = opt.id === 'random'
+                        return (
+                          <div
+                            key={opt.id}
+                            onClick={() => setThumbnailStyle(opt.id)}
+                            style={{
+                              border: isSelected
+                                ? isRandom
+                                  ? '2px solid #43e7d5'
+                                  : `2px solid ${opt.accentColor}`
+                                : '1px solid var(--border)',
+                              borderRadius: 8,
+                              padding: '8px 6px',
+                              textAlign: 'center',
+                              cursor: 'pointer',
+                              background: isSelected
+                                ? isRandom
+                                  ? 'rgba(67, 231, 213, 0.12)'
+                                  : 'rgba(255, 255, 255, 0.08)'
+                                : 'transparent',
+                              boxShadow: isSelected
+                                ? isRandom
+                                  ? '0 0 10px rgba(67, 231, 213, 0.35)'
+                                  : `0 0 8px ${opt.accentColor}44`
+                                : 'none',
+                              transition: 'all 0.15s ease',
+                              display: 'flex',
+                              flexDirection: 'column',
+                              justifyContent: 'center',
+                              minHeight: 64
+                            }}
+                          >
+                            <div
+                              style={{
+                                fontSize: '0.92rem',
+                                fontWeight: 900,
+                                color: opt.textColor,
+                                WebkitTextStroke: opt.stroke,
+                                textShadow: opt.textShadow,
+                                lineHeight: 1.2
+                              }}
+                            >
+                              {opt.label}
+                            </div>
+                            <small
+                              style={{
+                                fontSize: '0.68rem',
+                                color: isSelected ? 'var(--text)' : 'var(--muted)',
+                                display: 'block',
+                                marginTop: 4,
+                                fontWeight: isSelected ? 600 : 400
+                              }}
+                            >
+                              {opt.tag}
+                            </small>
+                          </div>
+                        )
+                      })}
                     </div>
                   </div>
 

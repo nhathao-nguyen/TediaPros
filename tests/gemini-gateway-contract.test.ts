@@ -296,6 +296,63 @@ test('isPermanentGatewayError classifies permanent vs transient errors', () => {
   assert.equal(isPermanentGatewayError('Gateway timeout sau 60s'), false)
 })
 
+test('Gemini Gateway explains structured failures without leaking raw JSON and does not replay them', async () => {
+  const oldFetch = globalThis.fetch
+  try {
+    for (const code of ['invalid-structured-json', 'invalid-json', 'ambiguous-json', 'duplicate-key', 'response-limit']) {
+      const adapter = createGeminiGatewayTranslationAdapter()
+      const batch = planTranslation(input(1), adapter.capability).batches[0]
+      let calls = 0
+      globalThis.fetch = async () => {
+        calls++
+        return new Response(JSON.stringify({
+          error: { code, message: 'private raw payload: <nil>' },
+          gateway_metadata: { upstream_attempts: 3 }
+        }), { status: 422 })
+      }
+      await assert.rejects(adapter.requestOnce(batch, new AbortController().signal), (error: any) => {
+        assert.equal(error.errorCode, code)
+        assert.equal(error.providerCode, 'provider-protocol')
+        assert.equal(error.upstreamAttempts, 3)
+        assert.match(error.message, /Gemini Gateway.*đã thử 3 lần/u)
+        assert.equal(isPermanentGatewayError(error.message), true)
+        assert.doesNotMatch(error.message, /private raw|<nil>|\{"error"/u)
+        return true
+      })
+      assert.equal(calls, 1)
+    }
+  } finally {
+    globalThis.fetch = oldFetch
+  }
+})
+
+test('Gemini Gateway classifies an exhausted transient-message response as provider availability', async () => {
+  const adapter = createGeminiGatewayTranslationAdapter()
+  const batch = planTranslation(input(1), adapter.capability).batches[0]
+  const oldFetch = globalThis.fetch
+  let calls = 0
+  try {
+    globalThis.fetch = async () => {
+      calls++
+      return new Response(JSON.stringify({
+        error: { code: 'gemini-transient-message', message: 'private raw provider error' },
+        gateway_metadata: { upstream_attempts: 3 }
+      }), { status: 422 })
+    }
+    await assert.rejects(adapter.requestOnce(batch, new AbortController().signal), (error: any) => {
+      assert.equal(error.providerCode, 'provider-transient')
+      assert.equal(error.errorCode, 'gemini-transient-message')
+      assert.equal(isPermanentGatewayError(error.message), false)
+      assert.match(error.message, /Google Gemini tạm thời.*3 lần thử/u)
+      assert.doesNotMatch(error.message, /private raw|\{"error"/u)
+      return true
+    })
+    assert.equal(calls, 1)
+  } finally {
+    globalThis.fetch = oldFetch
+  }
+})
+
 test('Gemini Gateway rephrase keeps the existing labelled-candidate grammar', async () => {
   const oldFetch = globalThis.fetch
   let body: any

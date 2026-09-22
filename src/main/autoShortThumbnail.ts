@@ -1,4 +1,4 @@
-import { isAbsolute, join, parse, resolve, basename } from 'node:path'
+import { isAbsolute, join, parse, resolve, basename, extname } from 'node:path'
 import { mkdir, mkdtemp, rm, stat, writeFile } from 'node:fs/promises'
 import { spawn } from 'node:child_process'
 import opentype from 'opentype.js'
@@ -7,7 +7,8 @@ import {
   AutoShortThumbnailProgress,
   AutoShortThumbnailRequest,
   AutoShortThumbnailResult,
-  AutoShortThumbnailStyle
+  AutoShortThumbnailStyle,
+  AutoShortThumbnailStyleOrRandom
 } from '../shared/types'
 import type { CanonicalDisplayGeometry } from './canonicalDisplayGeometry'
 import { resolveFfmpeg } from './deps'
@@ -18,11 +19,65 @@ import { ocrVideoWithVisualTimeline } from './ocr'
 import { runSttnRemoval } from './inpainting/runner'
 import { getGlobalResourceManager, type AutoShortResourceManager } from './autoShortResourceManager'
 import { trackChildProcess, terminateProcessTree } from './processTree'
-import { assertContainedRegularFile } from './safeContainedPath'
+import { assertContainedParentDirectory, assertContainedRegularFile } from './safeContainedPath'
 import { deriveCanonicalDisplayGeometry, normalizedRegionToDisplayPixels } from './canonicalDisplayGeometry'
 import { appendPortraitFrame } from './portraitFrame'
 import { portraitFrame } from '../shared/portraitFrame'
 import { hasVideoAdjustments, normalizeVideoAdjustments, videoAdjustmentFilter } from '../shared/videoAdjustments'
+
+export const THUMBNAIL_STYLES: readonly AutoShortThumbnailStyle[] = [
+  'douyin_yellow',
+  'douyin_black',
+  'sticker_red',
+  'tiktok_white',
+  'neon_cyan',
+  'fire_orange',
+  'luxury_gold',
+  'electric_lime',
+  'hot_pink',
+  'purple_dream',
+  'emerald_green',
+  'sunshine_blue'
+] as const
+
+export function resolveThumbnailStyle(
+  style?: AutoShortThumbnailStyleOrRandom,
+  itemIndex?: number
+): AutoShortThumbnailStyle {
+  if (!style || style === 'random') {
+    if (typeof itemIndex === 'number' && Number.isFinite(itemIndex) && itemIndex >= 0) {
+      return THUMBNAIL_STYLES[Math.floor(itemIndex) % THUMBNAIL_STYLES.length]
+    }
+    const randomIndex = Math.floor(Math.random() * THUMBNAIL_STYLES.length)
+    return THUMBNAIL_STYLES[randomIndex]
+  }
+  return THUMBNAIL_STYLES.includes(style) ? style : 'douyin_yellow'
+}
+
+async function checkFileExists(path: string): Promise<boolean> {
+  try {
+    await stat(path)
+    return true
+  } catch {
+    return false
+  }
+}
+
+export async function resolveUniqueThumbnailFilename(
+  outputDir: string,
+  preferredName: string = 'Thumbnail.jpg'
+): Promise<string> {
+  const sanitized = preferredName.replace(/[<>:"/\\|?*\u0000-\u001f]/gu, '_').trim() || 'Thumbnail.jpg'
+  const ext = extname(sanitized) || '.jpg'
+  const stem = basename(sanitized, ext)
+  let candidate = `${stem}${ext}`
+  let counter = 1
+  while (await checkFileExists(join(outputDir, candidate))) {
+    counter++
+    candidate = `${stem} (${counter})${ext}`
+  }
+  return candidate
+}
 import { resolveSubtitlePlanFont } from './subtitlePlanner'
 import { escapeFfmpegFilterPath, readBurnFontPreview, type ResolvedBurnFont } from './fonts'
 import { escapeOverlayAssText } from './autoShortOverlays'
@@ -199,7 +254,7 @@ export function calculateThumbnailFontSize(
 
 export async function generateThumbnailAssDocument(options: {
   text: string
-  style: AutoShortThumbnailStyle
+  style: AutoShortThumbnailStyleOrRandom
   position?: 'ocr' | 'top' | 'center' | 'bottom'
   fontSize?: 'standard' | 'large' | 'huge'
   canvasWidth: number
@@ -229,34 +284,113 @@ export async function generateThumbnailAssDocument(options: {
   const baseFontSize = calculateThumbnailFontSize(text, canvasWidth, fontSize)
   const assFontSize = (baseFontSize * assEmScale).toFixed(2)
 
-  let primaryColor = '&H0000F5FF' // Vibrant Lemon Yellow: #FFF500
-  let outlineColor = '&H000000A8' // Deep Crimson Red: #A80000
+  const resolvedStyle = resolveThumbnailStyle(style)
+
+  let primaryColor = '&H0000F5FF' // Vibrant Lemon Yellow
+  let outlineColor = '&H000000A8' // Deep Crimson Red
   let shadowColor = '&H20000000'  // 3D Drop Shadow (high opacity)
   let outline = Math.max(6, Math.round(baseFontSize * 0.15))
   let shadow = Math.max(4, Math.round(baseFontSize * 0.07))
   let spacing = 3
 
-  if (style === 'douyin_black') {
-    primaryColor = '&H0000F5FF' // Vibrant Lemon Yellow
-    outlineColor = '&H00000000' // Pure Black Stroke
-    shadowColor = '&H20000000'  // 3D Drop Shadow
-    outline = Math.max(6, Math.round(baseFontSize * 0.16))
-    shadow = Math.max(4, Math.round(baseFontSize * 0.08))
-    spacing = 4
-  } else if (style === 'sticker_red') {
-    primaryColor = '&H00FFFFFF' // Crisp White
-    outlineColor = '&H001515E0' // Vivid Scarlet Red: #E01515
-    shadowColor = '&H25000000'  // Deep Shadow
-    outline = Math.max(6, Math.round(baseFontSize * 0.16))
-    shadow = Math.max(4, Math.round(baseFontSize * 0.07))
-    spacing = 3
-  } else if (style === 'tiktok_white') {
-    primaryColor = '&H00FFFFFF' // Crisp White
-    outlineColor = '&H00000000' // Pure Black Stroke
-    shadowColor = '&H30000000'  // 3D Drop Shadow
-    outline = Math.max(5, Math.round(baseFontSize * 0.14))
-    shadow = Math.max(4, Math.round(baseFontSize * 0.07))
-    spacing = 3
+  switch (resolvedStyle) {
+    case 'douyin_black':
+      primaryColor = '&H0000F5FF' // #FFF500
+      outlineColor = '&H00000000' // #000000
+      shadowColor = '&H20000000'
+      outline = Math.max(6, Math.round(baseFontSize * 0.16))
+      shadow = Math.max(4, Math.round(baseFontSize * 0.08))
+      spacing = 4
+      break
+    case 'sticker_red':
+      primaryColor = '&H00FFFFFF' // #FFFFFF
+      outlineColor = '&H001515E0' // #E01515
+      shadowColor = '&H25000000'
+      outline = Math.max(6, Math.round(baseFontSize * 0.16))
+      shadow = Math.max(4, Math.round(baseFontSize * 0.07))
+      spacing = 3
+      break
+    case 'tiktok_white':
+      primaryColor = '&H00FFFFFF' // #FFFFFF
+      outlineColor = '&H00000000' // #000000
+      shadowColor = '&H30000000'
+      outline = Math.max(5, Math.round(baseFontSize * 0.14))
+      shadow = Math.max(4, Math.round(baseFontSize * 0.07))
+      spacing = 3
+      break
+    case 'neon_cyan':
+      primaryColor = '&H00FFF000' // #00F0FF (R=00, G=F0, B=FF)
+      outlineColor = '&H00261005' // #051026
+      shadowColor = '&H18000000'
+      outline = Math.max(6, Math.round(baseFontSize * 0.16))
+      shadow = Math.max(4, Math.round(baseFontSize * 0.08))
+      spacing = 3
+      break
+    case 'fire_orange':
+      primaryColor = '&H00006BFF' // #FF6B00 (R=FF, G=6B, B=00)
+      outlineColor = '&H0000004D' // #4D0000
+      shadowColor = '&H20000000'
+      outline = Math.max(6, Math.round(baseFontSize * 0.16))
+      shadow = Math.max(4, Math.round(baseFontSize * 0.08))
+      spacing = 3
+      break
+    case 'luxury_gold':
+      primaryColor = '&H0000D7FF' // #FFD700
+      outlineColor = '&H0002162A' // #2A1602
+      shadowColor = '&H20000000'
+      outline = Math.max(6, Math.round(baseFontSize * 0.15))
+      shadow = Math.max(4, Math.round(baseFontSize * 0.08))
+      spacing = 3
+      break
+    case 'electric_lime':
+      primaryColor = '&H0000FF52' // #52FF00
+      outlineColor = '&H00000000' // #000000
+      shadowColor = '&H20000000'
+      outline = Math.max(6, Math.round(baseFontSize * 0.16))
+      shadow = Math.max(4, Math.round(baseFontSize * 0.08))
+      spacing = 3
+      break
+    case 'hot_pink':
+      primaryColor = '&H00852AFF' // #FF2A85
+      outlineColor = '&H001B0026' // #26001B
+      shadowColor = '&H20000000'
+      outline = Math.max(6, Math.round(baseFontSize * 0.16))
+      shadow = Math.max(4, Math.round(baseFontSize * 0.08))
+      spacing = 3
+      break
+    case 'purple_dream':
+      primaryColor = '&H00FF6BCF' // #CF6BFF
+      outlineColor = '&H0038001E' // #1E0038
+      shadowColor = '&H20000000'
+      outline = Math.max(6, Math.round(baseFontSize * 0.16))
+      shadow = Math.max(4, Math.round(baseFontSize * 0.08))
+      spacing = 3
+      break
+    case 'emerald_green':
+      primaryColor = '&H00A3FF00' // #00FFA3
+      outlineColor = '&H001B2E00' // #002E1B
+      shadowColor = '&H20000000'
+      outline = Math.max(6, Math.round(baseFontSize * 0.16))
+      shadow = Math.max(4, Math.round(baseFontSize * 0.08))
+      spacing = 3
+      break
+    case 'sunshine_blue':
+      primaryColor = '&H0000E6FF' // #FFE600
+      outlineColor = '&H00662A00' // #002A66
+      shadowColor = '&H20000000'
+      outline = Math.max(6, Math.round(baseFontSize * 0.16))
+      shadow = Math.max(4, Math.round(baseFontSize * 0.08))
+      spacing = 3
+      break
+    case 'douyin_yellow':
+    default:
+      primaryColor = '&H0000F5FF'
+      outlineColor = '&H000000A8'
+      shadowColor = '&H20000000'
+      outline = Math.max(6, Math.round(baseFontSize * 0.15))
+      shadow = Math.max(4, Math.round(baseFontSize * 0.07))
+      spacing = 3
+      break
   }
 
   const targetX = Math.round(canvasWidth / 2)
@@ -491,9 +625,10 @@ export async function createAutoShortThumbnail(
     }
 
     emit(88, 'Đang xuất ảnh thumbnail độ phân giải cao…')
-    const baseName = parse(request.videoPath).name
-    const outputFilename = `${baseName}_thumb.jpg`
+    const preferredFilename = (request.outputFilename?.trim() || 'Thumbnail.jpg').replace(/[<>:"/\\|?*\u0000-\u001f]/gu, '_')
+    const outputFilename = await resolveUniqueThumbnailFilename(request.outputDir, preferredFilename)
     const outputThumbnailPath = resolve(join(request.outputDir, outputFilename))
+    await assertContainedParentDirectory(outputThumbnailPath, request.outputDir, 'Thumbnail output')
 
     const lines: string[] = []
     let currentInput = '0:v'

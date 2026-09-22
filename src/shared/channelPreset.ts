@@ -1,5 +1,5 @@
 import type { TranslationTone } from './translation'
-import type { AutoShortThumbnailStyle, TtsProvider, VideoSeoOptions } from './types'
+import type { AutoShortThumbnailStyleOrRandom, TtsProvider, VideoSeoOptions } from './types'
 
 export interface AutoShortChannelPreset {
   id: string
@@ -39,7 +39,7 @@ export interface AutoShortChannelPreset {
   descriptionStyle?: VideoSeoOptions['descriptionStyle']
   keywordTone?: VideoSeoOptions['keywordTone']
   descriptionLength?: VideoSeoOptions['descriptionLength']
-  thumbnailStyle?: AutoShortThumbnailStyle
+  thumbnailStyle?: AutoShortThumbnailStyleOrRandom
   thumbnailPosition?: 'ocr' | 'top' | 'center' | 'bottom'
 }
 
