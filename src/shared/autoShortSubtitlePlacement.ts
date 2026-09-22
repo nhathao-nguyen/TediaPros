@@ -39,12 +39,13 @@ interface Candidate {
   coverage: number
   typicalLineHeight: number
   confidence: number
+  distinctStates: number
 }
 
 const MAX_TRACKS = 128
-const MIN_COVERAGE = 0.25
-const MIN_CONFIDENCE = 0.75
-const MIN_TEXT_STATE_SECONDS = 0.5
+const MIN_COVERAGE = 0.08
+const MIN_CONFIDENCE = 0.68
+const MIN_TEXT_STATE_SECONDS = 0.3
 const WINNER_TOLERANCE = 0.9
 
 export function effectiveAutoShortSubtitlePlacementMode(
@@ -241,14 +242,58 @@ function buildCandidates(timeline: OcrVisualTimeline): { candidates: Candidate[]
     const confidence = visibleSeconds > 0
       ? track.observations.reduce((sum, observation) => sum + observation.confidence * observation.duration, 0) / visibleSeconds
       : 0
+    const distinctStates = distinctTextStateCount(track.observations)
     if (
       coverage < MIN_COVERAGE ||
       confidence < MIN_CONFIDENCE ||
-      distinctTextStateCount(track.observations) < 2
+      distinctStates < 2
     ) return []
-    return [{ track, coverage, typicalLineHeight, confidence }]
+    return [{ track, coverage, typicalLineHeight, confidence, distinctStates }]
   })
   return { candidates, tooMany: false }
+}
+
+export function computeSmartFallbackRegion(
+  scanRegion: PixelRegion,
+  video: { width: number; height: number },
+  userFallback: AutoShortNormalizedRegion
+): AutoShortNormalizedRegion {
+  if (!scanRegion || video.height <= 0 || video.width <= 0) {
+    return userFallback
+  }
+  const scanNorm = {
+    x0: scanRegion.x0 / video.width,
+    y0: scanRegion.y0 / video.height,
+    x1: scanRegion.x1 / video.width,
+    y1: scanRegion.y1 / video.height
+  }
+  const overlap = Math.max(0, Math.min(scanNorm.y1, userFallback.y1) - Math.max(scanNorm.y0, userFallback.y0))
+  const userH = userFallback.y1 - userFallback.y0
+  // If user fallback already significantly overlaps with scanRegion (>= 40% vertical overlap), keep userFallback
+  if (userH > 0 && overlap >= userH * 0.4) {
+    return userFallback
+  }
+  // Otherwise, userFallback is far away (e.g. defaulted to bottom 0.78-0.90 while scanning higher up)
+  // Center the subtitle box inside scanRegion so it always lands on the erased/blurred area
+  const scanH = scanNorm.y1 - scanNorm.y0
+  const scanW = scanNorm.x1 - scanNorm.x0
+  const targetH = Math.min(userH > 0 ? userH : 0.12, scanH)
+  const userW = userFallback.x1 - userFallback.x0
+  const targetW = Math.min(userW > 0 ? userW : 0.84, scanW)
+  const centerY = (scanNorm.y0 + scanNorm.y1) / 2
+  const centerX = (scanNorm.x0 + scanNorm.x1) / 2
+  const y0 = Math.max(scanNorm.y0, Math.min(scanNorm.y1 - targetH, centerY - targetH / 2))
+  const x0 = Math.max(scanNorm.x0, Math.min(scanNorm.x1 - targetW, centerX - targetWidthFallback(scanNorm, targetW, centerX)))
+  return {
+    x0: Math.max(0, Math.min(1, x0)),
+    y0: Math.max(0, Math.min(1, y0)),
+    x1: Math.max(0, Math.min(1, x0 + targetW)),
+    y1: Math.max(0, Math.min(1, y0 + targetH))
+  }
+}
+
+function targetWidthFallback(scanNorm: { x0: number; x1: number }, targetW: number, centerX: number): number {
+  return targetW / 2
 }
 
 function selectedRegion(
@@ -271,11 +316,19 @@ function selectedRegion(
   const padding = typicalLineHeightPx * 0.5
   const fallbackWidth = (fallback.x1 - fallback.x0) * timeline.video.width
   const fallbackHeight = (fallback.y1 - fallback.y0) * timeline.video.height
-  const desiredWidth = Math.max(envelope.x1 - envelope.x0 + padding * 2, fallbackWidth)
-  const desiredHeight = Math.max(envelope.y1 - envelope.y0 + padding * 2, fallbackHeight)
+
+  const textEnvelopeWidth = envelope.x1 - envelope.x0 + padding * 2
+  const textEnvelopeHeight = envelope.y1 - envelope.y0 + padding * 2
+
   const scanWidth = timeline.scanRegion.x1 - timeline.scanRegion.x0
   const scanHeight = timeline.scanRegion.y1 - timeline.scanRegion.y0
-  if (scanWidth < desiredWidth * 0.8 || scanHeight < desiredHeight * 0.8) return null
+
+  // Require scanRegion to fit at least 70% of text envelope
+  if (scanWidth < textEnvelopeWidth * 0.7 || scanHeight < textEnvelopeHeight * 0.7) return null
+
+  // Ensure desired dimensions do not exceed scanRegion even if fallback box was drawn oversized
+  const desiredWidth = Math.min(scanWidth, Math.max(textEnvelopeWidth, Math.min(fallbackWidth, scanWidth)))
+  const desiredHeight = Math.min(scanHeight, Math.max(textEnvelopeHeight, Math.min(fallbackHeight, scanHeight)))
 
   const width = Math.min(scanWidth, desiredWidth)
   const height = Math.min(scanHeight, desiredHeight)
@@ -300,9 +353,32 @@ function selectedRegion(
 function fallbackDecision(
   reason: Exclude<SubtitlePlacementReason, 'manual' | 'selected'>,
   fallbackRegion: AutoShortNormalizedRegion | null,
-  candidateCount: number
+  candidateCount: number,
+  timeline?: OcrVisualTimeline | null
 ): SubtitlePlacementDecision {
-  return { version: 1, mode: 'ocr-dominant', reason, region: fallbackRegion, candidateCount }
+  const region = fallbackRegion && timeline
+    ? computeSmartFallbackRegion(timeline.scanRegion, timeline.video, fallbackRegion)
+    : fallbackRegion
+  return { version: 1, mode: 'ocr-dominant', reason, region, candidateCount }
+}
+
+function scoreSubtitleCandidate(candidate: Candidate, timeline: OcrVisualTimeline): number {
+  // Dialogue subtitles typically:
+  // 1. Have changing text (distinctStates >= 2, capped at 10)
+  // 2. High coverage (longer duration on screen)
+  // 3. Subtitle height plausibility (0.015 - 0.10 of video height)
+  // 4. Vertical position: lower half of scanRegion is more typical for dialogue subtitles than top title banner
+  const stateBonus = Math.min(candidate.distinctStates, 10)
+  const dynamicMultiplier = candidate.distinctStates >= 2 ? 1.6 : 0.5
+  const heightPlausibility = candidate.typicalLineHeight >= 0.015 && candidate.typicalLineHeight <= 0.09 ? 1.0 : 0.7
+  const observations = candidate.track.observations
+  const centerY = weightedQuantile(observations.map((o) => ({
+    value: (o.region.y0 + o.region.y1) / 2,
+    weight: o.duration
+  })), 0.5) / timeline.video.height
+  const positionBonus = 1.0 + Math.max(0, centerY - 0.35) * 0.35
+
+  return candidate.coverage * (1 + stateBonus * 0.3) * dynamicMultiplier * heightPlausibility * positionBonus * candidate.confidence
 }
 
 export function resolveAutoShortSubtitlePlacement(input: {
@@ -314,31 +390,60 @@ export function resolveAutoShortSubtitlePlacement(input: {
     return { version: 1, mode: 'manual', reason: 'manual', region: input.fallbackRegion, candidateCount: 0 }
   }
   if (!input.timeline || !input.fallbackRegion || input.timeline.video.durationSeconds <= 0) {
-    return fallbackDecision('no-candidate', input.fallbackRegion, 0)
+    return fallbackDecision('no-candidate', input.fallbackRegion, 0, input.timeline)
   }
   const { candidates, tooMany } = buildCandidates(input.timeline)
-  if (tooMany) return fallbackDecision('too-many-candidates', input.fallbackRegion, 0)
-  if (candidates.length === 0) return fallbackDecision('no-candidate', input.fallbackRegion, 0)
+  if (tooMany) return fallbackDecision('too-many-candidates', input.fallbackRegion, 0, input.timeline)
+  if (candidates.length === 0) return fallbackDecision('no-candidate', input.fallbackRegion, 0, input.timeline)
 
   const maxCoverage = Math.max(...candidates.map((candidate) => candidate.coverage))
   const maxHeight = Math.max(...candidates.map((candidate) => candidate.typicalLineHeight))
-  const winners = candidates.filter((candidate) =>
+  const strictWinners = candidates.filter((candidate) =>
     candidate.coverage >= WINNER_TOLERANCE * maxCoverage &&
     candidate.typicalLineHeight >= WINNER_TOLERANCE * maxHeight
   )
-  if (winners.length === 0) return fallbackDecision('criteria-conflict', input.fallbackRegion, candidates.length)
-  if (winners.length > 1) return fallbackDecision('ambiguous', input.fallbackRegion, candidates.length)
-
-  const winner = winners[0]
-  const region = selectedRegion(winner, input.timeline, input.fallbackRegion)
-  if (!region) return fallbackDecision('region-too-small', input.fallbackRegion, candidates.length)
-  return {
-    version: 1,
-    mode: 'ocr-dominant',
-    reason: 'selected',
-    region,
-    candidateCount: candidates.length,
-    coverage: winner.coverage,
-    typicalLineHeight: winner.typicalLineHeight
+  if (strictWinners.length === 1) {
+    const winner = strictWinners[0]
+    const region = selectedRegion(winner, input.timeline, input.fallbackRegion)
+    if (!region) return fallbackDecision('region-too-small', input.fallbackRegion, candidates.length, input.timeline)
+    return {
+      version: 1,
+      mode: 'ocr-dominant',
+      reason: 'selected',
+      region,
+      candidateCount: candidates.length,
+      coverage: winner.coverage,
+      typicalLineHeight: winner.typicalLineHeight
+    }
   }
+
+  // When strict winners don't yield a single winner (e.g. large title vs dialogue subtitle, or tie):
+  // Score candidates by dialogue subtitle characteristics
+  const scored = candidates.map((candidate) => ({
+    candidate,
+    score: scoreSubtitleCandidate(candidate, input.timeline!)
+  })).sort((a, b) => b.score - a.score)
+
+  const best = scored[0]
+  const second = scored[1]
+
+  // If best candidate is clearly dominant over the second (or single candidate)
+  if (best && (!second || best.score >= 1.25 * second.score)) {
+    const winner = best.candidate
+    const region = selectedRegion(winner, input.timeline, input.fallbackRegion)
+    if (!region) return fallbackDecision('region-too-small', input.fallbackRegion, candidates.length, input.timeline)
+    return {
+      version: 1,
+      mode: 'ocr-dominant',
+      reason: 'selected',
+      region,
+      candidateCount: candidates.length,
+      coverage: winner.coverage,
+      typicalLineHeight: winner.typicalLineHeight
+    }
+  }
+
+  // Truly ambiguous or conflicting candidates with equivalent scores
+  const reason = strictWinners.length > 1 ? 'ambiguous' : 'criteria-conflict'
+  return fallbackDecision(reason, input.fallbackRegion, candidates.length, input.timeline)
 }

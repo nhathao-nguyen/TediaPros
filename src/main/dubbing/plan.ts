@@ -209,7 +209,37 @@ function groupByReviewedTargetBoundaries(cues: readonly DubbingPlanCue[]): Dubbi
     if (!boundary) {
       const duration = cue.sourceEnd - current[0].sourceStart
       if (current.length >= 10 || duration >= 18) {
-        throw new Error(`Bản dịch chưa có ranh giới câu an toàn trước cue ${cue.id}; dừng trước khi tạo voice.`)
+        if (current.length > 1) {
+          // Auto-heal: Tìm điểm nghỉ tự nhiên nhất (khoảng lặng âm thanh hoặc trung điểm) để tách nhóm
+          let bestIdx = 0
+          let bestScore = -Infinity
+          const targetMid = Math.floor((current.length - 1) / 2)
+          for (let k = 0; k < current.length - 1; k++) {
+            const gap = current[k + 1].sourceStart - current[k].sourceEnd
+            const leftSafe = (k + 1) <= 10 && (current[k].sourceEnd - current[0].sourceStart) <= 18
+            const rightSafe = (current.length - 1 - k) <= 10 && (cue.sourceEnd - current[k + 1].sourceStart) <= 18
+            let score = Math.max(0, gap) * 100
+            if (leftSafe) score += 500
+            if (rightSafe) score += 100
+            score -= Math.abs(k - targetMid) * 5
+            if (score > bestScore) {
+              bestScore = score
+              bestIdx = k
+            }
+          }
+          const left = current.slice(0, bestIdx + 1)
+          const right = current.slice(bestIdx + 1)
+          const lastLeft = left.at(-1)!
+          if (!isSentenceTerminal(lastLeft.translatedText)) {
+            const stripped = lastLeft.translatedText.trim().replace(/[,;:\-–—\s]+$/u, '')
+            lastLeft.translatedText = `${stripped || lastLeft.translatedText.trim()}.`
+          }
+          groups.push(left)
+          current = right
+        } else {
+          groups.push(current)
+          current = []
+        }
       }
       continue
     }

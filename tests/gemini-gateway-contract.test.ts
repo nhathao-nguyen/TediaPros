@@ -3,7 +3,13 @@ import test from 'node:test'
 import { mkdtemp, readFile, rm } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
-import { createGeminiGatewayTranslationAdapter, checkGeminiGateway, rephraseGeminiGateway, isPermanentGatewayError } from '../src/main/geminiGateway'
+import {
+  createGeminiGatewayTranslationAdapter,
+  checkGeminiGateway,
+  rephraseGeminiGateway,
+  isPermanentGatewayError,
+  autoHealReviewedDubbingPunctuation
+} from '../src/main/geminiGateway'
 import { parseAiJsonObject } from '../src/shared/aiOutput'
 import { planTranslation } from '../src/main/translation/planner'
 import { translateWithAdapter } from '../src/main/translation/orchestrator'
@@ -139,14 +145,23 @@ test('Gemini Gateway uses compact keyed output for a 113-cue video while returni
   }
 })
 
-test('Gemini Gateway rejects an unpunctuated dubbing review before publication', async () => {
+test('Gemini Gateway auto-heals an unpunctuated dubbing review before publication', async () => {
   const source = input(12)
   const adapter = createGeminiGatewayTranslationAdapter()
   const batch = planTranslation(source, adapter.capability).batches[0]
   const oldFetch = globalThis.fetch
   try {
     globalThis.fetch = async () => completion(source.cues.map((cue) => ({ id: cue.id, text: 'mảnh lời chưa có dấu câu' })))
-    await assert.rejects(adapter.requestOnce(batch, new AbortController().signal), /dấu kết thúc cho câu cuối/u)
+    const result = await adapter.requestOnce(batch, new AbortController().signal)
+    assert.ok(result.raw)
+    const parsed = JSON.parse(result.raw)
+    assert.ok(Array.isArray(parsed.items))
+    assert.equal(parsed.items.length, 12)
+    const lastItem = parsed.items.at(-1)!
+    assert.match(lastItem.text, /\.$/u)
+    // Phải có ít nhất một cue ở giữa được bổ sung dấu chấm để ngắt run > 10
+    const intermediateTerminals = parsed.items.slice(0, -1).filter((item: { text: string }) => /\.$/u.test(item.text))
+    assert.ok(intermediateTerminals.length >= 1)
   } finally {
     globalThis.fetch = oldFetch
   }
@@ -532,3 +547,65 @@ test('audit log redacts sensitive query parameters, tokens, and cookies', async 
     await rm(auditDir, { recursive: true, force: true }).catch(() => {})
   }
 })
+
+test('autoHealReviewedDubbingPunctuation inserts period at natural silence gaps for long runs and heals last cue', () => {
+  const cues = Array.from({ length: 16 }, (_, index) => {
+    // Gap bình thường 0.05s; riêng giữa cue 5-6 có khoảng lặng 0.45s; giữa cue 10-11 có khoảng lặng 0.40s
+    let start = index * 1.0
+    if (index >= 6) start += 0.40
+    if (index >= 11) start += 0.35
+    return {
+      id: `cue-${index + 1}`,
+      sourceIndex: index,
+      start,
+      end: start + 0.95,
+      groupId: 'g-0',
+      text: `Nguồn ${index + 1}`
+    }
+  })
+
+  const batch: any = {
+    input: {
+      mode: 'dubbing',
+      cues,
+      contextBefore: [],
+      contextAfter: [],
+      targetLocale: 'vi-VN'
+    }
+  }
+
+  // Toàn bộ các cue đều thiếu dấu chấm kết thúc
+  const raw = JSON.stringify({
+    items: cues.map((cue) => ({ id: cue.id, text: `Bản dịch ${cue.id} chưa có dấu chấm` }))
+  })
+
+  const healed = autoHealReviewedDubbingPunctuation(batch, raw)
+  const parsed = JSON.parse(healed)
+  assert.equal(parsed.items.length, 16)
+
+  // Cue cuối cùng bắt buộc được auto-heal dấu chấm
+  assert.equal(parsed.items.at(-1)!.text.endsWith('.'), true)
+
+  // Điểm ngắt tự nhiên: cue-6 (sau cue-6 là khoảng lặng 0.45s) phải được bổ sung dấu chấm
+  const cue6 = parsed.items.find((item: any) => item.id === 'cue-6')
+  assert.equal(cue6?.text.endsWith('.'), true)
+
+  // Sau khi auto-heal, không còn bất kỳ đoạn nào kéo dài > 10 cue hoặc > 18s
+  let runStart = cues[0].start
+  let runCues = 0
+  const byId = new Map(parsed.items.map((item: any) => [item.id, item.text]))
+  for (let i = 0; i < cues.length; i++) {
+    const cue = cues[i]
+    const next = cues[i + 1]
+    runCues++
+    const text: string = byId.get(cue.id) || ''
+    const boundary = text.endsWith('.') || !next || next.start - cue.end >= 0.6 - 1e-9
+    if (!boundary) continue
+    const duration = cue.end - runStart
+    assert.ok(runCues <= 10, `Run cues ${runCues} vượt quá 10 tại cue ${cue.id}`)
+    assert.ok(duration <= 18, `Duration ${duration} vượt quá 18 tại cue ${cue.id}`)
+    if (next) runStart = next.start
+    runCues = 0
+  }
+})
+

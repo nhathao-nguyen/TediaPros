@@ -82,7 +82,7 @@ test('rejects a fixed logo even when it is large and visible throughout the vide
   assert.ok(result.region && result.region.y0 > 0.6)
 })
 
-test('uses the manual fallback when frequency and largest text belong to different tracks', () => {
+test('selects dominant dialogue subtitle track even when a shorter large title track exists', () => {
   const input = timeline([
     segment('s1', 0, 2.5, [{ text: 'Nhỏ một', x0: 300, y0: 720, x1: 700, y1: 750 }]),
     segment('s2', 2.5, 5, [{ text: 'Nhỏ hai', x0: 300, y0: 720, x1: 700, y1: 750 }]),
@@ -93,8 +93,50 @@ test('uses the manual fallback when frequency and largest text belong to differe
 
   const result = resolveAutoShortSubtitlePlacement({ mode: 'ocr-dominant', timeline: input, fallbackRegion: fallback })
 
-  assert.equal(result.reason, 'criteria-conflict')
-  assert.deepEqual(result.region, fallback)
+  assert.equal(result.reason, 'selected')
+  assert.ok(result.region)
+  assert.ok(result.region.y0 >= 0.65)
+})
+
+test('falls back with criteria-conflict when competing tracks have equal prominence', () => {
+  const input = timeline([
+    segment('s1', 0, 2.5, [{ text: 'Dòng một câu một', x0: 300, y0: 720, x1: 700, y1: 760 }]),
+    segment('s2', 2.5, 5, [{ text: 'Dòng một câu hai', x0: 300, y0: 720, x1: 700, y1: 760 }]),
+    segment('s3', 5, 7.5, [{ text: 'DÒNG HAI CÂU MỘT', x0: 300, y0: 400, x1: 700, y1: 440 }]),
+    segment('s4', 7.5, 10, [{ text: 'DÒNG HAI CÂU HAI', x0: 300, y0: 400, x1: 700, y1: 440 }])
+  ])
+
+  const result = resolveAutoShortSubtitlePlacement({ mode: 'ocr-dominant', timeline: input, fallbackRegion: fallback })
+
+  assert.ok(result.reason === 'criteria-conflict' || result.reason === 'ambiguous')
+})
+
+test('detects subtitle track even with short dialogue duration (e.g. 15% coverage)', () => {
+  const input = timeline([
+    segment('s1', 0, 0.75, [{ text: 'Câu ngắn một', x0: 250, y0: 700, x1: 750, y1: 750 }]),
+    segment('s2', 1.5, 2.25, [{ text: 'Câu ngắn hai', x0: 250, y0: 700, x1: 750, y1: 750 }])
+  ])
+
+  const result = resolveAutoShortSubtitlePlacement({ mode: 'ocr-dominant', timeline: input, fallbackRegion: fallback })
+
+  assert.equal(result.reason, 'selected')
+  assert.ok(result.region)
+  assert.ok(result.region.y0 > 0.6)
+})
+
+test('smart fallback centers within scanRegion when user fallback is far outside', () => {
+  const distantFallback = { x0: 0.1, y0: 0.85, x1: 0.9, y1: 0.95 }
+  const input = timeline([
+    segment('s1', 0, 4, [{ text: 'Chữ ngoài một', x0: 0, y0: 920, x1: 1000, y1: 990 }]),
+    segment('s2', 4, 8, [{ text: 'Chữ ngoài hai', x0: 0, y0: 920, x1: 1000, y1: 990 }])
+  ])
+  input.scanRegion = { x0: 100, y0: 200, x1: 900, y1: 500 }
+
+  const result = resolveAutoShortSubtitlePlacement({ mode: 'ocr-dominant', timeline: input, fallbackRegion: distantFallback })
+
+  assert.equal(result.reason, 'no-candidate')
+  assert.ok(result.region)
+  assert.ok(result.region.y0 >= 0.2 && result.region.y1 <= 0.5)
 })
 
 test('never uses text outside the user-selected OCR region', () => {

@@ -75,6 +75,26 @@ test('reviewed whole-document punctuation may keep a seven-cue sentence intact',
   assert.equal(plans.validateDubbingPlan(result).ok, true)
 })
 
+test('groupByReviewedTargetBoundaries auto-heals long unpunctuated runs without throwing', () => {
+  const source = Array.from({ length: 14 }, (_, index) => ({
+    id: `c${index + 1}`,
+    start: index * 1.5,
+    end: index * 1.5 + 1.2,
+    text: `cue nguồn ${index + 1}`
+  }))
+  const translated = applyDubbingTranslations(
+    plans.buildDubbingPlan({ videoDuration: 25, cues: source }),
+    source.map((cue, index) => ({
+      id: cue.id,
+      text: `mảnh dịch ${index + 1}`
+    }))
+  )
+  const result = plans.groupDubbingPlanForSpeech(translated, 'vi-VN', { reviewedTargetBoundaries: true })
+  assert.ok(result.cues.length >= 2)
+  assert.equal(plans.validateDubbingPlan(result).ok, true)
+  assert.deepEqual(result.cues.flatMap((cue) => cue.sourceCueIds), source.map((cue) => cue.id))
+})
+
 test('semantic subtitle chunks avoid splitting common Vietnamese compounds', () => {
   const text = 'mới biết được sự thật thì ra đây là nhà vệ sinh khô của gia đình anh thiết kế này cũng có cái khôn của nó vì càng đào sâu càng chứa được nhiều'
   const chunks = buildDubbingSubtitleSegments({

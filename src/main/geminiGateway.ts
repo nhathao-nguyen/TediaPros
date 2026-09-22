@@ -476,33 +476,122 @@ async function writeGatewayAudit(path: string | undefined, records: readonly Gat
   await rename(temporary, path)
 }
 
-function validateReviewedDubbingPunctuation(batch: PlannedTranslationBatch, raw: string): void {
-  if (batch.input.mode !== 'dubbing' || batch.input.cues.length === 0) return
+function appendSentenceTerminal(text: string): string {
+  const trimmed = text.trim()
+  if (!trimmed) return '.'
+  if (isSentenceTerminal(trimmed)) return trimmed
+  const stripped = trimmed.replace(/[,;:\-–—\s]+$/u, '')
+  return `${stripped || trimmed}.`
+}
+
+export function autoHealReviewedDubbingPunctuation(batch: PlannedTranslationBatch, raw: string): string {
+  if (batch.input.mode !== 'dubbing' || batch.input.cues.length === 0) return raw
   const expectedIds = batch.input.cues.map((cue) => cue.id)
   const contextIds = [...batch.input.contextBefore, ...batch.input.contextAfter].map((cue) => cue.id)
   const parsed = parseTranslationResponse(raw, 'json-items', expectedIds, false, contextIds)
-  if (!parsed.complete) return
-  const byId = new Map(parsed.items.map((item) => [item.id, item.text]))
-  const lastText = byId.get(expectedIds.at(-1)!) || ''
+  if (!parsed.complete) return raw
+
+  const textById = new Map(parsed.items.map((item) => [item.id, item.text]))
+  let modified = false
+
+  // 1. Auto-heal: Khôi phục dấu kết thúc cho câu cuối của video nếu thiếu
+  const lastId = expectedIds.at(-1)!
+  const lastText = textById.get(lastId) || ''
   if (!isSentenceTerminal(lastText)) {
-    throw Object.assign(new Error('Lượt review chưa khôi phục dấu kết thúc cho câu cuối của video.'), { providerCode: 'provider-protocol' })
+    const healed = appendSentenceTerminal(lastText)
+    textById.set(lastId, healed)
+    modified = true
+    logWarn(`[GeminiGateway] Auto-heal: Đã tự động bổ sung dấu kết thúc cho câu cuối của video (cue ${lastId}).`)
   }
-  let runStart = batch.input.cues[0].start
-  let runCues = 0
-  for (let index = 0; index < batch.input.cues.length; index++) {
-    const cue = batch.input.cues[index]
-    const next = batch.input.cues[index + 1]
-    runCues++
-    const boundary = isSentenceTerminal(byId.get(cue.id) || '') || !next || next.start - cue.end >= 0.6 - 1e-9
-    if (!boundary) continue
-    const duration = cue.end - runStart
-    if (runCues > 10 || duration > 18) {
-      throw Object.assign(new Error(`Lượt review chưa đặt đủ ranh giới câu quanh cue ${cue.id}.`), { providerCode: 'provider-protocol' })
+
+  // 2. Auto-heal: Quét các đoạn thoại kéo dài không có ranh giới câu (quá 10 cue hoặc quá 18s)
+  // và tự động bổ sung dấu chấm tại điểm nghỉ âm thanh tự nhiên nhất (khoảng lặng giữa 2 cue).
+  const cues = batch.input.cues
+  let maxPasses = cues.length + 2
+  while (maxPasses-- > 0) {
+    let violationFound = false
+    let runStartIndex = 0
+    let runStart = cues[0].start
+
+    for (let index = 0; index < cues.length; index++) {
+      const cue = cues[index]
+      const next = cues[index + 1]
+      const text = textById.get(cue.id) || ''
+      const boundary = isSentenceTerminal(text) || !next || next.start - cue.end >= 0.6 - 1e-9
+
+      if (!boundary) continue
+
+      const count = index - runStartIndex + 1
+      const duration = cue.end - runStart
+
+      if ((count > 10 || duration > 18) && count > 1) {
+        // Tìm điểm nghỉ tự nhiên nhất giữa runStartIndex và index - 1
+        let bestCandidateIdx = -1
+        let bestScore = -Infinity
+        const targetMid = runStartIndex + Math.floor((index - runStartIndex) / 2)
+
+        for (let candIdx = runStartIndex; candIdx < index; candIdx++) {
+          const candCue = cues[candIdx]
+          const nextCue = cues[candIdx + 1]
+          const gap = nextCue.start - candCue.end
+          const leftCount = candIdx - runStartIndex + 1
+          const leftDuration = candCue.end - runStart
+          const rightCount = index - candIdx
+          const rightDuration = cue.end - nextCue.start
+
+          const leftSafe = leftCount <= 10 && leftDuration <= 18
+          const rightSafe = rightCount <= 10 && rightDuration <= 18
+
+          let score = Math.max(0, gap) * 100
+          if (leftSafe) score += 500
+          if (rightSafe) score += 100
+          score -= Math.abs(candIdx - targetMid) * 5
+
+          if (score > bestScore) {
+            bestScore = score
+            bestCandidateIdx = candIdx
+          }
+        }
+
+        if (bestCandidateIdx >= 0) {
+          const splitCue = cues[bestCandidateIdx]
+          const nextCue = cues[bestCandidateIdx + 1]
+          const curText = textById.get(splitCue.id) || ''
+          const healedText = appendSentenceTerminal(curText)
+          textById.set(splitCue.id, healedText)
+          modified = true
+          violationFound = true
+          const gapSec = (nextCue.start - splitCue.end).toFixed(2)
+          logWarn(
+            `[GeminiGateway] Auto-heal: Đã tự động bổ sung dấu chấm cho cue ${splitCue.id} tại điểm nghỉ tự nhiên ` +
+            `(khoảng lặng ${gapSec}s, run: ${count} cues, ${duration.toFixed(1)}s) để đảm bảo nhịp đọc Dubbing.`
+          )
+          break
+        }
+      }
+
+      if (next) {
+        runStartIndex = index + 1
+        runStart = next.start
+      }
     }
-    if (next) runStart = next.start
-    runCues = 0
+
+    if (!violationFound) break
   }
+
+  if (!modified) return raw
+
+  const healedItems = parsed.items.map((item) => ({
+    id: item.id,
+    text: textById.get(item.id) ?? item.text
+  }))
+  return JSON.stringify({ items: healedItems })
 }
+
+function validateReviewedDubbingPunctuation(batch: PlannedTranslationBatch, raw: string): void {
+  autoHealReviewedDubbingPunctuation(batch, raw)
+}
+
 
 /** Gemini Gateway adapter performs two fresh generations for each planned batch:
  * a full-context draft and an independent full-context review that returns the
@@ -656,9 +745,9 @@ export function createGeminiGatewayTranslationAdapter(serverUrl?: string, option
       const reviewed = await runStage('independent-review', batch, reviewMessages, signal)
       logInfo(`[GeminiGateway] request=2/2 outcome=complete upstreamAttempts=${reviewed.upstreamAttempts} retryReasons=${reviewed.upstreamRetryReasons.join(',') || 'none'}`)
       const canonicalReviewed = canonicalizeCompactTranslation(reviewed.raw, expectedIds.length)
-      validateReviewedDubbingPunctuation(batch, canonicalReviewed)
+      const healedReviewed = autoHealReviewedDubbingPunctuation(batch, canonicalReviewed)
       return {
-        raw: canonicalReviewed,
+        raw: healedReviewed,
         truncated: reviewed.truncated,
         modelIdentity: reviewed.modelIdentity
       }
