@@ -1,5 +1,5 @@
 @echo off
-title TediaPros Dev (Worktree)
+title TediaPros Dev (SonVersion)
 cd /d "%~dp0"
 set ELECTRON_RUN_AS_NODE=
 npm.cmd run dev
