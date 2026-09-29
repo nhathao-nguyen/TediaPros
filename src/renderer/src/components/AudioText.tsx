@@ -28,7 +28,9 @@ interface WhItem {
 const MODELS: { value: string; label: string; note: string }[] = [
   { value: 'base', label: 'Nhanh', note: 'Tải thêm khoảng 145 MB · phù hợp bản nháp' },
   { value: 'small', label: 'Cân bằng — khuyên dùng', note: 'Tải thêm khoảng 484 MB' },
-  { value: 'medium', label: 'Chính xác cao', note: 'Tải thêm khoảng 1,5 GB · xử lý lâu hơn' }
+  { value: 'medium', label: 'Chính xác cao', note: 'Tải thêm khoảng 1,5 GB · xử lý lâu hơn' },
+  { value: 'large-v3-turbo', label: 'Large v3 Turbo (Siêu nhanh)', note: 'Tải thêm khoảng 1,6 GB · chính xác cao, tối ưu GPU' },
+  { value: 'large-v3', label: 'Chính xác tối đa (Large v3)', note: 'Tải thêm khoảng 3,1 GB · khuyến nghị GPU rời NVIDIA' }
 ]
 
 const LANGS: { value: string; label: string }[] = [
@@ -71,8 +73,7 @@ export default function AudioText({
 
   useEffect(() => {
     if (model === 'tiny') setModel('base')
-    else if (model === 'large-v3') setModel('medium')
-    else if (!['base', 'small', 'medium'].includes(model)) setModel('base')
+    else if (!['base', 'small', 'medium', 'large-v3', 'large-v3-turbo'].includes(model)) setModel('base')
     if (diarize) setDiarize(false)
   }, [model, setModel, diarize, setDiarize])
 
@@ -414,7 +415,7 @@ export default function AudioText({
         </div>
         <div className="muted small" style={{ marginTop: 6 }}>
           {MODELS.find((m) => m.value === model)?.note}
-          {model === 'medium' && ' Máy cấu hình thấp có thể cần nhiều thời gian hơn.'}
+          {(model === 'medium' || model === 'large-v3') && ' Máy cấu hình thấp hoặc dùng CPU có thể cần nhiều thời gian hơn.'}
         </div>
         <div className="model-readiness" style={{ marginTop: 8 }}>
           {modelStatus?.complete ? (

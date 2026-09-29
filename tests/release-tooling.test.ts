@@ -306,7 +306,7 @@ test('release tooling has no developer-machine or destructive re-upload fallback
   assert.doesNotMatch(packer, /where\.exe|findInPath|process\.env\.PATH/u)
   assert.doesNotMatch(publisher, /method:\s*['"]DELETE['"]/u)
   assert.doesNotMatch(verifier, /containsEntrypoint\s*=\s*true/u)
-  assert.match(publisher, /runtime-v5/u)
+  assert.match(publisher, /runtime-v7/u)
   assert.match(publisher, /manifest\.runtimeVersion/u)
   assert.match(publisher, /different runtime version|runtimeVersion/u)
   assert.match(publisher, /draft:\s*true/u)
@@ -336,7 +336,7 @@ test('runtime packer archives every canonical kind and verifies the generated ma
       inputSpecPath
     })
     assert.equal(Object.keys(result.manifest.assets).length, 8)
-    assert.equal((await readFile(join(root, 'release', 'runtime-provenance.json'), 'utf8')).includes('runtime-v5'), true)
+    assert.equal((await readFile(join(root, 'release', 'runtime-provenance.json'), 'utf8')).includes('runtime-v7'), true)
   } finally {
     await rm(root, { recursive: true, force: true })
   }
@@ -478,24 +478,24 @@ test('Task 11.1: Separator model baseline deep-equals current catalog omitting r
   assert.deepEqual(rest.models, V4_SEPARATOR_BASELINE)
 })
 
-test('Task 11.2: runtime-v5 default is used across all distribution configs, workflows, and packers', async () => {
+test('Task 11.2: runtime-v7 default is used across all distribution configs, workflows, and packers', async () => {
   const distConfig = await readFile(join(process.cwd(), 'src', 'main', 'distributionConfig.ts'), 'utf8')
-  assert.match(distConfig, /runtime-v5/u)
+  assert.match(distConfig, /runtime-v7/u)
 
   const runtimeInputs = JSON.parse(await readFile(join(process.cwd(), 'distribution', 'runtime-inputs.json'), 'utf8'))
-  assert.equal(runtimeInputs.runtimeVersion, 'runtime-v5')
+  assert.equal(runtimeInputs.runtimeVersion, 'runtime-v7')
 
   const separatorInputs = JSON.parse(await readFile(join(process.cwd(), 'distribution', 'separator-model-inputs.json'), 'utf8'))
-  assert.equal(separatorInputs.runtimeChannel, 'runtime-v5')
+  assert.equal(separatorInputs.runtimeChannel, 'runtime-v7')
 
   const workflow = await readFile(join(process.cwd(), '.github', 'workflows', 'build-windows-runtime.yml'), 'utf8')
-  assert.match(workflow, /default:\s*runtime-v5/u)
+  assert.match(workflow, /default:\s*runtime-v7/u)
 
   const publisher = await readFile(join(process.cwd(), 'scripts', 'publish-github-release.mjs'), 'utf8')
-  assert.match(publisher, /DEFAULT_RUNTIME_CHANNEL\s*=\s*['"]runtime-v5['"]/u)
+  assert.match(publisher, /DEFAULT_RUNTIME_CHANNEL\s*=\s*['"]runtime-v7['"]/u)
 
   const separatorPacker = await readFile(join(process.cwd(), 'scripts', 'pack-separator-model-release.mjs'), 'utf8')
-  assert.match(separatorPacker, /runtimeVersion\s*\|\|\s*['"]runtime-v5['"]/u)
+  assert.match(separatorPacker, /runtimeVersion\s*\|\|\s*['"]runtime-v7['"]/u)
 })
 
 test('Task 11.3: OCR capability requires 1.2.1, ocr-local/1, and exact capabilities without duplicates', async () => {
@@ -534,7 +534,7 @@ test('Task 11.4: FFmpeg ocr-mask-v1 packaging and proof verification test matrix
       ffmpegExecutableSha256: 'deadbeef'
     },
     expectedExecutableSha256: 'deadbeef',
-    runtimeVersion: 'runtime-v5',
+    runtimeVersion: 'runtime-v7',
     platform: 'win32',
     arch: 'x64',
     asset: 'tediapros-ffmpeg-win32-x64.zip',
@@ -558,7 +558,7 @@ test('Task 11.4: FFmpeg ocr-mask-v1 packaging and proof verification test matrix
         cases: sampleCases.slice(0, 3)
       },
       expectedExecutableSha256: 'deadbeef',
-      runtimeVersion: 'runtime-v5',
+      runtimeVersion: 'runtime-v7',
       platform: 'win32',
       arch: 'x64',
       asset: 'tediapros-ffmpeg-win32-x64.zip',
@@ -576,7 +576,7 @@ test('Task 11.4: FFmpeg ocr-mask-v1 packaging and proof verification test matrix
         ffmpegExecutableSha256: 'otherhash'
       },
       expectedExecutableSha256: 'deadbeef',
-      runtimeVersion: 'runtime-v5',
+      runtimeVersion: 'runtime-v7',
       platform: 'win32',
       arch: 'x64',
       asset: 'tediapros-ffmpeg-win32-x64.zip',
@@ -604,7 +604,7 @@ test('Task 11.4: FFmpeg ocr-mask-v1 packaging and proof verification test matrix
     const res1 = await buildRuntimeRelease({
       inputDir: inputsDir,
       outputDir: join(root, 'release-no-ocr'),
-      runtimeVersion: 'runtime-v5',
+      runtimeVersion: 'runtime-v7',
       platform: 'win32',
       arch: 'x64',
       inputSpecPath: noOcrSpecPath,
@@ -626,7 +626,7 @@ test('Task 11.4: FFmpeg ocr-mask-v1 packaging and proof verification test matrix
       await buildRuntimeRelease({
         inputDir: inputsDir,
         outputDir: join(root, 'release-hook-reject'),
-        runtimeVersion: 'runtime-v5',
+        runtimeVersion: 'runtime-v7',
         platform: 'win32',
         arch: 'x64',
         inputSpecPath: ocrSpecPath,
@@ -649,7 +649,7 @@ test('Task 11.4: FFmpeg ocr-mask-v1 packaging and proof verification test matrix
       await buildRuntimeRelease({
         inputDir: inputsDir,
         outputDir: join(root, 'release-failed-case'),
-        runtimeVersion: 'runtime-v5',
+        runtimeVersion: 'runtime-v7',
         platform: 'win32',
         arch: 'x64',
         inputSpecPath: ocrSpecPath,
@@ -666,7 +666,7 @@ test('Task 11.4: FFmpeg ocr-mask-v1 packaging and proof verification test matrix
       await buildRuntimeRelease({
         inputDir: inputsDir,
         outputDir: join(root, 'release-hash-mismatch'),
-        runtimeVersion: 'runtime-v5',
+        runtimeVersion: 'runtime-v7',
         platform: 'win32',
         arch: 'x64',
         inputSpecPath: ocrSpecPath,
@@ -691,7 +691,7 @@ test('Task 11.4: FFmpeg ocr-mask-v1 packaging and proof verification test matrix
         capability: 'ocr-mask-v1',
         native: true,
         passed: true,
-        runtimeVersion: 'runtime-v5',
+        runtimeVersion: 'runtime-v7',
         platform: 'win32',
         arch: 'x64',
         asset: manifest.assets['ffmpeg'].asset,

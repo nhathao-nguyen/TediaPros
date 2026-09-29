@@ -80,6 +80,7 @@ import {
   type AutoShortTtsJobAdapter
 } from './autoshort'
 import type { DubbingFeedbackJournal } from './dubbing/synthesis'
+import type { DiskReservation } from './autoShortDiskBudget'
 import type { SeparatorProviderState } from './separation/pipeline'
 import { createAutoShortItemScope, type BranchOutcome } from './autoShortItemScope'
 import {
@@ -206,6 +207,7 @@ export interface AutoShortItemContext {
   policy?: AutoShortExecutionPolicy
   resourceManager?: AutoShortResourceManager
   artifactCache?: ArtifactCache
+  reservation?: DiskReservation
   /** Active-job-only TTS retry state; never read from or written to a checkpoint. */
   feedbackJournal: DubbingFeedbackJournal
 }
@@ -1236,6 +1238,13 @@ export function createAutoShortItemProcessor(
         checkpoint.sourceCues = boundedExtracted
         checkpoint.detectedSourceLanguage = detectedSourceLanguage
         await saveCheckpoint()
+
+        // Eager Stage Cleanup: Whisper/OCR cues are safely serialized and checkpointed.
+        // Prune the scratch whisper and ocr directories immediately to reduce peak disk usage.
+        await Promise.all([
+          rm(join(workDir, 'whisper'), { recursive: true, force: true }).catch(() => {}),
+          rm(join(workDir, 'ocr'), { recursive: true, force: true }).catch(() => {})
+        ])
       }
 
       if (cutExecutionPlan) {
@@ -1950,6 +1959,13 @@ export function createAutoShortItemProcessor(
       }
       const completedBurn = burnResult
       published = true
+
+      // Eager Stage Cleanup: Final video has been successfully generated and verified.
+      // Intermediate STTN workspace (which can hold hundreds of MB to GBs of scratch frames) can be unlinked immediately.
+      if (sttnWorkDir) {
+        await rm(sttnWorkDir, { recursive: true, force: true }).catch(() => {})
+        sttnWorkDir = undefined
+      }
 
       // Tự động tạo ảnh bìa thumbnail ghép tiêu đề AI nếu được bật
       if (config.thumbnailConfig?.enabled) {

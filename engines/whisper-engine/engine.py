@@ -98,6 +98,51 @@ def configure_cuda(cuda_dir):
             pass
 
 
+def _ensure_preprocessor_config(model_path):
+    """Tu tao preprocessor_config.json neu thieu (dac biet voi model 128 mel bins nhu large-v3/turbo)."""
+    if not model_path or not os.path.isdir(model_path):
+        return
+    cfg_path = os.path.join(model_path, "preprocessor_config.json")
+    if not os.path.isfile(cfg_path):
+        try:
+            import ctranslate2
+            ct_model = ctranslate2.models.Whisper(model_path, device="cpu")
+            n_mels = int(getattr(ct_model, "n_mels", 80) or 80)
+            del ct_model
+            cfg = {
+                "chunk_length": 30,
+                "feature_extractor_type": "WhisperFeatureExtractor",
+                "feature_size": n_mels,
+                "hop_length": 160,
+                "n_fft": 400,
+                "n_samples": 480000,
+                "nb_max_frames": 3000,
+                "padding_side": "right",
+                "padding_value": 0.0,
+                "processor_class": "WhisperProcessor",
+                "return_attention_mask": false,
+                "sampling_rate": 16000
+            }
+            with open(cfg_path, "w", encoding="utf-8") as f:
+                json.dump(cfg, f, indent=2)
+        except Exception:
+            pass
+
+
+def _align_feature_extractor(model):
+    """Bao dam so mel filter cua FeatureExtractor luon khop voi so mel ma CTranslate2 model yeu cau."""
+    try:
+        if hasattr(model, "feature_extractor") and hasattr(model, "model") and hasattr(model.model, "n_mels"):
+            expected = int(getattr(model.model, "n_mels", 80) or 80)
+            filters = getattr(model.feature_extractor, "mel_filters", None)
+            current = int(filters.shape[0]) if filters is not None and hasattr(filters, "shape") else None
+            if current is not None and current != expected:
+                from faster_whisper.feature_extractor import FeatureExtractor
+                model.feature_extractor = FeatureExtractor(feature_size=expected)
+    except Exception:
+        pass
+
+
 DIA_THRESHOLD = 0.8
 MIN_SEG_SEC = 0.5
 
@@ -188,6 +233,7 @@ def main():
     p.add_argument("--vad-min-speech-ms", type=int, default=100, help="do dai tieng noi toi thieu ms (mac dinh 100ms)")
     p.add_argument("--vad-min-silence-ms", type=int, default=500, help="do dai im lang tach doan ms (mac dinh 500ms)")
     p.add_argument("--vad-speech-pad-ms", type=int, default=400, help="dem truoc/sau doan thoai ms (mac dinh 400ms)")
+    p.add_argument("--daemon", action="store_true", help="chay o che do daemon lang nghe lenh NDJSON qua stdin")
     args = p.parse_args()
 
     if args.version:
@@ -210,7 +256,9 @@ def main():
             if args.model_path:
                 if not os.path.isdir(args.model_path):
                     raise RuntimeError("--model-path không phải thư mục model local")
-                WhisperModel(args.model_path, device=device, compute_type="auto" if device == "cuda" else "int8")
+                _ensure_preprocessor_config(args.model_path)
+                probe_m = WhisperModel(args.model_path, device=device, compute_type="auto" if device == "cuda" else "int8")
+                _align_feature_extractor(probe_m)
                 model_loaded = True
             emit({
                 "type": "probe",
@@ -226,7 +274,7 @@ def main():
             emit({"type": "probe", "protocol": "whisper-engine/1", "ready": False, "error": str(e)})
             return 1
 
-    if not args.input or not args.output_dir:
+    if not args.daemon and (not args.input or not args.output_dir):
         emit({"type": "error", "message": "Thieu --input hoac --output-dir"})
         return 1
 
@@ -255,113 +303,172 @@ def main():
 
     try:
         emit({"type": "status", "message": "Dang nap model local (%s)..." % device})
+        _ensure_preprocessor_config(args.model_path)
         model = WhisperModel(
             args.model_path,
             device=device,
             compute_type=compute_type,
             cpu_threads=max(0, args.threads),
         )
+        _align_feature_extractor(model)
     except Exception as e:
         emit({"type": "error", "message": "Loi nap model: %s" % e})
         return 1
 
-    lang = None if args.language in ("auto", "") else args.language
+    def run_transcription(input_path, output_dir, basename_override=None, language=None, task=None, formats=None, vad_params=None, diarize=False, speakers=0):
+        lang = None if language in ("auto", "", None) else language
+        v_params = vad_params or dict(
+            threshold=args.vad_threshold,
+            min_speech_duration_ms=args.vad_min_speech_ms,
+            min_silence_duration_ms=args.vad_min_silence_ms,
+            speech_pad_ms=args.vad_speech_pad_ms,
+        )
+        try:
+            segments, info = model.transcribe(
+                input_path,
+                language=lang,
+                task=task or args.task,
+                vad_filter=True,
+                vad_parameters=v_params,
+                word_timestamps=True,
+            )
+        except Exception as e:
+            emit({"type": "error", "message": "Loi phien am: %s" % e})
+            return 1
+
+        duration = float(getattr(info, "duration", 0) or 0)
+        emit({
+            "type": "info",
+            "language": getattr(info, "language", None),
+            "language_probability": getattr(info, "language_probability", None),
+            "duration": duration,
+        })
+
+        collected = []
+        try:
+            for seg in segments:
+                words = []
+                if getattr(seg, "words", None):
+                    for w in seg.words:
+                        words.append({
+                            "text": w.word.strip(),
+                            "start": float(w.start),
+                            "end": float(w.end),
+                            "probability": float(getattr(w, "probability", 1.0) or 1.0)
+                        })
+                item = {
+                    "start": float(seg.start),
+                    "end": float(seg.end),
+                    "text": seg.text.strip(),
+                    "words": words
+                }
+                collected.append(item)
+                emit({
+                    "type": "progress",
+                    "seconds": float(seg.end or 0),
+                    "duration": duration,
+                    "text": seg.text.strip()
+                })
+        except Exception as e:
+            emit({"type": "error", "message": "Loi trong khi phien am: %s" % e})
+            return 1
+
+        speakers_found = 0
+        if diarize and collected:
+            try:
+                emit({"type": "status", "message": "Dang nhan dien nguoi noi..."})
+                speakers_found = diarize_segments(collected, input_path, speakers)
+                if speakers_found:
+                    emit({"type": "status", "message": "Nhan dien xong: %d nguoi noi" % speakers_found})
+            except Exception as e:
+                emit({"type": "status", "message": "Bo qua nhan dien nguoi noi: %s" % str(e)[:120]})
+
+        base = basename_override or os.path.splitext(os.path.basename(input_path))[0]
+        os.makedirs(output_dir, exist_ok=True)
+        fmts = [x.strip().lower() for x in (formats or args.formats).split(",") if x.strip()]
+        outputs = []
+        if "srt" in fmts:
+            pth = os.path.join(output_dir, base + ".srt")
+            write_srt(collected, pth)
+            outputs.append(pth)
+        if "vtt" in fmts:
+            pth = os.path.join(output_dir, base + ".vtt")
+            write_vtt(collected, pth)
+            outputs.append(pth)
+        if "txt" in fmts:
+            pth = os.path.join(output_dir, base + ".txt")
+            write_txt(collected, pth)
+            outputs.append(pth)
+
+        align_pth = os.path.join(output_dir, base + ".alignment.json")
+        write_alignment_json(collected, align_pth, duration, getattr(info, "language", None))
+        outputs.append(align_pth)
+
+        emit({
+            "type": "done",
+            "outputs": outputs,
+            "alignment": align_pth,
+            "segments": len(collected),
+            "speakers": speakers_found
+        })
+        return 0
+
+    if args.daemon:
+        emit({"type": "ready", "protocol": "whisper-engine/1"})
+        for raw_line in sys.stdin:
+            line = raw_line.strip()
+            if not line:
+                continue
+            try:
+                req = json.loads(line)
+            except Exception as e:
+                emit({"type": "error", "message": "Loi JSON request: %s" % e})
+                continue
+            cmd = req.get("command")
+            if cmd == "exit":
+                break
+            elif cmd == "transcribe":
+                inp = req.get("input")
+                out_dir = req.get("output_dir")
+                if not inp or not out_dir:
+                    emit({"type": "error", "message": "Lenh transcribe thieu input hoac output_dir"})
+                    continue
+                v_params = dict(
+                    threshold=float(req.get("vad_threshold", args.vad_threshold)),
+                    min_speech_duration_ms=int(req.get("vad_min_speech_ms", args.vad_min_speech_ms)),
+                    min_silence_duration_ms=int(req.get("vad_min_silence_ms", args.vad_min_silence_ms)),
+                    speech_pad_ms=int(req.get("vad_speech_pad_ms", args.vad_speech_pad_ms)),
+                )
+                run_transcription(
+                    input_path=inp,
+                    output_dir=out_dir,
+                    basename_override=req.get("basename"),
+                    language=req.get("language", args.language),
+                    task=req.get("task", args.task),
+                    formats=req.get("formats", args.formats),
+                    vad_params=v_params,
+                    diarize=bool(req.get("diarize", args.diarize)),
+                    speakers=int(req.get("speakers", args.speakers)),
+                )
+        return 0
+
     vad_params = dict(
         threshold=args.vad_threshold,
         min_speech_duration_ms=args.vad_min_speech_ms,
         min_silence_duration_ms=args.vad_min_silence_ms,
         speech_pad_ms=args.vad_speech_pad_ms,
     )
-    try:
-        segments, info = model.transcribe(
-            args.input,
-            language=lang,
-            task=args.task,
-            vad_filter=True,
-            vad_parameters=vad_params,
-            word_timestamps=True,
-        )
-    except Exception as e:
-        emit({"type": "error", "message": "Loi phien am: %s" % e})
-        return 1
-
-    duration = float(getattr(info, "duration", 0) or 0)
-    emit({
-        "type": "info",
-        "language": getattr(info, "language", None),
-        "language_probability": getattr(info, "language_probability", None),
-        "duration": duration,
-    })
-
-    collected = []
-    try:
-        for seg in segments:
-            words = []
-            if getattr(seg, "words", None):
-                for w in seg.words:
-                    words.append({
-                        "text": w.word.strip(),
-                        "start": float(w.start),
-                        "end": float(w.end),
-                        "probability": float(getattr(w, "probability", 1.0) or 1.0)
-                    })
-            item = {
-                "start": float(seg.start),
-                "end": float(seg.end),
-                "text": seg.text.strip(),
-                "words": words
-            }
-            collected.append(item)
-            emit({
-                "type": "progress",
-                "seconds": float(seg.end or 0),
-                "duration": duration,
-                "text": seg.text.strip()
-            })
-    except Exception as e:
-        emit({"type": "error", "message": "Loi trong khi phien am: %s" % e})
-        return 1
-
-    speakers_found = 0
-    if args.diarize and collected:
-        try:
-            emit({"type": "status", "message": "Dang nhan dien nguoi noi..."})
-            speakers_found = diarize_segments(collected, args.input, args.speakers)
-            if speakers_found:
-                emit({"type": "status", "message": "Nhan dien xong: %d nguoi noi" % speakers_found})
-        except Exception as e:
-            emit({"type": "status", "message": "Bo qua nhan dien nguoi noi: %s" % str(e)[:120]})
-
-    base = args.basename or os.path.splitext(os.path.basename(args.input))[0]
-    os.makedirs(args.output_dir, exist_ok=True)
-    fmts = [x.strip().lower() for x in args.formats.split(",") if x.strip()]
-    outputs = []
-    if "srt" in fmts:
-        pth = os.path.join(args.output_dir, base + ".srt")
-        write_srt(collected, pth)
-        outputs.append(pth)
-    if "vtt" in fmts:
-        pth = os.path.join(args.output_dir, base + ".vtt")
-        write_vtt(collected, pth)
-        outputs.append(pth)
-    if "txt" in fmts:
-        pth = os.path.join(args.output_dir, base + ".txt")
-        write_txt(collected, pth)
-        outputs.append(pth)
-
-    # Luon ghi alignment JSON neu co word timestamps de Auto Short va timeline doc duoc
-    align_pth = os.path.join(args.output_dir, base + ".alignment.json")
-    write_alignment_json(collected, align_pth, duration, getattr(info, "language", None))
-    outputs.append(align_pth)
-
-    emit({
-        "type": "done",
-        "outputs": outputs,
-        "alignment": align_pth,
-        "segments": len(collected),
-        "speakers": speakers_found
-    })
-    return 0
+    return run_transcription(
+        input_path=args.input,
+        output_dir=args.output_dir,
+        basename_override=args.basename,
+        language=args.language,
+        task=args.task,
+        formats=args.formats,
+        vad_params=vad_params,
+        diarize=args.diarize,
+        speakers=args.speakers,
+    )
 
 
 if __name__ == "__main__":

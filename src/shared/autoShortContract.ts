@@ -28,7 +28,7 @@ const METHODS = new Set<AutoShortSubtitleMethod>(['whisper', 'ocr', 'whisper-ocr
 const PROVIDERS = new Set(['gemini', 'openai', 'local', 'gemini-gateway'])
 const DISPLAY_STYLES = new Set<SubtitleDisplayStyle>(['standard', 'word-reveal', 'word-highlight', 'single-word'])
 const LAYOUTS = new Set<SubtitleLayoutProfile>(['readable', 'social', 'vertical'])
-const MODELS = new Set(['base', 'small', 'medium'])
+const MODELS = new Set(['base', 'small', 'medium', 'large-v3', 'large-v3-turbo'])
 const BACKGROUND_MUSIC_MODES = new Set<AutoShortBackgroundMusicMode>(['single', 'random', 'per-video'])
 const PACE_MODES = new Set(['source-adaptive', 'fixed'])
 const TTS_PROVIDERS = new Set(['local-tts', 'edge-tts'])
@@ -109,7 +109,7 @@ function migrateLegacyConfig(raw: Record<string, unknown>): Record<string, unkno
   const oldMethod = raw.subtitleMethod
   const subtitleMethod = oldMethod === 'fast-whisper' ? 'whisper' : oldMethod
   const oldModel = raw.whisperModel
-  const whisperModel = oldModel === 'tiny' ? 'base' : oldModel === 'large-v3' ? 'medium' : oldModel
+  const whisperModel = oldModel === 'tiny' ? 'base' : oldModel
   const whisperDevice = raw.whisperDevice === 'cuda' || raw.whisperDevice === 'cpu'
     ? raw.whisperDevice
     : oldMethod === 'fast-whisper' || oldMethod === 'whisper-ocr'
@@ -388,9 +388,13 @@ function validateConfigRecord(raw: Record<string, unknown>): AutoShortConfig | s
   }
 }
 
+export const MAX_AUTOSHORT_QUEUE_ITEMS = 500
+
 export function validateAutoShortStartRequest(raw: unknown): AutoShortValidation {
   if (!isRecord(raw) || !Array.isArray(raw.items)) return { ok: false, error: 'Yêu cầu Auto Short không hợp lệ.' }
-  if (raw.items.length === 0 || raw.items.length > 100) return { ok: false, error: 'Hàng đợi phải có từ 1 đến 100 video.' }
+  if (raw.items.length === 0 || raw.items.length > MAX_AUTOSHORT_QUEUE_ITEMS) {
+    return { ok: false, error: `Hàng đợi phải có từ 1 đến ${MAX_AUTOSHORT_QUEUE_ITEMS} video.` }
+  }
   const ids = new Set<string>()
   const paths = new Set<string>()
   const items: AutoShortQueueItemInput[] = []

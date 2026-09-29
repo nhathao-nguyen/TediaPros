@@ -1,3 +1,21 @@
+## TediaPros v0.1.30
+
+### Whisper Engine & Trí tuệ nhân tạo (AI)
+
+- **Whisper Daemon Mode:** Bổ sung cờ `--daemon` cho Faster-Whisper engine, duy trì tiến trình chạy nền và giữ model sẵn sàng trong bộ nhớ RAM/VRAM. Loại bỏ hoàn toàn độ trễ khởi động lại (cold-start) khi phiên âm hàng loạt video trong hàng đợi.
+- **Mô hình Large-v3 & Large-v3 Turbo:** Mở rộng danh mục mô hình Whisper với `large-v3` (độ chính xác tối đa) và `large-v3-turbo` (tốc độ cao, tối ưu tài nguyên VRAM). Hỗ trợ chọn trực tiếp từ giao diện AutoShort và AudioText.
+- **Tùy chỉnh độ nhạy VAD:** Cung cấp các tham số ngưỡng Silero VAD linh hoạt (`vad_threshold`, `vad_speech_pad_ms`, v.v.) với giá trị mặc định nhạy bén hơn, hạn chế tối đa việc bỏ sót câu thoại ngắn.
+
+### OCR & Tăng tốc xử lý hình ảnh
+
+- **Bộ nhớ đệm khung hình tĩnh OCR:** Thêm thuật toán kiểm tra độ lệch khung hình (`diff < 4.0`), tái sử dụng kết quả nhận diện cho các khung hình tĩnh liền kề trong video stream, giúp giảm tải suy luận OCR và tăng tốc độ xử lý tổng thể.
+- **Bộ mã hóa (Burn Pipeline):** Ghi nhớ encoder phần cứng đã kiểm chứng thành công (`cachedWorkingEncoder`), tối ưu hóa preset ffmpeg và bổ sung hỗ trợ `h264_videotoolbox` cho macOS.
+
+### Nâng cấp AutoShort & Phụ đề
+
+- **Mở rộng hàng đợi:** Tăng trần số lượng video xử lý trong một phiên hàng đợi AutoShort từ 100 lên 500 video.
+- **Kiểu chữ & Phụ đề linh hoạt:** Tích hợp bộ 24 font chữ tiếng Việt, hỗ trợ điều chỉnh dynamic font weights, chuyển đổi chữ hoa/thường (uppercase, lowercase), tối ưu ngắt dòng câu và thời gian hiển thị single-word.
+
 ## TediaPros v0.1.26
 
 ### Auto Short và xử lý video

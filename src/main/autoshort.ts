@@ -3239,7 +3239,8 @@ async function processSingleVideo(
     resourceManager: job.resourceManager || getGlobalResourceManager(),
     artifactCache: job.artifactCache,
     feedbackJournal: job.feedbackJournal,
-    telemetryBudget: job.telemetryBudget
+    telemetryBudget: job.telemetryBudget,
+    reservation
   })
   if (result.translationIdentity && result.translationAssessment?.disposition === 'needs-review') {
     let generation = 0

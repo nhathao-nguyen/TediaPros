@@ -1,5 +1,5 @@
-import type { JSX } from 'react'
-import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
+import type { JSX, MouseEvent as ReactMouseEvent } from 'react'
+import { memo, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import {
   DEFAULT_GEMINI_GATEWAY_URL,
   DEFAULT_AI_SERVER_URL,
@@ -344,6 +344,154 @@ interface PreviewStageSize {
 type EditorTool = 'subtitle' | 'blur' | 'audio' | 'thumbnail' | 'queue'
 type FontLoadState = 'idle' | 'loading' | 'ready' | 'error'
 
+interface AutoShortTaskCardProps {
+  task: AutoShortTaskItem
+  idx: number
+  isSelected: boolean
+  isRunning: boolean
+  retryingTitleId: string | null
+  onSelect: (id: string) => void
+  onRemove: (id: string, e: ReactMouseEvent) => void
+  onPrepareTranslationRetry: (task: AutoShortTaskItem) => void
+  onRetryTitle: (task: AutoShortTaskItem) => void
+}
+
+const AutoShortTaskCard = memo(function AutoShortTaskCard({
+  task,
+  idx,
+  isSelected,
+  isRunning,
+  retryingTitleId,
+  onSelect,
+  onRemove,
+  onPrepareTranslationRetry,
+  onRetryTitle
+}: AutoShortTaskCardProps) {
+  return (
+    <div
+      className={`autoshort-queue-item ${isSelected ? 'selected' : ''}`}
+      onClick={() => onSelect(task.id)}
+      style={{ padding: '10px 12px' }}
+    >
+      <span className="queue-item-index">{idx + 1}</span>
+      <div className="queue-item-info">
+        <div className="queue-item-name">{task.fileName}</div>
+        <div className="queue-item-msg muted small">
+          {task.currentStepMessage || 'Sẵn sàng'}
+          {task.percent > 0 && ` (${task.percent}%)`}
+        </div>
+        {task.temporalEdit?.removedRanges.length ? (
+          <div className="queue-item-msg small">Cắt: {task.temporalEdit.removedRanges.length} đoạn{task.temporalEdit.schemaVersion === 1
+            ? ` · bỏ ${(task.temporalEdit.removedRanges.reduce((sum, range) => sum + range.endUs - range.startUs, 0) / MICROSECONDS_PER_SECOND).toFixed(2)} giây`
+            : ' · theo ranh giới frame'}</div>
+        ) : null}
+        {task.error && <div className="queue-item-msg" style={{ color: 'var(--danger)' }}>{task.error}</div>}
+        {task.recovery && task.status === 'error' && (
+          <div className="queue-item-msg small" style={{ color: 'var(--danger)' }}>
+            Phục hồi thời lượng lượt {task.recovery.attempt}/2
+            {task.recovery.cueId ? ` · ${task.recovery.cueId}` : ''}
+            {task.recovery.missingSeconds != null ? ` · thiếu ${task.recovery.missingSeconds.toFixed(2)} giây` : ''}
+            {task.recovery.requiredPercent != null ? ` · cần ${task.recovery.requiredPercent.toFixed(1)}%` : ''}
+          </div>
+        )}
+        {task.seoMetadata
+          ? <VideoSeoResult metadata={task.seoMetadata} titlePath={task.titlePath} />
+          : task.title && <div className="queue-item-msg small" style={{ whiteSpace: 'normal', overflowWrap: 'anywhere' }}>Tiêu đề: {task.title}</div>}
+        {task.titleError && <div className="queue-item-msg small" role="status" style={{ color: 'var(--danger)', whiteSpace: 'normal', overflowWrap: 'anywhere' }}>
+          Chưa có tieude.txt: {task.titleError}
+        </div>}
+        {task.translationAssessment?.disposition === 'needs-review' && task.translationAssessment.issues.length > 0 && (
+          <details className="queue-item-msg small" style={{ color: 'var(--danger)' }}>
+            <summary>
+              Cần kiểm tra bản dịch
+            </summary>
+            <ul style={{ margin: '4px 0 0 16px', padding: 0 }}>
+              {task.translationAssessment.issues.slice(0, 8).map((issue, issueIndex) => (
+                <li key={`${issue.code}-${issueIndex}`}>{issue.cueIds.length > 0 ? `${issue.cueIds.join(', ')}: ` : ''}{issue.message}</li>
+              ))}
+            </ul>
+          </details>
+        )}
+        {task.translationAssessment?.disposition === 'needs-review' && task.translationIdentity && (
+          <button
+            type="button"
+            className="btn ghost sm"
+            disabled={isRunning}
+            onClick={(event) => {
+              event.stopPropagation()
+              void onPrepareTranslationRetry(task)
+            }}
+          >
+            Thử lại dịch
+          </button>
+        )}
+        {task.titlePath && !task.seoMetadata && <button type="button" className="btn ghost sm"
+          onClick={(event) => { event.stopPropagation(); void window.api.openPath(task.titlePath!) }}>
+          Mở tieude.txt
+        </button>}
+        {task.status === 'done' && (
+          <button
+            type="button"
+            className="btn ghost sm"
+            disabled={retryingTitleId === task.id}
+            title={task.titlePath ? 'Tạo lại tiêu đề và ghi đè tieude.txt' : 'Thử lại tạo tiêu đề'}
+            onClick={(event) => {
+              event.stopPropagation()
+              void onRetryTitle(task)
+            }}
+          >
+            {retryingTitleId === task.id ? '⏳ Đang tạo lại tiêu đề…' : (task.titlePath ? '🔄 Tạo lại tiêu đề' : '🔄 Thử lại tạo tiêu đề')}
+          </button>
+        )}
+        {task.status === 'done' && (
+          <div className="queue-item-msg small" style={{ color: 'var(--success)' }}>
+            OCR {task.extractedCueCount ?? 0} cue · Dịch {task.translatedCueCount ?? 0} cue · TTS {task.generatedVoiceCount ?? 0} cue · Voice {task.voice || 'không xác định'} · Render FFmpeg hoàn tất
+          </div>
+        )}
+        {task.outputPath && (
+          <button
+            type="button"
+            className="btn ghost sm"
+            onClick={(e) => {
+              e.stopPropagation()
+              void window.api.openPath(task.outputPath || '')
+            }}
+          >
+            Mở output
+          </button>
+        )}
+        {task.percent > 0 && task.percent < 100 && (
+          <div className="queue-item-progress-bar">
+            <div className="queue-item-progress-fill" style={{ width: `${task.percent}%` }} />
+          </div>
+        )}
+      </div>
+      <div className="queue-item-actions">
+        <span className={`status-pill ${task.status === 'done' ? 'done' : task.status === 'error' ? 'error' : task.status === 'idle' ? 'idle' : 'working'}`}>
+          {task.status === 'idle'
+            ? 'Sẵn sàng'
+            : task.status === 'queued'
+              ? 'Chờ'
+              : task.status === 'done'
+                ? 'Hoàn tất'
+                : task.status === 'error'
+                  ? 'Lỗi'
+                  : 'Đang chạy'}
+        </span>
+        <button
+          className="btn ghost sm icon-btn"
+          disabled={isRunning}
+          onClick={(e) => onRemove(task.id, e)}
+          title="Xóa video này"
+          type="button"
+        >
+          ✕
+        </button>
+      </div>
+    </div>
+  )
+})
+
 export default function AutoShort(): JSX.Element {
   const [outputDir, setOutputDir] = useTabOutputDir('tblao.outputDir.autoshort')
 
@@ -485,7 +633,13 @@ export default function AutoShort(): JSX.Element {
   )
   const [whisperDevice, setWhisperDevice] = usePersistedState<WhisperDevice>('tblao.autoshort.whisperDevice', 'cpu')
   const [whisperModel, setWhisperModel] = usePersistedState('tblao.autoshort.whModel', 'base')
-  const selectedWhisperModel = whisperModel === 'small' || whisperModel === 'medium' ? whisperModel : 'base'
+  const selectedWhisperModel =
+    whisperModel === 'small' ||
+    whisperModel === 'medium' ||
+    whisperModel === 'large-v3' ||
+    whisperModel === 'large-v3-turbo'
+      ? whisperModel
+      : 'base'
   const [whisperLanguage, setWhisperLanguage] = usePersistedState('tblao.autoshort.whisperLanguage', 'auto')
   const [translateTarget, setTranslateTarget] = usePersistedState('tblao.autoshort.transLang', 'none')
   const [titleEnabled, setTitleEnabled] = usePersistedState('tblao.autoshort.videoTitle', false)
@@ -903,6 +1057,8 @@ export default function AutoShort(): JSX.Element {
 
   // Batch Execution State
   const [isRunning, setIsRunning] = useState(false)
+  const [isStarting, setIsStarting] = useState(false)
+  const isStartingRef = useRef(false)
   // An explicit translation retry is scoped to the items the user prepared;
   // it must never silently reset and re-run already completed videos.
   const [retryPendingIdList, setRetryPendingIdList] = usePersistedState<string[]>('tblao.autoshort.retryPendingIds', [])
@@ -968,6 +1124,10 @@ export default function AutoShort(): JSX.Element {
 
   const applyItemResult = useCallback((event: AutoShortEvent): void => {
     if (event.type === 'item-progress') {
+      setIsRunning(true)
+      setIsStarting(false)
+      isStartingRef.current = false
+      if (event.jobId) setActiveJobId(event.jobId)
       setTasks((prev) => prev.map((item) => item.id === event.itemId ? {
         ...item,
         status: event.itemStatus,
@@ -986,6 +1146,7 @@ export default function AutoShort(): JSX.Element {
       return
     }
     if (event.type === 'item-done' || event.type === 'item-error' || event.type === 'item-cancelled') {
+      if (event.jobId) setActiveJobId(event.jobId)
       const result = event.result
       setTasks((prev) => prev.map((item) => item.id === result.itemId ? {
         ...item,
@@ -1020,6 +1181,8 @@ export default function AutoShort(): JSX.Element {
         : `Đã xử lý ${event.completedCount}/${event.totalCount} video${event.needsReviewCount ? ` · ${event.needsReviewCount} cần kiểm tra` : ''}`
     })
     setIsRunning(false)
+    setIsStarting(false)
+    isStartingRef.current = false
     setActiveJobId(null)
   }, [])
 
@@ -1081,7 +1244,7 @@ export default function AutoShort(): JSX.Element {
 
   // Lắng nghe event discriminated union của job hiện tại.
   useEffect(() => {
-    const coalescer = createAutoShortProgressCoalescer((event) => applyItemResult(event), 10)
+    const coalescer = createAutoShortProgressCoalescer((event) => applyItemResult(event), 5)
     const unsub = window.api.onAutoShortEvent((event: AutoShortEvent) => {
       if (!activeJobId || event.jobId !== activeJobId) return
       coalescer.push(event)
@@ -1456,219 +1619,248 @@ export default function AutoShort(): JSX.Element {
 
   // Khởi động chạy hàng loạt Auto Short
   const startBatch = async (resume?: BatchSnapshot, explicitRetryIds?: ReadonlySet<string>): Promise<void> => {
-    if (tasks.length === 0 || isRunning || sttnPreviewRunning) return
-    const resumeIds = resume ? new Set(resumeCandidateIds(resume)) : null
-    const effectiveRetryIds = explicitRetryIds?.size ? explicitRetryIds : retryPendingIds
-    const retryOnly = !resumeIds && effectiveRetryIds.size > 0
-    const runnableTasks = resumeIds
-      ? tasks.filter((task) => resumeIds.has(task.id))
-      : retryOnly
-      ? tasks.filter((task) => effectiveRetryIds.has(task.id))
-      : tasks
-    if (runnableTasks.length === 0) {
-      setRetryPendingIdList([])
-      return
-    }
-    const guidance = parseTranslationGuidance(translationSynopsis, translationGlossaryText, translationTone, customToneInstruction)
-    if (translateTarget !== 'none' && guidance.error) {
-      alert(guidance.error)
-      return
-    }
-    setDependencyAction('batch')
-    let backgroundMusicConfig: AutoShortBackgroundMusicConfig | undefined
-    if (audioMode === 'replace' && backgroundMusicEnabled) {
-      const assignmentResult = createAutoShortMusicAssignments({
-        mode: backgroundMusicMode,
-        itemIds: runnableTasks.map((task) => task.id),
-        trackPaths: backgroundMusicTracks.map((track) => track.path),
-        selectedTrackPath: backgroundMusicSingleTrack,
-        perVideoAssignments: backgroundMusicAssignments
-      })
-      if (!assignmentResult.ok) {
-        alert(assignmentResult.error)
-        return
-      }
-      backgroundMusicConfig = {
-        folderPath: backgroundMusicFolder,
-        mode: backgroundMusicMode,
-        volume: backgroundMusicVolume,
-        assignments: assignmentResult.assignments
-      }
-    }
-    if (!outputDir) {
-      alert('Vui lòng chọn thư mục lưu video đầu ra.')
-      return
-    }
-
-    const sub = subtitleRegion && clampAutoShortNormalizedRegion(subtitleRegion)
-    const ocr = ocrRegion && clampAutoShortNormalizedRegion(ocrRegion)
-    if (!sub || !ocr) {
-      alert('Chưa đọc xong kích thước video xem trước. Vui lòng chờ video hiển thị rồi thử lại.')
-      return
-    }
-    const normalizedBlurs = blurRegions.flatMap((region) => {
-      const normalized = clampAutoShortNormalizedRegion(region)
-      return normalized ? [{ ...normalized, id: region.id, color: region.color }] : []
-    })
-
-    const activeClonedVoice = clonedVoices.find((cv) => `clone:${cv.id}` === ttsVoice || cv.id === ttsVoice)
-
-    if (ttsEnabled) {
-      if (ttsProvider === 'local-tts' && !activeClonedVoice && (!ttsModel.trim() || !ttsVoice.trim())) {
-        alert('Vui lòng chọn Mô hình và Giọng đọc TTS trong tab "Lồng tiếng" (hoặc chọn nhà cung cấp Edge-TTS / tắt Lồng tiếng).')
-        return
-      }
-      if (ttsProvider === 'edge-tts' && !edgeVoice.trim()) {
-        alert('Vui lòng chọn giọng đọc Edge-TTS trong tab "Lồng tiếng".')
-        return
-      }
-    }
-
-    const status = await refreshAutoShortReadiness()
-    if (!status || !status.ready) {
-      setDependencyError(status?.message || 'Không thể kiểm tra dependency Auto Short.')
-      setShowDependencyModal(true)
-      return
-    }
-
-    setIsRunning(true)
-    setOverallProgress({ current: 0, total: runnableTasks.length, message: retryOnly ? 'Đang khởi động lượt thử lại…' : 'Đang khởi động tiến trình hàng loạt…' })
-
-    const runnableIds = new Set(runnableTasks.map((task) => task.id))
-    setTasks((prev) => prev.map((t) => runnableIds.has(t.id) ? ({
-      ...t,
-      status: 'queued',
-      percent: 0,
-      outputPath: undefined,
-      artifactDir: undefined,
-      error: undefined,
-      title: undefined,
-      titlePath: undefined,
-      titleError: undefined,
-      seoMetadata: undefined,
-      translationAssessment: undefined,
-      translationIdentity: undefined,
-      currentStepMessage: 'Đang trong hàng đợi…'
-    }) : t))
-
-    const config: AutoShortConfig = {
-      portraitBlur,
-      videoAdjustments: normalizedVideoAdjustments,
-      ...(effectsState.error || effectsState.value.length ? { videoEffects: effectsState.error ? videoEffects : effectsState.value } : {}),
-      ...(overlayState.error || overlayState.value.image || overlayState.value.text
-        ? { overlays: overlayState.error ? overlaySettings : overlayState.value } : {}),
-      subtitleMethod,
-      whisperModel: selectedWhisperModel,
-      whisperDevice,
-      whisperLanguage: whisperLanguage.trim() || 'auto',
-      ocrRegion: ocr,
-      blurRegions: normalizedBlurs,
-      lamMo: blurEnabled,
-      blurMode,
-      ocrBlurProfile,
-      subRegion: sub,
-      subtitlePlacementMode: effectiveSubtitlePlacementMode,
-      fontId: fontId === 'auto' ? null : fontId,
-      textColor,
-      outlineColor,
-      outlinePx: Math.min(8, outlinePx),
-      bgEnabled,
-      bgColor,
-      bgOpacity,
-      subtitleDisplayStyle: (subtitleMethod === 'ocr' && !ttsEnabled) ? 'standard' : displayStyle,
-      subtitleFontSize: fontSize > 0 ? fontSize : undefined,
-      subtitleFontWeight: fontWeight,
-      subtitleTextCase,
-      subtitleFontScale: fontSize > 0 ? fontSize / SUBTITLE_STYLE_REFERENCE_HEIGHT : undefined,
-      highlightColor,
-      subtitleHighlightPop: highlightPop,
-      highlightBgEnabled,
-      highlightBgColor,
-      subtitleLayoutProfile: layoutProfile,
-      subtitleAutoOptimize: autoOptimize,
-      outlineScale: outlinePx / SUBTITLE_STYLE_REFERENCE_HEIGHT,
-      translateTarget,
-      translateProvider,
-      translateServerUrl: translateProvider === 'local'
-        ? ttsServerUrl
-        : translateProvider === 'gemini-gateway' ? geminiGatewayUrl : undefined,
-      translationGuidance: translateTarget !== 'none' ? guidance.value : undefined,
-      videoTitle: titleEnabled ? {
-        provider: titleProvider,
-        language: titleLanguage,
-        serverUrl: titleProvider === 'local'
-          ? (titleServerUrl.trim() || undefined)
-          : titleProvider === 'gemini-gateway'
-            ? (titleServerUrl.trim() || geminiGatewayUrl.trim() || undefined)
-            : undefined,
-        seo: titleSeoOptions
-      } : undefined,
-      ttsEnabled,
-      ...(ttsEnabled && ttsProvider === 'edge-tts' ? { ttsProvider } : {}),
-      ttsServerUrl: ttsEnabled && ttsProvider === 'local-tts' ? (ttsServerUrl.trim() || undefined) : undefined,
-      ttsModel: ttsEnabled ? (ttsProvider === 'edge-tts' ? 'edge-tts' : (ttsModel.trim() || undefined)) : undefined,
-      ttsVoice: ttsEnabled
-        ? (ttsProvider === 'edge-tts'
-          ? (edgeVoice.trim() || undefined)
-          : (activeClonedVoice ? activeClonedVoice.name : (ttsVoice.trim() || undefined)))
-        : undefined,
-      ttsRefAudioPath: ttsEnabled && ttsProvider === 'local-tts' && activeClonedVoice ? activeClonedVoice.referenceAudioPath : undefined,
-      ttsRefTranscript: ttsEnabled && ttsProvider === 'local-tts' && activeClonedVoice ? activeClonedVoice.referenceTranscript : undefined,
-      ttsLanguage: ttsEnabled ? (translateTarget !== 'none' ? translateTarget : whisperLanguage.trim() || undefined) : undefined,
-      ttsSpeed,
-      paceMode,
-      voiceOverMode,
-      audioMode,
-      separationPreset: audioMode === 'separate-vocals' ? separationPreset : undefined,
-      originalAudioVolume,
-      backgroundMusic: backgroundMusicConfig,
-      executionPolicy: ttsProvider === 'edge-tts' ? { edgeTtsConcurrency } : undefined,
-      thumbnailConfig: batchAutoThumbnail ? {
-        enabled: true,
-        mode: batchThumbnailMode,
-        cleanSubtitles: thumbnailCleanSubtitles,
-        style: thumbnailStyle,
-        position: thumbnailPosition,
-        fontSize: thumbnailFontSize,
-        autoTitleFromAi: thumbnailAutoTitle
-      } : undefined,
-      outputDir
-    }
+    if (isStartingRef.current || isStarting || isRunning || sttnPreviewRunning) return
+    if (tasks.length === 0) return
+    isStartingRef.current = true
+    setIsStarting(true)
 
     try {
-      const started = resume
-        ? await window.api.autoShortResume({ jobId: resume.jobId, expectedRevision: resume.revision, config })
-        : await window.api.autoShortStart({
-          config,
-          items: runnableTasks.map((task) => ({ id: task.id, filePath: task.filePath,
-            ...(task.temporalEdit ? { temporalEdit: task.temporalEdit } : {}) }))
+      const resumeIds = resume ? new Set(resumeCandidateIds(resume)) : null
+      const effectiveRetryIds = explicitRetryIds?.size ? explicitRetryIds : retryPendingIds
+      const retryOnly = !resumeIds && effectiveRetryIds.size > 0
+      const runnableTasks = resumeIds
+        ? tasks.filter((task) => resumeIds.has(task.id))
+        : retryOnly
+        ? tasks.filter((task) => effectiveRetryIds.has(task.id))
+        : tasks
+      if (runnableTasks.length === 0) {
+        setRetryPendingIdList([])
+        return
+      }
+      const guidance = parseTranslationGuidance(translationSynopsis, translationGlossaryText, translationTone, customToneInstruction)
+      if (translateTarget !== 'none' && guidance.error) {
+        alert(guidance.error)
+        return
+      }
+      setDependencyAction('batch')
+      let backgroundMusicConfig: AutoShortBackgroundMusicConfig | undefined
+      if (audioMode === 'replace' && backgroundMusicEnabled) {
+        const assignmentResult = createAutoShortMusicAssignments({
+          mode: backgroundMusicMode,
+          itemIds: runnableTasks.map((task) => task.id),
+          trackPaths: backgroundMusicTracks.map((track) => track.path),
+          selectedTrackPath: backgroundMusicSingleTrack,
+          perVideoAssignments: backgroundMusicAssignments
         })
-      if (!started.ok) {
+        if (!assignmentResult.ok) {
+          alert(assignmentResult.error)
+          return
+        }
+        backgroundMusicConfig = {
+          folderPath: backgroundMusicFolder,
+          mode: backgroundMusicMode,
+          volume: backgroundMusicVolume,
+          assignments: assignmentResult.assignments
+        }
+      }
+      if (!outputDir) {
+        alert('Vui lòng chọn thư mục lưu video đầu ra.')
+        return
+      }
+
+      const sub = subtitleRegion && clampAutoShortNormalizedRegion(subtitleRegion)
+      const ocr = ocrRegion && clampAutoShortNormalizedRegion(ocrRegion)
+      if (!sub || !ocr) {
+        alert('Chưa đọc xong kích thước video xem trước. Vui lòng chờ video hiển thị rồi thử lại.')
+        return
+      }
+      const normalizedBlurs = blurRegions.flatMap((region) => {
+        const normalized = clampAutoShortNormalizedRegion(region)
+        return normalized ? [{ ...normalized, id: region.id, color: region.color }] : []
+      })
+
+      const activeClonedVoice = clonedVoices.find((cv) => `clone:${cv.id}` === ttsVoice || cv.id === ttsVoice)
+
+      if (ttsEnabled) {
+        if (ttsProvider === 'local-tts' && !activeClonedVoice && (!ttsModel.trim() || !ttsVoice.trim())) {
+          alert('Vui lòng chọn Mô hình và Giọng đọc TTS trong tab "Lồng tiếng" (hoặc chọn nhà cung cấp Edge-TTS / tắt Lồng tiếng).')
+          return
+        }
+        if (ttsProvider === 'edge-tts' && !edgeVoice.trim()) {
+          alert('Vui lòng chọn giọng đọc Edge-TTS trong tab "Lồng tiếng".')
+          return
+        }
+      }
+
+      const runnableIds = new Set(runnableTasks.map((task) => task.id))
+      setTasks((prev) => prev.map((t) => runnableIds.has(t.id) ? ({
+        ...t,
+        status: 'queued',
+        percent: 0,
+        outputPath: undefined,
+        artifactDir: undefined,
+        error: undefined,
+        title: undefined,
+        titlePath: undefined,
+        titleError: undefined,
+        seoMetadata: undefined,
+        translationAssessment: undefined,
+        translationIdentity: undefined,
+        currentStepMessage: 'Đang kiểm tra môi trường…'
+      }) : t))
+
+      setOverallProgress({ current: 0, total: runnableTasks.length, message: 'Đang kiểm tra môi trường và engine…' })
+
+      const status = await refreshAutoShortReadiness()
+      if (!status || !status.ready) {
+        setDependencyError(status?.message || 'Không thể kiểm tra dependency Auto Short.')
+        setShowDependencyModal(true)
+        setTasks((prev) => prev.map((t) => runnableIds.has(t.id) ? ({
+          ...t,
+          status: 'idle',
+          currentStepMessage: 'Chưa đủ điều kiện khởi chạy'
+        }) : t))
+        return
+      }
+
+      setOverallProgress({ current: 0, total: runnableTasks.length, message: retryOnly ? 'Đang khởi động lượt thử lại…' : 'Đang khởi động tiến trình hàng loạt…' })
+
+      setTasks((prev) => prev.map((t) => runnableIds.has(t.id) ? ({
+        ...t,
+        currentStepMessage: 'Đang trong hàng đợi…'
+      }) : t))
+
+      const config: AutoShortConfig = {
+        portraitBlur,
+        videoAdjustments: normalizedVideoAdjustments,
+        ...(effectsState.error || effectsState.value.length ? { videoEffects: effectsState.error ? videoEffects : effectsState.value } : {}),
+        ...(overlayState.error || overlayState.value.image || overlayState.value.text
+          ? { overlays: overlayState.error ? overlaySettings : overlayState.value } : {}),
+        subtitleMethod,
+        whisperModel: selectedWhisperModel,
+        whisperDevice,
+        whisperLanguage: whisperLanguage.trim() || 'auto',
+        ocrRegion: ocr,
+        blurRegions: normalizedBlurs,
+        lamMo: blurEnabled,
+        blurMode,
+        ocrBlurProfile,
+        subRegion: sub,
+        subtitlePlacementMode: effectiveSubtitlePlacementMode,
+        fontId: fontId === 'auto' ? null : fontId,
+        textColor,
+        outlineColor,
+        outlinePx: Math.min(8, outlinePx),
+        bgEnabled,
+        bgColor,
+        bgOpacity,
+        subtitleDisplayStyle: (subtitleMethod === 'ocr' && !ttsEnabled) ? 'standard' : displayStyle,
+        subtitleFontSize: fontSize > 0 ? fontSize : undefined,
+        subtitleFontWeight: fontWeight,
+        subtitleTextCase,
+        subtitleFontScale: fontSize > 0 ? fontSize / SUBTITLE_STYLE_REFERENCE_HEIGHT : undefined,
+        highlightColor,
+        subtitleHighlightPop: highlightPop,
+        highlightBgEnabled,
+        highlightBgColor,
+        subtitleLayoutProfile: layoutProfile,
+        subtitleAutoOptimize: autoOptimize,
+        outlineScale: outlinePx / SUBTITLE_STYLE_REFERENCE_HEIGHT,
+        translateTarget,
+        translateProvider,
+        translateServerUrl: translateProvider === 'local'
+          ? ttsServerUrl
+          : translateProvider === 'gemini-gateway' ? geminiGatewayUrl : undefined,
+        translationGuidance: translateTarget !== 'none' ? guidance.value : undefined,
+        videoTitle: titleEnabled ? {
+          provider: titleProvider,
+          language: titleLanguage,
+          serverUrl: titleProvider === 'local'
+            ? (titleServerUrl.trim() || undefined)
+            : titleProvider === 'gemini-gateway'
+              ? (titleServerUrl.trim() || geminiGatewayUrl.trim() || undefined)
+              : undefined,
+          seo: titleSeoOptions
+        } : undefined,
+        ttsEnabled,
+        ...(ttsEnabled && ttsProvider === 'edge-tts' ? { ttsProvider } : {}),
+        ttsServerUrl: ttsEnabled && ttsProvider === 'local-tts' ? (ttsServerUrl.trim() || undefined) : undefined,
+        ttsModel: ttsEnabled ? (ttsProvider === 'edge-tts' ? 'edge-tts' : (ttsModel.trim() || undefined)) : undefined,
+        ttsVoice: ttsEnabled
+          ? (ttsProvider === 'edge-tts'
+            ? (edgeVoice.trim() || undefined)
+            : (activeClonedVoice ? activeClonedVoice.name : (ttsVoice.trim() || undefined)))
+          : undefined,
+        ttsRefAudioPath: ttsEnabled && ttsProvider === 'local-tts' && activeClonedVoice ? activeClonedVoice.referenceAudioPath : undefined,
+        ttsRefTranscript: ttsEnabled && ttsProvider === 'local-tts' && activeClonedVoice ? activeClonedVoice.referenceTranscript : undefined,
+        ttsLanguage: ttsEnabled ? (translateTarget !== 'none' ? translateTarget : whisperLanguage.trim() || undefined) : undefined,
+        ttsSpeed,
+        paceMode,
+        voiceOverMode,
+        audioMode,
+        separationPreset: audioMode === 'separate-vocals' ? separationPreset : undefined,
+        originalAudioVolume,
+        backgroundMusic: backgroundMusicConfig,
+        executionPolicy: {
+          ...(ttsProvider === 'edge-tts' ? { edgeTtsConcurrency } : {}),
+          maxActiveItems: runnableTasks.length >= 2 ? 2 : 1,
+          overlapIndependentStages: true
+        },
+        thumbnailConfig: batchAutoThumbnail ? {
+          enabled: true,
+          mode: batchThumbnailMode,
+          cleanSubtitles: thumbnailCleanSubtitles,
+          style: thumbnailStyle,
+          position: thumbnailPosition,
+          fontSize: thumbnailFontSize,
+          autoTitleFromAi: thumbnailAutoTitle
+        } : undefined,
+        outputDir
+      }
+
+      try {
+        const started = resume
+          ? await window.api.autoShortResume({ jobId: resume.jobId, expectedRevision: resume.revision, config })
+          : await window.api.autoShortStart({
+            config,
+            items: runnableTasks.map((task) => ({ id: task.id, filePath: task.filePath,
+              ...(task.temporalEdit ? { temporalEdit: task.temporalEdit } : {}) }))
+          })
+        if (!started.ok) {
+          if (started.error?.includes('Đang có một Auto Short job khác chạy')) {
+            setIsRunning(true)
+            return
+          }
+          setIsRunning(false)
+          setOverallProgress((prev) => ({ ...prev, message: started.error }))
+          setTasks((prev) => prev.map((t) => runnableIds.has(t.id) ? ({
+            ...t,
+            status: 'error' as const,
+            error: started.error,
+            currentStepMessage: `Lỗi khởi chạy: ${started.error}`
+          }) : t))
+          alert(`Không thể bắt đầu Auto Short: ${started.error}`)
+          return
+        }
+        setIsRunning(true)
+        setRetryPendingIdList([])
+        setResumeSnapshot(null)
+        setActiveJobId(started.jobId)
+      } catch (launchErr) {
+        const message = launchErr instanceof Error ? launchErr.message : String(launchErr)
         setIsRunning(false)
-        setOverallProgress((prev) => ({ ...prev, message: started.error }))
+        setOverallProgress((prev) => ({ ...prev, message }))
         setTasks((prev) => prev.map((t) => runnableIds.has(t.id) ? ({
           ...t,
           status: 'error' as const,
-          error: started.error,
-          currentStepMessage: `Lỗi khởi chạy: ${started.error}`
+          error: message,
+          currentStepMessage: `Lỗi khởi chạy: ${message}`
         }) : t))
-        alert(`Không thể bắt đầu Auto Short: ${started.error}`)
-        return
+        alert(`Lỗi khi khởi chạy Auto Short: ${message}`)
       }
-      setRetryPendingIdList([])
-      setResumeSnapshot(null)
-      setActiveJobId(started.jobId)
-    } catch (launchErr) {
-      const message = launchErr instanceof Error ? launchErr.message : String(launchErr)
-      setIsRunning(false)
-      setOverallProgress((prev) => ({ ...prev, message }))
-      setTasks((prev) => prev.map((t) => runnableIds.has(t.id) ? ({
-        ...t,
-        status: 'error' as const,
-        error: message,
-        currentStepMessage: `Lỗi khởi chạy: ${message}`
-      }) : t))
-      alert(`Lỗi khi khởi chạy Auto Short: ${message}`)
+    } finally {
+      isStartingRef.current = false
+      setIsStarting(false)
     }
   }
 
@@ -1913,16 +2105,16 @@ export default function AutoShort(): JSX.Element {
             </div>
 
             <div className="editor-preview-actions">
-              <button className={`btn sm ${showCutPanel ? 'primary' : 'ghost'}`} type="button" disabled={!selectedTask || isRunning}
+              <button className={`btn sm ${showCutPanel ? 'primary' : 'ghost'}`} type="button" disabled={!selectedTask || isRunning || isStarting}
                 onClick={() => setShowCutPanel((current) => !current)}>Cắt đoạn</button>
-              <PortraitBlurButton enabled={portraitBlur} onChange={setPortraitBlur} disabled={isRunning} />
-              <VideoAdjustmentsControl value={normalizedVideoAdjustments} onChange={setVideoAdjustments} disabled={isRunning} />
-              <AutoShortOverlayControl value={overlayState.value} onChange={setOverlaySettings} disabled={isRunning} configError={overlayState.error} />
-              <VideoEffectsControl value={effectsState.value} onChange={setVideoEffects} disabled={isRunning} configError={effectsState.error} />
+              <PortraitBlurButton enabled={portraitBlur} onChange={setPortraitBlur} disabled={isRunning || isStarting} />
+              <VideoAdjustmentsControl value={normalizedVideoAdjustments} onChange={setVideoAdjustments} disabled={isRunning || isStarting} />
+              <AutoShortOverlayControl value={overlayState.value} onChange={setOverlaySettings} disabled={isRunning || isStarting} configError={overlayState.error} />
+              <VideoEffectsControl value={effectsState.value} onChange={setVideoEffects} disabled={isRunning || isStarting} configError={effectsState.error} />
               <button
                 className="btn sm ghost"
                 type="button"
-                disabled={!selectedTask || isRunning}
+                disabled={!selectedTask || isRunning || isStarting}
                 onClick={() => setShowThumbnailModal(true)}
                 title="Tạo ảnh bìa (thumbnail) cho video short"
               >
@@ -1954,7 +2146,7 @@ export default function AutoShort(): JSX.Element {
               <button
                 className="btn sm primary"
                 onClick={() => void addVideoFiles()}
-                disabled={isRunning}
+                disabled={isRunning || isStarting}
                 type="button"
                 style={{ padding: '4px 10px', fontSize: '12px' }}
               >
@@ -1965,7 +2157,7 @@ export default function AutoShort(): JSX.Element {
                 <button
                   className="btn sm ghost"
                   onClick={clearAllTasks}
-                  disabled={isRunning}
+                  disabled={isRunning || isStarting}
                   type="button"
                   style={{ padding: '4px 8px', fontSize: '12px' }}
                   title="Xóa tất cả video"
@@ -2239,7 +2431,7 @@ export default function AutoShort(): JSX.Element {
               edit={selectedTask.temporalEdit?.schemaVersion === 1 ? selectedTask.temporalEdit : undefined}
               durationSeconds={videoDuration}
               currentTimeSeconds={currentTime}
-              disabled={isRunning}
+              disabled={isRunning || isStarting}
               onSeek={transport.seekTo}
               onChange={(temporalEdit) => {
                 setResumeSnapshot(null)
@@ -2280,7 +2472,7 @@ export default function AutoShort(): JSX.Element {
                   const target = channelPresets.find((p) => p.id === e.target.value)
                   if (target) applyChannelPreset(target)
                 }}
-                disabled={isRunning}
+                disabled={isRunning || isStarting}
                 style={{
                   flex: 1,
                   minWidth: 0,
@@ -2308,7 +2500,7 @@ export default function AutoShort(): JSX.Element {
                 type="button"
                 className="btn ghost sm"
                 onClick={() => saveCurrentToPreset(activePresetId)}
-                disabled={isRunning}
+                disabled={isRunning || isStarting}
                 style={{ padding: '3px 8px', fontSize: 11, fontWeight: 600 }}
                 title="Lưu cấu hình hiện tại vào preset kênh đang chọn"
               >
@@ -2318,7 +2510,7 @@ export default function AutoShort(): JSX.Element {
                 type="button"
                 className="btn ghost sm"
                 onClick={() => setShowChannelPresetModal(true)}
-                disabled={isRunning}
+                disabled={isRunning || isStarting}
                 style={{ padding: '3px 8px', fontSize: 11 }}
                 title="Mở bảng quản lý danh sách kênh, đổi tên, thêm mới hoặc nhập/xuất JSON"
               >
@@ -2375,7 +2567,7 @@ export default function AutoShort(): JSX.Element {
           </div>
 
           <div className="editor-inspector-scroll">
-            <fieldset disabled={isRunning || sttnPreviewRunning} style={{ border: 0, padding: 0, margin: 0, minWidth: 0 }}>
+            <fieldset disabled={isRunning || isStarting || sttnPreviewRunning} style={{ border: 0, padding: 0, margin: 0, minWidth: 0 }}>
               {/* ------------------------------------------------------------- */}
               {/* TAB 1: PHỤ ĐỀ                                                 */}
               {/* ------------------------------------------------------------- */}
@@ -2424,6 +2616,8 @@ export default function AutoShort(): JSX.Element {
                         <option value="base">Base (Cân bằng · Khuyên dùng)</option>
                         <option value="small">Small (Chính xác hơn)</option>
                         <option value="medium">Medium (Chính xác cao)</option>
+                        <option value="large-v3-turbo">Large v3 Turbo (Siêu nhanh · Cực kỳ chính xác)</option>
+                        <option value="large-v3">Large v3 (Chính xác tối đa · Cần GPU rời)</option>
                       </select>
                     </label>
                   )}
@@ -4016,7 +4210,7 @@ export default function AutoShort(): JSX.Element {
                       <strong>Hàng đợi video ({tasks.length})</strong>
                       <small>Theo dõi trạng thái và tiến độ chi tiết từng video.</small>
                     </div>
-                    <button className="btn sm primary" onClick={() => void addVideoFiles()} disabled={isRunning} type="button">
+                    <button className="btn sm primary" onClick={() => void addVideoFiles()} disabled={isRunning || isStarting} type="button">
                       + Thêm
                     </button>
                   </div>
@@ -4028,128 +4222,18 @@ export default function AutoShort(): JSX.Element {
                       </div>
                     ) : (
                       tasks.map((task, idx) => (
-                        <div
+                        <AutoShortTaskCard
                           key={task.id}
-                          className={`autoshort-queue-item ${selectedTask?.id === task.id ? 'selected' : ''}`}
-                          onClick={() => setSelectedId(task.id)}
-                          style={{ padding: '10px 12px' }}
-                        >
-                          <span className="queue-item-index">{idx + 1}</span>
-                          <div className="queue-item-info">
-                            <div className="queue-item-name">{task.fileName}</div>
-                            <div className="queue-item-msg muted small">
-                              {task.currentStepMessage || 'Sẵn sàng'}
-                              {task.percent > 0 && ` (${task.percent}%)`}
-                            </div>
-                            {task.temporalEdit?.removedRanges.length ? (
-                              <div className="queue-item-msg small">Cắt: {task.temporalEdit.removedRanges.length} đoạn{task.temporalEdit.schemaVersion === 1
-                                ? ` · bỏ ${(task.temporalEdit.removedRanges.reduce((sum, range) => sum + range.endUs - range.startUs, 0) / MICROSECONDS_PER_SECOND).toFixed(2)} giây`
-                                : ' · theo ranh giới frame'}</div>
-                            ) : null}
-                            {task.error && <div className="queue-item-msg" style={{ color: 'var(--danger)' }}>{task.error}</div>}
-                            {task.recovery && task.status === 'error' && (
-                              <div className="queue-item-msg small" style={{ color: 'var(--danger)' }}>
-                                Phục hồi thời lượng lượt {task.recovery.attempt}/2
-                                {task.recovery.cueId ? ` · ${task.recovery.cueId}` : ''}
-                                {task.recovery.missingSeconds != null ? ` · thiếu ${task.recovery.missingSeconds.toFixed(2)} giây` : ''}
-                                {task.recovery.requiredPercent != null ? ` · cần ${task.recovery.requiredPercent.toFixed(1)}%` : ''}
-                              </div>
-                            )}
-                            {task.seoMetadata
-                              ? <VideoSeoResult metadata={task.seoMetadata} titlePath={task.titlePath} />
-                              : task.title && <div className="queue-item-msg small" style={{ whiteSpace: 'normal', overflowWrap: 'anywhere' }}>Tiêu đề: {task.title}</div>}
-                            {task.titleError && <div className="queue-item-msg small" role="status" style={{ color: 'var(--danger)', whiteSpace: 'normal', overflowWrap: 'anywhere' }}>
-                              Chưa có tieude.txt: {task.titleError}
-                            </div>}
-                            {task.translationAssessment?.disposition === 'needs-review' && task.translationAssessment.issues.length > 0 && (
-                              <details className="queue-item-msg small" style={{ color: 'var(--danger)' }}>
-                                <summary>
-                                  Cần kiểm tra bản dịch
-                                </summary>
-                                <ul style={{ margin: '4px 0 0 16px', padding: 0 }}>
-                                  {task.translationAssessment.issues.slice(0, 8).map((issue, issueIndex) => (
-                                    <li key={`${issue.code}-${issueIndex}`}>{issue.cueIds.length > 0 ? `${issue.cueIds.join(', ')}: ` : ''}{issue.message}</li>
-                                  ))}
-                                </ul>
-                              </details>
-                            )}
-                            {task.translationAssessment?.disposition === 'needs-review' && task.translationIdentity && (
-                              <button
-                                type="button"
-                                className="btn ghost sm"
-                                disabled={isRunning}
-                                onClick={(event) => {
-                                  event.stopPropagation()
-                                  void prepareTranslationRetry(task)
-                                }}
-                              >
-                                Thử lại dịch
-                              </button>
-                            )}
-                            {task.titlePath && !task.seoMetadata && <button type="button" className="btn ghost sm"
-                              onClick={(event) => { event.stopPropagation(); void window.api.openPath(task.titlePath!) }}>
-                              Mở tieude.txt
-                            </button>}
-                            {task.status === 'done' && (
-                              <button
-                                type="button"
-                                className="btn ghost sm"
-                                disabled={retryingTitleId === task.id}
-                                title={task.titlePath ? 'Tạo lại tiêu đề và ghi đè tieude.txt' : 'Thử lại tạo tiêu đề'}
-                                onClick={(event) => {
-                                  event.stopPropagation()
-                                  void retryTitle(task)
-                                }}
-                              >
-                                {retryingTitleId === task.id ? '⏳ Đang tạo lại tiêu đề…' : (task.titlePath ? '🔄 Tạo lại tiêu đề' : '🔄 Thử lại tạo tiêu đề')}
-                              </button>
-                            )}
-                            {task.status === 'done' && (
-                              <div className="queue-item-msg small" style={{ color: 'var(--success)' }}>
-                                OCR {task.extractedCueCount ?? 0} cue · Dịch {task.translatedCueCount ?? 0} cue · TTS {task.generatedVoiceCount ?? 0} cue · Voice {task.voice || 'không xác định'} · Render FFmpeg hoàn tất
-                              </div>
-                            )}
-                            {task.outputPath && (
-                              <button
-                                type="button"
-                                className="btn ghost sm"
-                                onClick={(e) => {
-                                  e.stopPropagation()
-                                  void window.api.openPath(task.outputPath || '')
-                                }}
-                              >
-                                Mở output
-                              </button>
-                            )}
-                            {task.percent > 0 && task.percent < 100 && (
-                              <div className="queue-item-progress-bar">
-                                <div className="queue-item-progress-fill" style={{ width: `${task.percent}%` }} />
-                              </div>
-                            )}
-                          </div>
-                          <div className="queue-item-actions">
-                            <span className={`status-pill ${task.status === 'done' ? 'done' : task.status === 'error' ? 'error' : task.status === 'idle' ? 'idle' : 'working'}`}>
-                              {task.status === 'idle'
-                                ? 'Sẵn sàng'
-                                : task.status === 'queued'
-                                  ? 'Chờ'
-                                  : task.status === 'done'
-                                    ? 'Hoàn tất'
-                                    : task.status === 'error'
-                                      ? 'Lỗi'
-                                      : 'Đang chạy'}
-                            </span>
-                            <button
-                              className="btn ghost sm icon-btn"
-                              disabled={isRunning}
-                              onClick={(e) => removeTask(task.id, e)}
-                              title="Xóa video này"
-                              type="button"
-                            >
-                              ✕
-                            </button>
-                          </div>
-                        </div>
+                          task={task}
+                          idx={idx}
+                          isSelected={selectedTask?.id === task.id}
+                          isRunning={isRunning || isStarting}
+                          retryingTitleId={retryingTitleId}
+                          onSelect={setSelectedId}
+                          onRemove={removeTask}
+                          onPrepareTranslationRetry={prepareTranslationRetry}
+                          onRetryTitle={retryTitle}
+                        />
                       ))
                     )}
                   </div>
@@ -4158,7 +4242,7 @@ export default function AutoShort(): JSX.Element {
                     <button
                       className="btn ghost danger sm"
                       onClick={clearAllTasks}
-                      disabled={isRunning}
+                      disabled={isRunning || isStarting}
                       type="button"
                       style={{ marginTop: 12, width: '100%' }}
                     >
@@ -4191,7 +4275,7 @@ export default function AutoShort(): JSX.Element {
             <span className="small" style={{ maxWidth: 240, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }} title={outputDir}>
               {outputDir || 'Chưa chọn thư mục'}
             </span>
-            <button className="btn ghost sm" onClick={() => void chooseOutputDir()} disabled={isRunning} type="button">
+            <button className="btn ghost sm" onClick={() => void chooseOutputDir()} disabled={isRunning || isStarting} type="button">
               Đổi thư mục
             </button>
           </div>
@@ -4212,6 +4296,12 @@ export default function AutoShort(): JSX.Element {
                     }}
                   />
                 </div>
+              </div>
+            ) : isStarting ? (
+              <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                <span className="small" style={{ color: 'var(--warning, #eab308)', fontWeight: 600 }}>
+                  ⏳ {overallProgress.message || 'Đang chuẩn bị chạy hàng loạt…'}
+                </span>
               </div>
             ) : (
               <span className="muted small" style={overallProgress.message ? { color: 'var(--danger, #ff4d4f)' } : undefined}>
@@ -4235,15 +4325,24 @@ export default function AutoShort(): JSX.Element {
           <button className="btn danger" onClick={() => void cancelBatch()} type="button">
             ⛔ Dừng xử lý
           </button>
+        ) : isStarting ? (
+          <button
+            className="btn primary"
+            disabled={true}
+            style={{ fontWeight: 700, padding: '10px 22px', opacity: 0.85, cursor: 'wait' }}
+            type="button"
+          >
+            ⏳ Đang chuẩn bị Auto Short…
+          </button>
         ) : resumeSnapshot && resumeCandidateIds(resumeSnapshot).length > 0 ? (
           <div style={{ display: 'flex', gap: 8 }}>
-            <button className="btn ghost" type="button" onClick={() => setResumeSnapshot(null)}>
+            <button className="btn ghost" type="button" onClick={() => setResumeSnapshot(null)} disabled={isStarting}>
               Bỏ checkpoint
             </button>
             <button
               className="btn primary"
               onClick={() => void startBatch(resumeSnapshot)}
-              disabled={sttnPreviewRunning || dependencyInstalling}
+              disabled={tasks.length === 0 || isStarting || sttnPreviewRunning || dependencyInstalling}
               style={{ fontWeight: 700, padding: '10px 22px' }}
               type="button"
             >
@@ -4254,7 +4353,7 @@ export default function AutoShort(): JSX.Element {
           <button
             className="btn primary"
             onClick={() => void startBatch()}
-            disabled={tasks.length === 0 || sttnPreviewRunning || dependencyInstalling}
+            disabled={tasks.length === 0 || isStarting || sttnPreviewRunning || dependencyInstalling}
             style={{ fontWeight: 700, padding: '10px 22px' }}
             type="button"
           >

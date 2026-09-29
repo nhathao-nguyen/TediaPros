@@ -14,7 +14,7 @@ on:
       runtime_version:
         description: Immutable runtime release tag
         required: true
-        default: runtime-v5
+        default: runtime-v7
       publish:
         description: Publish the verified bundle as a GitHub release
         required: true
@@ -30,7 +30,7 @@ concurrency:
 
 env:
   PYTHON_VERSION: '3.12.10'
-  RUNTIME_VERSION: ${{ github.event_name == 'workflow_dispatch' && inputs.runtime_version || 'runtime-v5' }}
+  RUNTIME_VERSION: ${{ github.event_name == 'workflow_dispatch' && inputs.runtime_version || 'runtime-v7' }}
 
 jobs:
   build:

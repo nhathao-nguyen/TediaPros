@@ -487,19 +487,32 @@ def run_visual_stream(args):
     }
 
     processed = [0]
+    prev_frame = [None]
+    prev_display_items = [None]
 
     def detect_frame(frame):
-        res, _ = ocr(frame)
-        display_items = []
-        for item in (res or []):
-            if not item or len(item) < 3:
-                continue
-            poly, text, score = item[0], item[1], item[2]
-            poly_display = (
-                [[pt[0] + crop_x0, pt[1] + crop_y0] for pt in poly]
-                if use_roi else poly
-            )
-            display_items.append([poly_display, text, score])
+        display_items = None
+        if prev_frame[0] is not None and prev_display_items[0] is not None:
+            if hasattr(frame, "shape") and frame.shape == prev_frame[0].shape:
+                diff = float(np.mean(np.abs(frame.astype(np.int16) - prev_frame[0].astype(np.int16))))
+                if diff < 4.0:
+                    display_items = prev_display_items[0]
+
+        if display_items is None:
+            res, _ = ocr(frame)
+            display_items = []
+            for item in (res or []):
+                if not item or len(item) < 3:
+                    continue
+                poly, text, score = item[0], item[1], item[2]
+                poly_display = (
+                    [[pt[0] + crop_x0, pt[1] + crop_y0] for pt in poly]
+                    if use_roi else poly
+                )
+                display_items.append([poly_display, text, score])
+            prev_frame[0] = frame.copy()
+            prev_display_items[0] = display_items
+
         processed[0] += 1
         emit({
             "type": "progress",
@@ -665,23 +678,37 @@ def run_visual_legacy_disk(args):
 
         total_frames = len(frame_paths)
         processed = [0]
+        prev_crop = [None]
+        prev_display_res = [None]
 
         def detect(path):
             frame = cv2.imread(path)
             if frame is None:
                 raise RuntimeError(f"Không thể đọc khung hình {path} để OCR")
             crop = frame[crop_y0:crop_y1, crop_x0:crop_x1]
-            res, _ = ocr(crop)
-            display_res = []
-            for item in (res or []):
-                if not item or len(item) < 3:
-                    continue
-                poly, text, score = item[0], item[1], item[2]
-                try:
-                    shifted_poly = [[float(pt[0]) + crop_x0, float(pt[1]) + crop_y0] for pt in poly]
-                except (TypeError, ValueError, IndexError):
-                    continue
-                display_res.append([shifted_poly, text, score])
+
+            display_res = None
+            if prev_crop[0] is not None and prev_display_res[0] is not None:
+                if crop.shape == prev_crop[0].shape:
+                    diff = float(np.mean(np.abs(crop.astype(np.int16) - prev_crop[0].astype(np.int16))))
+                    if diff < 4.0:
+                        display_res = prev_display_res[0]
+
+            if display_res is None:
+                res, _ = ocr(crop)
+                display_res = []
+                for item in (res or []):
+                    if not item or len(item) < 3:
+                        continue
+                    poly, text, score = item[0], item[1], item[2]
+                    try:
+                        shifted_poly = [[float(pt[0]) + crop_x0, float(pt[1]) + crop_y0] for pt in poly]
+                    except (TypeError, ValueError, IndexError):
+                        continue
+                    display_res.append([shifted_poly, text, score])
+                prev_crop[0] = crop.copy()
+                prev_display_res[0] = display_res
+
             processed[0] += 1
             emit({
                 "type": "progress",

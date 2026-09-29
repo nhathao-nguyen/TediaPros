@@ -156,6 +156,11 @@ let child: ChildProcess | null = null
 let daHuy = false
 let burnInFlight = false
 let burnAbortController: AbortController | null = null
+let cachedWorkingEncoder: string | null = null
+
+export function resetCachedWorkingEncoder(): void {
+  cachedWorkingEncoder = null
+}
 const burnChildren = new Set<ChildProcess>()
 
 function spawnBurnChild<T extends ChildProcess>(process: T): T {
@@ -1324,12 +1329,22 @@ export async function runBurnSubtitleLower(
       debugRaw('burn filter_complex', filterArgs.join(' '))
     }
 
-    const encoders: Array<{ ten: string; gpu: boolean; args: string[] }> = [
-      { ten: 'h264_nvenc', gpu: true, args: ['-c:v', 'h264_nvenc', '-pix_fmt', 'yuv420p', '-preset', 'p4', '-cq', '23'] },
+    const isDarwin = process.platform === 'darwin'
+    const allCandidates: Array<{ ten: string; gpu: boolean; args: string[] }> = [
+      ...(isDarwin ? [{ ten: 'h264_videotoolbox', gpu: true, args: ['-c:v', 'h264_videotoolbox', '-pix_fmt', 'yuv420p', '-q:v', '65'] }] : []),
+      { ten: 'h264_nvenc', gpu: true, args: ['-c:v', 'h264_nvenc', '-pix_fmt', 'yuv420p', '-preset', 'p4', '-cq', '23', '-spatial-aq', '1'] },
       { ten: 'h264_amf', gpu: true, args: ['-c:v', 'h264_amf', '-pix_fmt', 'yuv420p', '-quality', 'balanced', '-rc', 'cqp', '-qp_i', '23', '-qp_p', '23'] },
       { ten: 'h264_qsv', gpu: true, args: ['-c:v', 'h264_qsv', '-pix_fmt', 'yuv420p', '-global_quality', '23'] },
-      { ten: 'libx264', gpu: false, args: ['-c:v', 'libx264', '-pix_fmt', 'yuv420p', '-preset', 'medium', '-crf', '20'] }
+      { ten: 'libx264', gpu: false, args: ['-c:v', 'libx264', '-pix_fmt', 'yuv420p', '-preset', 'faster', '-crf', '21'] }
     ]
+    if (cachedWorkingEncoder) {
+      const workingIdx = allCandidates.findIndex((c) => c.ten === cachedWorkingEncoder)
+      if (workingIdx > 0) {
+        const [working] = allCandidates.splice(workingIdx, 1)
+        allCandidates.unshift(working)
+      }
+    }
+    const encoders = allCandidates
 
     let lastFailure: BurnProcessResult | null = null
     let lastEncoder = ''
@@ -1361,6 +1376,7 @@ export async function runBurnSubtitleLower(
         return { ok: false, error: 'Đã huỷ.', encoderAttempts }
       }
       if (attemptSucceeded) {
+        cachedWorkingEncoder = enc.ten
         logInfo(`Dịch màn hình: xử lý video xong${enc.gpu ? ' (tăng tốc GPU)' : ''}.`)
         return { ok: true, output, selectedEncoder: enc.ten, encoderAttempts }
       }

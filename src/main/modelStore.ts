@@ -130,7 +130,7 @@ export async function writeWhisperModelManifest(
   revision = WHISPER_MODEL_CATALOG[model].revision
 ): Promise<string> {
   await mkdir(targetDir, { recursive: true })
-  const names = ['model.bin', 'config.json', 'tokenizer.json', 'vocabulary.json', 'vocabulary.txt']
+  const names = ['model.bin', 'config.json', 'tokenizer.json', 'vocabulary.json', 'vocabulary.txt', 'preprocessor_config.json']
   const files: WhisperModelFile[] = []
   for (const name of names) {
     const path = join(targetDir, name)

@@ -65,8 +65,8 @@ export async function verifySeparatorModelReleaseDirectory(releaseDir) {
   }
 
   if (manifest.schemaVersion !== 1) return { ok: false, error: 'schemaVersion must be 1' }
-  if (manifest.runtimeChannel !== 'runtime-v4' && manifest.runtimeChannel !== 'runtime-v5') {
-    return { ok: false, error: 'runtimeChannel must be runtime-v4 or runtime-v5' }
+  if (manifest.runtimeChannel !== 'runtime-v4' && manifest.runtimeChannel !== 'runtime-v5' && manifest.runtimeChannel !== 'runtime-v6' && manifest.runtimeChannel !== 'runtime-v7') {
+    return { ok: false, error: 'runtimeChannel must be runtime-v4, runtime-v5, runtime-v6 or runtime-v7' }
   }
   if (!manifest.models || typeof manifest.models !== 'object') return { ok: false, error: 'models object is required' }
 

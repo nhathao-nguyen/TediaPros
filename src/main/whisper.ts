@@ -228,6 +228,11 @@ export async function installWhisperModel(
       vocabulary = 'vocabulary.txt'
       await downloadModelFile(`https://huggingface.co/${spec.repoId}/resolve/${spec.revision}/${vocabulary}`, join(stagingDir, vocabulary))
     }
+    try {
+      await downloadModelFile(`https://huggingface.co/${spec.repoId}/resolve/${spec.revision}/preprocessor_config.json`, join(stagingDir, 'preprocessor_config.json'))
+    } catch {
+      // preprocessor_config is optional for base/small/medium but needed for 128-mel models like large-v3
+    }
     await writeWhisperModelManifest(stagingDir, modelId, spec.repoId, spec.revision)
     if (!(await isCompleteWhisperModel(stagingDir, modelId))) throw new Error('Model Faster-Whisper chưa đủ file hoặc checksum không hợp lệ.')
     onProgress({ percent: 90, message: 'Đang load thử model bằng Faster-Whisper…' })
@@ -256,10 +261,218 @@ export async function whisperCudaProbe(
 
 let runningWhisperProcess: ChildProcess | null = null
 
+interface WhisperDaemon {
+  child: ChildProcess
+  modelPath: string
+  device: WhisperDevice
+  busy: boolean
+  send: (id: string, req: WhisperRequest, onProgress: (p: WhisperProgress) => void, signal?: AbortSignal) => Promise<WhisperResult>
+  kill: () => void
+}
+
+let activeWhisperDaemon: WhisperDaemon | null = null
+
 export async function shutdownWhisperRuntime(): Promise<void> {
+  if (activeWhisperDaemon) {
+    activeWhisperDaemon.kill()
+    activeWhisperDaemon = null
+  }
   if (!runningWhisperProcess) return
   terminateProcessTree(runningWhisperProcess)
   runningWhisperProcess = null
+}
+
+async function getOrCreateWhisperDaemon(
+  engine: string,
+  modelPath: string,
+  device: WhisperDevice,
+  useCuda: boolean
+): Promise<WhisperDaemon | null> {
+  if (
+    activeWhisperDaemon &&
+    activeWhisperDaemon.modelPath === modelPath &&
+    activeWhisperDaemon.device === device &&
+    !activeWhisperDaemon.busy &&
+    activeWhisperDaemon.child.exitCode === null
+  ) {
+    return activeWhisperDaemon
+  }
+
+  if (activeWhisperDaemon) {
+    activeWhisperDaemon.kill()
+    activeWhisperDaemon = null
+  }
+
+  try {
+    const daemonArgs = [
+      '--daemon',
+      '--model-path', modelPath,
+      '--device', device
+    ]
+    if (useCuda) daemonArgs.push('--cuda-dir', cudaDir())
+
+    const child = trackChildProcess(spawn(engine, daemonArgs, {
+      windowsHide: true,
+      cwd: engineDir(),
+      env: { ...process.env, PYTHONUTF8: '1', PYTHONIOENCODING: 'utf-8', HF_HUB_DISABLE_SYMLINKS_WARNING: '1' }
+    }))
+
+    const ready = await new Promise<boolean>((resolve) => {
+      let buf = ''
+      const onData = (data: Buffer): void => {
+        buf += data.toString()
+        if (buf.includes('"type": "ready"') || buf.includes('"type":"ready"')) {
+          child.stdout?.off('data', onData)
+          resolve(true)
+        }
+      }
+      child.stdout?.on('data', onData)
+      child.once('error', () => resolve(false))
+      child.once('close', () => resolve(false))
+      setTimeout(() => resolve(false), 25_000)
+    })
+
+    if (!ready || child.exitCode !== null) {
+      terminateProcessTree(child)
+      return null
+    }
+
+    const daemon: WhisperDaemon = {
+      child,
+      modelPath,
+      device,
+      busy: false,
+      kill: () => {
+        try { child.stdin?.write(JSON.stringify({ command: 'exit' }) + '\n') } catch {}
+        terminateProcessTree(child)
+      },
+      send: (taskId, taskReq, taskOnProgress, taskSignal) => {
+        daemon.busy = true
+        return new Promise<WhisperResult>((resolve) => {
+          let duration = 0
+          let language: string | null = null
+          let outBuf = ''
+          let errTail = ''
+          let outputs: string[] = []
+          let alignmentPath: string | null = null
+          let segments = 0
+          let speakers = 0
+          let doneOk = false
+          let errMsg: string | null = null
+
+          const onAbort = (): void => {
+            daemon.kill()
+            activeWhisperDaemon = null
+            resolve({ id: taskId, ok: false, outputs: [], segments: 0, speakers: 0, error: 'Đã hủy Faster-Whisper.', requestedDevice: taskReq.device, effectiveDevice: device })
+          }
+
+          if (taskSignal?.aborted) {
+            daemon.busy = false
+            return onAbort()
+          }
+          if (taskSignal) taskSignal.addEventListener('abort', onAbort, { once: true })
+
+          const handleLine = (line: string): void => {
+            const text = line.trim()
+            if (!text || !text.startsWith('{')) return
+            let object: { type?: string; message?: string; duration?: number; language?: string; seconds?: number; text?: string; outputs?: string[]; alignment?: string; segments?: number; speakers?: number }
+            try { object = JSON.parse(text) } catch { return }
+            switch (object.type) {
+              case 'status': taskOnProgress({ id: taskId, status: 'preparing', percent: -1, language, line: object.message ?? null }); break
+              case 'info': duration = Number(object.duration) || 0; language = object.language ?? null; taskOnProgress({ id: taskId, status: 'transcribing', percent: 0, language, line: null }); break
+              case 'progress': {
+                const seconds = Number(object.seconds) || 0
+                taskOnProgress({ id: taskId, status: 'transcribing', percent: duration > 0 ? Math.min(99, Math.round((seconds / duration) * 100)) : -1, language, line: object.text ?? null })
+                break
+              }
+              case 'done': doneOk = true; outputs = object.outputs ?? []; alignmentPath = object.alignment ?? null; segments = object.segments ?? 0; speakers = object.speakers ?? 0; break
+              case 'error': errMsg = object.message ?? 'Lỗi không rõ'; break
+            }
+          }
+
+          const onData = (data: Buffer): void => {
+            outBuf += data.toString()
+            const parts = outBuf.split(/\r?\n/)
+            outBuf = parts.pop() ?? ''
+            for (const line of parts) {
+              handleLine(line)
+              if (doneOk || errMsg) {
+                cleanup()
+                daemon.busy = false
+                if (doneOk && !errMsg) {
+                  taskOnProgress({ id: taskId, status: 'finished', percent: 100, language, line: null })
+                  resolve({
+                    id: taskId,
+                    ok: true,
+                    outputs,
+                    alignmentPath: alignmentPath || outputs.find((file) => file.endsWith('.alignment.json')) || null,
+                    segments,
+                    speakers,
+                    language,
+                    requestedDevice: taskReq.device,
+                    effectiveDevice: device,
+                    error: null
+                  })
+                } else {
+                  resolve({
+                    id: taskId,
+                    ok: false,
+                    outputs: [],
+                    segments: 0,
+                    speakers: 0,
+                    error: errMsg || errTail || 'Lỗi xử lý Whisper',
+                    requestedDevice: taskReq.device,
+                    effectiveDevice: device
+                  })
+                }
+                return
+              }
+            }
+          }
+
+          const cleanup = (): void => {
+            if (taskSignal) taskSignal.removeEventListener('abort', onAbort)
+            child.stdout?.off('data', onData)
+          }
+
+          child.stdout?.on('data', onData)
+          child.stderr?.on('data', (d) => { const l = d.toString().trim().split(/\r?\n/).filter(Boolean).slice(-1)[0]; if (l) errTail = l })
+          child.once('error', (err) => {
+            cleanup()
+            daemon.busy = false
+            resolve({ id: taskId, ok: false, outputs: [], segments: 0, speakers: 0, error: errLabel(err), requestedDevice: taskReq.device, effectiveDevice: device })
+          })
+
+          const formats = taskReq.formats?.length ? taskReq.formats : ['srt']
+          try {
+            child.stdin?.write(JSON.stringify({
+              command: 'transcribe',
+              input: taskReq.input,
+              output_dir: taskReq.outputDir,
+              language: taskReq.language || 'auto',
+              task: taskReq.task || 'transcribe',
+              formats: formats.join(','),
+              vad_threshold: taskReq.vadThreshold,
+              vad_min_speech_ms: taskReq.vadMinSpeechMs,
+              vad_min_silence_ms: taskReq.vadMinSilenceMs,
+              vad_speech_pad_ms: taskReq.vadSpeechPadMs,
+              diarize: taskReq.diarize,
+              speakers: taskReq.speakers
+            }) + '\n')
+          } catch (writeErr) {
+            cleanup()
+            daemon.busy = false
+            resolve({ id: taskId, ok: false, outputs: [], segments: 0, speakers: 0, error: errLabel(writeErr), requestedDevice: taskReq.device, effectiveDevice: device })
+          }
+        })
+      }
+    }
+
+    activeWhisperDaemon = daemon
+    return daemon
+  } catch {
+    return null
+  }
 }
 
 export async function transcribeAudio(
@@ -281,6 +494,14 @@ export async function transcribeAudio(
     if (!useCuda) logWarn(`Audio→Text: CUDA không sẵn sàng, chuyển sang CPU. ${cuda.message || ''}`)
   }
   const effectiveDevice: WhisperDevice = useCuda ? 'cuda' : 'cpu'
+
+  // Try warm daemon worker first to bypass cold-start model reload overhead
+  const daemon = await getOrCreateWhisperDaemon(engine, model.path, effectiveDevice, useCuda)
+  if (daemon) {
+    return daemon.send(id, req, onProgress, signal)
+  }
+
+  // Graceful fallback to single-shot execution
   const args = [
     '--input', req.input,
     '--output-dir', req.outputDir,

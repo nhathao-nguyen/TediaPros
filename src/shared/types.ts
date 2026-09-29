@@ -207,7 +207,7 @@ export type WhisperDevice = 'cpu' | 'cuda'
 export interface WhisperRequest {
   input: string // duong dan file audio/video
   outputDir: string
-  model: string // 'base' | 'small' | 'medium'
+  model: string // 'base' | 'small' | 'medium' | 'large-v3' | 'large-v3-turbo'
   language: string // 'auto' | 'vi' | 'en' ...
   task: WhisperTask
   formats: string[] // ['srt','txt','vtt']

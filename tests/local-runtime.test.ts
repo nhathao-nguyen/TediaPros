@@ -695,9 +695,9 @@ async function writeCompleteWhisperModel(modelDir: string, id: WhisperModelId): 
   }))
 }
 
-test('catalog exposes exactly the three local multilingual models', () => {
-  assert.deepEqual(Object.keys(WHISPER_MODEL_CATALOG), ['base', 'small', 'medium'])
-  for (const id of ['base', 'small', 'medium'] as WhisperModelId[]) {
+test('catalog exposes local multilingual models', () => {
+  assert.deepEqual(Object.keys(WHISPER_MODEL_CATALOG), ['base', 'small', 'medium', 'large-v3', 'large-v3-turbo'])
+  for (const id of ['base', 'small', 'medium', 'large-v3', 'large-v3-turbo'] as WhisperModelId[]) {
     assert.equal(WHISPER_MODEL_CATALOG[id].backend, 'faster-whisper')
     assert.equal(WHISPER_MODEL_CATALOG[id].format, 'ctranslate2')
     assert.equal(WHISPER_MODEL_CATALOG[id].languageFamily, 'multilingual')
@@ -706,7 +706,8 @@ test('catalog exposes exactly the three local multilingual models', () => {
 
 test('legacy model and method names migrate without prompting', () => {
   assert.equal(normalizeWhisperModel('tiny'), 'base')
-  assert.equal(normalizeWhisperModel('large-v3'), 'medium')
+  assert.equal(normalizeWhisperModel('large-v3'), 'large-v3')
+  assert.equal(normalizeWhisperModel('large-v3-turbo'), 'large-v3-turbo')
   assert.equal(normalizeWhisperModel('small'), 'small')
   assert.equal(normalizeWhisperModel('unknown'), 'base')
 })
@@ -1234,7 +1235,8 @@ test('AutoShort preflight checks Gemini Gateway without spending a model probe',
 test('AutoShort exposes only native Whisper models and the selected device', async () => {
   const renderer = await readFile(join(process.cwd(), 'src', 'renderer', 'src', 'components', 'AutoShort.tsx'), 'utf8')
   assert.doesNotMatch(renderer, /<option value="tiny">/u)
-  assert.doesNotMatch(renderer, /<option value="large-v3">/u)
+  assert.match(renderer, /<option value="large-v3">/u)
+  assert.match(renderer, /<option value="large-v3-turbo">/u)
   assert.match(renderer, /<option value="base">/u)
   assert.match(renderer, /<option value="small">/u)
   assert.match(renderer, /<option value="medium">/u)
