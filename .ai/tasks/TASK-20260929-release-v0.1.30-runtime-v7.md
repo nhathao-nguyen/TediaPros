@@ -89,17 +89,20 @@ git push origin v0.1.30
 ### Kết quả thực tế:
 - `Release Gate Verification`: PASS (`Release metadata OK: v0.1.30 (v0.1.30)`).
 - `Typecheck`: PASS (0 errors across `typecheck:node` and `typecheck:web`).
-- `Release Tooling & Migration Tests`: PASS (26/27 pass in release-tooling, 18/18 pass in canonical-runtime-migration).
-- `GitHub Actions Run`:
-  - Run ID `36581376900` (`Build and release app` trên tag `v0.1.30`): Đang chạy build và đóng gói Windows app.
-  - Run ID `36581346713` (`Build and publish Windows runtime` trên `main`): Đang chạy build kiểm tra các engine.
+- `Release Tooling & Migration Tests`: PASS (26/26 pass in release-tooling, 18/18 pass in canonical-runtime-migration).
+- `App Release v0.1.30`: THÀNH CÔNG (GitHub Actions run `36581376900` hoàn tất).
+  - Release page: `https://github.com/nhathao-nguyen/TediaPros/releases/tag/v0.1.30`
+  - Assets: `TediaPros-0.1.30-setup.exe` (92.9 MB), `latest.yml`, `TediaPros-0.1.30-setup.exe.blockmap`.
+- `Sửa lỗi CI FFmpeg (commit 2540bea)`:
+  - Lỗi 404 do link autobuild tạm thời của BtbN bị xóa đã được khắc phục triệt để bằng cách ghim nguồn FFmpeg sang asset bất biến từ `runtime-v5` với SHA-256 (`8dc88e3e4dabdd98479186d5abb9ddff81fabe9be0fb7c05c54239668f09ad16`).
+  - Bước `Download and verify pinned FFmpeg source` trên GitHub Actions run `36583515597` đã PASS 100%.
 
 ---
 
 ## 7. Bước Tiếp Theo / Ghi Chú Bàn Giao (Handoff Notes)
 
-1. **Bản cài đặt ứng dụng (App Build):**
-   - Workflow `Build and release app` ([Run 36581376900](https://github.com/nhathao-nguyen/TediaPros/actions/runs/36581376900)) sẽ tự động hoàn tất việc đóng gói installer Windows (`TediaPros-0.1.30-setup.exe`) và tạo GitHub Release `v0.1.30` khi kết thúc.
+1. **Bản cài đặt ứng dụng (App Build v0.1.30):**
+   - Đã được phát hành chính thức tại [GitHub Releases v0.1.30](https://github.com/nhathao-nguyen/TediaPros/releases/tag/v0.1.30). Người dùng có thể tải bộ cài `TediaPros-0.1.30-setup.exe` ngay bây giờ.
 2. **Phát hành Engine mới (`runtime-v7`):**
    - Để xuất bản bản phát hành GitHub Release chính thức cho các engine (`runtime-v7`), truy cập GitHub Actions tab:
      - Chọn workflow **Build and publish Windows runtime**
@@ -107,4 +110,4 @@ git push origin v0.1.30
      - Chọn nhánh: **main**
      - Immutable runtime release tag: **runtime-v7**
      - Đánh dấu chọn: **Publish the verified bundle as a GitHub release** (hoặc `true`)
-     - Nhấn **Run workflow**. Workflow sẽ biên dịch các engine từ môi trường sạch, chạy bộ kiểm tra probe và upload lên GitHub Release `runtime-v7`.
+     - Nhấn **Run workflow**. Workflow sẽ tự động đóng gói toàn bộ engine và phát hành thẻ `runtime-v7` với đầy đủ checksum SHA-256 đã xác minh.
