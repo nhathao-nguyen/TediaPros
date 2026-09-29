@@ -27,6 +27,10 @@ Nếu đóng gói toàn bộ vào bộ cài đặt ban đầu (NSIS / DMG), file
 3. **Ghim chặt mã băm mật mã học (Cryptographic SHA-256 Pinning):**
    - Mọi asset tải từ GitHub Releases hoặc máy chủ phân phối bắt buộc phải được khai báo trước trong [distribution/runtime-inputs.json](file:///f:/Son/tool/TediaPros/distribution/runtime-inputs.json).
    - Tệp tải về chỉ được giải nén và kích hoạt sau khi `runtimeInstaller.ts` kiểm tra mã băm SHA-256 thực tế trùng khớp 100% với giá trị đã ghim.
+4. **Hỗ trợ archive multipart cho runtime lớn:**
+   - Khi ZIP vượt ngưỡng an toàn của một GitHub Release asset, `pack-runtime-release.mjs` chia byte stream thành các part có thứ tự; không thay đổi nội dung ZIP logic.
+   - Manifest ghim `bytes` và SHA-256 cho từng part, đồng thời ghim `bytes` và SHA-256 của archive sau khi ghép.
+   - Installer tải tuần tự, kiểm tra từng part, ghép theo thứ tự manifest, kiểm tra lại toàn archive rồi mới validate ZIP, giải nén, probe và promote atomic.
 
 ---
 
@@ -39,3 +43,4 @@ Nếu đóng gói toàn bộ vào bộ cài đặt ban đầu (NSIS / DMG), file
 ### Tiêu cực / Đánh đổi:
 - Yêu cầu kết nối mạng trong lần đầu tiên người dùng kích hoạt tính năng AI nâng cao.
 - Phải duy trì quy trình kiểm tra và cập nhật manifest chặt chẽ thông qua script `scripts/pack-runtime-release.mjs`.
+- Runtime multipart cần thêm dung lượng tạm cho archive ghép và thời gian kiểm tra hai lớp checksum; staging vẫn bị xóa khi thất bại.

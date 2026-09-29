@@ -103,7 +103,9 @@ test('Windows runtime release builds and stages the optional STTN engine', async
   const end = workflow.indexOf('Run native capability probes before packaging', start)
   assert.ok(start >= 0 && end > start, 'STTN build step must be present before capability probes')
   const step = workflow.slice(start, end)
-  assert.match(step, /torch==2\.7\.1[^\r\n]*download\.pytorch\.org\/whl\/cpu/u)
+  assert.match(step, /torch==2\.7\.1[^\r\n]*download\.pytorch\.org\/whl\/cu118/u)
+  assert.match(step, /torch\.__version__\s*==\s*'2\.7\.1\+cu118'/u)
+  assert.match(step, /torch\.version\.cuda\s*==\s*'11\.8'/u)
   assert.match(step, /unittest discover[^\r\n]*engines\\sttn-engine\\tests/u)
   assert.match(step, /PyInstaller[^\r\n]*sttn-engine\.spec/u)
   assert.match(step, /sttn-dist\\sttn-engine[\s\S]{0,400}STTN build output is missing/u)
@@ -114,12 +116,12 @@ test('Windows runtime release builds and stages the optional STTN engine', async
     version: '1.1.1',
     entrypoint: 'sttn-engine.exe',
     protocol: 'sttn-engine/1',
-    capabilities: ['cpu', 'timed-mask', 'ffv1', 'preview'],
+    capabilities: ['cpu', 'cuda', 'timed-mask', 'ffv1', 'preview'],
     source: {
       kind: 'repository-build',
       path: 'engines/sttn-engine',
       python: '3.12.10',
-      torch: '2.7.1+cpu'
+      torch: '2.7.1+cu118'
     }
   })
 })
@@ -305,6 +307,9 @@ test('release tooling has no developer-machine or destructive re-upload fallback
   const verifier = await readFile(join(process.cwd(), 'scripts', 'verify-runtime-release.mjs'), 'utf8')
   assert.doesNotMatch(packer, /where\.exe|findInPath|process\.env\.PATH/u)
   assert.doesNotMatch(publisher, /method:\s*['"]DELETE['"]/u)
+  assert.match(publisher, /body:\s*createReadStream\(file\)/u)
+  assert.match(publisher, /duplex:\s*['"]half['"]/u)
+  assert.doesNotMatch(publisher, /readFile\(file\)/u)
   assert.doesNotMatch(verifier, /containsEntrypoint\s*=\s*true/u)
   assert.match(publisher, /runtime-v7/u)
   assert.match(publisher, /manifest\.runtimeVersion/u)
@@ -333,9 +338,17 @@ test('runtime packer archives every canonical kind and verifies the generated ma
       runtimeVersion: inputSpec.runtimeVersion,
       platform: inputSpec.platform,
       arch: inputSpec.arch,
-      inputSpecPath
+      inputSpecPath,
+      maxAssetBytes: 64
     })
     assert.equal(Object.keys(result.manifest.assets).length, 8)
+    const sttn = result.manifest.assets['sttn-engine']
+    assert.ok(sttn.parts?.length > 1)
+    assert.equal(sttn.parts.every((part: { bytes: number }) => part.bytes <= 64), true)
+    assert.equal(await access(join(root, 'release', sttn.asset)).then(() => true).catch(() => false), false)
+    for (const part of sttn.parts) {
+      assert.equal(await access(join(root, 'release', part.asset)).then(() => true).catch(() => false), true)
+    }
     assert.equal((await readFile(join(root, 'release', 'runtime-provenance.json'), 'utf8')).includes('runtime-v7'), true)
   } finally {
     await rm(root, { recursive: true, force: true })
@@ -604,7 +617,7 @@ test('Task 11.4: FFmpeg ocr-mask-v1 packaging and proof verification test matrix
     const res1 = await buildRuntimeRelease({
       inputDir: inputsDir,
       outputDir: join(root, 'release-no-ocr'),
-      runtimeVersion: 'runtime-v7',
+      runtimeVersion: baseSpec.runtimeVersion,
       platform: 'win32',
       arch: 'x64',
       inputSpecPath: noOcrSpecPath,
@@ -626,7 +639,7 @@ test('Task 11.4: FFmpeg ocr-mask-v1 packaging and proof verification test matrix
       await buildRuntimeRelease({
         inputDir: inputsDir,
         outputDir: join(root, 'release-hook-reject'),
-        runtimeVersion: 'runtime-v7',
+        runtimeVersion: baseSpec.runtimeVersion,
         platform: 'win32',
         arch: 'x64',
         inputSpecPath: ocrSpecPath,
@@ -649,7 +662,7 @@ test('Task 11.4: FFmpeg ocr-mask-v1 packaging and proof verification test matrix
       await buildRuntimeRelease({
         inputDir: inputsDir,
         outputDir: join(root, 'release-failed-case'),
-        runtimeVersion: 'runtime-v7',
+        runtimeVersion: baseSpec.runtimeVersion,
         platform: 'win32',
         arch: 'x64',
         inputSpecPath: ocrSpecPath,
@@ -666,7 +679,7 @@ test('Task 11.4: FFmpeg ocr-mask-v1 packaging and proof verification test matrix
       await buildRuntimeRelease({
         inputDir: inputsDir,
         outputDir: join(root, 'release-hash-mismatch'),
-        runtimeVersion: 'runtime-v7',
+        runtimeVersion: baseSpec.runtimeVersion,
         platform: 'win32',
         arch: 'x64',
         inputSpecPath: ocrSpecPath,
@@ -691,7 +704,7 @@ test('Task 11.4: FFmpeg ocr-mask-v1 packaging and proof verification test matrix
         capability: 'ocr-mask-v1',
         native: true,
         passed: true,
-        runtimeVersion: 'runtime-v7',
+        runtimeVersion: manifest.runtimeVersion,
         platform: 'win32',
         arch: 'x64',
         asset: manifest.assets['ffmpeg'].asset,

@@ -1,10 +1,11 @@
 import { createHash } from 'node:crypto'
-import { createReadStream } from 'node:fs'
-import { access, readFile, stat } from 'node:fs/promises'
+import { createReadStream, createWriteStream } from 'node:fs'
+import { access, mkdtemp, readFile, rm, stat } from 'node:fs/promises'
 import { constants } from 'node:fs'
 import { join, resolve } from 'node:path'
 import { spawnSync } from 'node:child_process'
 import { fileURLToPath } from 'node:url'
+import { pipeline } from 'node:stream/promises'
 
 const SUPPORTED_KINDS = new Set(['ffmpeg', 'whisper-engine', 'whisper-cuda', 'ocr-engine', 'video2x', 'douyin', 'separator-engine', 'sttn-engine'])
 const SUPPORTED_PLATFORMS = new Set(['win32', 'darwin', 'linux'])
@@ -52,6 +53,21 @@ export function validateRuntimeReleaseManifest(manifest) {
     assetNames.add(spec.asset)
     if (!/^[a-f0-9]{64}$/iu.test(spec.sha256 || '')) return `${kind}.sha256 is invalid`
     if (!Number.isSafeInteger(spec.bytes) || spec.bytes <= 0) return `${kind}.bytes must be positive`
+    if (spec.parts !== undefined) {
+      if (!Array.isArray(spec.parts) || spec.parts.length === 0) return `${kind}.parts is invalid`
+      let totalPartBytes = 0
+      for (const [index, part] of spec.parts.entries()) {
+        if (!part || typeof part !== 'object' || Array.isArray(part)) return `${kind}.parts[${index}] is invalid`
+        if (typeof part.asset !== 'string' || !/^[A-Za-z0-9][A-Za-z0-9._-]*$/u.test(part.asset.trim())) return `${kind}.parts[${index}].asset is invalid`
+        if (assetNames.has(part.asset)) return `duplicate published asset: ${part.asset}`
+        assetNames.add(part.asset)
+        if (!/^[a-f0-9]{64}$/iu.test(part.sha256 || '')) return `${kind}.parts[${index}].sha256 is invalid`
+        if (!Number.isSafeInteger(part.bytes) || part.bytes <= 0) return `${kind}.parts[${index}].bytes must be positive`
+        totalPartBytes += part.bytes
+        if (!Number.isSafeInteger(totalPartBytes)) return `${kind}.parts byte count is too large`
+      }
+      if (totalPartBytes !== spec.bytes) return `${kind}.parts byte count does not match archive`
+    }
     if (!safeRelativePath(spec.entrypoint)) return `${kind}.entrypoint is unsafe`
     if (!Array.isArray(spec.files) || spec.files.length === 0 || !spec.files.every(safeRelativePath)) return `${kind}.files is required`
     const files = spec.files.map((file) => file.replace(/\\/g, '/'))
@@ -149,6 +165,34 @@ export function isSafeRuntimeReleaseArchiveEntry(entry) {
   return Boolean(normalized) && safeRelativePath(normalized)
 }
 
+async function materializeVerifiedArchive(artifactsDir, workingDir, kind, spec) {
+  if (!spec.parts?.length) {
+    const assetFile = join(artifactsDir, spec.asset)
+    const info = await stat(assetFile).catch(() => null)
+    if (!info?.isFile()) throw new Error(`missing asset ${spec.asset} for ${kind}`)
+    if (info.size !== spec.bytes) throw new Error(`byte count mismatch for ${spec.asset}`)
+    const actualHash = await sha256File(assetFile)
+    if (actualHash.toLowerCase() !== spec.sha256.toLowerCase()) throw new Error(`SHA-256 mismatch for ${spec.asset}`)
+    return assetFile
+  }
+
+  const assembled = join(workingDir, spec.asset)
+  for (const [index, part] of spec.parts.entries()) {
+    const partFile = join(artifactsDir, part.asset)
+    const info = await stat(partFile).catch(() => null)
+    if (!info?.isFile()) throw new Error(`missing multipart asset ${part.asset} for ${kind}`)
+    if (info.size !== part.bytes) throw new Error(`byte count mismatch for ${part.asset}`)
+    const actualHash = await sha256File(partFile)
+    if (actualHash.toLowerCase() !== part.sha256.toLowerCase()) throw new Error(`SHA-256 mismatch for ${part.asset}`)
+    await pipeline(createReadStream(partFile), createWriteStream(assembled, { flags: index === 0 ? 'w' : 'a' }))
+  }
+  const assembledInfo = await stat(assembled)
+  if (assembledInfo.size !== spec.bytes) throw new Error(`assembled byte count mismatch for ${spec.asset}`)
+  const assembledHash = await sha256File(assembled)
+  if (assembledHash.toLowerCase() !== spec.sha256.toLowerCase()) throw new Error(`assembled SHA-256 mismatch for ${spec.asset}`)
+  return assembled
+}
+
 export async function verifyRuntimeReleaseDirectory(artifactsDir) {
   const manifestPath = join(artifactsDir, 'runtime-manifest.json')
   if (!(await fileExists(manifestPath))) return { ok: false, error: `missing manifest: ${manifestPath}` }
@@ -174,21 +218,25 @@ export async function verifyRuntimeReleaseDirectory(artifactsDir) {
     return { ok: false, error: 'runtime-provenance.json does not match runtime-manifest.json' }
   }
 
-  for (const [kind, spec] of Object.entries(manifest.assets)) {
-    const assetFile = join(artifactsDir, spec.asset)
-    const info = await stat(assetFile).catch(() => null)
-    if (!info?.isFile()) return { ok: false, error: `missing asset ${spec.asset} for ${kind}` }
-    if (info.size !== spec.bytes) return { ok: false, error: `byte count mismatch for ${spec.asset}` }
-    const actualHash = await sha256File(assetFile)
-    if (actualHash.toLowerCase() !== spec.sha256.toLowerCase()) return { ok: false, error: `SHA-256 mismatch for ${spec.asset}` }
+  const workingDir = await mkdtemp(join(resolve(artifactsDir), '.verify-'))
+  const materializedAssets = new Map()
+  try {
+    for (const [kind, spec] of Object.entries(manifest.assets)) {
+      let assetFile
+      try {
+        assetFile = await materializeVerifiedArchive(artifactsDir, workingDir, kind, spec)
+      } catch (error) {
+        return { ok: false, error: error.message }
+      }
+      materializedAssets.set(kind, assetFile)
 
-    const inspected = listArchiveEntries(assetFile)
-    if (!inspected.ok) return { ok: false, error: inspected.error }
-    const unsafeEntry = inspected.entries.find((entry) => !isSafeRuntimeReleaseArchiveEntry(entry))
-    if (unsafeEntry) return { ok: false, error: `${spec.asset} contains unsafe archive entry: ${unsafeEntry}` }
-    const missingFiles = spec.files.filter((file) => !archiveContains(inspected.entries, file))
-    if (missingFiles.length > 0) return { ok: false, error: `${spec.asset} is missing required files: ${missingFiles.join(', ')}` }
-  }
+      const inspected = listArchiveEntries(assetFile)
+      if (!inspected.ok) return { ok: false, error: inspected.error }
+      const unsafeEntry = inspected.entries.find((entry) => !isSafeRuntimeReleaseArchiveEntry(entry))
+      if (unsafeEntry) return { ok: false, error: `${spec.asset} contains unsafe archive entry: ${unsafeEntry}` }
+      const missingFiles = spec.files.filter((file) => !archiveContains(inspected.entries, file))
+      if (missingFiles.length > 0) return { ok: false, error: `${spec.asset} is missing required files: ${missingFiles.join(', ')}` }
+    }
 
   // Verify nativeCapabilityProofs for ffmpeg if present or required
   const ffmpegSpec = manifest.assets['ffmpeg']
@@ -243,13 +291,16 @@ export async function verifyRuntimeReleaseDirectory(artifactsDir) {
       return { ok: false, error: 'proof cases must contain the exact four passed test case IDs' }
     }
 
-    const entryHash = sha256ArchiveEntry(join(artifactsDir, ffmpegSpec.asset), ffmpegSpec.entrypoint)
+    const entryHash = sha256ArchiveEntry(materializedAssets.get('ffmpeg'), ffmpegSpec.entrypoint)
     if (entryHash.toLowerCase() !== manifestProof.ffmpegExecutableSha256.toLowerCase()) {
       return { ok: false, error: `archived ffmpeg entry SHA-256 (${entryHash}) does not match proof (${manifestProof.ffmpegExecutableSha256})` }
     }
   }
 
-  return { ok: true, manifest }
+    return { ok: true, manifest }
+  } finally {
+    await rm(workingDir, { recursive: true, force: true }).catch(() => {})
+  }
 }
 
 async function main() {

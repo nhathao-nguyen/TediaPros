@@ -13,6 +13,13 @@ exercise the existing managed installer. Full runtime releases can also include
 the optional `sttn-engine` key in their explicit runtime input specification.
 Never add STTN to the required baseline runtime list.
 
+The Windows runtime-v6 build pins `torch==2.7.1+cu118`. The packaged engine
+advertises both `cuda` and `cpu`: NVIDIA machines use CUDA when the probe says
+it is available, while unsupported machines retain the CPU fallback. Because
+the verified CUDA archive is larger than GitHub Releases' single-asset limit,
+the release packer emits ordered `.partNNN` files. Every part and the assembled
+ZIP is SHA-256 checked before extraction; the logical ZIP itself is not uploaded.
+
 Protocol: `sttn-engine/1`; `--version`, `--probe --model <file> --provider auto`,
 `--run --request <json-file>`. Requests and JSONL events are documented in the
 approved STTN design. Runtime output must be a new MKV path. Inference is offline.

@@ -34,6 +34,8 @@ Trong xử lý video hiện đại, có hai hướng tiếp cận chính:
 3. **Cung cấp STTN Inpainting như một tùy chọn cao cấp (High-Quality Option):**
    - Hỗ trợ tính năng xem trước vài giây ([AutoShortSttnPreviewRequest](file:///f:/Son/tool/TediaPros/src/shared/types.ts)) để người dùng thẩm định chất lượng trước khi quyết định chạy toàn bộ video.
    - Khi chạy STTN, áp dụng cơ chế chia nhỏ frame và giải phóng VRAM định kỳ.
+   - Windows runtime-v6 phân phối PyTorch `2.7.1+cu118`; engine phải quảng bá capability `cuda` và `cpu`, chọn CUDA khi probe thành công và giữ CPU làm fallback.
+   - Gói CUDA được phân phối bằng archive multipart theo ADR 003; không hạ trần checksum hoặc nạp DLL từ URL chưa xác minh.
 4. **Phân biệt hợp đồng OCR thô và timeline đã ổn định:**
    - Dữ liệu trực tiếp từ OCR engine phải đi qua `validateOcrVisualTimeline`; engine không được tự chèn segment có prefix `gap-`.
    - Timeline nội bộ sau `stabilizeSingleSampleGaps`, kể cả timeline đọc lại từ cache, phải đi qua `validateStabilizedOcrVisualTimeline` trước khi giao cho STTN.
