@@ -140,10 +140,12 @@ jobs:
       - name: Download and verify pinned FFmpeg source
         shell: pwsh
         run: |
+          $runtimeInputs = Get-Content -LiteralPath 'distribution/runtime-inputs.json' -Raw | ConvertFrom-Json
+          $ffmpegSource = $runtimeInputs.assets.ffmpeg.source
           $archive = Join-Path $env:RUNNER_TEMP 'ffmpeg-pinned.zip'
-          Invoke-WebRequest -Uri 'https://github.com/BtbN/FFmpeg-Builds/releases/download/autobuild-2026-09-11-13-20/ffmpeg-n9.0.1-29-gad500d59cb-win64-gpl-9.0.zip' -OutFile $archive
+          Invoke-WebRequest -Uri $ffmpegSource.url -OutFile $archive
           $hash = (Get-FileHash -LiteralPath $archive -Algorithm SHA256).Hash.ToLowerInvariant()
-          if ($hash -ne 'af971817c209439bb0374b5e623aca894042aa435426217d0dd5cfd15fb69d1b') { throw "FFmpeg SHA-256 mismatch: $hash" }
+          if ($hash -ne $ffmpegSource.sha256) { throw "FFmpeg SHA-256 mismatch: $hash" }
           $extract = Join-Path $env:RUNNER_TEMP 'ffmpeg-pinned'
           Expand-Archive -LiteralPath $archive -DestinationPath $extract -Force
           $ffmpeg = Get-ChildItem -LiteralPath $extract -Filter ffmpeg.exe -Recurse | Select-Object -First 1

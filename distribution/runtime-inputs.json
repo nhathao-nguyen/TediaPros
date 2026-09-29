@@ -9,11 +9,11 @@
       "entrypoint": "ffmpeg.exe",
       "capabilities": ["version", "ffprobe", "ocr-mask-v1"],
       "source": {
-        "provider": "BtbN/FFmpeg-Builds",
-        "release": "autobuild-2026-09-11-13-20",
-        "asset": "ffmpeg-n9.0.1-29-gad500d59cb-win64-gpl-9.0.zip",
-        "sha256": "af971817c209439bb0374b5e623aca894042aa435426217d0dd5cfd15fb69d1b",
-        "url": "https://github.com/BtbN/FFmpeg-Builds/releases/download/autobuild-2026-09-11-13-20/ffmpeg-n9.0.1-29-gad500d59cb-win64-gpl-9.0.zip"
+        "provider": "TediaPros",
+        "release": "runtime-v5",
+        "asset": "tediapros-ffmpeg-win32-x64.zip",
+        "sha256": "8dc88e3e4dabdd98479186d5abb9ddff81fabe9be0fb7c05c54239668f09ad16",
+        "url": "https://github.com/nhathao-nguyen/TediaPros/releases/download/runtime-v5/tediapros-ffmpeg-win32-x64.zip"
       }
     },
     "whisper-engine": {
