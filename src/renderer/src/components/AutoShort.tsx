@@ -40,8 +40,11 @@ import {
   type AutoShortThumbnailFontSize,
   type AutoShortThumbnailProgress,
   type AutoShortThumbnailResult,
-  type VideoTitleConfig
+  type VideoTitleConfig,
+  type SubtitleTextCase
 } from '../../../shared/types'
+import { SUBTITLE_TEXT_CASES } from '../../../shared/subtitleTextCase'
+import { clampFontWeight, getSupportedFontWeights } from '../../../shared/fontWeights'
 import { AutoShortThumbnailModal } from './AutoShortThumbnailModal'
 import { DEFAULT_VIDEO_SEO_OPTIONS } from '../../../shared/videoSeo'
 import { translationGuidanceError, type TranslationGuidance, type TranslationTone } from '../../../shared/translation'
@@ -77,6 +80,9 @@ import VideoSeoResult from './VideoSeoResult'
 import AutoShortCutPanel from './AutoShortCutPanel'
 import AutoShortOverlayControl from './AutoShortOverlayControl'
 import AutoShortOverlayPreview from './AutoShortOverlayPreview'
+import VideoEffectsControl from './VideoEffectsControl'
+import VideoEffectsPreview from './VideoEffectsPreview'
+import { normalizeVideoEffects, type VideoEffect } from '../../../shared/videoEffects'
 import { normalizeAutoShortOverlays, type AutoShortOverlays } from '../../../shared/autoShortOverlays'
 import { MICROSECONDS_PER_SECOND } from '../../../shared/autoShortTemporalEdit'
 import { compatibleEdgeVoices, resolveEdgeVoice } from '../../../shared/edgeTtsContract'
@@ -363,6 +369,11 @@ export default function AutoShort(): JSX.Element {
   const [videoH, setVideoH] = useState(0)
   const [portraitBlur, setPortraitBlur] = usePersistedState('tblao.autoshort.portraitBlur', false)
   const [overlaySettings, setOverlaySettings] = usePersistedState<AutoShortOverlays>('tblao.autoshort.overlays.v1', {})
+  const [videoEffects, setVideoEffects] = usePersistedState<VideoEffect[]>('tblao.autoshort.videoEffects.v1', [])
+  const effectsState = useMemo(() => {
+    try { return { value: normalizeVideoEffects(videoEffects) || [], error: '' } }
+    catch { return { value: [] as VideoEffect[], error: 'Cấu hình hiệu ứng đã lưu không hợp lệ. Bấm Tắt toàn bộ hiệu ứng rồi chọn lại.' } }
+  }, [videoEffects])
   const overlayState = useMemo(() => {
     try { return { value: normalizeAutoShortOverlays(overlaySettings, true) || {}, error: '' } }
     catch { return { value: {} as AutoShortOverlays, error: 'Cấu hình ảnh/chữ đã lưu không hợp lệ. Bấm bỏ toàn bộ ảnh/chữ rồi chọn lại.' } }
@@ -454,12 +465,18 @@ export default function AutoShort(): JSX.Element {
   )
   const [highlightColor, setHighlightColor] = usePersistedState('tblao.autoshort.highlightColor', '#43e7d5')
   const [highlightPop, setHighlightPop] = usePersistedState('tblao.autoshort.highlightPop', true)
+  const [highlightBgEnabled, setHighlightBgEnabled] = usePersistedState('tblao.autoshort.highlightBgEnabled', false)
+  const [highlightBgColor, setHighlightBgColor] = usePersistedState('tblao.autoshort.highlightBgColor', '#000000')
   const [layoutProfile, setLayoutProfile] = usePersistedState<SubtitleLayoutProfile>(
     'tblao.autoshort.layoutProfile',
     'readable'
   )
   const [autoOptimize, setAutoOptimize] = usePersistedState('tblao.autoshort.autoOptimize', true)
   const [showSafeArea, setShowSafeArea] = usePersistedState('tblao.autoshort.showSafeArea', true)
+  const [subtitleTextCase, setSubtitleTextCase] = usePersistedState<SubtitleTextCase>(
+    'tblao.autoshort.subtitleTextCase',
+    'original'
+  )
 
   // Subtitle Extraction & AI Translation
   const [subtitleMethod, setSubtitleMethod] = usePersistedState<AutoShortSubtitleMethod>(
@@ -729,7 +746,10 @@ export default function AutoShort(): JSX.Element {
     if (preset.fontWeight !== undefined) setFontWeight(preset.fontWeight)
     if (preset.textColor) setTextColor(preset.textColor)
     if (preset.outlineColor) setOutlineColor(preset.outlineColor)
+    if (preset.subtitleTextCase !== undefined) setSubtitleTextCase(preset.subtitleTextCase)
     if (preset.highlightColor) setHighlightColor(preset.highlightColor)
+    if (preset.highlightBgEnabled !== undefined) setHighlightBgEnabled(preset.highlightBgEnabled)
+    if (preset.highlightBgColor) setHighlightBgColor(preset.highlightBgColor)
     if (preset.titleEnabled !== undefined) setTitleEnabled(preset.titleEnabled)
     setTitleSeoOptions((prev) => ({
       ...prev,
@@ -746,7 +766,7 @@ export default function AutoShort(): JSX.Element {
     setTranslationSynopsis, setTranslationGlossaryText, setTtsEnabled, setTtsProvider,
     setEdgeVoice, setTtsVoice, setTtsSpeed, setPaceMode, setOriginalAudioVolume,
     setBackgroundMusicEnabled, setBackgroundMusicVolume, setFontId, setFontSize,
-    setFontWeight, setTextColor, setOutlineColor, setHighlightColor, setTitleEnabled,
+    setFontWeight, setTextColor, setOutlineColor, setSubtitleTextCase, setHighlightColor, setHighlightBgEnabled, setHighlightBgColor, setTitleEnabled,
     setTitleSeoOptions, setThumbnailStyle, setThumbnailPosition
   ])
 
@@ -772,9 +792,12 @@ export default function AutoShort(): JSX.Element {
       fontId: fontId === 'auto' ? null : fontId,
       fontSize: fontSize > 0 ? fontSize : undefined,
       fontWeight,
+      subtitleTextCase,
       textColor,
       outlineColor,
       highlightColor,
+      highlightBgEnabled,
+      highlightBgColor,
       titleEnabled,
       channelName: titleSeoOptions.channelName || '',
       brandVoice: titleSeoOptions.brandVoice || '',
@@ -787,8 +810,8 @@ export default function AutoShort(): JSX.Element {
   }, [
     translationTone, customToneInstruction, translationSynopsis, translationGlossaryText,
     ttsEnabled, ttsProvider, edgeVoice, ttsVoice, ttsSpeed, paceMode, originalAudioVolume,
-    backgroundMusicEnabled, backgroundMusicVolume, fontId, fontSize, fontWeight, textColor,
-    outlineColor, highlightColor, titleEnabled, titleSeoOptions, thumbnailStyle, thumbnailPosition
+    backgroundMusicEnabled, backgroundMusicVolume, fontId, fontSize, fontWeight, subtitleTextCase, textColor,
+    outlineColor, highlightColor, highlightBgEnabled, highlightBgColor, titleEnabled, titleSeoOptions, thumbnailStyle, thumbnailPosition
   ])
 
   const saveCurrentToPreset = useCallback((targetId: string) => {
@@ -1174,6 +1197,21 @@ export default function AutoShort(): JSX.Element {
     return Array.from(map.entries())
   }, [fonts])
 
+  const selectedFontEntry = useMemo(
+    () => fonts.find((font) => font.id === fontId && font.available !== false) || null,
+    [fonts, fontId]
+  )
+
+  const supportedFontWeights = useMemo(
+    () => getSupportedFontWeights(selectedFontEntry),
+    [selectedFontEntry]
+  )
+
+  useEffect(() => {
+    if (!fontsLoaded) return
+    setFontWeight((current) => clampFontWeight(current, selectedFontEntry))
+  }, [selectedFontEntry, fontsLoaded, setFontWeight])
+
   // Measure video preview stage accurately
   const measureStage = useCallback(() => {
     const shell = stageShellRef.current
@@ -1438,7 +1476,7 @@ export default function AutoShort(): JSX.Element {
     }
     setDependencyAction('batch')
     let backgroundMusicConfig: AutoShortBackgroundMusicConfig | undefined
-    if (ttsEnabled && audioMode === 'replace' && backgroundMusicEnabled) {
+    if (audioMode === 'replace' && backgroundMusicEnabled) {
       const assignmentResult = createAutoShortMusicAssignments({
         mode: backgroundMusicMode,
         itemIds: runnableTasks.map((task) => task.id),
@@ -1473,6 +1511,19 @@ export default function AutoShort(): JSX.Element {
       return normalized ? [{ ...normalized, id: region.id, color: region.color }] : []
     })
 
+    const activeClonedVoice = clonedVoices.find((cv) => `clone:${cv.id}` === ttsVoice || cv.id === ttsVoice)
+
+    if (ttsEnabled) {
+      if (ttsProvider === 'local-tts' && !activeClonedVoice && (!ttsModel.trim() || !ttsVoice.trim())) {
+        alert('Vui lòng chọn Mô hình và Giọng đọc TTS trong tab "Lồng tiếng" (hoặc chọn nhà cung cấp Edge-TTS / tắt Lồng tiếng).')
+        return
+      }
+      if (ttsProvider === 'edge-tts' && !edgeVoice.trim()) {
+        alert('Vui lòng chọn giọng đọc Edge-TTS trong tab "Lồng tiếng".')
+        return
+      }
+    }
+
     const status = await refreshAutoShortReadiness()
     if (!status || !status.ready) {
       setDependencyError(status?.message || 'Không thể kiểm tra dependency Auto Short.')
@@ -1500,11 +1551,10 @@ export default function AutoShort(): JSX.Element {
       currentStepMessage: 'Đang trong hàng đợi…'
     }) : t))
 
-    const activeClonedVoice = clonedVoices.find((cv) => `clone:${cv.id}` === ttsVoice || cv.id === ttsVoice)
-
     const config: AutoShortConfig = {
       portraitBlur,
       videoAdjustments: normalizedVideoAdjustments,
+      ...(effectsState.error || effectsState.value.length ? { videoEffects: effectsState.error ? videoEffects : effectsState.value } : {}),
       ...(overlayState.error || overlayState.value.image || overlayState.value.text
         ? { overlays: overlayState.error ? overlaySettings : overlayState.value } : {}),
       subtitleMethod,
@@ -1528,9 +1578,12 @@ export default function AutoShort(): JSX.Element {
       subtitleDisplayStyle: (subtitleMethod === 'ocr' && !ttsEnabled) ? 'standard' : displayStyle,
       subtitleFontSize: fontSize > 0 ? fontSize : undefined,
       subtitleFontWeight: fontWeight,
+      subtitleTextCase,
       subtitleFontScale: fontSize > 0 ? fontSize / SUBTITLE_STYLE_REFERENCE_HEIGHT : undefined,
       highlightColor,
       subtitleHighlightPop: highlightPop,
+      highlightBgEnabled,
+      highlightBgColor,
       subtitleLayoutProfile: layoutProfile,
       subtitleAutoOptimize: autoOptimize,
       outlineScale: outlinePx / SUBTITLE_STYLE_REFERENCE_HEIGHT,
@@ -1551,15 +1604,17 @@ export default function AutoShort(): JSX.Element {
         seo: titleSeoOptions
       } : undefined,
       ttsEnabled,
-      ...(ttsProvider === 'edge-tts' ? { ttsProvider } : {}),
-      ttsServerUrl: ttsProvider === 'local-tts' ? ttsServerUrl : undefined,
-      ttsModel: ttsProvider === 'edge-tts' ? 'edge-tts' : ttsModel,
-      ttsVoice: ttsProvider === 'edge-tts'
-        ? edgeVoice
-        : (activeClonedVoice ? activeClonedVoice.name : ttsVoice),
-      ttsRefAudioPath: ttsProvider === 'local-tts' && activeClonedVoice ? activeClonedVoice.referenceAudioPath : undefined,
-      ttsRefTranscript: ttsProvider === 'local-tts' && activeClonedVoice ? activeClonedVoice.referenceTranscript : undefined,
-      ttsLanguage: translateTarget !== 'none' ? translateTarget : whisperLanguage.trim() || undefined,
+      ...(ttsEnabled && ttsProvider === 'edge-tts' ? { ttsProvider } : {}),
+      ttsServerUrl: ttsEnabled && ttsProvider === 'local-tts' ? (ttsServerUrl.trim() || undefined) : undefined,
+      ttsModel: ttsEnabled ? (ttsProvider === 'edge-tts' ? 'edge-tts' : (ttsModel.trim() || undefined)) : undefined,
+      ttsVoice: ttsEnabled
+        ? (ttsProvider === 'edge-tts'
+          ? (edgeVoice.trim() || undefined)
+          : (activeClonedVoice ? activeClonedVoice.name : (ttsVoice.trim() || undefined)))
+        : undefined,
+      ttsRefAudioPath: ttsEnabled && ttsProvider === 'local-tts' && activeClonedVoice ? activeClonedVoice.referenceAudioPath : undefined,
+      ttsRefTranscript: ttsEnabled && ttsProvider === 'local-tts' && activeClonedVoice ? activeClonedVoice.referenceTranscript : undefined,
+      ttsLanguage: ttsEnabled ? (translateTarget !== 'none' ? translateTarget : whisperLanguage.trim() || undefined) : undefined,
       ttsSpeed,
       paceMode,
       voiceOverMode,
@@ -1580,21 +1635,41 @@ export default function AutoShort(): JSX.Element {
       outputDir
     }
 
-    const started = resume
-      ? await window.api.autoShortResume({ jobId: resume.jobId, expectedRevision: resume.revision, config })
-      : await window.api.autoShortStart({
-        config,
-        items: runnableTasks.map((task) => ({ id: task.id, filePath: task.filePath,
-          ...(task.temporalEdit ? { temporalEdit: task.temporalEdit } : {}) }))
-      })
-    if (!started.ok) {
+    try {
+      const started = resume
+        ? await window.api.autoShortResume({ jobId: resume.jobId, expectedRevision: resume.revision, config })
+        : await window.api.autoShortStart({
+          config,
+          items: runnableTasks.map((task) => ({ id: task.id, filePath: task.filePath,
+            ...(task.temporalEdit ? { temporalEdit: task.temporalEdit } : {}) }))
+        })
+      if (!started.ok) {
+        setIsRunning(false)
+        setOverallProgress((prev) => ({ ...prev, message: started.error }))
+        setTasks((prev) => prev.map((t) => runnableIds.has(t.id) ? ({
+          ...t,
+          status: 'error' as const,
+          error: started.error,
+          currentStepMessage: `Lỗi khởi chạy: ${started.error}`
+        }) : t))
+        alert(`Không thể bắt đầu Auto Short: ${started.error}`)
+        return
+      }
+      setRetryPendingIdList([])
+      setResumeSnapshot(null)
+      setActiveJobId(started.jobId)
+    } catch (launchErr) {
+      const message = launchErr instanceof Error ? launchErr.message : String(launchErr)
       setIsRunning(false)
-      setOverallProgress((prev) => ({ ...prev, message: started.error }))
-      return
+      setOverallProgress((prev) => ({ ...prev, message }))
+      setTasks((prev) => prev.map((t) => runnableIds.has(t.id) ? ({
+        ...t,
+        status: 'error' as const,
+        error: message,
+        currentStepMessage: `Lỗi khởi chạy: ${message}`
+      }) : t))
+      alert(`Lỗi khi khởi chạy Auto Short: ${message}`)
     }
-    setRetryPendingIdList([])
-    setResumeSnapshot(null)
-    setActiveJobId(started.jobId)
   }
 
   const cancelBatch = async (): Promise<void> => {
@@ -1843,6 +1918,7 @@ export default function AutoShort(): JSX.Element {
               <PortraitBlurButton enabled={portraitBlur} onChange={setPortraitBlur} disabled={isRunning} />
               <VideoAdjustmentsControl value={normalizedVideoAdjustments} onChange={setVideoAdjustments} disabled={isRunning} />
               <AutoShortOverlayControl value={overlayState.value} onChange={setOverlaySettings} disabled={isRunning} configError={overlayState.error} />
+              <VideoEffectsControl value={effectsState.value} onChange={setVideoEffects} disabled={isRunning} configError={effectsState.error} />
               <button
                 className="btn sm ghost"
                 type="button"
@@ -1912,8 +1988,12 @@ export default function AutoShort(): JSX.Element {
                 width={previewStageSize.width}
                 height={previewStageSize.height}
                 adjustments={normalizedVideoAdjustments}
-                overlay={<AutoShortOverlayPreview value={overlayState.value} width={previewStageSize.width}
-                  height={previewStageSize.height} fontFamily={previewFontFamily} fontId={fontId} />}
+                overlay={<>
+                  <VideoEffectsPreview effects={effectsState.value} videoRef={videoRef} source={previewPath}
+                    width={previewStageSize.width} height={previewStageSize.height} />
+                  <AutoShortOverlayPreview value={overlayState.value} width={previewStageSize.width}
+                    height={previewStageSize.height} fontFamily={previewFontFamily} fontId={fontId} />
+                </>}
               >
                 <video
                   ref={videoRef}
@@ -1977,8 +2057,11 @@ export default function AutoShort(): JSX.Element {
                       : undefined}
                     subtitleFontWeight={fontWeight}
                     scaleSubtitleToVideo={portraitBlur}
+                    subtitleTextCase={subtitleTextCase}
                     highlightColor={highlightColor}
                     highlightPop={highlightPop}
+                    highlightBgEnabled={highlightBgEnabled}
+                    highlightBgColor={highlightBgColor}
                     textColor={textColor}
                     outlineColor={outlineColor}
                     outlinePx={videoPixelsFromReferenceHeight(outlinePx, videoH, SUBTITLE_STYLE_REFERENCE_HEIGHT)}
@@ -2349,8 +2432,8 @@ export default function AutoShort(): JSX.Element {
                     <label className="field editor-field" style={{ marginTop: 6 }}>
                       <span>Thiết bị Whisper</span>
                       <select value={whisperDevice} onChange={(e) => setWhisperDevice(e.target.value as WhisperDevice)}>
-                        <option value="cpu">CPU (tương thích)</option>
-                        <option value="cuda">CUDA (GPU NVIDIA)</option>
+                        <option value="cpu">CPU (tương thích · Card AMD / Intel / CPU)</option>
+                        <option value="cuda">CUDA (Chỉ dành cho GPU NVIDIA)</option>
                       </select>
                     </label>
                   )}
@@ -2744,6 +2827,30 @@ export default function AutoShort(): JSX.Element {
                           <span>{highlightPop ? 'Bật' : 'Tắt'}</span>
                         </label>
                       </div>
+                      <div className="highlight-pop-control">
+                        <div>
+                          <strong>Nền sau chữ đang đọc</strong>
+                          <small>Thêm ô nền nổi bật phía sau từ đang đọc.</small>
+                        </div>
+                        <label className="editor-switch">
+                          <input
+                            type="checkbox"
+                            checked={highlightBgEnabled}
+                            onChange={(e) => setHighlightBgEnabled(e.target.checked)}
+                          />
+                          <span>{highlightBgEnabled ? 'Bật' : 'Tắt'}</span>
+                        </label>
+                      </div>
+                      {highlightBgEnabled && (
+                        <label className="field editor-field">
+                          <span>Màu nền chữ đang đọc</span>
+                          <input
+                            type="color"
+                            value={highlightBgColor}
+                            onChange={(e) => setHighlightBgColor(e.target.value)}
+                          />
+                        </label>
+                      )}
                     </div>
                   )}
 
@@ -2769,8 +2876,8 @@ export default function AutoShort(): JSX.Element {
                         value={layoutProfile}
                         onChange={(e) => setLayoutProfile(e.target.value as SubtitleLayoutProfile)}
                       >
+                        <option value="social">Social · 1 dòng (nhịp nhanh)</option>
                         <option value="readable">Dễ đọc · tối đa 2 dòng</option>
-                        <option value="social">Social · nhịp nhanh</option>
                         <option value="vertical">Video dọc · tối đa 2 dòng</option>
                       </select>
                     </label>
@@ -2788,7 +2895,15 @@ export default function AutoShort(): JSX.Element {
 
                   <label className="field editor-field">
                     <span>Font chữ</span>
-                    <select value={fontId} onChange={(e) => setFontId(e.target.value)}>
+                    <select
+                      value={fontId}
+                      onChange={(e) => {
+                        const nextFontId = e.target.value
+                        setFontId(nextFontId)
+                        const nextFont = fonts.find((font) => font.id === nextFontId && font.available !== false) || null
+                        setFontWeight((current) => clampFontWeight(current, nextFont))
+                      }}
+                    >
                       <option value="auto">Tự động theo nội dung</option>
                       {groupedFonts.map(([group, entries]) => (
                         <optgroup key={group} label={group}>
@@ -2809,13 +2924,25 @@ export default function AutoShort(): JSX.Element {
                   <label className="field editor-field">
                     <span>Độ đậm chữ</span>
                     <select value={fontWeight} onChange={(e) => setFontWeight(Number(e.target.value))}>
-                      <option value={300}>300 · Mảnh (Light)</option>
-                      <option value={400}>400 · Thường (Regular)</option>
-                      <option value={500}>500 · Vừa (Medium)</option>
-                      <option value={600}>600 · Bán đậm (Semi-Bold)</option>
-                      <option value={700}>700 · Đậm (Bold)</option>
-                      <option value={800}>800 · Rất đậm (Extra Bold)</option>
-                      <option value={900}>900 · Cực đậm (Black)</option>
+                      {supportedFontWeights.map((opt) => (
+                        <option key={opt.value} value={opt.value}>
+                          {opt.label}
+                        </option>
+                      ))}
+                    </select>
+                  </label>
+
+                  <label className="field editor-field">
+                    <span>Định dạng chữ</span>
+                    <select
+                      value={subtitleTextCase}
+                      onChange={(e) => setSubtitleTextCase(e.target.value as SubtitleTextCase)}
+                    >
+                      {SUBTITLE_TEXT_CASES.map((item) => (
+                        <option key={item.id} value={item.id}>
+                          {item.label}
+                        </option>
+                      ))}
                     </select>
                   </label>
 
@@ -3427,12 +3554,16 @@ export default function AutoShort(): JSX.Element {
                     </label>
                   )}
 
-                  {ttsEnabled && audioMode === 'replace' && (
+                  {audioMode === 'replace' && (
                     <div className="autoshort-music-panel">
                       <div className="editor-section-head">
                         <div>
-                          <strong>Nhạc background</strong>
-                          <small>Phát lặp, tự giảm âm lượng khi có giọng đọc AI.</small>
+                          <strong>{ttsEnabled ? 'Nhạc background' : 'Âm thanh / Nhạc thay thế'}</strong>
+                          <small>
+                            {ttsEnabled
+                              ? 'Phát lặp, tự giảm âm lượng khi có giọng đọc AI.'
+                              : 'Phát lặp nếu ngắn hơn video, tự cắt tỉa vừa khớp video gốc.'}
+                          </small>
                         </div>
                         <label className="editor-switch">
                           <input
@@ -3503,7 +3634,7 @@ export default function AutoShort(): JSX.Element {
                           )}
 
                           <label className="field editor-field">
-                            <span>Âm lượng nhạc background · {backgroundMusicVolume}%</span>
+                            <span>{ttsEnabled ? 'Âm lượng nhạc background' : 'Âm lượng âm thanh thay thế'} · {backgroundMusicVolume}%</span>
                             <input type="range" min={0} max={100} value={backgroundMusicVolume} onChange={(event) => setBackgroundMusicVolume(Number(event.target.value))} />
                           </label>
                         </>
@@ -4083,10 +4214,10 @@ export default function AutoShort(): JSX.Element {
                 </div>
               </div>
             ) : (
-              <span className="muted small">
-                {tasks.length > 0
+              <span className="muted small" style={overallProgress.message ? { color: 'var(--danger, #ff4d4f)' } : undefined}>
+                {overallProgress.message || (tasks.length > 0
                   ? `Sẵn sàng xử lý tự động ${tasks.length} video hàng loạt theo cấu hình đã chọn.`
-                  : 'Hãy thêm video vào danh sách để bắt đầu tạo Auto Short.'}
+                  : 'Hãy thêm video vào danh sách để bắt đầu tạo Auto Short.')}
               </span>
             )}
           </div>
@@ -4176,8 +4307,8 @@ export default function AutoShort(): JSX.Element {
                 return (
                   <div key={item.id} style={{ border: '1px solid var(--border)', borderRadius: 8, padding: '10px 12px' }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', gap: 12 }}>
-                      <strong>{item.ready ? '✓ ' : '○ '}{item.label}</strong>
-                      <span className="muted small">{item.ready ? 'Sẵn sàng' : formatBytes(item.downloadBytes)}</span>
+                      <strong>{item.ready ? '✓ ' : item.required ? '○ ' : '— '}{item.label}</strong>
+                      <span className="muted small">{item.ready ? 'Sẵn sàng' : !item.required ? 'Tự động bỏ qua (dùng CPU)' : formatBytes(item.downloadBytes)}</span>
                     </div>
                     {(progress?.message || item.message) && (
                       <div className="muted small" style={{ marginTop: 4 }}>{progress?.message || item.message}</div>

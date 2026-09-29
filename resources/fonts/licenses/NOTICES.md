@@ -29,4 +29,9 @@ Copyright 2022 The Noto Project Authors
 Copyright 2014-2021 Adobe (http://www.adobe.com/), with Reserved Font Name
 "Source".
 
+## Anton
+
+Copyright 2020 The Anton Project Authors
+(https://github.com/googlefonts/AntonFont.git)  
+
 The complete license text is available in `OFL-1.1.txt`.

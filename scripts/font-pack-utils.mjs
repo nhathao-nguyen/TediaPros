@@ -181,7 +181,14 @@ export function inspectFontFile(file) {
   const family = englishName(font, 'preferredFamily') || englishName(font, 'fontFamily')
   const fullName = englishName(font, 'fullName') || family
   if (!family) fail(`font has no readable family metadata: ${file}`)
-  return { buffer, font, family, fullName }
+
+  const fvar = font.tables.fvar
+  const wghtAxis = fvar?.axes?.find((a) => a.tag === 'wght')
+  const isVariable = Boolean(wghtAxis)
+  const minWeight = isVariable ? Math.round(wghtAxis.minValue) : (font.tables.os2?.usWeightClass || 400)
+  const maxWeight = isVariable ? Math.round(wghtAxis.maxValue) : (font.tables.os2?.usWeightClass || 400)
+
+  return { buffer, font, family, fullName, isVariable, minWeight, maxWeight }
 }
 
 export function catalogFromManifest(manifest) {
@@ -192,7 +199,9 @@ export function catalogFromManifest(manifest) {
     family: font.family,
     group: font.group,
     source: 'bundled',
-    available: true
+    available: true,
+    ...(font.minWeight != null ? { minWeight: font.minWeight } : {}),
+    ...(font.maxWeight != null ? { maxWeight: font.maxWeight } : {})
   }))
 }
 

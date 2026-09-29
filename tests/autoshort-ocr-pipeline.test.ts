@@ -334,6 +334,7 @@ test('Step 9.2: RED OCR-only automatic reuse (single visual OCR call, same timel
         config: baseConfig({
           outputDir: outDir,
           subtitlePlacementMode: 'ocr-dominant',
+          videoEffects: [{ kind: 'dust', intensity: 55 }, { kind: 'grain', intensity: 35 }],
           subRegion: fallbackRegion
         })
       },
@@ -359,6 +360,7 @@ test('Step 9.2: RED OCR-only automatic reuse (single visual OCR call, same timel
     const opts = burnOptionsReceived as Record<string, unknown>
     assert.deepEqual(req.blurRegions, [], 'Automatic blur must send empty manual blurRegions to burn')
     assert.ok(opts.timedOcrBlurMask != null, 'burnAutoShort must receive timedOcrBlurMask')
+    assert.deepEqual(opts.videoEffects, context.request.config.videoEffects, 'Effect order and intensity must reach the renderer')
     assert.notDeepEqual(req.subRegion, { x0: 256, y0: 518, x1: 1024, y1: 562 }, 'Burn must not keep the manual fallback when OCR selected a dominant region')
     assert.deepEqual(req.subRegion, { x0: 205, y0: 545, x1: 1075, y1: 645 })
 
@@ -922,22 +924,21 @@ test('Step 9.8: Parameterized failure matrix & cleanup verification', async () =
   }
 })
 
-test('Step 12.1 & 12.2: Real Main-path coordinator integration with real mask writer and burnAutoShort', async () => {
+test('Step 12.1 & 12.2: Real Main-path coordinator integration with real mask writer and burnAutoShort', async (t) => {
   const { probeBurnMedia, burnAutoShort } = await import('../src/main/burn')
   const { writeTimedOcrBlurMask } = await import('../src/main/ocrMask')
   const { spawnSync } = await import('node:child_process')
   const { access } = await import('node:fs/promises')
 
   const managedDir = join(process.env.APPDATA || '', 'tedia-pros', 'bin', 'ffmpeg')
-  const candidateFfmpeg = join(managedDir, process.platform === 'win32' ? 'ffmpeg.exe' : 'ffmpeg')
-  const candidateFfprobe = join(managedDir, process.platform === 'win32' ? 'ffprobe.exe' : 'ffprobe')
+  const candidateFfmpeg = process.env.TEDIAPROS_TEST_FFMPEG || join(managedDir, process.platform === 'win32' ? 'ffmpeg.exe' : 'ffmpeg')
+  const candidateFfprobe = join(dirname(candidateFfmpeg), process.platform === 'win32' ? 'ffprobe.exe' : 'ffprobe')
 
   const hasFfmpeg = await access(candidateFfmpeg).then(() => true).catch(() => false)
   const hasFfprobe = await access(candidateFfprobe).then(() => true).catch(() => false)
 
   if (!hasFfmpeg || !hasFfprobe) {
-    console.log('SKIP: managed FFmpeg fixture unavailable')
-    return
+    return t.skip('Managed FFmpeg fixture unavailable')
   }
 
   const ffmpeg = candidateFfmpeg

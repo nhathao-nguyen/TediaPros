@@ -810,13 +810,21 @@
   display: block;
 }
 .sub-preview-line {
+  position: relative;
   display: block;
   white-space: pre;
   overflow-wrap: normal;
   word-break: normal;
+  isolation: isolate;
 }
-.sub-preview-token.active {
+.sub-preview-base-layer {
+  position: relative;
+  z-index: 2;
+}
+.sub-preview-word-bg {
+  position: absolute;
   z-index: 1;
+  pointer-events: none;
 }
 .sub-preview-pop-layer {
   position: absolute;
@@ -826,5 +834,6 @@
   transform-origin: 50% 70%;
   filter: drop-shadow(0 0 3px currentColor);
   pointer-events: none;
+  z-index: 3;
 }
 

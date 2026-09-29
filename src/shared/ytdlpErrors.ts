@@ -15,6 +15,7 @@ export type YtDlpErrorCode =
   | 'permission_denied'
   | 'disk_full'
   | 'missing_dependency'
+  | 'metadata_too_long'
   | 'unknown'
 
 export interface YtDlpErrorInfo {
@@ -130,6 +131,14 @@ export function classifyYtDlpError(
   }
   if (/fetch failed|ECONNRESET|ECONNREFUSED|ENOTFOUND|EAI_AGAIN|network|timed? ?out|ETIMEDOUT/i.test(text)) {
     return { code: 'network_error', site, message: 'Lỗi kết nối mạng hoặc máy chủ không phản hồi.' }
+  }
+
+  if (/WinError 206|The filename or extension is too long|command line is too long/i.test(text)) {
+    return {
+      code: 'metadata_too_long',
+      site,
+      message: 'Mô tả metadata của video quá dài vượt quá giới hạn hệ thống Windows.'
+    }
   }
 
   return { code: 'unknown', site, message: 'Không xác định được nguyên nhân tải thất bại.' }

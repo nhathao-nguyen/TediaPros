@@ -51,6 +51,7 @@ assert.equal(originalAudioGain(100), 1)
 assert.equal(originalAudioGain(50), 0.25)
 assert.equal(originalAudioGain(0), 0)
 assert.equal(subtitleLayoutRules('vertical').maxLines, 2)
+assert.equal(subtitleLayoutRules('social').maxLines, 1)
 assert(subtitleTextSimilarity('Xin chào, bạn!', 'xin chao ban') > 0.8)
 const speechCue: AlignedCue = {
   id: 'speech-1', start: 0, end: 2, text: 'Hello world', source: 'whisper', timingQuality: 'word',
@@ -480,6 +481,16 @@ assert(portraitDialogues.length > 1)
 for (const dialogue of portraitDialogues) {
   assert((dialogue.match(/\\N/g) ?? []).length <= 3)
 }
+
+const portraitHighlightBgAss = taoAss(longPortraitCue, portraitMeta, portraitLayout, null, null, null, {
+  displayStyle: 'word-highlight',
+  highlightBgEnabled: true,
+  highlightBgColor: '#FF0000'
+})
+assert(portraitHighlightBgAss.includes('Style: WordBox'))
+const portraitWordBoxDialogues = portraitHighlightBgAss.match(/^Dialogue: [^,]*,[^,]*,[^,]*,WordBox,/gm) ?? []
+assert(portraitWordBoxDialogues.length > 0)
+
 
 // If an FFmpeg binary is available, also prove that libass accepts every style
 // and that the two animated styles actually change rendered frames over time.

@@ -95,6 +95,7 @@ Khi dịch sang ngôn ngữ mới (vd: Tiếng Trung $\rightarrow$ Tiếng Việ
 - **Standard:** Hiển thị trọn câu tĩnh theo từng dòng.
 - **Word-Reveal:** Từng từ xuất hiện đồng bộ theo tiến trình đọc của audio.
 - **Word-Highlight:** Cả câu hiển thị sẵn, từ đang phát âm được tô sáng bằng màu nhấn (highlight color).
+- **Single-Word:** Mỗi lần hiển thị một từ. Khi xuất ASS, giữ nguyên cửa sổ thời gian cue để dùng word alignment; không chia lại thời gian theo số dòng/độ rộng của cả câu dù bật tự tối ưu. Thời gian hiển thị không được kéo qua đầu từ kế tiếp hoặc cuối cue chỉ để đạt thời lượng tối thiểu. Khoảng lặng dài vẫn áp dụng giới hạn giữ chữ hiện có.
 
 ### 4.2. An Toàn Font Chữ (Font Integrity)
 - TediaPros sử dụng `opentype.js` để đo đạc chính xác kích thước glyph tại `fontMeasure.ts` trước khi sinh file ASS.

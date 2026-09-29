@@ -77,6 +77,7 @@ const knownTests = [
   'rendered-media-validation.test',
   'portrait-blur.test',
   'video-adjustments.test',
+  'video-effects.test',
   'autoshort-overlays.test',
   'ocr-visual-timeline.test',
   'autoshort-ocr-runtime.test',
@@ -153,7 +154,12 @@ const knownTests = [
   'standalone-engine-results.test',
   'ipc-origin-validation.test',
   'autoshort-channel-preset-and-tone.test',
-  'douyin-channel-folder.test'
+  'douyin-channel-folder.test',
+  'facebook-reels-crawler.test',
+  'burn-font-registry.test',
+  'subtitle-layout.test',
+  'subtitle-text-case.test',
+  'font-weights.test'
 ]
 
 const requestedTests = process.argv.slice(2).map((name) => name.replace(/\.(ts|js)$/, ''))

@@ -94,7 +94,7 @@ import {
   normalizedRegionToDisplayPixels,
   type CanonicalDisplayGeometry
 } from './canonicalDisplayGeometry'
-import { fuseWhisperAndOcr, clampAlignedCueTimeline } from '../shared/autoShortAlignment'
+import { fuseWhisperAndOcr, clampAlignedCueTimeline, splitLongAlignedCues, subtitleTextSimilarity } from '../shared/autoShortAlignment'
 import { isAutomaticOcrBlur, isSttnRemoval, autoShortNeedsOcr } from '../shared/autoShortOcrBlur'
 import { getSttnReadiness, installSttnDependencies } from './inpainting/assets'
 import { runSttnRemoval } from './inpainting/runner'
@@ -1041,7 +1041,7 @@ export function alignedFromSrt(cues: SubtitleCue[], source: AlignedCue['source']
 export async function readWhisperAlignedCues(srtPath: string, alignmentPath: string | null | undefined): Promise<AlignedCue[]> {
   const cues = parseSrt(await readFile(srtPath, 'utf8')).cues.filter((cue) => cue.text.trim())
   const result = alignedFromSrt(cues, 'whisper')
-  if (!alignmentPath || !(await fileExists(alignmentPath))) return result
+  if (!alignmentPath || !(await fileExists(alignmentPath))) return splitLongAlignedCues(result)
   try {
     const raw = JSON.parse(await readFile(alignmentPath, 'utf8')) as {
       segments?: Array<Record<string, unknown>>
@@ -1052,12 +1052,38 @@ export async function readWhisperAlignedCues(srtPath: string, alignmentPath: str
       : Array.isArray(raw.cues)
         ? raw.cues
         : []
-    for (const cue of result) {
-      const match = aligned.find((candidate) =>
-        (Math.abs(Number(candidate.start) - cue.start) < 0.08 && Math.abs(Number(candidate.end) - cue.end) < 0.08) ||
-        (typeof candidate.id === 'string' && candidate.id === cue.id) ||
-        (typeof candidate.id === 'number' && `cue-${candidate.id}` === cue.id)
-      )
+    for (let cueIdx = 0; cueIdx < result.length; cueIdx++) {
+      const cue = result[cueIdx]
+      // 1. Thử match theo thứ tự sourceIndex nếu text tương đồng
+      const byIndex = aligned[cueIdx]
+      let match =
+        byIndex && subtitleTextSimilarity(String(byIndex.text || ''), cue.text) >= 0.5
+          ? byIndex
+          : undefined
+
+      // 2. Thử match theo start/end với dung sai nới lỏng (0.25s) và text similarity
+      if (!match) {
+        match = aligned.find(
+          (candidate) =>
+            ((Math.abs(Number(candidate.start) - cue.start) < 0.25 &&
+              Math.abs(Number(candidate.end) - cue.end) < 0.25) ||
+              (typeof candidate.id === 'string' && candidate.id === cue.id) ||
+              (typeof candidate.id === 'number' && `cue-${candidate.id}` === cue.id)) &&
+            subtitleTextSimilarity(String(candidate.text || ''), cue.text) >= 0.4
+        )
+      }
+
+      // 3. Fallback tìm theo text similarity cao nhất
+      if (!match) {
+        let bestScore = 0
+        for (const candidate of aligned) {
+          const score = subtitleTextSimilarity(String(candidate.text || ''), cue.text)
+          if (score > 0.7 && score > bestScore) {
+            bestScore = score
+            match = candidate
+          }
+        }
+      }
       const words = Array.isArray(match?.words)
         ? match.words.flatMap((word) => {
             const text = typeof word.text === 'string' ? word.text.trim() : ''
@@ -1071,12 +1097,18 @@ export async function readWhisperAlignedCues(srtPath: string, alignmentPath: str
       if (words.length) {
         cue.words = words
         cue.timingQuality = 'word'
+        const firstWordStart = words[0].start
+        const lastWordEnd = words[words.length - 1].end
+        if (Number.isFinite(firstWordStart) && Number.isFinite(lastWordEnd) && lastWordEnd > firstWordStart) {
+          cue.start = firstWordStart
+          cue.end = lastWordEnd
+        }
       }
     }
   } catch (error) {
     logWarn(`[AutoShort] Không đọc được alignment Whisper: ${errLabel(error)}`)
   }
-  return result
+  return splitLongAlignedCues(result)
 }
 
 export function serializeAlignedCues(cues: AlignedCue[]): string {

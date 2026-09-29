@@ -105,5 +105,7 @@ tests/fixtures/separator/private/
 separator-benchmark-results/
  
 .vite-codex-dev-cache/
+scratch/
+.ai/tasks/**/*.mp4
 .ai/tasks/2026-09-12-dalam-encoder-test/*.mp4
 

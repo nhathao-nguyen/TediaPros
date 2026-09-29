@@ -22,11 +22,8 @@ extraResources:
       - catalog.json
       - README.md
       - licenses/**/*
-      - NotoSans.ttf
-      - Roboto.ttf
-      - NotoSansArabic.ttf
-      - NotoSansThai.ttf
-      - NotoSansKR.ttf
+      - "*.ttf"
+      - "*.otf"
 win:
   target:
     - nsis

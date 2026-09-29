@@ -124,6 +124,16 @@ function wrapWordsPx(text: string, maxWidthPx: number, measure: MeasureFn): stri
       }
       continue
     }
+    // Nếu dòng hiện tại đã có từ 2 từ trở lên và kết thúc bằng dấu chấm/chấm than/hỏi chấm,
+    // ưu tiên xuống dòng để từ bắt đầu câu mới không bị dính lẻ vào dòng cũ (ví dụ "Stay behind the line. It")
+    if (currentLine && /[.!?。！？؟…]["'”’»›)\]})]*$/u.test(currentLine)) {
+      const currentWordCount = currentLine.trim().split(/\s+/u).length
+      if (currentWordCount >= 2) {
+        pushLine()
+        currentLine = word
+        continue
+      }
+    }
     const next = currentLine ? `${currentLine} ${word}` : word
     if (currentLine && measure(next) > maxWidthPx) {
       pushLine()

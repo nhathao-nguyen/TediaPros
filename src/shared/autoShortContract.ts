@@ -11,12 +11,14 @@ import type {
 } from './types'
 import { normalizeVideoAdjustments } from './videoAdjustments'
 import { normalizeAutoShortOverlays } from './autoShortOverlays'
+import { normalizeVideoEffects } from './videoEffects'
 import { normalizeAutoShortTemporalEdit } from './autoShortTemporalEdit'
 import { validateAutoShortTemporalEditV2 } from './autoShortCutContract'
 import { isAutoShortSeparationPreset } from './autoShortSeparation'
 import { validateVideoTitleConfig } from './videoTitle'
 import { translationGuidanceError } from './translation'
 import { EDGE_VOICE_ID_PATTERN } from './edgeTtsContract'
+import { isValidSubtitleTextCase } from './subtitleTextCase'
 
 export type AutoShortValidation =
   | { ok: true; value: AutoShortStartRequest }
@@ -143,6 +145,8 @@ function validateConfig(raw: unknown): AutoShortConfig | string {
 }
 
 function validateConfigRecord(raw: Record<string, unknown>): AutoShortConfig | string {
+  let videoEffects: AutoShortConfig['videoEffects']
+  try { videoEffects = normalizeVideoEffects(raw.videoEffects) } catch (error) { return (error as Error).message }
   let overlays: AutoShortConfig['overlays']
   try { overlays = normalizeAutoShortOverlays(raw.overlays) } catch (error) { return (error as Error).message }
   if (!METHODS.has(raw.subtitleMethod as AutoShortSubtitleMethod)) return 'Phương thức tạo phụ đề không hợp lệ.'
@@ -195,10 +199,17 @@ function validateConfigRecord(raw: Record<string, unknown>): AutoShortConfig | s
     ['textColor', 'Màu chữ'],
     ['outlineColor', 'Màu viền'],
     ['bgColor', 'Màu nền'],
-    ['highlightColor', 'Màu highlight']
+    ['highlightColor', 'Màu highlight'],
+    ['highlightBgColor', 'Màu nền highlight']
   ] as const) {
     const error = color(raw[key], label)
     if (error) return error
+  }
+  if (raw.highlightBgEnabled != null && typeof raw.highlightBgEnabled !== 'boolean') {
+    return 'Cấu hình nền chữ highlight không hợp lệ.'
+  }
+  if (raw.subtitleHighlightPop != null && typeof raw.subtitleHighlightPop !== 'boolean') {
+    return 'Cấu hình nhấn nhẹ chữ highlight không hợp lệ.'
   }
   if (raw.fontId != null && optionalString(raw.fontId, 'Font', 128)) return 'Font không hợp lệ.'
   if (raw.subtitleDisplayStyle != null && !DISPLAY_STYLES.has(raw.subtitleDisplayStyle as SubtitleDisplayStyle)) {
@@ -209,6 +220,9 @@ function validateConfigRecord(raw: Record<string, unknown>): AutoShortConfig | s
   }
   if (raw.subtitleAutoOptimize != null && typeof raw.subtitleAutoOptimize !== 'boolean') {
     return 'Tối ưu phụ đề tự động không hợp lệ.'
+  }
+  if (raw.subtitleTextCase != null && !isValidSubtitleTextCase(raw.subtitleTextCase)) {
+    return 'Định dạng chữ hoa/thường không hợp lệ.'
   }
   for (const [key, label] of [
     ['outlinePx', 'Độ dày viền'],
@@ -354,16 +368,16 @@ function validateConfigRecord(raw: Record<string, unknown>): AutoShortConfig | s
       if (pathError) return pathError
     }
     if (raw.audioMode !== 'replace') return 'Nhạc background chỉ dùng khi thay thế toàn bộ âm thanh gốc.'
-    if (raw.ttsEnabled !== true) return 'Nhạc background cần bật lồng tiếng AI.'
   }
   const outputError = absolutePath(raw.outputDir, 'Thư mục đầu ra')
   if (outputError) return outputError
 
-  const { overlays: _rawOverlays, ...baseConfig } = raw
+  const { overlays: _rawOverlays, videoEffects: _rawVideoEffects, ...baseConfig } = raw
   return {
     ...(baseConfig as unknown as AutoShortConfig),
     videoAdjustments: normalizeVideoAdjustments(raw.videoAdjustments as any),
     ...(overlays ? { overlays } : {}),
+    ...(videoEffects ? { videoEffects } : {}),
     blurRegions: raw.lamMo === true && raw.blurMode === 'sttn' ? [] : raw.blurRegions as AutoShortBlurRegion[],
     ocrRegion: (raw.ocrRegion as AutoShortNormalizedRegion | null | undefined) ?? null,
     subRegion: (raw.subRegion as AutoShortNormalizedRegion | null | undefined) ?? null,

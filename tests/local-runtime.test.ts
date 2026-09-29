@@ -165,7 +165,7 @@ test('AutoShort renders all three background music assignment modes only for rep
   assert.match(source, /Một bài cho tất cả/u)
   assert.match(source, /Ngẫu nhiên theo video/u)
   assert.match(source, /Chọn riêng từng video/u)
-  assert.match(source, /\{ttsEnabled && audioMode === 'replace' && \(/u)
+  assert.match(source, /audioMode === 'replace' && \(/u)
   assert.match(source, /createAutoShortMusicAssignments/u)
   assert.match(source, /backgroundMusic:\s*backgroundMusicConfig/u)
 })
@@ -259,6 +259,24 @@ test('AutoShort background compositor loops music, ducks it under narration, and
   assert.match(graph, /alimiter=limit=-1dB:attack=5:release=50:level=false/u)
   assert.match(graph, /atrim=duration=12\.345/u)
   assert.equal(args.at(-1), 'C:\\Temp\\tts-background-mix.wav')
+})
+
+test('AutoShort replacement audio compositor loops audio when shorter and trims to video duration without narration', () => {
+  const args = buildAutoShortBackgroundAudioArgs({
+    musicPath: 'C:\\Nhạc nền\\bài 01.mp3',
+    narrationPath: null,
+    outputPath: 'C:\\Temp\\replacement-audio.wav',
+    duration: 30.500,
+    volume: 100
+  })
+  assert.deepEqual(args.slice(0, 6), ['-y', '-hide_banner', '-nostats', '-loglevel', 'error', '-stream_loop'])
+  assert.equal(args[args.indexOf('-i') + 1], 'C:\\Nhạc nền\\bài 01.mp3')
+  const graph = args[args.indexOf('-filter_complex') + 1]
+  assert.match(graph, /volume=1(\.0)?/u)
+  assert.match(graph, /apad=whole_dur=30\.500/u)
+  assert.match(graph, /atrim=duration=30\.500/u)
+  assert.match(graph, /alimiter=limit=-1dB:attack=5:release=50:level=false/u)
+  assert.equal(args.at(-1), 'C:\\Temp\\replacement-audio.wav')
 })
 
 test('AutoShort FFmpeg runner drains output and returns a bounded path-free stderr tail', { timeout: 10_000 }, async () => {
@@ -519,7 +537,7 @@ test('AutoShort validates and composes assigned background music before replace-
 
 test('AutoShort registers a partial composed WAV before composition can fail', async () => {
   const source = await readFile(join(process.cwd(), 'src', 'main', 'autoShortItemCoordinator.ts'), 'utf8')
-  const registerArtifact = source.indexOf("artifactEntries.push({ source: outputAudioPath, name: 'tts-background-mix.wav' })")
+  const registerArtifact = source.indexOf('artifactEntries.push({ source: outputAudioPath, name: outputAudioName })')
   const runCompositor = source.indexOf('await composeAutoShortBackgroundAudio({')
   assert.ok(registerArtifact >= 0, 'composed WAV is not registered as an artifact candidate')
   assert.ok(runCompositor >= 0, 'background compositor is not called')
@@ -599,12 +617,11 @@ test('AutoShort rejects background music in source-audio mix mode', () => {
   if (!result.ok) assert.match(result.error, /thay thế toàn bộ âm thanh gốc/iu)
 })
 
-test('AutoShort rejects background music when AI narration is disabled', () => {
+test('AutoShort accepts replacement audio / background music when AI narration is disabled in replace mode', () => {
   const request = autoShortBackgroundRequest()
   request.config.ttsEnabled = false
   const result = validateAutoShortStartRequest(request)
-  assert.equal(result.ok, false)
-  if (!result.ok) assert.match(result.error, /lồng tiếng AI/iu)
+  assert.equal(result.ok, true)
 })
 
 test('AutoShort rejects missing or unknown background assignment keys', () => {
@@ -2420,7 +2437,7 @@ test('AutoShort renderer wiring: audio mode state and separation presets contrac
   assert.match(source, /disabled=\{!ttsEnabled\}/u)
 
   // background-music controls render only for replace
-  assert.match(source, /ttsEnabled && audioMode === 'replace' &&/u)
+  assert.match(source, /audioMode === 'replace' &&/u)
 
   // the request includes separationPreset only for separate-vocals
   assert.match(source, /separationPreset:\s*audioMode === 'separate-vocals' \? separationPreset : undefined/u)

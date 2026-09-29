@@ -336,6 +336,10 @@ export interface BurnFontEntry {
   available?: boolean
   /** URL tblao:// de @font-face preview trong renderer (main gan khi list). */
   previewUrl?: string
+  /** Do dam nho nhat ho tro (vd 100, 200, 400). */
+  minWeight?: number
+  /** Do dam lon nhat ho tro (vd 700, 800, 900). */
+  maxWeight?: number
 }
 
 export interface BurnFontPreviewData {
@@ -351,6 +355,7 @@ export interface BurnFontMutationResult {
 }
 
 export type SubtitleDisplayStyle = 'standard' | 'word-reveal' | 'word-highlight' | 'single-word'
+export type SubtitleTextCase = 'original' | 'uppercase' | 'lowercase' | 'titlecase'
 
 export type SubtitleLayoutProfile = 'readable' | 'social' | 'vertical'
 export type SubtitleCueHealthLevel = 'good' | 'warning' | 'error'
@@ -426,6 +431,7 @@ export interface SubtitleLayoutRequest {
   bgEnabled?: boolean
   profile?: SubtitleLayoutProfile
   autoOptimize?: boolean
+  subtitleTextCase?: SubtitleTextCase
 }
 
 /** Cue da chuan hoa cho preview; start/end luon tinh bang giay. */
@@ -479,8 +485,11 @@ export interface BurnReq {
   subtitleDisplayStyle?: SubtitleDisplayStyle
   highlightColor?: string
   subtitleHighlightPop?: boolean
+  highlightBgEnabled?: boolean
+  highlightBgColor?: string
   subtitleLayoutProfile?: SubtitleLayoutProfile
   subtitleAutoOptimize?: boolean
+  subtitleTextCase?: SubtitleTextCase
   subtitleFontSize?: number
   subtitleFontWeight?: number
   /** Optional ASR/TTS word timing for effects. Burn falls back per cue when it
@@ -991,6 +1000,8 @@ export interface VideoAdjustments {
 }
 
 export interface AutoShortConfig {
+  /** Ordered built-in effects across the complete output; absent means disabled. */
+  videoEffects?: import('./videoEffects').VideoEffect[]
   /** Optional static image/text across the final output timeline. */
   overlays?: import('./autoShortOverlays').AutoShortOverlays
   /** Optional for old saved configurations; absent means original frame. */
@@ -1022,8 +1033,11 @@ export interface AutoShortConfig {
   subtitleFontWeight?: number
   highlightColor?: string
   subtitleHighlightPop?: boolean
+  highlightBgEnabled?: boolean
+  highlightBgColor?: string
   subtitleLayoutProfile?: SubtitleLayoutProfile
   subtitleAutoOptimize?: boolean
+  subtitleTextCase?: SubtitleTextCase
   /** Values normalized by the preview display height; optional for old saved settings. */
   subtitleFontScale?: number
   outlineScale?: number

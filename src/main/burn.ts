@@ -7,6 +7,8 @@ import { appendPortraitFrame } from './portraitFrame'
 import { portraitFrame } from '../shared/portraitFrame'
 import type { AutoShortOverlays } from '../shared/autoShortOverlays'
 import { appendAutoShortOverlays, prepareAutoShortOverlays, type PreparedAutoShortOverlays } from './autoShortOverlays'
+import { appendVideoEffects } from './videoEffects'
+import { normalizeVideoEffects, type VideoEffect } from '../shared/videoEffects'
 import {
   escapeFfmpegFilterPath,
   readBurnFontPreview,
@@ -27,8 +29,10 @@ import type {
   BurnReq,
   BurnProgress,
   BurnResult,
-  SubtitleLayoutProfile
+  SubtitleLayoutProfile,
+  SubtitleTextCase
 } from '../shared/types'
+import { applyTextCaseToCues } from '../shared/subtitleTextCase'
 import { subtitleFontSizeForBox, wrapWidthFromBox } from '../shared/subWrap'
 import { hasVideoAdjustments, normalizeVideoAdjustments, videoAdjustmentFilter } from '../shared/videoAdjustments'
 import {
@@ -47,6 +51,8 @@ import {
   renderAssBaseLineWithHiddenBeat,
   renderAssWordHighlight,
   renderAssWordPopLineOverlay,
+  renderAssWordBoxLineOverlay,
+  renderAssWordBox,
   renderAssWordReveal,
   renderAssWordRevealAt,
   safeSubtitlePopScale,
@@ -54,6 +60,7 @@ import {
   type SubtitleDisplayStyle
 } from '../shared/subtitleEffects'
 import { planSubtitleLayout } from '../shared/subtitleLayout'
+import { alignWordsDtw } from '../shared/autoShortAlignment'
 import { AUDIO_MIX_DROPOUT_TRANSITION_SECONDS, originalAudioGain } from '../shared/audioMix'
 import { resolveSubtitlePlanFont } from './subtitlePlanner'
 import { terminateProcessTree, trackChildProcess } from './processTree'
@@ -466,12 +473,65 @@ export interface AssSubtitleOptions {
   displayStyle?: SubtitleDisplayStyle
   highlightColor?: string
   highlightPop?: boolean
+  highlightBgEnabled?: boolean
+  highlightBgColor?: string
   layoutProfile?: SubtitleLayoutProfile
   autoOptimize?: boolean
+  subtitleTextCase?: SubtitleTextCase
   wordTimings?: BurnReq['wordTimings']
   /** AutoShort sets this so an effect is never synthesized from character
    * count when a cue has no trustworthy ASR/TTS word alignment. */
   requireWordTimings?: boolean
+}
+
+function resolveMatchingSegmentWords(
+  cueLines: readonly string[],
+  cueStart: number,
+  cueEnd: number,
+  wordTimings: BurnReq['wordTimings']
+): NonNullable<BurnReq['wordTimings']>[number]['words'] | undefined {
+  if (!wordTimings || wordTimings.length === 0) return undefined
+
+  const cueWords = cueLines.join(' ').trim().split(/\s+/u).filter(Boolean)
+  if (cueWords.length === 0) return undefined
+
+  const overlapping = wordTimings.filter((entry) => entry.end > cueStart - 0.25 && entry.start < cueEnd + 0.25)
+  if (overlapping.length === 0) return undefined
+
+  const candidateWords = overlapping.flatMap((entry) => entry.words)
+
+  // 1. Căn chỉnh bằng Dynamic Time Warping (DTW)
+  const dtwAligned = alignWordsDtw(cueWords, candidateWords)
+  if (dtwAligned && dtwAligned.length === cueWords.length) {
+    return dtwAligned
+  }
+
+  // 2. Lọc theo khoảng thời gian trực tiếp
+  const timeFiltered = candidateWords.filter((word) => word.end > cueStart + 0.001 && word.start < cueEnd - 0.001)
+  if (timeFiltered.length === cueWords.length) {
+    return timeFiltered
+  }
+
+  // 3. Fallback: tìm chuỗi từ khớp chính xác text trong các entry giao nhau
+  for (const entry of overlapping) {
+    if (!entry.words || entry.words.length < cueWords.length) continue
+    for (let i = 0; i <= entry.words.length - cueWords.length; i++) {
+      let matches = true
+      for (let j = 0; j < cueWords.length; j++) {
+        const a = entry.words[i + j].text.replace(/[^\p{L}\p{N}]+/gu, '').toLowerCase()
+        const b = cueWords[j].replace(/[^\p{L}\p{N}]+/gu, '').toLowerCase()
+        if (a !== b) {
+          matches = false
+          break
+        }
+      }
+      if (matches) {
+        return entry.words.slice(i, i + cueWords.length)
+      }
+    }
+  }
+
+  return timeFiltered.length > 0 ? timeFiltered : undefined
 }
 
 export function taoAss(
@@ -483,6 +543,9 @@ export function taoAss(
   pickedFont: BurnFontEntry | null = null,
   effectOptions: AssSubtitleOptions = {}
 ): string {
+  const effectiveCues = effectOptions.subtitleTextCase && effectOptions.subtitleTextCase !== 'original'
+    ? applyTextCaseToCues(cues, effectOptions.subtitleTextCase)
+    : cues
   const w = meta.w > 0 ? meta.w : 1280
   const h = meta.h > 0 ? meta.h : 720
 
@@ -496,7 +559,7 @@ export function taoAss(
   const marginV = bc.tamY != null ? Math.max(0, h - (bc.y + bc.bh)) : bc.marginV
 
   // Tu dong phat hien font theo ngon ngu (mau ca file). Wrap xuong dong: theo TUNG cue.
-  const textSample = cues.map((c) => c.text).join('')
+  const textSample = effectiveCues.map((c) => c.text).join('')
   let fontName = 'Arial'
   const isJapanese = /[\u3040-\u309f\u30a0-\u30ff]/.test(textSample)
   const isChinese = /[\u4e00-\u9fa5]/.test(textSample)
@@ -527,11 +590,14 @@ export function taoAss(
   const bgOn = Boolean(style?.bgEnabled)
   const boxPad = Math.max(8, Math.round(bc.fontSize * 0.26))
   const measure = createTextMeasurer(bc.fontSize, fontName, pickedFont)
+  const displayStyle = normalizeSubtitleDisplayStyle(effectOptions.displayStyle)
   const renderPlan = planSubtitleLayout(
-    cues,
+    effectiveCues,
     {
       profile: effectOptions.layoutProfile ?? 'readable',
-      autoOptimize: effectOptions.autoOptimize !== false,
+      // Single-word rendering needs the original cue window. Splitting a whole
+      // sentence by line width can clamp multiple aligned words to the same end.
+      autoOptimize: displayStyle !== 'single-word' && effectOptions.autoOptimize !== false,
       videoWidth: w,
       videoHeight: h,
       boxWidth,
@@ -543,13 +609,15 @@ export function taoAss(
   )
 
   const primary = hexToAssColour(style?.textColor ?? '#ffffff', 100)
-  const displayStyle = normalizeSubtitleDisplayStyle(effectOptions.displayStyle)
   const secondary =
     displayStyle === 'word-reveal'
       ? hexToAssColour(style?.textColor ?? '#ffffff', 0)
       : '&H00000000&'
   const highlight = hexToAssColour(effectOptions.highlightColor ?? '#FFD166', 100)
   const highlightPop = effectOptions.highlightPop !== false
+  const highlightBgOn = displayStyle === 'word-highlight' && effectOptions.highlightBgEnabled === true
+  const highlightBg = hexToAssColour(effectOptions.highlightBgColor ?? '#000000', 100)
+  const wordBoxPad = Math.max(2, Math.min(14, Math.round(bc.fontSize * 0.09)))
   const outline = hexToAssColour(style?.outlineColor ?? '#000000', 100)
   const outlineW = style != null ? style.outlinePx : bc.vien
   const back = bgOn
@@ -573,6 +641,9 @@ export function taoAss(
   const styleBox =
     `Style: Box,${fontName},${bc.fontSize},&HFF000000&,&H00000000&,${back},&H00000000&,` +
     `${boldValue},0,0,0,100,100,0,0,3,${boxPad},0,${bc.tamY != null ? 5 : 2},${marginL},${marginR},${marginV},1`
+  const styleWordBox =
+    `Style: WordBox,${fontName},${bc.fontSize},&HFF000000&,&H00000000&,${highlightBg},&H00000000&,` +
+    `${boldValue},0,0,0,100,100,0,0,3,${wordBoxPad},0,${bc.tamY != null ? 5 : 2},${marginL},${marginR},${marginV},1`
 
   const assNumber = (value: number): string =>
     (Math.round(value * 100) / 100).toString()
@@ -593,6 +664,9 @@ export function taoAss(
     const a = formatAssTimestamp(cue.start)
     const b = formatAssTimestamp(cue.end)
     const layer = bgOn ? 1 : 0
+    const wordBoxLayer = bgOn ? 1 : 0
+    const baseLayer = (bgOn ? 1 : 0) + (highlightBgOn ? 1 : 0)
+    const popOverlayLayer = baseLayer + 1
     const boxEvent = bgOn
       ? [`Dialogue: 0,${a},${b},Box,,0,0,0,,{${anchorPosition}\\blur${boxBlur.toFixed(1)}}${textFormatted}`]
       : []
@@ -601,9 +675,7 @@ export function taoAss(
       return [...boxEvent, `Dialogue: ${layer},${a},${b},D,,0,0,0,,{${anchorPosition}}${textFormatted}`]
     }
 
-    const suppliedWords = effectOptions.wordTimings
-      ?.filter((entry) => entry.end > cue.start + 0.001 && entry.start < cue.end - 0.001)
-      .flatMap((entry) => entry.words.filter((word) => word.end > cue.start + 0.001 && word.start < cue.end - 0.001))
+    const suppliedWords = resolveMatchingSegmentWords(cue.lines, cue.start, cue.end, effectOptions.wordTimings)
     const timeline = createSubtitleEffectTimeline({
       ...cue,
       text: textFormatted.replace(/\\N/g, '\n')
@@ -614,7 +686,14 @@ export function taoAss(
 
     if (displayStyle === 'single-word') {
       return timeline.beats.flatMap((beat, beatIndex) => {
-        const nextStart = timeline.beats[beatIndex + 1]?.start ?? cue.end
+        const nextBeat = timeline.beats[beatIndex + 1]
+        // Ngăn chặn giữ chữ quá lâu khi có khoảng lặng giữa 2 từ (dead air >= 0.35s)
+        const maxWordDuration = Math.max(beat.end - beat.start + 0.15, 0.4)
+        const wordEnd = nextBeat
+          ? (nextBeat.start - beat.end >= 0.35
+              ? Math.min(nextBeat.start, beat.start + maxWordDuration)
+              : nextBeat.start)
+          : Math.min(cue.end, beat.start + maxWordDuration)
         const wordText = timeline.tokens
           .filter((token) => token.beatIndex === beat.index && token.kind !== 'newline')
           .map((token) => assPlainText(token.text))
@@ -622,7 +701,8 @@ export function taoAss(
           .trim()
         if (!wordText) return []
         const aWord = formatAssTimestamp(beat.start)
-        const bWord = formatAssTimestamp(nextStart)
+        // A minimum hold must not extend a short word into the next word/cue.
+        const bWord = formatAssTimestamp(wordEnd)
         const popTags = highlightPop
           ? '\\fscx112\\fscy112\\t(0,60,1.2,\\fscx100\\fscy100)'
           : ''
@@ -660,11 +740,20 @@ export function taoAss(
     const fixedPopSupported =
       highlightPop && supportsFixedSubtitleWordPop(timeline.tokens.map((token) => token.text).join(''))
     if (!fixedPopSupported) {
+      const fallbackBoxEvents = highlightBgOn
+        ? timeline.beats.map(
+            (beat) =>
+              `Dialogue: ${wordBoxLayer},${formatAssTimestamp(beat.start)},${formatAssTimestamp(beat.end)},WordBox,,0,0,0,,` +
+              `{${anchorPosition}\\blur${boxBlur.toFixed(1)}}` +
+              renderAssWordBox(timeline, beat.index)
+          )
+        : []
       return [
         ...boxEvent,
+        ...fallbackBoxEvents,
         ...timeline.beats.map(
           (beat) =>
-            `Dialogue: ${layer},${formatAssTimestamp(beat.start)},${formatAssTimestamp(beat.end)},D,,0,0,0,,` +
+            `Dialogue: ${baseLayer},${formatAssTimestamp(beat.start)},${formatAssTimestamp(beat.end)},D,,0,0,0,,` +
             `{${anchorPosition}}` + renderAssWordHighlight(timeline, beat.index, primary, highlight, { enabled: false })
         )
       ]
@@ -678,10 +767,34 @@ export function taoAss(
             `Dialogue: 0,${a},${b},Box,,0,0,0,,{${fixedLinePosition(line.lineIndex, lineCount)}\\blur${boxBlur.toFixed(1)}}${line.text}`
         )
       : []
+    const fixedWordBoxEvents = highlightBgOn
+      ? timeline.beats.flatMap((beat) => {
+          const popScale = safeSubtitlePopScale(
+            timeline,
+            beat.index,
+            wrapWidthFromBox(boxWidth, bgOn ? boxPad : 0),
+            measure,
+            cue.lineWidths
+          )
+          return overlayPlan.words
+            .filter((word) => word.beatIndex === beat.index)
+            .map((word) => {
+              const y = textCenterY + (word.lineIndex - (lineCount - 1) / 2) * lineHeight
+              return (
+                `Dialogue: ${wordBoxLayer},${formatAssTimestamp(beat.start)},${formatAssTimestamp(beat.end)},WordBox,,0,0,0,,` +
+                `{\\an5\\pos(${assNumber(textCenterX)},${assNumber(y)})\\blur${boxBlur.toFixed(1)}}` +
+                renderAssWordBoxLineOverlay(timeline, word.lineIndex, word.tokenIndex, beat, {
+                  enabled: highlightPop,
+                  peakScale: popScale
+                })
+              )
+            })
+        })
+      : []
     const fixedBaseEvents = timeline.beats.flatMap((beat) =>
       overlayPlan.lines.map(
         (line) =>
-          `Dialogue: ${layer},${formatAssTimestamp(beat.start)},${formatAssTimestamp(beat.end)},D,,0,0,0,,` +
+          `Dialogue: ${baseLayer},${formatAssTimestamp(beat.start)},${formatAssTimestamp(beat.end)},D,,0,0,0,,` +
           `{${fixedLinePosition(line.lineIndex, lineCount)}}` +
           renderAssBaseLineWithHiddenBeat(timeline, line.lineIndex, beat.index)
       )
@@ -699,7 +812,7 @@ export function taoAss(
         .map((word) => {
           const y = textCenterY + (word.lineIndex - (lineCount - 1) / 2) * lineHeight
           return (
-            `Dialogue: ${layer + 1},${formatAssTimestamp(beat.start)},${formatAssTimestamp(beat.end)},D,,0,0,0,,` +
+            `Dialogue: ${popOverlayLayer},${formatAssTimestamp(beat.start)},${formatAssTimestamp(beat.end)},D,,0,0,0,,` +
             `{\\an5\\pos(${assNumber(textCenterX)},${assNumber(y)})}` +
             renderAssWordPopLineOverlay(timeline, word.lineIndex, word.tokenIndex, beat, highlight, {
               enabled: true,
@@ -709,10 +822,14 @@ export function taoAss(
         })
     })
 
-    return [...fixedBoxEvents, ...fixedBaseEvents, ...overlayEvents]
+    return [...fixedBoxEvents, ...fixedWordBoxEvents, ...fixedBaseEvents, ...overlayEvents]
   })
 
-  const styleLines = bgOn ? [styleBox, styleText] : [styleText]
+  const styleLines = [
+    ...(bgOn ? [styleBox] : []),
+    ...(highlightBgOn ? [styleWordBox] : []),
+    styleText
+  ]
 
   return [
     '[Script Info]',
@@ -798,14 +915,16 @@ export function taoFilterComplex(
   fontsDir: string | null = null,
   portraitBlur = false,
   videoAdjustments = normalizeVideoAdjustments(undefined),
-  overlays?: PreparedAutoShortOverlays
+  overlays?: PreparedAutoShortOverlays,
+  videoEffects?: VideoEffect[]
 ): string[] {
   const sigma = blurSigmaForDisplayHeight(meta.h)
   const validRegions = lamMo ? regions.filter((r) => r.x1 > r.x0 && r.y1 > r.y0) : []
   const lines: string[] = []
   const canonicalFilter = canonicalDisplayVideoFilter(meta)
   const videoAdjustmentActive = hasVideoAdjustments(videoAdjustments)
-  const hasVideoFilters = validRegions.length > 0 || coAss || Boolean(canonicalFilter) || portraitBlur || videoAdjustmentActive || Boolean(overlays)
+  const effects = normalizeVideoEffects(videoEffects)
+  const hasVideoFilters = validRegions.length > 0 || coAss || Boolean(canonicalFilter) || portraitBlur || videoAdjustmentActive || Boolean(overlays) || Boolean(effects)
   let videoInput = '0:v'
   if (canonicalFilter) {
     lines.push(`[0:v]${canonicalFilter}[display]`)
@@ -822,6 +941,7 @@ export function taoFilterComplex(
     if (portraitBlur) appendPortraitFrame(lines, adjustedInput, meta.w, meta.h, coAss ? assFilter : undefined)
     else lines.push(`[${adjustedInput}]${coAss ? assFilter : 'null'}[out]`)
     const canvas = portraitBlur ? portraitFrame(meta.w, meta.h) : { width: meta.w, height: meta.h }
+    appendVideoEffects(lines, canvas.width, canvas.height, effects)
     appendAutoShortOverlays(lines, canvas.width, canvas.height, overlays)
   }
 
@@ -865,15 +985,13 @@ export function taoFilterComplex(
         x -= x % 2
         y -= y % 2
 
-        const outLbl = i === N - 1 && !coAss && !portraitBlur && !videoAdjustmentActive ? '[out]' : `[v${i + 1}]`
+        const outLbl = `[v${i + 1}]`
         lines.push(`[${prev}][b${i}]overlay=${x}:${y}${outLbl}`)
         prev = `v${i + 1}`
       }
 
       // 4. Ghep phu de neu co
-      if (coAss || portraitBlur || videoAdjustmentActive) {
-        finishVideo(prev)
-      }
+      finishVideo(prev)
     } else {
       // Chi co ass, khong co blur
       finishVideo(videoInput)
@@ -906,7 +1024,8 @@ export function taoFilterComplexAutomatic(
   fontsDir: string | null = null,
   portraitBlur = false,
   videoAdjustments = normalizeVideoAdjustments(undefined),
-  overlays?: PreparedAutoShortOverlays
+  overlays?: PreparedAutoShortOverlays,
+  videoEffects?: VideoEffect[]
 ): string[] {
   if (plan.maskVideoIndex == null) {
     throw new Error('Cần có mask index cho automatic filter complex.')
@@ -953,6 +1072,7 @@ export function taoFilterComplexAutomatic(
   }
 
   const canvas = portraitBlur ? portraitFrame(meta.w, meta.h) : { width: meta.w, height: meta.h }
+  appendVideoEffects(lines, canvas.width, canvas.height, videoEffects)
   appendAutoShortOverlays(lines, canvas.width, canvas.height, overlays)
   const audio = buildAudioFilter(meta, plan.narrationAudioIndex, batAmThanh, audioVolume)
   if (audio.filter) {
@@ -1048,6 +1168,7 @@ function burnOutputName(req: BurnReq): string {
 }
 
 export interface RunBurnSubtitleLowerOptions {
+  videoEffects?: VideoEffect[]
   overlays?: AutoShortOverlays
   outputPath: string
   plan: BurnInputPlan
@@ -1075,7 +1196,7 @@ export async function runBurnSubtitleLower(
   const hasTimedMask = Boolean(options.timedMask)
   const hasAudioFile = Boolean(req.batAmThanh && req.amThanhFile)
 
-  if (!hasSrt && !hasBlur && !hasTimedMask && !req.batAmThanh && !req.portraitBlur && !hasVideoAdjustments(req.videoAdjustments) && !options.overlays) {
+  if (!hasSrt && !hasBlur && !hasTimedMask && !req.batAmThanh && !req.portraitBlur && !hasVideoAdjustments(req.videoAdjustments) && !options.overlays && !options.videoEffects?.length) {
     return { ok: false, error: 'Vui lòng chọn ít nhất 1 vùng làm mờ, tải lên tệp phụ đề hoặc bật cấu hình âm thanh.' }
   }
 
@@ -1110,6 +1231,8 @@ export async function runBurnSubtitleLower(
         subtitleDisplayStyle?: SubtitleDisplayStyle
         highlightColor?: string
         subtitleHighlightPop?: boolean
+        highlightBgEnabled?: boolean
+        highlightBgColor?: string
       }
       const explicitFontId = req.fontId?.trim()
       if (explicitFontId && explicitFontId !== 'auto' && !resolvedFont) {
@@ -1142,8 +1265,11 @@ export async function runBurnSubtitleLower(
           displayStyle: effectReq.subtitleDisplayStyle,
           highlightColor: effectReq.highlightColor,
           highlightPop: effectReq.subtitleHighlightPop,
+          highlightBgEnabled: effectReq.highlightBgEnabled,
+          highlightBgColor: effectReq.highlightBgColor,
           layoutProfile: effectReq.subtitleLayoutProfile,
           autoOptimize: effectReq.subtitleAutoOptimize,
+          subtitleTextCase: effectReq.subtitleTextCase,
           wordTimings: effectReq.wordTimings,
           requireWordTimings: effectReq.requireWordTimings
         }),
@@ -1172,7 +1298,8 @@ export async function runBurnSubtitleLower(
         fontsDir,
         req.portraitBlur === true,
         req.videoAdjustments,
-        overlays
+        overlays,
+        options.videoEffects
       )
     } else {
       filterArgs = taoFilterComplex(
@@ -1187,7 +1314,8 @@ export async function runBurnSubtitleLower(
         fontsDir,
         req.portraitBlur === true,
         req.videoAdjustments,
-        overlays
+        overlays,
+        options.videoEffects
       )
     }
 
@@ -1587,6 +1715,7 @@ export async function validateRenderedMedia(
 }
 
 export interface AutoShortBurnExecutionOptions {
+  videoEffects?: VideoEffect[]
   overlays?: AutoShortOverlays
   timedOcrBlurMask?: TimedOcrBlurMask | null
   ffmpegPath: string
@@ -1671,10 +1800,10 @@ export async function burnAutoShort(
   const partialPath = join(finalDir, partialName)
   const titleController = new AbortController()
   const forwardTitleAbort = (): void => {
-    if (!titleController.signal.aborted) titleController.abort(options.signal.reason)
+    if (!titleController.signal.aborted) titleController.abort(options.signal?.reason)
   }
-  if (options.signal.aborted) forwardTitleAbort()
-  else options.signal.addEventListener('abort', forwardTitleAbort, { once: true })
+  if (options.signal?.aborted) forwardTitleAbort()
+  else if (options.signal) options.signal.addEventListener('abort', forwardTitleAbort, { once: true })
   let preparedTitlePromise: Promise<PreparedVideoSeoMetadata | undefined> | undefined
   let published = false
 
@@ -1721,6 +1850,7 @@ export async function burnAutoShort(
         outputPath: partialPath,
         plan,
         overlays: options.overlays,
+        videoEffects: options.videoEffects,
         timedMask: options.timedOcrBlurMask,
         ffmpegPath: options.ffmpegPath,
         ffprobePath: options.ffprobePath,
@@ -1933,12 +2063,16 @@ export async function validateBurnRequest(raw: unknown): Promise<BurnValidation>
     'bgEnabled',
     'subtitleAutoOptimize',
     'subtitleHighlightPop',
+    'highlightBgEnabled',
     'requireWordTimings'
   ] as const
   for (const key of booleans) {
     if (raw[key] != null && typeof raw[key] !== 'boolean') {
       return { ok: false, error: `Giá trị ${key} không hợp lệ.` }
     }
+  }
+  if (raw.highlightBgColor != null && (typeof raw.highlightBgColor !== 'string' || !parseHexColor(raw.highlightBgColor))) {
+    return { ok: false, error: 'Màu nền chữ highlight không hợp lệ.' }
   }
   const boundedNumbers: Array<[keyof BurnReq, number, number]> = [
     ['amLuongGoc', 0, 100],
@@ -2036,6 +2170,8 @@ export async function validateBurnRequest(raw: unknown): Promise<BurnValidation>
     ...(raw.subtitleDisplayStyle != null ? { subtitleDisplayStyle: raw.subtitleDisplayStyle as SubtitleDisplayStyle } : {}),
     ...(raw.highlightColor != null ? { highlightColor: raw.highlightColor as string } : {}),
     ...(raw.subtitleHighlightPop != null ? { subtitleHighlightPop: raw.subtitleHighlightPop as boolean } : {}),
+    ...(raw.highlightBgEnabled != null ? { highlightBgEnabled: raw.highlightBgEnabled as boolean } : {}),
+    ...(raw.highlightBgColor != null ? { highlightBgColor: raw.highlightBgColor as string } : {}),
     ...(raw.subtitleLayoutProfile != null ? { subtitleLayoutProfile: raw.subtitleLayoutProfile as SubtitleLayoutProfile } : {}),
     ...(raw.subtitleAutoOptimize != null ? { subtitleAutoOptimize: raw.subtitleAutoOptimize as boolean } : {}),
     ...(raw.subtitleFontSize != null ? { subtitleFontSize: raw.subtitleFontSize as number } : {}),

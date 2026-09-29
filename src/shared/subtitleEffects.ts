@@ -663,3 +663,62 @@ export function renderAssWordHighlight(
     })
     .join('')
 }
+
+/**
+ * Render one line of a WordBox style where every glyph except the active word
+ * is invisible. This draws the BorderStyle=3 background box only around the
+ * active word/group while keeping exact line layout.
+ */
+export function renderAssWordBoxLineOverlay(
+  timeline: SubtitleEffectTimeline,
+  lineIndex: number,
+  activeTokenIndex: number,
+  beat: SubtitleEffectBeat,
+  options: SubtitlePopRenderOptions = {}
+): string {
+  const timing = subtitlePopTiming(
+    beat,
+    Math.max(1, options.peakScale ?? DEFAULT_POP_PEAK_SCALE)
+  )
+  const enabled = options.enabled !== false && timing.peakScale > 1.001
+  const scale = Math.max(100, Math.round(timing.peakScale * 100))
+  const popTags = enabled
+    ? `\\fscx${scale}\\fscy${scale}\\t(${timing.holdDurationMs},${timing.holdDurationMs + timing.settleDurationMs},${timing.acceleration},\\fscx100\\fscy100)`
+    : ''
+  const resetScale = enabled ? '\\fscx100\\fscy100' : ''
+  const hidden = '\\1a&HFF&\\3a&HFF&'
+  const visible = '\\3a&H00&'
+
+  return (
+    `{${hidden}}` +
+    subtitleLineTokenEntries(timeline, lineIndex)
+      .map(({ token, tokenIndex }) => {
+        const text = assPlainText(token.text)
+        if (tokenIndex !== activeTokenIndex) return text
+        return `{${visible}${popTags}}${text}{${resetScale}${hidden}}`
+      })
+      .join('')
+  )
+}
+
+/**
+ * Build one full cue for the WordBox style where only the active word's box is visible.
+ */
+export function renderAssWordBox(
+  timeline: SubtitleEffectTimeline,
+  activeBeatIndex: number
+): string {
+  const hidden = '\\1a&HFF&\\3a&HFF&'
+  const visible = '\\3a&H00&'
+  return (
+    `{${hidden}}` +
+    timeline.tokens
+      .map((token) => {
+        const text = assPlainText(token.text)
+        if (token.kind !== 'word' || token.beatIndex !== activeBeatIndex) return text
+        return `{${visible}}${text}{${hidden}}`
+      })
+      .join('')
+  )
+}
+

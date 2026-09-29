@@ -10,9 +10,12 @@ import type {
   SubtitleFilePreview,
   SubtitleLayoutProfile,
   SubtitleRenderPlan,
+  SubtitleTextCase,
   VideoSeoMetadata,
   VideoSeoOptions
 } from '../../../shared/types'
+import { SUBTITLE_TEXT_CASES } from '../../../shared/subtitleTextCase'
+import { clampFontWeight, getSupportedFontWeights } from '../../../shared/fontWeights'
 import { DEFAULT_AI_SERVER_URL } from '../../../shared/types'
 import { DEFAULT_VIDEO_SEO_OPTIONS } from '../../../shared/videoSeo'
 import { automaticSubtitleFontId } from '../../../shared/subtitles'
@@ -146,6 +149,14 @@ export default function VideoEditor({ draft, active = true }: Props): JSX.Elemen
     'tblao.burn.subtitleHighlightPop',
     !(typeof window !== 'undefined' && window.matchMedia?.('(prefers-reduced-motion: reduce)').matches)
   )
+  const [highlightBgEnabled, setHighlightBgEnabled] = usePersistedState(
+    'tblao.burn.subtitleHighlightBgEnabled',
+    false
+  )
+  const [highlightBgColor, setHighlightBgColor] = usePersistedState(
+    'tblao.burn.subtitleHighlightBgColor',
+    '#000000'
+  )
   const [layoutProfile, setLayoutProfile] = usePersistedState<SubtitleLayoutProfile>(
     'tblao.burn.subtitleLayoutProfile',
     'readable'
@@ -157,6 +168,10 @@ export default function VideoEditor({ draft, active = true }: Props): JSX.Elemen
   const [showSafeArea, setShowSafeArea] = usePersistedState(
     'tblao.editor.showSafeArea',
     true
+  )
+  const [subtitleTextCase, setSubtitleTextCase] = usePersistedState<SubtitleTextCase>(
+    'tblao.editor.subtitleTextCase',
+    'original'
   )
 
   const [audioFile, setAudioFile] = useState('')
@@ -254,6 +269,22 @@ export default function VideoEditor({ draft, active = true }: Props): JSX.Elemen
     () => automaticSubtitleFontId(previewFile.cues.map((cue) => cue.text).join('')),
     [previewFile.cues]
   )
+
+  const effectiveFontId = fontId === 'auto' ? automaticFontId : fontId
+  const selectedFontEntry = useMemo(
+    () => fonts.find((font) => font.id === (effectiveFontId || fontId)) || null,
+    [fonts, effectiveFontId, fontId]
+  )
+
+  const supportedFontWeights = useMemo(
+    () => getSupportedFontWeights(selectedFontEntry),
+    [selectedFontEntry]
+  )
+
+  useEffect(() => {
+    if (!fontsLoaded) return
+    setFontWeight((current) => clampFontWeight(current, selectedFontEntry))
+  }, [selectedFontEntry, fontsLoaded, setFontWeight])
 
   const measureStage = useCallback((): void => {
     const shell = stageShellRef.current
@@ -520,7 +551,8 @@ export default function VideoEditor({ draft, active = true }: Props): JSX.Elemen
           fontWeight,
           bgEnabled,
           profile: layoutProfile,
-          autoOptimize
+          autoOptimize,
+          subtitleTextCase
         })
         .then((plan) => {
           if (!cancelled) setLayoutPlan(plan)
@@ -550,6 +582,7 @@ export default function VideoEditor({ draft, active = true }: Props): JSX.Elemen
     subtitleEnabled,
     subtitlePath,
     subtitleRegion,
+    subtitleTextCase,
     videoH,
     videoW
   ])
@@ -846,8 +879,11 @@ export default function VideoEditor({ draft, active = true }: Props): JSX.Elemen
       subtitleDisplayStyle: displayStyle,
       highlightColor,
       subtitleHighlightPop: highlightPop,
+      highlightBgEnabled,
+      highlightBgColor,
       subtitleLayoutProfile: layoutProfile,
       subtitleAutoOptimize: autoOptimize,
+      subtitleTextCase,
       ...(titleEnabled && hasTitleSubtitles ? {
         videoTitle: {
           provider: titleProvider,
@@ -860,6 +896,8 @@ export default function VideoEditor({ draft, active = true }: Props): JSX.Elemen
       subtitleDisplayStyle: SubtitleDisplayStyle
       highlightColor: string
       subtitleHighlightPop: boolean
+      highlightBgEnabled: boolean
+      highlightBgColor: string
     }
 
     let result: BurnResult
@@ -1051,8 +1089,11 @@ export default function VideoEditor({ draft, active = true }: Props): JSX.Elemen
                     subtitleFontSize={layoutPlan?.options.fontSize}
                     subtitleFontWeight={fontWeight}
                     scaleSubtitleToVideo={portraitBlur}
+                    subtitleTextCase={subtitleTextCase}
                     highlightColor={highlightColor}
                     highlightPop={highlightPop}
+                    highlightBgEnabled={highlightBgEnabled}
+                    highlightBgColor={highlightBgColor}
                     textColor={textColor}
                     outlineColor={outlineColor}
                     outlinePx={outlinePx}
@@ -1267,6 +1308,32 @@ export default function VideoEditor({ draft, active = true }: Props): JSX.Elemen
                         <span>{highlightPop ? 'Bật' : 'Tắt'}</span>
                       </label>
                     </div>
+                    <div className="highlight-pop-control">
+                      <div>
+                        <strong>Nền sau chữ đang đọc</strong>
+                        <small>Thêm ô nền nổi bật phía sau từ đang đọc.</small>
+                      </div>
+                      <label className="editor-switch">
+                        <input
+                          type="checkbox"
+                          checked={highlightBgEnabled}
+                          disabled={burnState === 'running'}
+                          onChange={(event) => setHighlightBgEnabled(event.target.checked)}
+                        />
+                        <span>{highlightBgEnabled ? 'Bật' : 'Tắt'}</span>
+                      </label>
+                    </div>
+                    {highlightBgEnabled && (
+                      <label className="field editor-field">
+                        <span>Màu nền chữ đang đọc</span>
+                        <input
+                          type="color"
+                          value={highlightBgColor}
+                          disabled={burnState === 'running'}
+                          onChange={(event) => setHighlightBgColor(event.target.value)}
+                        />
+                      </label>
+                    )}
                   </div>
                 )}
 
@@ -1293,9 +1360,9 @@ export default function VideoEditor({ draft, active = true }: Props): JSX.Elemen
                       disabled={burnState === 'running'}
                       onChange={(event) => setLayoutProfile(event.target.value as SubtitleLayoutProfile)}
                     >
+                      <option value="social">Social · 1 dòng (nhịp nhanh)</option>
                       <option value="readable">Dễ đọc · tối đa 2 dòng</option>
-                      <option value="social">Social · nhịp nhanh</option>
-                      <option value="vertical">Video dọc · tối đa 3 dòng</option>
+                      <option value="vertical">Video dọc · tối đa 2 dòng</option>
                     </select>
                   </label>
                   <label className="gk-check editor-check subtitle-safe-toggle">
@@ -1349,7 +1416,13 @@ export default function VideoEditor({ draft, active = true }: Props): JSX.Elemen
                   <select
                     value={fontId}
                     disabled={burnState === 'running'}
-                    onChange={(event) => setFontId(event.target.value)}
+                    onChange={(event) => {
+                      const nextFontId = event.target.value
+                      setFontId(nextFontId)
+                      const targetId = nextFontId === 'auto' ? automaticFontId : nextFontId
+                      const nextFont = fonts.find((font) => font.id === targetId) || null
+                      setFontWeight((current) => clampFontWeight(current, nextFont))
+                    }}
                   >
                     <option value="auto">Tự động theo nội dung</option>
                     {groupedFonts.map(([group, entries]) => (
@@ -1390,13 +1463,26 @@ export default function VideoEditor({ draft, active = true }: Props): JSX.Elemen
                     disabled={burnState === 'running'}
                     onChange={(event) => setFontWeight(Number(event.target.value))}
                   >
-                    <option value={300}>300 · Mảnh (Light)</option>
-                    <option value={400}>400 · Thường (Regular)</option>
-                    <option value={500}>500 · Vừa (Medium)</option>
-                    <option value={600}>600 · Bán đậm (Semi-Bold)</option>
-                    <option value={700}>700 · Đậm (Bold)</option>
-                    <option value={800}>800 · Rất đậm (Extra Bold)</option>
-                    <option value={900}>900 · Cực đậm (Black)</option>
+                    {supportedFontWeights.map((opt) => (
+                      <option key={opt.value} value={opt.value}>
+                        {opt.label}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+
+                <label className="field editor-field">
+                  <span>Định dạng chữ</span>
+                  <select
+                    value={subtitleTextCase}
+                    disabled={burnState === 'running'}
+                    onChange={(event) => setSubtitleTextCase(event.target.value as SubtitleTextCase)}
+                  >
+                    {SUBTITLE_TEXT_CASES.map((item) => (
+                      <option key={item.id} value={item.id}>
+                        {item.label}
+                      </option>
+                    ))}
                   </select>
                 </label>
 

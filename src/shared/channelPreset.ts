@@ -30,7 +30,10 @@ export interface AutoShortChannelPreset {
   fontWeight?: number
   textColor?: string
   outlineColor?: string
+  subtitleTextCase?: import('./types').SubtitleTextCase
   highlightColor?: string
+  highlightBgEnabled?: boolean
+  highlightBgColor?: string
 
   // 4. Video SEO & Title
   titleEnabled?: boolean
@@ -68,6 +71,8 @@ export function createDefaultChannelPreset(name = 'Kênh Mặc định'): AutoSh
     textColor: '#FFFFFF',
     outlineColor: '#000000',
     highlightColor: '#FFD700',
+    highlightBgEnabled: false,
+    highlightBgColor: '#000000',
     titleEnabled: true,
     channelName: '',
     brandVoice: '',
@@ -114,6 +119,8 @@ export function validateChannelPreset(value: unknown): AutoShortChannelPreset | 
     textColor: typeof raw.textColor === 'string' ? raw.textColor : '#FFFFFF',
     outlineColor: typeof raw.outlineColor === 'string' ? raw.outlineColor : '#000000',
     highlightColor: typeof raw.highlightColor === 'string' ? raw.highlightColor : '#FFD700',
+    highlightBgEnabled: typeof raw.highlightBgEnabled === 'boolean' ? raw.highlightBgEnabled : false,
+    highlightBgColor: typeof raw.highlightBgColor === 'string' ? raw.highlightBgColor : '#000000',
     titleEnabled: raw.titleEnabled !== false,
     channelName: typeof raw.channelName === 'string' ? raw.channelName.slice(0, 200) : '',
     brandVoice: typeof raw.brandVoice === 'string' ? raw.brandVoice.slice(0, 2000) : '',

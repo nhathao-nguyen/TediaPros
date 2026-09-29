@@ -141,6 +141,7 @@ sequenceDiagram
 ## 3. Ranh Giới Module & Trách Nhiệm Chi Tiết
 
 ### 3.1. `src/renderer/` (Frontend React 19)
+- **Hiệu ứng video AutoShort:** `Hiệu ứng` chọn nhiều lớp nhiễu hạt/bụi phim/analog; `AutoShortConfig.videoEffects` được kiểm tra ở IPC và chuyển đến graph FFmpeg cuối, sau khung/phụ đề và trước ảnh/chữ. Xem [Hiệu ứng video](autoshort-video-effects.md).
 - **Ảnh/chữ AutoShort:** nút `Ảnh / Chữ` và preview dùng cấu hình normalized trên khung đầu ra. Coordinator chuyển `overlays` vào render; `autoShortOverlays.ts` ghép ảnh/ASS sau xử lý nguồn và khung 9:16, trong cùng lượt FFmpeg. Xem [Ảnh/chữ xuyên suốt](autoshort-overlays.md).
 - **Provider giọng đọc:** Local AI Server là mặc định tương thích. Edge-TTS đi qua typed contract, origin-gated IPC và transport có deadline/abort. AutoShort chỉ chạy sau catalog live + synthesis probe; audio phải full-decode thành PCM WAV trước khi vào cache v2, rồi tiếp tục qua dubbing planner và batch journal. Xem [Microsoft Edge-TTS](edge-tts.md).
 - **Cửa sổ cue ngắn:** Dubbing planner và AutoShort policy dùng cùng công thức. Cue liền nhau chỉ giữ trọn protected gap 0,50 giây khi span còn tối thiểu 0,10 giây cho lời nói; nếu cue ngắn hơn, gap giảm theo span. Kiểm tra khoảng lặng thật dựa trên `next.start - current.end`, tránh coi toàn bộ `start - start` là khoảng lặng và tạo vách timing ở cue 550–600 ms.

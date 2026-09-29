@@ -39,6 +39,8 @@ interface BundledFontManifestEntry {
   family: string
   group: string
   sha256: string
+  minWeight?: number
+  maxWeight?: number
 }
 
 interface BundledFontManifest {
@@ -236,7 +238,9 @@ function isManifestFont(raw: unknown): raw is BundledFontManifestEntry {
     typeof font.family === 'string' &&
     typeof font.group === 'string' &&
     typeof font.sha256 === 'string' &&
-    SHA256_RE.test(font.sha256)
+    SHA256_RE.test(font.sha256) &&
+    (font.minWeight === undefined || (typeof font.minWeight === 'number' && Number.isInteger(font.minWeight))) &&
+    (font.maxWeight === undefined || (typeof font.maxWeight === 'number' && Number.isInteger(font.maxWeight)))
   )
 }
 
@@ -282,7 +286,9 @@ function readBundledRecords(): { records: FontRecord[]; defaultFontId: string | 
             family: font.family,
             group: font.group,
             source: 'bundled',
-            available: true
+            available: true,
+            minWeight: font.minWeight,
+            maxWeight: font.maxWeight
           },
           filePath,
           fontsDir: dir,
@@ -385,9 +391,17 @@ function buildRegistry(): FontRegistry {
     used.add(record.entry.id)
     records.push(record)
   }
+  const byId = new Map(records.map((record) => [record.entry.id, record]))
+  for (const record of records) {
+    if (record.entry.id === 'anton-regular' && !byId.has('anton')) {
+      byId.set('anton', record)
+    } else if (record.entry.id === 'anton' && !byId.has('anton-regular')) {
+      byId.set('anton-regular', record)
+    }
+  }
   return {
     records,
-    byId: new Map(records.map((record) => [record.entry.id, record])),
+    byId,
     defaultFontId: bundled.defaultFontId
   }
 }

@@ -1,47 +1,266 @@
 [
   {
-    "id": "noto-sans",
-    "label": "Noto Sans",
-    "file": "NotoSans.ttf",
-    "family": "Noto Sans",
-    "group": "Mặc định",
+    "id": "anton-regular",
+    "label": "Anton",
+    "file": "Anton-Regular.ttf",
+    "family": "Anton",
+    "group": "🔥 Shorts & Tiêu đề",
     "source": "bundled",
-    "available": true
+    "available": true,
+    "minWeight": 400,
+    "maxWeight": 400
+  },
+  {
+    "id": "oswald",
+    "label": "Oswald",
+    "file": "Oswald.ttf",
+    "family": "Oswald",
+    "group": "🔥 Shorts & Tiêu đề",
+    "source": "bundled",
+    "available": true,
+    "minWeight": 200,
+    "maxWeight": 700
+  },
+  {
+    "id": "lobster",
+    "label": "Lobster",
+    "file": "Lobster-Regular.ttf",
+    "family": "Lobster",
+    "group": "🔥 Shorts & Tiêu đề",
+    "source": "bundled",
+    "available": true,
+    "minWeight": 400,
+    "maxWeight": 400
+  },
+  {
+    "id": "be-vietnam-pro",
+    "label": "Be Vietnam Pro",
+    "file": "BeVietnamPro-Regular.ttf",
+    "family": "Be Vietnam Pro",
+    "group": "✨ Hiện đại (Tối ưu TV)",
+    "source": "bundled",
+    "available": true,
+    "minWeight": 400,
+    "maxWeight": 400
+  },
+  {
+    "id": "inter",
+    "label": "Inter",
+    "file": "Inter.ttf",
+    "family": "Inter",
+    "group": "✨ Hiện đại (Tối ưu TV)",
+    "source": "bundled",
+    "available": true,
+    "minWeight": 100,
+    "maxWeight": 900
+  },
+  {
+    "id": "montserrat",
+    "label": "Montserrat",
+    "file": "Montserrat.ttf",
+    "family": "Montserrat",
+    "group": "✨ Hiện đại (Tối ưu TV)",
+    "source": "bundled",
+    "available": true,
+    "minWeight": 100,
+    "maxWeight": 900
+  },
+  {
+    "id": "manrope",
+    "label": "Manrope",
+    "file": "Manrope.ttf",
+    "family": "Manrope",
+    "group": "✨ Hiện đại (Tối ưu TV)",
+    "source": "bundled",
+    "available": true,
+    "minWeight": 200,
+    "maxWeight": 800
+  },
+  {
+    "id": "space-grotesk",
+    "label": "Space Grotesk",
+    "file": "SpaceGrotesk.ttf",
+    "family": "Space Grotesk",
+    "group": "✨ Hiện đại (Tối ưu TV)",
+    "source": "bundled",
+    "available": true,
+    "minWeight": 300,
+    "maxWeight": 700
+  },
+  {
+    "id": "plus-jakarta-sans",
+    "label": "Plus Jakarta Sans",
+    "file": "PlusJakartaSans.ttf",
+    "family": "Plus Jakarta Sans",
+    "group": "✨ Hiện đại (Tối ưu TV)",
+    "source": "bundled",
+    "available": true,
+    "minWeight": 200,
+    "maxWeight": 800
+  },
+  {
+    "id": "lexend",
+    "label": "Lexend",
+    "file": "Lexend.ttf",
+    "family": "Lexend",
+    "group": "✨ Hiện đại (Tối ưu TV)",
+    "source": "bundled",
+    "available": true,
+    "minWeight": 100,
+    "maxWeight": 900
   },
   {
     "id": "roboto",
     "label": "Roboto",
     "file": "Roboto.ttf",
     "family": "Roboto",
-    "group": "Mặc định",
+    "group": "✨ Hiện đại (Tối ưu TV)",
     "source": "bundled",
-    "available": true
+    "available": true,
+    "minWeight": 100,
+    "maxWeight": 900
   },
   {
-    "id": "noto-sans-arabic",
-    "label": "Noto Sans Arabic",
-    "file": "NotoSansArabic.ttf",
-    "family": "Noto Sans Arabic",
-    "group": "Ả Rập",
+    "id": "comfortaa",
+    "label": "Comfortaa",
+    "file": "Comfortaa.ttf",
+    "family": "Comfortaa",
+    "group": "🎨 Thân thiện & Sáng tạo",
     "source": "bundled",
-    "available": true
+    "available": true,
+    "minWeight": 300,
+    "maxWeight": 700
   },
   {
-    "id": "noto-sans-thai",
-    "label": "Noto Sans Thai",
-    "file": "NotoSansThai.ttf",
-    "family": "Noto Sans Thai",
-    "group": "Thái",
+    "id": "nunito",
+    "label": "Nunito",
+    "file": "Nunito.ttf",
+    "family": "Nunito",
+    "group": "🎨 Thân thiện & Sáng tạo",
     "source": "bundled",
-    "available": true
+    "available": true,
+    "minWeight": 200,
+    "maxWeight": 1000
+  },
+  {
+    "id": "quicksand",
+    "label": "Quicksand",
+    "file": "Quicksand.ttf",
+    "family": "Quicksand",
+    "group": "🎨 Thân thiện & Sáng tạo",
+    "source": "bundled",
+    "available": true,
+    "minWeight": 300,
+    "maxWeight": 700
+  },
+  {
+    "id": "playfair-display",
+    "label": "Playfair Display",
+    "file": "PlayfairDisplay.ttf",
+    "family": "Playfair Display",
+    "group": "☕ Báo chí & Kể chuyện",
+    "source": "bundled",
+    "available": true,
+    "minWeight": 400,
+    "maxWeight": 900
+  },
+  {
+    "id": "lora",
+    "label": "Lora",
+    "file": "Lora.ttf",
+    "family": "Lora",
+    "group": "☕ Báo chí & Kể chuyện",
+    "source": "bundled",
+    "available": true,
+    "minWeight": 400,
+    "maxWeight": 700
+  },
+  {
+    "id": "dancing-script",
+    "label": "Dancing Script",
+    "file": "DancingScript.ttf",
+    "family": "Dancing Script",
+    "group": "✍️ Viết tay & Nghệ thuật",
+    "source": "bundled",
+    "available": true,
+    "minWeight": 400,
+    "maxWeight": 700
+  },
+  {
+    "id": "pacifico",
+    "label": "Pacifico",
+    "file": "Pacifico-Regular.ttf",
+    "family": "Pacifico",
+    "group": "✍️ Viết tay & Nghệ thuật",
+    "source": "bundled",
+    "available": true,
+    "minWeight": 400,
+    "maxWeight": 400
+  },
+  {
+    "id": "patrick-hand",
+    "label": "Patrick Hand",
+    "file": "PatrickHand-Regular.ttf",
+    "family": "Patrick Hand",
+    "group": "✍️ Viết tay & Nghệ thuật",
+    "source": "bundled",
+    "available": true,
+    "minWeight": 400,
+    "maxWeight": 400
+  },
+  {
+    "id": "jetbrains-mono",
+    "label": "JetBrains Mono",
+    "file": "JetBrainsMono.ttf",
+    "family": "JetBrains Mono",
+    "group": "💻 Công nghệ & Tech",
+    "source": "bundled",
+    "available": true,
+    "minWeight": 100,
+    "maxWeight": 800
+  },
+  {
+    "id": "noto-sans",
+    "label": "Noto Sans",
+    "file": "NotoSans.ttf",
+    "family": "Noto Sans",
+    "group": "🌐 Đa ngôn ngữ",
+    "source": "bundled",
+    "available": true,
+    "minWeight": 100,
+    "maxWeight": 900
   },
   {
     "id": "noto-sans-kr",
     "label": "Noto Sans CJK",
     "file": "NotoSansKR.ttf",
     "family": "Noto Sans KR",
-    "group": "Trung · Nhật · Hàn",
+    "group": "🌐 Đa ngôn ngữ",
     "source": "bundled",
-    "available": true
+    "available": true,
+    "minWeight": 100,
+    "maxWeight": 900
+  },
+  {
+    "id": "noto-sans-thai",
+    "label": "Noto Sans Thai",
+    "file": "NotoSansThai.ttf",
+    "family": "Noto Sans Thai",
+    "group": "🌐 Đa ngôn ngữ",
+    "source": "bundled",
+    "available": true,
+    "minWeight": 100,
+    "maxWeight": 900
+  },
+  {
+    "id": "noto-sans-arabic",
+    "label": "Noto Sans Arabic",
+    "file": "NotoSansArabic.ttf",
+    "family": "Noto Sans Arabic",
+    "group": "🌐 Đa ngôn ngữ",
+    "source": "bundled",
+    "available": true,
+    "minWeight": 100,
+    "maxWeight": 900
   }
 ]

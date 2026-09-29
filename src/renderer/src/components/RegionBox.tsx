@@ -4,8 +4,10 @@ import type {
   BlurRegion,
   RenderedSubtitleSegment,
   SubtitleCue,
-  SubtitleDisplayStyle
+  SubtitleDisplayStyle,
+  SubtitleTextCase
 } from '../../../shared/types'
+import { applySubtitleTextCase } from '../../../shared/subtitleTextCase'
 import {
   createSubtitleEffectTimeline,
   safeSubtitlePopScale,
@@ -87,8 +89,11 @@ interface Props {
   subtitleFontWeight?: number
   /** Match the final composition when the source is shrunk into a portrait frame. */
   scaleSubtitleToVideo?: boolean
+  subtitleTextCase?: SubtitleTextCase
   highlightColor?: string
   highlightPop?: boolean
+  highlightBgEnabled?: boolean
+  highlightBgColor?: string
   textColor?: string
   outlineColor?: string
   outlinePx?: number
@@ -131,8 +136,11 @@ export default function RegionBox({
   subtitleFontSize,
   subtitleFontWeight,
   scaleSubtitleToVideo = false,
+  subtitleTextCase,
   highlightColor = '#43e7d5',
   highlightPop = true,
+  highlightBgEnabled = false,
+  highlightBgColor = '#000000',
   textColor = '#ffffff',
   outlineColor = '#000000',
   outlinePx = 2,
@@ -265,7 +273,10 @@ export default function RegionBox({
     : Math.max(12, Math.round(sourceFontSize / sy))
 
   // Xuong dong mau: do px that (canvas) vs chieu ngang khung (video px)
-  const sample = subtitleText === undefined ? 'Mẫu chữ xuất ra' : subtitleText
+  const sample = applySubtitleTextCase(
+    subtitleText === undefined ? 'Mẫu chữ xuất ra' : subtitleText,
+    subtitleTextCase
+  )
   const wrapPreviewText = useCallback((text: string): string[] => {
     if (!text) return []
     const assText = text.replace(/\r\n|\r|\n/g, '\\N')
@@ -294,9 +305,11 @@ export default function RegionBox({
   }, [bgEnabled, previewFontFamily, subRegion, subtitleFontSize, subtitleFontWeight, videoH, videoW])
 
   const sampleAssLines = useMemo(() => {
-    const planned = subtitleCues.flatMap((cue) => ('lines' in cue ? cue.lines : []))
+    const planned = subtitleCues.flatMap((cue) =>
+      'lines' in cue ? cue.lines.map((l) => applySubtitleTextCase(l, subtitleTextCase)) : []
+    )
     return planned.length > 0 ? planned : wrapPreviewText(sample)
-  }, [sample, subtitleCues, wrapPreviewText])
+  }, [sample, subtitleCues, subtitleTextCase, wrapPreviewText])
 
   const previewMaxLineWidth = useMemo(() => {
     if (!subRegion) return 0
@@ -334,17 +347,37 @@ export default function RegionBox({
   )
 
   const effectTimelines = useMemo(
-    () =>
-      subtitleDisplayStyle === 'standard'
-        ? []
-        : subtitleCues.map((cue) => ({
+    () => {
+      if (subtitleDisplayStyle === 'standard') return []
+      if (subtitleCues.length > 0) {
+        return subtitleCues.map((cue) => {
+          const rawLines = 'lines' in cue ? cue.lines : wrapPreviewText(cue.text)
+          const text = rawLines.map((line) => applySubtitleTextCase(line, subtitleTextCase)).join('\n')
+          return {
             cue,
             timeline: createSubtitleEffectTimeline({
               ...cue,
-              text: 'lines' in cue ? cue.lines.join('\n') : wrapPreviewText(cue.text).join('\n')
+              text
             })
-          })),
-    [subtitleCues, subtitleDisplayStyle, wrapPreviewText]
+          }
+        })
+      }
+      const sampleText = sampleAssLines.join('\n') || applySubtitleTextCase('Mẫu chữ xuất ra', subtitleTextCase)
+      const mockCue: SubtitleCue = {
+        id: 'sample-preview-cue',
+        sourceIndex: 0,
+        start: 0,
+        end: 4,
+        text: sampleText
+      }
+      return [
+        {
+          cue: mockCue,
+          timeline: createSubtitleEffectTimeline(mockCue)
+        }
+      ]
+    },
+    [sampleAssLines, subtitleCues, subtitleDisplayStyle, subtitleTextCase, wrapPreviewText]
   )
 
   const boxPadPreview = scaleSubtitleToVideo
@@ -523,9 +556,13 @@ export default function RegionBox({
             >
               {effectTimelines.length > 0 ? (
                 effectTimelines.map(({ cue, timeline }) => {
-                  const activeBeat = timeline.beats.find(
-                    (beat) => subtitleTime >= beat.start && subtitleTime < beat.end
-                  )
+                  const isSampleMode = subtitleCues.length === 0
+                  const sampleActiveIndex = Math.min(1, Math.max(0, timeline.beats.length - 1))
+                  const activeBeat = isSampleMode
+                    ? (timeline.beats[sampleActiveIndex] ?? timeline.beats[0])
+                    : timeline.beats.find(
+                        (beat) => subtitleTime >= beat.start && subtitleTime < beat.end
+                      )
                   const activeBeatIndex = activeBeat?.index ?? -1
                   const peakScale =
                     highlightPop && activeBeat
@@ -538,7 +575,7 @@ export default function RegionBox({
                         )
                       : 1
                   const popScale = activeBeat
-                    ? subtitlePopScaleAt(activeBeat, subtitleTime, peakScale)
+                    ? (isSampleMode ? peakScale : subtitlePopScaleAt(activeBeat, subtitleTime, peakScale))
                     : 1
 
                   if (subtitleDisplayStyle === 'single-word') {
@@ -596,6 +633,24 @@ export default function RegionBox({
                                     }
                                     style={tokenStyle}
                                   >
+                                    {subtitleDisplayStyle === 'word-highlight' && highlighted && highlightBgEnabled && (
+                                      <span
+                                        aria-hidden="true"
+                                        className="sub-preview-word-bg"
+                                        style={{
+                                          position: 'absolute',
+                                          inset: '-0.08em -0.10em',
+                                          backgroundColor: highlightBgColor,
+                                          borderRadius: '0.18em',
+                                          zIndex: 1,
+                                          transform: highlightPop
+                                            ? `scale(${popScale.toFixed(4)})`
+                                            : 'scale(1)',
+                                          transformOrigin: '50% 70%',
+                                          pointerEvents: 'none'
+                                        }}
+                                      />
+                                    )}
                                     <span
                                       className="sub-preview-base-layer"
                                       style={
@@ -610,7 +665,7 @@ export default function RegionBox({
                                       <span
                                         aria-hidden="true"
                                         className="sub-preview-pop-layer"
-                                        style={overlayStyle}
+                                        style={{ ...overlayStyle, zIndex: 3 }}
                                       >
                                         {token.text}
                                       </span>

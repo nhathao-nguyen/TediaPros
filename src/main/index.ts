@@ -161,6 +161,7 @@ import {
 import { listAutoShortMusicTracks } from './autoShortMusicLibrary'
 import { createAutoShortThumbnail } from './autoShortThumbnail'
 import { isAutoShortSeparationPreset } from '../shared/autoShortSeparation'
+import { isValidSubtitleTextCase, applyTextCaseToCues } from '../shared/subtitleTextCase'
 import type {
   DichProvider,
   DouyinRequest,
@@ -821,7 +822,8 @@ function registerIpc(): void {
       (request.autoOptimize != null && typeof request.autoOptimize !== 'boolean') ||
       (request.bgEnabled != null && typeof request.bgEnabled !== 'boolean') ||
       (request.fontId != null && (typeof request.fontId !== 'string' || request.fontId.length > 100)) ||
-      (request.fontWeight != null && (!Number.isFinite(request.fontWeight) || request.fontWeight < 100 || request.fontWeight > 900))
+      (request.fontWeight != null && (!Number.isFinite(request.fontWeight) || request.fontWeight < 100 || request.fontWeight > 900)) ||
+      (request.subtitleTextCase != null && !isValidSubtitleTextCase(request.subtitleTextCase))
     ) {
       throw new Error('Cấu hình phụ đề không hợp lệ.')
     }
@@ -839,6 +841,8 @@ function registerIpc(): void {
     }
     if (cues.length === 0) throw new Error('File phụ đề không có đoạn nào với mốc thời gian hợp lệ.')
 
+    const effectiveCues = applyTextCaseToCues(cues, request.subtitleTextCase)
+
     const bc = boCuc(
       { w: width, h: height, giay: 0, hasAudio: false },
       region,
@@ -852,7 +856,7 @@ function registerIpc(): void {
 
     try {
       return createMainSubtitlePlan(
-        cues,
+        effectiveCues,
         {
           profile: request.profile ?? 'readable',
           autoOptimize: request.autoOptimize !== false,

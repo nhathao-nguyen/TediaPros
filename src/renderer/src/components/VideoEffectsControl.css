@@ -1,0 +1,14 @@
+.video-effects-panel { position: fixed; z-index: 40; right: 24px; top: 110px; width: min(400px, calc(100vw - 32px)); max-height: calc(100vh - 140px); overflow-y: auto; background: var(--panel-2); color: var(--text); border: 1px solid var(--control-border); border-radius: 10px; box-shadow: 0 14px 40px rgb(0 0 0 / 35%); padding: 14px; }
+.video-effects-heading, .video-effect-actions { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.video-effects-presets { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; margin: 12px 0; }
+.video-effect-card { border: 1px solid var(--control-border); background: transparent; color: inherit; padding: 5px; border-radius: 8px; cursor: pointer; font: inherit; font-size: 12px; }
+.video-effect-card[aria-pressed=true] { border-color: #31c6ca; box-shadow: 0 0 0 1px #31c6ca; }
+.video-effect-card:focus-visible { outline: 2px solid #31c6ca; outline-offset: 3px; }
+.video-effect-sample { position: relative; display: block; height: 80px; overflow: hidden; margin-bottom: 6px; border-radius: 5px; background: linear-gradient(#356f86, #a0c5b0 68%, #345568); }
+.video-effect-landscape { position: absolute; inset: 30% -10% -15%; background: #315060; clip-path: polygon(0 85%, 35% 15%, 55% 55%, 73% 28%, 100% 78%, 100% 100%, 0 100%); }
+.video-effect-layer { border: 1px solid var(--control-border); border-radius: 8px; padding: 10px; margin: 12px 0; min-width: 0; }
+.video-effect-layer legend { padding: 0 5px; }
+.video-effect-layer label { display: grid; grid-template-columns: 66px minmax(0, 1fr) 36px; align-items: center; gap: 6px; font-size: 12px; }
+.video-effect-layer input { min-width: 0; width: 100%; }
+.video-effect-actions { margin-top: 8px; }
+.video-effects-preview { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 4; }

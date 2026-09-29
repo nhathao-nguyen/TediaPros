@@ -147,6 +147,10 @@ function partitionForDomain(domain: string): string {
   return `persist:tblao-login-domain-${id}`
 }
 
+export function sitePartition(site: CookieSite): string {
+  return partitionForDomain(getSiteConfig(site).canonicalDomain)
+}
+
 export function siteCookiesPath(site: CookieSite): string {
   return domainCookiesPath(getSiteConfig(site).canonicalDomain)
 }
@@ -679,6 +683,46 @@ export async function withResolvedDomainCookie<T>(
     // so dang nhap da mo truoc do, tranh snapshot cu ghi de file vua cap nhat.
     if (file) nextDomainRevision(target.domain)
     return task(file)
+  })
+}
+
+/**
+ * Nap cac cookie da luu tu file Netscape vao mot Electron session (vd cua so offscreen/crawler).
+ * Tra ve so luong cookie hop le da nap thanh cong.
+ */
+export async function populateSessionFromDomainCookies(
+  domain: string,
+  ses: Electron.Session
+): Promise<number> {
+  await ensureLegacyCookieMigration()
+  return withDomainMutex(domain, async () => {
+    const filePath = domainCookiesPath(domain)
+    const { rows } = await readCookieRows(filePath)
+    if (rows.length === 0) return 0
+    let added = 0
+    const nowSeconds = Date.now() / 1000
+    for (const row of rows) {
+      if (row.expires > 0 && row.expires <= nowSeconds) continue
+      try {
+        const protocol = row.secure ? 'https:' : 'http:'
+        const cleanDomain = row.domain.replace(/^\./, '')
+        const cookieUrl = `${protocol}//${cleanDomain}${row.path || '/'}`
+        await ses.cookies.set({
+          url: cookieUrl,
+          name: row.name,
+          value: row.value,
+          domain: row.domain.startsWith('.') ? row.domain : `.${row.domain}`,
+          path: row.path || '/',
+          secure: row.secure,
+          httpOnly: row.httpOnly,
+          expirationDate: row.expires > 0 ? row.expires : undefined
+        })
+        added += 1
+      } catch {
+        // Bo qua cookie loi neu co
+      }
+    }
+    return added
   })
 }
 

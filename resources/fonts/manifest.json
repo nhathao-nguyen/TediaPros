@@ -1,79 +1,464 @@
 {
   "schemaVersion": 1,
-  "packVersion": "2026.08.14.1",
+  "packVersion": "2026.09.29.1",
   "defaultFontId": "noto-sans",
   "sourceRepository": "https://github.com/google/fonts",
   "sourceCommit": "73fc2ff52147e34a74804b500cf89ca219eac55d",
   "fonts": [
     {
-      "id": "noto-sans",
-      "label": "Noto Sans",
-      "file": "NotoSans.ttf",
-      "family": "Noto Sans",
-      "group": "Mặc định",
-      "sha256": "bfb7bb691513f12e734dc346c03a03f784912432d7e3fa8e56efcf906fe86b3d",
+      "id": "anton-regular",
+      "label": "Anton",
+      "file": "Anton-Regular.ttf",
+      "family": "Anton",
+      "group": "🔥 Shorts & Tiêu đề",
+      "sha256": "a4ba3a92350ebb031da0cb47630ac49eb265082ca1bc0450442f4a83ab947cab",
       "license": "OFL-1.1",
       "licenseFile": "licenses/OFL-1.1.txt",
       "noticeFile": "licenses/NOTICES.md",
-      "copyright": "Copyright 2022 The Noto Project Authors (https://github.com/notofonts/latin-greek-cyrillic)",
-      "sourceUrl": "https://raw.githubusercontent.com/google/fonts/73fc2ff52147e34a74804b500cf89ca219eac55d/ofl/notosans/NotoSans%5Bwdth%2Cwght%5D.ttf",
-      "requiredCodepoints": [65, 7879]
+      "copyright": "Copyright 2020 The Anton Project Authors (https://github.com/googlefonts/AntonFont.git)",
+      "sourceUrl": "https://raw.githubusercontent.com/google/fonts/73fc2ff52147e34a74804b500cf89ca219eac55d/ofl/anton/Anton-Regular.ttf",
+      "requiredCodepoints": [
+        65,
+        7879
+      ],
+      "minWeight": 400,
+      "maxWeight": 400
+    },
+    {
+      "id": "oswald",
+      "label": "Oswald",
+      "file": "Oswald.ttf",
+      "family": "Oswald",
+      "group": "🔥 Shorts & Tiêu đề",
+      "sha256": "5b38c246e255a12f5712d640d56bcced0472466fc68983d2d0410ec0457c2817",
+      "license": "OFL-1.1",
+      "licenseFile": "licenses/OFL-1.1.txt",
+      "noticeFile": "licenses/NOTICES.md",
+      "copyright": "Copyright 2016 The Oswald Project Authors (https://github.com/googlefonts/OswaldFont)",
+      "sourceUrl": "https://raw.githubusercontent.com/google/fonts/73fc2ff52147e34a74804b500cf89ca219eac55d/ofl/oswald/Oswald%5Bwght%5D.ttf",
+      "requiredCodepoints": [
+        65,
+        7879
+      ],
+      "minWeight": 200,
+      "maxWeight": 700
+    },
+    {
+      "id": "lobster",
+      "label": "Lobster",
+      "file": "Lobster-Regular.ttf",
+      "family": "Lobster",
+      "group": "🔥 Shorts & Tiêu đề",
+      "sha256": "d6568e697fd50cedc0be04d8aae4127fe95add607e7bff954ca88604be80c205",
+      "license": "OFL-1.1",
+      "licenseFile": "licenses/OFL-1.1.txt",
+      "noticeFile": "licenses/NOTICES.md",
+      "copyright": "Copyright 2010 The Lobster Project Authors (https://github.com/impallari/The-Lobster-Font), with Reserved Font Name \"Lobster\".",
+      "sourceUrl": "https://raw.githubusercontent.com/google/fonts/73fc2ff52147e34a74804b500cf89ca219eac55d/ofl/lobster/Lobster-Regular.ttf",
+      "requiredCodepoints": [
+        65,
+        7879
+      ],
+      "minWeight": 400,
+      "maxWeight": 400
+    },
+    {
+      "id": "be-vietnam-pro",
+      "label": "Be Vietnam Pro",
+      "file": "BeVietnamPro-Regular.ttf",
+      "family": "Be Vietnam Pro",
+      "group": "✨ Hiện đại (Tối ưu TV)",
+      "sha256": "cd1ef6e9d7db28ad5cdb88a65ccbe693870e60d340b791f349d248342b4fe4c3",
+      "license": "OFL-1.1",
+      "licenseFile": "licenses/OFL-1.1.txt",
+      "noticeFile": "licenses/NOTICES.md",
+      "copyright": "Copyright 2019 The Be Vietnam Pro Project Authors (https://github.com/bettertype/BeVietnamPro)",
+      "sourceUrl": "https://raw.githubusercontent.com/google/fonts/73fc2ff52147e34a74804b500cf89ca219eac55d/ofl/bevietnampro/BeVietnamPro-Regular.ttf",
+      "requiredCodepoints": [
+        65,
+        7879
+      ],
+      "minWeight": 400,
+      "maxWeight": 400
+    },
+    {
+      "id": "inter",
+      "label": "Inter",
+      "file": "Inter.ttf",
+      "family": "Inter",
+      "group": "✨ Hiện đại (Tối ưu TV)",
+      "sha256": "29160a80ff49ddcab2c97711247e08b1fab27a484a329ce8b813d820dc559031",
+      "license": "OFL-1.1",
+      "licenseFile": "licenses/OFL-1.1.txt",
+      "noticeFile": "licenses/NOTICES.md",
+      "copyright": "Copyright 2020 The Inter Project Authors (https://github.com/rsms/inter)",
+      "sourceUrl": "https://raw.githubusercontent.com/google/fonts/73fc2ff52147e34a74804b500cf89ca219eac55d/ofl/inter/Inter%5Bopsz%2Cwght%5D.ttf",
+      "requiredCodepoints": [
+        65,
+        7879
+      ],
+      "minWeight": 100,
+      "maxWeight": 900
+    },
+    {
+      "id": "montserrat",
+      "label": "Montserrat",
+      "file": "Montserrat.ttf",
+      "family": "Montserrat",
+      "group": "✨ Hiện đại (Tối ưu TV)",
+      "sha256": "0f7b311b2f3279e4eef9b2f968bcdbab6e28f4daeb1f049f4f278a902bcd82f7",
+      "license": "OFL-1.1",
+      "licenseFile": "licenses/OFL-1.1.txt",
+      "noticeFile": "licenses/NOTICES.md",
+      "copyright": "Copyright 2011 The Montserrat Project Authors (https://github.com/JulietaUla/Montserrat)",
+      "sourceUrl": "https://raw.githubusercontent.com/google/fonts/73fc2ff52147e34a74804b500cf89ca219eac55d/ofl/montserrat/Montserrat%5Bwght%5D.ttf",
+      "requiredCodepoints": [
+        65,
+        7879
+      ],
+      "minWeight": 100,
+      "maxWeight": 900
+    },
+    {
+      "id": "manrope",
+      "label": "Manrope",
+      "file": "Manrope.ttf",
+      "family": "Manrope",
+      "group": "✨ Hiện đại (Tối ưu TV)",
+      "sha256": "d0639be45d0af36e798172419d7bd173c4bd4f29e2b76cbb69db1d11bf8b0a40",
+      "license": "OFL-1.1",
+      "licenseFile": "licenses/OFL-1.1.txt",
+      "noticeFile": "licenses/NOTICES.md",
+      "copyright": "Copyright 2018 The Manrope Project Authors (https://github.com/sharanda/manrope)",
+      "sourceUrl": "https://raw.githubusercontent.com/google/fonts/73fc2ff52147e34a74804b500cf89ca219eac55d/ofl/manrope/Manrope%5Bwght%5D.ttf",
+      "requiredCodepoints": [
+        65,
+        7879
+      ],
+      "minWeight": 200,
+      "maxWeight": 800
+    },
+    {
+      "id": "space-grotesk",
+      "label": "Space Grotesk",
+      "file": "SpaceGrotesk.ttf",
+      "family": "Space Grotesk",
+      "group": "✨ Hiện đại (Tối ưu TV)",
+      "sha256": "acad6de1fc93436f5c0f1f4137751ef04f1aea3063e7036535970ffcfbd79f72",
+      "license": "OFL-1.1",
+      "licenseFile": "licenses/OFL-1.1.txt",
+      "noticeFile": "licenses/NOTICES.md",
+      "copyright": "Copyright 2020 The Space Grotesk Project Authors (https://github.com/floriankarsten/space-grotesk)",
+      "sourceUrl": "https://raw.githubusercontent.com/google/fonts/73fc2ff52147e34a74804b500cf89ca219eac55d/ofl/spacegrotesk/SpaceGrotesk%5Bwght%5D.ttf",
+      "requiredCodepoints": [
+        65,
+        7879
+      ],
+      "minWeight": 300,
+      "maxWeight": 700
+    },
+    {
+      "id": "plus-jakarta-sans",
+      "label": "Plus Jakarta Sans",
+      "file": "PlusJakartaSans.ttf",
+      "family": "Plus Jakarta Sans",
+      "group": "✨ Hiện đại (Tối ưu TV)",
+      "sha256": "89b3fb38aa0d275d7a731d0d817a4f1622b316b4d7fbdedcf02ee9099ff68bc8",
+      "license": "OFL-1.1",
+      "licenseFile": "licenses/OFL-1.1.txt",
+      "noticeFile": "licenses/NOTICES.md",
+      "copyright": "Copyright 2020 The Plus Jakarta Sans Project Authors (https://github.com/tokotype/PlusJakartaSans)",
+      "sourceUrl": "https://raw.githubusercontent.com/google/fonts/73fc2ff52147e34a74804b500cf89ca219eac55d/ofl/plusjakartasans/PlusJakartaSans%5Bwght%5D.ttf",
+      "requiredCodepoints": [
+        65,
+        7879
+      ],
+      "minWeight": 200,
+      "maxWeight": 800
+    },
+    {
+      "id": "lexend",
+      "label": "Lexend",
+      "file": "Lexend.ttf",
+      "family": "Lexend",
+      "group": "✨ Hiện đại (Tối ưu TV)",
+      "sha256": "3add53e641fbc81da64da4bb254285e2831b52b029527bc0714e2b9610832ee6",
+      "license": "OFL-1.1",
+      "licenseFile": "licenses/OFL-1.1.txt",
+      "noticeFile": "licenses/NOTICES.md",
+      "copyright": "Copyright 2019 The Lexend Project Authors (https://github.com/ThomasJockin/lexend)",
+      "sourceUrl": "https://raw.githubusercontent.com/google/fonts/73fc2ff52147e34a74804b500cf89ca219eac55d/ofl/lexend/Lexend%5Bwght%5D.ttf",
+      "requiredCodepoints": [
+        65,
+        7879
+      ],
+      "minWeight": 100,
+      "maxWeight": 900
     },
     {
       "id": "roboto",
       "label": "Roboto",
       "file": "Roboto.ttf",
       "family": "Roboto",
-      "group": "Mặc định",
+      "group": "✨ Hiện đại (Tối ưu TV)",
       "sha256": "d7598e12c5dbef095ff8272cfc55da0250bd07fbdecbac8a530b9b277872a134",
       "license": "OFL-1.1",
       "licenseFile": "licenses/OFL-1.1.txt",
       "noticeFile": "licenses/NOTICES.md",
       "copyright": "Copyright 2011 The Roboto Project Authors (https://github.com/googlefonts/roboto-classic)",
       "sourceUrl": "https://raw.githubusercontent.com/google/fonts/73fc2ff52147e34a74804b500cf89ca219eac55d/ofl/roboto/Roboto%5Bwdth%2Cwght%5D.ttf",
-      "requiredCodepoints": [65, 7879]
+      "requiredCodepoints": [
+        65,
+        7879
+      ],
+      "minWeight": 100,
+      "maxWeight": 900
     },
     {
-      "id": "noto-sans-arabic",
-      "label": "Noto Sans Arabic",
-      "file": "NotoSansArabic.ttf",
-      "family": "Noto Sans Arabic",
-      "group": "Ả Rập",
-      "sha256": "63111b5b2e074dd48cc67692e0a2726d86ee94c1c37fe8598257b7b4e87e869e",
+      "id": "comfortaa",
+      "label": "Comfortaa",
+      "file": "Comfortaa.ttf",
+      "family": "Comfortaa",
+      "group": "🎨 Thân thiện & Sáng tạo",
+      "sha256": "0fc3f45dc48b614db9c39181502544b37217ecbf8bee2fb35886992bc96c5bd3",
       "license": "OFL-1.1",
       "licenseFile": "licenses/OFL-1.1.txt",
       "noticeFile": "licenses/NOTICES.md",
-      "copyright": "Copyright 2022 The Noto Project Authors (https://github.com/notofonts/arabic)",
-      "sourceUrl": "https://raw.githubusercontent.com/google/fonts/73fc2ff52147e34a74804b500cf89ca219eac55d/ofl/notosansarabic/NotoSansArabic%5Bwdth%2Cwght%5D.ttf",
-      "requiredCodepoints": [1593]
+      "copyright": "Copyright 2011 The Comfortaa Project Authors (https://github.com/alexeiva/comfortaa), with Reserved Font Name \"Comfortaa\".",
+      "sourceUrl": "https://raw.githubusercontent.com/google/fonts/73fc2ff52147e34a74804b500cf89ca219eac55d/ofl/comfortaa/Comfortaa%5Bwght%5D.ttf",
+      "requiredCodepoints": [
+        65,
+        7879
+      ],
+      "minWeight": 300,
+      "maxWeight": 700
     },
     {
-      "id": "noto-sans-thai",
-      "label": "Noto Sans Thai",
-      "file": "NotoSansThai.ttf",
-      "family": "Noto Sans Thai",
-      "group": "Thái",
-      "sha256": "5a1c559bb539583c8a1fd99d1c5b9491e5e14478c9cd2bd0970d5c3096cc9ef8",
+      "id": "nunito",
+      "label": "Nunito",
+      "file": "Nunito.ttf",
+      "family": "Nunito",
+      "group": "🎨 Thân thiện & Sáng tạo",
+      "sha256": "bb55a5ca5c2042335b3991af27c4d0705d0ef41cac6164ac737fd8f2a1e85207",
       "license": "OFL-1.1",
       "licenseFile": "licenses/OFL-1.1.txt",
       "noticeFile": "licenses/NOTICES.md",
-      "copyright": "Copyright 2022 The Noto Project Authors (https://github.com/notofonts/thai)",
-      "sourceUrl": "https://raw.githubusercontent.com/google/fonts/73fc2ff52147e34a74804b500cf89ca219eac55d/ofl/notosansthai/NotoSansThai%5Bwdth%2Cwght%5D.ttf",
-      "requiredCodepoints": [3585]
+      "copyright": "Copyright 2014 The Nunito Project Authors (https://github.com/googlefonts/nunito)",
+      "sourceUrl": "https://raw.githubusercontent.com/google/fonts/73fc2ff52147e34a74804b500cf89ca219eac55d/ofl/nunito/Nunito%5Bwght%5D.ttf",
+      "requiredCodepoints": [
+        65,
+        7879
+      ],
+      "minWeight": 200,
+      "maxWeight": 1000
+    },
+    {
+      "id": "quicksand",
+      "label": "Quicksand",
+      "file": "Quicksand.ttf",
+      "family": "Quicksand",
+      "group": "🎨 Thân thiện & Sáng tạo",
+      "sha256": "39c9b64223561f56aaff6062a6f04063c4fc86809ad6768722c06614d977e1cc",
+      "license": "OFL-1.1",
+      "licenseFile": "licenses/OFL-1.1.txt",
+      "noticeFile": "licenses/NOTICES.md",
+      "copyright": "Copyright 2019 The Quicksand Project Authors (https://github.com/andrew-paglinawan/QuicksandFamily.git), with Reserved Font Name \"Quicksand\".",
+      "sourceUrl": "https://raw.githubusercontent.com/google/fonts/73fc2ff52147e34a74804b500cf89ca219eac55d/ofl/quicksand/Quicksand%5Bwght%5D.ttf",
+      "requiredCodepoints": [
+        65,
+        7879
+      ],
+      "minWeight": 300,
+      "maxWeight": 700
+    },
+    {
+      "id": "playfair-display",
+      "label": "Playfair Display",
+      "file": "PlayfairDisplay.ttf",
+      "family": "Playfair Display",
+      "group": "☕ Báo chí & Kể chuyện",
+      "sha256": "c40f2293766a503bc70cce9e512ef844a4ccb7cbcde792fe2ea31d191917d8d6",
+      "license": "OFL-1.1",
+      "licenseFile": "licenses/OFL-1.1.txt",
+      "noticeFile": "licenses/NOTICES.md",
+      "copyright": "Copyright 2017 The Playfair Display Project Authors (https://github.com/clauseggers/Playfair-Display), with Reserved Font Name \"Playfair Display\".",
+      "sourceUrl": "https://raw.githubusercontent.com/google/fonts/73fc2ff52147e34a74804b500cf89ca219eac55d/ofl/playfairdisplay/PlayfairDisplay%5Bwght%5D.ttf",
+      "requiredCodepoints": [
+        65,
+        7879
+      ],
+      "minWeight": 400,
+      "maxWeight": 900
+    },
+    {
+      "id": "lora",
+      "label": "Lora",
+      "file": "Lora.ttf",
+      "family": "Lora",
+      "group": "☕ Báo chí & Kể chuyện",
+      "sha256": "822a6621ccbe8d97d20ac88c1c41f5615c9c2c202eaa75f272cd452aac6475a7",
+      "license": "OFL-1.1",
+      "licenseFile": "licenses/OFL-1.1.txt",
+      "noticeFile": "licenses/NOTICES.md",
+      "copyright": "Copyright 2011 The Lora Project Authors (https://github.com/cyrealtype/Lora-Cyrillic), with Reserved Font Name \"Lora\".",
+      "sourceUrl": "https://raw.githubusercontent.com/google/fonts/73fc2ff52147e34a74804b500cf89ca219eac55d/ofl/lora/Lora%5Bwght%5D.ttf",
+      "requiredCodepoints": [
+        65,
+        7879
+      ],
+      "minWeight": 400,
+      "maxWeight": 700
+    },
+    {
+      "id": "dancing-script",
+      "label": "Dancing Script",
+      "file": "DancingScript.ttf",
+      "family": "Dancing Script",
+      "group": "✍️ Viết tay & Nghệ thuật",
+      "sha256": "21808625578fe8d8cd10cb684be546dca077b27cd03a53a2f1ec11dc743c924c",
+      "license": "OFL-1.1",
+      "licenseFile": "licenses/OFL-1.1.txt",
+      "noticeFile": "licenses/NOTICES.md",
+      "copyright": "Copyright 2016 The Dancing Script Project Authors (https://github.com/googlefonts/DancingScript), with Reserved Font Name 'Dancing Script'.",
+      "sourceUrl": "https://raw.githubusercontent.com/google/fonts/73fc2ff52147e34a74804b500cf89ca219eac55d/ofl/dancingscript/DancingScript%5Bwght%5D.ttf",
+      "requiredCodepoints": [
+        65,
+        7879
+      ],
+      "minWeight": 400,
+      "maxWeight": 700
+    },
+    {
+      "id": "pacifico",
+      "label": "Pacifico",
+      "file": "Pacifico-Regular.ttf",
+      "family": "Pacifico",
+      "group": "✍️ Viết tay & Nghệ thuật",
+      "sha256": "5b6c0d5334a7bf77dea52b975c5a0c408878c0f7115ed5b6fb151f634b7bf701",
+      "license": "OFL-1.1",
+      "licenseFile": "licenses/OFL-1.1.txt",
+      "noticeFile": "licenses/NOTICES.md",
+      "copyright": "Copyright 2018 The Pacifico Project Authors (https://github.com/googlefonts/Pacifico)",
+      "sourceUrl": "https://raw.githubusercontent.com/google/fonts/73fc2ff52147e34a74804b500cf89ca219eac55d/ofl/pacifico/Pacifico-Regular.ttf",
+      "requiredCodepoints": [
+        65,
+        7879
+      ],
+      "minWeight": 400,
+      "maxWeight": 400
+    },
+    {
+      "id": "patrick-hand",
+      "label": "Patrick Hand",
+      "file": "PatrickHand-Regular.ttf",
+      "family": "Patrick Hand",
+      "group": "✍️ Viết tay & Nghệ thuật",
+      "sha256": "0f173b3e6cb6d1af25babf7f0057c5ac4ee11f9992b0469bb817e967ef4ad0fc",
+      "license": "OFL-1.1",
+      "licenseFile": "licenses/OFL-1.1.txt",
+      "noticeFile": "licenses/NOTICES.md",
+      "copyright": "Copyright 2012 The Patrick Hand Project Authors (https://github.com/googlefonts/patrick-hand), with Reserved Font Name \"Patrick Hand\".",
+      "sourceUrl": "https://raw.githubusercontent.com/google/fonts/73fc2ff52147e34a74804b500cf89ca219eac55d/ofl/patrickhand/PatrickHand-Regular.ttf",
+      "requiredCodepoints": [
+        65,
+        7879
+      ],
+      "minWeight": 400,
+      "maxWeight": 400
+    },
+    {
+      "id": "jetbrains-mono",
+      "label": "JetBrains Mono",
+      "file": "JetBrainsMono.ttf",
+      "family": "JetBrains Mono",
+      "group": "💻 Công nghệ & Tech",
+      "sha256": "48715a42ec242c21e9f02692891e147d022299a52e48d5e413e1a942193ffeda",
+      "license": "OFL-1.1",
+      "licenseFile": "licenses/OFL-1.1.txt",
+      "noticeFile": "licenses/NOTICES.md",
+      "copyright": "Copyright 2020 The JetBrains Mono Project Authors (https://github.com/JetBrains/JetBrainsMono)",
+      "sourceUrl": "https://raw.githubusercontent.com/google/fonts/73fc2ff52147e34a74804b500cf89ca219eac55d/ofl/jetbrainsmono/JetBrainsMono%5Bwght%5D.ttf",
+      "requiredCodepoints": [
+        65,
+        7879
+      ],
+      "minWeight": 100,
+      "maxWeight": 800
+    },
+    {
+      "id": "noto-sans",
+      "label": "Noto Sans",
+      "file": "NotoSans.ttf",
+      "family": "Noto Sans",
+      "group": "🌐 Đa ngôn ngữ",
+      "sha256": "bfb7bb691513f12e734dc346c03a03f784912432d7e3fa8e56efcf906fe86b3d",
+      "license": "OFL-1.1",
+      "licenseFile": "licenses/OFL-1.1.txt",
+      "noticeFile": "licenses/NOTICES.md",
+      "copyright": "Copyright 2022 The Noto Project Authors (https://github.com/notofonts/latin-greek-cyrillic)",
+      "sourceUrl": "https://raw.githubusercontent.com/google/fonts/73fc2ff52147e34a74804b500cf89ca219eac55d/ofl/notosans/NotoSans%5Bwdth%2Cwght%5D.ttf",
+      "requiredCodepoints": [
+        65,
+        7879
+      ],
+      "minWeight": 100,
+      "maxWeight": 900
     },
     {
       "id": "noto-sans-kr",
       "label": "Noto Sans CJK",
       "file": "NotoSansKR.ttf",
       "family": "Noto Sans KR",
-      "group": "Trung · Nhật · Hàn",
+      "group": "🌐 Đa ngôn ngữ",
       "sha256": "194018e6b2b293a7964f037b25c0249ce1418bc9ab3c971060a03aa57861e252",
       "license": "OFL-1.1",
       "licenseFile": "licenses/OFL-1.1.txt",
       "noticeFile": "licenses/NOTICES.md",
       "copyright": "Copyright 2014-2021 Adobe (http://www.adobe.com/), with Reserved Font Name 'Source'",
       "sourceUrl": "https://raw.githubusercontent.com/google/fonts/73fc2ff52147e34a74804b500cf89ca219eac55d/ofl/notosanskr/NotoSansKR%5Bwght%5D.ttf",
-      "requiredCodepoints": [23383, 12354, 54620]
+      "requiredCodepoints": [
+        23383,
+        12354,
+        54620
+      ],
+      "minWeight": 100,
+      "maxWeight": 900
+    },
+    {
+      "id": "noto-sans-thai",
+      "label": "Noto Sans Thai",
+      "file": "NotoSansThai.ttf",
+      "family": "Noto Sans Thai",
+      "group": "🌐 Đa ngôn ngữ",
+      "sha256": "5a1c559bb539583c8a1fd99d1c5b9491e5e14478c9cd2bd0970d5c3096cc9ef8",
+      "license": "OFL-1.1",
+      "licenseFile": "licenses/OFL-1.1.txt",
+      "noticeFile": "licenses/NOTICES.md",
+      "copyright": "Copyright 2022 The Noto Project Authors (https://github.com/notofonts/thai)",
+      "sourceUrl": "https://raw.githubusercontent.com/google/fonts/73fc2ff52147e34a74804b500cf89ca219eac55d/ofl/notosansthai/NotoSansThai%5Bwdth%2Cwght%5D.ttf",
+      "requiredCodepoints": [
+        3585
+      ],
+      "minWeight": 100,
+      "maxWeight": 900
+    },
+    {
+      "id": "noto-sans-arabic",
+      "label": "Noto Sans Arabic",
+      "file": "NotoSansArabic.ttf",
+      "family": "Noto Sans Arabic",
+      "group": "🌐 Đa ngôn ngữ",
+      "sha256": "63111b5b2e074dd48cc67692e0a2726d86ee94c1c37fe8598257b7b4e87e869e",
+      "license": "OFL-1.1",
+      "licenseFile": "licenses/OFL-1.1.txt",
+      "noticeFile": "licenses/NOTICES.md",
+      "copyright": "Copyright 2022 The Noto Project Authors (https://github.com/notofonts/arabic)",
+      "sourceUrl": "https://raw.githubusercontent.com/google/fonts/73fc2ff52147e34a74804b500cf89ca219eac55d/ofl/notosansarabic/NotoSansArabic%5Bwdth%2Cwght%5D.ttf",
+      "requiredCodepoints": [
+        1593
+      ],
+      "minWeight": 100,
+      "maxWeight": 900
     }
   ]
 }

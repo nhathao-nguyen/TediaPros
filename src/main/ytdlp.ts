@@ -15,6 +15,7 @@ import {
 import { binDir, resolveFfmpeg, resolveYtDlp } from './deps'
 import { debugRaw, logError, logInfo } from './logger'
 import { withResolvedDomainCookie } from './cookies'
+import { isFacebookReelsTabUrl, crawlFacebookReelsTab } from './facebookReels'
 import {
   siteExecutionContext,
   type SiteExecutionContext
@@ -142,10 +143,12 @@ async function fileExists(p: string): Promise<boolean> {
   }
 }
 
-/** Neu ffmpeg da tai ve binDir thi tra ve thu muc do de truyen cho yt-dlp. */
+/** Neu ffmpeg da co trong runtime thi tra ve thu muc hoac binary de truyen cho yt-dlp. */
 async function ffmpegLocation(): Promise<string | null> {
+  const resolved = await resolveFfmpeg()
+  if (resolved) return dirname(resolved)
   const local = join(binDir(), isWin ? 'ffmpeg.exe' : 'ffmpeg')
-  return (await fileExists(local)) ? binDir() : null
+  return (await fileExists(local)) ? local : null
 }
 
 async function ytdlpCmd(): Promise<string> {
@@ -234,6 +237,22 @@ export async function fetchInfo(
   proxy?: string | null,
   useCookies = false
 ): Promise<VideoInfo> {
+  if (isFacebookReelsTabUrl(url)) {
+    const pl = await crawlFacebookReelsTab(url, proxy, useCookies)
+    return {
+      id: 'facebook_reels',
+      title: pl.title ?? 'Facebook Reels',
+      uploader: pl.title,
+      duration: null,
+      durationString: null,
+      thumbnail: null,
+      webpageUrl: url,
+      isPlaylist: true,
+      playlistCount: pl.count,
+      formats: [],
+      heights: []
+    }
+  }
   const cmd = await ytdlpCmd()
   const args = ['-J', '--no-playlist']
   logInfo(`Lấy thông tin video từ ${domainOf(url)}…`)
@@ -307,6 +326,9 @@ export async function fetchPlaylist(
   proxy?: string | null,
   useCookies = false
 ): Promise<PlaylistProbe> {
+  if (isFacebookReelsTabUrl(url)) {
+    return crawlFacebookReelsTab(url, proxy, useCookies)
+  }
   const cmd = await ytdlpCmd()
   const args = ['-J', '--flat-playlist']
   logInfo(`Phân tích danh sách từ ${domainOf(url)}…`)
@@ -590,19 +612,21 @@ function buildArgs(
     args.push('-x', '--audio-format', req.audioFormat || 'mp3', '--audio-quality', '0')
   } else {
     const h = req.height
-    const cap = h && h > 0 ? `[height<=${h}]` : ''
+    if (h && h > 0) {
+      args.push('-S', `res:${h}`)
+    }
     if (req.ensureH264) {
       // Opt-in: thu H.264 truoc de tranh chuyen ma neu website co san. Van co
       // fallback codec khac; buoc sau tai se chuyen file cuoi sang H.264.
       const fmt =
-        `bv${cap}[vcodec^=avc]+ba[ext=m4a]/` +
-        `bv${cap}[vcodec^=avc]+ba/` +
-        `b${cap}[vcodec^=avc]/` +
-        `bv*${cap}+ba/b${cap}/bv*+ba/b`
+        `bv[vcodec^=avc]+ba[ext=m4a]/` +
+        `bv[vcodec^=avc]+ba/` +
+        `b[vcodec^=avc]/` +
+        `bv*+ba/b`
       args.push('-f', fmt)
     } else {
-      // Che do mac dinh: khong ep codec, chi ton trong gioi han do phan giai.
-      if (cap) args.push('-f', `bv*${cap}+ba/b${cap}/bv*+ba/b`)
+      // Che do mac dinh: khong ep codec, ho tro ca video ngang va video doc thong qua -S res:h.
+      args.push('-f', 'bv*+ba/b')
       args.push('--merge-output-format', container)
     }
   }
@@ -620,7 +644,13 @@ function buildArgs(
   }
 
   if (req.embedThumbnail) args.push('--embed-thumbnail')
-  if (req.embedMetadata) args.push('--embed-metadata')
+  if (req.embedMetadata) {
+    args.push('--embed-metadata')
+    // Tren Windows, CreateProcess gioi han do dai dong lenh <= 32767 ky tu. Neu bai viet Facebook/YouTube
+    // co description qua dai (nhu truyen/tieu thuyet hang van chu), ffmpeg se bi loi WinError 206.
+    // Cat ngan description toi da 1000 ky tu khi nhung metadata de luon an toan.
+    args.push('--parse-metadata', '%(description).1000s:%(description)s')
+  }
 
   // Bo qua file da tai (luu lich su o userData)
   if (req.useArchive) {

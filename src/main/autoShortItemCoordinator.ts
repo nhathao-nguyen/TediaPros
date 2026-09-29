@@ -1,6 +1,7 @@
 import { basename, dirname, join } from 'node:path'
 import { copyFile, mkdir, mkdtemp, readFile, rename, rm, stat, writeFile } from 'node:fs/promises'
 import { createHash, randomUUID } from 'node:crypto'
+import { spawn } from 'node:child_process'
 import type {
   AlignedCue,
   AutoShortConfig,
@@ -40,7 +41,7 @@ import { probeBurnMedia, type burnAutoShort } from './burn'
 import { ocrVideo, type ocrVideoWithVisualTimeline } from './ocr'
 import { transcribeAudio } from './whisper'
 import { validateAutoShortPublicationTimeline } from './autoShortPolicy'
-import { fuseWhisperAndOcr, clampAlignedCueTimeline } from '../shared/autoShortAlignment'
+import { fuseWhisperAndOcr, clampAlignedCueTimeline, splitLongAlignedCues } from '../shared/autoShortAlignment'
 import {
   mustRegenerateOcrSource,
   digestCanonicalSourceCues,
@@ -97,6 +98,9 @@ import { retimeDubbingMedia } from './dubbing/retimeMedia'
 import { validateAutoShortMusicTrack } from './autoShortMusicLibrary'
 import { assessContentQuality } from './autoShortContentQuality'
 import { separateSourceAudio } from './separation/pipeline'
+import { resolveSeparatorEngine } from './runtimeResolver'
+import { resolveInstalledSeparatorModel } from './separation/modelStore'
+import { modelIdForSeparationPreset } from '../shared/autoShortSeparation'
 import { errLabel, logInfo, logWarn, logError } from './logger'
 import type { getTtsModels } from './tts'
 import { EDGE_TTS_ENDPOINT_ID } from './edgeTtsIdentity'
@@ -1002,21 +1006,121 @@ export function createAutoShortItemProcessor(
               throw new Error(whisperResult.error || 'Whisper không tạo được SRT')
             }
             const srtPath = whisperResult.outputs.find((p) => p.toLowerCase().endsWith('.srt')) || whisperResult.outputs[0]
-            const cues = await readWhisperAlignedCues(srtPath, whisperResult.alignmentPath)
+            let cues = await readWhisperAlignedCues(srtPath, whisperResult.alignmentPath)
+            let detectedLang = whisperResult.language || null
+
+            if (cues.length === 0) {
+              logWarn(`[AutoShort] Whisper không nhận được câu phụ đề từ video gốc (${basename(processingPath)}). Thử cơ chế tách giọng nói để nhận diện lại...`)
+
+              let sepVocalsPath: string | null = null
+              const sepEngine = context.separation?.enginePath || (await resolveSeparatorEngine().catch(() => null))
+              const sepModel = context.separation?.model || (await resolveInstalledSeparatorModel(modelIdForSeparationPreset('balanced')).catch(() => null))
+
+              if (sepEngine && sepModel && ffmpeg && ffprobe) {
+                emitProgress(context, 'extracting_sub', 10, 'Âm thanh nhiều nhạc nền, đang bóc tách giọng nói để nhận diện lại…', undefined, undefined, { stage: 'asr', phase: 'running' })
+                try {
+                  const sepWorkDir = join(workDir, 'separation')
+                  await mkdir(sepWorkDir, { recursive: true })
+                  const sepResult = await resourceManager.withLease(['local-gpu-heavy', 'local-cpu-heavy'], signal, async (lease) => {
+                    span.recordResourceWait(lease.waitMs || 0)
+                    return separateSourceAudio({
+                      sourcePath: processingPath,
+                      videoDurationSeconds: processingMeta.giay,
+                      workDir: sepWorkDir,
+                      ffmpegPath: ffmpeg,
+                      ffprobePath: ffprobe,
+                      enginePath: sepEngine,
+                      model: sepModel,
+                      preset: 'balanced',
+                      providerState: context.separationProviderState,
+                      signal,
+                      onProgress: (p) => {
+                        emitProgress(context, 'extracting_sub', 10 + (p.percent || 0) * 0.15, 'Đang bóc tách giọng nói khỏi nhạc nền…', undefined, undefined, { stage: 'asr', phase: 'running' })
+                      }
+                    })
+                  })
+                  if (sepResult.kind === 'separated') {
+                    sepVocalsPath = sepResult.vocalsPath
+                    if (!checkpoint.instrumentalPath && sepResult.instrumentalPath) {
+                      checkpoint.instrumentalPath = sepResult.instrumentalPath
+                    }
+                  }
+                } catch (sepErr) {
+                  logWarn(`[AutoShort] Không thể tách vocal tự động: ${errLabel(sepErr)}`)
+                }
+              }
+
+              let filteredAudioPath: string | null = null
+              if (!sepVocalsPath && ffmpeg) {
+                try {
+                  const filterDir = join(whisperDir, 'voice-filtered')
+                  await mkdir(filterDir, { recursive: true })
+                  filteredAudioPath = join(filterDir, 'filtered-voice.wav')
+                  const filterArgs = [
+                    '-y', '-hide_banner', '-nostats', '-loglevel', 'error',
+                    '-i', processingPath,
+                    '-vn', '-ac', '1', '-ar', '16000',
+                    '-af', 'highpass=f=150,lowpass=f=3800,dynaudnorm=f=150:g=15',
+                    '-c:a', 'pcm_s16le',
+                    filteredAudioPath
+                  ]
+                  await new Promise<void>((resFf, rejFf) => {
+                    const proc = spawn(ffmpeg, filterArgs, { windowsHide: true })
+                    proc.on('close', (code) => (code === 0 ? resFf() : rejFf(new Error(`FFmpeg filter exit ${code}`))))
+                    proc.on('error', rejFf)
+                  })
+                } catch (filterErr) {
+                  logWarn(`[AutoShort] Không thể lọc audio tăng cường giọng nói: ${errLabel(filterErr)}`)
+                  filteredAudioPath = null
+                }
+              }
+
+              const retryAudioInput = sepVocalsPath || filteredAudioPath
+              if (retryAudioInput && (await fileExists(retryAudioInput))) {
+                emitProgress(context, 'extracting_sub', 25, 'Đang nhận diện giọng nói từ âm thanh đã tinh lọc…', undefined, undefined, { stage: 'asr', phase: 'running' })
+                const retryResult = await resourceManager.withLease(asrResources, signal, async (lease) => {
+                  span.recordResourceWait(lease.waitMs || 0)
+                  return transcribeFn(jobId + '-retry-vocals', {
+                    input: retryAudioInput,
+                    outputDir: join(whisperDir, 'retry'),
+                    model: config.whisperModel || 'base',
+                    language: resolveAutoShortWhisperLanguage(config.whisperLanguage),
+                    task: 'transcribe',
+                    formats: ['srt'],
+                    device: needsCuda(config) ? 'cuda' : 'cpu',
+                    diarize: false,
+                    speakers: 0
+                  }, (p: WhisperProgress) => {
+                    emitProgress(context, 'extracting_sub', 25 + Math.max(0, p.percent) * 0.1, p.line || 'Đang nhận diện giọng nói đã tinh lọc…', undefined, undefined, { stage: 'asr', phase: 'running' })
+                  }, signal)
+                })
+
+                if (retryResult.ok && retryResult.outputs.length) {
+                  const retrySrtPath = retryResult.outputs.find((p) => p.toLowerCase().endsWith('.srt')) || retryResult.outputs[0]
+                  const retryCues = await readWhisperAlignedCues(retrySrtPath, retryResult.alignmentPath)
+                  if (retryCues.length > 0) {
+                    logInfo(`[AutoShort] Cứu hộ Whisper thành công: nhận diện được ${retryCues.length} câu sau khi tinh lọc âm thanh!`)
+                    cues = retryCues
+                    detectedLang = retryResult.language || detectedLang
+                  }
+                }
+              }
+            }
+
             if (cues.length === 0) failInvalidSource('Whisper không nhận được câu phụ đề hợp lệ')
             span.updateCounters({ cueCount: cues.length })
             if (artifactCache) {
               const cacheSource = join(whisperDir, 'aligned-cache.json')
               await writeFile(cacheSource, JSON.stringify({
                 schemaVersion: 1,
-                language: whisperResult.language || null,
+                language: detectedLang,
                 cues
               }), 'utf8')
               await artifactCache.put('asr', asrKey, cacheSource, signal).catch((error) => {
                 logWarn(`[AutoShort] Không lưu cache Whisper: ${errLabel(error)}`)
               })
             }
-            return { cues, language: whisperResult.language || null }
+            return { cues, language: detectedLang }
           })
         }
 
@@ -1122,7 +1226,7 @@ export function createAutoShortItemProcessor(
           detectedSourceLanguage = whisper.language
         }
 
-        const boundedExtracted = clampAlignedCueTimeline(extracted, processingMeta.giay)
+        const boundedExtracted = clampAlignedCueTimeline(splitLongAlignedCues(extracted), processingMeta.giay)
         if (boundedExtracted.length === 0) failInvalidSource('SRT nguồn không có câu nằm trong thời lượng video')
         await writeFile(rawSrtPath, serializeAlignedCues(boundedExtracted), 'utf8')
         sourceCues = parseSrt(await readFile(rawSrtPath, 'utf8')).cues.filter((cue) => cue.text.trim())
@@ -1658,15 +1762,23 @@ export function createAutoShortItemProcessor(
             signal
           })
         })
-      } else if (config.backgroundMusic && stitchedAudioPath) {
+      } else if (config.backgroundMusic && (stitchedAudioPath || config.audioMode === 'replace')) {
         const backgroundMusic = config.backgroundMusic
         const assignedMusicPath = backgroundMusic.assignments[item.id]
         selectedBackgroundMusicPath = await validateAutoShortMusicTrack(backgroundMusic.folderPath, assignedMusicPath)
-        outputAudioPath = join(workDir, 'tts-background-mix.wav')
-        artifactEntries.push({ source: outputAudioPath, name: 'tts-background-mix.wav' })
-        emitProgress(context, 'stitching_audio', 83, 'Đang trộn nhạc background với giọng lồng tiếng…')
+        const outputAudioName = stitchedAudioPath ? 'tts-background-mix.wav' : 'replacement-audio.wav'
+        outputAudioPath = join(workDir, outputAudioName)
+        artifactEntries.push({ source: outputAudioPath, name: outputAudioName })
+        emitProgress(
+          context,
+          'stitching_audio',
+          83,
+          stitchedAudioPath
+            ? 'Đang trộn nhạc background với giọng lồng tiếng…'
+            : 'Đang xử lý âm thanh thay thế (lặp và cắt tỉa theo video)…'
+        )
         const musicPath = selectedBackgroundMusicPath
-        const narrationPath = stitchedAudioPath
+        const narrationPath = stitchedAudioPath || null
         const mixOutputPath = outputAudioPath
         await resourceManager.withLease(['local-audio-dsp'], signal, async () => {
           await composeAutoShortBackgroundAudio({
@@ -1772,8 +1884,11 @@ export function createAutoShortItemProcessor(
               outlineScale: config.outlineScale,
               highlightColor: config.highlightColor,
               subtitleHighlightPop: config.subtitleHighlightPop,
+              highlightBgEnabled: config.highlightBgEnabled,
+              highlightBgColor: config.highlightBgColor,
               subtitleLayoutProfile: config.subtitleLayoutProfile || 'vertical',
               subtitleAutoOptimize: config.subtitleAutoOptimize !== false,
+              subtitleTextCase: config.subtitleTextCase,
               wordTimings: finalWordTimings || (!config.ttsEnabled && config.translateTarget === 'none'
                 ? (checkpoint.sourceCues || [])
                     .filter((cue) => Array.isArray(cue.words) && cue.words.length > 0)
@@ -1795,6 +1910,7 @@ export function createAutoShortItemProcessor(
             {
               timedOcrBlurMask: timedMask,
               overlays: config.overlays,
+              videoEffects: config.videoEffects,
               ffmpegPath: ffmpeg,
               ffprobePath: ffprobe,
               finalOutputPath,
