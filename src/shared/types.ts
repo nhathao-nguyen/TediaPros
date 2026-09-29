@@ -214,6 +214,10 @@ export interface WhisperRequest {
   device: WhisperDevice // 'cuda' neu user bat GPU va da co goi tang toc
   diarize: boolean // nhan dien ai noi luc nao (gan nhan [SPEAKER_xx])
   speakers: number // so nguoi noi (0 = tu doan)
+  vadThreshold?: number
+  vadMinSpeechMs?: number
+  vadMinSilenceMs?: number
+  vadSpeechPadMs?: number
 }
 
 export interface WhisperCudaStatus {

@@ -295,6 +295,18 @@ export async function transcribeAudio(
     args.push('--diarize')
     if (req.speakers > 0) args.push('--speakers', String(req.speakers))
   }
+  if (req.vadThreshold !== undefined) {
+    args.push('--vad-threshold', String(req.vadThreshold))
+  }
+  if (req.vadMinSpeechMs !== undefined) {
+    args.push('--vad-min-speech-ms', String(req.vadMinSpeechMs))
+  }
+  if (req.vadMinSilenceMs !== undefined) {
+    args.push('--vad-min-silence-ms', String(req.vadMinSilenceMs))
+  }
+  if (req.vadSpeechPadMs !== undefined) {
+    args.push('--vad-speech-pad-ms', String(req.vadSpeechPadMs))
+  }
   logInfo(`Audio→Text: bắt đầu ${basename(req.input)} (model ${req.model}, ${req.task}, ${effectiveDevice}${req.diarize ? ', nhận diện người nói' : ''})`)
 
   return new Promise<WhisperResult>((resolve) => {

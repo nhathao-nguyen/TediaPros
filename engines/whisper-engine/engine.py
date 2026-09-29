@@ -184,6 +184,10 @@ def main():
     p.add_argument("--cuda-dir", default=None, help="thu muc chua cuBLAS/cuDNN (goi tang toc GPU)")
     p.add_argument("--diarize", action="store_true", help="nhan dien ai noi luc nao")
     p.add_argument("--speakers", type=int, default=0, help="so nguoi noi (0 = tu doan)")
+    p.add_argument("--vad-threshold", type=float, default=0.35, help="nguong xac suat tieng noi Silero VAD (mac dinh 0.35)")
+    p.add_argument("--vad-min-speech-ms", type=int, default=100, help="do dai tieng noi toi thieu ms (mac dinh 100ms)")
+    p.add_argument("--vad-min-silence-ms", type=int, default=500, help="do dai im lang tach doan ms (mac dinh 500ms)")
+    p.add_argument("--vad-speech-pad-ms", type=int, default=400, help="dem truoc/sau doan thoai ms (mac dinh 400ms)")
     args = p.parse_args()
 
     if args.version:
@@ -262,12 +266,19 @@ def main():
         return 1
 
     lang = None if args.language in ("auto", "") else args.language
+    vad_params = dict(
+        threshold=args.vad_threshold,
+        min_speech_duration_ms=args.vad_min_speech_ms,
+        min_silence_duration_ms=args.vad_min_silence_ms,
+        speech_pad_ms=args.vad_speech_pad_ms,
+    )
     try:
         segments, info = model.transcribe(
             args.input,
             language=lang,
             task=args.task,
             vad_filter=True,
+            vad_parameters=vad_params,
             word_timestamps=True,
         )
     except Exception as e:
