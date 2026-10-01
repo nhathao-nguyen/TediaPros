@@ -122,6 +122,7 @@ function publishVaultMetadata(target: string, vaultRoot: string, metadata: unkno
 
 /** Recover key metadata for selections saved before chroma-key support was added. */
 export async function resolveOverlayChromaKey(videoPath: string): Promise<OverlayChromaKey | undefined> {
+  console.error('[CHROMA DEBUG] ENTER resolveOverlayChromaKey:', videoPath)
   if (typeof videoPath !== 'string' || !isAbsolute(videoPath) || videoPath.includes('\0')) return undefined
   const cacheDir = getCapCutEffectCacheDir()
   const capcutParts = containedParts(videoPath, cacheDir)
@@ -131,18 +132,24 @@ export async function resolveOverlayChromaKey(videoPath: string): Promise<Overla
   }
   const vaultDir = getTediaProsVaultDir()
   const vaultParts = containedParts(videoPath, vaultDir)
+  if (!vaultParts) console.error('[CHROMA DEBUG] containedParts returned undefined for videoPath:', videoPath, 'vaultDir:', vaultDir)
+  else if (vaultParts.length !== 2) console.error('[CHROMA DEBUG] vaultParts !== 2:', vaultParts)
   if (vaultParts?.length === 2) {
     await assertContainedRegularFile(videoPath, vaultDir, 'Video trong kho hiệu ứng')
     const metaPath = await assertContainedRegularFile(join(vaultDir, vaultParts[0], 'metadata.json'), vaultDir, 'Metadata kho hiệu ứng')
     const meta = JSON.parse(await readFile(metaPath, 'utf8'))
     if (meta.chromaKey) return normalizeOverlayChromaKey(meta.chromaKey)
     const origin = String(meta.id || vaultParts[0]).match(/^(\d+)_([\da-f]+)$/i)
+    if (!origin) console.error('[CHROMA DEBUG] no origin match for:', meta.id, vaultParts[0])
+    if (!existsSync(cacheDir)) console.error('[CHROMA DEBUG] cacheDir does not exist:', cacheDir)
     if (origin && existsSync(cacheDir)) {
       const chromaKey = await readCapCutChromaKey(join(cacheDir, origin[1], origin[2]))
+      if (!chromaKey) console.error('[CHROMA DEBUG] readCapCutChromaKey returned undefined for:', join(cacheDir, origin[1], origin[2]))
       if (chromaKey) await publishVaultMetadata(metaPath, vaultDir, { ...meta, blendMode: 'chromakey', chromaKey })
       return chromaKey
     }
   }
+  console.error('[CHROMA DEBUG] EXIT resolveOverlayChromaKey undefined for:', videoPath)
   return undefined
 }
 
