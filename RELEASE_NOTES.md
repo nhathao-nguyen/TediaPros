@@ -1,3 +1,34 @@
+## TediaPros v0.1.31
+
+### CapCut Overlay Vault & Hiệu ứng video
+
+- **CapCut Local Cache Scanner**: Tự động quét và phát hiện các hiệu ứng overlay video (`.mp4`) từ cache CapCut.
+- **Tên hiệu ứng chuẩn xác**: Trích xuất tên hiển thị dễ hiểu từ `draft_content.json` (`materials.video_effects`), giải quyết triệt để lỗi hiển thị mã ID AE2Effect.
+- **Permanent Vault (Kho lưu trữ vĩnh viễn)**: Lưu/ghim hiệu ứng vào kho cục bộ của TediaPros, không lo bị mất khi CapCut dọn dẹp cache.
+- **Giao diện 3 tab**: Tích hợp tab Hiệu ứng mẫu / Đồng bộ CapCut / Kho đã lưu kèm hướng dẫn 4 bước tải và sử dụng hiệu ứng từ CapCut.
+- **FFmpeg Render Pipeline**: Hỗ trợ render `custom_overlay` với cơ chế blend màu (screen blend) và alpha merge tối ưu.
+
+### Điều khiển tốc độ Video (Video Speed)
+
+- Tùy chỉnh tốc độ video linh hoạt (tăng tốc / làm chậm) qua chuỗi bộ lọc `atempo` của FFmpeg.
+- Tùy chọn giữ nguyên cao độ giọng nói (pitch preservation) và đặt tên file tránh trùng lặp an toàn.
+
+### Hiệu ứng mở đầu (Opening Hooks)
+
+- Bổ sung hiệu ứng intro Flash và Zoom-in cho phần mở đầu video.
+- Tự do cấu hình thời lượng và cường độ hiệu ứng.
+
+### Cải tiến AutoShort Overlay
+
+- Hỗ trợ làm mờ viền mềm (Feather/Soft Edge) cho overlay hình ảnh.
+- Hỗ trợ xoay hình ảnh (Rotation) với bộ lọc rotate của FFmpeg.
+- Bo góc (Corner radius) và đa dạng hóa kiểu mask (hình chữ nhật, ellipse, hình chữ nhật bo góc).
+
+### Giao diện & Trải nghiệm người dùng
+
+- Tinh chỉnh bảng màu sang tone nâu ấm / kem trang nhã cho toàn bộ bảng điều khiển hiệu ứng video.
+- Thêm nhãn PRO và tỉ lệ khung hình 9:16 rõ ràng, xem trước hiệu ứng trực quan.
+
 ## TediaPros v0.1.30
 
 ### Whisper Engine & Trí tuệ nhân tạo (AI)
