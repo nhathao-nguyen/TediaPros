@@ -26,6 +26,23 @@ Ba hiệu ứng dựng sẵn chạy offline, tự sinh bằng FFmpeg. Đây là 
 
 ## Kiểm chứng
 
+### Hiệu ứng CapCut có nền màu
+
+Video MP4 bên trong một gói CapCut có thể là nguyên liệu có nền xanh, chưa phải overlay trong suốt. Scanner đọc các literal `LumiChromaKey` trong `AmazingFeature/lua/LumiFamily/LumiExportData.lua`, không thực thi Lua. Nếu có một màu key đang bật và không có matte riêng, hiệu ứng được gán **Tách nền màu** cùng `chromaKey: { color, similarity, blend }`; không mặc định ghép tài nguyên đó bằng Screen. Các gói có nhiều màu key khác nhau cần hỗ trợ shader graph riêng và không được suy đoán tự động.
+
+Preview tách nền bằng canvas RGBA, khử màu xanh/lam dư và giữ alpha của viền khói. FFmpeg dùng [colorkey](https://ffmpeg.org/ffmpeg-filters.html#colorkey) và [despill](https://ffmpeg.org/ffmpeg-filters.html#despill) trong graph hiện có, rồi nhân alpha theo cường độ. Đầu ra dừng cùng video chính; không cần chuyển asset sang WebM, tạo một lượt encode trung gian hoặc thêm scratch video. Mô hình RGB dùng chung được kiểm tra độ khớp với FFmpeg trên các pixel đã giải mã.
+
+Kho lưu giữ cả thông số key trong `metadata.json`. Cấu hình CapCut/kho đã lưu từ trước được khôi phục khi preview hoặc render. Khi thông số key của một mục kho cũ được tìm thấy trong cache gốc, metadata được ghi lại qua file tạm rồi rename, để lần dùng sau không phụ thuộc cache CapCut. Các tài nguyên được kiểm tra containment trước khi đọc/copy; thumbnail tùy chọn bị thiếu không làm mất video trong danh sách.
+
+Đây là cách ghép phần video nguyên liệu sau tách nền, chưa tái hiện các shader, matte hay bố cục đầy đủ của chuyển cảnh CapCut. Threshold/smoothness của shader CapCut không tương đương trực tiếp với similarity/blend của FFmpeg; mặc định hiện tại là 0.3/0.12, đã kiểm tra trên BurstingSmoke. Với mục kho cũ chưa từng được khôi phục key mà cache gốc đã bị xóa, cần nhập lại gói có metadata.
+
+```powershell
+$env:TEDIAPROS_TEST_FFMPEG = (Get-Command ffmpeg).Source
+$env:TEDIAPROS_CHROMA_KEY_ASSET = '<đường dẫn MP4 nền xanh trong cache CapCut>'
+node scripts/run-local-runtime-tests.mjs video-effects.test
+node scripts/smoke-chroma-key-ui.mjs
+```
+
 ```powershell
 $env:TEDIAPROS_TEST_FFMPEG = Join-Path $env:APPDATA 'tedia-pros\bin\ffmpeg.exe'
 node scripts/run-local-runtime-tests.mjs video-effects.test autoshort-overlays.test autoshort-ocr-burn.test video-adjustments.test portrait-blur.test autoshort-ocr-pipeline.test

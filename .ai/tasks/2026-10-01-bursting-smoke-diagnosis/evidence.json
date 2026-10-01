@@ -1,0 +1,17 @@
+{
+  "asset": "C:/Users/PC/AppData/Local/CapCut/User Data/Cache/effect/7613821658716998930/38ad36053fb5215d243ac06ee92bdc08/AmazingFeature/resource/video/BurstingSmoke.mp4",
+  "firstFrameCornerRGBA": [
+    0,
+    255,
+    0,
+    255
+  ],
+  "experimentalChromaKeyCornerRGBA": [
+    0,
+    255,
+    0,
+    0
+  ],
+  "experimentalFilter": "chromakey=0x00FF00:0.3:0.1",
+  "note": "One-pixel proof of green backing and alpha removal; parameters are diagnostic only, not a faithful CapCut implementation."
+}

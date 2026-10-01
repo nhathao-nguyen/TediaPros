@@ -1,3 +1,13 @@
+## TediaPros v0.1.32
+
+### Tách nền màu Chroma Key cho hiệu ứng CapCut
+
+- **Nhận diện Chroma Key tự động**: Tự động phát hiện cấu hình `LumiChromaKey` trong các gói hiệu ứng CapCut (`LumiExportData.lua`) để trích xuất màu key (nền xanh lá, xanh dương), độ tương đồng (`similarity`) và độ hòa trộn mềm viền (`blend`).
+- **Khử ám màu (Despill) & Giữ khói mượt**: Preview canvas RGBA thời gian thực áp dụng thuật toán khử ám màu dư (green/blue spill suppression) và giữ độ trong suốt tự nhiên của khói, tia lửa, hiệu ứng mờ viền.
+- **FFmpeg Render Pipeline không trung gian**: Tích hợp trực tiếp bộ lọc `colorkey` và `despill` vào filter graph của AutoShort Burn Pipeline, không cần xuất tạm sang WebM hay re-encode trung gian.
+- **Đồng bộ Vault & Khôi phục Metadata**: Lưu trữ thông số Chroma Key vào `metadata.json` của kho lưu trữ vĩnh viễn (Permanent Vault). Tự động tìm kiếm và khôi phục thông số key từ cache gốc vào kho lưu trữ khi sử dụng hoặc xem trước.
+- **Giao diện trực quan**: Cập nhật nhãn Tách nền màu trên bảng điều khiển hiệu ứng video, hiển thị preview chính xác tương thích với kết quả xuất video thật.
+
 ## TediaPros v0.1.31
 
 ### CapCut Overlay Vault & Hiệu ứng video

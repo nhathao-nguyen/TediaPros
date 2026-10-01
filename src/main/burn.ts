@@ -8,6 +8,7 @@ import { portraitFrame } from '../shared/portraitFrame'
 import type { AutoShortOverlays } from '../shared/autoShortOverlays'
 import { appendAutoShortOverlays, prepareAutoShortOverlays, type PreparedAutoShortOverlays } from './autoShortOverlays'
 import { appendVideoEffects, resolveFilmGrungePath, planVideoEffectInputs, type VideoEffectInputMapping } from './videoEffects'
+import { restoreVideoEffectChromaKeys } from './capcutScanner'
 import { appendOpeningHooks } from './openingHooks'
 import { normalizeVideoEffects, type VideoEffect } from '../shared/videoEffects'
 import {
@@ -1304,6 +1305,7 @@ export async function runBurnSubtitleLower(
     }, overlayFiles)
 
     const filmGrungePath = resolveFilmGrungePath()
+    options = { ...options, videoEffects: await restoreVideoEffectChromaKeys(options.videoEffects) }
     const hasFilmGrunge = Boolean(filmGrungePath && options.videoEffects?.some(e => e.kind === 'film_grunge'))
     const baseInputCount = 1 + Number(options.plan.narrationAudioIndex != null) + Number(options.plan.maskVideoIndex != null)
     const overlayImageOffset = overlays?.image ? 1 : 0

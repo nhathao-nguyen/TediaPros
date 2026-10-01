@@ -4,7 +4,8 @@ import {
   type VideoEffect,
   type VideoEffectKind,
   type CapCutScannedEffect,
-  type SavedOverlayEffect
+  type SavedOverlayEffect,
+  type OverlayBlendMode
 } from '../../../shared/videoEffects'
 import VideoEffectsPreview from './VideoEffectsPreview'
 import './VideoEffectsControl.css'
@@ -93,8 +94,9 @@ export default function VideoEffectsControl({ value, onChange, disabled, configE
     name: string,
     videoPath: string,
     mattePath?: string,
-    blendMode: 'screen' | 'alphamerge' = 'screen',
-    sourceType: 'capcut' | 'saved' = 'capcut'
+    blendMode: OverlayBlendMode = 'screen',
+    sourceType: 'capcut' | 'saved' = 'capcut',
+    chromaKey?: VideoEffect['chromaKey']
   ) => {
     const isSelected = value.some(e => e.kind === 'custom_overlay' && e.assetPath === videoPath)
     if (isSelected) {
@@ -112,6 +114,7 @@ export default function VideoEffectsControl({ value, onChange, disabled, configE
           assetPath: videoPath,
           mattePath,
           blendMode,
+          chromaKey,
           name,
           sourceType
         }
@@ -201,17 +204,17 @@ export default function VideoEffectsControl({ value, onChange, disabled, configE
               const isSelected = value.some(item => item.kind === 'custom_overlay' && item.assetPath === eff.videoPath)
               return (
                 <div key={eff.id} className="video-effect-card" aria-pressed={isSelected}
-                  onClick={() => toggleCustomOverlay(eff.name, eff.videoPath, eff.mattePath, eff.blendMode, 'capcut')}>
+                  onClick={() => toggleCustomOverlay(eff.name, eff.videoPath, eff.mattePath, eff.blendMode, 'capcut', eff.chromaKey)}>
                   {eff.isPro && <span className="video-effects-badge-pro">PRO</span>}
                   {eff.aspectRatio === 'portrait' && <span className="video-effects-badge-ratio">9:16 Dọc</span>}
                   <span className="video-effect-sample">
-                    <VideoEffectsPreview effects={[{ kind: 'custom_overlay', intensity: 80, assetPath: eff.videoPath, blendMode: eff.blendMode }]} width={110} height={80} />
+                    <VideoEffectsPreview effects={[{ kind: 'custom_overlay', intensity: 80, assetPath: eff.videoPath, blendMode: eff.blendMode, chromaKey: eff.chromaKey }]} width={110} height={80} />
                   </span>
                   <div style={{ fontWeight: 600, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }} title={eff.name}>
                     {eff.name}
                   </div>
                   <div className="video-effects-card-footer">
-                    <span className="muted" style={{ fontSize: '10px' }}>{eff.blendMode === 'alphamerge' ? 'Alpha mask' : 'Screen blend'}</span>
+                    <span className="muted" style={{ fontSize: '10px' }}>{eff.blendMode === 'chromakey' ? 'Tách nền màu' : (eff.blendMode === 'alphamerge' ? 'Alpha mask' : (eff.blendMode === 'multiply' ? 'Multiply (Tối)' : 'Screen blend'))}</span>
                     <button type="button" className="btn sm ghost video-effects-save-btn" disabled={eff.isSaved || savingId === eff.id}
                       title={eff.isSaved ? 'Đã lưu vĩnh viễn' : 'Lưu vào kho TediaPros'}
                       onClick={(e) => handleSaveToVault(eff, e)}>
@@ -239,10 +242,10 @@ export default function VideoEffectsControl({ value, onChange, disabled, configE
                 const isSelected = value.some(e => e.kind === 'custom_overlay' && e.assetPath === item.videoPath)
                 return (
                   <div key={item.id} className="video-effect-card" aria-pressed={isSelected}
-                    onClick={() => toggleCustomOverlay(item.name, item.videoPath, item.mattePath, item.blendMode, 'saved')}>
+                    onClick={() => toggleCustomOverlay(item.name, item.videoPath, item.mattePath, item.blendMode, 'saved', item.chromaKey)}>
                     {item.isPro && <span className="video-effects-badge-pro">PRO</span>}
                     <span className="video-effect-sample">
-                      <VideoEffectsPreview effects={[{ kind: 'custom_overlay', intensity: 80, assetPath: item.videoPath, blendMode: item.blendMode }]} width={110} height={80} />
+                      <VideoEffectsPreview effects={[{ kind: 'custom_overlay', intensity: 80, assetPath: item.videoPath, blendMode: item.blendMode, chromaKey: item.chromaKey }]} width={110} height={80} />
                     </span>
                     <div style={{ fontWeight: 600, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }} title={item.name}>
                       {item.name}

@@ -80,6 +80,7 @@ import {
 } from '../shared/types'
 import type { TranslationAssessment } from '../shared/translation'
 import type { CapCutScannedEffect, SavedOverlayEffect } from '../shared/videoEffects'
+import type { OverlayChromaKey } from '../shared/overlayChromaKey'
 
 const api = {
   checkDeps: (): Promise<DepStatus> => ipcRenderer.invoke('deps:check'),
@@ -467,6 +468,8 @@ const api = {
     ipcRenderer.invoke('effects:assetPath', kind),
   scanCapCutEffects: (): Promise<CapCutScannedEffect[]> =>
     ipcRenderer.invoke('effects:scanCapCut'),
+  resolveOverlayChromaKey: (videoPath: string): Promise<{ ok: boolean; chromaKey?: OverlayChromaKey; error?: string }> =>
+    ipcRenderer.invoke('effects:chromaKey', videoPath),
   getSavedOverlayEffects: (): Promise<SavedOverlayEffect[]> =>
     ipcRenderer.invoke('effects:getSavedVault'),
   saveOverlayToVault: (effect: CapCutScannedEffect): Promise<{ ok: boolean; saved?: SavedOverlayEffect; error?: string }> =>

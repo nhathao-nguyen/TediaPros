@@ -49,7 +49,7 @@ const KIEU_MEDIA: Record<string, string> = {
 protocol.registerSchemesAsPrivileged([
   {
     scheme: 'tblao',
-    privileges: { standard: true, secure: true, stream: true, supportFetchAPI: true }
+    privileges: { standard: true, secure: true, stream: true, supportFetchAPI: true, corsEnabled: true }
   }
 ])
 import {
@@ -167,7 +167,8 @@ import {
   scanCapCutEffects,
   getSavedOverlayEffects,
   saveOverlayToVault,
-  deleteOverlayFromVault
+  deleteOverlayFromVault,
+  resolveOverlayChromaKey
 } from './capcutScanner'
 import type {
   DichProvider,
@@ -636,6 +637,14 @@ function registerIpc(): void {
 
   ipcMain.handle('effects:getSavedVault', async () => {
     return getSavedOverlayEffects()
+  })
+
+  ipcMain.handle('effects:chromaKey', async (_e, videoPath: string) => {
+    try {
+      return { ok: true, chromaKey: await resolveOverlayChromaKey(videoPath) }
+    } catch (err) {
+      return { ok: false, error: (err as Error).message }
+    }
   })
 
   ipcMain.handle('effects:saveToVault', async (_e, effect) => {

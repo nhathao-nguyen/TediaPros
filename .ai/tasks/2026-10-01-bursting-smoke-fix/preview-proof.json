@@ -1,0 +1,20 @@
+{
+  "asset": "C:\\Users\\PC\\AppData\\Local\\CapCut\\User Data\\Cache\\effect\\7613821658716998930\\38ad36053fb5215d243ac06ee92bdc08\\AmazingFeature\\resource\\video\\BurstingSmoke.mp4",
+  "stats": {
+    "transparent": 0,
+    "smoke": 230400,
+    "green": 0,
+    "pixels": 230400
+  },
+  "checks": [
+    "CORS canvas read",
+    "legacy selection lookup",
+    "backing alpha",
+    "smoke retained",
+    "spill suppressed",
+    "intensity",
+    "pause/play",
+    "seek",
+    "rate"
+  ]
+}

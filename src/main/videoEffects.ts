@@ -1,7 +1,8 @@
 import { existsSync } from 'node:fs'
 import { join } from 'node:path'
 import { app } from 'electron'
-import { normalizeVideoEffects, type VideoEffect } from '../shared/videoEffects'
+import { normalizeVideoEffects, type VideoEffect, type OverlayBlendMode } from '../shared/videoEffects'
+import { chromaKeySpillChannel } from '../shared/overlayChromaKey'
 
 export function resolveFilmGrungePath(): string | null {
   const candidates = [
@@ -26,7 +27,7 @@ export interface VideoEffectInputMapping {
   matteInputIndex?: number
   videoPath: string
   mattePath?: string
-  blendMode?: 'screen' | 'alphamerge' | 'add'
+  blendMode?: OverlayBlendMode
 }
 
 export function planVideoEffectInputs(
@@ -131,6 +132,16 @@ export function appendVideoEffects(
           // Alpha merge blend mode
           lines.push(`[${videoIdx}:v][${matteIdx}:v]alphamerge,scale=w=${width}:h=${height}:force_original_aspect_ratio=increase,crop=${width}:${height},setsar=1,format=yuva444p[${label}_fg]`)
           lines.push(`[${input}][${label}_fg]overlay=shortest=1[${output}]`)
+        } else if (effect.chromaKey) {
+          const key = effect.chromaKey
+          const spill = chromaKeySpillChannel(key)
+          const despill = spill ? `,despill=type=${spill}:green=${spill === 'green' ? -1 : 0}:blue=${spill === 'blue' ? -1 : 0}` : ''
+          lines.push(`[${videoIdx}:v]scale=w=${width}:h=${height}:force_original_aspect_ratio=increase,crop=${width}:${height},setsar=1,format=rgba,colorkey=0x${key.color.slice(1)}:${key.similarity}:${key.blend}${despill},colorchannelmixer=aa=${strength.toFixed(4)}[${label}_fg]`)
+          lines.push(`[${input}][${label}_fg]overlay=shortest=1[${output}]`)
+        } else if (mapped?.blendMode === 'multiply') {
+          // Multiply blend mode (for black noise / dark scratches on light/white background)
+          lines.push(`[${videoIdx}:v]scale=w=${width}:h=${height}:force_original_aspect_ratio=increase,crop=${width}:${height},setsar=1,format=yuv444p[${label}_scaled]`)
+          lines.push(`[${input}][${label}_scaled]blend=all_mode=multiply:all_opacity=${strength.toFixed(4)}:shortest=1[${output}]`)
         } else {
           // Screen blend mode
           lines.push(`[${videoIdx}:v]scale=w=${width}:h=${height}:force_original_aspect_ratio=increase,crop=${width}:${height},setsar=1,format=yuv444p[${label}_scaled]`)

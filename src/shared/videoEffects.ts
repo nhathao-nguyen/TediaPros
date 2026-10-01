@@ -1,5 +1,9 @@
+import { normalizeOverlayChromaKey, type OverlayChromaKey } from './overlayChromaKey'
+
 /** Built-in procedural effects; order is the compositing order. */
 export type VideoEffectKind = 'grain' | 'dust' | 'analog' | 'film_grunge' | 'custom_overlay'
+
+export type OverlayBlendMode = 'screen' | 'alphamerge' | 'multiply' | 'add' | 'chromakey'
 
 export interface VideoEffect {
   kind: VideoEffectKind
@@ -8,8 +12,9 @@ export interface VideoEffect {
   assetPath?: string
   /** Đường dẫn file matte.mp4 (alpha mask) nếu có */
   mattePath?: string
-  /** Chế độ hòa trộn: 'screen' hoặc 'alphamerge' */
-  blendMode?: 'screen' | 'alphamerge' | 'add'
+  /** Chế độ hòa trộn: 'screen', 'alphamerge', hoặc 'multiply' */
+  blendMode?: OverlayBlendMode
+  chromaKey?: OverlayChromaKey
   /** Tên hiển thị */
   name?: string
   /** Nguồn hiệu ứng */
@@ -23,7 +28,8 @@ export interface CapCutScannedEffect {
   videoPath: string
   mattePath?: string
   thumbnailPath?: string
-  blendMode: 'screen' | 'alphamerge'
+  blendMode: OverlayBlendMode
+  chromaKey?: OverlayChromaKey
   isPro: boolean
   aspectRatio: 'portrait' | 'landscape' | 'square' | 'unknown'
   isSaved?: boolean
@@ -35,7 +41,8 @@ export interface SavedOverlayEffect {
   videoPath: string
   mattePath?: string
   thumbnailPath?: string
-  blendMode: 'screen' | 'alphamerge'
+  blendMode: OverlayBlendMode
+  chromaKey?: OverlayChromaKey
   isPro: boolean
   savedAt: number
 }
@@ -83,9 +90,11 @@ export function normalizeVideoEffects(value: unknown): VideoEffect[] | undefined
       if (isCustom) {
         entry.assetPath = item.assetPath
         if (item.mattePath) entry.mattePath = item.mattePath
-        if (item.blendMode === 'alphamerge' || item.blendMode === 'screen' || item.blendMode === 'add') {
+        if (item.blendMode === 'alphamerge' || item.blendMode === 'screen' || item.blendMode === 'add' || item.blendMode === 'multiply' || item.blendMode === 'chromakey') {
           entry.blendMode = item.blendMode
         }
+        if (item.chromaKey != null) entry.chromaKey = normalizeOverlayChromaKey(item.chromaKey)
+        if (entry.blendMode === 'chromakey' && !entry.chromaKey) throw new Error('Thiếu thông số Chroma Key.')
         if (typeof item.name === 'string' && item.name.trim()) entry.name = item.name.trim()
         if (item.sourceType) entry.sourceType = item.sourceType
       }

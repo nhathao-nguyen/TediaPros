@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState, type RefObject } from 'react'
 import type { VideoEffect } from '../../../shared/videoEffects'
+import { applyOverlayChromaKey, type OverlayChromaKey } from '../../../shared/overlayChromaKey'
 import { localMediaSource } from '../lib/localMedia'
 
 let cachedFilmGrungePath: string | null = null
@@ -37,9 +38,24 @@ export default function VideoEffectsPreview({ effects, videoRef, source, width, 
 }) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const grungeVideoRef = useRef<HTMLVideoElement>(null)
+  const keyedCanvasRef = useRef<HTMLCanvasElement>(null)
+  const [legacyKey, setLegacyKey] = useState<{ path: string; key?: OverlayChromaKey }>()
 
   const videoOverlayEffect = effects.find(e => e.kind === 'film_grunge' || e.kind === 'custom_overlay')
   const hasProcedural = effects.some(e => e.kind !== 'film_grunge' && e.kind !== 'custom_overlay')
+  const legacyPath = videoOverlayEffect?.kind === 'custom_overlay' && !videoOverlayEffect.chromaKey && !videoOverlayEffect.mattePath &&
+    (videoOverlayEffect.sourceType === 'capcut' || videoOverlayEffect.sourceType === 'saved') ? videoOverlayEffect.assetPath : undefined
+  const chromaKey = videoOverlayEffect?.chromaKey || (legacyKey?.path === legacyPath ? legacyKey?.key : undefined)
+  const resolvingKey = Boolean(legacyPath && legacyKey?.path !== legacyPath && window.api?.resolveOverlayChromaKey)
+
+  useEffect(() => {
+    if (!legacyPath || !window.api?.resolveOverlayChromaKey) return
+    let active = true
+    window.api.resolveOverlayChromaKey(legacyPath).then(result => {
+      if (active) setLegacyKey({ path: legacyPath, key: result.ok ? result.chromaKey : undefined })
+    }).catch(() => { if (active) setLegacyKey({ path: legacyPath }) })
+    return () => { active = false }
+  }, [legacyPath])
 
   const customSrc = videoOverlayEffect?.kind === 'custom_overlay' && videoOverlayEffect.assetPath
     ? localMediaSource(videoOverlayEffect.assetPath)
@@ -91,6 +107,8 @@ export default function VideoEffectsPreview({ effects, videoRef, source, width, 
 
     syncPlay()
     syncRate()
+    syncTime()
+    grungeVideo.addEventListener('loadedmetadata', syncTime)
 
     mainVideo.addEventListener('play', syncPlay)
     mainVideo.addEventListener('pause', syncPlay)
@@ -104,8 +122,44 @@ export default function VideoEffectsPreview({ effects, videoRef, source, width, 
       mainVideo.removeEventListener('seeking', syncTime)
       mainVideo.removeEventListener('seeked', syncTime)
       mainVideo.removeEventListener('ratechange', syncRate)
+      grungeVideo.removeEventListener('loadedmetadata', syncTime)
     }
   }, [Boolean(videoOverlayEffect), videoRef, activeVideoSrc])
+
+  // Color-keyed assets use a transparent canvas, never CSS screen blending.
+  useEffect(() => {
+    const canvas = keyedCanvasRef.current
+    const video = grungeVideoRef.current
+    const context = canvas?.getContext('2d', { willReadFrequently: true })
+    if (!canvas || !context || !video || !chromaKey) return
+    let callbackId = 0
+    let disposed = false
+    context.clearRect(0, 0, canvas.width, canvas.height)
+    const paint = () => {
+      if (disposed || video.readyState < 2 || !video.videoWidth || !video.videoHeight) return
+      const scale = Math.max(canvas.width / video.videoWidth, canvas.height / video.videoHeight)
+      const w = video.videoWidth * scale, h = video.videoHeight * scale
+      context.clearRect(0, 0, canvas.width, canvas.height)
+      context.drawImage(video, (canvas.width - w) / 2, (canvas.height - h) / 2, w, h)
+      const frame = context.getImageData(0, 0, canvas.width, canvas.height)
+      applyOverlayChromaKey(frame.data, chromaKey)
+      context.putImageData(frame, 0, 0)
+    }
+    const onFrame = () => {
+      if (disposed) return
+      paint()
+      callbackId = video.requestVideoFrameCallback(onFrame)
+    }
+    const events = ['loadeddata', 'seeked', 'pause', 'ended'] as const
+    for (const event of events) video.addEventListener(event, paint)
+    paint()
+    callbackId = video.requestVideoFrameCallback(onFrame)
+    return () => {
+      disposed = true
+      video.cancelVideoFrameCallback(callbackId)
+      for (const event of events) video.removeEventListener(event, paint)
+    }
+  }, [chromaKey, activeVideoSrc, width, height])
 
   // Procedural canvas effects (grain, dust, analog)
   useEffect(() => {
@@ -133,7 +187,7 @@ export default function VideoEffectsPreview({ effects, videoRef, source, width, 
       }
       context.clearRect(0, 0, w, h)
       for (const effect of effects) {
-        if (effect.kind === 'film_grunge') continue
+        if (effect.kind === 'film_grunge' || effect.kind === 'custom_overlay') continue
         const strength = effect.intensity / 100
         if (effect.kind === 'dust') {
           context.fillStyle = `rgba(255,250,235,${strength * 0.85})`
@@ -201,10 +255,11 @@ export default function VideoEffectsPreview({ effects, videoRef, source, width, 
         <video
           ref={grungeVideoRef}
           src={activeVideoSrc}
-          autoPlay
+          autoPlay={!videoRef}
           loop
           muted
           playsInline
+          crossOrigin={chromaKey || legacyPath ? 'anonymous' : undefined}
           className="video-effects-preview video-effects-grunge-layer"
           style={{
             position: 'absolute',
@@ -212,14 +267,25 @@ export default function VideoEffectsPreview({ effects, videoRef, source, width, 
             width: '100%',
             height: '100%',
             objectFit: 'cover',
-            mixBlendMode: videoOverlayEffect.blendMode === 'screen' ? 'screen' : 'screen',
-            opacity: videoOverlayEffect.intensity / 100,
+            mixBlendMode: videoOverlayEffect.blendMode === 'multiply' ? 'multiply' : 'screen',
+            opacity: chromaKey || resolvingKey ? 0 : (videoOverlayEffect.blendMode === 'multiply' ? 1 : videoOverlayEffect.intensity / 100),
+            filter: videoOverlayEffect.blendMode === 'multiply'
+              ? `contrast(${(0.5 + (videoOverlayEffect.intensity / 100) * 0.5).toFixed(3)}) brightness(${(1.08 + (1 - videoOverlayEffect.intensity / 100) * 0.4).toFixed(3)})`
+              : undefined,
             pointerEvents: 'none',
             zIndex: 4
           }}
           aria-hidden="true"
         />
       )}
+      {chromaKey && activeVideoSrc && <canvas
+        ref={keyedCanvasRef}
+        className="video-effects-preview video-effects-keyed-layer"
+        width={Math.max(1, Math.round(width * scale))}
+        height={Math.max(1, Math.round(height * scale))}
+        style={{ opacity: (videoOverlayEffect?.intensity || 0) / 100 }}
+        aria-hidden="true"
+      />}
     </>
   )
 }
