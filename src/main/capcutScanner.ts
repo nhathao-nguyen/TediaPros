@@ -1,4 +1,4 @@
-import { constants, existsSync, readdirSync } from 'node:fs'
+import { constants, existsSync, readdirSync, realpathSync } from 'node:fs'
 import { readdir, readFile, mkdir, copyFile, stat, rm, rename, writeFile } from 'node:fs/promises'
 import { randomUUID } from 'node:crypto'
 import { join, basename, extname, dirname, relative, isAbsolute } from 'node:path'
@@ -85,9 +85,22 @@ export async function readCapCutChromaKey(effectRoot: string): Promise<OverlayCh
 }
 
 function containedParts(candidate: string, root: string): string[] | undefined {
-  const rel = relative(root, candidate)
-  if (!rel || isAbsolute(rel) || rel === '..' || rel.startsWith('..\\') || rel.startsWith('../')) return undefined
-  return rel.split(/[\\/]/)
+  const check = (r: string, c: string): string[] | undefined => {
+    const rel = relative(r, c)
+    if (!rel || isAbsolute(rel) || rel === '..' || rel.startsWith('..\\') || rel.startsWith('../')) return undefined
+    return rel.split(/[\\/]/)
+  }
+
+  const direct = check(root, candidate)
+  if (direct) return direct
+
+  try {
+    const realRoot = existsSync(root) ? realpathSync(root) : root
+    const realCand = existsSync(candidate) ? realpathSync(candidate) : candidate
+    return check(realRoot, realCand)
+  } catch {
+    return undefined
+  }
 }
 
 /** Publish by replacement so an existing target-file symlink is never followed. */
