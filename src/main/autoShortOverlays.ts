@@ -27,7 +27,7 @@ export async function readAutoShortOverlayImage(path: string, expectedSha256?: s
 }
 
 export interface PreparedAutoShortOverlays {
-  image?: { path: string; inputIndex: number; width: number; x: number; y: number; opacity: number }
+  image?: NonNullable<AutoShortOverlays['image']> & { inputIndex: number }
   textFilter?: string
 }
 
@@ -97,7 +97,45 @@ export function appendAutoShortOverlays(lines: string[], width: number, height: 
   let input = 'overlay_base'
   if (prepared.image) {
     const image = prepared.image
-    lines.push(`[${image.inputIndex}:v]format=rgba,scale=w=${Math.max(1, Math.floor(width * image.width))}:h=${Math.max(1, Math.floor(height * 0.8))}:force_original_aspect_ratio=decrease,setsar=1,colorchannelmixer=aa=${image.opacity}[overlay_image]`)
+    const targetW = Math.max(1, Math.floor(width * image.width))
+    const targetH = Math.max(1, Math.floor(height * 0.8))
+    const imageFilters: string[] = [
+      'format=rgba',
+      `scale=w=${targetW}:h=${targetH}:force_original_aspect_ratio=decrease`,
+      'setsar=1'
+    ]
+
+    const feather = image.feather || 0
+    const cornerRadius = image.cornerRadius || 0
+    const maskType = image.maskType || (feather > 0 || cornerRadius > 0 ? 'rect' : 'none')
+
+    if (maskType === 'circle') {
+      const featherRatio = Math.max(0.005, feather * 2)
+      imageFilters.push(
+        `geq=r='r(X,Y)':g='g(X,Y)':b='b(X,Y)':a='if(lte(hypot((X-W/2)/(W/2),(Y-H/2)/(H/2)),1), alpha(X,Y)*pow(sin(clip((1-hypot((X-W/2)/(W/2),(Y-H/2)/(H/2)))/${featherRatio.toFixed(4)},0,1)*1.5707963),2), 0)'`
+      )
+    } else if (maskType === 'rect' || feather > 0 || cornerRadius > 0) {
+      if (feather > 0) {
+        imageFilters.push(
+          `geq=r='r(X,Y)':g='g(X,Y)':b='b(X,Y)':a='alpha(X,Y)*pow(sin(clip(min(X,W-1-X)/max(1,W*${feather.toFixed(4)}),0,1)*1.5707963),2)*pow(sin(clip(min(Y,H-1-Y)/max(1,H*${feather.toFixed(4)}),0,1)*1.5707963),2)'`
+        )
+      }
+      if (cornerRadius > 0 && feather <= 0) {
+        imageFilters.push(
+          `geq=r='r(X,Y)':g='g(X,Y)':b='b(X,Y)':a='if(lt(X,min(W,H)*${cornerRadius.toFixed(4)})*lt(Y,min(W,H)*${cornerRadius.toFixed(4)}), if(lte(hypot(min(W,H)*${cornerRadius.toFixed(4)}-X, min(W,H)*${cornerRadius.toFixed(4)}-Y), min(W,H)*${cornerRadius.toFixed(4)}), alpha(X,Y), 0), if(gt(X,W-1-min(W,H)*${cornerRadius.toFixed(4)})*lt(Y,min(W,H)*${cornerRadius.toFixed(4)}), if(lte(hypot(X-(W-1-min(W,H)*${cornerRadius.toFixed(4)}), min(W,H)*${cornerRadius.toFixed(4)}-Y), min(W,H)*${cornerRadius.toFixed(4)}), alpha(X,Y), 0), if(lt(X,min(W,H)*${cornerRadius.toFixed(4)})*gt(Y,H-1-min(W,H)*${cornerRadius.toFixed(4)}), if(lte(hypot(min(W,H)*${cornerRadius.toFixed(4)}-X, Y-(H-1-min(W,H)*${cornerRadius.toFixed(4)})), min(W,H)*${cornerRadius.toFixed(4)}), alpha(X,Y), 0), if(gt(X,W-1-min(W,H)*${cornerRadius.toFixed(4)})*gt(Y,H-1-min(W,H)*${cornerRadius.toFixed(4)}), if(lte(hypot(X-(W-1-min(W,H)*${cornerRadius.toFixed(4)}), Y-(H-1-min(W,H)*${cornerRadius.toFixed(4)})), min(W,H)*${cornerRadius.toFixed(4)}), alpha(X,Y), 0), alpha(X,Y)))))'`
+        )
+      }
+    }
+
+    const rotation = image.rotation || 0
+    if (Math.abs(rotation) > 0.01) {
+      const rad = (rotation * Math.PI / 180).toFixed(6)
+      imageFilters.push(`rotate=${rad}:c=none:ow='rotw(${rad})':oh='roth(${rad})'`)
+    }
+
+    imageFilters.push(`colorchannelmixer=aa=${image.opacity}`)
+    lines.push(`[${image.inputIndex}:v]${imageFilters.join(',')}[overlay_image]`)
+
     lines.push(`[${input}][overlay_image]overlay=x='round((W-w)*${image.x})':y='round((H-h)*${image.y})':eof_action=repeat:repeatlast=1:shortest=0:format=auto[overlay_composed]`)
     input = 'overlay_composed'
   }

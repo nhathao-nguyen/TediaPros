@@ -11,6 +11,7 @@ import VideoEnhance from './components/VideoEnhance'
 import Voice from './components/Voice'
 import License from './components/License'
 import Logs from './components/Logs'
+import VideoSpeedModal from './components/VideoSpeedModal'
 import type { UpdateStatus } from '../../shared/types'
 import { APP_BRAND } from '../../shared/brand'
 import brandLogo from './assets/tediapros-logo.png'
@@ -126,6 +127,7 @@ export default function App(): JSX.Element {
   // "Hop thu" gui file tu tab Tai xuong sang tab Audio->Text (nut "Lay sub")
   const [subInbox, setSubInbox] = useState<{ path: string; id: string } | null>(null)
   const [editorDraft, setEditorDraft] = useState<EditorDraft | null>(null)
+  const [speedModalVideo, setSpeedModalVideo] = useState<string | null | undefined>(undefined)
 
   const sendToSub = (filePath: string): void => {
     setSubInbox({ path: filePath, id: crypto.randomUUID() })
@@ -235,11 +237,21 @@ export default function App(): JSX.Element {
       </aside>
 
       <main className="content">
-        <header className="content-head">
+        <header className="content-head" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <div>
             <h1 className="content-title">{active.title}</h1>
             <p className="content-sub muted">{active.subtitle}</p>
           </div>
+          <button
+            type="button"
+            className="btn ghost sm"
+            style={{ display: 'flex', alignItems: 'center', gap: 6, cursor: 'pointer', padding: '6px 12px', fontSize: 13, border: '1px solid var(--border)' }}
+            onClick={() => setSpeedModalVideo(null)}
+            title="Tua nhanh video đã xuất lên 1.1x, 1.15x..."
+          >
+            <span>⚡</span>
+            <span>Tua nhanh video</span>
+          </button>
         </header>
         <div className="content-body">
           {/* Giu 2 tab tai luon SONG (khong unmount) de chay song song, khong mat hang doi/tien do */}
@@ -259,11 +271,11 @@ export default function App(): JSX.Element {
             <ScreenText onOpenEditor={openInEditor} />
           </div>
           <div className={`tab-pane ${tab === 'autoshort' ? '' : 'hidden'}`}>
-            <AutoShort />
+            <AutoShort onOpenSpeedModal={(p) => setSpeedModalVideo(p)} />
           </div>
           {/* Editor luon mounted de khong mat video, vung chinh va tien do khi doi tab. */}
           <div className={`tab-pane ${tab === 'editor' ? '' : 'hidden'}`}>
-            <VideoEditor draft={editorDraft} active={tab === 'editor'} />
+            <VideoEditor draft={editorDraft} active={tab === 'editor'} onOpenSpeedModal={(p) => setSpeedModalVideo(p)} />
           </div>
           <div className={`tab-pane ${tab === 'enhance' ? '' : 'hidden'}`}>
             <VideoEnhance />
@@ -275,6 +287,13 @@ export default function App(): JSX.Element {
           {tab === 'license' && <License />}
         </div>
       </main>
+
+      {speedModalVideo !== undefined && (
+        <VideoSpeedModal
+          initialVideoPath={speedModalVideo}
+          onClose={() => setSpeedModalVideo(undefined)}
+        />
+      )}
     </div>
   )
 }

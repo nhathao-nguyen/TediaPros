@@ -7,7 +7,7 @@ import { spawnSync } from 'node:child_process'
 import test from 'node:test'
 import { normalizeVideoEffects, VIDEO_EFFECT_PRESETS, type VideoEffect } from '../src/shared/videoEffects'
 import { validateAutoShortStartRequest } from '../src/shared/autoShortContract'
-import { appendVideoEffects } from '../src/main/videoEffects'
+import { appendVideoEffects, resolveFilmGrungePath } from '../src/main/videoEffects'
 import { burnAutoShort, taoFilterComplex, taoFilterComplexAutomatic } from '../src/main/burn'
 import { planBurnInputs } from '../src/main/burnInputPlanner'
 import type { AutoShortConfig } from '../src/shared/types'
@@ -45,13 +45,21 @@ test('IPC preserves legacy config and rejects malformed, duplicate or injected e
   assert.deepEqual(normalizeVideoEffects([...effects].reverse()), [...effects].reverse())
 })
 
+test('resolveFilmGrungePath resolves to bundled resource and contains no hardcoded drive path', () => {
+  const resolved = resolveFilmGrungePath()
+  assert.notEqual(resolved, null, 'Film grunge video asset must resolve')
+  assert.ok(resolved!.endsWith('film_grunge.mp4'), `Expected film_grunge.mp4, got ${resolved}`)
+  assert.equal(existsSync(resolved!), true, 'Resolved path must exist on disk')
+  assert.equal(resolved!.toLowerCase().includes('0928.mp4'), false, 'Must not reference local scratch media')
+})
+
 test('zero strength leaves graph unchanged; manual blur and OCR both retain effects before branding', () => {
   const lines = ['[0:v]null[out]']
   appendVideoEffects(lines, 320, 180, [{ kind: 'grain', intensity: 0 }])
   assert.deepEqual(lines, ['[0:v]null[out]'])
   const meta = { w: 320, h: 180, giay: 1, hasAudio: false }
   const overlay = { textFilter: 'null' }
-  const manual = taoFilterComplex(meta, [{ x0: 0, y0: 0, x1: 80, y1: 40 }], true, false, '', false, false, 100, null, false, undefined, overlay, effects).join(' ')
+  const manual = taoFilterComplex(meta, [{ id: 'blur-1', x0: 0, y0: 0, x1: 80, y1: 40 }], true, false, '', false, false, 100, null, false, undefined, overlay, effects).join(' ')
   const automatic = taoFilterComplexAutomatic(meta, planBurnInputs({ sourceVideo: 'source', timedMask: 'mask' }), false, '', false, 100, null, true, undefined, overlay, effects).join(' ')
   for (const graph of [manual, automatic]) {
     assert.ok(graph.indexOf('noise=') < graph.indexOf('[overlay_base]null[out]'))
@@ -107,7 +115,7 @@ test('real stacked render with manual blur retains frames, audio, dimensions and
     run(['-f', 'lavfi', '-i', 'testsrc2=s=320x180:r=12:d=1', '-f', 'lavfi', '-i', 'sine=frequency=440:duration=1', '-c:v', 'libx264', '-pix_fmt', 'yuv420p', '-c:a', 'aac', source])
     const options = { videoEffects: effects, ffmpegPath: ffmpeg, ffprobePath: ffprobe, finalOutputPath: output, itemWorkDir: root, signal: new AbortController().signal,
       expectedMedia: { durationSeconds: 1, frameRate: 12, requireAudio: true, durationToleranceFrames: 3 } }
-    const result = await burnAutoShort({ video: source, mode: 'burn', lamMo: true, blurRegions: [{ x0: 0, y0: 0, x1: 80, y1: 40 }] }, options, () => {})
+    const result = await burnAutoShort({ video: source, mode: 'burn', lamMo: true, blurRegions: [{ id: 'blur-1', x0: 0, y0: 0, x1: 80, y1: 40 }] }, options, () => {})
     assert.equal(result.ok, true, JSON.stringify(result))
     const probe = spawnSync(ffprobe, ['-v', 'error', '-show_streams', '-show_format', '-of', 'json', output], { windowsHide: true, encoding: 'utf8' })
     assert.equal(probe.status, 0, probe.stderr)
@@ -128,3 +136,52 @@ test('real stacked render with manual blur retains frames, audio, dimensions and
     await rm(root, { recursive: true, force: true })
   }
 })
+
+test('normalizes custom_overlay effects and rejects invalid paths, duplicates and out-of-range intensity', () => {
+  const validCustom: VideoEffect = {
+    kind: 'custom_overlay',
+    intensity: 75,
+    assetPath: 'C:\\media\\effect.mp4',
+    mattePath: 'C:\\media\\matte.mp4',
+    blendMode: 'alphamerge',
+    name: 'Nhiễu trắng',
+    sourceType: 'capcut'
+  }
+
+  const normalized = normalizeVideoEffects([validCustom])
+  assert.equal(normalized?.length, 1)
+  assert.equal(normalized?.[0].kind, 'custom_overlay')
+  assert.equal(normalized?.[0].name, 'Nhiễu trắng')
+  assert.equal(normalized?.[0].blendMode, 'alphamerge')
+
+  // Reject empty path or null char
+  assert.throws(() => normalizeVideoEffects([{ kind: 'custom_overlay', intensity: 50, assetPath: '' }]))
+  assert.throws(() => normalizeVideoEffects([{ kind: 'custom_overlay', intensity: 50, assetPath: 'C:\\bad\0.mp4' }]))
+  assert.throws(() => normalizeVideoEffects([{ kind: 'custom_overlay', intensity: 50, assetPath: 'C:\\ok.mp4', mattePath: '\0' }]))
+  // Reject duplicates
+  assert.throws(() => normalizeVideoEffects([validCustom, validCustom]))
+})
+
+test('planVideoEffectInputs and appendVideoEffects support custom_overlay with both screen and alphamerge', () => {
+  // Test alphamerge filter generation
+  const linesAlpha = ['[0:v]null[out]']
+  appendVideoEffects(linesAlpha, 1080, 1920, [
+    { kind: 'custom_overlay', intensity: 80, assetPath: 'C:\\effect.mp4', mattePath: 'C:\\matte.mp4', blendMode: 'alphamerge' }
+  ], [{ effectIndex: 0, videoInputIndex: 1, matteInputIndex: 2, videoPath: 'C:\\effect.mp4', mattePath: 'C:\\matte.mp4', blendMode: 'alphamerge' }])
+
+  const alphaGraph = linesAlpha.join(';')
+  assert.match(alphaGraph, /\[1:v\]\[2:v\]alphamerge/)
+  assert.match(alphaGraph, /scale=w=1080:h=1920:force_original_aspect_ratio=increase/)
+  assert.match(alphaGraph, /overlay=shortest=1\[out\]/)
+
+  // Test screen blend filter generation
+  const linesScreen = ['[0:v]null[out]']
+  appendVideoEffects(linesScreen, 1080, 1920, [
+    { kind: 'custom_overlay', intensity: 65, assetPath: 'C:\\sparkles.mp4', blendMode: 'screen' }
+  ], [{ effectIndex: 0, videoInputIndex: 3, videoPath: 'C:\\sparkles.mp4', blendMode: 'screen' }])
+
+  const screenGraph = linesScreen.join(';')
+  assert.match(screenGraph, /\[3:v\]scale=w=1080:h=1920/)
+  assert.match(screenGraph, /blend=c0_mode=screen:c0_opacity=0\.6500/)
+})
+

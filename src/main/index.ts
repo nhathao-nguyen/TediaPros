@@ -162,6 +162,13 @@ import { listAutoShortMusicTracks } from './autoShortMusicLibrary'
 import { createAutoShortThumbnail } from './autoShortThumbnail'
 import { isAutoShortSeparationPreset } from '../shared/autoShortSeparation'
 import { isValidSubtitleTextCase, applyTextCaseToCues } from '../shared/subtitleTextCase'
+import { resolveFilmGrungePath } from './videoEffects'
+import {
+  scanCapCutEffects,
+  getSavedOverlayEffects,
+  saveOverlayToVault,
+  deleteOverlayFromVault
+} from './capcutScanner'
 import type {
   DichProvider,
   DouyinRequest,
@@ -178,8 +185,10 @@ import type {
   LogEntry,
   RendererIssueReport,
   SetupProgress,
-  BurnReq
+  BurnReq,
+  VideoSpeedRequest
 } from '../shared/types'
+import { changeVideoSpeed, cancelVideoSpeed } from './videoSpeed'
 import {
   clearLogs,
   debugRaw,
@@ -616,6 +625,32 @@ function registerIpc(): void {
     }
   })
 
+  ipcMain.handle('effects:assetPath', async (_e, kind: string): Promise<string | null> => {
+    if (kind === 'film_grunge') return resolveFilmGrungePath()
+    return null
+  })
+
+  ipcMain.handle('effects:scanCapCut', async () => {
+    return scanCapCutEffects()
+  })
+
+  ipcMain.handle('effects:getSavedVault', async () => {
+    return getSavedOverlayEffects()
+  })
+
+  ipcMain.handle('effects:saveToVault', async (_e, effect) => {
+    try {
+      const saved = await saveOverlayToVault(effect)
+      return { ok: true, saved }
+    } catch (err) {
+      return { ok: false, error: (err as Error).message }
+    }
+  })
+
+  ipcMain.handle('effects:deleteFromVault', async (_e, id: string) => {
+    return deleteOverlayFromVault(id)
+  })
+
   // Chon 1 tep am thanh
   ipcMain.handle('dialog:chooseAudio', async () => {
     if (!mainWindow) return null
@@ -744,6 +779,28 @@ function registerIpc(): void {
       debugRaw('audio preview ipc', error)
       return { ok: false, error: 'Không thể chuẩn bị bản nghe thử.' }
     }
+  })
+
+  // ---- Tua nhanh video (Thay đổi tốc độ video 1.1x,...) ----
+  ipcMain.handle('video:speed', async (event, req: VideoSpeedRequest) => {
+    try {
+      return await changeVideoSpeed(req, (p) => event.sender.send('video:speed-progress', p))
+    } catch (error) {
+      debugRaw('video speed ipc', error)
+      return { ok: false, error: error instanceof Error ? error.message : 'Không thể tua nhanh video.' }
+    }
+  })
+  ipcMain.handle('video:speed-cancel', async () => cancelVideoSpeed())
+  ipcMain.handle('dialog:chooseVideo', async () => {
+    if (!mainWindow) return null
+    const res = await dialog.showOpenDialog(mainWindow, {
+      properties: ['openFile'],
+      filters: [
+        { name: 'Video', extensions: ['mp4', 'mkv', 'webm', 'mov', 'avi', 'flv', 'ts', 'm4v'] },
+        { name: 'Tất cả file', extensions: ['*'] }
+      ]
+    })
+    return res.canceled ? null : res.filePaths[0]
   })
   // Do do dai file .srt -> renderer canh bao khi lech han so voi video
   ipcMain.handle('burn:srtGiay', async (_e, duong: string) => srtGiay(duong))

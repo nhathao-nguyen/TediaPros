@@ -222,3 +222,52 @@ test('actual OCR mask + narration + portrait render preserves transparent image 
     }
   } finally { await cleanup(root) }
 })
+
+test('normalizes and generates FFmpeg filter graph for overlay feather, rotation, corner radius and mask types', () => {
+  const custom = normalizeAutoShortOverlays({
+    image: {
+      ...image,
+      rotation: 45.6,
+      feather: 0.15,
+      cornerRadius: 0.1,
+      maskType: 'rect'
+    }
+  })
+  assert.equal(custom?.image?.rotation, 46)
+  assert.equal(custom?.image?.feather, 0.15)
+  assert.equal(custom?.image?.cornerRadius, 0.1)
+  assert.equal(custom?.image?.maskType, 'rect')
+
+  const circleCustom = normalizeAutoShortOverlays({
+    image: {
+      ...image,
+      rotation: -30,
+      feather: 0.25,
+      maskType: 'circle'
+    }
+  })
+  assert.equal(circleCustom?.image?.rotation, -30)
+  assert.equal(circleCustom?.image?.feather, 0.25)
+  assert.equal(circleCustom?.image?.maskType, 'circle')
+
+  // Test filter complex output
+  const lines = ['[0:v]null[out]']
+  appendAutoShortOverlays(lines, 1080, 1920, {
+    image: { ...circleCustom!.image!, inputIndex: 1, path: 'C:\\fake.png' }
+  })
+  const filterGraph = lines.join(';')
+  assert.match(filterGraph, /rotate=-0\.523599/)
+  assert.match(filterGraph, /hypot\(\(X-W\/2\)\/\(W\/2\)/)
+  assert.match(filterGraph, /colorchannelmixer=aa=1/)
+  assert.match(filterGraph, /overlay=x='round\(\(W-/)
+
+  // Test rect feather unified border distance
+  const rectLines = ['[0:v]null[out]']
+  appendAutoShortOverlays(rectLines, 1080, 1920, {
+    image: { ...custom!.image!, inputIndex: 1, path: 'C:\\fake.png' }
+  })
+  const rectGraph = rectLines.join(';')
+  assert.match(rectGraph, /clip\(min\(X,W-1-X\)\/max\(1,W\*0\.1500\),0,1\)/)
+  assert.match(rectGraph, /clip\(min\(Y,H-1-Y\)\/max\(1,H\*0\.1500\),0,1\)/)
+})
+

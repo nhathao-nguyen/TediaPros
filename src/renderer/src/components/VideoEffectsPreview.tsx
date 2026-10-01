@@ -1,35 +1,148 @@
-import { useEffect, useRef, type RefObject } from 'react'
+import { useEffect, useRef, useState, type RefObject } from 'react'
 import type { VideoEffect } from '../../../shared/videoEffects'
+import { localMediaSource } from '../lib/localMedia'
+
+let cachedFilmGrungePath: string | null = null
+let pendingPathPromise: Promise<string | null> | null = null
+
+async function getFilmGrungeSrc(): Promise<string | null> {
+  if (cachedFilmGrungePath) return localMediaSource(cachedFilmGrungePath)
+  if (!pendingPathPromise) {
+    pendingPathPromise = (async () => {
+      try {
+        const p = await window.api?.getVideoEffectAssetPath?.('film_grunge')
+        if (p) {
+          cachedFilmGrungePath = p
+          return p
+        }
+      } catch {
+        // ignore
+      }
+      return null
+    })()
+  }
+  const resolved = await pendingPathPromise
+  if (resolved) {
+    cachedFilmGrungePath = resolved
+    return localMediaSource(resolved)
+  }
+  pendingPathPromise = null
+  return null
+}
 
 /** Lightweight illustrative preview. Export uses FFmpeg at full output resolution. */
 export default function VideoEffectsPreview({ effects, videoRef, source, width, height }: {
   effects: VideoEffect[]; videoRef?: RefObject<HTMLVideoElement | null>; source?: string | null
   width: number; height: number
 }) {
-  const ref = useRef<HTMLCanvasElement>(null)
+  const canvasRef = useRef<HTMLCanvasElement>(null)
+  const grungeVideoRef = useRef<HTMLVideoElement>(null)
+
+  const videoOverlayEffect = effects.find(e => e.kind === 'film_grunge' || e.kind === 'custom_overlay')
+  const hasProcedural = effects.some(e => e.kind !== 'film_grunge' && e.kind !== 'custom_overlay')
+
+  const customSrc = videoOverlayEffect?.kind === 'custom_overlay' && videoOverlayEffect.assetPath
+    ? localMediaSource(videoOverlayEffect.assetPath)
+    : null
+
+  const [grungeSrc, setGrungeSrc] = useState<string | null>(
+    cachedFilmGrungePath ? localMediaSource(cachedFilmGrungePath) : null
+  )
+
+  const activeVideoSrc = customSrc || grungeSrc
+
   useEffect(() => {
-    const canvas = ref.current
+    if (videoOverlayEffect?.kind !== 'film_grunge') return
+    if (grungeSrc) return
+    let active = true
+    getFilmGrungeSrc().then(src => {
+      if (active && src) setGrungeSrc(src)
+    })
+    return () => { active = false }
+  }, [Boolean(videoOverlayEffect?.kind === 'film_grunge'), grungeSrc])
+
+  // Video playback synchronization with main video
+  useEffect(() => {
+    const mainVideo = videoRef?.current
+    const grungeVideo = grungeVideoRef.current
+    if (!videoOverlayEffect || !grungeVideo) return
+
+    if (!mainVideo) {
+      // Standalone preview (e.g. preset card thumbnail)
+      grungeVideo.play().catch(() => {})
+      return
+    }
+
+    const syncPlay = () => {
+      if (mainVideo.paused) {
+        grungeVideo.pause()
+      } else {
+        grungeVideo.play().catch(() => {})
+      }
+    }
+    const syncTime = () => {
+      if (grungeVideo.duration && Number.isFinite(grungeVideo.duration) && grungeVideo.duration > 0) {
+        grungeVideo.currentTime = mainVideo.currentTime % grungeVideo.duration
+      }
+    }
+    const syncRate = () => {
+      grungeVideo.playbackRate = mainVideo.playbackRate || 1
+    }
+
+    syncPlay()
+    syncRate()
+
+    mainVideo.addEventListener('play', syncPlay)
+    mainVideo.addEventListener('pause', syncPlay)
+    mainVideo.addEventListener('seeking', syncTime)
+    mainVideo.addEventListener('seeked', syncTime)
+    mainVideo.addEventListener('ratechange', syncRate)
+
+    return () => {
+      mainVideo.removeEventListener('play', syncPlay)
+      mainVideo.removeEventListener('pause', syncPlay)
+      mainVideo.removeEventListener('seeking', syncTime)
+      mainVideo.removeEventListener('seeked', syncTime)
+      mainVideo.removeEventListener('ratechange', syncRate)
+    }
+  }, [Boolean(videoOverlayEffect), videoRef, activeVideoSrc])
+
+  // Procedural canvas effects (grain, dust, analog)
+  useEffect(() => {
+    const canvas = canvasRef.current
     const context = canvas?.getContext('2d')
-    if (!canvas || !context || !effects.length) return
+    if (!canvas || !context || !hasProcedural) {
+      if (canvas && context) context.clearRect(0, 0, canvas.width, canvas.height)
+      return
+    }
     const video = videoRef?.current
     const noiseCanvas = document.createElement('canvas')
-    noiseCanvas.width = canvas.width; noiseCanvas.height = canvas.height
+    noiseCanvas.width = canvas.width
+    noiseCanvas.height = canvas.height
     const noiseContext = noiseCanvas.getContext('2d')
     let callbackId = 0
     let disposed = false
     const paint = () => {
-      const w = canvas.width; const h = canvas.height
+      const w = canvas.width
+      const h = canvas.height
       const frame = Math.floor((video?.currentTime || 0) * 24)
       let seed = (frame + 1) * 731
-      const random = () => { seed = (Math.imul(seed, 1664525) + 1013904223) | 0; return (seed >>> 0) / 4294967296 }
+      const random = () => {
+        seed = (Math.imul(seed, 1664525) + 1013904223) | 0
+        return (seed >>> 0) / 4294967296
+      }
       context.clearRect(0, 0, w, h)
       for (const effect of effects) {
+        if (effect.kind === 'film_grunge') continue
         const strength = effect.intensity / 100
         if (effect.kind === 'dust') {
           context.fillStyle = `rgba(255,250,235,${strength * 0.85})`
-          for (let i = 0; i < Math.max(5, w * h / 3000); i++) {
-            const x = random() * w; const y = random() * h
-            context.beginPath(); context.ellipse(x, y, 0.6 + random(), 0.6 + random() * 1.8, random() * 3, 0, Math.PI * 2); context.fill()
+          for (let i = 0; i < Math.max(5, (w * h) / 3000); i++) {
+            const x = random() * w
+            const y = random() * h
+            context.beginPath()
+            context.ellipse(x, y, 0.6 + random(), 0.6 + random() * 1.8, random() * 3, 0, Math.PI * 2)
+            context.fill()
           }
         } else {
           if (!noiseContext) continue
@@ -68,9 +181,45 @@ export default function VideoEffectsPreview({ effects, videoRef, source, width, 
         for (const name of events) video.removeEventListener(name, paint)
       }
     }
-  }, [effects, videoRef, source, width, height])
+  }, [effects, hasProcedural, videoRef, source, width, height])
+
   if (!effects.length) return null
   const scale = Math.min(1, 640 / Math.max(1, width, height))
-  return <canvas ref={ref} className="video-effects-preview" aria-hidden="true"
-    width={Math.max(1, Math.round(width * scale))} height={Math.max(1, Math.round(height * scale))} />
+
+  return (
+    <>
+      {hasProcedural && (
+        <canvas
+          ref={canvasRef}
+          className="video-effects-preview"
+          aria-hidden="true"
+          width={Math.max(1, Math.round(width * scale))}
+          height={Math.max(1, Math.round(height * scale))}
+        />
+      )}
+      {videoOverlayEffect && activeVideoSrc && (
+        <video
+          ref={grungeVideoRef}
+          src={activeVideoSrc}
+          autoPlay
+          loop
+          muted
+          playsInline
+          className="video-effects-preview video-effects-grunge-layer"
+          style={{
+            position: 'absolute',
+            inset: 0,
+            width: '100%',
+            height: '100%',
+            objectFit: 'cover',
+            mixBlendMode: videoOverlayEffect.blendMode === 'screen' ? 'screen' : 'screen',
+            opacity: videoOverlayEffect.intensity / 100,
+            pointerEvents: 'none',
+            zIndex: 4
+          }}
+          aria-hidden="true"
+        />
+      )}
+    </>
+  )
 }

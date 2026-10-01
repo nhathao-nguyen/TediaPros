@@ -159,7 +159,10 @@ const knownTests = [
   'burn-font-registry.test',
   'subtitle-layout.test',
   'subtitle-text-case.test',
-  'font-weights.test'
+  'font-weights.test',
+  'video-speed.test',
+  'opening-hooks.test',
+  'autoshort-overlays.test'
 ]
 
 const requestedTests = process.argv.slice(2).map((name) => name.replace(/\.(ts|js)$/, ''))

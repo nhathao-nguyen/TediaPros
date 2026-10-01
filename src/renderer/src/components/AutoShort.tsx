@@ -82,6 +82,8 @@ import AutoShortOverlayControl from './AutoShortOverlayControl'
 import AutoShortOverlayPreview from './AutoShortOverlayPreview'
 import VideoEffectsControl from './VideoEffectsControl'
 import VideoEffectsPreview from './VideoEffectsPreview'
+import AutoShortSpeedControl from './AutoShortSpeedControl'
+import AutoShortOpeningControl from './AutoShortOpeningControl'
 import { normalizeVideoEffects, type VideoEffect } from '../../../shared/videoEffects'
 import { normalizeAutoShortOverlays, type AutoShortOverlays } from '../../../shared/autoShortOverlays'
 import { MICROSECONDS_PER_SECOND } from '../../../shared/autoShortTemporalEdit'
@@ -354,6 +356,7 @@ interface AutoShortTaskCardProps {
   onRemove: (id: string, e: ReactMouseEvent) => void
   onPrepareTranslationRetry: (task: AutoShortTaskItem) => void
   onRetryTitle: (task: AutoShortTaskItem) => void
+  onOpenSpeedModal?: (videoPath: string) => void
 }
 
 const AutoShortTaskCard = memo(function AutoShortTaskCard({
@@ -365,7 +368,8 @@ const AutoShortTaskCard = memo(function AutoShortTaskCard({
   onSelect,
   onRemove,
   onPrepareTranslationRetry,
-  onRetryTitle
+  onRetryTitle,
+  onOpenSpeedModal
 }: AutoShortTaskCardProps) {
   return (
     <div
@@ -449,16 +453,31 @@ const AutoShortTaskCard = memo(function AutoShortTaskCard({
           </div>
         )}
         {task.outputPath && (
-          <button
-            type="button"
-            className="btn ghost sm"
-            onClick={(e) => {
-              e.stopPropagation()
-              void window.api.openPath(task.outputPath || '')
-            }}
-          >
-            Mở output
-          </button>
+          <div style={{ display: 'flex', gap: 6, marginTop: 4 }}>
+            <button
+              type="button"
+              className="btn ghost sm"
+              onClick={(e) => {
+                e.stopPropagation()
+                void window.api.openPath(task.outputPath || '')
+              }}
+            >
+              Mở output
+            </button>
+            {onOpenSpeedModal && (
+              <button
+                type="button"
+                className="btn ghost sm"
+                title="Tua nhanh video này lên 1.1x, 1.15x..."
+                onClick={(e) => {
+                  e.stopPropagation()
+                  onOpenSpeedModal(task.outputPath || '')
+                }}
+              >
+                ⚡ Tua 1.1x
+              </button>
+            )}
+          </div>
         )}
         {task.percent > 0 && task.percent < 100 && (
           <div className="queue-item-progress-bar">
@@ -492,7 +511,11 @@ const AutoShortTaskCard = memo(function AutoShortTaskCard({
   )
 })
 
-export default function AutoShort(): JSX.Element {
+export interface AutoShortProps {
+  onOpenSpeedModal?: (videoPath: string) => void
+}
+
+export default function AutoShort({ onOpenSpeedModal }: AutoShortProps = {}): JSX.Element {
   const [outputDir, setOutputDir] = useTabOutputDir('tblao.outputDir.autoshort')
 
   // Danh sách video hàng đợi
@@ -526,6 +549,7 @@ export default function AutoShort(): JSX.Element {
     try { return { value: normalizeAutoShortOverlays(overlaySettings, true) || {}, error: '' } }
     catch { return { value: {} as AutoShortOverlays, error: 'Cấu hình ảnh/chữ đã lưu không hợp lệ. Bấm bỏ toàn bộ ảnh/chữ rồi chọn lại.' } }
   }, [overlaySettings])
+  const [overlayOpen, setOverlayOpen] = useState(false)
   const [videoAdjustments, setVideoAdjustments] = usePersistedState<VideoAdjustments>(
     'tblao.autoshort.videoAdjustments.v1',
     { ...DEFAULT_VIDEO_ADJUSTMENTS }
@@ -563,6 +587,13 @@ export default function AutoShort(): JSX.Element {
     'tblao.autoshort.thumbnail.position',
     'ocr'
   )
+  const [videoSpeed, setVideoSpeed] = usePersistedState<number>('tblao.autoshort.videoSpeed', 1.0)
+  const [videoSpeedPreservePitch, setVideoSpeedPreservePitch] = usePersistedState<boolean>(
+    'tblao.autoshort.videoSpeedPreservePitch',
+    true
+  )
+  const [openingZoom, setOpeningZoom] = usePersistedState<boolean>('tblao.autoshort.openingZoom', false)
+  const [openingFlash, setOpeningFlash] = usePersistedState<boolean>('tblao.autoshort.openingFlash', false)
   const [thumbnailFontSize, setThumbnailFontSize] = usePersistedState<AutoShortThumbnailFontSize>(
     'tblao.autoshort.thumbnail.fontSize',
     'large'
@@ -1815,7 +1846,11 @@ export default function AutoShort(): JSX.Element {
           fontSize: thumbnailFontSize,
           autoTitleFromAi: thumbnailAutoTitle
         } : undefined,
-        outputDir
+        outputDir,
+        videoSpeed: Math.abs(videoSpeed - 1.0) >= 0.01 ? videoSpeed : undefined,
+        videoSpeedPreservePitch,
+        openingZoom,
+        openingFlash
       }
 
       try {
@@ -2109,8 +2144,33 @@ export default function AutoShort(): JSX.Element {
                 onClick={() => setShowCutPanel((current) => !current)}>Cắt đoạn</button>
               <PortraitBlurButton enabled={portraitBlur} onChange={setPortraitBlur} disabled={isRunning || isStarting} />
               <VideoAdjustmentsControl value={normalizedVideoAdjustments} onChange={setVideoAdjustments} disabled={isRunning || isStarting} />
-              <AutoShortOverlayControl value={overlayState.value} onChange={setOverlaySettings} disabled={isRunning || isStarting} configError={overlayState.error} />
+              <AutoShortOverlayControl
+                value={overlayState.value}
+                onChange={setOverlaySettings}
+                disabled={isRunning || isStarting}
+                configError={overlayState.error}
+                open={overlayOpen}
+                onOpenChange={setOverlayOpen}
+              />
               <VideoEffectsControl value={effectsState.value} onChange={setVideoEffects} disabled={isRunning || isStarting} configError={effectsState.error} />
+              <AutoShortOpeningControl
+                zoom={openingZoom}
+                flash={openingFlash}
+                onChange={(z, f) => {
+                  setOpeningZoom(z)
+                  setOpeningFlash(f)
+                }}
+                disabled={isRunning || isStarting}
+              />
+              <AutoShortSpeedControl
+                speed={videoSpeed}
+                preservePitch={videoSpeedPreservePitch}
+                onChange={(s, p) => {
+                  setVideoSpeed(s)
+                  setVideoSpeedPreservePitch(p)
+                }}
+                disabled={isRunning || isStarting}
+              />
               <button
                 className="btn sm ghost"
                 type="button"
@@ -2183,8 +2243,17 @@ export default function AutoShort(): JSX.Element {
                 overlay={<>
                   <VideoEffectsPreview effects={effectsState.value} videoRef={videoRef} source={previewPath}
                     width={previewStageSize.width} height={previewStageSize.height} />
-                  <AutoShortOverlayPreview value={overlayState.value} width={previewStageSize.width}
-                    height={previewStageSize.height} fontFamily={previewFontFamily} fontId={fontId} />
+                  <AutoShortOverlayPreview
+                    value={overlayState.value}
+                    onChange={setOverlaySettings}
+                    active={overlayOpen}
+                    onSelect={() => setOverlayOpen(true)}
+                    width={previewStageSize.width}
+                    height={previewStageSize.height}
+                    fontFamily={previewFontFamily}
+                    fontId={fontId}
+                    disabled={isRunning || isStarting}
+                  />
                 </>}
               >
                 <video
@@ -4233,6 +4302,7 @@ export default function AutoShort(): JSX.Element {
                           onRemove={removeTask}
                           onPrepareTranslationRetry={prepareTranslationRetry}
                           onRetryTitle={retryTitle}
+                          onOpenSpeedModal={onOpenSpeedModal}
                         />
                       ))
                     )}

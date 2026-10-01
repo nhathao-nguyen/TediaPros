@@ -72,10 +72,14 @@ import {
   WhisperProgress,
   WhisperRequest,
   WhisperResult,
+  VideoSpeedRequest,
+  VideoSpeedProgress,
+  VideoSpeedResult,
   YtDlpCapabilityStatus,
   YtDlpErrorCode
 } from '../shared/types'
 import type { TranslationAssessment } from '../shared/translation'
+import type { CapCutScannedEffect, SavedOverlayEffect } from '../shared/videoEffects'
 
 const api = {
   checkDeps: (): Promise<DepStatus> => ipcRenderer.invoke('deps:check'),
@@ -447,7 +451,28 @@ const api = {
     const listener = (_e: unknown, event: AutoShortEvent): void => cb(event)
     ipcRenderer.on('autoshort:event', listener)
     return () => ipcRenderer.removeListener('autoshort:event', listener)
-  }
+  },
+  videoSpeed: (req: VideoSpeedRequest): Promise<VideoSpeedResult> =>
+    ipcRenderer.invoke('video:speed', req),
+  videoSpeedCancel: (): Promise<void> =>
+    ipcRenderer.invoke('video:speed-cancel'),
+  onVideoSpeedProgress: (cb: (progress: VideoSpeedProgress) => void): (() => void) => {
+    const listener = (_e: unknown, progress: VideoSpeedProgress): void => cb(progress)
+    ipcRenderer.on('video:speed-progress', listener)
+    return () => ipcRenderer.removeListener('video:speed-progress', listener)
+  },
+  chooseVideo: (): Promise<string | null> =>
+    ipcRenderer.invoke('dialog:chooseVideo'),
+  getVideoEffectAssetPath: (kind: string): Promise<string | null> =>
+    ipcRenderer.invoke('effects:assetPath', kind),
+  scanCapCutEffects: (): Promise<CapCutScannedEffect[]> =>
+    ipcRenderer.invoke('effects:scanCapCut'),
+  getSavedOverlayEffects: (): Promise<SavedOverlayEffect[]> =>
+    ipcRenderer.invoke('effects:getSavedVault'),
+  saveOverlayToVault: (effect: CapCutScannedEffect): Promise<{ ok: boolean; saved?: SavedOverlayEffect; error?: string }> =>
+    ipcRenderer.invoke('effects:saveToVault', effect),
+  deleteOverlayFromVault: (id: string): Promise<boolean> =>
+    ipcRenderer.invoke('effects:deleteFromVault', id)
 }
 
 contextBridge.exposeInMainWorld('api', api)

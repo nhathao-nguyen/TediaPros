@@ -260,6 +260,19 @@ function validateConfigRecord(raw: Record<string, unknown>): AutoShortConfig | s
       return 'Cấu hình chỉnh hình ảnh không hợp lệ.'
     }
   }
+  if (raw.videoSpeed != null) {
+    const error = numberIn(raw.videoSpeed, 'Tốc độ video đầu ra', 0.5, 2.5)
+    if (error) return error
+  }
+  if (raw.videoSpeedPreservePitch != null && typeof raw.videoSpeedPreservePitch !== 'boolean') {
+    return 'Cấu hình giữ tông giọng không hợp lệ.'
+  }
+  if (raw.openingFlash != null && typeof raw.openingFlash !== 'boolean') {
+    return 'Cấu hình hiệu ứng chớp sáng mở màn không hợp lệ.'
+  }
+  if (raw.openingZoom != null && typeof raw.openingZoom !== 'boolean') {
+    return 'Cấu hình hiệu ứng zoom mở màn không hợp lệ.'
+  }
   if (typeof raw.lamMo !== 'boolean' || typeof raw.ttsEnabled !== 'boolean' || typeof raw.voiceOverMode !== 'boolean') return 'Cấu hình bật/tắt không hợp lệ.'
   if (raw.executionPolicy != null) {
     if (!isRecord(raw.executionPolicy)) return 'Chính sách thực thi Auto Short không hợp lệ.'
@@ -378,6 +391,10 @@ function validateConfigRecord(raw: Record<string, unknown>): AutoShortConfig | s
     videoAdjustments: normalizeVideoAdjustments(raw.videoAdjustments as any),
     ...(overlays ? { overlays } : {}),
     ...(videoEffects ? { videoEffects } : {}),
+    ...(typeof raw.videoSpeed === 'number' ? { videoSpeed: raw.videoSpeed } : {}),
+    ...(typeof raw.videoSpeedPreservePitch === 'boolean' ? { videoSpeedPreservePitch: raw.videoSpeedPreservePitch } : {}),
+    ...(typeof raw.openingFlash === 'boolean' ? { openingFlash: raw.openingFlash } : {}),
+    ...(typeof raw.openingZoom === 'boolean' ? { openingZoom: raw.openingZoom } : {}),
     blurRegions: raw.lamMo === true && raw.blurMode === 'sttn' ? [] : raw.blurRegions as AutoShortBlurRegion[],
     ocrRegion: (raw.ocrRegion as AutoShortNormalizedRegion | null | undefined) ?? null,
     subRegion: (raw.subRegion as AutoShortNormalizedRegion | null | undefined) ?? null,

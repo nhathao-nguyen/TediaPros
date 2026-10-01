@@ -1,9 +1,9 @@
-.video-effects-panel { position: fixed; z-index: 40; right: 24px; top: 110px; width: min(400px, calc(100vw - 32px)); max-height: calc(100vh - 140px); overflow-y: auto; background: var(--panel-2); color: var(--text); border: 1px solid var(--control-border); border-radius: 10px; box-shadow: 0 14px 40px rgb(0 0 0 / 35%); padding: 14px; }
+.video-effects-panel { position: fixed; z-index: 40; right: 24px; top: 110px; width: min(440px, calc(100vw - 32px)); max-height: calc(100vh - 140px); overflow-y: auto; background: var(--panel-2); color: var(--text); border: 1px solid var(--control-border); border-radius: 10px; box-shadow: 0 14px 40px rgb(0 0 0 / 35%); padding: 14px; }
 .video-effects-heading, .video-effect-actions { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
-.video-effects-presets { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; margin: 12px 0; }
-.video-effect-card { border: 1px solid var(--control-border); background: transparent; color: inherit; padding: 5px; border-radius: 8px; cursor: pointer; font: inherit; font-size: 12px; }
-.video-effect-card[aria-pressed=true] { border-color: #31c6ca; box-shadow: 0 0 0 1px #31c6ca; }
-.video-effect-card:focus-visible { outline: 2px solid #31c6ca; outline-offset: 3px; }
+.video-effects-presets { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; margin: 12px 0; }
+.video-effect-card { position: relative; border: 1px solid var(--control-border); background: transparent; color: inherit; padding: 5px; border-radius: 8px; cursor: pointer; font: inherit; font-size: 12px; text-align: left; }
+.video-effect-card[aria-pressed=true] { border-color: #a0825a; box-shadow: 0 0 0 1px #a0825a; }
+.video-effect-card:focus-visible { outline: 2px solid #a0825a; outline-offset: 3px; }
 .video-effect-sample { position: relative; display: block; height: 80px; overflow: hidden; margin-bottom: 6px; border-radius: 5px; background: linear-gradient(#356f86, #a0c5b0 68%, #345568); }
 .video-effect-landscape { position: absolute; inset: 30% -10% -15%; background: #315060; clip-path: polygon(0 85%, 35% 15%, 55% 55%, 73% 28%, 100% 78%, 100% 100%, 0 100%); }
 .video-effect-layer { border: 1px solid var(--control-border); border-radius: 8px; padding: 10px; margin: 12px 0; min-width: 0; }
@@ -12,3 +12,25 @@
 .video-effect-layer input { min-width: 0; width: 100%; }
 .video-effect-actions { margin-top: 8px; }
 .video-effects-preview { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 4; }
+
+.video-effects-tabs { display: flex; gap: 4px; margin: 10px 0 12px; border-bottom: 1px solid var(--control-border); padding-bottom: 8px; }
+.video-effects-tab { background: transparent; border: 1px solid transparent; color: var(--text-muted, #94a3b8); font-size: 12px; padding: 5px 10px; border-radius: 6px; cursor: pointer; transition: all 0.15s ease; }
+.video-effects-tab:hover { color: var(--text, #fff); background: rgba(255, 255, 255, 0.05); }
+.video-effects-tab.active { background: rgba(140, 110, 70, 0.15); color: #7a5c3a; border-color: rgba(140, 110, 70, 0.35); font-weight: 600; }
+.video-effects-badge-pro { background: linear-gradient(135deg, #fbbf24, #f59e0b); color: #1e1b4b; font-weight: 800; font-size: 9px; padding: 1px 5px; border-radius: 4px; position: absolute; top: 6px; right: 6px; z-index: 5; text-transform: uppercase; letter-spacing: 0.5px; box-shadow: 0 2px 4px rgba(0,0,0,0.3); }
+.video-effects-badge-ratio { background: rgba(0, 0, 0, 0.65); backdrop-filter: blur(4px); color: #e2e8f0; font-size: 9px; padding: 1px 5px; border-radius: 4px; position: absolute; bottom: 6px; left: 6px; z-index: 5; }
+
+.video-effects-sync-bar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; font-size: 11px; padding: 8px 10px; border-radius: 8px; background: rgba(160, 130, 90, 0.1); border: 1px solid rgba(160, 130, 90, 0.22); }
+.video-effects-sync-bar span { color: #6b5438; font-weight: 500; }
+.video-effects-sync-bar .btn { background: rgba(140, 110, 70, 0.14); border: 1px solid rgba(140, 110, 70, 0.3); color: #7a5c3a; border-radius: 6px; font-size: 11px; padding: 4px 10px; transition: all 0.15s ease; }
+.video-effects-sync-bar .btn:hover:not(:disabled) { background: rgba(140, 110, 70, 0.25); color: #5a3e20; }
+
+.video-effects-guide { background: rgba(160, 130, 90, 0.06); border: 1px solid rgba(160, 130, 90, 0.15); border-radius: 10px; padding: 12px 14px; margin-bottom: 10px; font-size: 11px; line-height: 1.6; }
+.video-effects-guide-title { font-weight: 700; font-size: 12px; margin-bottom: 6px; color: #7a5c3a; display: flex; align-items: center; gap: 6px; }
+.video-effects-guide ol { margin: 0; padding-left: 18px; color: #6b5438; }
+.video-effects-guide ol li { margin-bottom: 3px; }
+.video-effects-guide ol li strong { color: #3d2b14; }
+.video-effects-guide-note { margin-top: 6px; font-size: 10px; color: #8c7a64; font-style: italic; }
+
+.video-effects-card-footer { display: flex; align-items: center; justify-content: space-between; margin-top: 4px; }
+.video-effects-save-btn { font-size: 10px; padding: 2px 6px; }

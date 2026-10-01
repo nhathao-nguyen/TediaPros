@@ -7,7 +7,8 @@ import { appendPortraitFrame } from './portraitFrame'
 import { portraitFrame } from '../shared/portraitFrame'
 import type { AutoShortOverlays } from '../shared/autoShortOverlays'
 import { appendAutoShortOverlays, prepareAutoShortOverlays, type PreparedAutoShortOverlays } from './autoShortOverlays'
-import { appendVideoEffects } from './videoEffects'
+import { appendVideoEffects, resolveFilmGrungePath, planVideoEffectInputs, type VideoEffectInputMapping } from './videoEffects'
+import { appendOpeningHooks } from './openingHooks'
 import { normalizeVideoEffects, type VideoEffect } from '../shared/videoEffects'
 import {
   escapeFfmpegFilterPath,
@@ -921,7 +922,10 @@ export function taoFilterComplex(
   portraitBlur = false,
   videoAdjustments = normalizeVideoAdjustments(undefined),
   overlays?: PreparedAutoShortOverlays,
-  videoEffects?: VideoEffect[]
+  videoEffects?: VideoEffect[],
+  openingFlash = false,
+  openingZoom = false,
+  filmGrungeInputIndex?: number | VideoEffectInputMapping[]
 ): string[] {
   const sigma = blurSigmaForDisplayHeight(meta.h)
   const validRegions = lamMo ? regions.filter((r) => r.x1 > r.x0 && r.y1 > r.y0) : []
@@ -929,7 +933,7 @@ export function taoFilterComplex(
   const canonicalFilter = canonicalDisplayVideoFilter(meta)
   const videoAdjustmentActive = hasVideoAdjustments(videoAdjustments)
   const effects = normalizeVideoEffects(videoEffects)
-  const hasVideoFilters = validRegions.length > 0 || coAss || Boolean(canonicalFilter) || portraitBlur || videoAdjustmentActive || Boolean(overlays) || Boolean(effects)
+  const hasVideoFilters = validRegions.length > 0 || coAss || Boolean(canonicalFilter) || portraitBlur || videoAdjustmentActive || Boolean(overlays) || Boolean(effects) || openingFlash || openingZoom
   let videoInput = '0:v'
   if (canonicalFilter) {
     lines.push(`[0:v]${canonicalFilter}[display]`)
@@ -946,7 +950,8 @@ export function taoFilterComplex(
     if (portraitBlur) appendPortraitFrame(lines, adjustedInput, meta.w, meta.h, coAss ? assFilter : undefined)
     else lines.push(`[${adjustedInput}]${coAss ? assFilter : 'null'}[out]`)
     const canvas = portraitBlur ? portraitFrame(meta.w, meta.h) : { width: meta.w, height: meta.h }
-    appendVideoEffects(lines, canvas.width, canvas.height, effects)
+    appendVideoEffects(lines, canvas.width, canvas.height, effects, filmGrungeInputIndex)
+    appendOpeningHooks(lines, canvas.width, canvas.height, { flash: openingFlash, zoom: openingZoom })
     appendAutoShortOverlays(lines, canvas.width, canvas.height, overlays)
   }
 
@@ -1030,7 +1035,10 @@ export function taoFilterComplexAutomatic(
   portraitBlur = false,
   videoAdjustments = normalizeVideoAdjustments(undefined),
   overlays?: PreparedAutoShortOverlays,
-  videoEffects?: VideoEffect[]
+  videoEffects?: VideoEffect[],
+  openingFlash = false,
+  openingZoom = false,
+  filmGrungeInputIndex?: number | VideoEffectInputMapping[]
 ): string[] {
   if (plan.maskVideoIndex == null) {
     throw new Error('Cần có mask index cho automatic filter complex.')
@@ -1077,7 +1085,8 @@ export function taoFilterComplexAutomatic(
   }
 
   const canvas = portraitBlur ? portraitFrame(meta.w, meta.h) : { width: meta.w, height: meta.h }
-  appendVideoEffects(lines, canvas.width, canvas.height, videoEffects)
+  appendVideoEffects(lines, canvas.width, canvas.height, videoEffects, filmGrungeInputIndex)
+  appendOpeningHooks(lines, canvas.width, canvas.height, { flash: openingFlash, zoom: openingZoom })
   appendAutoShortOverlays(lines, canvas.width, canvas.height, overlays)
   const audio = buildAudioFilter(meta, plan.narrationAudioIndex, batAmThanh, audioVolume)
   if (audio.filter) {
@@ -1175,6 +1184,8 @@ function burnOutputName(req: BurnReq): string {
 export interface RunBurnSubtitleLowerOptions {
   videoEffects?: VideoEffect[]
   overlays?: AutoShortOverlays
+  openingFlash?: boolean
+  openingZoom?: boolean
   outputPath: string
   plan: BurnInputPlan
   timedMask?: TimedOcrBlurMask | null
@@ -1201,7 +1212,7 @@ export async function runBurnSubtitleLower(
   const hasTimedMask = Boolean(options.timedMask)
   const hasAudioFile = Boolean(req.batAmThanh && req.amThanhFile)
 
-  if (!hasSrt && !hasBlur && !hasTimedMask && !req.batAmThanh && !req.portraitBlur && !hasVideoAdjustments(req.videoAdjustments) && !options.overlays && !options.videoEffects?.length) {
+  if (!hasSrt && !hasBlur && !hasTimedMask && !req.batAmThanh && !req.portraitBlur && !hasVideoAdjustments(req.videoAdjustments) && !options.overlays && !options.videoEffects?.length && !options.openingFlash && !options.openingZoom && !req.openingFlash && !req.openingZoom) {
     return { ok: false, error: 'Vui lòng chọn ít nhất 1 vùng làm mờ, tải lên tệp phụ đề hoặc bật cấu hình âm thanh.' }
   }
 
@@ -1291,7 +1302,19 @@ export async function runBurnSubtitleLower(
       nextInputIndex: 1 + Number(options.plan.narrationAudioIndex != null) + Number(options.plan.maskVideoIndex != null),
       fontId: req.fontId
     }, overlayFiles)
+
+    const filmGrungePath = resolveFilmGrungePath()
+    const hasFilmGrunge = Boolean(filmGrungePath && options.videoEffects?.some(e => e.kind === 'film_grunge'))
+    const baseInputCount = 1 + Number(options.plan.narrationAudioIndex != null) + Number(options.plan.maskVideoIndex != null)
+    const overlayImageOffset = overlays?.image ? 1 : 0
+    const effectStartInputIndex = baseInputCount + overlayImageOffset
+    const plannedEffects = planVideoEffectInputs(options.videoEffects, effectStartInputIndex)
+    const filmGrungeInputIndex = plannedEffects.mappings.length > 0 ? plannedEffects.mappings : plannedEffects.filmGrungeInputIndex
+
     let filterArgs: string[] = []
+    const effectiveOpeningFlash = Boolean(options.openingFlash ?? req.openingFlash)
+    const effectiveOpeningZoom = Boolean(options.openingZoom ?? req.openingZoom)
+
     if (hasTimedMask) {
       filterArgs = taoFilterComplexAutomatic(
         meta,
@@ -1304,7 +1327,10 @@ export async function runBurnSubtitleLower(
         req.portraitBlur === true,
         req.videoAdjustments,
         overlays,
-        options.videoEffects
+        options.videoEffects,
+        effectiveOpeningFlash,
+        effectiveOpeningZoom,
+        filmGrungeInputIndex
       )
     } else {
       filterArgs = taoFilterComplex(
@@ -1320,7 +1346,10 @@ export async function runBurnSubtitleLower(
         req.portraitBlur === true,
         req.videoAdjustments,
         overlays,
-        options.videoEffects
+        options.videoEffects,
+        effectiveOpeningFlash,
+        effectiveOpeningZoom,
+        filmGrungeInputIndex
       )
     }
 
@@ -1355,6 +1384,11 @@ export async function runBurnSubtitleLower(
       const inputArgs = ['-y', ...options.plan.inputArgs]
       // A single decoded still frame is repeated by overlay; the source ends the stream.
       if (overlays?.image) inputArgs.push('-i', overlays.image.path)
+      if (plannedEffects.inputArgs.length > 0) {
+        inputArgs.push(...plannedEffects.inputArgs)
+      } else if (hasFilmGrunge && filmGrungePath) {
+        inputArgs.push('-stream_loop', '-1', '-i', filmGrungePath)
+      }
       const dungFilterAudio = req.batAmThanh && (meta.hasAudio || hasAudioFile)
       const audioCodecArgs = dungFilterAudio ? ['-c:a', 'aac'] : ['-c:a', 'copy']
 
@@ -1733,6 +1767,8 @@ export async function validateRenderedMedia(
 export interface AutoShortBurnExecutionOptions {
   videoEffects?: VideoEffect[]
   overlays?: AutoShortOverlays
+  openingFlash?: boolean
+  openingZoom?: boolean
   timedOcrBlurMask?: TimedOcrBlurMask | null
   ffmpegPath: string
   ffprobePath: string
@@ -1867,6 +1903,8 @@ export async function burnAutoShort(
         plan,
         overlays: options.overlays,
         videoEffects: options.videoEffects,
+        openingFlash: options.openingFlash,
+        openingZoom: options.openingZoom,
         timedMask: options.timedOcrBlurMask,
         ffmpegPath: options.ffmpegPath,
         ffprobePath: options.ffprobePath,

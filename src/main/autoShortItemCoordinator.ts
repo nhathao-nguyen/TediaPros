@@ -38,6 +38,7 @@ import {
   normalizedRegionToDisplayPixels
 } from './canonicalDisplayGeometry'
 import { probeBurnMedia, type burnAutoShort } from './burn'
+import { changeVideoSpeed } from './videoSpeed'
 import { ocrVideo, type ocrVideoWithVisualTimeline } from './ocr'
 import { transcribeAudio } from './whisper'
 import { validateAutoShortPublicationTimeline } from './autoShortPolicy'
@@ -1920,6 +1921,8 @@ export function createAutoShortItemProcessor(
               timedOcrBlurMask: timedMask,
               overlays: config.overlays,
               videoEffects: config.videoEffects,
+              openingFlash: config.openingFlash,
+              openingZoom: config.openingZoom,
               ffmpegPath: ffmpeg,
               ffprobePath: ffprobe,
               finalOutputPath,
@@ -1959,6 +1962,31 @@ export function createAutoShortItemProcessor(
       }
       const completedBurn = burnResult
       published = true
+
+      // Auto-retime video speed if configured (e.g. 1.1x speedup to evade duplicate detection and tighten pacing)
+      if (config.videoSpeed && Math.abs(config.videoSpeed - 1) >= 0.01 && completedBurn.output) {
+        const inputVideoPath = completedBurn.output
+        emitProgress(context, 'rendering_video', 98, `Đang tự động tua nhanh video lên ${config.videoSpeed}x…`, undefined, undefined, { stage: 'render', phase: 'running' })
+        const speedRes = await changeVideoSpeed({
+          videoPath: inputVideoPath,
+          speed: config.videoSpeed,
+          preservePitch: config.videoSpeedPreservePitch !== false,
+          outputDir: itemOutputDir
+        }, (p) => {
+          emitProgress(context, 'rendering_video', 98, `Đang tua nhanh ${config.videoSpeed}x… ${p.percent}%`, undefined, undefined, { stage: 'render', phase: 'running' })
+        }, signal)
+
+        if (speedRes.ok && speedRes.outputPath) {
+          if (speedRes.outputPath !== inputVideoPath) {
+            await rm(inputVideoPath, { force: true }).catch(() => {})
+            completedBurn.output = speedRes.outputPath
+            outputName = basename(speedRes.outputPath)
+          }
+          logInfo(`[AutoShort] Đã tự động tua nhanh video lên ${config.videoSpeed}x: ${outputName}`)
+        } else if (speedRes.error) {
+          logWarn(`[AutoShort] Không thể tua nhanh video: ${speedRes.error}, giữ nguyên video gốc.`)
+        }
+      }
 
       // Eager Stage Cleanup: Final video has been successfully generated and verified.
       // Intermediate STTN workspace (which can hold hundreds of MB to GBs of scratch frames) can be unlinked immediately.

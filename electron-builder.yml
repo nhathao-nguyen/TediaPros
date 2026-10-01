@@ -24,6 +24,10 @@ extraResources:
       - licenses/**/*
       - "*.ttf"
       - "*.otf"
+  - from: resources/effects
+    to: effects
+    filter:
+      - "*.mp4"
 win:
   target:
     - nsis

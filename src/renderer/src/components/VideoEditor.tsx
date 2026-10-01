@@ -68,6 +68,7 @@ interface Props {
   draft?: EditorDraft | null
   /** Editor duoc giu mounted khi doi tab; active bao luc khung da co kich thuoc de do lai. */
   active?: boolean
+  onOpenSpeedModal?: (videoPath: string) => void
 }
 
 interface PreviewStageSize {
@@ -100,7 +101,7 @@ function defaultSubtitleRegion(width: number, height: number): Region {
   }
 }
 
-export default function VideoEditor({ draft, active = true }: Props): JSX.Element {
+export default function VideoEditor({ draft, active = true, onOpenSpeedModal }: Props): JSX.Element {
   const [outputDir, setOutputDir] = useTabOutputDir('tblao.outputDir.editor')
   const [video, setVideo] = useState<string | null>(null)
   const [subtitlePath, setSubtitlePath] = useState('')
@@ -1698,6 +1699,17 @@ export default function VideoEditor({ draft, active = true }: Props): JSX.Elemen
                 <button className="link-btn" onClick={() => window.api.showItem(burnOutput)}>
                   {baseName(burnOutput)}
                 </button>
+                {onOpenSpeedModal && (
+                  <button
+                    type="button"
+                    className="btn ghost sm"
+                    style={{ marginLeft: 8, padding: '2px 8px', fontSize: 12 }}
+                    onClick={() => onOpenSpeedModal(burnOutput)}
+                    title="Tua nhanh video này lên 1.1x, 1.15x..."
+                  >
+                    ⚡ Tua nhanh (1.1x)
+                  </button>
+                )}
               </span>
               {burnSeoMetadata
                 ? <VideoSeoResult metadata={burnSeoMetadata} titlePath={burnTitlePath || undefined} />

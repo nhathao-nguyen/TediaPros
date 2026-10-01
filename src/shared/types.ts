@@ -458,6 +458,8 @@ export interface BurnReq {
   /** Fit the full source into 1080x1920 with a blurred video background. */
   portraitBlur?: boolean
   videoAdjustments?: VideoAdjustments
+  openingFlash?: boolean
+  openingZoom?: boolean
   video: string
   srt?: string | null
   /** Optional separate subtitle track specifically used for title/SEO generation (e.g. translated.srt instead of timed.srt or source.srt). */
@@ -528,6 +530,25 @@ export interface BurnResult {
     diagnostic?: string
   }>
 }
+
+export interface VideoSpeedRequest {
+  videoPath: string
+  speed: number
+  preservePitch?: boolean
+  outputDir?: string
+}
+
+export interface VideoSpeedProgress {
+  percent: number
+  message?: string
+}
+
+export interface VideoSpeedResult {
+  ok: boolean
+  outputPath?: string
+  error?: string
+}
+
 
 /** Nha cung cap dich phu de bang AI. */
 export type DichProvider = 'gemini' | 'openai' | 'local' | 'gemini-gateway'
@@ -1069,6 +1090,14 @@ export interface AutoShortConfig {
   backgroundMusic?: AutoShortBackgroundMusicConfig
   outputDir: string
   thumbnailConfig?: AutoShortThumbnailConfig
+  /** Tự động tua nhanh video đầu ra cho cả hàng đợi (ví dụ: 1.05, 1.10, 1.15, 1.20). Mặc định undefined hoặc 1.0. */
+  videoSpeed?: number
+  /** Giữ nguyên cao độ giọng nói khi tua nhanh (mặc định true). */
+  videoSpeedPreservePitch?: boolean
+  /** Hiệu ứng mở màn: Chớp sáng trắng camera 0.35s ở giây 0 (Opening Flash). */
+  openingFlash?: boolean
+  /** Hiệu ứng mở màn: Phóng to 115% rồi nhả về 100% trong 1.5s đầu (Punch-in Zoom). */
+  openingZoom?: boolean
   executionPolicy?: {
     edgeTtsConcurrency?: 1 | 2
     maxActiveItems?: 1 | 2
