@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict'
 import { existsSync } from 'node:fs'
-import { copyFile, mkdir, mkdtemp, readFile, readdir, rm, symlink, writeFile } from 'node:fs/promises'
+import { copyFile, mkdir, mkdtemp, readFile, readdir, realpath, rm, symlink, writeFile } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { dirname, join, relative } from 'node:path'
 import { spawnSync } from 'node:child_process'
@@ -223,7 +223,7 @@ test('chroma key survives normalization and rejects filter injection or invalid 
 
 test('CapCut chroma metadata is recognized without depending on the asset name and survives vault save', async () => {
   const { scanCapCutEffects, saveOverlayToVault, getSavedOverlayEffects, resolveOverlayChromaKey, restoreVideoEffectChromaKeys } = await import('../src/main/capcutScanner')
-  const root = await mkdtemp(join(tmpdir(), 'tedia-chroma-fixture-'))
+  const root = await realpath(await mkdtemp(join(tmpdir(), 'tedia-chroma-fixture-')))
   const oldLocal = process.env.LOCALAPPDATA
   const oldUserData = process.env.TEDIAPROS_TEST_USER_DATA
   try {
@@ -278,7 +278,7 @@ test('CapCut chroma metadata is recognized without depending on the asset name a
   } finally {
     if (oldLocal == null) delete process.env.LOCALAPPDATA; else process.env.LOCALAPPDATA = oldLocal
     if (oldUserData == null) delete process.env.TEDIAPROS_TEST_USER_DATA; else process.env.TEDIAPROS_TEST_USER_DATA = oldUserData
-    const rel = relative(tmpdir(), root)
+    const rel = relative(await realpath(tmpdir()), root)
     assert.ok(rel.startsWith('tedia-chroma-fixture-') && !rel.includes('..'))
     await rm(root, { recursive: true, force: true })
   }
