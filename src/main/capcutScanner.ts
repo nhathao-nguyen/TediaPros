@@ -1,7 +1,7 @@
 import { constants, existsSync, readdirSync, realpathSync } from 'node:fs'
 import { readdir, readFile, mkdir, copyFile, stat, rm, rename, writeFile } from 'node:fs/promises'
 import { randomUUID } from 'node:crypto'
-import { join, basename, extname, dirname, relative, isAbsolute } from 'node:path'
+import { join, basename, extname, dirname, relative, isAbsolute, normalize } from 'node:path'
 import { homedir } from 'node:os'
 import { spawn } from 'node:child_process'
 import { app } from 'electron'
@@ -84,23 +84,50 @@ export async function readCapCutChromaKey(effectRoot: string): Promise<OverlayCh
   return { color: [...colors][0], similarity: 0.3, blend: 0.12 }
 }
 
+function stripLongPathPrefix(p: string): string {
+  return p.replace(/^\\\\\?\\UNC\\/i, '\\\\').replace(/^\\\\\?\\/i, '')
+}
+
+function toCanonicalPath(p: string): string {
+  let clean = stripLongPathPrefix(p)
+  try {
+    if (existsSync(clean)) clean = stripLongPathPrefix(realpathSync(clean))
+  } catch {
+    // ignore
+  }
+  return normalize(clean)
+}
+
 function containedParts(candidate: string, root: string): string[] | undefined {
+  if (typeof candidate !== 'string' || typeof root !== 'string') return undefined
+
   const check = (r: string, c: string): string[] | undefined => {
-    const rel = relative(r, c)
+    const cleanR = stripLongPathPrefix(r)
+    const cleanC = stripLongPathPrefix(c)
+    const rel = relative(cleanR, cleanC)
     if (!rel || isAbsolute(rel) || rel === '..' || rel.startsWith('..\\') || rel.startsWith('../')) return undefined
-    return rel.split(/[\\/]/)
+    const parts = rel.split(/[\\/]/).filter(Boolean)
+    if (parts.includes('..')) return undefined
+    return parts
   }
 
   const direct = check(root, candidate)
   if (direct) return direct
 
-  try {
-    const realRoot = existsSync(root) ? realpathSync(root) : root
-    const realCand = existsSync(candidate) ? realpathSync(candidate) : candidate
-    return check(realRoot, realCand)
-  } catch {
-    return undefined
+  const cRoot = toCanonicalPath(root)
+  const cCand = toCanonicalPath(candidate)
+  const canon = check(cRoot, cCand)
+  if (canon) return canon
+
+  const lcRoot = cRoot.toLowerCase().replace(/\\/g, '/').replace(/\/+$/, '')
+  const lcCand = cCand.toLowerCase().replace(/\\/g, '/').replace(/\/+$/, '')
+  if (lcCand.startsWith(lcRoot + '/')) {
+    const rel = cCand.slice(lcRoot.length + 1)
+    const parts = rel.split(/[\\/]/).filter(Boolean)
+    if (parts.length > 0 && !parts.includes('..')) return parts
   }
+
+  return undefined
 }
 
 /** Publish by replacement so an existing target-file symlink is never followed. */
@@ -122,7 +149,6 @@ function publishVaultMetadata(target: string, vaultRoot: string, metadata: unkno
 
 /** Recover key metadata for selections saved before chroma-key support was added. */
 export async function resolveOverlayChromaKey(videoPath: string): Promise<OverlayChromaKey | undefined> {
-  console.error('[CHROMA DEBUG] ENTER resolveOverlayChromaKey:', videoPath)
   if (typeof videoPath !== 'string' || !isAbsolute(videoPath) || videoPath.includes('\0')) return undefined
   const cacheDir = getCapCutEffectCacheDir()
   const capcutParts = containedParts(videoPath, cacheDir)
@@ -132,24 +158,18 @@ export async function resolveOverlayChromaKey(videoPath: string): Promise<Overla
   }
   const vaultDir = getTediaProsVaultDir()
   const vaultParts = containedParts(videoPath, vaultDir)
-  if (!vaultParts) console.error('[CHROMA DEBUG] containedParts returned undefined for videoPath:', videoPath, 'vaultDir:', vaultDir)
-  else if (vaultParts.length !== 2) console.error('[CHROMA DEBUG] vaultParts !== 2:', vaultParts)
   if (vaultParts?.length === 2) {
     await assertContainedRegularFile(videoPath, vaultDir, 'Video trong kho hiệu ứng')
     const metaPath = await assertContainedRegularFile(join(vaultDir, vaultParts[0], 'metadata.json'), vaultDir, 'Metadata kho hiệu ứng')
     const meta = JSON.parse(await readFile(metaPath, 'utf8'))
     if (meta.chromaKey) return normalizeOverlayChromaKey(meta.chromaKey)
     const origin = String(meta.id || vaultParts[0]).match(/^(\d+)_([\da-f]+)$/i)
-    if (!origin) console.error('[CHROMA DEBUG] no origin match for:', meta.id, vaultParts[0])
-    if (!existsSync(cacheDir)) console.error('[CHROMA DEBUG] cacheDir does not exist:', cacheDir)
     if (origin && existsSync(cacheDir)) {
       const chromaKey = await readCapCutChromaKey(join(cacheDir, origin[1], origin[2]))
-      if (!chromaKey) console.error('[CHROMA DEBUG] readCapCutChromaKey returned undefined for:', join(cacheDir, origin[1], origin[2]))
       if (chromaKey) await publishVaultMetadata(metaPath, vaultDir, { ...meta, blendMode: 'chromakey', chromaKey })
       return chromaKey
     }
   }
-  console.error('[CHROMA DEBUG] EXIT resolveOverlayChromaKey undefined for:', videoPath)
   return undefined
 }
 
