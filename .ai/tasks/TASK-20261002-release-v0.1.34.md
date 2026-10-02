@@ -1,6 +1,6 @@
 # TASK-20261002-release-v0.1.34: Phát hành Facebook Reels
 
-- **Trạng thái:** Đã kiểm chứng local; chờ CI release
+- **Trạng thái:** CI thất bại; không xuất bản v0.1.34, tiếp tục v0.1.35
 - **Người thực hiện:** Codex
 - **Thời gian:** 2026-10-02
 
@@ -14,7 +14,7 @@ Người dùng yêu cầu push code, nâng phiên bản và release. Phát hành
 - [x] Typecheck node/web pass.
 - [x] Full local runtime suite pass: 1164 lượt pass, 0 fail, 35 skipped (fixture/runtime chuyên biệt chưa cấu hình).
 - [x] Subtitle smoke pass và FFmpeg render thực tế 2/10/24 frames.
-- [ ] Push SonVersion và tag v0.1.34.
+- [x] Push SonVersion và tag v0.1.34.
 - [ ] CI build/package/publish hoàn tất và release có EXE, blockmap, latest.yml.
 
 ## 3. Phạm Vi
@@ -43,3 +43,5 @@ Local logs: `.ai/qa/release-v0.1.34-tests.txt`. Đã fetch remote/tags và xác 
 ## 7. Bàn Giao
 
 Cần xác minh CI và exact asset list sau push. Local tests/packaging không thay thế acceptance Facebook thật hay kiểm chứng bản đã cài.
+
+CI run `36992774710` trên Windows thất bại ở đúng 3 assertion của `facebook-reels-library.test.ts`: fixture dùng TEMP dạng `C:\Users\RUNNER~1\...`, còn containment trả canonical `C:\Users\runneradmin\...`. Typecheck/subtitle/metadata/font đều pass; chưa đóng gói/xuất bản release. Sửa bằng realpath root fixture, giữ tag v0.1.34 nguyên trạng và phát hành tag mới v0.1.35.

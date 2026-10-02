@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict'
 import { test } from 'node:test'
-import { mkdtemp, mkdir, writeFile, readFile, rm } from 'node:fs/promises'
+import { mkdtemp, mkdir, writeFile, readFile, rm, realpath } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { FacebookReelsLibrary } from '../src/main/facebookReelsLibrary'
@@ -14,7 +14,9 @@ test('Reels filenames retain ID even for a title-only preset, preserving export 
   assert.equal(reelsOutputTemplate('%(title)s [%(id)s].%(ext)s', '111111'), '%(title)s [%(id)s].%(ext)s')
 })
 async function fixture(run: (library: FacebookReelsLibrary, root: string) => Promise<void>): Promise<void> {
-  const root = await mkdtemp(join(tmpdir(), 'reels-library-'))
+  // Windows CI exposes TEMP as RUNNER~1 while containment returns the long
+  // canonical path. Compare the same filesystem identity in all assertions.
+  const root = await realpath(await mkdtemp(join(tmpdir(), 'reels-library-')))
   try { await run(new FacebookReelsLibrary(join(root, 'state')), root) }
   finally { await rm(root, { recursive: true, force: true }) }
 }

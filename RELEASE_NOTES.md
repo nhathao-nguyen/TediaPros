@@ -1,4 +1,4 @@
-## TediaPros v0.1.34
+## TediaPros v0.1.35
 
 ### Facebook Reels: quét, xuất dữ liệu và quản lý kênh
 
