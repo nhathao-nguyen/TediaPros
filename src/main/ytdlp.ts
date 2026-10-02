@@ -15,6 +15,11 @@ import {
 import { binDir, resolveFfmpeg, resolveYtDlp } from './deps'
 import { debugRaw, logError, logInfo } from './logger'
 import { withResolvedDomainCookie } from './cookies'
+import { trackChildProcess, terminateProcessTree } from './processTree'
+import { facebookCookieAccount } from './facebookReelsAccount'
+import { reelsDownloadLibrary } from './facebookReelsLibraryRuntime'
+import { facebookReelId, reelsOutputTemplate } from '../shared/facebookReels'
+import { assertContainedParentDirectory } from './safeContainedPath'
 import { isFacebookReelsTabUrl, crawlFacebookReelsTab } from './facebookReels'
 import {
   siteExecutionContext,
@@ -167,15 +172,23 @@ function secondsToString(s: number | null): string | null {
 }
 
 /** Chay yt-dlp, gom stdout. */
-function run(cmd: string, args: string[]): Promise<{ code: number; stdout: string; stderr: string }> {
+function run(cmd: string, args: string[], signal?: AbortSignal): Promise<{ code: number; stdout: string; stderr: string }> {
   return new Promise((resolve, reject) => {
+    if (signal?.aborted) { reject(new Error('Đã hủy lấy metadata.')); return }
     const child = spawn(cmd, args, { windowsHide: true, env: utf8Env() })
+    trackChildProcess(child)
+    const abort = (): void => { void terminateProcessTree(child) }
+    signal?.addEventListener('abort', abort, { once: true })
     let stdout = ''
     let stderr = ''
     child.stdout.on('data', (d) => (stdout += d.toString()))
     child.stderr.on('data', (d) => (stderr += d.toString()))
-    child.on('error', reject)
-    child.on('close', (code) => resolve({ code: code ?? -1, stdout, stderr }))
+    child.on('error', error => { signal?.removeEventListener('abort', abort); reject(error) })
+    child.on('close', (code) => {
+      signal?.removeEventListener('abort', abort)
+      if (signal?.aborted) reject(new Error('Đã hủy lấy metadata.'))
+      else resolve({ code: code ?? -1, stdout, stderr })
+    })
   })
 }
 
@@ -198,7 +211,9 @@ async function runMetadataRequest(
   base: string[],
   url: string,
   useCookies: boolean,
-  proxy?: string | null
+  proxy?: string | null,
+  signal?: AbortSignal,
+  expectedFacebookAccount?: string
 ): Promise<{
   context: SiteExecutionContext
   code: number
@@ -206,6 +221,9 @@ async function runMetadataRequest(
   stderr: string
 }> {
   return withResolvedDomainCookie(url, useCookies, async (savedCookie) => {
+    if (expectedFacebookAccount && await facebookCookieAccount(savedCookie) !== expectedFacebookAccount) {
+      throw new Error('Tài khoản Facebook đã thay đổi. Hãy bắt đầu lượt quét mới.')
+    }
     const context = await siteExecutionContext(url, savedCookie)
     // Metadata Facebook public thu guest + impersonation truoc. Cookie co the
     // lam Facebook tra mot payload khac/khong on dinh du link van public.
@@ -213,15 +231,15 @@ async function runMetadataRequest(
     const initialCookie = context.site === 'facebook' ? null : savedCookie
     let result: { code: number; stdout: string; stderr: string }
     try {
-      result = await run(cmd, requestArgs(base, context, initialCookie, proxy, url))
+      result = await run(cmd, requestArgs(base, context, initialCookie, proxy, url), signal)
     } catch (error) {
       throw siteError(context, error)
     }
 
-    if (context.site === 'facebook' && result.code !== 0 && savedCookie) {
+    if (context.site === 'facebook' && result.code !== 0 && savedCookie && !signal?.aborted) {
       logInfo('Facebook khong tra metadata cong khai — thu lai bang cookie da luu…')
       try {
-        result = await run(cmd, requestArgs(base, context, savedCookie, proxy, url))
+        result = await run(cmd, requestArgs(base, context, savedCookie, proxy, url), signal)
       } catch (error) {
         throw siteError(context, error)
       }
@@ -235,7 +253,9 @@ async function runMetadataRequest(
 export async function fetchInfo(
   url: string,
   proxy?: string | null,
-  useCookies = false
+  useCookies = false,
+  signal?: AbortSignal,
+  expectedFacebookAccount?: string
 ): Promise<VideoInfo> {
   if (isFacebookReelsTabUrl(url)) {
     const pl = await crawlFacebookReelsTab(url, proxy, useCookies)
@@ -261,7 +281,9 @@ export async function fetchInfo(
     args,
     url,
     useCookies,
-    proxy
+    proxy,
+    signal,
+    expectedFacebookAccount
   )
   if (code !== 0) {
     // stderr THO lo ten cong cu tai (thu tab Giay phep co tinh giau) + URL user
@@ -305,6 +327,7 @@ export async function fetchInfo(
   return {
     id: String(data.id ?? ''),
     title: String(data.title ?? 'Khong ro tieu de'),
+    description: typeof data.description === 'string' ? data.description : null,
     uploader: data.uploader ?? data.channel ?? null,
     duration: typeof data.duration === 'number' ? data.duration : null,
     durationString: data.duration_string ?? secondsToString(data.duration ?? null),
@@ -677,13 +700,18 @@ async function runYtdlpDownload(
   req: DownloadRequest,
   context: SiteExecutionContext,
   onProgress: (p: DownloadProgress) => void,
-  sidecar: string
+  sidecar: string,
+  signal?: AbortSignal
 ): Promise<InternalDownloadResult> {
+  if(signal?.aborted) throw new Error('Đã hủy tải video.')
   await mkdir(dirname(sidecar), { recursive: true })
   await rm(sidecar, { force: true })
   const startedAt = Date.now()
   return new Promise<InternalDownloadResult>((resolve) => {
-    const child = spawn(cmd, args, { windowsHide: true, env: utf8Env() })
+    const child = trackChildProcess(spawn(cmd, args, { windowsHide: true, env: utf8Env() }))
+    const abort=():void=>terminateProcessTree(child)
+    signal?.addEventListener('abort',abort,{once:true})
+    if(signal?.aborted)abort()
     let structuredDestFile: string | null = null
     let legacyDestFile: string | null = null
     let skipped = false
@@ -694,6 +722,7 @@ async function runYtdlpDownload(
     const finish = (result: InternalDownloadResult): void => {
       if (settled) return
       settled = true
+      signal?.removeEventListener('abort',abort)
       resolve(result)
     }
 
@@ -789,6 +818,7 @@ async function runYtdlpDownload(
     })
 
     child.on('close', async (code) => {
+      if(signal?.aborted){await rm(sidecar,{force:true}).catch(()=>{});finish({id,ok:false,file:null,error:'Đã hủy tải video.',errorCode:'unknown',rawError:null});return}
       if (stdoutBuf) handleLine(stdoutBuf)
       if (code === 0) {
         if (skipped) {
@@ -876,8 +906,31 @@ function safeDownloadResult(result: InternalDownloadResult): DownloadResult {
 export async function download(
   id: string,
   req: DownloadRequest,
-  onProgress: (p: DownloadProgress) => void
+  onProgress: (p: DownloadProgress) => void,
+  signal?: AbortSignal,
+  expectedFacebookAccount?: string
 ): Promise<DownloadResult> {
+  const reelId = facebookReelId(req.url)
+  if (!reelId || req.kind !== 'video') return downloadUntracked(id, req, onProgress, signal, expectedFacebookAccount)
+  if (req.mediaId && req.mediaId !== reelId) throw Error('Reel ID không khớp URL tải.')
+  const outputTemplate = reelsOutputTemplate(req.outputTemplate ?? '', reelId)
+  if (/[\x00-\x1f]/.test(outputTemplate) || outputTemplate.split(/[\\/]/).some(part => part === '..') || isAbsolute(outputTemplate)) throw Error('Mẫu tên file Reels nằm ngoài thư mục tải.')
+  await assertContainedParentDirectory(join(req.outputDir, outputTemplate), req.outputDir, 'File Reels')
+  const result = await reelsDownloadLibrary().download(req,
+    () => downloadUntracked(id, { ...req, outputTemplate, useArchive: false }, onProgress, signal, expectedFacebookAccount), signal)
+  if (result.skipped) onProgress({ id, status: 'finished', percent: 100, downloadedBytes: null,
+    totalBytes: null, speed: null, eta: null, line: 'Đã có video này trong thư viện Reels; bỏ qua tải trùng.' })
+  return { ...result, id }
+}
+
+async function downloadUntracked(
+  id: string,
+  req: DownloadRequest,
+  onProgress: (p: DownloadProgress) => void,
+  signal?: AbortSignal,
+  expectedFacebookAccount?: string
+): Promise<DownloadResult> {
+  if(signal?.aborted)throw new Error('Đã hủy tải video.')
   const cmd = await ytdlpCmd()
   const ffLoc = await ffmpegLocation()
   const sidecar = resultSidecarPath(id, 'primary')
@@ -885,6 +938,8 @@ export async function download(
   // khong duoc tu chi dinh domain cookie khac voi URL tai.
   const policyUrl = resolvedPolicyUrlFor(req.url)
   const downloaded = await withResolvedDomainCookie(policyUrl, req.useCookies, async (savedCookie) => {
+    if(signal?.aborted)throw new Error('Đã hủy tải video.')
+    if(expectedFacebookAccount && await facebookCookieAccount(savedCookie)!==expectedFacebookAccount)throw new Error('Tài khoản Facebook đã thay đổi. Hãy quét lại.')
     const context = await siteExecutionContext(policyUrl, savedCookie)
     // Neu user bat cookie, moi website dung file cua chinh domain ngay tu dau.
     const initialCookie = savedCookie
@@ -893,7 +948,7 @@ export async function download(
     // Dong lenh day du lo: duong dan cong cu, TEN cong cu (thu tab Giay phep co
     // tinh giau), duong dan file cookie, proxy, URL. Chi cho console luc dev.
     debugRaw('ytdlp cmd', `${cmd} ${args.join(' ')}`)
-    let result = await runYtdlpDownload(cmd, args, id, req, context, onProgress, sidecar)
+    let result = await runYtdlpDownload(cmd, args, id, req, context, onProgress, sidecar, signal)
 
     if (
       !result.ok &&
@@ -912,7 +967,8 @@ export async function download(
         req,
         context,
         onProgress,
-        retrySidecar
+        retrySidecar,
+        signal
       )
       if (result.ok) logInfo('Thử lại không cookie: thành công.')
     }

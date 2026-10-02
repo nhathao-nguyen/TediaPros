@@ -69,6 +69,14 @@ graph TD
 
 ---
 
+## Facebook Reels
+
+Theo dõi hằng ngày chạy trong Main singleton `facebookReelsMonitorRuntime.ts`, với store v1 `facebookReelsMonitorStore.ts`, lịch theo ngày Việt Nam và durable claim trước scan/download. Typed preload nối các nút theo dõi từng kênh, giờ chạy và trung tâm thông báo toàn ứng dụng. Xem [theo dõi Reels](facebook-reels-monitor.md).
+
+Downloader có crawler Facebook Reels tách thành URL/contract (`src/shared/facebookReels.ts`), parser theo source/video ID, CDP observer, controller, job registry và checkpoint store (`src/main/facebookReels*.ts`). Luồng typed IPC start/progress/result/cancel/metadata nối vào hộp chọn Downloader. Mỗi lượt có session riêng; completion, membership và caption là bằng chứng riêng, không suy ra hết danh sách từ DOM đứng yên. Chính sách và giới hạn: [ADR 012](adr/012-facebook-reels-scoped-discovery.md).
+
+Export dùng cùng owner/account của job: detail browser lấy link caption/bình luận creator theo video ID, service article HTTP public tách HTML, exporter ghi caption/article TXT và XLSX trong run folder an toàn, pipeline tái sử dụng downloader MP4 có signal. Progress/cancel được dùng chung; renderer hiển thị kết quả và trạng thái từng bước. Xem [hướng dẫn xuất](facebook-reels-export.md).
+
 ## 2. Pipeline AutoShort (Quy Trình Xử Lý Video Tự Động Từ A-Z)
 
 AutoShort là tính năng phức tạp nhất trong TediaPros. Mỗi video chạy qua pipeline độc lập được điều phối bởi [autoShortItemCoordinator.ts](file:///f:/Son/tool/TediaPros/src/main/autoShortItemCoordinator.ts):
