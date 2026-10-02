@@ -42,6 +42,6 @@ Local logs: `.ai/qa/release-v0.1.34-tests.txt`. Đã fetch remote/tags và xác 
 
 ## 7. Bàn Giao
 
-Cần xác minh CI và exact asset list sau push. Local tests/packaging không thay thế acceptance Facebook thật hay kiểm chứng bản đã cài.
+v0.1.34 không được xuất bản do lỗi CI dưới đây. Bản thay thế v0.1.35 đã hoàn thành CI, xuất bản và xác minh exact asset list/checksum; xem `TASK-20261002-release-v0.1.35.md`. Local tests/packaging không thay thế acceptance Facebook thật hay kiểm chứng bản đã cài.
 
 CI run `36992774710` trên Windows thất bại ở đúng 3 assertion của `facebook-reels-library.test.ts`: fixture dùng TEMP dạng `C:\Users\RUNNER~1\...`, còn containment trả canonical `C:\Users\runneradmin\...`. Typecheck/subtitle/metadata/font đều pass; chưa đóng gói/xuất bản release. Sửa bằng realpath root fixture, giữ tag v0.1.34 nguyên trạng và phát hành tag mới v0.1.35.
