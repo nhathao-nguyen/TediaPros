@@ -1,3 +1,28 @@
+## TediaPros v0.1.35
+
+### Facebook Reels: quét, xuất dữ liệu và quản lý kênh
+
+- Quét Reels từ profile/fanpage, hiển thị tiến trình, kết quả một phần và trạng thái xác minh nguồn; cải thiện thu thập danh sách lớn và lấy caption theo đúng video ID.
+- Chọn video để tải hoặc xuất caption, bài viết liên kết và bảng Excel; hiển thị đầy đủ nội dung cùng lỗi của từng bước.
+- Thư viện kênh Reels lưu thư mục riêng, hỗ trợ mở/đổi thư mục, thêm kênh từ video đã tải và lấy video mới. Chống tải trùng theo ID, tái sử dụng video có sẵn.
+
+### Tự theo dõi Reels và thông báo
+
+- Bật theo dõi hằng ngày cho từng kênh; lịch mặc định 09:00 giờ Việt Nam, có thể đổi giờ. Nếu ứng dụng đóng hoặc máy ngủ qua lịch, chạy bù một lượt khi mở lại/thức dậy.
+- Chỉ tự tải các ID đã xác minh thuộc kênh và chưa từng tải thành công. Video tải lỗi được xét lại ở lượt kế tiếp; lịch sử chống trùng vẫn giữ khi xóa file cũ.
+- Chuông thông báo hiển thị số video đã tải/bỏ qua/lỗi, danh sách video và nút mở thư mục; hỗ trợ đã đọc, xóa từng thông báo và xóa tất cả thông báo đã kết thúc.
+- Giữ tối đa 100 thông báo, có thanh cuộn khi nội dung dài. Xóa thông báo không xóa video, lịch sử tải hoặc lịch theo dõi; thông báo đang chạy được giữ lại.
+
+Theo dõi tự động chạy khi ứng dụng mở, dùng phiên Facebook đã chọn và kết nối trực tiếp. Các kết quả chưa quét hết hoặc cần đăng nhập được báo rõ trong thông báo.
+
+## TediaPros v0.1.33
+
+### Khắc phục & Tăng cường độ ổn định Runtime (Multi-Channel Fallback)
+
+- **Dự phòng Runtime đa kênh tự động**: Tự động fallback sang các kênh runtime trước đó (`runtime-v6`, `runtime-v5`) khi kênh mới (`runtime-v7`) chưa sẵn sàng hoặc gặp lỗi mạng (404/timeout), giải quyết triệt để lỗi không khởi tạo được FFmpeg/FFprobe trên máy tính mới cài đặt.
+- **Tải model tách Vocal thông minh**: Áp dụng cơ chế fallback tương tự cho các manifest mô hình tách thoại offline.
+- **Tối ưu hóa dung lượng & dọn dẹp workspace**: Loại bỏ các artifact và file tạm thừa, tinh gọn codebase.
+
 ## TediaPros v0.1.32
 
 ### Tách nền màu Chroma Key cho hiệu ứng CapCut

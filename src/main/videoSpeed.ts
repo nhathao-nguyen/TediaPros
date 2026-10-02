@@ -128,11 +128,13 @@ export async function changeVideoSpeed(
   })
 
   const isDarwin = process.platform === 'darwin'
+  const jitterCq = 21 + Math.floor(Math.random() * 3) // 21, 22, 23
+  const gopSize = Math.random() > 0.5 ? 60 : 120
   const encoders = [
     ...(isDarwin ? [{ ten: 'h264_videotoolbox', args: ['-c:v', 'h264_videotoolbox', '-pix_fmt', 'yuv420p', '-q:v', '65'] }] : []),
-    { ten: 'h264_nvenc', args: ['-c:v', 'h264_nvenc', '-pix_fmt', 'yuv420p', '-preset', 'p4', '-cq', '22', '-spatial-aq', '1'] },
-    { ten: 'h264_amf', args: ['-c:v', 'h264_amf', '-pix_fmt', 'yuv420p', '-quality', 'balanced', '-rc', 'cqp', '-qp_i', '22', '-qp_p', '22'] },
-    { ten: 'h264_qsv', args: ['-c:v', 'h264_qsv', '-pix_fmt', 'yuv420p', '-global_quality', '22'] },
+    { ten: 'h264_nvenc', args: ['-c:v', 'h264_nvenc', '-pix_fmt', 'yuv420p', '-preset', 'p4', '-cq', String(jitterCq), '-g', String(gopSize), '-spatial-aq', '1'] },
+    { ten: 'h264_amf', args: ['-c:v', 'h264_amf', '-pix_fmt', 'yuv420p', '-quality', 'balanced', '-rc', 'cqp', '-qp_i', String(jitterCq), '-qp_p', String(jitterCq)] },
+    { ten: 'h264_qsv', args: ['-c:v', 'h264_qsv', '-pix_fmt', 'yuv420p', '-global_quality', String(jitterCq)] },
     { ten: 'libx264', args: ['-c:v', 'libx264', '-pix_fmt', 'yuv420p', '-preset', 'faster', '-crf', '20'] }
   ]
 
@@ -140,6 +142,25 @@ export async function changeVideoSpeed(
 
   cancelRequested = false
   let lastError = ''
+
+  const isMp4 = partialPath.toLowerCase().endsWith('.mp4') || partialPath.toLowerCase().endsWith('.m4v')
+  const sanitizeContainerArgs = [
+    '-map_metadata', '-1',
+    '-map_metadata:s:v', '-1',
+    '-map_metadata:s:a', '-1',
+    '-fflags', '+bitexact',
+    '-flags:v', '+bitexact',
+    '-flags:a', '+bitexact',
+    '-metadata:s:v', 'encoder=',
+    '-metadata:s:a', 'encoder=',
+    '-metadata', 'encoder=',
+    ...(isMp4 ? [
+      '-brand', 'mp42',
+      '-movflags', '+faststart',
+      '-metadata:s:v', 'handler_name=Core Media Video',
+      '-metadata:s:a', 'handler_name=Core Media Audio'
+    ] : [])
+  ]
 
   for (const enc of encoders) {
     if (cancelRequested || signal?.aborted) {
@@ -156,6 +177,7 @@ export async function changeVideoSpeed(
       ...mapArgs,
       ...enc.args,
       ...audioArgs,
+      ...sanitizeContainerArgs,
       partialPath
     ]
 

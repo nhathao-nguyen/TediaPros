@@ -3,6 +3,7 @@
 import type { CookieSite } from './sites'
 import type { YtDlpErrorCode } from './ytdlpErrors'
 import type { TranslationAssessment, TranslationStageCapability } from './translation'
+import type { FacebookReelMetadata, FacebookReelsSummary, FacebookReelsChannelSource } from './facebookReels'
 export type { CookieSite, SiteId } from './sites'
 export type { YtDlpErrorCode } from './ytdlpErrors'
 
@@ -70,6 +71,7 @@ export interface VideoFormat {
 export interface VideoInfo {
   id: string
   title: string
+  description?: string | null
   uploader: string | null
   duration: number | null // giay
   durationString: string | null
@@ -90,6 +92,7 @@ export interface PlaylistEntry {
   durationString: string | null
   isPlaylist?: boolean // entry nay ban than la playlist con (vd tab kenh: Videos/Shorts)
   count?: number | null // so video trong playlist con (neu biet)
+  facebook?: FacebookReelMetadata
 }
 
 export interface PlaylistProbe {
@@ -97,11 +100,14 @@ export interface PlaylistProbe {
   title: string | null
   count: number
   entries: PlaylistEntry[]
+  facebook?: FacebookReelsSummary
 }
 
 export type DownloadKind = 'video' | 'audio'
 
 export interface DownloadRequest {
+  /** Profile/fanpage owning a selected Reel, retained for the download library. */
+  reelsSource?: FacebookReelsChannelSource
   url: string
   /** ID video do yt-dlp tra ve; chi dung de doi chieu fallback file dau ra. */
   mediaId: string | null

@@ -61,6 +61,17 @@ import {
 } from './deps'
 import { readFile, writeFile } from 'node:fs/promises'
 import { fetchInfo, fetchPlaylist, download, ytdlpErrorPayload } from './ytdlp'
+import { facebookCookieAccount } from './facebookReelsAccount'
+import { crawlFacebookReels } from './facebookReels'
+import { FacebookReelsStore } from './facebookReelsStore'
+import { reelsDownloadLibrary } from './facebookReelsLibraryRuntime'
+import { reelsMonitor, setReelsWatch, pauseReelsChannel } from './facebookReelsMonitorRuntime'
+import type { ReelsWatchRequest } from '../shared/facebookReelsMonitor'
+import { facebookReelsSource } from '../shared/facebookReels'
+import { FacebookReelsJobs } from './facebookReelsJobs'
+import { createFacebookReelDetailsBrowser } from './facebookReelDetails'
+import type { FacebookReelsRequest, FacebookReelsExportRequest, FacebookReelsChannelSource } from '../shared/facebookReels'
+import { runFacebookReelsExport } from './facebookReelsExportPipeline'
 import {
   captureDomainCookies,
   clearDomainCookies,
@@ -71,6 +82,7 @@ import {
   isCookieSite,
   siteCookieStatus
 } from './cookies'
+import { withResolvedDomainCookie } from './cookies'
 import { invalidateYtDlpCapabilities, ytdlpCapabilityStatus } from './sitePolicy'
 import { testProxy } from './proxy'
 import { initAutoUpdate, checkForUpdates, quitAndInstall } from './updater'
@@ -443,6 +455,7 @@ app.whenReady().then(async () => {
   registerIpc()
   logInfo(`${appRuntimeProfile.windowTitle} ${app.getVersion()} khởi động · ${process.platform}`)
   createWindow()
+  void reelsMonitor().initialize().then(() => reelsMonitor().start()).catch(() => logError('Không khởi động được theo dõi Reels; kiểm tra dữ liệu hoặc thư mục lưu.'))
   void maybeAutoUpdateYtDlp()
   initAutoUpdate(() => mainWindow)
 
@@ -457,17 +470,99 @@ app.on('window-all-closed', () => {
 
 // Đóng resident worker sạch trước khi Electron thoát.
 let whisperShutdownStarted = false
+const facebookReelsJobs = new FacebookReelsJobs(
+  new FacebookReelsStore(join(app.getPath('userData'), 'facebook-reels')),
+  crawlFacebookReels, fetchInfo,
+  r => withResolvedDomainCookie(r.url, !!r.useCookies, facebookCookieAccount), runFacebookReelsExport,
+  (request, account) => {
+    const browser = createFacebookReelDetailsBrowser(request, account)
+    return { resolve: (entry, signal) => browser.resolve(entry, signal, { captionOnly: true }), dispose: () => browser.dispose() }
+  }
+)
 app.on('before-quit', (event) => {
   if (whisperShutdownStarted) return
   whisperShutdownStarted = true
+  facebookReelsJobs.shutdown()
   event.preventDefault()
   void Promise.all([
+    reelsMonitor().stop(),
     shutdownAutoShortRuntime(),
     shutdownWhisperRuntime()
   ]).finally(() => app.quit())
 })
 
 function registerIpc(): void {
+  const notifyMonitor = (): void => {
+    if (mainWindow && !mainWindow.isDestroyed()) mainWindow.webContents.send('facebook-reels:monitor-changed')
+  }
+  const monitor = reelsMonitor(notifyMonitor)
+  const guardedReels = async (event: Electron.IpcMainInvokeEvent, action: () => Promise<unknown>): Promise<unknown> => {
+    if (!isTrustedIpcSender(event, { packaged: app.isPackaged, devOrigin: process.env['ELECTRON_RENDERER_URL'], fileEntryUrl: rendererEntryUrl })) {
+      return { ok: false, error: 'Nguồn IPC Reels không được phép.' }
+    }
+    try { return await action() }
+    catch (error) { return { ok: false, error: error instanceof Error ? error.message : 'Lượt quét Reels thất bại.' } }
+  }
+  const reelsOwners = new WeakSet<Electron.WebContents>()
+  ipcMain.handle('facebook-reels:channels', event => guardedReels(event, async () =>
+    ({ ok: true, channels: await reelsDownloadLibrary().list() })))
+  ipcMain.handle('facebook-reels:track-channel', (event, source: FacebookReelsChannelSource, folder: string) => guardedReels(event, async () =>
+    ({ ok: true, channels: await reelsDownloadLibrary().track(source, folder) })))
+  ipcMain.handle('facebook-reels:channel-folder', (event, url: string, folder: string) => guardedReels(event, async () => {
+    await pauseReelsChannel(url)
+    try { return { ok: true, channels: await reelsDownloadLibrary().updateFolder(url, folder) } }
+    finally { const key = facebookReelsSource(url)?.key; if (key) monitor.resume(key); notifyMonitor() }
+  }))
+  ipcMain.handle('facebook-reels:remove-channel', (event, url: string) => guardedReels(event, async () => {
+    await pauseReelsChannel(url, true)
+    try { return { ok: true, channels: await reelsDownloadLibrary().remove(url) } }
+    finally { const key = facebookReelsSource(url)?.key; if (key) monitor.resume(key); notifyMonitor() }
+  }))
+  ipcMain.handle('facebook-reels:monitor-state', event => guardedReels(event, async () => ({ ok: true, state: await monitor.state() })))
+  ipcMain.handle('facebook-reels:monitor-watch', (event, request: ReelsWatchRequest) => guardedReels(event, async () => {
+    await setReelsWatch(request); notifyMonitor(); return { ok: true, state: await monitor.state() }
+  }))
+  ipcMain.handle('facebook-reels:monitor-time', (event, time: string) => guardedReels(event, async () => {
+    await monitor.store.setTime(time); notifyMonitor(); return { ok: true, state: await monitor.state() }
+  }))
+  ipcMain.handle('facebook-reels:monitor-check', (event, url: string) => guardedReels(event, async () => {
+    const key = facebookReelsSource(url)?.key, state = await monitor.state()
+    if (!key || !state.watches.some(w => w.key === key && w.enabled)) throw Error('Hãy bật theo dõi kênh trước.')
+    if (state.active) throw Error('Đang kiểm tra kênh khác; hãy chờ lượt hiện tại.')
+    // Dispatch immediately so the renderer can show progress and cancel.
+    void monitor.tick(key).catch(() => notifyMonitor())
+    return { ok: true, state: await monitor.state() }
+  }))
+  ipcMain.handle('facebook-reels:monitor-cancel', event => guardedReels(event, async () => {
+    monitor.cancel(); return { ok: true, state: await monitor.state() }
+  }))
+  ipcMain.handle('facebook-reels:monitor-read', (event, ids: string[]) => guardedReels(event, async () => {
+    await monitor.markRead(ids); return { ok: true, state: await monitor.state() }
+  }))
+  ipcMain.handle('facebook-reels:monitor-delete', (event, ids: string[]) => guardedReels(event, async () => {
+    await monitor.deleteNotices(ids); return { ok: true, state: await monitor.state() }
+  }))
+  ipcMain.handle('facebook-reels:start', (event, request: FacebookReelsRequest) => guardedReels(event, async () => {
+    const owner = event.sender.id
+    if (!reelsOwners.has(event.sender)) {
+      reelsOwners.add(event.sender)
+      event.sender.once('destroyed', () => facebookReelsJobs.release(owner))
+    }
+    const jobId = await facebookReelsJobs.start(owner, request, p => {
+      if (!event.sender.isDestroyed()) event.sender.send('facebook-reels:progress', p)
+    })
+    if (event.sender.isDestroyed()) facebookReelsJobs.release(owner)
+    return { ok: true, jobId }
+  }))
+  ipcMain.handle('facebook-reels:result', (event, id: string) => guardedReels(event, async () =>
+    ({ ok: true, playlist: await facebookReelsJobs.result(event.sender.id, id) })))
+  ipcMain.handle('facebook-reels:cancel', (event, id: string) => guardedReels(event, async () => {
+    facebookReelsJobs.cancel(event.sender.id, id); return { ok: true }
+  }))
+  ipcMain.handle('facebook-reels:metadata', (event, id: string, ids: string[]) => guardedReels(event, async () =>
+    ({ ok: true, entries: await facebookReelsJobs.enrich(event.sender.id, id, ids) })))
+  ipcMain.handle('facebook-reels:export', (event,id:string,request:FacebookReelsExportRequest)=>guardedReels(event,async()=>
+    ({ok:true,result:await facebookReelsJobs.export(event.sender.id,id,request)})))
   // Kiem tra phu thuoc luc khoi dong
   ipcMain.handle('deps:check', async () => {
     const s = await checkDependencies()
