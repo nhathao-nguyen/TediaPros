@@ -1,3 +1,11 @@
+## TediaPros v0.1.33
+
+### Khắc phục & Tăng cường độ ổn định Runtime (Multi-Channel Fallback)
+
+- **Dự phòng Runtime đa kênh tự động**: Tự động fallback sang các kênh runtime trước đó (`runtime-v6`, `runtime-v5`) khi kênh mới (`runtime-v7`) chưa sẵn sàng hoặc gặp lỗi mạng (404/timeout), giải quyết triệt để lỗi không khởi tạo được FFmpeg/FFprobe trên máy tính mới cài đặt.
+- **Tải model tách Vocal thông minh**: Áp dụng cơ chế fallback tương tự cho các manifest mô hình tách thoại offline.
+- **Tối ưu hóa dung lượng & dọn dẹp workspace**: Loại bỏ các artifact và file tạm thừa, tinh gọn codebase.
+
 ## TediaPros v0.1.32
 
 ### Tách nền màu Chroma Key cho hiệu ứng CapCut
