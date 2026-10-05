@@ -1625,7 +1625,7 @@ export function createAutoShortItemProcessor(
       }
 
       let stitchedAudioPath: string | null = null
-      let outputDuration = processingMeta.giay
+      let outputDuration = visualDurationSeconds
       let dubbingTimeMap: DubbingTimeMap | undefined
       let renderSrtPath = targetSrtPath
       let renderDisplayStyle = config.subtitleDisplayStyle || 'standard'
@@ -1654,7 +1654,7 @@ export function createAutoShortItemProcessor(
             targetCues,
             sourceCues,
             workDir,
-            processingMeta.giay,
+            visualDurationSeconds,
             index,
             total,
             detectedSourceLanguage,
@@ -1673,7 +1673,7 @@ export function createAutoShortItemProcessor(
         outputDuration = synthesized.outputDuration
         dubbingTimeMap = synthesized.timeMap
         if (dubbingTimeMap) {
-          logInfo(`[AutoShort:retiming] sourceSeconds=${processingMeta.giay.toFixed(3)} outputSeconds=${outputDuration.toFixed(3)} maxLocalExtension=60% maxSlowdownExtension=20%`)
+          logInfo(`[AutoShort:retiming] sourceSeconds=${visualDurationSeconds.toFixed(3)} outputSeconds=${outputDuration.toFixed(3)} maxLocalExtension=60% maxSlowdownExtension=20%`)
           const mapPath = join(workDir, 'dubbing-time-map.json')
           await writeFile(mapPath, JSON.stringify({ ...dubbingTimeMap, originalSourceCues: sourceCues }, null, 2), 'utf8')
           artifactEntries.push({ source: mapPath, name: 'dubbing-time-map.json' })
@@ -1711,7 +1711,7 @@ export function createAutoShortItemProcessor(
         const timelineManifestPath = join(workDir, 'tts-timeline.json')
         await writeFile(timelineManifestPath, JSON.stringify({
           timeMap: dubbingTimeMap,
-          sourceDuration: processingMeta.giay,
+          sourceDuration: visualDurationSeconds,
           outputDuration,
           timingWarnings: syncValidation.warnings || [],
           language: synthesized.language,

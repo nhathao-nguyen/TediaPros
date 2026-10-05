@@ -1,5 +1,5 @@
 import type { JSX } from 'react'
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import type {
   CookieSite,
   CookieStatus,
@@ -14,12 +14,20 @@ import type {
   YtDlpCapabilityStatus
 } from '../../../shared/types'
 import { cookieSiteForUrl, isKnownSingleVideoUrl } from '../../../shared/sites'
+import { facebookReelsSource, facebookReelsStopMessage, type FacebookReelsRequest,
+  type FacebookReelsSummary, type FacebookReelMetadata, type FacebookReelsExportResult, type FacebookReelsExportRow,
+  type FacebookReelsChannel, type FacebookReelsChannelSource, type FacebookReelsLibraryResult } from '../../../shared/facebookReels'
+import { FacebookReelsLibrary } from './FacebookReelsLibrary'
+import { FacebookReelsExportResults } from './FacebookReelsExportResults'
+import { FacebookReelsSelection } from './FacebookReelsSelection'
+import { mergeReelsSelection, reelsSelectionWindow, reelsSelectionCounts, loadMissingReelsCaptions } from '../lib/facebookReels'
 import { formatBytes, formatEta, formatSpeed } from '../lib/format'
 import { useTabOutputDir } from '../lib/outputDir'
 import { usePersistedState } from '../lib/persist'
 import { useQueueRunner } from '../lib/useQueueRunner'
 import LinkInput from './LinkInput'
 import RunControls from './RunControls'
+import '../styles/facebookReels.css'
 
 const AUDIO_FORMATS = ['mp3', 'm4a', 'opus', 'flac', 'wav']
 const COOKIE_SITE_LABEL: Record<CookieSite, string> = {
@@ -69,6 +77,8 @@ interface QueueItem {
   formatId: string | null
   formatLabel: string | null
   subfolder: string | null // ten thu muc con (vd: ten playlist)
+  facebook?: FacebookReelMetadata
+  reelsSource?: FacebookReelsChannelSource
 }
 
 // Lam sach ten thu muc: bo ky tu cam tren Windows, gom khoang trang
@@ -144,6 +154,50 @@ export default function Downloader({
 
   // Playlist
   const [probing, setProbing] = useState(false)
+  const [reelsLimit, setReelsLimit] = usePersistedState('tblao.dl.reelsLimit', '')
+  const [reelsSources, setReelsSources] = useState<{ jobId: string; request: FacebookReelsRequest; summary: FacebookReelsSummary; downloadedIds?: string[] }[]>([])
+  const [probeMessage, setProbeMessage] = useState('Đang tải danh sách…')
+  const [reelsBusy, setReelsBusy] = useState(false)
+  const [reelsExportRoot,setReelsExportRoot]=usePersistedState('tblao.dl.reelsExportRoot','')
+  const [reelsExportVideo,setReelsExportVideo]=usePersistedState('tblao.dl.reelsExportVideo',true)
+  const [reelsExportResults,setReelsExportResults]=useState<FacebookReelsExportResult[]>([])
+  const [reelsExportRows,setReelsExportRows]=useState<FacebookReelsExportRow[]>([])
+  const [downloadView, setDownloadView] = useState<'download' | 'reels'>('download')
+  const [reelsExporting, setReelsExporting] = useState(false)
+  const [reelsExportError, setReelsExportError] = useState('')
+  const [reelsExportExpected, setReelsExportExpected] = useState(0)
+  const [reelsSelectionError, setReelsSelectionError] = useState('')
+  const [reelsChannels, setReelsChannels] = useState<FacebookReelsChannel[]>([])
+  const [reelsLibraryError, setReelsLibraryError] = useState('')
+  const [reelsLibraryMessage, setReelsLibraryMessage] = useState('')
+  const reelsEntrySources = useRef(new Map<string, FacebookReelsChannelSource>())
+  const updateReelsLibrary = (result: FacebookReelsLibraryResult): void => {
+    if (!mounted.current) return
+    if (!result.ok) { setReelsLibraryError(result.error ?? 'Không đọc được thư viện Reels.'); return }
+    setReelsChannels(result.channels ?? []); setReelsLibraryError('')
+  }
+  const refreshReelsLibrary = async (): Promise<void> => {
+    try { updateReelsLibrary(await window.api.facebookReelsChannels()) }
+    catch (error) { if (mounted.current) setReelsLibraryError(error instanceof Error ? error.message : 'Không đọc được thư viện Reels.') }
+  }
+  const activeReels = useRef<string | null>(null)
+  const stopReels = useRef(false)
+  const mounted = useRef(true)
+  useEffect(() => {
+    mounted.current = true
+    void refreshReelsLibrary()
+    const offMonitor = window.api.onFacebookReelsMonitorChanged?.(() => void refreshReelsLibrary())
+    const off = window.api.onFacebookReelsProgress(p => {
+      if (p.jobId === activeReels.current) {
+        setProbeMessage(p.message)
+        if(p.exportRow){const row=p.exportRow;setReelsExportRows(rows=>[...rows.filter(r=>r.id!==row.id),row])}
+      }
+    })
+    return () => {
+      mounted.current = false; off(); offMonitor?.(); stopReels.current = true
+      if (activeReels.current) void window.api.cancelFacebookReels(activeReels.current)
+    }
+  }, [])
   const [playlistSel, setPlaylistSel] = useState<{ open: boolean; entries: SelEntry[] }>({
     open: false,
     entries: []
@@ -416,10 +470,24 @@ export default function Downloader({
     if (urls.length === 0) return
     setUrlInput('')
     setProbing(true)
+    setProbeMessage('Đang tải danh sách…'); setReelsSources([]); setReelsSelectionError(''); stopReels.current = false
     const singles: string[] = []
     const collected: SelEntry[] = []
     const sublists: { title: string; url: string; count: number | null }[] = []
-    for (const url of urls) {
+    try { for (const url of urls) {
+      if (stopReels.current) break
+      if (facebookReelsSource(url)) {
+        const request: FacebookReelsRequest = { url, proxy: proxyArg(), useCookies: useCookiesForUrl(url),
+          maxEntries: reelsLimit.trim() ? Number(reelsLimit) : null }
+        try {
+          const result = await scanReels(request)
+          if (result?.playlist) {
+            collected.push(...result.playlist.entries.map(e => ({ ...e, checked: true, playlistTitle: result.playlist.title ?? 'Facebook Reels' })))
+            if (result.playlist.facebook) setReelsSources(s => [...s, { jobId: result.jobId, request, summary: result.playlist.facebook! }])
+          }
+        } catch (error) { addProbeFailure(url, error instanceof Error ? error.message : 'Không quét được Reels.') }
+        continue
+      }
       if (isKnownSingleVideoUrl(url)) {
         singles.push(url)
         continue
@@ -451,15 +519,147 @@ export default function Downloader({
       }
     }
 
+    if (!mounted.current) return
     if (singles.length) await addSingles(singles)
     // Uu tien: neu co danh sach con (tab kenh) -> mo bang chon danh sach truoc
     if (sublists.length) {
       setSubChooser({ open: true, parent: urls[0], lists: sublists })
-    } else if (collected.length) {
+    } else if (collected.length || urls.some(url => facebookReelsSource(url))) {
       setPlRange({ from: 1, to: collected.length })
       setPlaylistSel({ open: true, entries: collected })
     }
-    setProbing(false)
+    } finally { if (mounted.current) { setProbing(false); setReelsBusy(false) } }
+  }
+
+  const scanReels = async (request: FacebookReelsRequest, downloadedIds?: Set<string>): Promise<{ jobId: string; playlist: import('../../../shared/types').PlaylistProbe } | null> => {
+    setReelsBusy(true); setProbeMessage('Đang mở tab Reels…')
+    const start = await window.api.startFacebookReels(request)
+    if (!start.ok || !start.jobId) throw new Error(start.error ?? 'Không bắt đầu được lượt quét.')
+    const jobId = start.jobId
+    activeReels.current = start.jobId
+    if (!mounted.current || stopReels.current) await window.api.cancelFacebookReels(start.jobId)
+    try {
+      const result = await window.api.facebookReelsResult(start.jobId)
+      if (!result.ok || !result.playlist) throw new Error(result.error ?? 'Không lấy được danh sách Reels.')
+      const playlist = result.playlist
+      const source = facebookReelsSource(request.url)
+      if (source?.kind === 'profile') {
+        const channelSource = { url: source.url, name: playlist.facebook?.pageTitle ?? playlist.entries.find(e => e.uploader)?.uploader ?? playlist.title ?? source.slug ?? 'Kênh Facebook' }
+        for (const entry of playlist.entries) reelsEntrySources.current.set(entry.id, channelSource)
+      }
+      if (downloadedIds) {
+        playlist.entries = playlist.entries.filter(entry => !downloadedIds.has(entry.id))
+        playlist.count = playlist.entries.length
+      }
+      try {
+        playlist.entries = await loadMissingReelsCaptions(playlist.entries, async ids => {
+          setProbeMessage(`Đã quét ${playlist.entries.length} Reels · đang bổ sung caption còn thiếu…`)
+          const metadata = await window.api.facebookReelsMetadata(jobId, ids)
+          if (!metadata.ok) throw new Error(metadata.error ?? 'Không lấy được caption.')
+          return metadata.entries ?? []
+        }, () => stopReels.current || !mounted.current, entries => { playlist.entries = entries })
+        if (stopReels.current && mounted.current) setReelsSelectionError('Đã dừng bổ sung caption. Các caption đã lấy được vẫn được giữ; có thể lấy tiếp phần còn thiếu.')
+      } catch (error) {
+        // Discovery remains usable even if the caption step is interrupted or fails.
+        if (mounted.current) setReelsSelectionError(error instanceof Error ? error.message : 'Không lấy đủ caption; đã giữ danh sách Reels.')
+      }
+      return mounted.current ? { jobId: start.jobId, playlist } : null
+    } finally { activeReels.current = null; if (mounted.current) setReelsBusy(false) }
+  }
+
+  const getNewReels = async (channel: FacebookReelsChannel): Promise<void> => {
+    setProbing(true); stopReels.current = false; setReelsLibraryError(''); setReelsLibraryMessage(''); setReelsSelectionError('')
+    try {
+      const library = await window.api.facebookReelsChannels()
+      if (!library.ok) throw Error(library.error ?? 'Không đọc được lịch sử tải.')
+      updateReelsLibrary(library)
+      const current = library.channels?.find(c => c.key === channel.key)
+      if (!current) throw Error('Kênh không còn trong thư viện.')
+      const request: FacebookReelsRequest = { url: current.url, proxy: proxyArg(), useCookies: useCookiesForUrl(current.url), maxEntries: null }
+      const result = await scanReels(request, new Set(current.downloadedIds))
+      if (!result) return
+      for (const entry of result.playlist.entries) reelsEntrySources.current.set(entry.id, { url: current.url, name: current.name })
+      const entries = result.playlist.entries.map(entry => ({ ...entry, checked: true, playlistTitle: current.name }))
+      setReelsSources(result.playlist.facebook ? [{ jobId: result.jobId, request, summary: result.playlist.facebook, downloadedIds: current.downloadedIds }] : [])
+      setPlRange({ from: 1, to: entries.length }); setPlaylistSel({ open: true, entries })
+      setReelsLibraryMessage(`${entries.length} video chưa tải được tìm thấy. ${result.playlist.facebook ? facebookReelsStopMessage(result.playlist.facebook.stopReason) : ''}`)
+    } catch (error) { if (mounted.current) setReelsLibraryError(error instanceof Error ? error.message : 'Không lấy được video mới.') }
+    finally { if (mounted.current) { setProbing(false); setReelsBusy(false) } }
+  }
+
+  const continueReels = async (source: typeof reelsSources[number]): Promise<void> => {
+    setProbing(true); setReelsBusy(true); setProbeMessage('Đang kiểm tra lượt quét trước…'); stopReels.current = false
+    try {
+      const previous=await window.api.facebookReelsResult(source.jobId)
+      if(!previous.ok||!previous.playlist)throw Error(previous.error??'Lượt Reels đã hết hạn. Hãy quét lại.')
+      if(stopReels.current||!mounted.current)return
+      const previousIds=new Set(previous.playlist.entries.map(e=>e.id))
+      const result = await scanReels({ ...source.request, resumeKey: source.summary.resumeKey, maxEntries: null }, source.downloadedIds ? new Set(source.downloadedIds) : undefined)
+      if (!result) return
+      const currentIds=new Set(result.playlist.entries.map(e=>e.id))
+      setPlaylistSel(s => ({ ...s, entries: mergeReelsSelection(s.entries.filter(e=>!previousIds.has(e.id)||currentIds.has(e.id)), result.playlist.entries, result.playlist.title ?? 'Facebook Reels') }))
+      setPlRange(r => ({ ...r, to: result.playlist.count }))
+      setReelsSources(s => s.map(v => v.jobId === source.jobId ? { ...v, jobId: result.jobId, summary: result.playlist.facebook! } : v))
+    } catch (error) { setProbeMessage(error instanceof Error ? error.message : 'Không tiếp tục được.'); setReelsSelectionError(error instanceof Error ? error.message : 'Không tiếp tục được.') }
+    finally { if (mounted.current) { setProbing(false); setReelsBusy(false) } }
+  }
+
+  const enrichSelectedReels = async (): Promise<SelEntry[]> => {
+    let rows = playlistSel.entries
+    setProbing(true); setReelsBusy(true); setProbeMessage('Đang lấy caption còn thiếu…'); stopReels.current = false
+    try {
+      for (const source of reelsSources) {
+        if (stopReels.current) break
+        // A modal can contain several sources; submit only IDs owned by this job.
+        const original = await window.api.facebookReelsResult(source.jobId)
+        if (!mounted.current || stopReels.current) break
+        if (!original.ok) throw new Error(original.error ?? 'Lượt Reels đã hết hạn. Hãy quét lại.')
+        const owned = new Set(original.playlist?.entries.map(e => e.id) ?? [])
+        const selected = rows.filter(e => e.checked && e.facebook && e.facebook.status !== 'verified' && owned.has(e.id))
+        if (!selected.length) continue
+        activeReels.current = source.jobId
+        await loadMissingReelsCaptions(selected, async ids => {
+          const result = await window.api.facebookReelsMetadata(source.jobId, ids)
+          if (!result.ok) throw new Error(result.error ?? 'Không lấy được caption.')
+          return result.entries ?? []
+        }, () => stopReels.current || !mounted.current, entries => {
+          rows = mergeReelsSelection(rows, entries, '')
+          if (mounted.current) setPlaylistSel(s => ({ ...s, entries: rows }))
+        })
+      }
+      if (mounted.current) setPlaylistSel(s => ({ ...s, entries: rows }))
+      if (stopReels.current && mounted.current) setReelsSelectionError('Đã dừng lấy caption; đã giữ các caption hoàn tất.')
+      return rows
+    } finally { activeReels.current = null; if (mounted.current) { setProbing(false); setReelsBusy(false) } }
+  }
+
+  const exportSelectedReels=async():Promise<void>=>{
+    const root=reelsExportRoot||outputDir
+    if(!root)return
+    setProbing(true);setReelsBusy(true);stopReels.current=false;setReelsExportRows([]);setReelsExportResults([])
+    setReelsExporting(true); setReelsExportError(''); setReelsExportExpected(reelsSelectionCounts(playlistSel.entries).reels)
+    setDownloadView('reels'); setPlaylistSel(s => ({ ...s, open: false }))
+    try{
+      for(const source of reelsSources){
+        if(stopReels.current||!mounted.current)break
+        const original=await window.api.facebookReelsResult(source.jobId)
+        if(!original.ok||!original.playlist)throw Error(original.error??'Lượt Reels đã hết hạn. Hãy quét lại.')
+        if(stopReels.current||!mounted.current)break
+        const owned=new Set(original.playlist.entries.map(e=>e.id))
+        const ids=playlistSel.entries.filter(e=>e.checked&&owned.has(e.id)).map(e=>e.id)
+        activeReels.current=source.jobId;setProbeMessage('Đang xuất Facebook Reels…')
+        const folderName = source.summary.pageTitle && source.summary.profileId
+          ? `${source.summary.pageTitle} - ${source.summary.profileId}`
+          : (original.playlist.title && !original.playlist.title.endsWith(' - Reels') ? original.playlist.title : undefined)
+        const response=await window.api.exportFacebookReels(source.jobId,{ids,outputRoot:root,downloadVideos:reelsExportVideo,folderName})
+        if(!response.ok||!response.result)throw Error(response.error??'Không xuất được kết quả Reels.')
+        if(mounted.current){const result=response.result;setReelsExportResults(old=>[...old,result]);
+          setReelsExportRows(old=>[...old.filter(r=>!result.rows.some(n=>n.id===r.id)),...result.rows])}
+        activeReels.current=null
+      }
+      if(mounted.current)setPlaylistSel(s=>({...s,open:false}))
+    }catch(error){if(mounted.current)setReelsExportError(error instanceof Error?error.message:'Không xuất được Reels.')}
+    finally{activeReels.current=null;if(mounted.current){setProbing(false);setReelsBusy(false);setReelsExporting(false);void refreshReelsLibrary()}}
   }
 
   // Thao tac tren bang chon playlist
@@ -479,6 +679,7 @@ export default function Downloader({
 
   // Dao vao 1 danh sach con: lay video that (hoac hien tiep bang chon neu van long nhau)
   const openSubList = async (url: string): Promise<void> => {
+    setReelsSources([])
     setSubChooser({ open: false, parent: '', lists: [] })
     setProbing(true)
     try {
@@ -517,13 +718,21 @@ export default function Downloader({
     setProbing(false)
   }
 
-  const confirmAddPlaylist = (): void => {
-    const chosen = playlistSel.entries.filter((e) => e.checked)
+  const confirmAddPlaylist = async (): Promise<void> => {
+    stopReels.current = false; setReelsSelectionError('')
+    let rows = playlistSel.entries
+    try {
+      if (rows.some(e => e.checked && e.facebook && e.facebook.status !== 'verified')) rows = await enrichSelectedReels()
+    } catch (error) { setReelsSelectionError(error instanceof Error ? error.message : 'Không lấy được caption.'); return }
+    if (stopReels.current || !mounted.current) return
+    const chosen = rows.filter((e) => e.checked)
     const newItems: QueueItem[] = chosen.map((e) => ({
       id: crypto.randomUUID(),
       mediaId: e.id || null,
       url: e.url,
       title: e.title,
+      facebook: e.facebook,
+      reelsSource: reelsEntrySources.current.get(e.id),
       info: null,
       status: 'ready',
       progress: null,
@@ -533,8 +742,8 @@ export default function Downloader({
       formatLabel: null,
       subfolder: cleanFolder(e.playlistTitle) // playlist -> thu muc theo ten playlist
     }))
-    setItems((prev) => [...prev, ...newItems])
-    setPlaylistSel({ open: false, entries: [] })
+    setItems((prev) => [...prev, ...newItems.filter(item => !prev.some(existing => existing.url === item.url && ['ready', 'fetching', 'downloading'].includes(existing.status)))])
+    setPlaylistSel({ open: false, entries: reelsSources.length ? rows : [] })
   }
 
   // Chon dinh dang nang cao
@@ -556,6 +765,7 @@ export default function Downloader({
 
   // Chen thu muc con vao truoc mau ten file tuy theo cach sap xep
   const templateFor = (item: QueueItem): string => {
+    if (item.reelsSource) return outputTemplate
     if (folderMode === 'channel') return `%(uploader)s/${outputTemplate}`
     if (folderMode === 'playlist' && item.subfolder) return `${item.subfolder}/${outputTemplate}`
     return outputTemplate
@@ -566,10 +776,11 @@ export default function Downloader({
     // khong doi sang webpage_url cua extractor (co the la host mobile/redirect).
     url: item.url,
     mediaId: item.info?.id || item.mediaId,
+    reelsSource: item.reelsSource,
     kind,
     height: kind === 'video' ? height : null,
     audioFormat,
-    outputDir,
+    outputDir: item.reelsSource ? reelsChannels.find(channel => channel.key === facebookReelsSource(item.reelsSource!.url)?.key)?.outputDir ?? outputDir : outputDir,
     embedThumbnail,
     embedMetadata,
     useCookies: useCookiesForUrl(item.info?.webpageUrl ?? item.url),
@@ -582,7 +793,7 @@ export default function Downloader({
     subLangs,
     embedSubs,
     useArchive,
-    forceOverwrite,
+    forceOverwrite: item.reelsSource ? false : forceOverwrite,
     proxy: proxyArg()
   })
 
@@ -595,6 +806,7 @@ export default function Downloader({
         result,
         error: result.ok ? null : result.error
       })
+      if (it.reelsSource) await refreshReelsLibrary()
     } catch (err) {
       patch(it.id, {
         status: 'error',
@@ -627,10 +839,46 @@ export default function Downloader({
   const failed = items.filter((it) => it.status === 'error').length
 
   return (
-    <div className="lam-viec">
+    <div className="download-workspace">
+      <nav className="download-view-nav" aria-label="Khu vực tải xuống">
+        <div className="reels-actions">
+          <button className={`download-view-button ${downloadView === 'download' ? 'active' : ''}`} aria-pressed={downloadView === 'download'} onClick={() => setDownloadView('download')}>Tải xuống <span>{items.length}</span></button>
+          <button className={`download-view-button ${downloadView === 'reels' ? 'active' : ''}`} aria-pressed={downloadView === 'reels'} onClick={() => setDownloadView('reels')}>Kết quả Reels <span>{reelsExportRows.length}</span></button>
+        </div>
+        {!!reelsSources.length && <button className="btn small-btn" disabled={probing} onClick={() => setPlaylistSel(s => ({ ...s, open: true }))}>Danh sách đã quét ({playlistSel.entries.length})</button>}
+      </nav>
+      <div className="lam-viec download-config-grid" hidden={downloadView !== 'download'}>
       {/* ---------- COT GIUA: tuy chon + dan link ---------- */}
       <div className="cot-cauhinh">
         <div className="cot-tieude">Tùy chọn &amp; liên kết</div>
+      {/* Them URL vao hang doi */}
+      <div className="card download-link-card"><strong>Thêm liên kết</strong><div className="url-row link-entry-row">
+        <LinkInput
+          placeholder="Dán link video, playlist hoặc profile/fanpage Facebook"
+          value={urlInput}
+          onChange={setUrlInput}
+          onSubmit={addUrls}
+          disabled={probing}
+        />
+        <button
+          className="btn primary link-add-btn"
+          onClick={addUrls}
+          disabled={!urlInput.trim() || probing}
+        >
+          {probing ? 'Đang phân tích…' : '+ Thêm'}
+        </button>
+      </div>
+
+      <p className="hint muted small">
+        Video/playlist: thêm vào hàng đợi. Profile/fanpage Facebook: quét Reels và chọn dữ liệu để xuất.
+      </p>
+      <label className="reels-scan-option muted small">
+        Khi quét profile/fanpage Facebook: lấy
+        <input className="mini-input pl-num" type="number" min={1} max={10000} value={reelsLimit}
+          placeholder="Tất cả" disabled={probing} onChange={e => setReelsLimit(e.target.value)} />
+        Reel · để trống để quét đến hết
+      </label>
+      </div>
       {/* Tuy chon chung */}
       <div className="card options-card">
         <div className="options">
@@ -1117,32 +1365,11 @@ export default function Downloader({
         </div>
       </details>
 
-      {/* Them URL vao hang doi */}
-      <div className="url-row link-entry-row">
-        <LinkInput
-          placeholder="Dán link video hoặc playlist vào đây"
-          value={urlInput}
-          onChange={setUrlInput}
-          onSubmit={addUrls}
-          disabled={probing}
-        />
-        <button
-          className="btn primary link-add-btn"
-          onClick={addUrls}
-          disabled={!urlInput.trim() || probing}
-        >
-          {probing ? 'Đang phân tích…' : '+ Thêm'}
-        </button>
-      </div>
-
-      <p className="hint muted small">
-        Dán link video để thêm vào hàng đợi. Với playlist, TediaPros sẽ cho bạn chọn các video cần tải.
-      </p>
       </div>
 
       {/* ---------- COT PHAI: hang doi ---------- */}
       <div className="cot-ketqua cot-hangdoi">
-        <div className="cot-tieude">Hàng đợi</div>
+        <div className="cot-tieude">Hàng đợi &amp; thư viện</div>
 
       {/* Hang doi */}
       {items.length > 0 && (
@@ -1177,7 +1404,7 @@ export default function Downloader({
                 selKind={kind}
                 selHeight={height}
                 folderMode={folderMode}
-                outputDir={outputDir}
+                outputDir={it.reelsSource ? reelsChannels.find(channel => channel.key === facebookReelsSource(it.reelsSource!.url)?.key)?.outputDir ?? outputDir : outputDir}
                 onRemove={() => removeItem(it.id)}
                 onPickFormat={() => openFormatPicker(it)}
                 onClearFormat={() => clearFormat(it.id)}
@@ -1199,6 +1426,16 @@ export default function Downloader({
           </div>
         </div>
       )}
+      <FacebookReelsLibrary channels={reelsChannels} busy={probing || runner.active} error={reelsLibraryError} message={reelsLibraryMessage}
+        onRefresh={refreshReelsLibrary} onChange={updateReelsLibrary} onNew={getNewReels} useCookies={useCookiesForUrl}/>
+      </div>
+
+      </div>
+      <div className="download-results-view" hidden={downloadView !== 'reels'}>
+        <FacebookReelsExportResults rows={reelsExportRows} results={reelsExportResults} busy={reelsExporting}
+          message={probeMessage} error={reelsExportError} expected={reelsExportExpected}
+          onChoose={() => reelsSources.length ? setPlaylistSel(s => ({ ...s, open: true })) : setDownloadView('download')}
+          onStop={() => { stopReels.current = true; setProbeMessage('Đang dừng xuất và giữ kết quả…'); if (activeReels.current) void window.api.cancelFacebookReels(activeReels.current) }}/>
       </div>
 
       {/* Bang chon danh sach con (tab kenh / nhieu playlist) */}
@@ -1241,18 +1478,19 @@ export default function Downloader({
         </div>
       )}
 
+      {playlistSel.open && reelsSources.length > 0 && <FacebookReelsSelection entries={playlistSel.entries} sources={reelsSources}
+        busy={probing} error={reelsSelectionError} folder={reelsExportRoot || outputDir} downloadVideos={reelsExportVideo} range={plRange} onRange={setPlRange}
+        onApplyRange={applyRange} onToggle={toggleEntry} onAll={setAllEntries} onContinue={source => { setReelsSelectionError(''); void continueReels(source) }}
+        onEnrich={() => { setReelsSelectionError(''); void enrichSelectedReels().catch(error => setReelsSelectionError(error instanceof Error ? error.message : 'Không lấy được caption.')) }}
+        onFolder={() => { void window.api.chooseFolder().then(dir => { if (dir) setReelsExportRoot(dir) }).catch(error => setReelsSelectionError(error instanceof Error ? error.message : 'Không chọn được thư mục.')) }} onVideo={setReelsExportVideo}
+        onExport={() => void exportSelectedReels()} onQueue={() => void confirmAddPlaylist()} onClose={() => setPlaylistSel(s => ({ ...s, open: false }))}/>}
+
       {/* Bang chon video tu playlist */}
-      {playlistSel.open &&
+      {playlistSel.open && !reelsSources.length &&
         (() => {
           const total = playlistSel.entries.length
           const checkedCount = playlistSel.entries.filter((e) => e.checked).length
-          const from = Math.max(1, Math.min(plRange.from || 1, total))
-          const to = Math.max(from, Math.min(plRange.to || total, total))
-          const RENDER_CAP = 500 // gioi han so dong ve DOM cho khoi lag
-          const rows: { e: SelEntry; i: number }[] = []
-          for (let i = from - 1; i < to && rows.length < RENDER_CAP; i++)
-            rows.push({ e: playlistSel.entries[i], i })
-          const hidden = to - from + 1 - rows.length
+          const { from, to, rows, hidden } = reelsSelectionWindow(playlistSel.entries, plRange.from, plRange.to)
 
           return (
             <div
@@ -1311,9 +1549,12 @@ export default function Downloader({
                     <label className="pl-entry" key={e.id || i}>
                       <input type="checkbox" checked={e.checked} onChange={() => toggleEntry(i)} />
                       <span className="pl-idx">{i + 1}</span>
-                      <span className="pl-title" title={e.title}>
+                      <span className="pl-title" title={e.facebook?.caption ?? e.title}>
                         {e.title}
                       </span>
+                      {e.facebook && <span className={`reels-caption-status ${e.facebook.status}`}>
+                        {e.facebook.status === 'verified' ? 'Có caption' : e.facebook.status === 'error' ? 'Lỗi caption' : 'Thiếu caption'}
+                      </span>}
                       {e.durationString && <span className="pl-dur muted">{e.durationString}</span>}
                     </label>
                   ))}
@@ -1335,7 +1576,7 @@ export default function Downloader({
                   <button
                     className="btn primary"
                     onClick={confirmAddPlaylist}
-                    disabled={checkedCount === 0}
+                    disabled={checkedCount === 0 || probing}
                   >
                     Thêm {checkedCount} video vào hàng đợi
                   </button>
@@ -1413,11 +1654,16 @@ export default function Downloader({
       )}
 
       {/* Overlay khi dang tai danh sach (dao vao tab lon co the mat vai giay) */}
-      {probing && !subChooser.open && !playlistSel.open && (
-        <div className="modal-overlay">
-          <div className="probing-box">
+      {probing && !reelsExporting && ((!subChooser.open && !playlistSel.open) || reelsBusy) && (
+        <div className="modal-overlay" onKeyDown={e => { if (reelsBusy && e.key === 'Tab') { e.preventDefault(); e.currentTarget.querySelector<HTMLButtonElement>('button')?.focus() } }}>
+          <div className="probing-box" role="dialog" aria-modal="true" aria-label="Tiến trình quét Reels">
             <div className="spinner" />
-            <div className="muted small">Đang tải danh sách…</div>
+            <div className="muted small" role="status">{probeMessage}</div>
+            {reelsBusy && <button autoFocus className="btn small-btn" onClick={() => {
+              stopReels.current = true
+              if (activeReels.current) void window.api.cancelFacebookReels(activeReels.current)
+              setProbeMessage('Đang dừng và giữ kết quả…')
+            }}>Dừng</button>}
           </div>
         </div>
       )}
@@ -1580,9 +1826,11 @@ function QueueRow({
       </div>
 
       <div className="qmain">
-        <div className="qtitle" title={title}>
+        <div className="qtitle" title={item.facebook?.caption ?? title}>
           {title}
         </div>
+        {item.facebook && item.facebook.status !== 'verified' && <div className="muted small">Chưa lấy được caption; đang dùng mã Reel.</div>}
+        {item.reelsSource && <div className="reels-channel-folder muted small" title={outputDir}>📁 {outputDir}</div>}
 
         {item.formatLabel && item.status !== 'downloading' && (
           <div className="qfmt">

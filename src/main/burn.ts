@@ -1361,11 +1361,13 @@ export async function runBurnSubtitleLower(
     }
 
     const isDarwin = process.platform === 'darwin'
+    const jitterCq = 22 + Math.floor(Math.random() * 3) // 22, 23, 24
+    const gopSize = Math.random() > 0.5 ? 60 : 120
     const allCandidates: Array<{ ten: string; gpu: boolean; args: string[] }> = [
       ...(isDarwin ? [{ ten: 'h264_videotoolbox', gpu: true, args: ['-c:v', 'h264_videotoolbox', '-pix_fmt', 'yuv420p', '-q:v', '65'] }] : []),
-      { ten: 'h264_nvenc', gpu: true, args: ['-c:v', 'h264_nvenc', '-pix_fmt', 'yuv420p', '-preset', 'p4', '-cq', '23', '-spatial-aq', '1'] },
-      { ten: 'h264_amf', gpu: true, args: ['-c:v', 'h264_amf', '-pix_fmt', 'yuv420p', '-quality', 'balanced', '-rc', 'cqp', '-qp_i', '23', '-qp_p', '23'] },
-      { ten: 'h264_qsv', gpu: true, args: ['-c:v', 'h264_qsv', '-pix_fmt', 'yuv420p', '-global_quality', '23'] },
+      { ten: 'h264_nvenc', gpu: true, args: ['-c:v', 'h264_nvenc', '-pix_fmt', 'yuv420p', '-preset', 'p4', '-cq', String(jitterCq), '-g', String(gopSize), '-spatial-aq', '1'] },
+      { ten: 'h264_amf', gpu: true, args: ['-c:v', 'h264_amf', '-pix_fmt', 'yuv420p', '-quality', 'balanced', '-rc', 'cqp', '-qp_i', String(jitterCq), '-qp_p', String(jitterCq)] },
+      { ten: 'h264_qsv', gpu: true, args: ['-c:v', 'h264_qsv', '-pix_fmt', 'yuv420p', '-global_quality', String(jitterCq)] },
       { ten: 'libx264', gpu: false, args: ['-c:v', 'libx264', '-pix_fmt', 'yuv420p', '-preset', 'faster', '-crf', '21'] }
     ]
     if (cachedWorkingEncoder) {
@@ -1394,9 +1396,28 @@ export async function runBurnSubtitleLower(
       const dungFilterAudio = req.batAmThanh && (meta.hasAudio || hasAudioFile)
       const audioCodecArgs = dungFilterAudio ? ['-c:a', 'aac'] : ['-c:a', 'copy']
 
+      const isMp4 = output.toLowerCase().endsWith('.mp4') || output.toLowerCase().endsWith('.m4v')
+      const sanitizeContainerArgs = [
+        '-map_metadata', '-1',
+        '-map_metadata:s:v', '-1',
+        '-map_metadata:s:a', '-1',
+        '-fflags', '+bitexact',
+        '-flags:v', '+bitexact',
+        '-flags:a', '+bitexact',
+        '-metadata:s:v', 'encoder=',
+        '-metadata:s:a', 'encoder=',
+        '-metadata', 'encoder=',
+        ...(isMp4 ? [
+          '-brand', 'mp42',
+          '-movflags', '+faststart',
+          '-metadata:s:v', 'handler_name=Core Media Video',
+          '-metadata:s:a', 'handler_name=Core Media Audio'
+        ] : [])
+      ]
+
       const args = filterArgs.length > 0
-        ? [...inputArgs, ...filterArgs, ...enc.args, ...audioCodecArgs, output]
-        : [...inputArgs, ...enc.args, ...audioCodecArgs, output]
+        ? [...inputArgs, ...filterArgs, ...enc.args, ...audioCodecArgs, ...sanitizeContainerArgs, output]
+        : [...inputArgs, ...enc.args, ...audioCodecArgs, ...sanitizeContainerArgs, output]
 
       const attemptStarted = performance.now()
       const attempt = await chay(ff, args, tam, meta, onProgress, options.signal)
@@ -1617,6 +1638,41 @@ export function validateFrameRateMeasurement(
   }
 }
 
+export function validateDurationMeasurement(
+  expected: {
+    durationSeconds: number
+    frameRate?: number
+    averageFrameRate?: number
+    durationToleranceFrames: number
+  },
+  actual: {
+    streamDuration?: number | null
+    containerDuration?: number | null
+  }
+): void {
+  const streamDuration = actual.streamDuration && actual.streamDuration > 0 ? actual.streamDuration : 0
+  const containerDuration = actual.containerDuration && actual.containerDuration > 0 ? actual.containerDuration : 0
+  const primaryDuration = streamDuration > 0 ? streamDuration : containerDuration
+  if (primaryDuration <= 0) {
+    throw new Error('Không thể xác định thời lượng video xuất.')
+  }
+
+  const durationFrameRate = expected.averageFrameRate && expected.averageFrameRate > 0
+    ? expected.averageFrameRate
+    : expected.frameRate
+  const durationTolerance = durationFrameRate && durationFrameRate > 0
+    ? expected.durationToleranceFrames / durationFrameRate
+    : 0.10
+
+  const diffStream = streamDuration > 0 ? Math.abs(streamDuration - expected.durationSeconds) : Infinity
+  const diffContainer = containerDuration > 0 ? Math.abs(containerDuration - expected.durationSeconds) : Infinity
+  const minDiff = Math.min(diffStream, diffContainer)
+
+  if (minDiff > durationTolerance) {
+    throw new Error(`Thời lượng video xuất (${primaryDuration.toFixed(3)}s) lệch quá mức so với dự kiến (${expected.durationSeconds.toFixed(3)}s).`)
+  }
+}
+
 export async function validateRenderedMedia(
   filePath: string,
   expected: {
@@ -1736,20 +1792,18 @@ export async function validateRenderedMedia(
 
   // Duration tolerance check
   const vStream = videoStreams[0]
-  const probedDuration = Number(vStream.duration) || Number(probeData.format?.duration) || 0
-  if (probedDuration <= 0) {
-    throw new Error('Không thể xác định thời lượng video xuất.')
-  }
-
-  const durationFrameRate = expected.averageFrameRate && expected.averageFrameRate > 0
-    ? expected.averageFrameRate
-    : expected.frameRate
-  const durationTolerance = durationFrameRate && durationFrameRate > 0
-    ? expected.durationToleranceFrames / durationFrameRate
-    : 0.10
-  if (Math.abs(probedDuration - expected.durationSeconds) > durationTolerance) {
-    throw new Error(`Thời lượng video xuất (${probedDuration.toFixed(3)}s) lệch quá mức so với dự kiến (${expected.durationSeconds.toFixed(3)}s).`)
-  }
+  validateDurationMeasurement(
+    {
+      durationSeconds: expected.durationSeconds,
+      frameRate: expected.frameRate,
+      averageFrameRate: expected.averageFrameRate,
+      durationToleranceFrames: expected.durationToleranceFrames
+    },
+    {
+      streamDuration: Number(vStream.duration) || null,
+      containerDuration: Number(probeData.format?.duration) || null
+    }
+  )
 
   // Frame rate check: average-to-average for VFR, nominal fallback for legacy
   // callers and probes that do not expose an average rate.

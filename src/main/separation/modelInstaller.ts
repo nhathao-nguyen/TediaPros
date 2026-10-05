@@ -52,23 +52,43 @@ export async function fetchSeparatorModelManifest(
   const config = getDistributionConfig()
   if (!config.separatorModelManifestUrl) return null
   const requestFetch = fetchImpl || createDistributionFetch(config)
-  try {
-    const response = await requestFetch(config.separatorModelManifestUrl, {
-      headers: { Accept: 'application/json' },
-      signal: AbortSignal.timeout(15_000)
-    })
-    if (!response.ok) return null
-    const json = await response.json()
-    const validated = validateSeparatorModelReleaseManifest(json)
-    if (!validated.ok) {
-      logWarn(`[SeparatorModelInstaller] Manifest không hợp lệ: ${validated.error}`)
-      return null
+  const channelsToTry = [
+    config.runtimeChannel,
+    ...(config.fallbackRuntimeChannels || ['runtime-v6', 'runtime-v5'])
+  ]
+  const uniqueChannels = [...new Set(channelsToTry)]
+
+  for (const channel of uniqueChannels) {
+    try {
+      const url =
+        config.localRuntimeDir
+          ? config.separatorModelManifestUrl
+          : `https://github.com/${config.owner}/${config.repo}/releases/download/${channel}/separator-model-manifest.json`
+
+      const response = await requestFetch(url, {
+        headers: { Accept: 'application/json' },
+        signal: AbortSignal.timeout(15_000)
+      })
+      if (!response.ok) {
+        if (config.localRuntimeDir) return null
+        continue
+      }
+      const json = await response.json()
+      const validated = validateSeparatorModelReleaseManifest(json)
+      if (!validated.ok) {
+        logWarn(`[SeparatorModelInstaller] Manifest không hợp lệ trên channel ${channel}: ${validated.error}`)
+        continue
+      }
+      return validated.manifest
+    } catch (error) {
+      if (config.localRuntimeDir) {
+        logWarn(`[SeparatorModelInstaller] Không tải được separator model manifest: ${errLabel(error)}`)
+        return null
+      }
+      logWarn(`[SeparatorModelInstaller] Không tải được separator model manifest trên channel ${channel}: ${errLabel(error)}`)
     }
-    return validated.manifest
-  } catch (error) {
-    logWarn(`[SeparatorModelInstaller] Không tải được separator model manifest: ${errLabel(error)}`)
-    return null
   }
+  return null
 }
 
 export async function installSeparatorModel(
@@ -131,7 +151,7 @@ export async function installSeparatorModel(
       message: `Đang tải model ${id}…`
     })
 
-    const assetUrl = config.getSeparatorModelAssetUrl(spec.asset)
+    const assetUrl = config.getSeparatorModelAssetUrl(spec.asset, manifest.runtimeChannel)
     const response = await fetchImpl(assetUrl, { redirect: 'follow', signal })
     if (!response.ok || !response.body) {
       throw new Error(`Tải model archive ${spec.asset} thất bại (${response.status}).`)

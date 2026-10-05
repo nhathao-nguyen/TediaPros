@@ -2,6 +2,14 @@
 
 Tài liệu này chuẩn hóa các khái niệm nghiệp vụ, định nghĩa dữ liệu và hằng số vật lý được áp dụng trong toàn bộ hệ thống **TediaPros**.
 
+Facebook Reels phân biệt ba bằng chứng: `sourceVerified` xác nhận video thuộc profile đang quét; `facebook.status` xác nhận tình trạng caption; `facebook.completion` của playlist xác nhận discovery đã đến cuối hay chỉ một phần. Caption đầy đủ nằm trong `facebook.caption`, còn `title` là dòng đầu dùng hiển thị. ID không có caption giữ placeholder và trạng thái missing/error. `resumeKey` do main cấp, gắn nguồn/tài khoản/proxy và không phải đường dẫn hay token Facebook. Xem [ADR 012](adr/012-facebook-reels-scoped-discovery.md).
+
+Kết quả export phân biệt caption Facebook, link website trong caption/bình luận tác giả, và nội dung bài viết HTML của website. Caption/article/video có status độc lập; lỗi lookup không chứng minh không có link. File TXT giữ toàn văn, Excel/results JSON giữ bản xem trước tối đa giới hạn ô Excel và đường dẫn file. Owner ID khác nguồn là bằng chứng loại trừ Reel kể cả response đến trước DOM.
+
+Thư viện tải Reels dùng URL profile chuẩn hóa làm khóa kênh và Reel ID làm khóa video. `downloadedIds` chỉ chứa ID còn ít nhất một file video không rỗng, hợp lệ trên đĩa; caption trùng không đồng nghĩa video trùng. Đổi thư mục áp dụng cho lượt tải tiếp theo và giữ lịch sử; bỏ theo dõi không xóa file/lịch sử. “Lấy video mới” nghĩa là ID chưa có video còn dùng được trong thư viện, không chỉ dựa trên ngày đăng. Xem [quy trình thư viện Reels](facebook-reels-export.md).
+
+Theo dõi hằng ngày là lựa chọn riêng của từng kênh: mỗi lịch ngày có một lượt tự động, lịch mặc định 09:00 Việt Nam và chạy bù lượt gần nhất khi mở app. Video mới trong lượt tự động là ID đã xác minh thuộc nguồn và **chưa từng tải thành công**, kể cả khi file cũ đã bị xóa; lỗi tải không đưa ID vào lịch sử thành công. Thông báo ghi riêng số phát hiện/tải/bỏ qua/lỗi và giữ trạng thái quét chưa hoàn tất. Xem [theo dõi Reels](facebook-reels-monitor.md).
+
 ---
 
 ## 1. Khái Niệm Xử Lý Âm Thanh & Lồng Tiếng (Dubbing Domain)
