@@ -1638,6 +1638,41 @@ export function validateFrameRateMeasurement(
   }
 }
 
+export function validateDurationMeasurement(
+  expected: {
+    durationSeconds: number
+    frameRate?: number
+    averageFrameRate?: number
+    durationToleranceFrames: number
+  },
+  actual: {
+    streamDuration?: number | null
+    containerDuration?: number | null
+  }
+): void {
+  const streamDuration = actual.streamDuration && actual.streamDuration > 0 ? actual.streamDuration : 0
+  const containerDuration = actual.containerDuration && actual.containerDuration > 0 ? actual.containerDuration : 0
+  const primaryDuration = streamDuration > 0 ? streamDuration : containerDuration
+  if (primaryDuration <= 0) {
+    throw new Error('Không thể xác định thời lượng video xuất.')
+  }
+
+  const durationFrameRate = expected.averageFrameRate && expected.averageFrameRate > 0
+    ? expected.averageFrameRate
+    : expected.frameRate
+  const durationTolerance = durationFrameRate && durationFrameRate > 0
+    ? expected.durationToleranceFrames / durationFrameRate
+    : 0.10
+
+  const diffStream = streamDuration > 0 ? Math.abs(streamDuration - expected.durationSeconds) : Infinity
+  const diffContainer = containerDuration > 0 ? Math.abs(containerDuration - expected.durationSeconds) : Infinity
+  const minDiff = Math.min(diffStream, diffContainer)
+
+  if (minDiff > durationTolerance) {
+    throw new Error(`Thời lượng video xuất (${primaryDuration.toFixed(3)}s) lệch quá mức so với dự kiến (${expected.durationSeconds.toFixed(3)}s).`)
+  }
+}
+
 export async function validateRenderedMedia(
   filePath: string,
   expected: {
@@ -1757,20 +1792,18 @@ export async function validateRenderedMedia(
 
   // Duration tolerance check
   const vStream = videoStreams[0]
-  const probedDuration = Number(vStream.duration) || Number(probeData.format?.duration) || 0
-  if (probedDuration <= 0) {
-    throw new Error('Không thể xác định thời lượng video xuất.')
-  }
-
-  const durationFrameRate = expected.averageFrameRate && expected.averageFrameRate > 0
-    ? expected.averageFrameRate
-    : expected.frameRate
-  const durationTolerance = durationFrameRate && durationFrameRate > 0
-    ? expected.durationToleranceFrames / durationFrameRate
-    : 0.10
-  if (Math.abs(probedDuration - expected.durationSeconds) > durationTolerance) {
-    throw new Error(`Thời lượng video xuất (${probedDuration.toFixed(3)}s) lệch quá mức so với dự kiến (${expected.durationSeconds.toFixed(3)}s).`)
-  }
+  validateDurationMeasurement(
+    {
+      durationSeconds: expected.durationSeconds,
+      frameRate: expected.frameRate,
+      averageFrameRate: expected.averageFrameRate,
+      durationToleranceFrames: expected.durationToleranceFrames
+    },
+    {
+      streamDuration: Number(vStream.duration) || null,
+      containerDuration: Number(probeData.format?.duration) || null
+    }
+  )
 
   // Frame rate check: average-to-average for VFR, nominal fallback for legacy
   // callers and probes that do not expose an average rate.

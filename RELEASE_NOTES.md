@@ -1,3 +1,11 @@
+## TediaPros v0.1.36
+
+### Tối ưu hóa xác thực thời lượng xuất video (Duration Validation)
+
+- **Xác thực thời lượng linh hoạt (validateDurationMeasurement)**: Kiểm tra độ khớp thời lượng video xuất trong dung sai an toàn (mặc định 3 frame) đối với cả luồng video (`streamDuration`) lẫn container (`containerDuration`), xử lý triệt để hiện tượng video có đuôi âm thanh dài hơn hình ảnh (audio tail) do padding AAC.
+- **Đồng bộ thời lượng AutoShort Item Coordinator**: Ghim `outputDuration` chính xác theo thời lượng luồng video thực tế (`visualDurationSeconds`) thay vì ước tính, đảm bảo tính nhất quán giữa tiến trình retiming, tts-timeline và burn media.
+- **Cập nhật ADR 011 & Test Suite**: Bổ sung bộ kiểm thử đơn vị và tích hợp chặt chẽ cho toàn bộ pipeline render và xác thực media.
+
 ## TediaPros v0.1.35
 
 ### Facebook Reels: quét, xuất dữ liệu và quản lý kênh
