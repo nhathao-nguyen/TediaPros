@@ -1,6 +1,6 @@
 # TASK-20261005-release-v0.1.36: Phát hành TediaPros v0.1.36 với bộ xác thực thời lượng render video linh hoạt
 
-- **Trạng thái:** Đang thực hiện (Sẵn sàng commit, tag và push CI release)
+- **Trạng thái:** Hoàn thành; v0.1.36 đã xuất bản
 - **Người thực hiện:** Antigravity
 - **Thời gian:** 2026-10-05
 
@@ -17,8 +17,8 @@ Phát hành phiên bản TediaPros v0.1.36 lên GitHub với cải tiến xác t
 - [x] Typecheck `npm run typecheck` vượt qua cả node và web.
 - [x] Kiểm tra cổng phát hành `node scripts/verify-release.mjs v0.1.36` thành công.
 - [x] Kiểm tra khói phụ đề `npm run test:subtitles` và font `npm run fonts:prepare && npm run fonts:verify` thành công.
-- [ ] Commit các thay đổi, tạo tag `v0.1.36` và push lên nhánh `SonVersion` cùng tag lên GitHub.
-- [ ] Giám sát GitHub Actions pipeline build và xuất bản GitHub Release v0.1.36.
+- [x] Commit các thay đổi, tạo tag `v0.1.36` và push lên nhánh `SonVersion` cùng tag lên GitHub.
+- [x] Giám sát GitHub Actions pipeline build và xuất bản GitHub Release v0.1.36 thành công.
 
 ## 3. Phạm Vi
 
@@ -33,3 +33,14 @@ Phát hành phiên bản TediaPros v0.1.36 lên GitHub với cải tiến xác t
 
 - Nâng phiên bản từ `0.1.35` lên `0.1.36` theo quy chuẩn semver và giữ phiên bản `v0.1.35` đã phát hành bất biến.
 - Đẩy tag `v0.1.36` để kích hoạt workflow `.github/workflows/release-app.yml` tự động build trên runner sạch, đóng gói và phát hành release chính thức.
+
+## 5. Bàn Giao
+
+[Release v0.1.36](https://github.com/nhathao-nguyen/TediaPros/releases/tag/v0.1.36) đã được xuất bản tự động qua GitHub Actions CI run [#37253611378](https://github.com/nhathao-nguyen/TediaPros/actions/runs/37253611378).
+
+| Asset | Trạng thái |
+| --- | --- |
+| `TediaPros-0.1.36-setup.exe` | Đã xuất bản |
+| `TediaPros-0.1.36-setup.exe.blockmap` | Đã xuất bản |
+| `latest.yml` | Đã xuất bản |
+
