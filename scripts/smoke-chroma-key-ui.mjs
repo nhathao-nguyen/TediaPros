@@ -8,7 +8,7 @@ import { spawn, spawnSync } from 'node:child_process'
 const require = createRequire(import.meta.url)
 const repo = process.cwd()
 const work = await mkdtemp(join(tmpdir(), 'tedia-chroma-ui-'))
-const evidence = join(repo, '.ai/tasks/2026-10-01-bursting-smoke-fix')
+const evidence = process.env.TEDIAPROS_EFFECT_UI_EVIDENCE || join(repo, '.ai/tasks/2026-10-01-bursting-smoke-fix')
 const ffmpeg = process.env.TEDIAPROS_TEST_FFMPEG || join(process.env.APPDATA || '', 'tedia-pros/bin/ffmpeg.exe')
 try {
   await mkdir(evidence, { recursive: true })

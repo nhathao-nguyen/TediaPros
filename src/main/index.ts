@@ -1,3 +1,10 @@
+import {
+  checkTypeSafeKey,
+  clearTypeSafeKey,
+  getTypeSafeKeyInfo,
+  hasTypeSafeKey,
+  saveTypeSafeKey
+} from './typesafeKeys'
 import { app, shell, BrowserWindow, ipcMain, dialog, protocol } from 'electron'
 import { readAutoShortOverlayImage } from './autoShortOverlays'
 import { assertContainedRegularFile } from './safeContainedPath'
@@ -170,6 +177,7 @@ import {
   retryAutoShortTitle,
   selectAutoShortVideoFiles
 } from './autoshort'
+import { saveWorkflowAutoShortConfig, getWorkflowAutoShortConfig } from './autoShortWorkflowConfig'
 import { listAutoShortMusicTracks } from './autoShortMusicLibrary'
 import { createAutoShortThumbnail } from './autoShortThumbnail'
 import { isAutoShortSeparationPreset } from '../shared/autoShortSeparation'
@@ -180,7 +188,8 @@ import {
   getSavedOverlayEffects,
   saveOverlayToVault,
   deleteOverlayFromVault,
-  resolveOverlayChromaKey
+  resolveOverlayChromaKey,
+  resolveOverlayComposition
 } from './capcutScanner'
 import type {
   DichProvider,
@@ -742,6 +751,14 @@ function registerIpc(): void {
     }
   })
 
+  ipcMain.handle('effects:composition', async (_e, videoPath: string) => {
+    try {
+      return { ok: true, composition: await resolveOverlayComposition(videoPath) }
+    } catch (err) {
+      return { ok: false, error: (err as Error).message }
+    }
+  })
+
   ipcMain.handle('effects:saveToVault', async (_e, effect) => {
     try {
       const saved = await saveOverlayToVault(effect)
@@ -1177,6 +1194,17 @@ function registerIpc(): void {
   ipcMain.handle('gemini:hasKey', async () => geminiHasKey())
   ipcMain.handle('gemini:saveKey', async (_e, key: string) => geminiSaveKey(key))
   ipcMain.handle('gemini:checkKey', async (_e, key: string) => geminiCheckKey(key))
+
+  // TypeSafe Jev AI Handlers
+  ipcMain.handle('typesafe:getInfo', async () => getTypeSafeKeyInfo())
+  ipcMain.handle('typesafe:hasKey', async () => hasTypeSafeKey())
+  ipcMain.handle('typesafe:saveKey', async (_e, key: string) => saveTypeSafeKey(key))
+  ipcMain.handle('typesafe:checkKey', async (_e, key: string) => checkTypeSafeKey(key))
+  ipcMain.handle('typesafe:clearKey', async () => {
+    await clearTypeSafeKey()
+    return { ok: true }
+  })
+
   ipcMain.handle(
     'gemini:translateSrt',
     async (event, srtPath: string, outPath: string, dich: string) =>
@@ -1483,6 +1511,21 @@ function registerIpc(): void {
     const rejected = rejectUntrustedAutoShortIpc(event)
     if (rejected) return rejected
     return clearAutoShortArtifactCache()
+  })
+  ipcMain.handle('autoshort:saveWorkflowConfig', async (event, rawConfig: unknown, validationError?: unknown) => {
+    const rejected = rejectUntrustedAutoShortIpc(event)
+    if (rejected) return rejected
+    if (!rawConfig || typeof rawConfig !== 'object' || Array.isArray(rawConfig)) return { ok: false, error: 'Cấu hình không hợp lệ.' }
+    try { await saveWorkflowAutoShortConfig(rawConfig, typeof validationError === 'string' ? validationError : undefined); return { ok: true } }
+    catch (error) { return { ok: false, error: error instanceof Error ? error.message : String(error) } }
+  })
+  ipcMain.handle('autoshort:getWorkflowConfig', async (event, outputDir?: unknown) => {
+    const rejected = rejectUntrustedAutoShortIpc(event)
+    if (rejected) return rejected
+    try {
+      const config = await getWorkflowAutoShortConfig(typeof outputDir === 'string' ? outputDir : app.getPath('userData'))
+      return { ok: true, config }
+    } catch (error) { return { ok: false, error: error instanceof Error ? error.message : String(error) } }
   })
 
   // Mo file/thu muc sau khi tai

@@ -139,7 +139,7 @@ function migrateLegacyConfig(raw: Record<string, unknown>): Record<string, unkno
   return base
 }
 
-function validateConfig(raw: unknown): AutoShortConfig | string {
+export function validateAutoShortConfig(raw: unknown): AutoShortConfig | string {
   if (!isRecord(raw)) return 'Cấu hình Auto Short không hợp lệ.'
   return validateConfigRecord(migrateLegacyConfig(raw))
 }
@@ -438,7 +438,7 @@ export function validateAutoShortStartRequest(raw: unknown): AutoShortValidation
     }
     items.push({ id, filePath, ...(temporalEdit ? { temporalEdit } : {}) })
   }
-  const config = validateConfig(raw.config)
+  const config = validateAutoShortConfig(raw.config)
   if (typeof config === 'string') return { ok: false, error: config }
   const backgroundMusic = config.backgroundMusic
   if (backgroundMusic) {

@@ -28,7 +28,7 @@ export function ReelsNotifications(): JSX.Element {
       <div className="reels-notice-head"><strong>Thông báo Reels</strong><button className="ibtn" aria-label="Đóng thông báo" onClick={() => { setOpen(false); button.current?.focus() }}>✕</button></div>
       <p className="muted small">Kiểm tra hằng ngày lúc {state?.settings.time ?? '09:00'} giờ Việt Nam.</p>
       {error && <p className="reels-error" role="alert">{error}</p>}
-      {state?.active && <div className="reels-monitor-active" role="status"><strong>{state.active.name}</strong><p>{state.active.message}</p>
+      {state?.active && <div className="reels-monitor-active" role="status"><strong>{state.active.name}</strong><p>{state.active.message || 'Đang xử lý…'}</p>
         <button className="btn small-btn" onClick={() => void act(window.api.cancelFacebookReelsMonitor())}>Dừng lượt hiện tại</button></div>}
       <div className="reels-notice-actions">
         {unread > 0 && <button className="link-btn" onClick={() => void act(window.api.readFacebookReelsNotices(state!.notices.filter(n => !n.read).map(n => n.id)))}>Đánh dấu tất cả đã đọc</button>}

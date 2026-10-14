@@ -8,7 +8,7 @@ import { spawn } from 'node:child_process'
 const require = createRequire(import.meta.url)
 const repo = process.cwd()
 const work = await mkdtemp(join(tmpdir(), 'tedia-effects-ui-'))
-const evidence = join(repo, '.ai/tasks/2026-09-28-video-effects')
+const evidence = process.env.TEDIAPROS_EFFECT_UI_EVIDENCE || join(repo, '.ai/tasks/2026-09-28-video-effects')
 await mkdir(evidence, { recursive: true })
 try {
   await build({ stdin: { contents: `

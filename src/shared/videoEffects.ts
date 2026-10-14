@@ -4,6 +4,38 @@ import { normalizeOverlayChromaKey, type OverlayChromaKey } from './overlayChrom
 export type VideoEffectKind = 'grain' | 'dust' | 'analog' | 'film_grunge' | 'custom_overlay'
 
 export type OverlayBlendMode = 'screen' | 'alphamerge' | 'multiply' | 'add' | 'chromakey'
+export type OverlayPackedAlpha = 'left'
+
+export function normalizeOverlayPackedAlpha(value: unknown): OverlayPackedAlpha | undefined {
+  if (value == null) return undefined
+  if (value !== 'left') throw new Error('Bố cục alpha video không hợp lệ.')
+  return value
+}
+
+/** Ordered RGB textures; alpha is flattened against each blend's neutral color. */
+export interface OverlayTextureLayer {
+  assetPath: string
+  blendMode: 'screen' | 'multiply'
+  isStatic?: boolean
+}
+
+export interface OverlayComposition {
+  layers?: OverlayTextureLayer[]
+  chromaKey?: OverlayChromaKey
+  packedAlpha?: OverlayPackedAlpha
+  blendMode?: OverlayBlendMode
+}
+
+export function normalizeOverlayTextureLayers(value: unknown): OverlayTextureLayer[] | undefined {
+  if (value == null) return undefined
+  if (!Array.isArray(value) || value.length < 1 || value.length > 4) throw new Error('Hiệu ứng phải có từ 1 đến 4 lớp texture.')
+  return value.map(layer => {
+    if (!layer || typeof layer !== 'object' || Array.isArray(layer) ||
+      typeof layer.assetPath !== 'string' || !layer.assetPath.trim() || layer.assetPath.includes('\0') ||
+      !['screen', 'multiply'].includes(layer.blendMode) || (layer.isStatic != null && typeof layer.isStatic !== 'boolean')) throw new Error('Lớp texture không hợp lệ.')
+    return { assetPath: layer.assetPath, blendMode: layer.blendMode, ...(layer.isStatic ? { isStatic: true } : {}) }
+  })
+}
 
 export interface VideoEffect {
   kind: VideoEffectKind
@@ -15,6 +47,9 @@ export interface VideoEffect {
   /** Chế độ hòa trộn: 'screen', 'alphamerge', hoặc 'multiply' */
   blendMode?: OverlayBlendMode
   chromaKey?: OverlayChromaKey
+  layers?: OverlayTextureLayer[]
+  /** Left half stores red-channel alpha; right half stores RGB. */
+  packedAlpha?: OverlayPackedAlpha
   /** Tên hiển thị */
   name?: string
   /** Nguồn hiệu ứng */
@@ -30,6 +65,8 @@ export interface CapCutScannedEffect {
   thumbnailPath?: string
   blendMode: OverlayBlendMode
   chromaKey?: OverlayChromaKey
+  layers?: OverlayTextureLayer[]
+  packedAlpha?: OverlayPackedAlpha
   isPro: boolean
   aspectRatio: 'portrait' | 'landscape' | 'square' | 'unknown'
   isSaved?: boolean
@@ -43,6 +80,8 @@ export interface SavedOverlayEffect {
   thumbnailPath?: string
   blendMode: OverlayBlendMode
   chromaKey?: OverlayChromaKey
+  layers?: OverlayTextureLayer[]
+  packedAlpha?: OverlayPackedAlpha
   isPro: boolean
   savedAt: number
 }
@@ -83,6 +122,14 @@ export function normalizeVideoEffects(value: unknown): VideoEffect[] | undefined
       if (item.mattePath != null && (typeof item.mattePath !== 'string' || !item.mattePath.trim() || item.mattePath.includes('\0'))) {
         throw new Error('Đường dẫn matte không hợp lệ.')
       }
+      const layers = normalizeOverlayTextureLayers(item.layers)
+      const packedAlpha = normalizeOverlayPackedAlpha(item.packedAlpha)
+      if (packedAlpha && (layers || item.mattePath || item.chromaKey || item.blendMode === 'chromakey')) {
+        throw new Error('Alpha đóng gói không được trộn với texture, matte hoặc Chroma Key.')
+      }
+      if (layers && (layers[0].assetPath !== item.assetPath || item.mattePath || item.chromaKey)) {
+        throw new Error('Texture nhiều lớp không được trộn với matte hoặc Chroma Key.')
+      }
     }
     seen.add(dedupeKey)
     if (item.intensity > 0) {
@@ -94,6 +141,8 @@ export function normalizeVideoEffects(value: unknown): VideoEffect[] | undefined
           entry.blendMode = item.blendMode
         }
         if (item.chromaKey != null) entry.chromaKey = normalizeOverlayChromaKey(item.chromaKey)
+        if (item.layers != null) entry.layers = normalizeOverlayTextureLayers(item.layers)
+        if (item.packedAlpha != null) entry.packedAlpha = normalizeOverlayPackedAlpha(item.packedAlpha)
         if (entry.blendMode === 'chromakey' && !entry.chromaKey) throw new Error('Thiếu thông số Chroma Key.')
         if (typeof item.name === 'string' && item.name.trim()) entry.name = item.name.trim()
         if (item.sourceType) entry.sourceType = item.sourceType

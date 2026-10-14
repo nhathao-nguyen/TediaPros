@@ -1153,14 +1153,18 @@ function emitProgress(
   outputPath?: string,
   error?: string
 ): void {
+  const boundedPercent = Math.max(0, Math.min(100, Math.round(percent)))
   safeEmit(job, {
     type: 'item-progress',
     jobId: job.id,
     taskId: item.id,
     itemId: item.id,
     itemStatus: status,
-    itemPercent: Math.max(0, Math.min(100, Math.round(percent))),
+    itemPercent: boundedPercent,
     itemMessage: message,
+    percent: boundedPercent,
+    phase: status,
+    message,
     batchIndex: index + 1,
     batchTotal: total,
     outputPath,

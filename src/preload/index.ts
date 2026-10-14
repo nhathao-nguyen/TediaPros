@@ -1,5 +1,6 @@
 import { contextBridge, ipcRenderer } from 'electron'
 import {
+  AutoShortConfig,
   AutoShortEvent,
   AutoShortDependencyConfig,
   AutoShortDependencyProgress,
@@ -83,7 +84,7 @@ import type { ReelsMonitorResult, ReelsWatchRequest } from '../shared/facebookRe
 import type { FacebookReelsRequest, FacebookReelsProgress, FacebookReelsStartResult,
   FacebookReelsResult, FacebookReelsMetadataResult, FacebookReelsExportRequest, FacebookReelsExportResponse,
   FacebookReelsChannelSource, FacebookReelsLibraryResult } from '../shared/facebookReels'
-import type { CapCutScannedEffect, SavedOverlayEffect } from '../shared/videoEffects'
+import type { CapCutScannedEffect, SavedOverlayEffect, OverlayComposition } from '../shared/videoEffects'
 import type { OverlayChromaKey } from '../shared/overlayChromaKey'
 
 const api = {
@@ -478,6 +479,10 @@ const api = {
     ipcRenderer.invoke('autoshort:retryTitle', request),
   autoShortClearCache: (): Promise<{ ok: boolean; error?: string }> =>
     ipcRenderer.invoke('autoshort:clearCache'),
+  autoShortSaveWorkflowConfig: (config: AutoShortConfig, validationError?: string): Promise<{ ok: boolean; error?: string }> =>
+    ipcRenderer.invoke('autoshort:saveWorkflowConfig', config, validationError),
+  autoShortGetWorkflowConfig: (outputDir?: string): Promise<{ ok: boolean; config?: AutoShortConfig; error?: string }> =>
+    ipcRenderer.invoke('autoshort:getWorkflowConfig', outputDir),
   onAutoShortEvent: (cb: (event: AutoShortEvent) => void): (() => void) => {
     const listener = (_e: unknown, event: AutoShortEvent): void => cb(event)
     ipcRenderer.on('autoshort:event', listener)
@@ -500,12 +505,24 @@ const api = {
     ipcRenderer.invoke('effects:scanCapCut'),
   resolveOverlayChromaKey: (videoPath: string): Promise<{ ok: boolean; chromaKey?: OverlayChromaKey; error?: string }> =>
     ipcRenderer.invoke('effects:chromaKey', videoPath),
+  resolveOverlayComposition: (videoPath: string): Promise<{ ok: boolean; composition?: OverlayComposition; error?: string }> =>
+    ipcRenderer.invoke('effects:composition', videoPath),
   getSavedOverlayEffects: (): Promise<SavedOverlayEffect[]> =>
     ipcRenderer.invoke('effects:getSavedVault'),
   saveOverlayToVault: (effect: CapCutScannedEffect): Promise<{ ok: boolean; saved?: SavedOverlayEffect; error?: string }> =>
     ipcRenderer.invoke('effects:saveToVault', effect),
   deleteOverlayFromVault: (id: string): Promise<boolean> =>
-    ipcRenderer.invoke('effects:deleteFromVault', id)
+    ipcRenderer.invoke('effects:deleteFromVault', id),
+  typesafeGetInfo: (): Promise<{ hasKey: boolean; masked: string }> =>
+    ipcRenderer.invoke('typesafe:getInfo'),
+  typesafeHasKey: (): Promise<boolean> =>
+    ipcRenderer.invoke('typesafe:hasKey'),
+  typesafeSaveKey: (key: string): Promise<{ ok: boolean; message: string }> =>
+    ipcRenderer.invoke('typesafe:saveKey', key),
+  typesafeCheckKey: (key: string): Promise<{ ok: boolean; message: string }> =>
+    ipcRenderer.invoke('typesafe:checkKey', key),
+  typesafeClearKey: (): Promise<{ ok: boolean }> =>
+    ipcRenderer.invoke('typesafe:clearKey')
 }
 
 contextBridge.exposeInMainWorld('api', api)

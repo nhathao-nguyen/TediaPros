@@ -4,24 +4,20 @@ import type { FacebookReelsExportRequest, FacebookReelsExportResult, FacebookRee
 import { externalArticleUrl, articleLinksFromMessage } from '../shared/facebookArticleLinks'
 import { facebookReelId, sanitizeFolderName, buildFacebookReelsFolderName } from '../shared/facebookReels'
 import { randomUUID } from 'node:crypto'
-import { mkdir, writeFile, lstat, rename } from 'node:fs/promises'
+import { mkdir, lstat } from 'node:fs/promises'
 import { isAbsolute, join } from 'node:path'
 import ExcelJS from 'exceljs'
 import { assertContainedParentDirectory, assertContainedRegularFile } from './safeContainedPath'
+import { atomicWorkflowWrite } from './reelsWorkflowStore'
 
 export interface FacebookReelsExportDependencies {
   resolve(e:PlaylistEntry,signal:AbortSignal):Promise<PlaylistEntry>
-  article(url:string,signal:AbortSignal):Promise<FacebookArticle>
+  article(url:string,signal:AbortSignal,maxChapters?:number):Promise<FacebookArticle>
   video(e:PlaylistEntry,dir:string,stem:string,signal:AbortSignal):Promise<string>
   progress?(row:FacebookReelsExportRow,message:string):void
 }
 async function writeContained(path:string,root:string,text:string):Promise<void> {
-  await assertContainedParentDirectory(path,root,'Xuất Reels')
-  const temp=path+'.tmp'
-  await assertContainedParentDirectory(temp,root,'Xuất Reels')
-  await writeFile(temp,text,{encoding:'utf8',flag:'w'})
-  await assertContainedRegularFile(temp,root,'Xuất Reels')
-  await rename(temp,path)
+  await atomicWorkflowWrite(path,root,text)
 }
 export async function exportFacebookReels(entries: PlaylistEntry[], options: Pick<FacebookReelsExportRequest,'outputRoot'|'downloadVideos'|'folderName'>,
   signal:AbortSignal,dependencies:FacebookReelsExportDependencies):Promise<FacebookReelsExportResult> {
@@ -53,7 +49,7 @@ export async function exportFacebookReels(entries: PlaylistEntry[], options: Pic
     excel: join(directory, 'excel')
   }
   for (const dir of Object.values(dirs)) {
-    await assertContainedParentDirectory(dir, directory, 'Thư mục Reels')
+    await assertContainedParentDirectory(join(dir, '.check'), directory, 'Thư mục Reels')
     await mkdir(dir, { recursive: true })
   }
   const rows:FacebookReelsExportRow[]=entries.map((e,i)=>({index:i+1,id:e.id,reelUrl:e.url,title:e.title,caption:e.facebook?.caption??'',
@@ -82,10 +78,30 @@ export async function exportFacebookReels(entries: PlaylistEntry[], options: Pic
     else {
       report(row,`Đang lấy nội dung web ${i+1}/${entries.length}…`)
       try {
-        const article=await dependencies.article(row.targetUrl,signal)
+        const article=await dependencies.article(row.targetUrl,signal,80)
         row.articleTitle=article.title;row.content=article.content.length>32700?article.content.slice(0,32700)+'\n[Nội dung đầy đủ nằm trong file TXT]':article.content;row.targetUrl=article.url;row.articleStatus=article.status
         if(article.error)row.errors.push(`Bài viết: ${article.error}`)
-        if(article.status==='success'&&article.content){row.articlePath=join(dirs.article,stem+'.txt');await writeContained(row.articlePath,directory,article.content)}
+        if(article.completion==='partial'){
+          if(article.stopReason==='chapter-limit'&&article.chapters&&article.chapters.length>0){
+            row.errors.push(`Bài viết dài: đã tải tối đa ${article.chapters.length} chương.`)
+          }else{
+            row.articleStatus='error';row.errors.push(`Bài viết chưa đầy đủ: ${article.stopReason || 'unknown'}`)
+          }
+        }
+        if(article.status==='success'&&article.content){
+          row.articlePath=join(dirs.article,stem+'.txt');
+          await writeContained(row.articlePath,directory,article.content);
+          if(article.chapters && article.chapters.length > 1){
+            const chaptersDir = join(dirs.article, `${stem}_chapters`);
+            await assertContainedParentDirectory(join(chaptersDir, '.check'), directory, 'Thư mục chương');
+            await mkdir(chaptersDir, { recursive: true });
+            for(const ch of article.chapters){
+              if(!Number.isSafeInteger(ch.index)||ch.index<1)throw Error('Số chapter không hợp lệ.');
+              const chFile = join(chaptersDir, `chapter_${String(ch.index).padStart(2, '0')}.txt`);
+              await writeContained(chFile, directory, `${ch.title}\n\n${ch.content}`);
+            }
+          }
+        }
       }catch(err){row.articleStatus=signal.aborted?'cancelled':'error';row.errors.push(`Bài viết: ${errorText(err)}`)}
     }
     if(options.downloadVideos) {
@@ -109,7 +125,7 @@ export async function exportFacebookReels(entries: PlaylistEntry[], options: Pic
   const clipped=(s:string):string=>s.length>32767?s.slice(0,32700)+'\n[Nội dung đầy đủ nằm trong file TXT]':s
   for(const row of rows){const r=sheet.addRow([row.index,row.reelUrl,clipped(row.caption),row.foundIn??'',row.targetUrl??'',clipped(row.content),row.videoPath??'',
     `Caption: ${row.captionStatus}; Bài viết: ${row.articleStatus}; Video: ${row.videoStatus}`,new Date().toISOString(),clipped(row.title),clipped(row.articleTitle),row.captionPath??'',row.articlePath??'',clipped(row.errors.join('\n'))]);r.alignment={vertical:'top',wrapText:true}}
-  await assertContainedParentDirectory(excelPath,directory,'Excel Reels');await wb.xlsx.writeFile(excelPath)
+  await atomicWorkflowWrite(excelPath,directory,Buffer.from(await wb.xlsx.writeBuffer()))
   await checkpoint()
   return {rows,directory,excelPath,manifestPath,cancelled:signal.aborted}
 }

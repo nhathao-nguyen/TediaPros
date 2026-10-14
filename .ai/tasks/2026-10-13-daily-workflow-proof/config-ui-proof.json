@@ -1,0 +1,10 @@
+{
+  "starts": 0,
+  "snapshotCount": 6,
+  "final": {
+    "lamMo": false,
+    "ttsEnabled": false,
+    "translateTarget": "none"
+  },
+  "errors": []
+}

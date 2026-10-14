@@ -247,14 +247,18 @@ function emitProgress(
   translationAssessment?: TranslationAssessment,
   translationIdentity?: string
 ): void {
+  const boundedPercent = Math.max(0, Math.min(100, Math.round(percent)))
   context.emit({
     type: 'item-progress',
     jobId: context.jobId,
     taskId: context.item.id,
     itemId: context.item.id,
     itemStatus,
-    itemPercent: Math.max(0, Math.min(100, Math.round(percent))),
+    itemPercent: boundedPercent,
     itemMessage: message,
+    percent: boundedPercent,
+    phase: itemStatus,
+    message,
     batchIndex: context.index + 1,
     batchTotal: context.total,
     outputPath,

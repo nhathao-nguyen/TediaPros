@@ -1,6 +1,7 @@
 import { useEffect, useState, type JSX } from 'react'
 import { useReelsMonitor } from './useReelsMonitor'
 import type { FacebookReelsChannel, FacebookReelsLibraryResult } from '../../../shared/facebookReels'
+import { TypeSafeKeyModal } from './TypeSafeKeyModal'
 
 // --- SVG Icons ---
 function IconReels(): JSX.Element {
@@ -134,6 +135,7 @@ export function FacebookReelsLibrary({ channels, busy, error, message, onRefresh
   const [time, setTime] = useState('09:00')
   useEffect(() => { if (monitor.state) setTime(monitor.state.settings.time) }, [monitor.state?.settings.time])
   const [adding, setAdding] = useState(false)
+  const [showJevModal, setShowJevModal] = useState(false)
   const [url, setUrl] = useState('')
   const [name, setName] = useState('')
   const [working, setWorking] = useState(false)
@@ -187,6 +189,16 @@ export function FacebookReelsLibrary({ channels, busy, error, message, onRefresh
             type="button"
             className="reels-btn reels-btn-subtle"
             disabled={locked}
+            onClick={() => setShowJevModal(true)}
+            title="Cấu hình TypeSafe Jev AI hỗ trợ phân xử liên kết chương"
+          >
+            <span>🧠</span>
+            <span>TypeSafe Jev</span>
+          </button>
+          <button
+            type="button"
+            className="reels-btn reels-btn-subtle"
+            disabled={locked}
             onClick={() => void act(onRefresh)}
             title="Làm mới danh sách"
           >
@@ -195,6 +207,7 @@ export function FacebookReelsLibrary({ channels, busy, error, message, onRefresh
           </button>
         </div>
       </header>
+      <TypeSafeKeyModal open={showJevModal} onClose={() => setShowJevModal(false)} />
 
       {/* 2. Automation & Daily Schedule Toolbar */}
       <div className="reels-schedule-toolbar">
@@ -411,34 +424,90 @@ export function FacebookReelsLibrary({ channels, busy, error, message, onRefresh
                       <span className="reels-path-open-hint">Mở thư mục</span>
                     </div>
 
-                    <div className="reels-channel-meta-row">
-                      <label className="reels-switch-label">
-                        <input
-                          type="checkbox"
-                          className="reels-switch-input"
-                          checked={isWatching}
-                          disabled={working || !monitor.state}
-                          onChange={e => {
-                            const enabled = e.target.checked
-                            void act(() =>
-                              monitor.act(
-                                window.api.setFacebookReelsWatch({
-                                  url: channel.url,
-                                  enabled,
-                                  useCookies: useCookies(channel.url)
-                                })
+                    <div className="reels-channel-meta-row" style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 8 }}>
+                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%', flexWrap: 'wrap', gap: 8 }}>
+                        <label className="reels-switch-label">
+                          <input
+                            type="checkbox"
+                            className="reels-switch-input"
+                            checked={isWatching}
+                            disabled={working || !monitor.state}
+                            onChange={e => {
+                              const enabled = e.target.checked
+                              void act(() =>
+                                monitor.act(
+                                  window.api.setFacebookReelsWatch({
+                                    url: channel.url,
+                                    enabled,
+                                    useCookies: useCookies(channel.url),
+                                    autoExportArticle: watch?.autoExportArticle ?? true,
+                                    autoRunAutoShort: (watch ? watch.autoRunAutoShort ?? false : true)
+                                  })
+                                )
                               )
-                            )
-                          }}
-                        />
-                        <span className="reels-switch-slider" />
-                        <span className="reels-switch-text">Tự động theo dõi & tải video mới</span>
-                      </label>
+                            }}
+                          />
+                          <span className="reels-switch-slider" />
+                          <span className="reels-switch-text">Tự động theo dõi & tải video mới hàng ngày</span>
+                        </label>
 
-                      {watch?.lastChecked && (
-                        <span className="reels-last-checked">
-                          Đã kiểm tra: {new Date(watch.lastChecked).toLocaleString('vi-VN', { timeZone: 'Asia/Ho_Chi_Minh', hour: '2-digit', minute: '2-digit', day: '2-digit', month: '2-digit' })}
-                        </span>
+                        {watch?.lastChecked && (
+                          <span className="reels-last-checked">
+                            Đã kiểm tra: {new Date(watch.lastChecked).toLocaleString('vi-VN', { timeZone: 'Asia/Ho_Chi_Minh', hour: '2-digit', minute: '2-digit', day: '2-digit', month: '2-digit' })}
+                          </span>
+                        )}
+                      </div>
+
+                      {isWatching && (
+                        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 16, paddingLeft: 32, fontSize: 12 }}>
+                          <label style={{ display: 'inline-flex', alignItems: 'center', gap: 6, cursor: 'pointer', color: 'var(--text-muted)' }}>
+                            <input
+                              type="checkbox"
+                              checked={watch?.autoExportArticle !== false}
+                              disabled={working}
+                              onChange={e => {
+                                const autoExportArticle = e.target.checked
+                                void act(() =>
+                                  monitor.act(
+                                    window.api.setFacebookReelsWatch({
+                                      url: channel.url,
+                                      enabled: isWatching,
+                                      useCookies: useCookies(channel.url),
+                                      autoExportArticle,
+                                      autoRunAutoShort: (watch ? watch.autoRunAutoShort ?? false : true)
+                                    })
+                                  )
+                                )
+                              }}
+                            />
+                            <span>Cào bài viết & các chapter theo ngày</span>
+                          </label>
+
+                          <label style={{ display: 'inline-flex', alignItems: 'center', gap: 6, cursor: 'pointer', color: watch?.autoRunAutoShort ? 'var(--accent, #43e7d5)' : 'var(--text-muted)' }}>
+                            <input
+                              type="checkbox"
+                              checked={watch?.autoRunAutoShort === true}
+                              disabled={working}
+                              onChange={e => {
+                                const autoRunAutoShort = e.target.checked
+                                void act(() =>
+                                  monitor.act(
+                                    window.api.setFacebookReelsWatch({
+                                      url: channel.url,
+                                      enabled: isWatching,
+                                      useCookies: useCookies(channel.url),
+                                      autoExportArticle: watch?.autoExportArticle ?? true,
+                                      autoRunAutoShort
+                                    })
+                                  )
+                                )
+                              }}
+                            />
+                            <span style={{ fontWeight: watch?.autoRunAutoShort ? 600 : 400 }}>
+                              ⚡ Tự động chạy AutoShort sau khi tải
+                            </span>
+                          </label>
+                        </div>
                       )}
                     </div>
 

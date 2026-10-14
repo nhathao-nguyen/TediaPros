@@ -183,7 +183,7 @@ test('planVideoEffectInputs and appendVideoEffects support custom_overlay with b
 
   const screenGraph = linesScreen.join(';')
   assert.match(screenGraph, /\[3:v\]scale=w=1080:h=1920/)
-  assert.match(screenGraph, /blend=c0_mode=screen:c0_opacity=0\.6500/)
+  assert.match(screenGraph, /blend=all_mode=screen:all_opacity=0\.6500/)
 
   // Test multiply blend filter generation (for dark scratches/noise)
   const linesMultiply = ['[0:v]null[out]']
@@ -194,6 +194,58 @@ test('planVideoEffectInputs and appendVideoEffects support custom_overlay with b
   const multiplyGraph = linesMultiply.join(';')
   assert.match(multiplyGraph, /\[4:v\]scale=w=1080:h=1920/)
   assert.match(multiplyGraph, /blend=all_mode=multiply:all_opacity=0\.7500/)
+})
+
+test('RGB texture blending preserves black Screen and white Multiply without lifting blacks or tinting colors', t => {
+  if (!existsSync(ffmpeg)) return t.skip('FFmpeg unavailable')
+  for (const sourceColor of ['black', '0x202020', '0x3864A2', 'white']) {
+    const source = ['-f', 'lavfi', '-i', `color=${sourceColor}:s=160x90:r=4:d=1`]
+    const output = ['-pix_fmt', 'rgb24', '-f', 'rawvideo', 'pipe:1']
+    const baseline = run([...source, ...output])
+    for (const blendMode of ['screen', 'multiply'] as const) {
+      for (const intensity of [25, 100]) {
+        const lines = ['[0:v]null[out]']
+        appendVideoEffects(lines, 160, 90, [{ kind: 'custom_overlay', intensity, assetPath: 'texture.mp4', blendMode }],
+          [{ effectIndex: 0, videoInputIndex: 1, videoPath: 'texture.mp4', blendMode }])
+        const pixels = run([...source, '-f', 'lavfi', '-i', `color=${blendMode === 'screen' ? 'black' : 'white'}:s=160x90:r=4:d=2`,
+          '-filter_complex', lines.join(';'), '-map', '[out]', ...output])
+        assert.equal(pixels.length, baseline.length, 'Looping textures must retain source frame count')
+        for (let p = 0; p < pixels.length; p++) {
+          assert.ok(Math.abs(pixels[p] - baseline[p]) <= 2,
+            `${blendMode} ${intensity}% must preserve ${sourceColor}; channel ${p}: ${baseline[p]} -> ${pixels[p]}`)
+        }
+      }
+    }
+    const lines = ['[0:v]null[out]']
+    appendVideoEffects(lines, 160, 90, [{ kind: 'film_grunge', intensity: 75 }], 1)
+    const pixels = run([...source, '-f', 'lavfi', '-i', 'color=black:s=160x90:r=4:d=2',
+      '-filter_complex', lines.join(';'), '-map', '[out]', ...output])
+    assert.equal(pixels.length, baseline.length)
+    for (let p = 0; p < pixels.length; p++) assert.ok(Math.abs(pixels[p] - baseline[p]) <= 2, 'Film texture must not add a white veil')
+  }
+})
+
+test('RGB Screen and Multiply follow per-channel compositing and intensity on decoded colored textures', t => {
+  if (!existsSync(ffmpeg)) return t.skip('FFmpeg unavailable')
+  const source = ['-f', 'lavfi', '-i', 'color=0x3864A2:s=160x90:r=2:d=1']
+  const texture = ['-f', 'lavfi', '-i', 'color=0x905028:s=160x90:r=2:d=1']
+  const output = ['-pix_fmt', 'rgb24', '-f', 'rawvideo', 'pipe:1']
+  const a = run([...source, ...output]), b = run([...texture, ...output])
+  for (const blendMode of ['screen', 'multiply'] as const) {
+    for (const intensity of [25, 75, 100]) {
+      const lines = ['[0:v]null[out]']
+      appendVideoEffects(lines, 160, 90, [{ kind: 'custom_overlay', intensity, assetPath: 'texture.mp4', blendMode }],
+        [{ effectIndex: 0, videoInputIndex: 1, videoPath: 'texture.mp4', blendMode }])
+      const pixels = run([...source, ...texture, '-filter_complex', lines.join(';'), '-map', '[out]', ...output])
+      assert.equal(pixels.length, a.length)
+      for (let p = 0; p < pixels.length; p++) {
+        const blended = blendMode === 'screen' ? 255 - (255 - a[p]) * (255 - b[p]) / 255 : a[p] * b[p] / 255
+        const expected = a[p] + (blended - a[p]) * intensity / 100
+        assert.ok(Math.abs(pixels[p] - expected) <= 3,
+          `${blendMode} ${intensity}% channel ${p}: expected ${expected}, got ${pixels[p]}`)
+      }
+    }
+  }
 })
 
 test('scanCapCutEffects discovers effects and synthesizes image sequences like Nhiễu đen', async () => {

@@ -85,6 +85,7 @@ import {
   writeVideoSeoMetadata
 } from './videoTitle'
 import { formatVideoSeoMetadata } from '../shared/videoSeo'
+import { planBalancedVideoExport, balancedVideoEncoderCandidates, randomizeVideoExportPlan } from './videoExportPolicy'
 
 /** Parse #RGB / #RRGGBB -> { r,g,b } hoac null. */
 function parseHexColor(hex: string | undefined | null): { r: number; g: number; b: number } | null {
@@ -158,10 +159,10 @@ let child: ChildProcess | null = null
 let daHuy = false
 let burnInFlight = false
 let burnAbortController: AbortController | null = null
-let cachedWorkingEncoder: string | null = null
+const cachedWorkingEncoders = new Map<string, string>()
 
 export function resetCachedWorkingEncoder(): void {
-  cachedWorkingEncoder = null
+  cachedWorkingEncoders.clear()
 }
 const burnChildren = new Set<ChildProcess>()
 
@@ -207,6 +208,8 @@ export interface Meta {
   sampleAspectRatio?: string
   videoStart?: number
   audioStart?: number
+  videoBitrate?: number
+  videoCodec?: string
 }
 
 function evenDimension(value: number, fallback: number): number {
@@ -250,7 +253,7 @@ async function doVideo(ffprobe: string, video: string): Promise<Meta> {
       ffprobe,
       [
         '-v', 'error',
-        '-show_entries', 'stream=index,codec_type,width,height,start_time,duration,r_frame_rate,avg_frame_rate,sample_aspect_ratio:stream_tags=rotate:stream_side_data=rotation',
+        '-show_entries', 'stream=index,codec_type,codec_name,bit_rate,width,height,start_time,duration,r_frame_rate,avg_frame_rate,sample_aspect_ratio:stream_tags=rotate:stream_side_data=rotation',
         '-show_entries', 'format=duration,start_time',
         '-of', 'json',
         video
@@ -262,7 +265,11 @@ async function doVideo(ffprobe: string, video: string): Promise<Meta> {
       p.on('close', () => {
         try {
           const parsed = JSON.parse(out)
-          resolve(parseCanonicalMediaMetadata(parsed))
+          const videoStream = parsed.streams?.find((stream: { codec_type?: string }) => stream.codec_type === 'video')
+          const bitrate = Number(videoStream?.bit_rate)
+          resolve({ ...parseCanonicalMediaMetadata(parsed),
+            ...(Number.isFinite(bitrate) && bitrate > 0 ? { videoBitrate: bitrate } : {}),
+            ...(typeof videoStream?.codec_name === 'string' ? { videoCodec: videoStream.codec_name } : {}) })
         } catch {
           resolve({ w: 0, h: 0, giay: 0, hasAudio: false, videoDurationSeconds: null, containerDurationSeconds: 0 })
         }
@@ -394,11 +401,11 @@ export function docSrt(srtRaw: string): SubtitleCue[] {
   return parseSrt(srtRaw).cues
 }
 
-export async function probeBurnMedia(video: string): Promise<Meta> {
+export async function probeBurnMedia(video: string, ffmpegPath?: string): Promise<Meta> {
   if (!isAbsolute(video)) throw new Error('Đường dẫn video không hợp lệ.')
   const info = await stat(video)
   if (!info.isFile() || info.size <= 0) throw new Error('Không thể đọc video đã chọn.')
-  const ffmpeg = await resolveFfmpeg()
+  const ffmpeg = ffmpegPath || await resolveFfmpeg()
   if (!ffmpeg) throw new Error('Chưa tìm thấy FFmpeg để kiểm tra âm thanh video.')
   return doVideo(duongFfprobe(ffmpeg), video)
 }
@@ -1305,7 +1312,7 @@ export async function runBurnSubtitleLower(
     }, overlayFiles)
 
     const filmGrungePath = resolveFilmGrungePath()
-    options = { ...options, videoEffects: await restoreVideoEffectChromaKeys(options.videoEffects) }
+    options = { ...options, videoEffects: await restoreVideoEffectChromaKeys(options.videoEffects, options.signal) }
     const hasFilmGrunge = Boolean(filmGrungePath && options.videoEffects?.some(e => e.kind === 'film_grunge'))
     const baseInputCount = 1 + Number(options.plan.narrationAudioIndex != null) + Number(options.plan.maskVideoIndex != null)
     const overlayImageOffset = overlays?.image ? 1 : 0
@@ -1360,16 +1367,12 @@ export async function runBurnSubtitleLower(
       debugRaw('burn filter_complex', filterArgs.join(' '))
     }
 
-    const isDarwin = process.platform === 'darwin'
-    const jitterCq = 22 + Math.floor(Math.random() * 3) // 22, 23, 24
-    const gopSize = Math.random() > 0.5 ? 60 : 120
-    const allCandidates: Array<{ ten: string; gpu: boolean; args: string[] }> = [
-      ...(isDarwin ? [{ ten: 'h264_videotoolbox', gpu: true, args: ['-c:v', 'h264_videotoolbox', '-pix_fmt', 'yuv420p', '-q:v', '65'] }] : []),
-      { ten: 'h264_nvenc', gpu: true, args: ['-c:v', 'h264_nvenc', '-pix_fmt', 'yuv420p', '-preset', 'p4', '-cq', String(jitterCq), '-g', String(gopSize), '-spatial-aq', '1'] },
-      { ten: 'h264_amf', gpu: true, args: ['-c:v', 'h264_amf', '-pix_fmt', 'yuv420p', '-quality', 'balanced', '-rc', 'cqp', '-qp_i', String(jitterCq), '-qp_p', String(jitterCq)] },
-      { ten: 'h264_qsv', gpu: true, args: ['-c:v', 'h264_qsv', '-pix_fmt', 'yuv420p', '-global_quality', String(jitterCq)] },
-      { ten: 'libx264', gpu: false, args: ['-c:v', 'libx264', '-pix_fmt', 'yuv420p', '-preset', 'faster', '-crf', '21'] }
-    ]
+    const exportPlan = randomizeVideoExportPlan(planBalancedVideoExport({ width: canvas.width, height: canvas.height, sourceWidth: meta.w, sourceHeight: meta.h,
+      frameRate: meta.frameRate, averageFrameRate: meta.averageFrameRate, videoBitrate: meta.videoBitrate, videoCodec: meta.videoCodec, effects: options.videoEffects }))
+    debugRaw('balanced video export policy', exportPlan)
+    const allCandidates = balancedVideoEncoderCandidates(exportPlan, process.platform)
+    const encoderCacheKey = `${ff}:${exportPlan.encoderPreference}`
+    const cachedWorkingEncoder = cachedWorkingEncoders.get(encoderCacheKey)
     if (cachedWorkingEncoder) {
       const workingIdx = allCandidates.findIndex((c) => c.ten === cachedWorkingEncoder)
       if (workingIdx > 0) {
@@ -1394,7 +1397,7 @@ export async function runBurnSubtitleLower(
         inputArgs.push('-stream_loop', '-1', '-i', filmGrungePath)
       }
       const dungFilterAudio = req.batAmThanh && (meta.hasAudio || hasAudioFile)
-      const audioCodecArgs = dungFilterAudio ? ['-c:a', 'aac'] : ['-c:a', 'copy']
+      const audioCodecArgs = dungFilterAudio ? ['-c:a', 'aac', '-b:a', '128k'] : ['-c:a', 'copy']
 
       const isMp4 = output.toLowerCase().endsWith('.mp4') || output.toLowerCase().endsWith('.m4v')
       const sanitizeContainerArgs = [
@@ -1433,7 +1436,7 @@ export async function runBurnSubtitleLower(
         return { ok: false, error: 'Đã huỷ.', encoderAttempts }
       }
       if (attemptSucceeded) {
-        cachedWorkingEncoder = enc.ten
+        cachedWorkingEncoders.set(encoderCacheKey, enc.ten)
         logInfo(`Dịch màn hình: xử lý video xong${enc.gpu ? ' (tăng tốc GPU)' : ''}.`)
         return { ok: true, output, selectedEncoder: enc.ten, encoderAttempts }
       }
@@ -2002,7 +2005,7 @@ export async function burnAutoShort(
     // burnSubtitle(), so it must explicitly run the optional title stage
     // after the MP4 has been atomically published.
     return await completeBurnVideoTitle(
-      { ok: true, output: options.finalOutputPath },
+      { ...renderRes, output: options.finalOutputPath },
       renderReq,
       onProgress,
       options.signal,

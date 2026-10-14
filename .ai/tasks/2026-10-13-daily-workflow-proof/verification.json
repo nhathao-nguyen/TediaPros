@@ -1,0 +1,24 @@
+{
+  "date": "2026-10-13",
+  "scope": "Local source, fixture regression, hidden Electron UI, native FFmpeg integration",
+  "tests": {
+    "tests": 103,
+    "pass": 103,
+    "fail": 0,
+    "skipped": 0
+  },
+  "typecheck": "PASS",
+  "build": "PASS",
+  "ui": {
+    "starts": 0,
+    "snapshotCount": 6,
+    "final": {
+      "lamMo": false,
+      "ttsEnabled": false,
+      "translateTarget": "none"
+    },
+    "errors": []
+  },
+  "liveFacebookProviderAcceptance": "not performed",
+  "installedAppUpdated": false
+}

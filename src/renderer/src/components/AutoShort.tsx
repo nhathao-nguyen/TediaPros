@@ -617,9 +617,9 @@ export default function AutoShort({ onOpenSpeedModal }: AutoShortProps = {}): JS
   const transport = useVideoTransport(videoRef, previewPath)
 
   // Subtitle Region & Styles
-  const [subtitleRegion, setSubtitleRegion] = useState<AutoShortNormalizedRegion | undefined>()
+  const [subtitleRegion, setSubtitleRegion] = usePersistedState<AutoShortNormalizedRegion | undefined>('tblao.autoshort.subtitleRegion.v1', undefined)
   // OCR source region is independent from the output subtitle safe-area.
-  const [ocrRegion, setOcrRegion] = useState<AutoShortNormalizedRegion | undefined>()
+  const [ocrRegion, setOcrRegion] = usePersistedState<AutoShortNormalizedRegion | undefined>('tblao.autoshort.ocrRegion.v1', undefined)
   const [fontId, setFontId] = usePersistedState('tblao.autoshort.fontId', 'auto')
   const [fontWeight, setFontWeight] = usePersistedState('tblao.autoshort.fontWeight', 400)
   const [fonts, setFonts] = useState<BurnFontEntry[]>([])
@@ -714,7 +714,7 @@ export default function AutoShort({ onOpenSpeedModal }: AutoShortProps = {}): JS
   const [showKeyText, setShowKeyText] = useState(false)
 
   // Blur Regions
-  const [blurEnabled, setBlurEnabled] = useState(true)
+  const [blurEnabled, setBlurEnabled] = usePersistedState('tblao.autoshort.blurEnabled.v1', true)
   const [blurModeRaw, setBlurModeRaw] = usePersistedState<AutoShortBlurMode>(
     'tblao.autoshort.blurMode',
     'manual'
@@ -735,7 +735,7 @@ export default function AutoShort({ onOpenSpeedModal }: AutoShortProps = {}): JS
     if (ocrBlurProfileRaw !== ocrBlurProfile) setOcrBlurProfileRaw(ocrBlurProfile)
   }, [blurMode, blurModeRaw, ocrBlurProfile, ocrBlurProfileRaw, setBlurModeRaw, setOcrBlurProfileRaw])
 
-  const [blurRegions, setBlurRegions] = useState<AutoShortBlurRegion[]>([])
+  const [blurRegions, setBlurRegions] = usePersistedState<AutoShortBlurRegion[]>('tblao.autoshort.blurRegions.v1', [])
   const [activeBlurId, setActiveBlurId] = useState<string | null>(null)
 
   const automaticProcessing = isAutomaticOcrProcessing({ lamMo: blurEnabled, blurMode })
@@ -1648,6 +1648,126 @@ export default function AutoShort({ onOpenSpeedModal }: AutoShortProps = {}): JS
     }
   }
 
+  const buildCurrentConfig = (backgroundMusicConfig?: AutoShortBackgroundMusicConfig, itemCount = 2): AutoShortConfig => {
+    const sub = subtitleRegion && clampAutoShortNormalizedRegion(subtitleRegion)
+    const ocr = ocrRegion && clampAutoShortNormalizedRegion(ocrRegion)
+    const normalizedBlurs = blurRegions.flatMap(region => {
+      const normalized = clampAutoShortNormalizedRegion(region)
+      return normalized ? [{ ...normalized, id: region.id, color: region.color }] : []
+    })
+    const activeClonedVoice = clonedVoices.find(cv => `clone:${cv.id}` === ttsVoice || cv.id === ttsVoice)
+    const guidance = parseTranslationGuidance(translationSynopsis, translationGlossaryText, translationTone, customToneInstruction)
+return {
+        portraitBlur,
+        videoAdjustments: normalizedVideoAdjustments,
+        ...(effectsState.error || effectsState.value.length ? { videoEffects: effectsState.error ? videoEffects : effectsState.value } : {}),
+        ...(overlayState.error || overlayState.value.image || overlayState.value.text
+          ? { overlays: overlayState.error ? overlaySettings : overlayState.value } : {}),
+        subtitleMethod,
+        whisperModel: selectedWhisperModel,
+        whisperDevice,
+        whisperLanguage: whisperLanguage.trim() || 'auto',
+        ocrRegion: ocr,
+        blurRegions: normalizedBlurs,
+        lamMo: blurEnabled,
+        blurMode,
+        ocrBlurProfile,
+        subRegion: sub,
+        subtitlePlacementMode: effectiveSubtitlePlacementMode,
+        fontId: fontId === 'auto' ? null : fontId,
+        textColor,
+        outlineColor,
+        outlinePx: Math.min(8, outlinePx),
+        bgEnabled,
+        bgColor,
+        bgOpacity,
+        subtitleDisplayStyle: (subtitleMethod === 'ocr' && !ttsEnabled) ? 'standard' : displayStyle,
+        subtitleFontSize: fontSize > 0 ? fontSize : undefined,
+        subtitleFontWeight: fontWeight,
+        subtitleTextCase,
+        subtitleFontScale: fontSize > 0 ? fontSize / SUBTITLE_STYLE_REFERENCE_HEIGHT : undefined,
+        highlightColor,
+        subtitleHighlightPop: highlightPop,
+        highlightBgEnabled,
+        highlightBgColor,
+        subtitleLayoutProfile: layoutProfile,
+        subtitleAutoOptimize: autoOptimize,
+        outlineScale: outlinePx / SUBTITLE_STYLE_REFERENCE_HEIGHT,
+        translateTarget,
+        translateProvider,
+        translateServerUrl: translateProvider === 'local'
+          ? ttsServerUrl
+          : translateProvider === 'gemini-gateway' ? geminiGatewayUrl : undefined,
+        translationGuidance: translateTarget !== 'none' ? guidance.value : undefined,
+        videoTitle: titleEnabled ? {
+          provider: titleProvider,
+          language: titleLanguage,
+          serverUrl: titleProvider === 'local'
+            ? (titleServerUrl.trim() || undefined)
+            : titleProvider === 'gemini-gateway'
+              ? (titleServerUrl.trim() || geminiGatewayUrl.trim() || undefined)
+              : undefined,
+          seo: titleSeoOptions
+        } : undefined,
+        ttsEnabled,
+        ...(ttsEnabled && ttsProvider === 'edge-tts' ? { ttsProvider } : {}),
+        ttsServerUrl: ttsEnabled && ttsProvider === 'local-tts' ? (ttsServerUrl.trim() || undefined) : undefined,
+        ttsModel: ttsEnabled ? (ttsProvider === 'edge-tts' ? 'edge-tts' : (ttsModel.trim() || undefined)) : undefined,
+        ttsVoice: ttsEnabled
+          ? (ttsProvider === 'edge-tts'
+            ? (edgeVoice.trim() || undefined)
+            : (activeClonedVoice ? activeClonedVoice.name : (ttsVoice.trim() || undefined)))
+          : undefined,
+        ttsRefAudioPath: ttsEnabled && ttsProvider === 'local-tts' && activeClonedVoice ? activeClonedVoice.referenceAudioPath : undefined,
+        ttsRefTranscript: ttsEnabled && ttsProvider === 'local-tts' && activeClonedVoice ? activeClonedVoice.referenceTranscript : undefined,
+        ttsLanguage: ttsEnabled ? (translateTarget !== 'none' ? translateTarget : whisperLanguage.trim() || undefined) : undefined,
+        ttsSpeed,
+        paceMode,
+        voiceOverMode,
+        audioMode,
+        separationPreset: audioMode === 'separate-vocals' ? separationPreset : undefined,
+        originalAudioVolume,
+        backgroundMusic: backgroundMusicConfig,
+        executionPolicy: {
+          ...(ttsProvider === 'edge-tts' ? { edgeTtsConcurrency } : {}),
+          maxActiveItems: itemCount >= 2 ? 2 : 1,
+          overlapIndependentStages: true
+        },
+        thumbnailConfig: batchAutoThumbnail ? {
+          enabled: true,
+          mode: batchThumbnailMode,
+          cleanSubtitles: thumbnailCleanSubtitles,
+          style: thumbnailStyle,
+          position: thumbnailPosition,
+          fontSize: thumbnailFontSize,
+          autoTitleFromAi: thumbnailAutoTitle
+        } : undefined,
+        outputDir,
+        videoSpeed: Math.abs(videoSpeed - 1.0) >= 0.01 ? videoSpeed : undefined,
+        videoSpeedPreservePitch,
+        openingZoom,
+        openingFlash
+      }
+  }
+  const workflowMusic: AutoShortBackgroundMusicConfig | undefined = audioMode === 'replace' && backgroundMusicEnabled ? {
+    folderPath: backgroundMusicFolder, mode: backgroundMusicMode, volume: backgroundMusicVolume,
+    assignments: backgroundMusicMode === 'per-video' ? backgroundMusicAssignments : Object.fromEntries(
+      (backgroundMusicMode === 'single' ? [backgroundMusicSingleTrack] : backgroundMusicTracks.map(t => t.path))
+        .map((path, index) => [`workflow-${index}`, path]))
+  } : undefined
+  const workflowSnapshot = JSON.stringify(buildCurrentConfig(workflowMusic))
+  const workflowGuidance = parseTranslationGuidance(translationSynopsis, translationGlossaryText, translationTone, customToneInstruction)
+  const workflowValidationError = translateTarget !== 'none' && workflowGuidance.error ? workflowGuidance.error : undefined
+  const [workflowSyncError, setWorkflowSyncError] = useState('')
+  useEffect(() => {
+    let current = true
+    if (!window.api.autoShortSaveWorkflowConfig) return
+    void window.api.autoShortSaveWorkflowConfig(JSON.parse(workflowSnapshot), workflowValidationError).then(result => {
+      if (current) setWorkflowSyncError(result.ok ? '' : result.error || 'Không lưu được cấu hình workflow.')
+    }).catch(error => { if (current) setWorkflowSyncError(String(error)) })
+    return () => { current = false }
+  }, [workflowSnapshot, workflowValidationError])
+
   // Khởi động chạy hàng loạt Auto Short
   const startBatch = async (resume?: BatchSnapshot, explicitRetryIds?: ReadonlySet<string>): Promise<void> => {
     if (isStartingRef.current || isStarting || isRunning || sttnPreviewRunning) return
@@ -1761,99 +1881,11 @@ export default function AutoShort({ onOpenSpeedModal }: AutoShortProps = {}): JS
         currentStepMessage: 'Đang trong hàng đợi…'
       }) : t))
 
-      const config: AutoShortConfig = {
-        portraitBlur,
-        videoAdjustments: normalizedVideoAdjustments,
-        ...(effectsState.error || effectsState.value.length ? { videoEffects: effectsState.error ? videoEffects : effectsState.value } : {}),
-        ...(overlayState.error || overlayState.value.image || overlayState.value.text
-          ? { overlays: overlayState.error ? overlaySettings : overlayState.value } : {}),
-        subtitleMethod,
-        whisperModel: selectedWhisperModel,
-        whisperDevice,
-        whisperLanguage: whisperLanguage.trim() || 'auto',
-        ocrRegion: ocr,
-        blurRegions: normalizedBlurs,
-        lamMo: blurEnabled,
-        blurMode,
-        ocrBlurProfile,
-        subRegion: sub,
-        subtitlePlacementMode: effectiveSubtitlePlacementMode,
-        fontId: fontId === 'auto' ? null : fontId,
-        textColor,
-        outlineColor,
-        outlinePx: Math.min(8, outlinePx),
-        bgEnabled,
-        bgColor,
-        bgOpacity,
-        subtitleDisplayStyle: (subtitleMethod === 'ocr' && !ttsEnabled) ? 'standard' : displayStyle,
-        subtitleFontSize: fontSize > 0 ? fontSize : undefined,
-        subtitleFontWeight: fontWeight,
-        subtitleTextCase,
-        subtitleFontScale: fontSize > 0 ? fontSize / SUBTITLE_STYLE_REFERENCE_HEIGHT : undefined,
-        highlightColor,
-        subtitleHighlightPop: highlightPop,
-        highlightBgEnabled,
-        highlightBgColor,
-        subtitleLayoutProfile: layoutProfile,
-        subtitleAutoOptimize: autoOptimize,
-        outlineScale: outlinePx / SUBTITLE_STYLE_REFERENCE_HEIGHT,
-        translateTarget,
-        translateProvider,
-        translateServerUrl: translateProvider === 'local'
-          ? ttsServerUrl
-          : translateProvider === 'gemini-gateway' ? geminiGatewayUrl : undefined,
-        translationGuidance: translateTarget !== 'none' ? guidance.value : undefined,
-        videoTitle: titleEnabled ? {
-          provider: titleProvider,
-          language: titleLanguage,
-          serverUrl: titleProvider === 'local'
-            ? (titleServerUrl.trim() || undefined)
-            : titleProvider === 'gemini-gateway'
-              ? (titleServerUrl.trim() || geminiGatewayUrl.trim() || undefined)
-              : undefined,
-          seo: titleSeoOptions
-        } : undefined,
-        ttsEnabled,
-        ...(ttsEnabled && ttsProvider === 'edge-tts' ? { ttsProvider } : {}),
-        ttsServerUrl: ttsEnabled && ttsProvider === 'local-tts' ? (ttsServerUrl.trim() || undefined) : undefined,
-        ttsModel: ttsEnabled ? (ttsProvider === 'edge-tts' ? 'edge-tts' : (ttsModel.trim() || undefined)) : undefined,
-        ttsVoice: ttsEnabled
-          ? (ttsProvider === 'edge-tts'
-            ? (edgeVoice.trim() || undefined)
-            : (activeClonedVoice ? activeClonedVoice.name : (ttsVoice.trim() || undefined)))
-          : undefined,
-        ttsRefAudioPath: ttsEnabled && ttsProvider === 'local-tts' && activeClonedVoice ? activeClonedVoice.referenceAudioPath : undefined,
-        ttsRefTranscript: ttsEnabled && ttsProvider === 'local-tts' && activeClonedVoice ? activeClonedVoice.referenceTranscript : undefined,
-        ttsLanguage: ttsEnabled ? (translateTarget !== 'none' ? translateTarget : whisperLanguage.trim() || undefined) : undefined,
-        ttsSpeed,
-        paceMode,
-        voiceOverMode,
-        audioMode,
-        separationPreset: audioMode === 'separate-vocals' ? separationPreset : undefined,
-        originalAudioVolume,
-        backgroundMusic: backgroundMusicConfig,
-        executionPolicy: {
-          ...(ttsProvider === 'edge-tts' ? { edgeTtsConcurrency } : {}),
-          maxActiveItems: runnableTasks.length >= 2 ? 2 : 1,
-          overlapIndependentStages: true
-        },
-        thumbnailConfig: batchAutoThumbnail ? {
-          enabled: true,
-          mode: batchThumbnailMode,
-          cleanSubtitles: thumbnailCleanSubtitles,
-          style: thumbnailStyle,
-          position: thumbnailPosition,
-          fontSize: thumbnailFontSize,
-          autoTitleFromAi: thumbnailAutoTitle
-        } : undefined,
-        outputDir,
-        videoSpeed: Math.abs(videoSpeed - 1.0) >= 0.01 ? videoSpeed : undefined,
-        videoSpeedPreservePitch,
-        openingZoom,
-        openingFlash
-      }
+      const config = buildCurrentConfig(backgroundMusicConfig, runnableTasks.length)
 
       try {
+        const saved = await window.api.autoShortSaveWorkflowConfig(config)
+        if (!saved.ok) throw Error(saved.error || 'Không lưu được cấu hình workflow.')
         const started = resume
           ? await window.api.autoShortResume({ jobId: resume.jobId, expectedRevision: resume.revision, config })
           : await window.api.autoShortStart({
@@ -1863,7 +1895,9 @@ export default function AutoShort({ onOpenSpeedModal }: AutoShortProps = {}): JS
           })
         if (!started.ok) {
           if (started.error?.includes('Đang có một Auto Short job khác chạy')) {
-            setIsRunning(true)
+            setIsRunning(false)
+            setOverallProgress(prev => ({ ...prev, message: started.error }))
+            setTasks(prev => prev.map(t => runnableIds.has(t.id) ? { ...t, status: 'idle', currentStepMessage: started.error } : t))
             return
           }
           setIsRunning(false)
@@ -2120,6 +2154,9 @@ export default function AutoShort({ onOpenSpeedModal }: AutoShortProps = {}): JS
     <div className="video-editor autoshort-page" style={{ gridTemplateRows: 'minmax(0, 1fr) auto' }}>
       {/* KHU VỰC CHÍNH: 2 CỘT (TRÁI: BẢN XEM TRƯỚC, PHẢI: INSPECTOR) */}
       <div className="editor-workspace">
+        {workflowSyncError && <div role="status" style={{ gridColumn: '1 / -1', color: 'var(--text-muted)' }}>
+          Workflow tự động cần cấu hình hợp lệ: {workflowSyncError}
+        </div>}
 
         {/* ========================================================================= */}
         {/* CỘT TRÁI: BẢN XEM TRƯỚC VIDEO (CHUẨN 3 HÀNG GRID, TỰ ĐỘNG SCALE VỪA VẶN) */}

@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { facebookReelsStopMessage, type FacebookReelsRequest, type FacebookReelsSummary } from '../../../shared/facebookReels'
 import { filterReelsEntries, reelsPage, reelsSelectionCounts, type ReelsSelectionEntry } from '../lib/facebookReels'
 import { FacebookReelReader, ReelsPagination } from './FacebookReelReader'
+import { TypeSafeKeyModal } from './TypeSafeKeyModal'
 
 export interface ReelsSelectionSource { jobId: string; request: FacebookReelsRequest; summary: FacebookReelsSummary }
 export function FacebookReelsSelection({ entries, sources, busy, error = '', folder, downloadVideos, range, onRange, onApplyRange,
@@ -15,6 +16,7 @@ export function FacebookReelsSelection({ entries, sources, busy, error = '', fol
   const [query, setQuery] = useState('')
   const [page, setPage] = useState(1)
   const [selectedId, setSelectedId] = useState<string | null>(null)
+  const [jevOpen, setJevOpen] = useState(false)
   const dialog = useRef<HTMLDivElement>(null)
   const closeRef = useRef(onClose)
   const busyRef = useRef(busy)
@@ -62,7 +64,9 @@ export function FacebookReelsSelection({ entries, sources, busy, error = '', fol
       {error && <div className="reels-selection-error" role="alert">{error}</div>}
       <div className="reels-selection-tools">
         <div className="reels-actions"><span className={captionCount === reelCount ? 'muted small' : 'reels-attention small'}>{captionCount}/{reelCount} Reel có caption{captionCount < reelCount ? ` · ${reelCount - captionCount} cần bổ sung` : ''}</span>
-          {selectedMissing > 0 && <button className="btn small-btn" disabled={busy} onClick={onEnrich}>Lấy {selectedMissing} caption còn thiếu</button>}</div>
+          {selectedMissing > 0 && <button className="btn small-btn" disabled={busy} onClick={onEnrich}>Lấy {selectedMissing} caption còn thiếu</button>}
+          <button className="btn small-btn" disabled={busy} onClick={() => setJevOpen(true)} title="Cấu hình TypeSafe Jev AI hỗ trợ phân xử chương">🧠 TypeSafe Jev</button>
+        </div>
         <div className="reels-results-toolbar"><input className="reels-search" type="search" aria-label="Tìm Reels để chọn" placeholder="Tìm trong tiêu đề, caption hoặc ID…" value={query} onChange={e => { setQuery(e.target.value); setPage(1) }}/>
           <button className="btn small-btn" disabled={busy || !entries.length} onClick={() => onAll(true)}>Chọn tất cả ({entries.length})</button><button className="btn small-btn" disabled={busy || !checked} onClick={() => onAll(false)}>Bỏ chọn tất cả</button></div>
         <details className="reels-selection-more"><summary>Chọn theo khoảng</summary><div className="reels-actions">
@@ -89,6 +93,7 @@ export function FacebookReelsSelection({ entries, sources, busy, error = '', fol
         {other > 0 && <small className="reels-attention">{other} video playlist đã chọn chỉ được thêm vào hàng đợi; nút Xuất xử lý {exportCount} Facebook Reels.</small>}
         {!folder && <small className="reels-attention">Chọn thư mục trước khi xuất dữ liệu.</small>}
       </footer>
+      <TypeSafeKeyModal open={jevOpen} onClose={() => setJevOpen(false)} />
     </div>
   </div>
 }

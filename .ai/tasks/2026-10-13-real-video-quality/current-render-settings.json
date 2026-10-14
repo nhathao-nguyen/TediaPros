@@ -1,0 +1,22 @@
+{
+  "tblao.autoshort.openingZoom": false,
+  "tblao.autoshort.videoEffects.v1": [
+    {
+      "kind": "custom_overlay",
+      "intensity": 75,
+      "assetPath": "C:\\Users\\PC\\AppData\\Local\\CapCut\\User Data\\Cache\\effect\\7628092028760395026\\b7980e084aeaf3542a78499bb5b0082d\\AmazingFeature\\resource\\video\\potret.mp4",
+      "blendMode": "screen",
+      "name": "Nhiễu cổ điển",
+      "sourceType": "capcut"
+    }
+  ],
+  "tblao.autoshort.portraitBlur": false,
+  "tblao.autoshort.videoAdjustments.v1": {
+    "zoom": 120,
+    "brightness": -5,
+    "saturation": 105,
+    "contrast": 103
+  },
+  "tblao.autoshort.openingFlash": false,
+  "tblao.autoshort.videoSpeed": 1.1
+}

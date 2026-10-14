@@ -5,11 +5,14 @@ import { join, basename, extname, dirname, relative, isAbsolute, normalize } fro
 import { homedir } from 'node:os'
 import { spawn } from 'node:child_process'
 import { app } from 'electron'
-import { normalizeVideoEffects, type VideoEffect, type CapCutScannedEffect, type SavedOverlayEffect, type OverlayBlendMode } from '../shared/videoEffects'
+import { normalizeVideoEffects, normalizeOverlayTextureLayers, normalizeOverlayPackedAlpha, type OverlayTextureLayer, type OverlayComposition, type VideoEffect, type CapCutScannedEffect, type SavedOverlayEffect, type OverlayBlendMode } from '../shared/videoEffects'
 import { normalizeOverlayChromaKey, type OverlayChromaKey } from '../shared/overlayChromaKey'
 import { assertContainedParentDirectory, assertContainedRegularFile } from './safeContainedPath'
 import { resolveFfmpeg } from './deps'
 import { logInfo, logWarn } from './logger'
+import { synthesizeCapCutTextureLayers } from './capcutTextureLayers'
+import { readCapCutPackedAlpha } from './capcutPackedAlpha'
+import { trackChildProcess, terminateProcessTree } from './processTree'
 
 function getCapCutEffectCacheDir(): string {
   return join(
@@ -173,15 +176,112 @@ export async function resolveOverlayChromaKey(videoPath: string): Promise<Overla
   return undefined
 }
 
-export async function restoreVideoEffectChromaKeys(raw: VideoEffect[] | undefined): Promise<VideoEffect[] | undefined> {
+export async function restoreVideoEffectChromaKeys(raw: VideoEffect[] | undefined, signal?: AbortSignal): Promise<VideoEffect[] | undefined> {
   const effects = normalizeVideoEffects(raw)
   if (!effects) return undefined
   return Promise.all(effects.map(async effect => {
-    if (effect.kind !== 'custom_overlay' || !effect.assetPath || effect.mattePath || effect.chromaKey ||
+    if (effect.kind !== 'custom_overlay' || !effect.assetPath || effect.mattePath || effect.chromaKey || effect.packedAlpha ||
       (effect.sourceType !== 'capcut' && effect.sourceType !== 'saved') || !existsSync(effect.assetPath)) return effect
-    const chromaKey = await resolveOverlayChromaKey(effect.assetPath)
-    return chromaKey ? { ...effect, blendMode: 'chromakey' as const, chromaKey } : effect
+    const composition = await resolveOverlayComposition(effect.assetPath, signal)
+    if (effect.layers) {
+      return { ...effect, layers: effect.layers.map(layer => {
+        const recovered = composition.layers?.find(candidate => candidate.assetPath === layer.assetPath)
+        return recovered?.isStatic ? { ...layer, isStatic: true } : layer
+      }) }
+    }
+    if (composition.layers) return { ...effect, assetPath: composition.layers[0].assetPath, blendMode: composition.layers[0].blendMode, layers: composition.layers }
+    if (composition.packedAlpha) return { ...effect, packedAlpha: composition.packedAlpha, blendMode: composition.blendMode }
+    return composition.chromaKey ? { ...effect, blendMode: 'chromakey' as const, chromaKey: composition.chromaKey } : effect
   }))
+}
+
+async function readVaultLayers(meta: { layers?: Array<{ videoFile: string; blendMode: string; isStatic?: boolean }> }, targetDir: string): Promise<OverlayTextureLayer[] | undefined> {
+  if (!meta.layers) return undefined
+  if (!Array.isArray(meta.layers) || meta.layers.length < 1 || meta.layers.length > 4) throw new Error('Metadata texture trong kho không hợp lệ.')
+  const layers = normalizeOverlayTextureLayers(meta.layers.map(layer => ({ assetPath: join(targetDir, layer.videoFile), blendMode: layer.blendMode, isStatic: layer.isStatic })))!
+  for (const layer of layers) layer.assetPath = await assertContainedRegularFile(layer.assetPath, targetDir, 'Lớp texture trong kho')
+  return layers
+}
+
+async function publishLayerComposition(layers: OverlayTextureLayer[], root: string): Promise<void> {
+  await publishVaultMetadata(`${layers[0].assetPath}.composition.json`, getGeneratedEffectCacheDir(), { layers, origin: root, version: 3 })
+}
+
+/** Recover legacy selections and freeze recovered passes before CapCut cleans its cache. */
+export async function resolveOverlayComposition(videoPath: string, signal?: AbortSignal): Promise<OverlayComposition> {
+  if (signal?.aborted) throw new Error('Đã huỷ.')
+  if (typeof videoPath !== 'string' || !isAbsolute(videoPath) || videoPath.includes('\0')) return {}
+  const vault = getTediaProsVaultDir(), cache = getGeneratedEffectCacheDir(), capcut = getCapCutEffectCacheDir()
+  const vaultParts = containedParts(videoPath, vault)
+  if (vaultParts?.length === 2) {
+    const targetDir = join(vault, vaultParts[0])
+    await assertContainedRegularFile(videoPath, targetDir, 'Video trong kho')
+    const metaPath = await assertContainedRegularFile(join(targetDir, 'metadata.json'), targetDir, 'Metadata kho')
+    if ((await stat(metaPath)).size > 4 * 1024 * 1024) throw new Error('Metadata kho quá lớn.')
+    const meta = JSON.parse(await readFile(metaPath, 'utf8'))
+    if (meta.packedAlpha != null) {
+      const packedAlpha = normalizeOverlayPackedAlpha(meta.packedAlpha)
+      if (!['alphamerge', 'multiply', 'screen', 'add'].includes(meta.blendMode) || meta.layers || meta.matteFile || meta.chromaKey) throw new Error('Metadata alpha trong kho không hợp lệ.')
+      return { packedAlpha, blendMode: meta.blendMode }
+    }
+    const stored = await readVaultLayers(meta, targetDir)
+    if (stored) return { layers: stored }
+    const origin = String(meta.id || vaultParts[0]).match(/^(\d+)_([\da-f]+)$/i)
+    if (origin && existsSync(capcut)) {
+      const layers = await recoverTextureLayers(join(capcut, origin[1], origin[2]), signal)
+      if (layers) {
+        const savedLayers: OverlayTextureLayer[] = []
+        for (const [i, layer] of layers.entries()) {
+          const target = join(targetDir, `layer-${i}.mp4`)
+          const source = await assertContainedRegularFile(layer.assetPath, cache, 'Texture đã chuyển đổi')
+          await publishVaultFile(target, vault, temp => copyFile(source, temp, constants.COPYFILE_EXCL))
+          savedLayers.push({ ...layer, assetPath: target })
+        }
+        await publishVaultMetadata(metaPath, vault, { ...meta, videoFile: basename(savedLayers[0].assetPath), blendMode: savedLayers[0].blendMode,
+          layers: savedLayers.map(layer => ({ videoFile: basename(layer.assetPath), blendMode: layer.blendMode, isStatic: layer.isStatic })) })
+        return { layers: savedLayers }
+      }
+      const packed = await readCapCutPackedAlpha(join(capcut, origin[1], origin[2]))
+      if (packed) {
+        await publishVaultMetadata(metaPath, vault, { ...meta, ...packed })
+        return packed
+      }
+    }
+    return { chromaKey: await resolveOverlayChromaKey(videoPath) }
+  }
+  const capcutParts = containedParts(videoPath, capcut)
+  if (capcutParts && capcutParts.length >= 3) {
+    await assertContainedRegularFile(videoPath, capcut, 'Video CapCut')
+    const root = join(capcut, ...capcutParts.slice(0, 2))
+    const layers = await recoverTextureLayers(root, signal)
+    return layers ? { layers } : await readCapCutPackedAlpha(root, videoPath) || { chromaKey: await resolveOverlayChromaKey(videoPath) }
+  }
+  if (containedParts(videoPath, cache)) {
+    await assertContainedRegularFile(videoPath, cache, 'Texture đã chuyển đổi')
+    if (existsSync(`${videoPath}.composition.json`)) {
+      const checked = await assertContainedRegularFile(`${videoPath}.composition.json`, cache, 'Metadata texture')
+      if ((await stat(checked)).size > 4 * 1024 * 1024) throw new Error('Metadata texture quá lớn.')
+      const meta = JSON.parse(await readFile(checked, 'utf8'))
+      const layers = normalizeOverlayTextureLayers(meta.layers)
+      for (const layer of layers || []) await assertContainedRegularFile(layer.assetPath, cache, 'Texture đã chuyển đổi')
+      if (meta.version !== 3 && typeof meta.origin === 'string' && containedParts(meta.origin, capcut)) {
+        const recovered = await recoverTextureLayers(meta.origin, signal)
+        if (recovered?.every((layer, i) => layer.assetPath === layers?.[i]?.assetPath)) return { layers: recovered }
+      }
+      return { layers }
+    }
+    const origin = basename(videoPath).match(/^(\d+)_([\da-f]+)_loop\.mp4$/i)
+    if (origin && existsSync(capcut)) return { layers: await recoverTextureLayers(join(capcut, origin[1], origin[2]), signal) }
+  }
+  return {}
+}
+
+async function recoverTextureLayers(root: string, signal?: AbortSignal): Promise<OverlayTextureLayer[] | undefined> {
+  if (!existsSync(root)) return undefined
+  await assertContainedParentDirectory(join(root, 'texture-check'), getCapCutEffectCacheDir(), 'Gói texture CapCut')
+  const layers = await synthesizeCapCutTextureLayers(root, getGeneratedEffectCacheDir(), (await resolveFfmpeg()) || 'ffmpeg', signal)
+  if (layers) await publishLayerComposition(layers, root)
+  return layers
 }
 
 /**
@@ -349,26 +449,37 @@ async function getOrSynthesizeSequenceLoop(
 
   const safeName = `${effectId}_${subId}`.replace(/[^a-zA-Z0-9_-]/g, '_')
   const metaJson = join(cacheDir, `${safeName}_meta.json`)
+  const outMp4 = join(cacheDir, `${safeName}_loop.mp4`)
+  // A warm scan needs no native probe or encode.
+  if (existsSync(outMp4) && existsSync(metaJson)) {
+    try {
+      const meta = JSON.parse(await readFile(metaJson, 'utf8'))
+      if ((await stat(outMp4)).size > 1000 && meta.frameCount === frames.length) return {
+        videoPath: outMp4, blendMode: meta.blendMode === 'multiply' ? 'multiply' : 'screen', thumbnailPath: frames[0]
+      }
+    } catch { /* rebuild incomplete cache */ }
+  }
   const ffmpegCmd = (await resolveFfmpeg()) || 'ffmpeg'
 
   // Probe luminance of first frame to determine whether it's dark-on-white (multiply) or light-on-dark (screen)
   let blendMode: OverlayBlendMode = 'screen'
   try {
-    const probeProc = spawn(ffmpegCmd, [
+    const probeProc = trackChildProcess(spawn(ffmpegCmd, [
       '-hide_banner',
       '-loglevel', 'error',
       '-i', frames[0],
       '-vf', 'scale=1:1,format=gray',
       '-f', 'rawvideo',
       '-'
-    ], { windowsHide: true })
+    ], { windowsHide: true }))
 
     const chunks: Buffer[] = []
     probeProc.stdout?.on('data', (d: Buffer) => chunks.push(d))
     await new Promise<void>((resolve) => {
-      probeProc.on('close', () => resolve())
-      probeProc.on('error', () => resolve())
-      setTimeout(resolve, 3000)
+      const timer = setTimeout(() => terminateProcessTree(probeProc), 3000)
+      const complete = () => { clearTimeout(timer); resolve() }
+      probeProc.once('close', complete)
+      probeProc.once('error', complete)
     })
     const outputBuf = Buffer.concat(chunks)
     if (outputBuf.length > 0 && outputBuf[0] > 128) {
@@ -376,24 +487,6 @@ async function getOrSynthesizeSequenceLoop(
     }
   } catch {
     // default to screen
-  }
-
-  const outMp4 = join(cacheDir, `${safeName}_loop.mp4`)
-
-  if (existsSync(outMp4) && existsSync(metaJson)) {
-    try {
-      const meta = JSON.parse(await readFile(metaJson, 'utf8'))
-      const s = await stat(outMp4)
-      if (s.size > 1000) {
-        return {
-          videoPath: outMp4,
-          blendMode: meta.blendMode === 'multiply' ? 'multiply' : 'screen',
-          thumbnailPath: frames[0]
-        }
-      }
-    } catch {
-      // re-synthesize
-    }
   }
 
   // Concat demuxer repeating frames to reach ~2.5 - 3.5 seconds
@@ -413,7 +506,7 @@ async function getOrSynthesizeSequenceLoop(
   await writeFile(concatPath, lines.join('\n'), 'utf8')
 
   const ok = await new Promise<boolean>((resolve) => {
-    const child = spawn(ffmpegCmd, [
+    const child = trackChildProcess(spawn(ffmpegCmd, [
       '-y',
       '-hide_banner',
       '-loglevel', 'error',
@@ -424,14 +517,11 @@ async function getOrSynthesizeSequenceLoop(
       '-pix_fmt', 'yuv420p',
       '-preset', 'ultrafast',
       outMp4
-    ], { windowsHide: true })
+    ], { windowsHide: true }))
 
-    child.on('close', (code) => resolve(code === 0))
-    child.on('error', () => resolve(false))
-    setTimeout(() => {
-      try { child.kill() } catch {}
-      resolve(false)
-    }, 15000)
+    const timer = setTimeout(() => terminateProcessTree(child), 15000)
+    child.once('close', code => { clearTimeout(timer); resolve(code === 0) })
+    child.once('error', () => { clearTimeout(timer); resolve(false) })
   })
 
   rm(concatPath).catch(() => {})
@@ -514,15 +604,18 @@ export async function scanCapCutEffects(): Promise<CapCutScannedEffect[]> {
 
         await findFiles(targetDir)
 
-        let sequenceInfo: Awaited<ReturnType<typeof getOrSynthesizeSequenceLoop>> = null
-        if (mp4Files.length === 0) {
-          const seq = findImageSequence(pngFiles)
-          if (seq) {
-            sequenceInfo = await getOrSynthesizeSequenceLoop(topDir.name, basename(targetDir), seq.frames)
-            if (sequenceInfo) {
-              mp4Files.push(sequenceInfo.videoPath)
+        let sequenceInfo: (NonNullable<Awaited<ReturnType<typeof getOrSynthesizeSequenceLoop>>> & { layers?: OverlayTextureLayer[] }) | null = null
+        const layers = await recoverTextureLayers(targetDir)
+        if (layers) {
+          sequenceInfo = { videoPath: layers[0].assetPath, blendMode: layers[0].blendMode, thumbnailPath: pngFiles[0], layers }
+          mp4Files.length = 0
+          mp4Files.push(sequenceInfo.videoPath)
+        } else if (mp4Files.length === 0) {
+            const seq = findImageSequence(pngFiles)
+            if (seq) {
+              sequenceInfo = await getOrSynthesizeSequenceLoop(topDir.name, basename(targetDir), seq.frames)
+              if (sequenceInfo) mp4Files.push(sequenceInfo.videoPath)
             }
-          }
         }
 
         if (mp4Files.length === 0) continue
@@ -576,7 +669,8 @@ export async function scanCapCutEffects(): Promise<CapCutScannedEffect[]> {
         const effectId = `${topDir.name}_${basename(targetDir)}`
         const isPro = Boolean(metaFromDraft?.isPro || info.configName?.toLowerCase().includes('pro') || topDir.name.toLowerCase().includes('vip'))
         const chromaKey = !mattePath && !sequenceInfo ? await readCapCutChromaKey(targetDir) : undefined
-        const blendMode: OverlayBlendMode = mattePath ? 'alphamerge' : (chromaKey ? 'chromakey' : (sequenceInfo ? sequenceInfo.blendMode : 'screen'))
+        const packed = !mattePath && !sequenceInfo && !chromaKey ? await readCapCutPackedAlpha(targetDir, mainVideo) : undefined
+        const blendMode: OverlayBlendMode = packed?.blendMode || (mattePath ? 'alphamerge' : (chromaKey ? 'chromakey' : (sequenceInfo ? sequenceInfo.blendMode : 'screen')))
 
         results.push({
           id: effectId,
@@ -587,6 +681,8 @@ export async function scanCapCutEffects(): Promise<CapCutScannedEffect[]> {
           thumbnailPath: thumb,
           blendMode,
           chromaKey,
+          layers: sequenceInfo?.layers,
+          packedAlpha: packed?.packedAlpha,
           isPro,
           aspectRatio,
           isSaved: savedIds.has(effectId)
@@ -628,17 +724,21 @@ export async function getSavedOverlayEffects(): Promise<SavedOverlayEffect[]> {
 
         const mattePath = meta.matteFile && existsSync(join(vaultDir, f.name, meta.matteFile)) ? await assertContainedRegularFile(join(vaultDir, f.name, meta.matteFile), join(vaultDir, f.name), 'Matte trong kho hiệu ứng') : undefined
         const thumbnailPath = meta.thumbnailFile && existsSync(join(vaultDir, f.name, meta.thumbnailFile)) ? await assertContainedRegularFile(join(vaultDir, f.name, meta.thumbnailFile), join(vaultDir, f.name), 'Ảnh trong kho hiệu ứng') : undefined
-        const chromaKey = meta.chromaKey ? normalizeOverlayChromaKey(meta.chromaKey) : await resolveOverlayChromaKey(videoPath)
-        const blendMode: OverlayBlendMode = chromaKey ? 'chromakey' : (meta.blendMode === 'multiply' ? 'multiply' : (meta.blendMode === 'alphamerge' ? 'alphamerge' : 'screen'))
+        const composition = await resolveOverlayComposition(videoPath)
+        const chromaKey = meta.chromaKey ? normalizeOverlayChromaKey(meta.chromaKey) : composition.chromaKey
+        const layers = composition.layers
+        const blendMode: OverlayBlendMode = composition.blendMode || (chromaKey ? 'chromakey' : (meta.blendMode === 'multiply' ? 'multiply' : (meta.blendMode === 'alphamerge' ? 'alphamerge' : 'screen')))
 
         saved.push({
           id: meta.id || f.name,
           name: meta.name || f.name,
-          videoPath,
+          videoPath: layers?.[0].assetPath || videoPath,
           mattePath: mattePath && existsSync(mattePath) ? mattePath : undefined,
           thumbnailPath: thumbnailPath && existsSync(thumbnailPath) ? thumbnailPath : undefined,
           blendMode,
           chromaKey,
+          layers,
+          packedAlpha: composition.packedAlpha,
           isPro: Boolean(meta.isPro),
           savedAt: meta.savedAt || Date.now()
         })
@@ -662,7 +762,11 @@ export async function saveOverlayToVault(item: CapCutScannedEffect): Promise<Sav
   if (!sanitizedId) throw new Error('ID hiệu ứng không hợp lệ.')
   const targetDir = join(vaultDir, sanitizedId)
   const chromaKey = item.chromaKey ? normalizeOverlayChromaKey(item.chromaKey) : await resolveOverlayChromaKey(item.videoPath)
-  const blendMode = chromaKey ? 'chromakey' : item.blendMode
+  const composition = await resolveOverlayComposition(item.videoPath)
+  const layers = normalizeOverlayTextureLayers(item.layers) || composition.layers
+  const packedAlpha = normalizeOverlayPackedAlpha(item.packedAlpha || composition.packedAlpha)
+  if (packedAlpha && (layers || item.mattePath || chromaKey)) throw new Error('Metadata alpha trong kho không hợp lệ.')
+  const blendMode = composition.blendMode || (chromaKey ? 'chromakey' : item.blendMode)
 
   const checkedSource = async (candidate: string): Promise<string> => {
     for (const root of [getCapCutEffectCacheDir(), getGeneratedEffectCacheDir()]) {
@@ -670,9 +774,10 @@ export async function saveOverlayToVault(item: CapCutScannedEffect): Promise<Sav
     }
     throw new Error('Tài nguyên nằm ngoài thư mục hiệu ứng cho phép.')
   }
-  const sourceVideo = await checkedSource(item.videoPath)
+  const sourceVideo = await checkedSource(layers?.[0].assetPath || item.videoPath)
   const sourceMatte = item.mattePath && existsSync(item.mattePath) ? await checkedSource(item.mattePath) : undefined
   const sourceThumb = item.thumbnailPath && existsSync(item.thumbnailPath) ? await checkedSource(item.thumbnailPath) : undefined
+  const sourceLayers = await Promise.all((layers || []).map(async layer => ({ ...layer, assetPath: await checkedSource(layer.assetPath) })))
   await mkdir(vaultDir, { recursive: true })
   await assertContainedParentDirectory(targetDir, vaultDir, 'Thư mục hiệu ứng')
   await mkdir(targetDir, { recursive: true })
@@ -683,6 +788,13 @@ export async function saveOverlayToVault(item: CapCutScannedEffect): Promise<Sav
   const videoFile = `video${videoExt}`
   const targetVideoPath = join(targetDir, videoFile)
   await publishVaultFile(targetVideoPath, vaultDir, temp => copyFile(sourceVideo, temp, constants.COPYFILE_EXCL))
+
+  const savedLayers: OverlayTextureLayer[] = []
+  for (const [i, layer] of sourceLayers.entries()) {
+    const target = i === 0 ? targetVideoPath : join(targetDir, `layer-${i}.mp4`)
+    if (i > 0) await publishVaultFile(target, vaultDir, temp => copyFile(layer.assetPath, temp, constants.COPYFILE_EXCL))
+    savedLayers.push({ ...layer, assetPath: target })
+  }
 
   // Copy matte if present
   let matteFile: string | undefined
@@ -712,6 +824,8 @@ export async function saveOverlayToVault(item: CapCutScannedEffect): Promise<Sav
     thumbnailFile,
     blendMode,
     chromaKey,
+    packedAlpha,
+    layers: savedLayers.length ? savedLayers.map(layer => ({ videoFile: basename(layer.assetPath), blendMode: layer.blendMode, isStatic: layer.isStatic })) : undefined,
     isPro: item.isPro,
     savedAt: Date.now()
   }
@@ -727,6 +841,8 @@ export async function saveOverlayToVault(item: CapCutScannedEffect): Promise<Sav
     thumbnailPath: targetThumbPath,
     blendMode,
     chromaKey,
+    packedAlpha,
+    layers: savedLayers.length ? savedLayers : undefined,
     isPro: item.isPro,
     savedAt: metaContent.savedAt
   }

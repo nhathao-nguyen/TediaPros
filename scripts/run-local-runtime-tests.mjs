@@ -47,6 +47,7 @@ const electronMockPlugin = {
 }
 
 const knownTests = [
+  'reels-daily-workflow.test',
   'edge-tts-contract.test',
   'edge-tts-adapter.test',
   'edge-tts-scheduler.test',
@@ -78,6 +79,9 @@ const knownTests = [
   'portrait-blur.test',
   'video-adjustments.test',
   'video-effects.test',
+  'effect-layer-composition.test',
+  'balanced-video-export.test',
+  'packed-video-alpha.test',
   'autoshort-overlays.test',
   'ocr-visual-timeline.test',
   'autoshort-ocr-runtime.test',

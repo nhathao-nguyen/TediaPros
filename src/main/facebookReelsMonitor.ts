@@ -1,6 +1,8 @@
 import { assertContainedParentDirectory } from './safeContainedPath'
 import { join } from 'node:path'
-import type { PlaylistEntry, PlaylistProbe, DownloadResult } from '../shared/types'
+import { runDailyReelsWorkflow } from './facebookReelsDailyWorkflow'
+import type { ReelsAutoShortHooks } from './reelsAutoShortRunner'
+import type { PlaylistEntry, PlaylistProbe, DownloadResult, AutoShortItemResult } from '../shared/types'
 import type { FacebookReelsChannel } from '../shared/facebookReels'
 import { facebookReelId, facebookReelsSource, facebookReelsStopMessage } from '../shared/facebookReels'
 import { reelsDueDay, reelsLocalDay, reelsWatchDue, type ReelsMonitorState,
@@ -8,14 +10,20 @@ import { reelsDueDay, reelsLocalDay, reelsWatchDue, type ReelsMonitorState,
 import { FacebookReelsLibrary } from './facebookReelsLibrary'
 import { ReelsMonitorStore } from './facebookReelsMonitorStore'
 import { reelsOperation } from './facebookReelsController'
+import type { FacebookArticle } from './facebookArticle'
 
 export interface ReelsMonitorDependencies {
   library: FacebookReelsLibrary; now(): number; account(watch: ReelsWatch): Promise<string>
   scan(watch: ReelsWatch, signal: AbortSignal): Promise<PlaylistProbe>
-  download(entry: PlaylistEntry, channel: FacebookReelsChannel, watch: ReelsWatch, signal: AbortSignal): Promise<DownloadResult>
+  download(entry: PlaylistEntry, channel: FacebookReelsChannel, watch: ReelsWatch, signal: AbortSignal, targetDir?: string, stem?: string): Promise<DownloadResult>
+  fetchArticle?(url: string, signal: AbortSignal): Promise<FacebookArticle>
+  resolveDetails?(entry: PlaylistEntry, signal: AbortSignal, account: string, watch: ReelsWatch): Promise<PlaylistEntry>
+  runAutoShort?(videoPaths: string[], outputDir: string, signal: AbortSignal, onProgress?: (p: { index: number; total: number; message: string }) => void, hooks?: ReelsAutoShortHooks): Promise<AutoShortItemResult[]>
+  recoverAutoShort?(jobId: string): Promise<AutoShortItemResult[]>
   changed?(): void
   failed?(error: unknown): void
 }
+
 /** One persistent daily claim per channel; discovery and downloads run serially outside Renderer. */
 export class FacebookReelsMonitor {
   private running: Promise<void> | null = null
@@ -69,10 +77,10 @@ export class FacebookReelsMonitor {
         await this.store.updateNotice(notice); this.changed(); continue
       }
       notice.outputDir = boundChannel.outputDir
-      await this.check(boundWatch, boundChannel, notice)
+      await this.check(boundWatch, boundChannel, notice, reelsLocalDay(now))
     }
   }
-  private async check(watch: ReelsWatch, channel: FacebookReelsChannel, notice: ReelsNotice): Promise<void> {
+  private async check(watch: ReelsWatch, channel: FacebookReelsChannel, notice: ReelsNotice, day: string): Promise<void> {
     let finished!: () => void
     this.activeFinished = new Promise(resolve => { finished = resolve })
     const controller = new AbortController(); this.controller = controller
@@ -98,37 +106,27 @@ export class FacebookReelsMonitor {
         if (!entry.facebook?.sourceVerified) { uncertain++; return false }
         return true
       })
+      if (entries.length > 10000) throw Error('Lượt có hơn 10.000 Reel mới; vượt giới hạn ledger của kênh. Chưa tải video và giữ dữ liệu theo dõi hợp lệ.')
       notice.found = entries.length
-      for (const entry of entries) {
-        if (signal.aborted) break
-        const enabled = (await this.store.read()).watches.find(w => w.key === watch.key)?.enabled
-        const current = (await this.deps.library.list()).find(c => c.key === watch.key)
-        if (!enabled || !current || current.outputDir !== channel.outputDir) { controller.abort(); break }
-        // Other manual jobs can finish after discovery. Never download a prior
-        // successful ID again, even if its file was removed meanwhile.
-        if ((await this.deps.library.historyIds()).includes(entry.id)) { notice.skipped++; continue }
-        this.active = { key: watch.key, name: channel.name, message: `Đang tải ${notice.downloaded + notice.skipped + notice.failed + 1}/${entries.length} video mới…` }; this.changed()
-        try {
-          const result = await this.deps.download(entry, channel, watch, signal)
-          if (!result.ok || !result.file) {
-            if (signal.aborted) break
-            notice.failed++
-          } else if (result.skipped) notice.skipped++
-          else {
-            await this.deps.library.recordCopy(entry.id, result.file, channel.outputDir)
-            notice.downloaded++
-            if (notice.videos.length < 100) notice.videos.push({ id: entry.id, title: entry.title.slice(0, 500), file: result.file })
-          }
-        } catch { if (signal.aborted) break; notice.failed++ }
-        await this.store.updateNotice(notice)
-        // Blocked downloads should not proceed through the entire channel.
-        if (notice.failed >= 3) { incomplete = true; reason = 'Đã dừng sau 3 video tải lỗi; sẽ kiểm tra lại ở lượt kế tiếp.'; break }
-      }
+
+      const workflow = await runDailyReelsWorkflow(entries, day, watch, channel, notice, this.deps, signal,
+        message => { this.active = { key: watch.key, name: channel.name, message }; this.changed() },
+        async () => {
+          const enabled = (await this.store.read()).watches.find(w => w.key === watch.key)?.enabled
+          const current = (await this.deps.library.list()).find(c => c.key === watch.key)
+          if (!enabled || !current || current.outputDir !== channel.outputDir) { controller.abort(); return false }
+          await this.store.updateNotice(notice)
+          return !signal.aborted
+        })
+      incomplete ||= workflow.incomplete
+      if (workflow.reason) reason = `${reason} ${workflow.reason}`.trim()
+
       notice.status = signal.aborted ? 'cancelled' : notice.failed || incomplete || uncertain ? 'partial' : 'success'
       notice.message = `${notice.downloaded} video mới đã tải · ${notice.skipped} bỏ qua · ${notice.failed} lỗi.` +
+        (watch.autoRunAutoShort && notice.autoShortProcessed ? ` · AutoShort hoàn tất ${notice.autoShortProcessed} video.` : '') +
         (signal.aborted ? ' Đã dừng; giữ video hoàn tất.' : incomplete ? ` ${reason}` : '') +
         (uncertain ? ` ${uncertain} ID chưa xác minh thuộc kênh nên chưa tải.` : '')
-      if (!entries.length && !signal.aborted && !incomplete && !uncertain) notice.message = 'Không có video mới so với lịch sử tải trước.'
+      if (!entries.length && !workflow.worked && !signal.aborted && !incomplete && !uncertain) notice.message = 'Không có video mới so với lịch sử tải trước.'
     } catch (error) {
       notice.status = signal.aborted ? 'cancelled' : 'error'
       notice.message = signal.aborted ? 'Đã dừng kiểm tra; giữ video đã tải.' :

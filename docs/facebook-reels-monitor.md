@@ -1,13 +1,25 @@
 # Theo dõi và tự tải Facebook Reels hằng ngày
 
-Trong **Tải xuống → Thư viện kênh Facebook Reels**, bật **Theo dõi hằng ngày** cho từng kênh muốn tự tải. Các kênh mặc định chưa bật. Thư mục của kênh là thư mục tải tự động; thay đổi thư mục chỉ áp dụng cho các lượt tiếp theo.
+Trong **Tải xuống → Thư viện kênh Facebook Reels**, bật **Theo dõi hằng ngày** cho từng kênh muốn tự tải. Các kênh mặc định chưa bật. Kênh mới mặc định bật cào bài/chapter và chạy AutoShort; lựa chọn đã lưu của kênh cũ được giữ nguyên. Hãy mở tab AutoShort để lưu cấu hình trước khi chạy tự động. Thiếu hoặc sai snapshot sẽ báo lỗi và giữ công việc để chạy lại.
 
 - Lịch mặc định **09:00 giờ Việt Nam**, có thể đổi giờ và bấm **Lưu giờ**. Lịch không phụ thuộc múi giờ của Windows.
 - Main process kiểm tra lịch mỗi phút khi ứng dụng chạy, kể cả khi chuyển tab. Nếu đóng ứng dụng hoặc máy ngủ qua lịch, khi mở lại/thức dậy chạy bù một lượt cho lịch gần nhất; không quét lại từng ngày bỏ lỡ.
 - Mỗi kênh có một lượt tự động mỗi ngày. Bật lần đầu trước 09:00 sẽ đợi 09:00; bật sau 09:00 sẽ chạy ở lần kiểm tra lịch kế tiếp. **Kiểm tra & tải ngay** cho phép chủ động chạy thêm và ghi nhận đã kiểm tra hôm nay.
 - Chỉ tải các ID mới đã xác minh thuộc profile/fanpage. ID từng tải thành công hoặc nhập từ thư mục được giữ trong lịch sử ngay cả khi file bị xóa. Vì thế tải tự động không khôi phục các file cũ đã xóa. Nút **Lấy video mới** thủ công vẫn dùng danh sách file còn tồn tại và cho phép lấy lại chúng.
 - Các ID tải lỗi không được ghi nhận thành công, nên được xét lại ở ngày tiếp theo. Sau ba lỗi tải trong một lượt, dừng phần còn lại. Mỗi video tải tối đa ba phút; lượt quét dùng giới hạn sẵn có của crawler. Một lượt quét chưa hết vẫn có thể tải những ID mới đã xác minh và báo **Chưa hoàn tất**.
-- Khi bật, lựa chọn tài khoản Facebook hiện tại được gắn với kênh bằng digest tài khoản. Nếu tài khoản đổi/hết phiên, thông báo yêu cầu đăng nhập và tắt/bật lại theo dõi. Không lưu cookie vào dữ liệu lịch. Theo dõi nền hiện dùng kết nối trực tiếp và video MP4 chất lượng tốt nhất, không dùng proxy hay các tùy chọn xuất caption/bài viết của lượt tải thủ công.
+- Khi bật, lựa chọn tài khoản Facebook hiện tại được gắn với kênh bằng digest tài khoản. Nếu tài khoản đổi/hết phiên, thông báo yêu cầu đăng nhập và tắt/bật lại theo dõi. Không lưu cookie vào dữ liệu lịch. Theo dõi nền dùng kết nối trực tiếp và video MP4 chất lượng tốt nhất. Cấu hình article/render là lựa chọn riêng của watch.
+
+## Workflow theo ngày
+
+Mỗi Reel mới có trạng thái riêng trong `[Kênh]/.reels-workflow.json`. File gốc nằm ở `YYYY-MM-DD/video/`, caption ở `caption/`, bài viết ở `article/`, từng chương ở `article/[stem]_chapters/`, bảng cả ngày ở `excel/reels_content.xlsx`. Ngày là ngày cào thực tế theo giờ Việt Nam; lượt chạy bù trước 09:00 vẫn ghi ngày hôm nay. Tắt article/render vẫn xuất caption và Excel. Bảng cùng ngày giữ các Reel từ lượt trước.
+
+Kết quả AutoShort và thư mục audit của từng video nằm dưới `YYYY-MM-DD/autoshort/[video]/`; thông báo/ledger ghi đường dẫn output thật. Cào bài hoặc render thất bại sẽ giữ MP4 và trạng thái chưa xong. Lượt hẹn kế tiếp hoặc **Kiểm tra & tải ngay** thử lại các bước chưa xong mà không tải lại MP4. Khôi phục biên nhận core sau crash giúp tránh render lại video đã hoàn tất. Danh sách thông báo tối đa 100 video không giới hạn số video được xử lý; AutoShort chia batch tối đa 500 video.
+
+Tab AutoShort tự đồng bộ cấu hình khi thay đổi, không cần bấm chạy. Các lựa chọn tắt TTS/dịch/xóa chữ được giữ khi chuyển tab. Cấu hình thiếu/sai hoặc lỗi lưu được hiển thị; workflow không âm thầm dùng mặc định bật các module. Workflow dùng cấu hình hiện tại, chưa chọn preset riêng cho từng watch. Nhạc một bài/ngẫu nhiên có thể dùng cho video mới; nhạc gán theo ID video thủ công cần chọn lại.
+
+Bộ cào chapter xác minh cùng truyện theo URL và liên kết tuần tự, giữ số chương thật. Bài thiếu chương, lỗi mạng, link mơ hồ, bắt đầu từ chương khác 1 hoặc vượt 25 trang/60 giây báo **Chưa hoàn tất**, giữ phần TXT đã lấy và trạng thái retry. Đây là giới hạn được báo rõ, không phải bằng chứng đã cào toàn bộ truyện. Nội dung bài/chapter được xuất để sử dụng riêng; AutoShort vẫn xử lý audio/OCR của MP4 gốc.
+
+Ledger giới hạn 10.000 Reel/32 MB mỗi kênh và báo lỗi khi đầy. Đổi thư mục kênh không tự chuyển ledger cũ; các video tải trước khi có ledger vẫn giữ lịch sử chống trùng, không tự suy đoán trạng thái article/render.
 
 **🔔 Thông báo** ở đầu ứng dụng hiển thị lượt kiểm tra, số video đã tải/bỏ qua/lỗi, danh sách tên video, trạng thái quét và nút mở thư mục. Có thể đánh dấu đã đọc hoặc dừng lượt đang chạy. Giữ tối đa 100 thông báo; danh sách chi tiết giữ tối đa 100 video mỗi lượt, số tổng vẫn phản ánh toàn lượt.
 
@@ -23,4 +35,4 @@ Thiết kế tham khảo lịch theo múi giờ và watch/notification của [ch
 
 ## Kiểm chứng
 
-`node scripts/run-local-runtime-tests.mjs facebook-reels-monitor.test facebook-reels-library.test` kiểm tra ngày Việt Nam, chạy bù, restart, tài khoản, chống trùng lịch sử, hủy và lỗi tải. Preview UI tại `scripts/preview-facebook-reels-ui.mjs` dùng dữ liệu minh họa. Test/preview không chứng minh tải từ Facebook thật; cần thử với một kênh/tài khoản đã đăng nhập trong ứng dụng.
+`node scripts/run-local-runtime-tests.mjs reels-daily-workflow.test facebook-reels-monitor.test facebook-reels-library.test facebook-reels-export.test` kiểm tra ngày Việt Nam, retry từng stage, hơn 100 video, kết quả batch, hủy, restart/receipt, Excel cùng ngày, cấu hình và chapter. `node scripts/smoke-reels-workflow-config-ui.mjs` kiểm tra đồng bộ toggle qua tab AutoShort thật với API mock trong Electron ẩn. Test/preview không chứng minh tải từ Facebook thật; cần thử với một kênh/tài khoản đã đăng nhập trong ứng dụng. Xem [ADR 016](adr/016-durable-daily-reels-workflow.md).

@@ -1,0 +1,29 @@
+{
+  "packageRoot": "C:\\Users\\PC\\AppData\\Local\\CapCut\\User Data\\Cache\\effect\\7399469641170554117\\53ff3188476c74715a73aa34f08a1edf",
+  "passes": [
+    {
+      "mode": "screen",
+      "frames": 28
+    },
+    {
+      "mode": "multiply",
+      "frames": 1
+    }
+  ],
+  "coldMs": 576.6854,
+  "warmMs": 102.5548,
+  "renderMs": 1145.9732,
+  "meanError": 1.9302777777777778,
+  "regionErrors": [
+    1.4638888888888888,
+    1.9302777777777778,
+    1.3844444444444444,
+    1.2072222222222222
+  ],
+  "frames": 36,
+  "durationSeconds": 3,
+  "hasAudio": true,
+  "animated": true,
+  "cacheReusedWithoutFfmpeg": true,
+  "cacheBytes": 400423
+}

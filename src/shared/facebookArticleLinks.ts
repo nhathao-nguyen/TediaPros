@@ -1,7 +1,8 @@
 /** Normalize only external HTTP(S) links. Never pass Facebook cookies to this destination. */
 export function externalArticleUrl(raw: string): string | null {
   try {
-    let url=new URL(raw.startsWith('www.') ? `https://${raw}` : raw)
+    const trimmed = raw.trim()
+    let url = new URL(!/^[a-zA-Z][a-zA-Z\d+\-.]*:\/\//.test(trimmed) ? `https://${trimmed}` : trimmed)
     if ((url.hostname==='l.facebook.com' || url.hostname==='lm.facebook.com' || url.hostname==='www.facebook.com') && url.pathname==='/l.php') {
       const target=url.searchParams.get('u'); if(!target) return null; url=new URL(target)
     }

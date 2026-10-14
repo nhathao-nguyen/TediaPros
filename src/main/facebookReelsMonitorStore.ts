@@ -36,7 +36,9 @@ export class ReelsMonitorStore {
         n.message.length > 2000 || typeof n.outputDir !== 'string' || !isAbsolute(n.outputDir) ||
         [n.found,n.downloaded,n.skipped,n.failed].some(count => !Number.isInteger(count) || count < 0 || count > 10000) ||
         !Array.isArray(n.videos) || n.videos.length > 100 || n.videos.some(v => !v || !/^\d{5,30}$/.test(v.id) ||
-          typeof v.title !== 'string' || typeof v.file !== 'string' || !isAbsolute(v.file))) throw Error('Thông báo Reels không hợp lệ.')
+          typeof v.title !== 'string' || typeof v.file !== 'string' || !isAbsolute(v.file) ||
+          (v.autoshortFile !== undefined && (typeof v.autoshortFile !== 'string' || !isAbsolute(v.autoshortFile)))) ||
+        [n.autoShortProcessed, n.autoShortFailed].some(count => count !== undefined && (!Number.isInteger(count) || count < 0 || count > 10000))) throw Error('Thông báo Reels không hợp lệ.')
     }
     return data
   }

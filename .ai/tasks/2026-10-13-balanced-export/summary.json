@@ -1,0 +1,106 @@
+{
+  "environment": {
+    "gpu": "GTX 1660 SUPER",
+    "driver": "616.92",
+    "cpu": "i5-11400F",
+    "ffmpeg": "9.0.2"
+  },
+  "samples": "Generated 720x1280 / 24 FPS / 4 s sources, real Nhiễu 2 textures, median of three timed renders per variant",
+  "baseline": "Previously randomized GPU policy fixed to CQ23/GOP60; before still-frame hoisting. CPU baseline faster CRF21.",
+  "reference": "Same post-effect graph encoded with x264 CRF0; not the clean source",
+  "verification": {
+    "tests": 136,
+    "pass": 133,
+    "fail": 0,
+    "skipped": 3
+  },
+  "cases": [
+    {
+      "name": "motion",
+      "policyPreference": "gpu",
+      "baseline": {
+        "encoder": "nvenc",
+        "version": "old",
+        "medianMs": 2988.8888000000006,
+        "bytes": 1870228,
+        "ssim": 0.994834
+      },
+      "balanced": {
+        "encoder": "nvenc",
+        "version": "balanced",
+        "medianMs": 2721.7814,
+        "bytes": 1444549,
+        "ssim": 0.993578,
+        "sizeReductionPct": 22.7608077731699,
+        "timeChangePct": -8.936679076183784
+      },
+      "selectedPathSizeReductionPct": 22.7608077731699,
+      "selectedPathTimeChangePct": -8.936679076183784,
+      "production": {
+        "frames": 96,
+        "durationSeconds": 4,
+        "hasAudio": true,
+        "fullyDecoded": true,
+        "bytes": 1444521
+      }
+    },
+    {
+      "name": "static",
+      "policyPreference": "cpu",
+      "baseline": {
+        "encoder": "nvenc",
+        "version": "old",
+        "medianMs": 3023.2727,
+        "bytes": 807763,
+        "ssim": 0.996766
+      },
+      "balanced": {
+        "encoder": "cpu",
+        "version": "balanced",
+        "medianMs": 3021.1516000000047,
+        "bytes": 268113,
+        "ssim": 0.995766,
+        "sizeReductionPct": -0.20518455397586788,
+        "timeChangePct": 3.4320355015986292
+      },
+      "selectedPathSizeReductionPct": 66.80796223644808,
+      "selectedPathTimeChangePct": -0.07015906967291485,
+      "production": {
+        "frames": 96,
+        "durationSeconds": 4,
+        "hasAudio": true,
+        "fullyDecoded": true,
+        "bytes": 268085
+      }
+    },
+    {
+      "name": "grain",
+      "policyPreference": "gpu",
+      "baseline": {
+        "encoder": "nvenc",
+        "version": "old",
+        "medianMs": 506.1073000000001,
+        "bytes": 3982194,
+        "ssim": 0.753276
+      },
+      "balanced": {
+        "encoder": "nvenc",
+        "version": "balanced",
+        "medianMs": 561.7335000000003,
+        "bytes": 3918922,
+        "ssim": 0.7521,
+        "sizeReductionPct": 1.5888728675699904,
+        "timeChangePct": 10.99098946014021
+      },
+      "selectedPathSizeReductionPct": 1.5888728675699904,
+      "selectedPathTimeChangePct": 10.99098946014021,
+      "production": {
+        "frames": 96,
+        "durationSeconds": 4,
+        "hasAudio": true,
+        "fullyDecoded": true,
+        "bytes": 3918894
+      }
+    }
+  ]
+}
