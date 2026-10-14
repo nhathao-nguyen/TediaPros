@@ -1,3 +1,12 @@
+## TediaPros v0.1.37
+
+### AutoShort: xóa logo trong vùng khoanh
+
+- Thêm tùy chọn STTN xóa toàn bộ vùng khoanh suốt video, dùng cho logo cố định mà OCR không nhận diện được.
+- Xem thử STTN 5 giây dùng cùng mask thủ công với luồng xuất video. Có thể chọn không tạo phụ đề để chỉ xử lý hình ảnh.
+- Sửa bộ kiểm tra IPC cho kiểm tra và tải dependency để nhận chế độ mới.
+- Vùng khoanh được phục hồi bằng AI; chi tiết nền có thể nhòe. Chưa bao gồm khử watermark bằng alpha.
+
 ## TediaPros v0.1.36
 
 ### Tối ưu hóa xác thực thời lượng xuất video (Duration Validation)

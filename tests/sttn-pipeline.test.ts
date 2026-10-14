@@ -27,7 +27,7 @@ function config(outputDir: string): AutoShortConfig {
   }
 }
 
-for (const outcome of ['success', 'removal failure', 'burn failure', 'cancel'] as const) {
+for (const outcome of ['success', 'manual mask', 'removal failure', 'burn failure', 'cancel'] as const) {
   test(`STTN pipeline uses output volume and cleans temporary media after ${outcome}`, async () => {
     const root = await mkdtemp(join(tmpdir(), 'tedia-sttn-pipeline-'))
     try {
@@ -39,12 +39,14 @@ for (const outcome of ['success', 'removal failure', 'burn failure', 'cancel'] a
       await mkdir(itemOutputDir, { recursive: true })
       await writeFile(join(itemOutputDir, 'existing.mp4'), 'keep existing output')
       const cfg = config(outputDir)
+      if (outcome === 'manual mask') { cfg.blurMode = 'sttn-region'; cfg.subtitleMethod = 'none' }
       const controller = new AbortController()
       let cleanedPath = ''
       const deps: AutoShortItemCoordinatorDeps = {
         resolveFfmpeg: async () => 'ffmpeg.exe', resolveFfprobe: async () => 'ffprobe.exe',
         probeMedia: async () => ({ w: 1280, h: 720, giay: 10, hasAudio: true, frameRate: 25, geometry }),
         runVisualOcr: async (options) => {
+          assert.notEqual(outcome, 'manual mask')
           events.push('ocr')
           assert.equal(options.input, video)
           assert.equal(options.profile, 'accurate')
@@ -53,7 +55,11 @@ for (const outcome of ['success', 'removal failure', 'burn failure', 'cancel'] a
         removeSubtitles: async (options) => {
           events.push('remove')
           assert.equal(options.videoPath, video)
-          assert.equal(options.timeline, timeline)
+          if (outcome === 'manual mask') {
+            assert.equal(options.timeline.segments[0].start, 0)
+            assert.equal(options.timeline.segments[0].end, 10)
+            assert.deepEqual(options.timeline.segments[0].boxes[0], { ...options.timeline.scanRegion, text: 'manual-mask', confidence: 1 })
+          } else assert.equal(options.timeline, timeline)
           cleanedPath = options.outputPath
           assert.equal(dirname(dirname(cleanedPath)), itemOutputDir, 'Large STTN media must use the selected output volume, not system temp')
           await writeFile(cleanedPath, 'clean video with source audio')
@@ -70,7 +76,7 @@ for (const outcome of ['success', 'removal failure', 'burn failure', 'cancel'] a
           assert.equal(request.lamMo, false)
           assert.deepEqual(request.blurRegions, [])
           assert.equal(options.timedOcrBlurMask, null)
-          assert.match(await readFile(request.srt!, 'utf8'), /Original subtitle/)
+          if (outcome !== 'manual mask') assert.match(await readFile(request.srt!, 'utf8'), /Original subtitle/)
           assert.equal(request.amLuongGoc, 37)
           assert.equal(request.batAmThanh, false)
           assert.equal(options.expectedMedia.requireAudio, true)
@@ -83,8 +89,8 @@ for (const outcome of ['success', 'removal failure', 'burn failure', 'cancel'] a
         item: { id: 'one', filePath: video }, index: 0, total: 1, signal: controller.signal,
         emit: () => {}, checkpointDir: join(root, 'checkpoint'), workDir: join(root, 'work'), artifactDir: join(root, 'artifacts'), itemOutputDir, separationProviderState: { mode: 'auto' }
       })
-      assert.deepEqual(events, outcome === 'removal failure' || outcome === 'cancel' ? ['ocr', 'remove'] : ['ocr', 'remove', 'burn'])
-      assert.equal(result.status, outcome === 'success' ? 'done' : outcome === 'cancel' ? 'cancelled' : 'error')
+      assert.deepEqual(events, outcome === 'manual mask' ? ['remove', 'burn'] : outcome === 'removal failure' || outcome === 'cancel' ? ['ocr', 'remove'] : ['ocr', 'remove', 'burn'])
+      assert.equal(result.status, (outcome === 'success' || outcome === 'manual mask') ? 'done' : outcome === 'cancel' ? 'cancelled' : 'error')
       if (outcome === 'success') assert.equal(result.title, 'Original title')
       if (outcome === 'success') {
         const summary = JSON.parse(await readFile(join(root, 'artifacts', 'diagnostics', 'summary.json'), 'utf8'))
@@ -193,6 +199,45 @@ test('STTN preview bounds source before OCR, uses accurate ROI, and produces pla
       }
     })
     assert.deepEqual(stages, ['clip', 'ocr', 'remove', 'encode'])
+    assert.ok(result.outputPath.endsWith('.mp4'))
+    assert.equal(await readFile(result.outputPath, 'utf8'), 'media')
+  } finally { await rm(root, { recursive: true, force: true }) }
+})
+
+test('manual STTN preview bypasses OCR and covers the entire preview', async () => {
+  const root = await mkdtemp(join(tmpdir(), 'tedia-sttn-preview-'))
+  try {
+    const videoPath = join(root, 'input.mp4')
+    await writeFile(videoPath, 'source')
+    const stages: string[] = []
+    const result = await runAutoShortSttnPreview({ videoPath, config: { ...config(''), blurMode: 'sttn-region', subtitleMethod: 'none' } }, join(root, 'work'), new AbortController().signal, () => {}, {
+      resolveFfmpeg: async () => 'ffmpeg.exe', resolveFfprobe: async () => 'ffprobe.exe',
+      probeMedia: async () => ({ w: 1280, h: 720, giay: 5, hasAudio: true, frameRate: 25, geometry }),
+      runMedia: async (_exe, args) => {
+        const output = args.at(-1)!
+        stages.push(output.endsWith('.mp4') ? 'encode' : 'clip')
+        if (!output.endsWith('.mp4')) assert.equal(args[args.indexOf('-t') + 1], '5')
+        await writeFile(output, 'media')
+      },
+      runVisualOcr: async options => {
+        throw new Error('Manual preview must not invoke OCR')
+        assert.equal(options.input, join(root, 'work', 'source-preview.mkv'))
+        assert.equal(options.profile, 'accurate')
+        assert.deepEqual(options.scanRegion, { x0: 0, y0: 504, x1: 1280, y1: 720 })
+        return { timeline, sourceSrtPath: '', sidecarPath: '', engineVersion: '1.1.0', engineProtocol: 'ocr-local/1', visualSegmentCount: 1, boxSegmentCount: 1 }
+      },
+      removeSubtitles: async options => {
+        stages.push('remove')
+        assert.equal(options.videoPath, join(root, 'work', 'source-preview.mkv'))
+        assert.equal(options.previewSeconds, 5)
+        assert.equal(options.timeline.segments[0].start, 0)
+        assert.equal(options.timeline.segments[0].end, 5)
+        assert.deepEqual(options.timeline.segments[0].boxes[0], { ...options.timeline.scanRegion, text: 'manual-mask', confidence: 1 })
+        await writeFile(options.outputPath, 'cleaned')
+        return { outputPath: options.outputPath, provider: 'cpu', elapsedMs: 5 }
+      }
+    })
+    assert.deepEqual(stages, ['clip', 'remove', 'encode'])
     assert.ok(result.outputPath.endsWith('.mp4'))
     assert.equal(await readFile(result.outputPath, 'utf8'), 'media')
   } finally { await rm(root, { recursive: true, force: true }) }

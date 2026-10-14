@@ -1,3 +1,4 @@
+import { createManualSttnTimeline } from '../shared/sttnManualTimeline'
 import { app, dialog } from 'electron'
 import { spawn, type ChildProcess } from 'node:child_process'
 import { access, copyFile, mkdir, readFile, readdir, rename, rm, stat, writeFile } from 'node:fs/promises'
@@ -501,11 +502,11 @@ function spawnAutoShortChild(command: string, args: string[], options?: Paramete
 }
 
 function needsWhisper(method: AutoShortConfig['subtitleMethod']): boolean {
-  return method !== 'ocr'
+  return method === 'whisper' || method === 'whisper-ocr'
 }
 
 export function needsCuda(config: Pick<AutoShortConfig, 'subtitleMethod' | 'whisperDevice'>): boolean {
-  return config.whisperDevice === 'cuda' && config.subtitleMethod !== 'ocr'
+  return config.whisperDevice === 'cuda' && (config.subtitleMethod === 'whisper' || config.subtitleMethod === 'whisper-ocr')
 }
 
 export function resolveAutoShortTtsLanguage(config: AutoShortConfig, detectedLanguage?: string | null): string {
@@ -575,7 +576,7 @@ export async function getAutoShortReadiness(
 
   const automaticBlur = isAutomaticOcrBlur(config)
   const sttnRemoval = isSttnRemoval(config)
-  const visualOcrRequired = automaticBlur || sttnRemoval
+  const visualOcrRequired = automaticBlur || (sttnRemoval && config.blurMode !== 'sttn-region')
   const needsOcr = autoShortNeedsOcr(config)
   const useWhisper = needsWhisper(config.subtitleMethod)
   const useCuda = needsCuda(config)
@@ -4046,7 +4047,11 @@ export async function runAutoShortSttnPreview(
   if (!scanRegion) throw new Error('Cần chọn vùng OCR để xem thử STTN.')
   const ocrDir = join(workDir, 'ocr')
   await mkdir(ocrDir, { recursive: true })
-  const visual = await resourceManager.withLease(['local-gpu-heavy', 'local-cpu-heavy'], signal, async () => {
+  const visual = config.blurMode === 'sttn-region'
+    ? { timeline: createManualSttnTimeline({ width: geometry.displayWidth, height: geometry.displayHeight,
+        durationSeconds: meta.videoDurationSeconds || meta.giay, sampleFps: 8,
+        geometryFingerprint: geometry.fingerprint, scanRegion }), boxSegmentCount: 1 }
+    : await resourceManager.withLease(['local-gpu-heavy', 'local-cpu-heavy'], signal, async () => {
     return (hooks.runVisualOcr || ocrVideoWithVisualTimeline)({
       input: sourceClip, outputDir: ocrDir, scanRegion, profile: 'accurate', geometry,
       videoDurationSeconds: meta.videoDurationSeconds || meta.giay, sampleFps: 8, signal

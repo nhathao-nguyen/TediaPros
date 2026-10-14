@@ -52,3 +52,7 @@ Trong xử lý video hiện đại, có hai hướng tiếp cận chính:
 ### Tiêu cực / Đánh đổi:
 - Cần duy trì hai pipeline xử lý hình ảnh song song (`src/main/ocrMask.ts` và `src/main/inpainting/*`).
 - Hai ranh giới OCR cần validator riêng và fixture hồi quy để tránh dùng nhầm hợp đồng raw cho artifact nội bộ đã ổn định.
+
+## Bổ sung 2026-10-14: vùng xóa thủ công
+
+`sttn-region` dùng vùng `ocrRegion` làm mask cố định từ đầu đến cuối video. Chế độ này không cần nhận diện chữ khi subtitleMethod là `none` hoặc `whisper`. OCR cho phụ đề vẫn hoạt động riêng khi được yêu cầu. Xem thử và xuất video dùng chung createManualSttnTimeline; timeline tham gia cache key STTN. Mask không được dùng làm nội dung phụ đề hoặc vị trí phụ đề tự động. Chế độ `sttn` cũ tiếp tục xóa theo box và thời gian OCR.

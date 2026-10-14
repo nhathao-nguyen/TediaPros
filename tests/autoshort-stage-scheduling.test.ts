@@ -7,7 +7,7 @@ test('overlap policy starts visual processing after Whisper source evidence and 
   const source = await readFile(join(process.cwd(), 'src', 'main', 'autoShortItemCoordinator.ts'), 'utf8')
   const visualStart = source.indexOf('visualBranchOutcomePromise = scope.start((s) => runVisualBranch(s))')
   const whisperCompletion = source.indexOf('const whisper = await runWhisper()')
-  const translationStage = source.indexOf("if (config.translateTarget !== 'none')")
+  const translationStage = source.indexOf("if (config.subtitleMethod !== 'none' && config.translateTarget !== 'none' && sourceCues.length > 0)")
 
   assert.ok(visualStart >= 0, 'visual overlap branch must remain explicit')
   assert.ok(whisperCompletion >= 0, 'Whisper extraction branch must remain explicit')

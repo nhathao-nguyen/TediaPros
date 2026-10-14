@@ -129,7 +129,7 @@ export interface ThumbnailPresetOption {
   accentColor: string
 }
 
-export const THUMBNAIL_PRESET_OPTIONS: readonly ThumbnailPresetOption[] = [
+const THUMBNAIL_PRESET_OPTIONS: readonly ThumbnailPresetOption[] = [
   {
     id: 'random',
     label: '🎲 NGẪU NHIÊN',
@@ -2044,7 +2044,7 @@ return {
         ...(selectedTask.temporalEdit ? { temporalEdit: selectedTask.temporalEdit } : {}),
         config: {
           subtitleMethod: 'ocr', whisperModel: selectedWhisperModel, whisperDevice,
-          lamMo: true, blurMode: 'sttn', ocrBlurProfile: 'accurate', blurRegions: [],
+          lamMo: true, blurMode, ocrBlurProfile: 'accurate', blurRegions: [],
           ocrRegion: scan,
           translateTarget: 'none', translateProvider: 'local', ttsEnabled: false,
           voiceOverMode: false, audioMode: 'replace', originalAudioVolume: 1,
@@ -2333,8 +2333,8 @@ return {
                     updateRegion={updateBlurRegion}
                     removeRegion={removeBlurRegion}
                     blurInteractive={tool === 'blur' && blurMode === 'manual'}
-                    hienSubBox={true}
-                    subInteractive={tool === 'subtitle'}
+                    hienSubBox={subtitleMethod !== 'none'}
+                    subInteractive={tool === 'subtitle' && subtitleMethod !== 'none'}
                     subRegion={subtitlePixelRegion || undefined}
                     setSubRegion={updateSubRegionClamped}
                     hienOcrBox={showOcrScanRegion}
@@ -2692,7 +2692,8 @@ return {
                       [
                         ['whisper', '🎙️ Whisper', 'Nhận diện âm thanh chuẩn xác'],
                         ['ocr', '🔍 OCR (Đọc chữ video)', 'Quét trực tiếp chữ trên khung hình'],
-                        ['whisper-ocr', '✨ Whisper + OCR', 'Kết hợp nhận diện âm thanh & hình ảnh']
+                        ['whisper-ocr', '✨ Whisper + OCR', 'Kết hợp nhận diện âm thanh & hình ảnh'],
+                        ['none', '🚫 Không dùng phụ đề', 'Tắt nhận diện và không gắn phụ đề lên video']
                       ] as const
                     ).map(([value, label, note]) => (
                       <label
@@ -2715,7 +2716,7 @@ return {
                     ))}
                   </div>
 
-                  {subtitleMethod !== 'ocr' && (
+                  {subtitleMethod !== 'ocr' && subtitleMethod !== 'none' && (
                     <label className="field editor-field" style={{ marginTop: 6 }}>
                       <span>Mô hình Whisper</span>
                       <select value={selectedWhisperModel} onChange={(e) => setWhisperModel(e.target.value)}>
@@ -2728,7 +2729,7 @@ return {
                     </label>
                   )}
 
-                  {subtitleMethod !== 'ocr' && (
+                  {subtitleMethod !== 'ocr' && subtitleMethod !== 'none' && (
                     <label className="field editor-field" style={{ marginTop: 6 }}>
                       <span>Thiết bị Whisper</span>
                       <select value={whisperDevice} onChange={(e) => setWhisperDevice(e.target.value as WhisperDevice)}>
@@ -2738,7 +2739,24 @@ return {
                     </label>
                   )}
 
-                  <div className="editor-section-divider" style={{ margin: '14px 0', borderBottom: '1px solid var(--border)' }} />
+                  {subtitleMethod === 'none' ? (
+                    <div style={{
+                      marginTop: 16,
+                      padding: '16px 14px',
+                      borderRadius: 8,
+                      background: 'rgba(255, 255, 255, 0.04)',
+                      border: '1px dashed var(--border)',
+                      textAlign: 'center'
+                    }}>
+                      <div style={{ fontSize: 26, marginBottom: 6 }}>🚫</div>
+                      <strong style={{ display: 'block', marginBottom: 4, fontSize: 13 }}>Đang chọn: Không dùng phụ đề</strong>
+                      <p className="muted small" style={{ margin: 0, lineHeight: 1.4 }}>
+                        Video xuất ra sẽ không gắn phụ đề. Toàn bộ các bước trích xuất lời thoại, dịch AI và burn chữ lên video sẽ được tự động bỏ qua.
+                      </p>
+                    </div>
+                  ) : (
+                    <>
+                      <div className="editor-section-divider" style={{ margin: '14px 0', borderBottom: '1px solid var(--border)' }} />
 
                   {/* 2. Dịch phụ đề AI */}
                   <div className="editor-section-head">
@@ -3022,7 +3040,7 @@ return {
                         <input
                           type="checkbox"
                           checked={subtitlePlacementMode === 'ocr-dominant'}
-                          disabled={!automaticProcessing}
+                          disabled={!automaticProcessing || blurMode === 'sttn-region'}
                           onChange={(event) => setSubtitlePlacementMode(event.target.checked ? 'ocr-dominant' : 'manual')}
                         />
                         <span>{subtitlePlacementMode === 'ocr-dominant' ? 'Bật' : 'Tắt'}</span>
@@ -3320,6 +3338,8 @@ return {
                       </label>
                     </div>
                   )}
+                    </>
+                  )}
                 </>
               )}
 
@@ -3364,16 +3384,20 @@ return {
                       />
                       <span>Tự động OCR</span>
                     </label>
-                    <label className={`autoshort-blur-mode-option ${blurMode === 'sttn' ? 'selected' : ''}`}>
+                    <label className={`autoshort-blur-mode-option ${sttnRemoval ? 'selected' : ''}`}>
                       <input type="radio" name="autoshort-blur-mode" value="sttn"
-                        checked={blurMode === 'sttn'} onChange={() => setBlurModeRaw('sttn')} />
+                        checked={sttnRemoval} onChange={() => setBlurModeRaw('sttn')} />
                       <span>Xóa phụ đề AI (STTN)</span>
                     </label>
                   </div>
 
-                  {blurMode === 'sttn' ? (
+                  {sttnRemoval ? (
                     <div className="autoshort-ocr-blur-settings">
                       <div className="autoshort-ocr-blur-explain">
+                        <label><input type="checkbox" checked={blurMode === 'sttn-region'}
+                          onChange={e => { setBlurModeRaw(e.target.checked ? 'sttn-region' : 'sttn'); if (e.target.checked) setSubtitlePlacementMode('manual') }} />
+                          Xóa logo/vùng khoanh suốt video</label>
+                        {blurMode === 'sttn-region' && <p>Kéo vùng nét đứt ôm sát logo. AI phục hồi toàn bộ vùng khoanh suốt video, không cần OCR nhận ra chữ. Logo di chuyển cần nằm trong vùng này.</p>}
                         <p>STTN dùng các khung hình lân cận để phục hồi nền tại vị trí chữ. Luôn quét OCR Chính xác để xác định vị trí và thời gian xuất hiện.</p>
                         <p>Kéo vùng nét đứt bao phủ chữ gốc cần xóa. Phụ đề nguồn được nhận diện trước khi xóa để tiếp tục dịch, tạo tiêu đề và lồng tiếng.</p>
                         <p>Engine và model STTN được tải riêng khi cần; bản CUDA cần khoảng 4,5 GiB dung lượng cài đặt, cộng thêm chỗ trống xử lý video. Hãy xem thử 5 giây đầu để đánh giá nền và chuyển động trước khi chạy toàn bộ.</p>
@@ -3492,6 +3516,22 @@ return {
                       <span>{ttsEnabled ? 'Bật' : 'Tắt'}</span>
                     </label>
                   </div>
+
+                  {subtitleMethod === 'none' && ttsEnabled && (
+                    <div style={{
+                      marginTop: 8,
+                      marginBottom: 8,
+                      padding: '8px 12px',
+                      borderRadius: 6,
+                      background: 'rgba(239, 68, 68, 0.1)',
+                      border: '1px solid rgba(239, 68, 68, 0.3)',
+                      color: '#f87171',
+                      fontSize: 12,
+                      lineHeight: 1.4
+                    }}>
+                      ⚠️ Tab Phụ đề đang chọn "Không dùng phụ đề" nên sẽ không có câu thoại để lồng tiếng. Hãy chọn Whisper hoặc OCR nếu muốn dùng tính năng này.
+                    </div>
+                  )}
 
                   <label className="field editor-field">
                     <span>Động cơ giọng đọc (TTS Provider)</span>

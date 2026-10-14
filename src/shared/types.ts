@@ -952,7 +952,7 @@ export interface ClonedVoice {
 
 // ==================== AUTO SHORT ====================
 
-export type AutoShortSubtitleMethod = 'whisper' | 'ocr' | 'whisper-ocr'
+export type AutoShortSubtitleMethod = 'whisper' | 'ocr' | 'whisper-ocr' | 'none'
 
 export interface AutoShortRegion {
   x0: number
@@ -1015,7 +1015,7 @@ export interface AutoShortSeparationReadiness {
   message?: string
 }
 
-export type AutoShortBlurMode = 'manual' | 'ocr-auto' | 'sttn'
+export type AutoShortBlurMode = 'manual' | 'ocr-auto' | 'sttn' | 'sttn-region'
 export type AutoShortOcrBlurProfile = 'accurate' | 'fast'
 export type AutoShortSubtitlePlacementMode = 'manual' | 'ocr-dominant'
 

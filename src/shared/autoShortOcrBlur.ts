@@ -1,7 +1,7 @@
 import type { AutoShortBlurMode, AutoShortConfig, AutoShortOcrBlurProfile } from './types'
 
 export function isSttnRemoval(config: Pick<AutoShortConfig, 'lamMo' | 'blurMode'>): boolean {
-  return config.lamMo === true && config.blurMode === 'sttn'
+  return config.lamMo === true && (config.blurMode === 'sttn' || config.blurMode === 'sttn-region')
 }
 
 /** Modes that need OCR boxes/timing in addition to subtitle text. */
@@ -18,7 +18,7 @@ export function isAutomaticOcrBlur(
 export function autoShortNeedsOcr(
   config: Pick<AutoShortConfig, 'subtitleMethod' | 'lamMo' | 'blurMode'>
 ): boolean {
-  return isAutomaticOcrProcessing(config) ||
+  return (isAutomaticOcrProcessing(config) && config.blurMode !== 'sttn-region') ||
     config.subtitleMethod === 'ocr' ||
     config.subtitleMethod === 'whisper-ocr'
 }
@@ -31,7 +31,7 @@ export function effectiveAutoShortOcrProfile(
 }
 
 export function normalizeAutoShortBlurMode(value: unknown): AutoShortBlurMode {
-  return value === 'sttn' || value === 'ocr-auto' ? value : 'manual'
+  return value === 'sttn' || value === 'sttn-region' || value === 'ocr-auto' ? value : 'manual'
 }
 
 export function normalizeAutoShortOcrBlurProfile(value: unknown): AutoShortOcrBlurProfile {
