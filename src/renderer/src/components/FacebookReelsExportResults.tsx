@@ -24,7 +24,7 @@ export function FacebookReelsExportResults({ rows, results, busy = false, messag
       {onChoose && <button className="btn" disabled={busy} onClick={onChoose}>Chọn Reels để xuất</button>}
     </div>
     <div className="reels-stats" aria-label="Thống kê kết quả">
-      {[['Reels có kết quả', rows.length], ['Link website', rows.filter(r => r.targetUrl).length], ['Bài viết đã lưu', rows.filter(r => r.articleStatus === 'success').length], ['MP4 đã tải', rows.filter(r => r.videoStatus === 'success').length]].map(([label, value]) =>
+      {[['Reels có kết quả', rows.length], ['Link website', rows.filter(r => r.targetUrl).length], ['Bài viết đã lưu', rows.filter(r => r.articleStatus === 'success').length], ['MP4 đã tải', rows.filter(r => r.videoStatus === 'success').length], ['Thumbnail', rows.filter(r => r.thumbnailPath).length]].map(([label, value]) =>
         <div key={label} className="reels-stat"><strong>{value}</strong><span>{label}</span></div>)}
     </div>
     {(busy || error) && <div className={`reels-progress ${error ? 'has-error' : ''}`} role="status">
@@ -55,7 +55,7 @@ export function FacebookReelsExportResults({ rows, results, busy = false, messag
           {pagination.rows.map(({ e: r }) => <button key={r.id} className={`reels-result-card ${selected?.id === r.id ? 'active' : ''}`} aria-pressed={selected?.id === r.id} onClick={() => setSelectedId(r.id)}>
             <div className="reels-row-meta"><span>REEL {r.index}</span><span className={reelsExportNeedsAttention(r) ? 'reels-attention' : 'reels-saved'}>{reelsExportNeedsAttention(r) ? 'Cần kiểm tra' : r.articleStatus === 'pending' || r.videoStatus === 'pending' ? 'Đang xử lý' : 'Đã xử lý'}</span></div>
             <strong>{r.title}</strong>
-            <div className="reels-result-stages"><span className={`reels-stage ${r.captionStatus}`}>Caption · {reelsExportStatus(r.captionStatus)}</span><span className={`reels-stage ${r.articleStatus}`}>Web · {reelsExportStatus(r.articleStatus)}</span><span className={`reels-stage ${r.videoStatus}`}>MP4 · {reelsExportStatus(r.videoStatus)}</span></div>
+            <div className="reels-result-stages"><span className={`reels-stage ${r.captionStatus}`}>Caption · {reelsExportStatus(r.captionStatus)}</span><span className={`reels-stage ${r.articleStatus}`}>Web · {reelsExportStatus(r.articleStatus)}</span><span className={`reels-stage ${r.videoStatus}`}>MP4 · {reelsExportStatus(r.videoStatus)}</span>{r.thumbnailPath && <span className="reels-stage success">Ảnh · Đã lưu</span>}</div>
           </button>)}
           {!filtered.length && <div className="reels-empty"><strong>{rows.length ? 'Không có Reel phù hợp' : busy ? 'Đang xử lý Reel đầu tiên…' : 'Chưa có kết quả xuất'}</strong><p>{rows.length ? 'Thử từ khóa khác hoặc chọn “Tất cả”.' : 'Quét profile/fanpage, chọn Reels rồi xuất caption, bài viết website và MP4.'}</p></div>}
         </div>

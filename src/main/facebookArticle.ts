@@ -25,6 +25,7 @@ export interface FacebookArticle {
   completion?: 'complete' | 'partial'
   stopReason?: string
   extractionMethod?: 'json-ld' | 'readability' | 'offscreen-browser'
+  thumbnailUrl?: string | null
 }
 
 export function isPublicArticleAddress(ip: string): boolean {
@@ -169,11 +170,94 @@ function extractJsonLdArticle(doc: Document): { title?: string; body?: string } 
   return null
 }
 
+function extractJsonLdThumbnail(doc: Document, baseUrl: string): string | null {
+  for (const script of doc.querySelectorAll('script[type="application/ld+json"]')) {
+    try {
+      const data = JSON.parse(script.textContent ?? '')
+      const candidates = Array.isArray(data) ? data : data['@graph'] ? data['@graph'] : [data]
+      for (const item of candidates) {
+        if (item && typeof item === 'object') {
+          const img = item.image || item.thumbnailUrl
+          if (typeof img === 'string' && img.trim()) {
+            return new URL(img.trim(), baseUrl).href
+          }
+          if (img && typeof img === 'object') {
+            if (typeof img.url === 'string' && img.url.trim()) {
+              return new URL(img.url.trim(), baseUrl).href
+            }
+            if (Array.isArray(img) && img.length > 0) {
+              const first = img[0]
+              if (typeof first === 'string' && first.trim()) return new URL(first.trim(), baseUrl).href
+              if (first && typeof first.url === 'string' && first.url.trim()) return new URL(first.url.trim(), baseUrl).href
+            }
+          }
+        }
+      }
+    } catch {
+      // ignore malformed JSON-LD
+    }
+  }
+  return null
+}
+
+export function extractThumbnailUrl(doc: Document, baseUrl: string): string | null {
+  try {
+    const jsonLdImg = extractJsonLdThumbnail(doc, baseUrl)
+    if (jsonLdImg) return jsonLdImg
+
+    const metaSelectors = [
+      'meta[property="og:image"]',
+      'meta[name="og:image"]',
+      'meta[property="og:image:url"]',
+      'meta[property="og:image:secure_url"]',
+      'meta[name="twitter:image"]',
+      'meta[property="twitter:image"]',
+      'meta[name="twitter:image:src"]',
+      'meta[itemprop="image"]',
+      'link[rel="image_src"]'
+    ]
+    for (const sel of metaSelectors) {
+      const el = doc.querySelector(sel)
+      if (el) {
+        const val = (el.getAttribute('content') || el.getAttribute('href') || '').trim()
+        if (val && !val.startsWith('data:')) {
+          try {
+            const resolved = new URL(val, baseUrl).href
+            if (/^https?:\/\//i.test(resolved)) return resolved
+          } catch {}
+        }
+      }
+    }
+
+    const imgSelectors = [
+      'article img[src]',
+      '[class*="featured"] img[src]',
+      '[class*="thumbnail"] img[src]',
+      '[class*="thumb"] img[src]',
+      'main img[src]'
+    ]
+    for (const sel of imgSelectors) {
+      const el = doc.querySelector(sel)
+      if (el) {
+        const src = (el.getAttribute('src') || el.getAttribute('data-src') || '').trim()
+        if (src && !src.startsWith('data:')) {
+          try {
+            const resolved = new URL(src, baseUrl).href
+            if (/^https?:\/\//i.test(resolved)) return resolved
+          } catch {}
+        }
+      }
+    }
+  } catch {}
+  return null
+}
+
 export function extractArticleHtml(html: string, url: string): FacebookArticle {
   if (Buffer.byteLength(html) > 4 * 1024 * 1024) throw new Error('Trang web vượt giới hạn 4 MB.')
   const dom = new JSDOM(html, { url })
   try {
     const doc = dom.window.document
+    const thumbnailUrl = extractThumbnailUrl(doc, url)
 
     // 1. Tier 1: Check Structured Data (JSON-LD)
     const jsonLd = extractJsonLdArticle(doc)
@@ -188,7 +272,8 @@ export function extractArticleHtml(html: string, url: string): FacebookArticle {
           content: cleaned,
           status: 'success',
           extractionMethod: 'json-ld',
-          chapters
+          chapters,
+          thumbnailUrl
         }
       }
     }
@@ -215,7 +300,8 @@ export function extractArticleHtml(html: string, url: string): FacebookArticle {
         title: doc.title,
         content: '',
         status: 'no-article',
-        error: 'Không tìm thấy phần nội dung bài viết trong HTML.'
+        error: 'Không tìm thấy phần nội dung bài viết trong HTML.',
+        thumbnailUrl
       }
     }
 
@@ -240,7 +326,8 @@ export function extractArticleHtml(html: string, url: string): FacebookArticle {
         content: finalContent,
         status: finalContent.length >= 200 ? 'success' : 'no-article',
         extractionMethod: 'readability',
-        chapters
+        chapters,
+        thumbnailUrl
       }
     } finally {
       fragment.window.close()
@@ -498,6 +585,100 @@ async function getHtml(url: URL, signal: AbortSignal, transport: FacebookArticle
   })
 }
 
+export async function downloadArticleThumbnail(
+  rawUrl: string,
+  signal: AbortSignal,
+  transport: FacebookArticleTransport = articleTransport
+): Promise<{ buffer: Buffer; ext: string } | null> {
+  try {
+    let current = new URL(rawUrl)
+    if (!['http:', 'https:'].includes(current.protocol)) return null
+    for (let redirect = 0; redirect < 3; redirect++) {
+      signal.throwIfAborted()
+      const addresses = await reelsOperation(transport.resolveHost(current.hostname), signal, 10000)
+      if (!addresses.length || addresses.some((a) => !isPublicArticleAddress(a.address))) {
+        return null
+      }
+      const address = addresses[0]
+      const res = await new Promise<{ status: number; location?: string; buffer: Buffer; contentType: string }>((resolve, reject) => {
+        const req = transport.request(
+          current,
+          {
+            signal,
+            headers: {
+              'User-Agent':
+                'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36',
+              'Accept': 'image/avif,image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8',
+              'Accept-Encoding': 'identity'
+            },
+            family: address.family,
+            lookup: (_host, _options, callback) => {
+              callback(null, address.address, address.family)
+            }
+          },
+          (res) => {
+            const status = res.statusCode ?? 0
+            if (status >= 300 && status < 400 && res.headers.location) {
+              res.resume()
+              resolve({ status, location: res.headers.location, buffer: Buffer.alloc(0), contentType: '' })
+              return
+            }
+            if (status !== 200) {
+              res.resume()
+              resolve({ status, buffer: Buffer.alloc(0), contentType: '' })
+              return
+            }
+            const contentType = res.headers['content-type'] ?? ''
+            const chunks: Buffer[] = []
+            let size = 0
+            res.on('data', (chunk: Buffer) => {
+              size += chunk.length
+              if (size > 10 * 1024 * 1024) {
+                req.destroy()
+              } else {
+                chunks.push(chunk)
+              }
+            })
+            res.on('error', reject)
+            res.on('end', () => {
+              resolve({ status, buffer: Buffer.concat(chunks), contentType })
+            })
+          }
+        )
+        req.on('error', reject)
+        req.end()
+      })
+
+      if (res.status >= 300 && res.status < 400 && res.location) {
+        current = new URL(res.location, current)
+        continue
+      }
+      if (res.status === 200 && res.buffer.length > 0) {
+        let ext = '.jpg'
+        const ct = res.contentType.toLowerCase()
+        if (ct.includes('webp')) ext = '.webp'
+        else if (ct.includes('png')) ext = '.png'
+        else if (ct.includes('gif')) ext = '.gif'
+        else if (ct.includes('avif')) ext = '.avif'
+        else if (ct.includes('jpeg') || ct.includes('jpg')) ext = '.jpg'
+        else {
+          const pathname = current.pathname.toLowerCase()
+          if (pathname.endsWith('.webp')) ext = '.webp'
+          else if (pathname.endsWith('.png')) ext = '.png'
+          else if (pathname.endsWith('.gif')) ext = '.gif'
+          else if (pathname.endsWith('.avif')) ext = '.avif'
+          else if (pathname.endsWith('.jpeg') || pathname.endsWith('.jpg')) ext = '.jpg'
+        }
+        return { buffer: res.buffer, ext }
+      }
+      return null
+    }
+    return null
+  } catch {
+    return null
+  }
+}
+
 async function fetchSingleArticleRaw(
   current: string,
   controller: AbortController,
@@ -570,7 +751,11 @@ export async function fetchArticle(
   const controller = new AbortController(), abort = (): void => controller.abort()
   parent.addEventListener('abort', abort, { once: true })
   if (parent.aborted) abort()
-  const timer = setTimeout(abort, 60000)
+  let timer = setTimeout(abort, 60000)
+  const resetTimer = (): void => {
+    clearTimeout(timer)
+    timer = setTimeout(abort, 60000)
+  }
   try {
     const first = await fetchSingleArticleRaw(raw, controller, transport)
     if (first.article.status !== 'success') return first.article
@@ -605,16 +790,18 @@ export async function fetchArticle(
           nextChapterIndex = Math.max(nextChapterIndex, actual) + 1
         }
       } else {
-        if (page > 0 && chapters.length > 0 && !chapterNumber(current.article.title)) {
+        const urlNum = chapterNumber(new URL(current.article.url).pathname) || chapterNumber(new URL(current.article.url).search)
+        const isUrlChapter = urlNum !== null && urlNum > 1
+        if (page > 0 && chapters.length > 0 && !chapterNumber(current.article.title) && !isUrlChapter) {
           const prev = chapters[chapters.length - 1]
           prev.content += '\n\n' + current.article.content
           prev.wordCount = prev.content.split(/\s+/).filter(Boolean).length
         } else {
-          const num = chapterNumber(current.article.title)
+          const num = chapterNumber(current.article.title) || urlNum
           const actual = (num !== null && num >= nextChapterIndex) ? num : nextChapterIndex
           chapters.push({
             index: actual,
-            title: current.article.title || `Chapter ${actual}`,
+            title: current.article.title && current.article.title !== first.article.title ? current.article.title : `Chapter ${actual}`,
             content: current.article.content,
             wordCount: current.article.content.split(/\s+/).filter(Boolean).length
           })
@@ -706,7 +893,7 @@ export async function fetchArticle(
       try {
         const fetched = await fetchSingleArticleRaw(nextUrl, controller, transport)
         if (fetched.article.status !== 'success' || !sameStory(first.article.url, fetched.article.url)) throw Error('Chapter không hợp lệ hoặc chuyển sang truyện khác.')
-        current = fetched; pageIndex = targetPageIndex ?? (pageIndex + 1); followedNext = true
+        current = fetched; pageIndex = targetPageIndex ?? (pageIndex + 1); followedNext = true; resetTimer()
       } catch { complete = false; stopReason = controller.signal.aborted ? 'timeout' : 'request-error'; break }
     }
     parent.throwIfAborted()

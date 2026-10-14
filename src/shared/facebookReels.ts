@@ -110,7 +110,9 @@ export interface FacebookReelsExportRow {
   targetUrl: string | null; foundIn: 'caption' | 'comment' | null;
   articleTitle: string; content: string; captionPath: string | null; articlePath: string | null; videoPath: string | null;
   captionStatus: FacebookReelsExportStage; articleStatus: FacebookReelsExportStage; videoStatus: FacebookReelsExportStage;
-  errors: string[]
+  errors: string[];
+  thumbnailUrl?: string | null;
+  thumbnailPath?: string | null;
 }
 export interface FacebookReelsExportResult {
   rows: FacebookReelsExportRow[]; directory: string; excelPath: string; manifestPath: string; cancelled: boolean

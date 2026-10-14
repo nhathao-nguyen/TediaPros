@@ -1,5 +1,5 @@
 import type { PlaylistEntry } from '../shared/types'
-import type { FacebookArticle } from './facebookArticle'
+import { downloadArticleThumbnail, type FacebookArticle } from './facebookArticle'
 import type { FacebookReelsExportRequest, FacebookReelsExportResult, FacebookReelsExportRow } from '../shared/facebookReels'
 import { externalArticleUrl, articleLinksFromMessage } from '../shared/facebookArticleLinks'
 import { facebookReelId, sanitizeFolderName, buildFacebookReelsFolderName } from '../shared/facebookReels'
@@ -15,6 +15,7 @@ export interface FacebookReelsExportDependencies {
   article(url:string,signal:AbortSignal,maxChapters?:number):Promise<FacebookArticle>
   video(e:PlaylistEntry,dir:string,stem:string,signal:AbortSignal):Promise<string>
   progress?(row:FacebookReelsExportRow,message:string):void
+  thumbnail?(url:string,signal:AbortSignal):Promise<{ buffer: Buffer; ext: string } | null>
 }
 async function writeContained(path:string,root:string,text:string):Promise<void> {
   await atomicWorkflowWrite(path,root,text)
@@ -46,6 +47,7 @@ export async function exportFacebookReels(entries: PlaylistEntry[], options: Pic
     video: join(directory, 'video'),
     caption: join(directory, 'caption'),
     article: join(directory, 'article'),
+    thumbnail: join(directory, 'thumbnail'),
     excel: join(directory, 'excel')
   }
   for (const dir of Object.values(dirs)) {
@@ -54,7 +56,8 @@ export async function exportFacebookReels(entries: PlaylistEntry[], options: Pic
   }
   const rows:FacebookReelsExportRow[]=entries.map((e,i)=>({index:i+1,id:e.id,reelUrl:e.url,title:e.title,caption:e.facebook?.caption??'',
     targetUrl:null,foundIn:null,articleTitle:'',content:'',captionPath:null,articlePath:null,videoPath:null,
-    captionStatus:'pending',articleStatus:'pending',videoStatus:options.downloadVideos?'pending':'disabled',errors:[]}))
+    captionStatus:'pending',articleStatus:'pending',videoStatus:options.downloadVideos?'pending':'disabled',errors:[],
+    thumbnailUrl:null,thumbnailPath:null}))
   const manifestPath=join(directory,'results.json'),excelPath=join(dirs.excel,'reels_content.xlsx')
   const checkpoint=():Promise<void>=>writeContained(manifestPath,directory,JSON.stringify({version:1,cancelled:signal.aborted,rows},null,2))
   const errorText=(err:unknown):string=>err instanceof Error?err.message:'Không xử lý được dữ liệu.'
@@ -80,10 +83,23 @@ export async function exportFacebookReels(entries: PlaylistEntry[], options: Pic
       try {
         const article=await dependencies.article(row.targetUrl,signal,80)
         row.articleTitle=article.title;row.content=article.content.length>32700?article.content.slice(0,32700)+'\n[Nội dung đầy đủ nằm trong file TXT]':article.content;row.targetUrl=article.url;row.articleStatus=article.status
+        row.thumbnailUrl=article.thumbnailUrl??null
+        if(article.thumbnailUrl){
+          try{
+            report(row,`Đang tải thumbnail ${i+1}/${entries.length}…`)
+            const fetchThumb=dependencies.thumbnail||downloadArticleThumbnail
+            const thumb=await fetchThumb(article.thumbnailUrl,signal)
+            if(thumb&&thumb.buffer.length>0){
+              const thumbPath=join(dirs.thumbnail,`${stem}${thumb.ext}`)
+              await atomicWorkflowWrite(thumbPath,directory,thumb.buffer)
+              row.thumbnailPath=thumbPath
+            }
+          }catch(err){row.errors.push(`Thumbnail: ${errorText(err)}`)}
+        }
         if(article.error)row.errors.push(`Bài viết: ${article.error}`)
         if(article.completion==='partial'){
-          if(article.stopReason==='chapter-limit'&&article.chapters&&article.chapters.length>0){
-            row.errors.push(`Bài viết dài: đã tải tối đa ${article.chapters.length} chương.`)
+          if((article.stopReason==='chapter-limit'||article.stopReason==='timeout')&&article.chapters&&article.chapters.length>0){
+            row.errors.push(`Bài viết dài: đã tải ${article.chapters.length} chương.`)
           }else{
             row.articleStatus='error';row.errors.push(`Bài viết chưa đầy đủ: ${article.stopReason || 'unknown'}`)
           }
@@ -118,13 +134,13 @@ export async function exportFacebookReels(entries: PlaylistEntry[], options: Pic
   }
   // Excel limits text cells to 32,767 characters; TXT holds the complete article.
   const wb=new ExcelJS.Workbook();const sheet=wb.addWorksheet('Facebook Reels Content')
-  sheet.columns=['STT','Link Reel','Caption','Vị trí link','Link Web','Nội dung bài viết','Đường dẫn Video','Trạng thái','Thời gian','Tiêu đề Reel','Tiêu đề bài viết','File caption','File nội dung','Chi tiết lỗi']
-    .map((header,i)=>({header,key:String(i),width:[8,40,65,16,45,75,45,55,26,60,60,45,45,55][i]}))
-  sheet.views=[{state:'frozen',ySplit:1}];sheet.autoFilter='A1:N1'
+  sheet.columns=['STT','Link Reel','Caption','Vị trí link','Link Web','Nội dung bài viết','Đường dẫn Video','Trạng thái','Thời gian','Tiêu đề Reel','Tiêu đề bài viết','File caption','File nội dung','Chi tiết lỗi','Link Thumbnail','File thumbnail']
+    .map((header,i)=>({header,key:String(i),width:[8,40,65,16,45,75,45,55,26,60,60,45,45,55,45,45][i]}))
+  sheet.views=[{state:'frozen',ySplit:1}];sheet.autoFilter='A1:P1'
   sheet.getRow(1).font={bold:true,color:{argb:'FFFFFFFF'}};sheet.getRow(1).fill={type:'pattern',pattern:'solid',fgColor:{argb:'FF2F5496'}}
   const clipped=(s:string):string=>s.length>32767?s.slice(0,32700)+'\n[Nội dung đầy đủ nằm trong file TXT]':s
   for(const row of rows){const r=sheet.addRow([row.index,row.reelUrl,clipped(row.caption),row.foundIn??'',row.targetUrl??'',clipped(row.content),row.videoPath??'',
-    `Caption: ${row.captionStatus}; Bài viết: ${row.articleStatus}; Video: ${row.videoStatus}`,new Date().toISOString(),clipped(row.title),clipped(row.articleTitle),row.captionPath??'',row.articlePath??'',clipped(row.errors.join('\n'))]);r.alignment={vertical:'top',wrapText:true}}
+    `Caption: ${row.captionStatus}; Bài viết: ${row.articleStatus}; Video: ${row.videoStatus}`,new Date().toISOString(),clipped(row.title),clipped(row.articleTitle),row.captionPath??'',row.articlePath??'',clipped(row.errors.join('\n')),row.thumbnailUrl??'',row.thumbnailPath??'']);r.alignment={vertical:'top',wrapText:true}}
   await atomicWorkflowWrite(excelPath,directory,Buffer.from(await wb.xlsx.writeBuffer()))
   await checkpoint()
   return {rows,directory,excelPath,manifestPath,cancelled:signal.aborted}

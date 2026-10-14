@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import type { FacebookReelsExportRow } from '../../../shared/facebookReels'
+import { localMediaSource } from '../lib/localMedia'
 
 export function FacebookReelReader({ reel, beforeExport = false, isFacebook = true }: {
   reel: Pick<FacebookReelsExportRow, 'id' | 'title' | 'caption' | 'reelUrl'> & Partial<FacebookReelsExportRow>
@@ -11,6 +12,7 @@ export function FacebookReelReader({ reel, beforeExport = false, isFacebook = tr
   const article = tab === 'article' && !beforeExport
   const text = article ? reel.content ?? '' : reel.caption
   const articlePreview = article && text.length > 32700
+  const thumbSrc = reel.thumbnailPath ? localMediaSource(reel.thumbnailPath) : (reel.thumbnailUrl ?? null)
   useEffect(() => { setCopyMessage('') }, [reel.id, tab])
   let website = reel.targetUrl ?? ''
   try { if (reel.targetUrl) website = new URL(reel.targetUrl).hostname } catch { /* Keep malformed saved text readable. */ }
@@ -34,6 +36,22 @@ export function FacebookReelReader({ reel, beforeExport = false, isFacebook = tr
         {reel.targetUrl && <button className="reels-text-button" title={reel.targetUrl} onClick={() => void window.api.openExternal(reel.targetUrl!)}>Mở website · {website}</button>}
         <small className="muted">{reel.foundIn === 'comment' ? 'Link từ bình luận' : reel.foundIn === 'caption' ? 'Link từ caption' : 'Chưa tìm thấy link website'}</small>
       </div>}
+      {article && thumbSrc && <div className="reels-article-thumb-preview" style={{ margin: '10px 0', textAlign: 'center' }}>
+        <img
+          src={thumbSrc}
+          alt="Thumbnail bài viết"
+          style={{ maxWidth: '100%', maxHeight: 220, borderRadius: 6, objectFit: 'cover', cursor: reel.thumbnailPath ? 'pointer' : 'default', border: '1px solid rgba(128,128,128,0.2)' }}
+          title={reel.thumbnailPath ? 'Bấm để mở ảnh gốc' : 'Ảnh bài viết'}
+          onClick={() => { if (reel.thumbnailPath) void window.api.openPath(reel.thumbnailPath) }}
+          onError={(e) => {
+            if (reel.thumbnailUrl && e.currentTarget.src !== reel.thumbnailUrl) {
+              e.currentTarget.src = reel.thumbnailUrl
+            } else {
+              e.currentTarget.style.display = 'none'
+            }
+          }}
+        />
+      </div>}
       {articlePreview && <p className="reels-notice">Đang xem bản rút gọn của bài viết dài. Mở TXT để đọc toàn bộ nội dung đã lưu.</p>}
       {!isFacebook && <p className="reels-notice">Video playlist được thêm qua “Thêm vào hàng đợi”. Chức năng xuất Reels chỉ áp dụng cho Facebook.</p>}
       {text ? <div className="reels-readable-text">{text}</div> : <div className="reels-reader-empty">
@@ -47,6 +65,7 @@ export function FacebookReelReader({ reel, beforeExport = false, isFacebook = tr
         <button className="btn small-btn" disabled={!text} onClick={() => void copy()}>Sao chép {articlePreview ? 'bản xem trước' : article ? 'bài viết' : isFacebook ? 'caption' : 'thông tin'}</button>
         {(article ? reel.articlePath : reel.captionPath) && <button className="btn small-btn" onClick={() => void window.api.openPath((article ? reel.articlePath : reel.captionPath)!)}>Mở TXT</button>}
         {reel.videoPath && <button className="btn small-btn" onClick={() => void window.api.openPath(reel.videoPath!)}>Mở MP4</button>}
+        {reel.thumbnailPath && <button className="btn small-btn" onClick={() => void window.api.openPath(reel.thumbnailPath!)}>Mở ảnh</button>}
       </div>
       {(copyMessage || beforeExport) && <small role="status" className="muted">{copyMessage || 'Caption có thể được bổ sung khi xuất dữ liệu.'}</small>}
     </footer>

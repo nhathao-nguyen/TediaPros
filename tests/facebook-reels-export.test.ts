@@ -71,6 +71,17 @@ test('slug profiles derive the Reel creator ID and never export another commente
   assert.equal(unknown.entries.flatMap(e=>e.facebook?.links??[]).length,0)
 })
 
+test('extracts article thumbnail URL from og:image, twitter:image, or JSON-LD of source webpage', () => {
+  const paragraphs = Array.from({ length: 6 }, (_, i) => `<p>Paragraph ${i}: ${'Story paragraph words. '.repeat(10)}</p>`).join('')
+  const htmlWithOg = `<html><head><meta property="og:image" content="/images/cover.webp"></head><body><article>${paragraphs}</article></body></html>`
+  const resOg = extractArticleHtml(htmlWithOg, 'https://story.example/post-1')
+  assert.equal(resOg.thumbnailUrl, 'https://story.example/images/cover.webp')
+
+  const htmlWithJsonLd = `<html><head><script type="application/ld+json">{"@context":"https://schema.org","@type":"NewsArticle","headline":"News","articleBody":"${'Body text long enough '.repeat(20)}","image":"https://cdn.example/lead.jpg"}</script></head><body></body></html>`
+  const resJson = extractArticleHtml(htmlWithJsonLd, 'https://story.example/post-2')
+  assert.equal(resJson.thumbnailUrl, 'https://cdn.example/lead.jpg')
+})
+
 test('exports matching caption/article/video/XLSX files and preserves full text beyond Excel cell limits', async () => {
   const root=await mkdtemp(join(tmpdir(),'tedia-reels-export-'))
   try {
@@ -79,17 +90,23 @@ test('exports matching caption/article/video/XLSX files and preserves full text 
     const full='Complete article paragraph.\n'.repeat(1500)
     const result=await exportFacebookReels([e],{outputRoot:root,downloadVideos:true},new AbortController().signal,{
       resolve:async entry=>entry,
-      article:async()=>({url:'https://news.example/story',title:'Story',content:full,status:'success'}),
-      video:async(entry,dir,stem)=>{const file=join(dir,stem+'.mp4');await writeFile(file,'video fixture');return file}
+      article:async()=>({url:'https://news.example/story',title:'Story',content:full,status:'success',thumbnailUrl:'https://news.example/thumb.jpg'}),
+      video:async(entry,dir,stem)=>{const file=join(dir,stem+'.mp4');await writeFile(file,'video fixture');return file},
+      thumbnail:async()=>({buffer:Buffer.from('fake-image-bytes'),ext:'.jpg'})
     })
     assert.equal(result.rows.length,1); const r=result.rows[0]
     assert.equal(await readFile(r.captionPath!,'utf8'),e.facebook!.caption)
     assert.equal(await readFile(r.articlePath!,'utf8'),full)
     assert.equal(r.videoStatus,'success'); assert.equal(r.articleStatus,'success')
+    assert.equal(r.thumbnailUrl,'https://news.example/thumb.jpg')
+    assert.ok(r.thumbnailPath?.endsWith('.jpg'))
+    assert.equal(await readFile(r.thumbnailPath!,'utf8'),'fake-image-bytes')
     const wb=new ExcelJS.Workbook(); await wb.xlsx.readFile(result.excelPath)
     const sheet=wb.worksheets[0]; assert.equal(sheet.rowCount,2); assert.equal(sheet.getCell('B2').value,e.url)
     assert.ok(String(sheet.getCell('F2').value).length<=32767)
     assert.ok(String(sheet.getCell('G2').value).endsWith('.mp4'))
+    assert.equal(sheet.getCell('O2').value,'https://news.example/thumb.jpg')
+    assert.equal(sheet.getCell('P2').value,r.thumbnailPath)
     assert.equal(JSON.parse(await readFile(result.manifestPath,'utf8')).rows[0].id,e.id)
   } finally { assert.equal(dirname(root),tmpdir());await rm(root,{recursive:true,force:true}) }
 })
