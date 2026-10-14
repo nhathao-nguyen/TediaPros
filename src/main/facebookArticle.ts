@@ -200,11 +200,31 @@ function extractJsonLdThumbnail(doc: Document, baseUrl: string): string | null {
   return null
 }
 
+const JUNK_IMAGE_PATTERNS = /(?:avatar|author-image|profile-pic|user-icon|favicon|spacer|pixel|blank|tracking|spinner|placeholder|share-icon|share-btn|1x1)/i
+
+function isCandidateImage(src: string, el?: Element | null): boolean {
+  if (!src || src.startsWith('data:')) return false
+  const lower = src.toLowerCase()
+  if (lower.endsWith('.svg') || lower.endsWith('.ico')) return false
+  if (JUNK_IMAGE_PATTERNS.test(lower)) return false
+  if (el) {
+    const w = el.getAttribute('width')
+    const h = el.getAttribute('height')
+    if (w && Number(w) > 0 && Number(w) < 100) return false
+    if (h && Number(h) > 0 && Number(h) < 100) return false
+    const cls = ((el.getAttribute('class') || '') + ' ' + (el.parentElement?.getAttribute('class') || '')).toLowerCase()
+    if (/(?:avatar|author|author-bio|profile|share|social|comment|widget|badge)/i.test(cls)) return false
+  }
+  return true
+}
+
 export function extractThumbnailUrl(doc: Document, baseUrl: string): string | null {
   try {
+    // 1. JSON-LD structured data (Cao nhất - do chính CMS chỉ định rõ ràng cho bài viết)
     const jsonLdImg = extractJsonLdThumbnail(doc, baseUrl)
-    if (jsonLdImg) return jsonLdImg
+    if (jsonLdImg && isCandidateImage(jsonLdImg)) return jsonLdImg
 
+    // 2. OpenGraph & Twitter Cards (Thẻ meta mạng xã hội - tiêu chuẩn vàng cho ảnh đại diện bài viết)
     const metaSelectors = [
       'meta[property="og:image"]',
       'meta[name="og:image"]',
@@ -220,7 +240,7 @@ export function extractThumbnailUrl(doc: Document, baseUrl: string): string | nu
       const el = doc.querySelector(sel)
       if (el) {
         const val = (el.getAttribute('content') || el.getAttribute('href') || '').trim()
-        if (val && !val.startsWith('data:')) {
+        if (isCandidateImage(val)) {
           try {
             const resolved = new URL(val, baseUrl).href
             if (/^https?:\/\//i.test(resolved)) return resolved
@@ -229,23 +249,39 @@ export function extractThumbnailUrl(doc: Document, baseUrl: string): string | nu
       }
     }
 
-    const imgSelectors = [
-      'article img[src]',
-      '[class*="featured"] img[src]',
-      '[class*="thumbnail"] img[src]',
-      '[class*="thumb"] img[src]',
-      'main img[src]'
+    // 3. Featured Image trong DOM (Phân cấp theo ngữ nghĩa và vị trí)
+    // Ưu tiên 3.1: Các class chuyên dụng cho ảnh bìa/ảnh đại diện bài viết
+    const featuredSelectors = [
+      '[class*="featured-image"] img',
+      '[class*="post-thumbnail"] img',
+      '[class*="entry-thumb"] img',
+      '[class*="cover-image"] img',
+      '[class*="hero-image"] img',
+      'article > figure:first-of-type img',
+      'article header img'
     ]
-    for (const sel of imgSelectors) {
+    for (const sel of featuredSelectors) {
       const el = doc.querySelector(sel)
       if (el) {
-        const src = (el.getAttribute('src') || el.getAttribute('data-src') || '').trim()
-        if (src && !src.startsWith('data:')) {
+        const src = (el.getAttribute('src') || el.getAttribute('data-src') || el.getAttribute('data-lazy-src') || '').trim()
+        if (isCandidateImage(src, el)) {
           try {
             const resolved = new URL(src, baseUrl).href
             if (/^https?:\/\//i.test(resolved)) return resolved
           } catch {}
         }
+      }
+    }
+
+    // Ưu tiên 3.2: Ảnh lớn đầu tiên trong nội dung bài viết chính
+    const contentImages = Array.from(doc.querySelectorAll('article img, [class*="entry-content"] img, main img'))
+    for (const el of contentImages) {
+      const src = (el.getAttribute('src') || el.getAttribute('data-src') || el.getAttribute('data-lazy-src') || '').trim()
+      if (isCandidateImage(src, el)) {
+        try {
+          const resolved = new URL(src, baseUrl).href
+          if (/^https?:\/\//i.test(resolved)) return resolved
+        } catch {}
       }
     }
   } catch {}
