@@ -54,6 +54,7 @@ const knownTests = [
   'autoshort-edge-tts.test',
   'tts-audio-format.test',
   'app-profile.test',
+  'gemini-alpha.test',
   'sttn-runtime.test',
   'sttn-contract.test',
   'sttn-pipeline.test',

@@ -27,7 +27,7 @@ function config(outputDir: string): AutoShortConfig {
   }
 }
 
-for (const outcome of ['success', 'manual mask', 'removal failure', 'burn failure', 'cancel'] as const) {
+for (const outcome of ['success', 'manual mask', 'alpha', 'removal failure', 'burn failure', 'cancel'] as const) {
   test(`STTN pipeline uses output volume and cleans temporary media after ${outcome}`, async () => {
     const root = await mkdtemp(join(tmpdir(), 'tedia-sttn-pipeline-'))
     try {
@@ -39,21 +39,28 @@ for (const outcome of ['success', 'manual mask', 'removal failure', 'burn failur
       await mkdir(itemOutputDir, { recursive: true })
       await writeFile(join(itemOutputDir, 'existing.mp4'), 'keep existing output')
       const cfg = config(outputDir)
-      if (outcome === 'manual mask') { cfg.blurMode = 'sttn-region'; cfg.subtitleMethod = 'none' }
+      if (outcome === 'manual mask' || outcome === 'alpha') { cfg.blurMode = outcome === 'alpha' ? 'gemini-alpha' : 'sttn-region'; cfg.subtitleMethod = 'none' }
       const controller = new AbortController()
       let cleanedPath = ''
       const deps: AutoShortItemCoordinatorDeps = {
         resolveFfmpeg: async () => 'ffmpeg.exe', resolveFfprobe: async () => 'ffprobe.exe',
         probeMedia: async () => ({ w: 1280, h: 720, giay: 10, hasAudio: true, frameRate: 25, geometry }),
         runVisualOcr: async (options) => {
-          assert.notEqual(outcome, 'manual mask')
+          assert.notEqual(outcome, 'manual mask'); assert.notEqual(outcome, 'alpha')
           events.push('ocr')
           assert.equal(options.input, video)
           assert.equal(options.profile, 'accurate')
           return { timeline, sourceSrtPath: '', sidecarPath: '', engineVersion: '1.1.0', engineProtocol: 'ocr-local/1', visualSegmentCount: 1, boxSegmentCount: 1 }
         },
+        removeAlpha: async (options) => {
+          assert.equal(outcome, 'alpha'); events.push('remove')
+          cleanedPath = options.outputPath
+          assert.equal(options.videoPath, video)
+          await writeFile(cleanedPath, 'clean video with source audio')
+          return { outputPath: cleanedPath, provider: 'cpu', elapsedMs: 5, frames: 250, revision: 'fixture', matchScore: .99, opacityRatio: 1 }
+        },
         removeSubtitles: async (options) => {
-          events.push('remove')
+          assert.notEqual(outcome, 'alpha'); events.push('remove')
           assert.equal(options.videoPath, video)
           if (outcome === 'manual mask') {
             assert.equal(options.timeline.segments[0].start, 0)
@@ -76,7 +83,7 @@ for (const outcome of ['success', 'manual mask', 'removal failure', 'burn failur
           assert.equal(request.lamMo, false)
           assert.deepEqual(request.blurRegions, [])
           assert.equal(options.timedOcrBlurMask, null)
-          if (outcome !== 'manual mask') assert.match(await readFile(request.srt!, 'utf8'), /Original subtitle/)
+          if (outcome !== 'manual mask' && outcome !== 'alpha') assert.match(await readFile(request.srt!, 'utf8'), /Original subtitle/)
           assert.equal(request.amLuongGoc, 37)
           assert.equal(request.batAmThanh, false)
           assert.equal(options.expectedMedia.requireAudio, true)
@@ -89,8 +96,8 @@ for (const outcome of ['success', 'manual mask', 'removal failure', 'burn failur
         item: { id: 'one', filePath: video }, index: 0, total: 1, signal: controller.signal,
         emit: () => {}, checkpointDir: join(root, 'checkpoint'), workDir: join(root, 'work'), artifactDir: join(root, 'artifacts'), itemOutputDir, separationProviderState: { mode: 'auto' }
       })
-      assert.deepEqual(events, outcome === 'manual mask' ? ['remove', 'burn'] : outcome === 'removal failure' || outcome === 'cancel' ? ['ocr', 'remove'] : ['ocr', 'remove', 'burn'])
-      assert.equal(result.status, (outcome === 'success' || outcome === 'manual mask') ? 'done' : outcome === 'cancel' ? 'cancelled' : 'error')
+      assert.deepEqual(events, (outcome === 'manual mask' || outcome === 'alpha') ? ['remove', 'burn'] : outcome === 'removal failure' || outcome === 'cancel' ? ['ocr', 'remove'] : ['ocr', 'remove', 'burn'])
+      assert.equal(result.status, (outcome === 'success' || outcome === 'manual mask' || outcome === 'alpha') ? 'done' : outcome === 'cancel' ? 'cancelled' : 'error')
       if (outcome === 'success') assert.equal(result.title, 'Original title')
       if (outcome === 'success') {
         const summary = JSON.parse(await readFile(join(root, 'artifacts', 'diagnostics', 'summary.json'), 'utf8'))
@@ -242,6 +249,41 @@ test('manual STTN preview bypasses OCR and covers the entire preview', async () 
     assert.equal(await readFile(result.outputPath, 'utf8'), 'media')
   } finally { await rm(root, { recursive: true, force: true }) }
 })
+test('alpha preview uses the alpha runner without OCR or STTN', async () => {
+  const root = await mkdtemp(join(tmpdir(), 'tedia-sttn-preview-'))
+  try {
+    const videoPath = join(root, 'input.mp4')
+    await writeFile(videoPath, 'source')
+    const stages: string[] = []
+    const result = await runAutoShortSttnPreview({ videoPath, config: { ...config(''), blurMode: 'gemini-alpha', subtitleMethod: 'none' } }, join(root, 'work'), new AbortController().signal, () => {}, {
+      resolveFfmpeg: async () => 'ffmpeg.exe', resolveFfprobe: async () => 'ffprobe.exe',
+      probeMedia: async () => ({ w: 1280, h: 720, giay: 5, hasAudio: true, frameRate: 25, geometry }),
+      runMedia: async (_exe, args) => {
+        const output = args.at(-1)!
+        stages.push(output.endsWith('.mp4') ? 'encode' : 'clip')
+        if (!output.endsWith('.mp4')) assert.equal(args[args.indexOf('-t') + 1], '5')
+        await writeFile(output, 'media')
+      },
+      runVisualOcr: async options => {
+        throw new Error('Manual preview must not invoke OCR')
+        assert.equal(options.input, join(root, 'work', 'source-preview.mkv'))
+        assert.equal(options.profile, 'accurate')
+        assert.deepEqual(options.scanRegion, { x0: 0, y0: 504, x1: 1280, y1: 720 })
+        return { timeline, sourceSrtPath: '', sidecarPath: '', engineVersion: '1.1.0', engineProtocol: 'ocr-local/1', visualSegmentCount: 1, boxSegmentCount: 1 }
+      },
+      removeAlpha: async options => {
+        stages.push('remove')
+        assert.equal(options.videoPath, join(root, 'work', 'source-preview.mkv'))
+        assert.ok(options.region)
+        await writeFile(options.outputPath, 'cleaned')
+        return { outputPath: options.outputPath, provider: 'cpu', elapsedMs: 5, revision: 'fixture', matchScore: .99, opacityRatio: 1, frames: 125 }
+      }
+    })
+    assert.deepEqual(stages, ['clip', 'remove', 'encode'])
+    assert.ok(result.outputPath.endsWith('.mp4'))
+    assert.equal(await readFile(result.outputPath, 'utf8'), 'media')
+  } finally { await rm(root, { recursive: true, force: true }) }
+})
 
 const previewFfmpegPath = process.env.TEDIAPROS_TEST_FFMPEG
 
@@ -346,4 +388,16 @@ test('STTN installs only its selected missing dependencies', async () => {
   assert.equal(installCount, 1)
   await installAutoShortDependencies({ ...config('C:\\output'), lamMo: false }, () => {}, undefined, hooks as any)
   assert.equal(installCount, 1)
+})
+
+test('alpha readiness only requires FFmpeg for image-only processing', async () => {
+  const cfg = { ...config('C:\\output'), subtitleMethod: 'none' as const, blurMode: 'gemini-alpha' as const }
+  const readiness = await getAutoShortReadiness(cfg, {
+    resolveFfmpeg: async () => 'ffmpeg.exe',
+    ocrEngineStatus: async () => { throw new Error('Alpha must not probe OCR') },
+    getSttnReadiness: async () => { throw new Error('Alpha must not probe STTN') },
+    probeFfmpegOcrMaskCapability: async () => { throw new Error('Alpha must not probe Gaussian maskedmerge') }
+  } as any)
+  assert.equal(readiness.ready, true)
+  assert.deepEqual(readiness.dependencies.map(d => d.id), ['ffmpeg'])
 })

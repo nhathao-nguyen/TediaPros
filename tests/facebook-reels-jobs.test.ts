@@ -132,6 +132,8 @@ test('export is owner-bound, selects only scanned IDs and cancels active native 
     const options={ids:['111111'],outputRoot:dir,downloadVideos:true}
     await assert.rejects(jobs.export(2,id,options),/quyền/)
     await assert.rejects(jobs.export(1,id,{...options,ids:['999999']}),/thuộc/)
+    await assert.rejects(jobs.export(1,id,{...options,downloadCaptions:'false'} as any),/không hợp lệ/)
+    await assert.rejects(jobs.export(1,id,{...options,downloadVideos:false,downloadCaptions:false,downloadArticles:false,downloadThumbnails:false,exportExcel:false}),/ít nhất/)
     const pending=jobs.export(1,id,options)
     await assert.rejects(jobs.export(1,id,options),/đang chạy/)
     await new Promise(resolve=>setTimeout(resolve,10));jobs.cancel(1,id)

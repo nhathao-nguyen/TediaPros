@@ -15,7 +15,7 @@ export function parseAutoShortDependencyConfig(raw: unknown): AutoShortDependenc
     if (r.separationPreset !== undefined && !isAutoShortSeparationPreset(r.separationPreset)) {
       throw new Error('Chất lượng tách thoại không hợp lệ.')
     }
-    if (r.blurMode !== undefined && r.blurMode !== 'manual' && r.blurMode !== 'ocr-auto' && r.blurMode !== 'sttn' && r.blurMode !== 'sttn-region') {
+    if (r.blurMode !== undefined && r.blurMode !== 'manual' && r.blurMode !== 'ocr-auto' && r.blurMode !== 'sttn' && r.blurMode !== 'sttn-region' && r.blurMode !== 'gemini-alpha') {
       throw new Error('Chế độ làm mờ không hợp lệ.')
     }
     if (r.ocrBlurProfile !== undefined && r.ocrBlurProfile !== 'accurate' && r.ocrBlurProfile !== 'fast') {

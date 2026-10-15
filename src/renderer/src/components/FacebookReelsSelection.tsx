@@ -1,13 +1,14 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { facebookReelsStopMessage, type FacebookReelsRequest, type FacebookReelsSummary } from '../../../shared/facebookReels'
+import { facebookReelsStopMessage, type FacebookReelsRequest, type FacebookReelsExportSelection, type FacebookReelsSummary } from '../../../shared/facebookReels'
 import { filterReelsEntries, reelsPage, reelsSelectionCounts, type ReelsSelectionEntry } from '../lib/facebookReels'
 import { FacebookReelReader, ReelsPagination } from './FacebookReelReader'
 import { TypeSafeKeyModal } from './TypeSafeKeyModal'
 
 export interface ReelsSelectionSource { jobId: string; request: FacebookReelsRequest; summary: FacebookReelsSummary }
-export function FacebookReelsSelection({ entries, sources, busy, error = '', folder, downloadVideos, range, onRange, onApplyRange,
+export function FacebookReelsSelection({ entries, sources, busy, error = '', folder, downloadVideos, parts, onParts, range, onRange, onApplyRange,
   onToggle, onAll, onContinue, onEnrich, onFolder, onVideo, onExport, onQueue, onClose }: {
   entries: ReelsSelectionEntry[]; sources: ReelsSelectionSource[]; busy: boolean; folder: string; downloadVideos: boolean;
+  parts: Omit<FacebookReelsExportSelection, 'downloadVideos'>; onParts: (parts: Omit<FacebookReelsExportSelection, 'downloadVideos'>) => void;
   error?: string;
   range: { from: number; to: number }; onRange: (range: { from: number; to: number }) => void; onApplyRange: (from: number, to: number) => void;
   onToggle: (index: number) => void; onAll: (checked: boolean) => void; onContinue: (source: ReelsSelectionSource) => void;
@@ -88,8 +89,13 @@ export function FacebookReelsSelection({ entries, sources, busy, error = '', fol
       </div>
       <footer className="reels-selection-footer">
         <div className="reels-folder-row"><label htmlFor="reels-export-folder">Thư mục xuất</label><input id="reels-export-folder" readOnly value={folder} placeholder="Chọn thư mục kết quả" title={folder}/><button className="btn small-btn" disabled={busy} onClick={onFolder}>Chọn thư mục</button></div>
-        <div className="reels-selection-finish"><div><label className="check"><input type="checkbox" checked={downloadVideos} disabled={busy} onChange={e => onVideo(e.target.checked)}/>Tải kèm MP4</label><small className="muted">Luôn xuất Excel, caption TXT và bài viết website TXT khi có dữ liệu.</small></div>
-          <div className="reels-actions"><button className="btn" disabled={busy || !checked} onClick={onQueue}>Thêm vào hàng đợi</button><button className="btn primary" disabled={busy || !exportCount || !folder} onClick={onExport}>Xuất {exportCount} Reels</button></div></div>
+        <div className="reels-selection-finish"><div><strong>Chọn phần muốn tải</strong><div className="reels-actions">
+            <label className="check"><input type="checkbox" checked={downloadVideos} disabled={busy} onChange={e => onVideo(e.target.checked)}/>Video MP4</label>
+            {([['downloadCaptions','Caption TXT'],['downloadArticles','Bài viết và các chương'],['downloadThumbnails','Thumbnail'],['exportExcel','Excel']] as const).map(([key,label]) => <label className="check" key={key}><input type="checkbox" checked={parts[key]} disabled={busy} onChange={e => onParts({ ...parts, [key]: e.target.checked })}/>{label}</label>)}
+            <button className="btn small-btn" disabled={busy} onClick={() => { onVideo(true); onParts({ downloadCaptions:false,downloadArticles:false,downloadThumbnails:false,exportExcel:false }) }}>Chỉ video</button>
+            <button className="btn small-btn" disabled={busy} onClick={() => { onVideo(true); onParts({ downloadCaptions:true,downloadArticles:true,downloadThumbnails:true,exportExcel:true }) }}>Tất cả</button>
+          </div></div>
+          <div className="reels-actions"><button className="btn" disabled={busy || !checked} onClick={onQueue}>Thêm vào hàng đợi</button><button className="btn primary" disabled={busy || !exportCount || !folder || ![downloadVideos, ...Object.values(parts)].some(Boolean)} onClick={onExport}>Xuất {exportCount} Reels</button></div></div>
         {other > 0 && <small className="reels-attention">{other} video playlist đã chọn chỉ được thêm vào hàng đợi; nút Xuất xử lý {exportCount} Facebook Reels.</small>}
         {!folder && <small className="reels-attention">Chọn thư mục trước khi xuất dữ liệu.</small>}
       </footer>

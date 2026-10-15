@@ -1,3 +1,4 @@
+import { facebookReelsExportSelection } from '../shared/facebookReels'
 import { randomUUID } from 'node:crypto'
 import type { PlaylistEntry, PlaylistProbe, VideoInfo } from '../shared/types'
 import { facebookReelEntry, mergeFacebookReel, facebookReelsSource, buildFacebookReelsFolderName,
@@ -73,6 +74,7 @@ export class FacebookReelsJobs {
     if(!options || !Array.isArray(options.ids)||!options.ids.length||options.ids.length>10000||
       options.ids.some(v=>typeof v!=='string')||typeof options.outputRoot!=='string'||typeof options.downloadVideos!=='boolean'||
       (options.folderName != null && (typeof options.folderName !== 'string' || options.folderName.length > 255))) throw Error('Yêu cầu xuất Reels không hợp lệ.')
+    facebookReelsExportSelection(options)
     if(!this.exporter)throw Error('Xuất Reels chưa khả dụng.')
     job.busy=true;job.controller=new AbortController();const controller=job.controller
     try {

@@ -1,3 +1,5 @@
+import { runGeminiAlpha } from './inpainting/geminiAlpha'
+import { isAlphaRemoval } from '../shared/autoShortOcrBlur'
 import { createManualSttnTimeline } from '../shared/sttnManualTimeline'
 import { basename, dirname, join } from 'node:path'
 import { copyFile, mkdir, mkdtemp, readFile, rename, rm, stat, writeFile } from 'node:fs/promises'
@@ -182,6 +184,7 @@ export interface AutoShortItemCoordinatorDeps {
   writeTimedMask: typeof writeTimedOcrBlurMask
   burn: typeof burnAutoShort
   removeSubtitles?: typeof runSttnRemoval
+  removeAlpha?: typeof runGeminiAlpha
 }
 
 export interface AutoShortItemContext {
@@ -737,6 +740,7 @@ export function createAutoShortItemProcessor(
 
       const automaticBlur = isAutomaticOcrBlur(config)
       const sttnRemoval = isSttnRemoval(config)
+      const alphaRemoval = isAlphaRemoval(config)
       const visualOcrRequired = automaticBlur || sttnRemoval
       const effectiveProfile = effectiveAutoShortOcrProfile(config)
       const forceFreshOcr = mustRegenerateOcrSource(config) || (sttnRemoval && config.subtitleMethod !== 'whisper' && config.subtitleMethod !== 'none')
@@ -876,6 +880,7 @@ export function createAutoShortItemProcessor(
         timedMask: TimedOcrBlurMask | null
         visualResultForAudit: Awaited<ReturnType<typeof deps.runVisualOcr>> | null
         sttnAudit?: { provider: 'cuda' | 'cpu'; elapsedMs: number }
+        alphaAudit?: { revision: string; matchScore: number; opacityRatio: number; frames: number; elapsedMs: number }
       }
       let visualBranchOutcomePromise: Promise<BranchOutcome<VisualBranchResult>> | null = null
 
@@ -884,9 +889,22 @@ export function createAutoShortItemProcessor(
         let branchTimedMask: TimedOcrBlurMask | null = null
         let branchVisualResult: Awaited<ReturnType<typeof deps.runVisualOcr>> | null = null
         let branchSttnAudit: { provider: 'cuda' | 'cpu'; elapsedMs: number } | undefined
+        let branchAlphaAudit: VisualBranchResult['alphaAudit']
 
         if (visualOcrRequired) {
           branchVisualResult = await getVisualOcr(branchSignal)
+        }
+
+        if (alphaRemoval) {
+          sttnWorkDir = await mkdtemp(join(itemOutputDir, '.alpha-'))
+          const cleaned = await telemetry.withStageSpan('gemini_alpha', { requestedProvider: 'cpu' }, async () =>
+            resourceManager.withLease(['local-cpu-heavy'], branchSignal, async () =>
+              (deps.removeAlpha || runGeminiAlpha)({ videoPath: processingPath,
+                outputPath: join(sttnWorkDir!, 'alpha-cleaned.mkv'), ffmpegPath: ffmpeg, ffprobePath: ffprobe,
+                region: ocrRegion, signal: branchSignal,
+                onProgress: (percent, message) => emitProgress(context, 'removing_subtitles', 82 + percent * .03, message) })))
+          branchRenderVideoPath = cleaned.outputPath
+          branchAlphaAudit = { revision: cleaned.revision, matchScore: cleaned.matchScore, opacityRatio: cleaned.opacityRatio, frames: cleaned.frames, elapsedMs: cleaned.elapsedMs }
         }
 
         const sttnTimeline = config.blurMode === 'sttn-region'
@@ -962,7 +980,7 @@ export function createAutoShortItemProcessor(
           renderVideoPath: branchRenderVideoPath,
           timedMask: branchTimedMask,
           visualResultForAudit: branchVisualResult,
-          sttnAudit: branchSttnAudit
+          sttnAudit: branchSttnAudit, alphaAudit: branchAlphaAudit
         }
       }
 
@@ -1857,7 +1875,7 @@ export function createAutoShortItemProcessor(
         renderVideoPath,
         timedMask,
         visualResultForAudit,
-        sttnAudit
+        sttnAudit, alphaAudit
       } = visualBranch
 
       throwIfAborted(signal)
@@ -1923,8 +1941,8 @@ export function createAutoShortItemProcessor(
                   : config.videoTitle.language
               } : undefined,
               mode: 'burn',
-              blurRegions: visualOcrRequired ? [] : blurRegions,
-              lamMo: sttnRemoval ? false : config.lamMo,
+              blurRegions: (visualOcrRequired || alphaRemoval) ? [] : blurRegions,
+              lamMo: (sttnRemoval || alphaRemoval) ? false : config.lamMo,
               portraitBlur: config.portraitBlur === true,
               videoAdjustments: config.videoAdjustments,
               subRegion: resolvedSubtitleRegion,
@@ -2147,6 +2165,7 @@ export function createAutoShortItemProcessor(
             voice,
             separation: separationAuditMetadata,
             sttn: sttnAudit,
+            geminiAlpha: alphaAudit,
             ocrBlur: ocrAuditMetadata,
             subtitlePlacement: createSubtitlePlacementAuditMetadata(subtitlePlacement),
             encoder: {

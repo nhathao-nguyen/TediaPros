@@ -1,3 +1,18 @@
+## TediaPros v0.1.38
+
+### Logo Gemini cố định: khử Alpha
+
+- Thêm chế độ Alpha bằng CPU và làm sạch viền mỏng, có xem thử 5 giây. Không cần tải model OCR/STTN để chỉ xử lý logo.
+- Mẫu hiện hỗ trợ video SDR 8-bit 720×1280, CFR, pixel vuông và không xoay, với logo tại vị trí đã hiệu chỉnh. Tiền kiểm hình dạng/vị trí/độ trong suốt; mẫu không khớp sẽ dừng, không tự thay bằng làm mờ.
+- Giữ frame và audio trong trung gian FFV1, kiểm tra output và dọn tệp tạm khi hủy. Chất lượng còn phụ thuộc nền; hãy xem thử trước khi xuất toàn bộ.
+
+### Facebook Reels: chọn phần muốn tải
+
+- Chọn riêng Video MP4, caption TXT, bài viết/chương, thumbnail website và Excel; có nút Chỉ video và Tất cả, nhớ từng lựa chọn.
+- Chỉ video bỏ qua lấy caption/link bài viết/thumbnail và không xuất TXT hoặc Excel. Nhật ký kết quả nội bộ vẫn được giữ để theo dõi và hủy tác vụ.
+- Chỉ tạo thư mục cho phần được chọn; ẩn nút mở Excel và thống kê không liên quan. Thumbnail website cần đọc trang nguồn nhưng không lưu bài viết khi chưa chọn.
+- Request cũ giữ hành vi mặc định; từ chối lựa chọn rỗng hoặc tham số không hợp lệ.
+
 ## TediaPros v0.1.37
 
 ### AutoShort: xóa logo trong vùng khoanh

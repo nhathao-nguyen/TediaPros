@@ -9,7 +9,7 @@ import { createFacebookReelDetailsBrowser } from './facebookReelDetails'
 import { exportFacebookReels } from './facebookReelsExporter'
 import { fetchArticle } from './facebookArticle'
 import { reelsOperation } from './facebookReelsController'
-import { facebookReelEntry, facebookReelsSource, mergeFacebookReel, type FacebookReelsRequest, type FacebookReelsExportRequest,
+import { facebookReelsExportSelection, facebookReelEntry, facebookReelsSource, mergeFacebookReel, type FacebookReelsRequest, type FacebookReelsExportRequest,
   type FacebookReelsExportResult, type FacebookReelsProgress } from '../shared/facebookReels'
 import type { PlaylistEntry } from '../shared/types'
 import { articleLinksFromMessage } from '../shared/facebookArticleLinks'
@@ -37,7 +37,8 @@ async function convertReelMp4(input: string, output: string, signal: AbortSignal
 
 export async function runFacebookReelsExport(request:FacebookReelsRequest,account:string,entries:PlaylistEntry[],options:FacebookReelsExportRequest,
   signal:AbortSignal,progress?:(p:FacebookReelsProgress)=>void):Promise<FacebookReelsExportResult> {
-  const browser=createFacebookReelDetailsBrowser(request,account)
+  const selection=facebookReelsExportSelection(options)
+  let browser: ReturnType<typeof createFacebookReelDetailsBrowser> | undefined
   try {
     return await exportFacebookReels(entries,options,signal,{
       resolve:async(entry,s)=>{
@@ -51,7 +52,9 @@ export async function runFacebookReelsExport(request:FacebookReelsRequest,accoun
           }catch{if(s.aborted)throw Error('Đã hủy lấy metadata.')}
           finally{clearTimeout(timer);s.removeEventListener('abort',abort)}
         }
+        if (!selection.downloadArticles && !selection.downloadThumbnails) return current
         if(current.facebook?.links?.length || articleLinksFromMessage({text:current.facebook?.caption}).length)return current
+        browser ||= createFacebookReelDetailsBrowser(request,account)
         return browser.resolve(current,s)
       },
       article:fetchArticle,
@@ -79,5 +82,5 @@ export async function runFacebookReelsExport(request:FacebookReelsRequest,accoun
       },
       progress:(row,message)=>progress?.({jobId:'',phase:'exporting',discoveredCount:entries.length,message,exportRow:row})
     })
-  }finally{await browser.dispose()}
+  }finally{await browser?.dispose()}
 }

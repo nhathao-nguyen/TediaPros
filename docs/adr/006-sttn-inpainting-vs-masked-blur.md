@@ -56,3 +56,9 @@ Trong xử lý video hiện đại, có hai hướng tiếp cận chính:
 ## Bổ sung 2026-10-14: vùng xóa thủ công
 
 `sttn-region` dùng vùng `ocrRegion` làm mask cố định từ đầu đến cuối video. Chế độ này không cần nhận diện chữ khi subtitleMethod là `none` hoặc `whisper`. OCR cho phụ đề vẫn hoạt động riêng khi được yêu cầu. Xem thử và xuất video dùng chung createManualSttnTimeline; timeline tham gia cache key STTN. Mask không được dùng làm nội dung phụ đề hoặc vị trí phụ đề tự động. Chế độ `sttn` cũ tiếp tục xóa theo box và thời gian OCR.
+
+## Bổ sung 2026-10-14: Gemini Alpha
+
+`gemini-alpha` là chế độ CPU riêng, không dùng model/OCR/STTN để xóa logo. Mẫu `gemini-video-720x1280-v1` được ước lượng từ video người dùng; hiện chỉ hỗ trợ 720×1280, CFR, pixel vuông và không xoay. Vùng chọn phải bao phủ logo tại vị trí đã hiệu chỉnh. Tiền kiểm lấy tối đa 16 mẫu trải trên toàn video, đối chiếu hình dạng bằng tương quan high-pass và độ trong suốt trên các mẫu có độ tin cậy cao; không khớp thì dừng, không tự chuyển sang blur hay STTN.
+
+Runner giải mã từng frame RGB, đảo phép trộn alpha, phục hồi biên mỏng bằng nội suy điều hòa cục bộ. Mask cố định; không thay pixel ngoài mask/biên trước mã hóa. Không dùng template này như mẫu phổ quát cho mọi video Gemini. Trung gian FFV1 trên ổ output, audio stream-copy, giữ nhịp CFR và offset video, kiểm tra số frame/offset/audio trước khi xuất. Quét dung lượng trống định kỳ và chờ helper đóng trước khi dọn tệp khi hủy. Log riêng `gemini_alpha` cùng revision, matchScore, opacityRatio và số frame; không dùng cache STTN. Preview và production gọi cùng runner.

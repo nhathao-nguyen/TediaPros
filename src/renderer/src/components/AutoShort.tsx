@@ -51,7 +51,7 @@ import { translationGuidanceError, type TranslationGuidance, type TranslationTon
 import type { AutoShortChannelPreset } from '../../../shared/channelPreset'
 import { createDefaultChannelPreset, DEFAULT_CHANNEL_PRESET_ID } from '../../../shared/channelPreset'
 import { ChannelPresetManager } from './ChannelPresetManager'
-import { isAutomaticOcrProcessing, isSttnRemoval, normalizeAutoShortBlurMode, normalizeAutoShortOcrBlurProfile } from '../../../shared/autoShortOcrBlur'
+import { isAutomaticOcrProcessing, isAlphaRemoval, isSttnRemoval, normalizeAutoShortBlurMode, normalizeAutoShortOcrBlurProfile } from '../../../shared/autoShortOcrBlur'
 import { effectiveAutoShortSubtitlePlacementMode } from '../../../shared/autoShortSubtitlePlacement'
 import { createAutoShortMusicAssignments } from '../../../shared/autoShortBackgroundMusic'
 import { localMediaSource } from '../lib/localMedia'
@@ -744,6 +744,7 @@ export default function AutoShort({ onOpenSpeedModal }: AutoShortProps = {}): JS
     automaticProcessing
   )
   const sttnRemoval = isSttnRemoval({ lamMo: blurEnabled, blurMode })
+  const alphaRemoval = isAlphaRemoval({ lamMo: blurEnabled, blurMode })
   const subtitleUsesOcr = subtitleMethod === 'ocr' || subtitleMethod === 'whisper-ocr'
   const subtitlePixelRegion = useMemo(
     () => subtitleRegion ? autoShortNormalizedRegionToPixels(subtitleRegion, videoW, videoH) : null,
@@ -1289,7 +1290,7 @@ export default function AutoShort({ onOpenSpeedModal }: AutoShortProps = {}): JS
   const refreshAutoShortReadiness = useCallback(async (preview = false): Promise<AutoShortReadiness | null> => {
     try {
       const next = await window.api.autoShortGetReadiness({
-        subtitleMethod: preview ? 'ocr' : subtitleMethod,
+        subtitleMethod: preview ? (alphaRemoval ? 'none' : 'ocr') : subtitleMethod,
         whisperModel: selectedWhisperModel,
         whisperDevice,
         lamMo: blurEnabled,
@@ -1304,7 +1305,7 @@ export default function AutoShort({ onOpenSpeedModal }: AutoShortProps = {}): JS
       setReadiness(null)
       return null
     }
-  }, [selectedWhisperModel, subtitleMethod, whisperDevice, blurEnabled, blurMode, ocrBlurProfile, audioMode, separationPreset])
+  }, [selectedWhisperModel, subtitleMethod, whisperDevice, blurEnabled, blurMode, ocrBlurProfile, audioMode, separationPreset, alphaRemoval])
 
   useEffect(() => {
     let active = true
@@ -2017,7 +2018,7 @@ return {
   }
 
   const startSttnPreview = async (): Promise<void> => {
-    if (!selectedTask || !sttnRemoval || isRunning || sttnPreviewRunning) return
+    if (!selectedTask || (!sttnRemoval && !alphaRemoval) || isRunning || sttnPreviewRunning) return
     const videoPathSnapshot = selectedTask.filePath
     const scan = ocrRegion && clampAutoShortNormalizedRegion(ocrRegion)
     if (!scan || videoW <= 0 || videoH <= 0) {
@@ -2043,7 +2044,7 @@ return {
         previewSeconds: 5,
         ...(selectedTask.temporalEdit ? { temporalEdit: selectedTask.temporalEdit } : {}),
         config: {
-          subtitleMethod: 'ocr', whisperModel: selectedWhisperModel, whisperDevice,
+          subtitleMethod: alphaRemoval ? 'none' : 'ocr', whisperModel: selectedWhisperModel, whisperDevice,
           lamMo: true, blurMode, ocrBlurProfile: 'accurate', blurRegions: [],
           ocrRegion: scan,
           translateTarget: 'none', translateProvider: 'local', ttsEnabled: false,
@@ -2070,7 +2071,7 @@ return {
     setDependencyProgress({})
     try {
       const result = await window.api.autoShortInstallDependencies({
-        subtitleMethod: dependencyAction === 'preview' ? 'ocr' : subtitleMethod,
+        subtitleMethod: dependencyAction === 'preview' ? (alphaRemoval ? 'none' : 'ocr') : subtitleMethod,
         whisperModel: selectedWhisperModel,
         whisperDevice,
         lamMo: blurEnabled,
@@ -3040,7 +3041,7 @@ return {
                         <input
                           type="checkbox"
                           checked={subtitlePlacementMode === 'ocr-dominant'}
-                          disabled={!automaticProcessing || blurMode === 'sttn-region'}
+                          disabled={!automaticProcessing || blurMode === 'sttn-region' || alphaRemoval}
                           onChange={(event) => setSubtitlePlacementMode(event.target.checked ? 'ocr-dominant' : 'manual')}
                         />
                         <span>{subtitlePlacementMode === 'ocr-dominant' ? 'Bật' : 'Tắt'}</span>
@@ -3389,9 +3390,24 @@ return {
                         checked={sttnRemoval} onChange={() => setBlurModeRaw('sttn')} />
                       <span>Xóa phụ đề AI (STTN)</span>
                     </label>
+                    <label className={`autoshort-blur-mode-option ${alphaRemoval ? 'selected' : ''}`}>
+                      <input type="radio" name="autoshort-blur-mode" value="gemini-alpha" checked={alphaRemoval}
+                        onChange={() => { setBlurModeRaw('gemini-alpha'); setSubtitlePlacementMode('manual') }} />
+                      <span>Logo Gemini cố định · Alpha</span>
+                    </label>
                   </div>
 
-                  {sttnRemoval ? (
+                  {alphaRemoval ? (
+                    <div className="autoshort-ocr-blur-settings">
+                      <p>Mẫu đã hiệu chỉnh cho logo cố định trên video 720×1280. Khoanh vùng bao phủ logo góc dưới phải. Tool kiểm tra mẫu trước khi khử Alpha và làm sạch viền; mẫu không khớp sẽ dừng.</p>
+                      <p>Không cần tải model. Chi tiết nền được giữ ngoài vùng logo; hãy xem thử để kiểm tra viền và màu nền.</p>
+                      <button className="btn editor-wide-action" type="button"
+                        disabled={!selectedTask || sttnPreviewRunning || dependencyInstalling}
+                        onClick={() => void startSttnPreview()}>Xem thử Alpha · 5 giây đầu</button>
+                      {sttnPreviewProgress && <div className="muted small" role="status">{sttnPreviewProgress.message}</div>}
+                      {sttnPreviewPath && <button className="btn ghost sm" type="button" onClick={() => void window.api.openPath(sttnPreviewPath)}>Mở bản xem thử</button>}
+                    </div>
+                  ) : sttnRemoval ? (
                     <div className="autoshort-ocr-blur-settings">
                       <div className="autoshort-ocr-blur-explain">
                         <label><input type="checkbox" checked={blurMode === 'sttn-region'}

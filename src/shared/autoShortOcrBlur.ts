@@ -4,9 +4,13 @@ export function isSttnRemoval(config: Pick<AutoShortConfig, 'lamMo' | 'blurMode'
   return config.lamMo === true && (config.blurMode === 'sttn' || config.blurMode === 'sttn-region')
 }
 
-/** Modes that need OCR boxes/timing in addition to subtitle text. */
+export function isAlphaRemoval(config: Pick<AutoShortConfig, 'lamMo' | 'blurMode'>): boolean {
+  return config.lamMo === true && config.blurMode === 'gemini-alpha'
+}
+
+/** Modes that show an erasure scan region in the editor. */
 export function isAutomaticOcrProcessing(config: Pick<AutoShortConfig, 'lamMo' | 'blurMode'>): boolean {
-  return isAutomaticOcrBlur(config) || isSttnRemoval(config)
+  return isAutomaticOcrBlur(config) || isSttnRemoval(config) || isAlphaRemoval(config)
 }
 
 export function isAutomaticOcrBlur(
@@ -18,7 +22,7 @@ export function isAutomaticOcrBlur(
 export function autoShortNeedsOcr(
   config: Pick<AutoShortConfig, 'subtitleMethod' | 'lamMo' | 'blurMode'>
 ): boolean {
-  return (isAutomaticOcrProcessing(config) && config.blurMode !== 'sttn-region') ||
+  return (isAutomaticOcrProcessing(config) && config.blurMode !== 'sttn-region' && config.blurMode !== 'gemini-alpha') ||
     config.subtitleMethod === 'ocr' ||
     config.subtitleMethod === 'whisper-ocr'
 }
@@ -31,7 +35,7 @@ export function effectiveAutoShortOcrProfile(
 }
 
 export function normalizeAutoShortBlurMode(value: unknown): AutoShortBlurMode {
-  return value === 'sttn' || value === 'sttn-region' || value === 'ocr-auto' ? value : 'manual'
+  return value === 'sttn' || value === 'sttn-region' || value === 'gemini-alpha' || value === 'ocr-auto' ? value : 'manual'
 }
 
 export function normalizeAutoShortOcrBlurProfile(value: unknown): AutoShortOcrBlurProfile {

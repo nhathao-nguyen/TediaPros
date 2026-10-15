@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict'
 import { test } from 'node:test'
-import { mkdtemp, readFile, rm, writeFile } from 'node:fs/promises'
+import { mkdtemp, readFile, readdir, rm, writeFile } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { join, dirname } from 'node:path'
 import ExcelJS from 'exceljs'
@@ -8,7 +8,7 @@ import { externalArticleUrl, articleLinksFromMessage } from '../src/shared/faceb
 import { extractArticleHtml, isPublicArticleAddress, fetchArticle, type FacebookArticleTransport } from '../src/main/facebookArticle'
 import { EventEmitter } from 'node:events'
 import { exportFacebookReels } from '../src/main/facebookReelsExporter'
-import { facebookReelEntry, facebookReelsSource } from '../src/shared/facebookReels'
+import { facebookReelsExportSelection, facebookReelEntry, facebookReelsSource } from '../src/shared/facebookReels'
 import { parseFacebookReelsPayload } from '../src/main/facebookReelsParser'
 
 test('unwraps Facebook links, preserves article query parameters and rejects private/nonarticle routes', () => {
@@ -169,4 +169,75 @@ test('respects folderName option and sanitizes invalid filesystem characters', a
     })
     assert.equal(result.directory, join(root, 'Woodard Baraka Page - 61593283816056'))
   } finally { assert.equal(dirname(root), tmpdir()); await rm(root, { recursive: true, force: true }) }
+})
+
+const videoOnly = { downloadVideos: true, downloadCaptions: false, downloadArticles: false, downloadThumbnails: false, exportExcel: false }
+test('video-only export never resolves captions/articles/thumbnails and only creates video folder plus receipt', async () => {
+  const root=await mkdtemp(join(tmpdir(),'tedia-reels-parts-'))
+  try {
+    let downloads=0
+    const result=await exportFacebookReels([facebookReelEntry('111111','caption with https://news.example/story','graphql')],{outputRoot:root,...videoOnly},new AbortController().signal,{
+      resolve:async()=>{throw Error('must not resolve metadata')},article:async()=>{throw Error('must not crawl article')},thumbnail:async()=>{throw Error('must not download thumbnail')},
+      video:async(_e,dir,stem)=>{downloads++;const p=join(dir,stem+'.mp4');await writeFile(p,'video');return p}
+    })
+    assert.equal(downloads,1);assert.equal(result.excelPath,'')
+    assert.deepEqual((await readdir(result.directory)).sort(),['results.json','video'])
+    assert.equal(result.rows[0].videoStatus,'success');assert.equal(result.rows[0].captionStatus,'disabled');assert.equal(result.rows[0].articleStatus,'disabled');assert.deepEqual(result.rows[0].errors,[])
+    assert.equal(result.rows[0].captionPath,null);assert.equal(result.rows[0].articlePath,null);assert.equal(result.rows[0].thumbnailPath,null)
+    assert.deepEqual(JSON.parse(await readFile(result.manifestPath,'utf8')).selection,videoOnly)
+  }finally{await rm(root,{recursive:true,force:true})}
+})
+
+test('caption-only and thumbnail-only exports do not save unchecked outputs', async () => {
+  for(const selected of ['downloadCaptions','downloadThumbnails'] as const){
+    const root=await mkdtemp(join(tmpdir(),'tedia-reels-parts-'))
+    try {
+      let articles=0,thumbs=0
+      const result=await exportFacebookReels([facebookReelEntry('111111','caption https://news.example/story','graphql')],{outputRoot:root,...videoOnly,downloadVideos:false,[selected]:true},new AbortController().signal,{
+        resolve:async e=>e,
+        article:async(_url,_signal,maxChapters)=>{articles++;assert.equal(maxChapters,1);return {url:'https://news.example/story',title:'Story',content:'Content',status:'success',thumbnailUrl:'https://news.example/a.jpg'}},
+        thumbnail:async()=>{thumbs++;return {buffer:Buffer.from('image'),ext:'.jpg'}},video:async()=>{throw Error('must not download video')}
+      })
+      assert.equal(result.excelPath,'');assert.equal(result.rows[0].articlePath,null);assert.equal(result.rows[0].videoStatus,'disabled')
+      assert.deepEqual((await readdir(result.directory)).sort(),[selected==='downloadCaptions'?'caption':'results.json',selected==='downloadCaptions'?'results.json':'thumbnail'])
+      assert.equal(articles,selected==='downloadThumbnails'?1:0);assert.equal(thumbs,selected==='downloadThumbnails'?1:0)
+    }finally{await rm(root,{recursive:true,force:true})}
+  }
+})
+
+test('export selection preserves legacy defaults but rejects empty selections and non-booleans',()=>{
+  assert.equal(facebookReelsExportSelection({downloadVideos:false}).downloadArticles,true)
+  assert.throws(()=>facebookReelsExportSelection({...videoOnly,downloadVideos:false}),/ít nhất/)
+  assert.throws(()=>facebookReelsExportSelection({downloadVideos:true,downloadCaptions:'false'} as any),/không hợp lệ/)
+})
+
+test('article-only and Excel-only selections keep web fetching and file creation independent',async()=>{
+  for(const selected of ['downloadArticles','exportExcel'] as const){
+    const root=await mkdtemp(join(tmpdir(),'tedia-reels-parts-'))
+    try{
+      let articleCalls=0
+      const result=await exportFacebookReels([facebookReelEntry('111111','caption https://news.example/story','graphql')],{outputRoot:root,...videoOnly,downloadVideos:false,[selected]:true},new AbortController().signal,{
+        resolve:async e=>e,article:async(_url,_s,max)=>{articleCalls++;assert.equal(max,80);return {url:'https://news.example/story',title:'Story',content:'Full text',status:'success'}},
+        thumbnail:async()=>{throw Error('unchecked thumbnail')},video:async()=>{throw Error('unchecked video')}
+      })
+      assert.equal(articleCalls,selected==='downloadArticles'?1:0)
+      assert.equal(result.rows[0].captionPath,null);assert.equal(result.rows[0].thumbnailPath,null)
+      if(selected==='downloadArticles'){
+        assert.equal(result.excelPath,'');assert.equal(await readFile(result.rows[0].articlePath!,'utf8'),'Full text')
+        assert.deepEqual((await readdir(result.directory)).sort(),['article','chapters','results.json'])
+      }else{
+        assert.ok(await readFile(result.excelPath));assert.equal(result.rows[0].articleStatus,'disabled')
+        assert.deepEqual((await readdir(result.directory)).sort(),['excel','results.json'])
+      }
+    }finally{await rm(root,{recursive:true,force:true})}
+  }
+})
+
+test('cancelled video-only export keeps unchecked stages disabled',async()=>{
+  const root=await mkdtemp(join(tmpdir(),'tedia-reels-parts-')),controller=new AbortController();controller.abort()
+  try{
+    const never=async()=>{throw Error('cancelled export must not call dependencies')}
+    const result=await exportFacebookReels([facebookReelEntry('111111')],{outputRoot:root,...videoOnly},controller.signal,{resolve:never,article:never,video:never})
+    assert.equal(result.rows[0].videoStatus,'cancelled');assert.equal(result.rows[0].captionStatus,'disabled');assert.equal(result.rows[0].articleStatus,'disabled')
+  }finally{await rm(root,{recursive:true,force:true})}
 })

@@ -2,7 +2,7 @@ import type { PlaylistEntry } from '../shared/types'
 import { downloadArticleThumbnail, type FacebookArticle } from './facebookArticle'
 import type { FacebookReelsExportRequest, FacebookReelsExportResult, FacebookReelsExportRow } from '../shared/facebookReels'
 import { externalArticleUrl, articleLinksFromMessage } from '../shared/facebookArticleLinks'
-import { facebookReelId, sanitizeFolderName, buildFacebookReelsFolderName } from '../shared/facebookReels'
+import { facebookReelsExportSelection, facebookReelId, sanitizeFolderName, buildFacebookReelsFolderName } from '../shared/facebookReels'
 import { randomUUID } from 'node:crypto'
 import { mkdir, lstat } from 'node:fs/promises'
 import { isAbsolute, join } from 'node:path'
@@ -20,8 +20,9 @@ export interface FacebookReelsExportDependencies {
 async function writeContained(path:string,root:string,text:string):Promise<void> {
   await atomicWorkflowWrite(path,root,text)
 }
-export async function exportFacebookReels(entries: PlaylistEntry[], options: Pick<FacebookReelsExportRequest,'outputRoot'|'downloadVideos'|'folderName'>,
+export async function exportFacebookReels(entries: PlaylistEntry[], options: Pick<FacebookReelsExportRequest,'outputRoot'|'downloadVideos'|'downloadCaptions'|'downloadArticles'|'downloadThumbnails'|'exportExcel'|'folderName'>,
   signal:AbortSignal,dependencies:FacebookReelsExportDependencies):Promise<FacebookReelsExportResult> {
+  const selection = facebookReelsExportSelection(options)
   if(!isAbsolute(options.outputRoot))throw new Error('Hãy chọn thư mục kết quả tuyệt đối.')
   const rootStat=await lstat(options.outputRoot)
   if(!rootStat.isDirectory()||rootStat.isSymbolicLink())throw new Error('Thư mục kết quả không hợp lệ hoặc là liên kết.')
@@ -47,44 +48,53 @@ export async function exportFacebookReels(entries: PlaylistEntry[], options: Pic
     video: join(directory, 'video'),
     caption: join(directory, 'caption'),
     article: join(directory, 'article'),
+    chapters: join(directory, 'chapters'),
     thumbnail: join(directory, 'thumbnail'),
     excel: join(directory, 'excel')
   }
-  for (const dir of Object.values(dirs)) {
+  const enabledDirs = [selection.downloadVideos && dirs.video, selection.downloadCaptions && dirs.caption,
+    selection.downloadArticles && dirs.article, selection.downloadArticles && dirs.chapters,
+    selection.downloadThumbnails && dirs.thumbnail, selection.exportExcel && dirs.excel].filter((dir): dir is string => Boolean(dir))
+  for (const dir of enabledDirs) {
     await assertContainedParentDirectory(join(dir, '.check'), directory, 'Thư mục Reels')
     await mkdir(dir, { recursive: true })
   }
   const rows:FacebookReelsExportRow[]=entries.map((e,i)=>({index:i+1,id:e.id,reelUrl:e.url,title:e.title,caption:e.facebook?.caption??'',
     targetUrl:null,foundIn:null,articleTitle:'',content:'',captionPath:null,articlePath:null,videoPath:null,
-    captionStatus:'pending',articleStatus:'pending',videoStatus:options.downloadVideos?'pending':'disabled',errors:[],
+    captionStatus:selection.downloadCaptions?'pending':'disabled',articleStatus:selection.downloadArticles?'pending':'disabled',videoStatus:options.downloadVideos?'pending':'disabled',errors:[],
     thumbnailUrl:null,thumbnailPath:null}))
-  const manifestPath=join(directory,'results.json'),excelPath=join(dirs.excel,'reels_content.xlsx')
-  const checkpoint=():Promise<void>=>writeContained(manifestPath,directory,JSON.stringify({version:1,cancelled:signal.aborted,rows},null,2))
+  const manifestPath=join(directory,'results.json'),excelPath=selection.exportExcel?join(dirs.excel,'reels_content.xlsx'):''
+  const checkpoint=():Promise<void>=>writeContained(manifestPath,directory,JSON.stringify({version:1,cancelled:signal.aborted,selection,rows},null,2))
   const errorText=(err:unknown):string=>err instanceof Error?err.message:'Không xử lý được dữ liệu.'
   const report=(row:FacebookReelsExportRow,message:string):void=>{try{dependencies.progress?.({...row},message)}catch{/* owner closed */}}
   await checkpoint()
   for(let i=0;i<entries.length;i++) {
     const row=rows[i];let entry=entries[i],detailsFailed=false;const stem=`${String(row.index).padStart(3,'0')}_${row.id}`
-    if(signal.aborted){row.captionStatus='cancelled';row.articleStatus='cancelled';if(options.downloadVideos)row.videoStatus='cancelled';report(row,'Đã dừng và giữ kết quả.');continue}
+    if(signal.aborted){if(selection.downloadCaptions)row.captionStatus='cancelled';if(selection.downloadArticles)row.articleStatus='cancelled';if(options.downloadVideos)row.videoStatus='cancelled';report(row,'Đã dừng và giữ kết quả.');continue}
+    if (selection.downloadCaptions || selection.downloadArticles || selection.downloadThumbnails || selection.exportExcel) {
     report(row,`Đang lấy caption/link web ${i+1}/${entries.length}…`)
     try {const resolved=await dependencies.resolve(entry,signal);if(resolved.id!==entry.id||resolved.url!==entry.url)throw Error('Thông tin không khớp Reel ID.');entry=resolved}
     catch(err){detailsFailed=true;row.errors.push(`Chi tiết Reel: ${errorText(err)}`)}
     row.title=entry.title;row.caption=entry.facebook?.caption??''
+    if(selection.downloadCaptions) {
     row.captionPath=join(dirs.caption,stem+'.txt')
     await writeContained(row.captionPath,directory,row.caption)
     row.captionStatus=row.caption?'success':'missing'
+    }
     const links=[...(entry.facebook?.links??[]),...articleLinksFromMessage({text:row.caption}).map(url=>({url,foundIn:'caption' as const}))]
     const link=links.find(l=>externalArticleUrl(l.url))
     if(link){row.targetUrl=externalArticleUrl(link.url);row.foundIn=link.foundIn}
-    if(signal.aborted)row.articleStatus='cancelled'
-    else if(!row.targetUrl)row.articleStatus=detailsFailed?'error':'no-link'
+    if(selection.downloadArticles || selection.downloadThumbnails) {
+    if(signal.aborted) { if(selection.downloadArticles)row.articleStatus='cancelled' }
+    else if(!row.targetUrl) { if(selection.downloadArticles)row.articleStatus=detailsFailed?'error':'no-link'; else if(selection.downloadThumbnails)row.errors.push('Thumbnail: Không tìm thấy liên kết website.') }
     else {
       report(row,`Đang lấy nội dung web ${i+1}/${entries.length}…`)
       try {
-        const article=await dependencies.article(row.targetUrl,signal,80)
-        row.articleTitle=article.title;row.content=article.content.length>32700?article.content.slice(0,32700)+'\n[Nội dung đầy đủ nằm trong file TXT]':article.content;row.targetUrl=article.url;row.articleStatus=article.status
+        const article=await dependencies.article(row.targetUrl,signal,selection.downloadArticles?80:1)
+        row.articleTitle=article.title;row.content=article.content.length>32700?article.content.slice(0,32700)+'\n[Nội dung đầy đủ nằm trong file TXT]':article.content;row.targetUrl=article.url;row.articleStatus=selection.downloadArticles?article.status:'disabled'
         row.thumbnailUrl=article.thumbnailUrl??null
-        if(article.thumbnailUrl){
+        if(selection.downloadThumbnails && !article.thumbnailUrl) row.errors.push('Thumbnail: Website không có ảnh đại diện.')
+        if(selection.downloadThumbnails && article.thumbnailUrl){
           try{
             report(row,`Đang tải thumbnail ${i+1}/${entries.length}…`)
             const fetchThumb=dependencies.thumbnail||downloadArticleThumbnail
@@ -96,19 +106,19 @@ export async function exportFacebookReels(entries: PlaylistEntry[], options: Pic
             }
           }catch(err){row.errors.push(`Thumbnail: ${errorText(err)}`)}
         }
-        if(article.error)row.errors.push(`Bài viết: ${article.error}`)
-        if(article.completion==='partial'){
+        if(selection.downloadArticles && article.error)row.errors.push(`Bài viết: ${article.error}`)
+        if(selection.downloadArticles && article.completion==='partial'){
           if((article.stopReason==='chapter-limit'||article.stopReason==='timeout')&&article.chapters&&article.chapters.length>0){
             row.errors.push(`Bài viết dài: đã tải ${article.chapters.length} chương.`)
           }else{
             row.articleStatus='error';row.errors.push(`Bài viết chưa đầy đủ: ${article.stopReason || 'unknown'}`)
           }
         }
-        if(article.status==='success'&&article.content){
+        if(selection.downloadArticles && article.status==='success'&&article.content){
           row.articlePath=join(dirs.article,stem+'.txt');
           await writeContained(row.articlePath,directory,article.content);
           if(article.chapters && article.chapters.length > 1){
-            const chaptersDir = join(dirs.article, `${stem}_chapters`);
+            const chaptersDir = join(dirs.chapters, `${stem}_chapters`);
             await assertContainedParentDirectory(join(chaptersDir, '.check'), directory, 'Thư mục chương');
             await mkdir(chaptersDir, { recursive: true });
             for(const ch of article.chapters){
@@ -118,7 +128,9 @@ export async function exportFacebookReels(entries: PlaylistEntry[], options: Pic
             }
           }
         }
-      }catch(err){row.articleStatus=signal.aborted?'cancelled':'error';row.errors.push(`Bài viết: ${errorText(err)}`)}
+      }catch(err){if(selection.downloadArticles)row.articleStatus=signal.aborted?'cancelled':'error';row.errors.push(`${selection.downloadArticles?'Bài viết':'Thumbnail'}: ${errorText(err)}`)}
+    }
+    }
     }
     if(options.downloadVideos) {
       if(signal.aborted)row.videoStatus='cancelled'
@@ -133,6 +145,7 @@ export async function exportFacebookReels(entries: PlaylistEntry[], options: Pic
     await checkpoint();report(row,`Đã xử lý ${i+1}/${entries.length} Reels.`)
   }
   // Excel limits text cells to 32,767 characters; TXT holds the complete article.
+  if(selection.exportExcel) {
   const wb=new ExcelJS.Workbook();const sheet=wb.addWorksheet('Facebook Reels Content')
   sheet.columns=['STT','Link Reel','Caption','Vị trí link','Link Web','Nội dung bài viết','Đường dẫn Video','Trạng thái','Thời gian','Tiêu đề Reel','Tiêu đề bài viết','File caption','File nội dung','Chi tiết lỗi','Link Thumbnail','File thumbnail']
     .map((header,i)=>({header,key:String(i),width:[8,40,65,16,45,75,45,55,26,60,60,45,45,55,45,45][i]}))
@@ -142,6 +155,7 @@ export async function exportFacebookReels(entries: PlaylistEntry[], options: Pic
   for(const row of rows){const r=sheet.addRow([row.index,row.reelUrl,clipped(row.caption),row.foundIn??'',row.targetUrl??'',clipped(row.content),row.videoPath??'',
     `Caption: ${row.captionStatus}; Bài viết: ${row.articleStatus}; Video: ${row.videoStatus}`,new Date().toISOString(),clipped(row.title),clipped(row.articleTitle),row.captionPath??'',row.articlePath??'',clipped(row.errors.join('\n')),row.thumbnailUrl??'',row.thumbnailPath??'']);r.alignment={vertical:'top',wrapText:true}}
   await atomicWorkflowWrite(excelPath,directory,Buffer.from(await wb.xlsx.writeBuffer()))
+  }
   await checkpoint()
-  return {rows,directory,excelPath,manifestPath,cancelled:signal.aborted}
+  return {selection,rows,directory,excelPath,manifestPath,cancelled:signal.aborted}
 }

@@ -1,3 +1,5 @@
+import { runGeminiAlpha } from './inpainting/geminiAlpha'
+import { isAlphaRemoval } from '../shared/autoShortOcrBlur'
 import { createManualSttnTimeline } from '../shared/sttnManualTimeline'
 import { app, dialog } from 'electron'
 import { spawn, type ChildProcess } from 'node:child_process'
@@ -3934,6 +3936,7 @@ interface SttnPreviewHooks {
   probeMedia?: typeof probeBurnMedia
   runVisualOcr?: typeof ocrVideoWithVisualTimeline
   removeSubtitles?: typeof runSttnRemoval
+  removeAlpha?: typeof runGeminiAlpha
   runMedia?: typeof runSttnPreviewMedia
   resourceManager?: AutoShortResourceManager
 }
@@ -3979,7 +3982,7 @@ export async function runAutoShortSttnPreview(
   })
   if (!validated.ok) throw new Error(validated.error)
   const { config } = validated.value
-  if (!isSttnRemoval(config)) throw new Error('Hãy bật chế độ xóa chữ STTN trước khi xem thử.')
+  if (!isSttnRemoval(config) && !isAlphaRemoval(config)) throw new Error('Hãy bật chế độ xóa chữ STTN trước khi xem thử.')
   throwIfAborted(signal)
   const sourcePath = validated.value.items[0].filePath
   if (!(await stat(sourcePath)).isFile()) throw new Error('Video xem thử không hợp lệ.')
@@ -4045,6 +4048,18 @@ export async function runAutoShortSttnPreview(
   const geometry = meta.geometry ?? deriveCanonicalDisplayGeometry({ codedWidth: meta.w, codedHeight: meta.h, rotation: meta.rotation, sampleAspectRatio: meta.sampleAspectRatio, videoStart: meta.videoStart })
   const scanRegion = normalizedToPixels(config.ocrRegion, geometry)
   if (!scanRegion) throw new Error('Cần chọn vùng OCR để xem thử STTN.')
+  if (isAlphaRemoval(config)) {
+    const result = await resourceManager.withLease(['local-cpu-heavy'], signal, async () =>
+      (hooks.removeAlpha || runGeminiAlpha)({ videoPath: sourceClip, outputPath: cleanedPath,
+        ffmpegPath: ffmpeg, ffprobePath: ffprobe, region: scanRegion, signal,
+        onProgress: (percent, message) => onProgress({ percent: 5 + percent * .85, message }) }))
+    await media(ffmpeg, ['-i', result.outputPath, '-map', '0:v:0', '-map', '0:a:0?', '-c:v', 'libx264', '-preset', 'fast', '-crf', '18', '-pix_fmt', 'yuv420p', '-c:a', 'aac', '-movflags', '+faststart', outputPath], signal)
+    throwIfAborted(signal)
+    if (!(await stat(outputPath)).size) throw new Error('Video xem thử Alpha trống.')
+    await Promise.all([sourceClip, cleanedPath, ...(videoPath === sourcePath ? [] : [videoPath])].map(path => rm(path, { recursive: true, force: true })))
+    onProgress({ percent: 100, message: 'Xem thử Alpha hoàn tất.' })
+    return { ...result, outputPath }
+  }
   const ocrDir = join(workDir, 'ocr')
   await mkdir(ocrDir, { recursive: true })
   const visual = config.blurMode === 'sttn-region'

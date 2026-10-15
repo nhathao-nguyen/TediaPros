@@ -98,10 +98,35 @@ export interface FacebookReelsProgress {
 export interface FacebookReelsStartResult { ok: boolean; jobId?: string; error?: string }
 export interface FacebookReelsResult { ok: boolean; playlist?: PlaylistProbe; error?: string }
 export interface FacebookReelsMetadataResult { ok: boolean; entries?: PlaylistEntry[]; error?: string }
+export interface FacebookReelsExportSelection {
+  downloadVideos: boolean
+  downloadCaptions: boolean
+  downloadArticles: boolean
+  downloadThumbnails: boolean
+  exportExcel: boolean
+}
+
+/** Missing new flags retain the legacy export behavior. */
+export function facebookReelsExportSelection(raw: Partial<FacebookReelsExportSelection>): FacebookReelsExportSelection {
+  const result: FacebookReelsExportSelection = { downloadVideos: true, downloadCaptions: true, downloadArticles: true, downloadThumbnails: true, exportExcel: true }
+  for (const key of Object.keys(result) as (keyof FacebookReelsExportSelection)[]) {
+    if (raw[key] !== undefined) {
+      if (typeof raw[key] !== 'boolean') throw new Error('Tùy chọn nội dung tải Reels không hợp lệ.')
+      result[key] = raw[key]!
+    }
+  }
+  if (!Object.values(result).some(Boolean)) throw new Error('Hãy chọn ít nhất một phần muốn tải hoặc xuất.')
+  return result
+}
+
 export interface FacebookReelsExportRequest {
   ids: string[]
   outputRoot: string
   downloadVideos: boolean
+  downloadCaptions?: boolean
+  downloadArticles?: boolean
+  downloadThumbnails?: boolean
+  exportExcel?: boolean
   folderName?: string
 }
 export type FacebookReelsExportStage = 'pending' | 'success' | 'missing' | 'no-link' | 'no-article' | 'error' | 'cancelled' | 'disabled'
@@ -115,6 +140,7 @@ export interface FacebookReelsExportRow {
   thumbnailPath?: string | null;
 }
 export interface FacebookReelsExportResult {
+  selection?: FacebookReelsExportSelection
   rows: FacebookReelsExportRow[]; directory: string; excelPath: string; manifestPath: string; cancelled: boolean
 }
 export interface FacebookReelsExportResponse { ok: boolean; result?: FacebookReelsExportResult; error?: string }

@@ -835,3 +835,6 @@
     grid-template-columns: 1fr;
   }
 }
+
+.reels-selection-finish > div:first-child { flex:1; }
+.reels-selection-finish > .reels-actions { flex-shrink:0; }

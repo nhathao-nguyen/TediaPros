@@ -1015,7 +1015,7 @@ export interface AutoShortSeparationReadiness {
   message?: string
 }
 
-export type AutoShortBlurMode = 'manual' | 'ocr-auto' | 'sttn' | 'sttn-region'
+export type AutoShortBlurMode = 'manual' | 'ocr-auto' | 'sttn' | 'sttn-region' | 'gemini-alpha'
 export type AutoShortOcrBlurProfile = 'accurate' | 'fast'
 export type AutoShortSubtitlePlacementMode = 'manual' | 'ocr-dominant'
 
@@ -1343,6 +1343,7 @@ export type AutoShortStage =
   | 'audio'
   | 'separation'
   | 'sttn'
+  | 'gemini_alpha'
   | 'retime'
   | 'render'
   | 'title'

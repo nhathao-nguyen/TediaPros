@@ -160,6 +160,12 @@ export default function Downloader({
   const [reelsBusy, setReelsBusy] = useState(false)
   const [reelsExportRoot,setReelsExportRoot]=usePersistedState('tblao.dl.reelsExportRoot','')
   const [reelsExportVideo,setReelsExportVideo]=usePersistedState('tblao.dl.reelsExportVideo',true)
+  const [reelsExportCaption,setReelsExportCaption]=usePersistedState('tblao.dl.reelsExportCaption',true)
+  const [reelsExportArticle,setReelsExportArticle]=usePersistedState('tblao.dl.reelsExportArticle',true)
+  const [reelsExportThumbnail,setReelsExportThumbnail]=usePersistedState('tblao.dl.reelsExportThumbnail',true)
+  const [reelsExportExcel,setReelsExportExcel]=usePersistedState('tblao.dl.reelsExportExcel',true)
+  const reelsExportParts = { downloadCaptions: reelsExportCaption, downloadArticles: reelsExportArticle, downloadThumbnails: reelsExportThumbnail, exportExcel: reelsExportExcel }
+
   const [reelsExportResults,setReelsExportResults]=useState<FacebookReelsExportResult[]>([])
   const [reelsExportRows,setReelsExportRows]=useState<FacebookReelsExportRow[]>([])
   const [downloadView, setDownloadView] = useState<'download' | 'reels'>('download')
@@ -636,6 +642,7 @@ export default function Downloader({
   const exportSelectedReels=async():Promise<void>=>{
     const root=reelsExportRoot||outputDir
     if(!root)return
+    if (![reelsExportVideo, ...Object.values(reelsExportParts)].some(Boolean)) { setReelsSelectionError('Hãy chọn ít nhất một phần muốn tải hoặc xuất.'); return }
     setProbing(true);setReelsBusy(true);stopReels.current=false;setReelsExportRows([]);setReelsExportResults([])
     setReelsExporting(true); setReelsExportError(''); setReelsExportExpected(reelsSelectionCounts(playlistSel.entries).reels)
     setDownloadView('reels'); setPlaylistSel(s => ({ ...s, open: false }))
@@ -647,11 +654,12 @@ export default function Downloader({
         if(stopReels.current||!mounted.current)break
         const owned=new Set(original.playlist.entries.map(e=>e.id))
         const ids=playlistSel.entries.filter(e=>e.checked&&owned.has(e.id)).map(e=>e.id)
+        if (!ids.length) continue
         activeReels.current=source.jobId;setProbeMessage('Đang xuất Facebook Reels…')
         const folderName = source.summary.pageTitle && source.summary.profileId
           ? `${source.summary.pageTitle} - ${source.summary.profileId}`
           : (original.playlist.title && !original.playlist.title.endsWith(' - Reels') ? original.playlist.title : undefined)
-        const response=await window.api.exportFacebookReels(source.jobId,{ids,outputRoot:root,downloadVideos:reelsExportVideo,folderName})
+        const response=await window.api.exportFacebookReels(source.jobId,{ids,outputRoot:root,downloadVideos:reelsExportVideo,...reelsExportParts,folderName})
         if(!response.ok||!response.result)throw Error(response.error??'Không xuất được kết quả Reels.')
         if(mounted.current){const result=response.result;setReelsExportResults(old=>[...old,result]);
           setReelsExportRows(old=>[...old.filter(r=>!result.rows.some(n=>n.id===r.id)),...result.rows])}
@@ -1432,7 +1440,7 @@ export default function Downloader({
 
       </div>
       <div className="download-results-view" hidden={downloadView !== 'reels'}>
-        <FacebookReelsExportResults rows={reelsExportRows} results={reelsExportResults} busy={reelsExporting}
+        <FacebookReelsExportResults selection={{ downloadVideos: reelsExportVideo, ...reelsExportParts }} rows={reelsExportRows} results={reelsExportResults} busy={reelsExporting}
           message={probeMessage} error={reelsExportError} expected={reelsExportExpected}
           onChoose={() => reelsSources.length ? setPlaylistSel(s => ({ ...s, open: true })) : setDownloadView('download')}
           onStop={() => { stopReels.current = true; setProbeMessage('Đang dừng xuất và giữ kết quả…'); if (activeReels.current) void window.api.cancelFacebookReels(activeReels.current) }}/>
@@ -1479,7 +1487,8 @@ export default function Downloader({
       )}
 
       {playlistSel.open && reelsSources.length > 0 && <FacebookReelsSelection entries={playlistSel.entries} sources={reelsSources}
-        busy={probing} error={reelsSelectionError} folder={reelsExportRoot || outputDir} downloadVideos={reelsExportVideo} range={plRange} onRange={setPlRange}
+        busy={probing} error={reelsSelectionError} folder={reelsExportRoot || outputDir} downloadVideos={reelsExportVideo} parts={reelsExportParts}
+        onParts={parts => { setReelsExportCaption(parts.downloadCaptions); setReelsExportArticle(parts.downloadArticles); setReelsExportThumbnail(parts.downloadThumbnails); setReelsExportExcel(parts.exportExcel) }} range={plRange} onRange={setPlRange}
         onApplyRange={applyRange} onToggle={toggleEntry} onAll={setAllEntries} onContinue={source => { setReelsSelectionError(''); void continueReels(source) }}
         onEnrich={() => { setReelsSelectionError(''); void enrichSelectedReels().catch(error => setReelsSelectionError(error instanceof Error ? error.message : 'Không lấy được caption.')) }}
         onFolder={() => { void window.api.chooseFolder().then(dir => { if (dir) setReelsExportRoot(dir) }).catch(error => setReelsSelectionError(error instanceof Error ? error.message : 'Không chọn được thư mục.')) }} onVideo={setReelsExportVideo}
