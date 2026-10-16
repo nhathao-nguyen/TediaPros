@@ -1,0 +1,58 @@
+[
+  {
+    "name": "static",
+    "sourceBytes": 82271,
+    "sourceVideoBitrate": 85682,
+    "plan": {
+      "mode": "balanced",
+      "qualityNvenc": 24,
+      "qualityX264": 22,
+      "gopFrames": 48,
+      "peakBitrate": 2400000,
+      "bufferBits": 4800000,
+      "frameRateForBudget": 24,
+      "encoderPreference": "cpu"
+    },
+    "renders": [
+      {
+        "encoder": "nvenc",
+        "version": "old",
+        "medianMs": 3023.2727,
+        "bytes": 807763,
+        "ssim": 0.996766
+      },
+      {
+        "encoder": "nvenc",
+        "version": "balanced",
+        "medianMs": 2884.567399999998,
+        "bytes": 685038,
+        "ssim": 0.996637,
+        "sizeReductionPct": 15.193194043302306,
+        "timeChangePct": -4.5879189131698865
+      },
+      {
+        "encoder": "cpu",
+        "version": "old",
+        "medianMs": 2920.9051,
+        "bytes": 267564,
+        "ssim": 0.995872
+      },
+      {
+        "encoder": "cpu",
+        "version": "balanced",
+        "medianMs": 3021.1516000000047,
+        "bytes": 268113,
+        "ssim": 0.995766,
+        "sizeReductionPct": -0.20518455397586788,
+        "timeChangePct": 3.4320355015986292
+      }
+    ],
+    "production": {
+      "frames": 96,
+      "durationSeconds": 4,
+      "hasAudio": true,
+      "fullyDecoded": true,
+      "bytes": 268085
+    }
+  }
+]

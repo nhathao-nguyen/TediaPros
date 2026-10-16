@@ -1,0 +1,17 @@
+{
+  "composition": {
+    "packedAlpha": "left",
+    "blendMode": "multiply"
+  },
+  "ok": true,
+  "output": "F:\\Son\\tool\\TediaPros\\.ai\\tasks\\2026-10-13-packed-overlay\\fixed-overlay.mp4",
+  "selectedEncoder": "h264_nvenc",
+  "encoderAttempts": [
+    {
+      "codec": "h264_nvenc",
+      "result": "succeeded",
+      "elapsedMs": 870,
+      "exitCode": 0
+    }
+  ]
+}

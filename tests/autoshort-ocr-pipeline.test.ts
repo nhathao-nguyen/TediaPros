@@ -394,6 +394,7 @@ test('AutoShort anchors OCR and its timed mask to video stream duration when aud
     await mkdir(outDir)
     let ocrDuration: number | undefined
     let maskDuration: number | undefined
+    let burnExpectedDuration: number | undefined
 
     const deps: AutoShortItemCoordinatorDeps = {
       resolveFfmpeg: async () => 'ffmpeg.exe',
@@ -428,7 +429,8 @@ test('AutoShort anchors OCR and its timed mask to video stream duration when aud
           height: 720
         }
       },
-      burn: async () => {
+      burn: async (_req, options) => {
+        burnExpectedDuration = options?.expectedMedia?.durationSeconds
         const output = join(outDir, 'input-phude.mp4')
         await writeFile(output, 'rendered-video')
         return { ok: true, output }
@@ -455,6 +457,7 @@ test('AutoShort anchors OCR and its timed mask to video stream duration when aud
     assert.equal(result.status, 'done')
     assert.equal(ocrDuration, 10)
     assert.equal(maskDuration, 10)
+    assert.equal(burnExpectedDuration, 10)
   } finally {
     await rm(root, { recursive: true, force: true })
   }

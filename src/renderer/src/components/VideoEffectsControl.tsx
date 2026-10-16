@@ -96,7 +96,9 @@ export default function VideoEffectsControl({ value, onChange, disabled, configE
     mattePath?: string,
     blendMode: OverlayBlendMode = 'screen',
     sourceType: 'capcut' | 'saved' = 'capcut',
-    chromaKey?: VideoEffect['chromaKey']
+    chromaKey?: VideoEffect['chromaKey'],
+    layers?: VideoEffect['layers'],
+    packedAlpha?: VideoEffect['packedAlpha']
   ) => {
     const isSelected = value.some(e => e.kind === 'custom_overlay' && e.assetPath === videoPath)
     if (isSelected) {
@@ -115,6 +117,8 @@ export default function VideoEffectsControl({ value, onChange, disabled, configE
           mattePath,
           blendMode,
           chromaKey,
+          layers,
+          packedAlpha,
           name,
           sourceType
         }
@@ -204,11 +208,11 @@ export default function VideoEffectsControl({ value, onChange, disabled, configE
               const isSelected = value.some(item => item.kind === 'custom_overlay' && item.assetPath === eff.videoPath)
               return (
                 <div key={eff.id} className="video-effect-card" aria-pressed={isSelected}
-                  onClick={() => toggleCustomOverlay(eff.name, eff.videoPath, eff.mattePath, eff.blendMode, 'capcut', eff.chromaKey)}>
+                  onClick={() => toggleCustomOverlay(eff.name, eff.videoPath, eff.mattePath, eff.blendMode, 'capcut', eff.chromaKey, eff.layers, eff.packedAlpha)}>
                   {eff.isPro && <span className="video-effects-badge-pro">PRO</span>}
                   {eff.aspectRatio === 'portrait' && <span className="video-effects-badge-ratio">9:16 Dọc</span>}
                   <span className="video-effect-sample">
-                    <VideoEffectsPreview effects={[{ kind: 'custom_overlay', intensity: 80, assetPath: eff.videoPath, blendMode: eff.blendMode, chromaKey: eff.chromaKey }]} width={110} height={80} />
+                    <VideoEffectsPreview effects={[{ kind: 'custom_overlay', intensity: 80, assetPath: eff.videoPath, blendMode: eff.blendMode, chromaKey: eff.chromaKey, layers: eff.layers, packedAlpha: eff.packedAlpha }]} width={110} height={80} />
                   </span>
                   <div style={{ fontWeight: 600, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }} title={eff.name}>
                     {eff.name}
@@ -242,10 +246,10 @@ export default function VideoEffectsControl({ value, onChange, disabled, configE
                 const isSelected = value.some(e => e.kind === 'custom_overlay' && e.assetPath === item.videoPath)
                 return (
                   <div key={item.id} className="video-effect-card" aria-pressed={isSelected}
-                    onClick={() => toggleCustomOverlay(item.name, item.videoPath, item.mattePath, item.blendMode, 'saved', item.chromaKey)}>
+                    onClick={() => toggleCustomOverlay(item.name, item.videoPath, item.mattePath, item.blendMode, 'saved', item.chromaKey, item.layers, item.packedAlpha)}>
                     {item.isPro && <span className="video-effects-badge-pro">PRO</span>}
                     <span className="video-effect-sample">
-                      <VideoEffectsPreview effects={[{ kind: 'custom_overlay', intensity: 80, assetPath: item.videoPath, blendMode: item.blendMode, chromaKey: item.chromaKey }]} width={110} height={80} />
+                      <VideoEffectsPreview effects={[{ kind: 'custom_overlay', intensity: 80, assetPath: item.videoPath, blendMode: item.blendMode, chromaKey: item.chromaKey, layers: item.layers, packedAlpha: item.packedAlpha }]} width={110} height={80} />
                     </span>
                     <div style={{ fontWeight: 600, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }} title={item.name}>
                       {item.name}

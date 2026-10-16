@@ -24,7 +24,7 @@ export type AutoShortValidation =
   | { ok: true; value: AutoShortStartRequest }
   | { ok: false; error: string }
 
-const METHODS = new Set<AutoShortSubtitleMethod>(['whisper', 'ocr', 'whisper-ocr'])
+const METHODS = new Set<AutoShortSubtitleMethod>(['whisper', 'ocr', 'whisper-ocr', 'none'])
 const PROVIDERS = new Set(['gemini', 'openai', 'local', 'gemini-gateway'])
 const DISPLAY_STYLES = new Set<SubtitleDisplayStyle>(['standard', 'word-reveal', 'word-highlight', 'single-word'])
 const LAYOUTS = new Set<SubtitleLayoutProfile>(['readable', 'social', 'vertical'])
@@ -139,7 +139,7 @@ function migrateLegacyConfig(raw: Record<string, unknown>): Record<string, unkno
   return base
 }
 
-function validateConfig(raw: unknown): AutoShortConfig | string {
+export function validateAutoShortConfig(raw: unknown): AutoShortConfig | string {
   if (!isRecord(raw)) return 'Cấu hình Auto Short không hợp lệ.'
   return validateConfigRecord(migrateLegacyConfig(raw))
 }
@@ -155,7 +155,7 @@ function validateConfigRecord(raw: Record<string, unknown>): AutoShortConfig | s
   if (raw.whisperLanguage != null && optionalString(raw.whisperLanguage, 'Ngôn ngữ Whisper', 32)) {
     return 'Ngôn ngữ Whisper không hợp lệ.'
   }
-  if (raw.blurMode !== 'manual' && raw.blurMode !== 'ocr-auto' && raw.blurMode !== 'sttn') {
+  if (raw.blurMode !== 'manual' && raw.blurMode !== 'ocr-auto' && raw.blurMode !== 'sttn' && raw.blurMode !== 'sttn-region' && raw.blurMode !== 'gemini-alpha') {
     return 'Chế độ làm mờ không hợp lệ.'
   }
   if (raw.ocrBlurProfile !== 'accurate' && raw.ocrBlurProfile !== 'fast') {
@@ -165,6 +165,7 @@ function validateConfigRecord(raw: Record<string, unknown>): AutoShortConfig | s
     return 'Chế độ đặt phụ đề không hợp lệ.'
   }
   if (raw.subtitlePlacementMode === 'ocr-dominant') {
+    if (raw.blurMode === 'sttn-region' || raw.blurMode === 'gemini-alpha') return 'Xóa vùng thủ công cần đặt phụ đề thủ công.'
     if (raw.lamMo !== true || (raw.blurMode !== 'ocr-auto' && raw.blurMode !== 'sttn')) {
       return 'Tự đặt phụ đề theo OCR cần bật Tự động OCR hoặc STTN.'
     }
@@ -175,7 +176,7 @@ function validateConfigRecord(raw: Record<string, unknown>): AutoShortConfig | s
       return 'Tự đặt phụ đề theo OCR cần một vùng phụ đề dự phòng hợp lệ.'
     }
   }
-  if (raw.lamMo === true && (raw.blurMode === 'ocr-auto' || raw.blurMode === 'sttn')) {
+  if (raw.lamMo === true && (raw.blurMode === 'ocr-auto' || (raw.blurMode === 'sttn' || raw.blurMode === 'sttn-region' || raw.blurMode === 'gemini-alpha'))) {
     if (!isRecord(raw.ocrRegion) || region(raw.ocrRegion, 'Vùng OCR') !== null) {
       return 'Tự động OCR cần một vùng OCR hợp lệ.'
     }
@@ -395,7 +396,7 @@ function validateConfigRecord(raw: Record<string, unknown>): AutoShortConfig | s
     ...(typeof raw.videoSpeedPreservePitch === 'boolean' ? { videoSpeedPreservePitch: raw.videoSpeedPreservePitch } : {}),
     ...(typeof raw.openingFlash === 'boolean' ? { openingFlash: raw.openingFlash } : {}),
     ...(typeof raw.openingZoom === 'boolean' ? { openingZoom: raw.openingZoom } : {}),
-    blurRegions: raw.lamMo === true && raw.blurMode === 'sttn' ? [] : raw.blurRegions as AutoShortBlurRegion[],
+    blurRegions: raw.lamMo === true && (raw.blurMode === 'sttn' || raw.blurMode === 'sttn-region' || raw.blurMode === 'gemini-alpha') ? [] : raw.blurRegions as AutoShortBlurRegion[],
     ocrRegion: (raw.ocrRegion as AutoShortNormalizedRegion | null | undefined) ?? null,
     subRegion: (raw.subRegion as AutoShortNormalizedRegion | null | undefined) ?? null,
     subtitlePlacementMode: raw.subtitlePlacementMode as AutoShortConfig['subtitlePlacementMode'],
@@ -438,7 +439,7 @@ export function validateAutoShortStartRequest(raw: unknown): AutoShortValidation
     }
     items.push({ id, filePath, ...(temporalEdit ? { temporalEdit } : {}) })
   }
-  const config = validateConfig(raw.config)
+  const config = validateAutoShortConfig(raw.config)
   if (typeof config === 'string') return { ok: false, error: config }
   const backgroundMusic = config.backgroundMusic
   if (backgroundMusic) {

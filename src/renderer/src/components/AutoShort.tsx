@@ -51,7 +51,7 @@ import { translationGuidanceError, type TranslationGuidance, type TranslationTon
 import type { AutoShortChannelPreset } from '../../../shared/channelPreset'
 import { createDefaultChannelPreset, DEFAULT_CHANNEL_PRESET_ID } from '../../../shared/channelPreset'
 import { ChannelPresetManager } from './ChannelPresetManager'
-import { isAutomaticOcrProcessing, isSttnRemoval, normalizeAutoShortBlurMode, normalizeAutoShortOcrBlurProfile } from '../../../shared/autoShortOcrBlur'
+import { isAutomaticOcrProcessing, isAlphaRemoval, isSttnRemoval, normalizeAutoShortBlurMode, normalizeAutoShortOcrBlurProfile } from '../../../shared/autoShortOcrBlur'
 import { effectiveAutoShortSubtitlePlacementMode } from '../../../shared/autoShortSubtitlePlacement'
 import { createAutoShortMusicAssignments } from '../../../shared/autoShortBackgroundMusic'
 import { localMediaSource } from '../lib/localMedia'
@@ -129,7 +129,7 @@ export interface ThumbnailPresetOption {
   accentColor: string
 }
 
-export const THUMBNAIL_PRESET_OPTIONS: readonly ThumbnailPresetOption[] = [
+const THUMBNAIL_PRESET_OPTIONS: readonly ThumbnailPresetOption[] = [
   {
     id: 'random',
     label: '🎲 NGẪU NHIÊN',
@@ -392,7 +392,15 @@ const AutoShortTaskCard = memo(function AutoShortTaskCard({
         {task.error && <div className="queue-item-msg" style={{ color: 'var(--danger)' }}>{task.error}</div>}
         {task.recovery && task.status === 'error' && (
           <div className="queue-item-msg small" style={{ color: 'var(--danger)' }}>
-            Phục hồi thời lượng lượt {task.recovery.attempt}/2
+            {task.recovery.kind === 'dubbing-duration'
+              ? `Phục hồi thời lượng lượt ${task.recovery.attempt}/2`
+              : task.recovery.kind === 'provider-throttled'
+                ? `Giới hạn tần suất dịch (lượt ${task.recovery.attempt})`
+                : task.recovery.kind === 'provider-transient'
+                  ? `Dịch tạm lỗi (lượt ${task.recovery.attempt})`
+                  : task.recovery.kind === 'tts-quality'
+                    ? `Phục hồi chất lượng giọng đọc lượt ${task.recovery.attempt}/2`
+                    : `Thử lại lượt ${task.recovery.attempt}/2`}
             {task.recovery.cueId ? ` · ${task.recovery.cueId}` : ''}
             {task.recovery.missingSeconds != null ? ` · thiếu ${task.recovery.missingSeconds.toFixed(2)} giây` : ''}
             {task.recovery.requiredPercent != null ? ` · cần ${task.recovery.requiredPercent.toFixed(1)}%` : ''}
@@ -617,9 +625,9 @@ export default function AutoShort({ onOpenSpeedModal }: AutoShortProps = {}): JS
   const transport = useVideoTransport(videoRef, previewPath)
 
   // Subtitle Region & Styles
-  const [subtitleRegion, setSubtitleRegion] = useState<AutoShortNormalizedRegion | undefined>()
+  const [subtitleRegion, setSubtitleRegion] = usePersistedState<AutoShortNormalizedRegion | undefined>('tblao.autoshort.subtitleRegion.v1', undefined)
   // OCR source region is independent from the output subtitle safe-area.
-  const [ocrRegion, setOcrRegion] = useState<AutoShortNormalizedRegion | undefined>()
+  const [ocrRegion, setOcrRegion] = usePersistedState<AutoShortNormalizedRegion | undefined>('tblao.autoshort.ocrRegion.v1', undefined)
   const [fontId, setFontId] = usePersistedState('tblao.autoshort.fontId', 'auto')
   const [fontWeight, setFontWeight] = usePersistedState('tblao.autoshort.fontWeight', 400)
   const [fonts, setFonts] = useState<BurnFontEntry[]>([])
@@ -714,7 +722,7 @@ export default function AutoShort({ onOpenSpeedModal }: AutoShortProps = {}): JS
   const [showKeyText, setShowKeyText] = useState(false)
 
   // Blur Regions
-  const [blurEnabled, setBlurEnabled] = useState(true)
+  const [blurEnabled, setBlurEnabled] = usePersistedState('tblao.autoshort.blurEnabled.v1', true)
   const [blurModeRaw, setBlurModeRaw] = usePersistedState<AutoShortBlurMode>(
     'tblao.autoshort.blurMode',
     'manual'
@@ -735,7 +743,7 @@ export default function AutoShort({ onOpenSpeedModal }: AutoShortProps = {}): JS
     if (ocrBlurProfileRaw !== ocrBlurProfile) setOcrBlurProfileRaw(ocrBlurProfile)
   }, [blurMode, blurModeRaw, ocrBlurProfile, ocrBlurProfileRaw, setBlurModeRaw, setOcrBlurProfileRaw])
 
-  const [blurRegions, setBlurRegions] = useState<AutoShortBlurRegion[]>([])
+  const [blurRegions, setBlurRegions] = usePersistedState<AutoShortBlurRegion[]>('tblao.autoshort.blurRegions.v1', [])
   const [activeBlurId, setActiveBlurId] = useState<string | null>(null)
 
   const automaticProcessing = isAutomaticOcrProcessing({ lamMo: blurEnabled, blurMode })
@@ -744,6 +752,7 @@ export default function AutoShort({ onOpenSpeedModal }: AutoShortProps = {}): JS
     automaticProcessing
   )
   const sttnRemoval = isSttnRemoval({ lamMo: blurEnabled, blurMode })
+  const alphaRemoval = isAlphaRemoval({ lamMo: blurEnabled, blurMode })
   const subtitleUsesOcr = subtitleMethod === 'ocr' || subtitleMethod === 'whisper-ocr'
   const subtitlePixelRegion = useMemo(
     () => subtitleRegion ? autoShortNormalizedRegionToPixels(subtitleRegion, videoW, videoH) : null,
@@ -1289,7 +1298,7 @@ export default function AutoShort({ onOpenSpeedModal }: AutoShortProps = {}): JS
   const refreshAutoShortReadiness = useCallback(async (preview = false): Promise<AutoShortReadiness | null> => {
     try {
       const next = await window.api.autoShortGetReadiness({
-        subtitleMethod: preview ? 'ocr' : subtitleMethod,
+        subtitleMethod: preview ? (alphaRemoval ? 'none' : 'ocr') : subtitleMethod,
         whisperModel: selectedWhisperModel,
         whisperDevice,
         lamMo: blurEnabled,
@@ -1304,7 +1313,7 @@ export default function AutoShort({ onOpenSpeedModal }: AutoShortProps = {}): JS
       setReadiness(null)
       return null
     }
-  }, [selectedWhisperModel, subtitleMethod, whisperDevice, blurEnabled, blurMode, ocrBlurProfile, audioMode, separationPreset])
+  }, [selectedWhisperModel, subtitleMethod, whisperDevice, blurEnabled, blurMode, ocrBlurProfile, audioMode, separationPreset, alphaRemoval])
 
   useEffect(() => {
     let active = true
@@ -1648,6 +1657,126 @@ export default function AutoShort({ onOpenSpeedModal }: AutoShortProps = {}): JS
     }
   }
 
+  const buildCurrentConfig = (backgroundMusicConfig?: AutoShortBackgroundMusicConfig, itemCount = 2): AutoShortConfig => {
+    const sub = subtitleRegion && clampAutoShortNormalizedRegion(subtitleRegion)
+    const ocr = ocrRegion && clampAutoShortNormalizedRegion(ocrRegion)
+    const normalizedBlurs = blurRegions.flatMap(region => {
+      const normalized = clampAutoShortNormalizedRegion(region)
+      return normalized ? [{ ...normalized, id: region.id, color: region.color }] : []
+    })
+    const activeClonedVoice = clonedVoices.find(cv => `clone:${cv.id}` === ttsVoice || cv.id === ttsVoice)
+    const guidance = parseTranslationGuidance(translationSynopsis, translationGlossaryText, translationTone, customToneInstruction)
+return {
+        portraitBlur,
+        videoAdjustments: normalizedVideoAdjustments,
+        ...(effectsState.error || effectsState.value.length ? { videoEffects: effectsState.error ? videoEffects : effectsState.value } : {}),
+        ...(overlayState.error || overlayState.value.image || overlayState.value.text
+          ? { overlays: overlayState.error ? overlaySettings : overlayState.value } : {}),
+        subtitleMethod,
+        whisperModel: selectedWhisperModel,
+        whisperDevice,
+        whisperLanguage: whisperLanguage.trim() || 'auto',
+        ocrRegion: ocr,
+        blurRegions: normalizedBlurs,
+        lamMo: blurEnabled,
+        blurMode,
+        ocrBlurProfile,
+        subRegion: sub,
+        subtitlePlacementMode: effectiveSubtitlePlacementMode,
+        fontId: fontId === 'auto' ? null : fontId,
+        textColor,
+        outlineColor,
+        outlinePx: Math.min(8, outlinePx),
+        bgEnabled,
+        bgColor,
+        bgOpacity,
+        subtitleDisplayStyle: (subtitleMethod === 'ocr' && !ttsEnabled) ? 'standard' : displayStyle,
+        subtitleFontSize: fontSize > 0 ? fontSize : undefined,
+        subtitleFontWeight: fontWeight,
+        subtitleTextCase,
+        subtitleFontScale: fontSize > 0 ? fontSize / SUBTITLE_STYLE_REFERENCE_HEIGHT : undefined,
+        highlightColor,
+        subtitleHighlightPop: highlightPop,
+        highlightBgEnabled,
+        highlightBgColor,
+        subtitleLayoutProfile: layoutProfile,
+        subtitleAutoOptimize: autoOptimize,
+        outlineScale: outlinePx / SUBTITLE_STYLE_REFERENCE_HEIGHT,
+        translateTarget,
+        translateProvider,
+        translateServerUrl: translateProvider === 'local'
+          ? ttsServerUrl
+          : translateProvider === 'gemini-gateway' ? geminiGatewayUrl : undefined,
+        translationGuidance: translateTarget !== 'none' ? guidance.value : undefined,
+        videoTitle: titleEnabled ? {
+          provider: titleProvider,
+          language: titleLanguage,
+          serverUrl: titleProvider === 'local'
+            ? (titleServerUrl.trim() || undefined)
+            : titleProvider === 'gemini-gateway'
+              ? (titleServerUrl.trim() || geminiGatewayUrl.trim() || undefined)
+              : undefined,
+          seo: titleSeoOptions
+        } : undefined,
+        ttsEnabled,
+        ...(ttsEnabled && ttsProvider === 'edge-tts' ? { ttsProvider } : {}),
+        ttsServerUrl: ttsEnabled && ttsProvider === 'local-tts' ? (ttsServerUrl.trim() || undefined) : undefined,
+        ttsModel: ttsEnabled ? (ttsProvider === 'edge-tts' ? 'edge-tts' : (ttsModel.trim() || undefined)) : undefined,
+        ttsVoice: ttsEnabled
+          ? (ttsProvider === 'edge-tts'
+            ? (edgeVoice.trim() || undefined)
+            : (activeClonedVoice ? activeClonedVoice.name : (ttsVoice.trim() || undefined)))
+          : undefined,
+        ttsRefAudioPath: ttsEnabled && ttsProvider === 'local-tts' && activeClonedVoice ? activeClonedVoice.referenceAudioPath : undefined,
+        ttsRefTranscript: ttsEnabled && ttsProvider === 'local-tts' && activeClonedVoice ? activeClonedVoice.referenceTranscript : undefined,
+        ttsLanguage: ttsEnabled ? (translateTarget !== 'none' ? translateTarget : whisperLanguage.trim() || undefined) : undefined,
+        ttsSpeed,
+        paceMode,
+        voiceOverMode,
+        audioMode,
+        separationPreset: audioMode === 'separate-vocals' ? separationPreset : undefined,
+        originalAudioVolume,
+        backgroundMusic: backgroundMusicConfig,
+        executionPolicy: {
+          ...(ttsProvider === 'edge-tts' ? { edgeTtsConcurrency } : {}),
+          maxActiveItems: itemCount >= 2 ? 2 : 1,
+          overlapIndependentStages: true
+        },
+        thumbnailConfig: batchAutoThumbnail ? {
+          enabled: true,
+          mode: batchThumbnailMode,
+          cleanSubtitles: thumbnailCleanSubtitles,
+          style: thumbnailStyle,
+          position: thumbnailPosition,
+          fontSize: thumbnailFontSize,
+          autoTitleFromAi: thumbnailAutoTitle
+        } : undefined,
+        outputDir,
+        videoSpeed: Math.abs(videoSpeed - 1.0) >= 0.01 ? videoSpeed : undefined,
+        videoSpeedPreservePitch,
+        openingZoom,
+        openingFlash
+      }
+  }
+  const workflowMusic: AutoShortBackgroundMusicConfig | undefined = audioMode === 'replace' && backgroundMusicEnabled ? {
+    folderPath: backgroundMusicFolder, mode: backgroundMusicMode, volume: backgroundMusicVolume,
+    assignments: backgroundMusicMode === 'per-video' ? backgroundMusicAssignments : Object.fromEntries(
+      (backgroundMusicMode === 'single' ? [backgroundMusicSingleTrack] : backgroundMusicTracks.map(t => t.path))
+        .map((path, index) => [`workflow-${index}`, path]))
+  } : undefined
+  const workflowSnapshot = JSON.stringify(buildCurrentConfig(workflowMusic))
+  const workflowGuidance = parseTranslationGuidance(translationSynopsis, translationGlossaryText, translationTone, customToneInstruction)
+  const workflowValidationError = translateTarget !== 'none' && workflowGuidance.error ? workflowGuidance.error : undefined
+  const [workflowSyncError, setWorkflowSyncError] = useState('')
+  useEffect(() => {
+    let current = true
+    if (!window.api.autoShortSaveWorkflowConfig) return
+    void window.api.autoShortSaveWorkflowConfig(JSON.parse(workflowSnapshot), workflowValidationError).then(result => {
+      if (current) setWorkflowSyncError(result.ok ? '' : result.error || 'Không lưu được cấu hình workflow.')
+    }).catch(error => { if (current) setWorkflowSyncError(String(error)) })
+    return () => { current = false }
+  }, [workflowSnapshot, workflowValidationError])
+
   // Khởi động chạy hàng loạt Auto Short
   const startBatch = async (resume?: BatchSnapshot, explicitRetryIds?: ReadonlySet<string>): Promise<void> => {
     if (isStartingRef.current || isStarting || isRunning || sttnPreviewRunning) return
@@ -1761,99 +1890,11 @@ export default function AutoShort({ onOpenSpeedModal }: AutoShortProps = {}): JS
         currentStepMessage: 'Đang trong hàng đợi…'
       }) : t))
 
-      const config: AutoShortConfig = {
-        portraitBlur,
-        videoAdjustments: normalizedVideoAdjustments,
-        ...(effectsState.error || effectsState.value.length ? { videoEffects: effectsState.error ? videoEffects : effectsState.value } : {}),
-        ...(overlayState.error || overlayState.value.image || overlayState.value.text
-          ? { overlays: overlayState.error ? overlaySettings : overlayState.value } : {}),
-        subtitleMethod,
-        whisperModel: selectedWhisperModel,
-        whisperDevice,
-        whisperLanguage: whisperLanguage.trim() || 'auto',
-        ocrRegion: ocr,
-        blurRegions: normalizedBlurs,
-        lamMo: blurEnabled,
-        blurMode,
-        ocrBlurProfile,
-        subRegion: sub,
-        subtitlePlacementMode: effectiveSubtitlePlacementMode,
-        fontId: fontId === 'auto' ? null : fontId,
-        textColor,
-        outlineColor,
-        outlinePx: Math.min(8, outlinePx),
-        bgEnabled,
-        bgColor,
-        bgOpacity,
-        subtitleDisplayStyle: (subtitleMethod === 'ocr' && !ttsEnabled) ? 'standard' : displayStyle,
-        subtitleFontSize: fontSize > 0 ? fontSize : undefined,
-        subtitleFontWeight: fontWeight,
-        subtitleTextCase,
-        subtitleFontScale: fontSize > 0 ? fontSize / SUBTITLE_STYLE_REFERENCE_HEIGHT : undefined,
-        highlightColor,
-        subtitleHighlightPop: highlightPop,
-        highlightBgEnabled,
-        highlightBgColor,
-        subtitleLayoutProfile: layoutProfile,
-        subtitleAutoOptimize: autoOptimize,
-        outlineScale: outlinePx / SUBTITLE_STYLE_REFERENCE_HEIGHT,
-        translateTarget,
-        translateProvider,
-        translateServerUrl: translateProvider === 'local'
-          ? ttsServerUrl
-          : translateProvider === 'gemini-gateway' ? geminiGatewayUrl : undefined,
-        translationGuidance: translateTarget !== 'none' ? guidance.value : undefined,
-        videoTitle: titleEnabled ? {
-          provider: titleProvider,
-          language: titleLanguage,
-          serverUrl: titleProvider === 'local'
-            ? (titleServerUrl.trim() || undefined)
-            : titleProvider === 'gemini-gateway'
-              ? (titleServerUrl.trim() || geminiGatewayUrl.trim() || undefined)
-              : undefined,
-          seo: titleSeoOptions
-        } : undefined,
-        ttsEnabled,
-        ...(ttsEnabled && ttsProvider === 'edge-tts' ? { ttsProvider } : {}),
-        ttsServerUrl: ttsEnabled && ttsProvider === 'local-tts' ? (ttsServerUrl.trim() || undefined) : undefined,
-        ttsModel: ttsEnabled ? (ttsProvider === 'edge-tts' ? 'edge-tts' : (ttsModel.trim() || undefined)) : undefined,
-        ttsVoice: ttsEnabled
-          ? (ttsProvider === 'edge-tts'
-            ? (edgeVoice.trim() || undefined)
-            : (activeClonedVoice ? activeClonedVoice.name : (ttsVoice.trim() || undefined)))
-          : undefined,
-        ttsRefAudioPath: ttsEnabled && ttsProvider === 'local-tts' && activeClonedVoice ? activeClonedVoice.referenceAudioPath : undefined,
-        ttsRefTranscript: ttsEnabled && ttsProvider === 'local-tts' && activeClonedVoice ? activeClonedVoice.referenceTranscript : undefined,
-        ttsLanguage: ttsEnabled ? (translateTarget !== 'none' ? translateTarget : whisperLanguage.trim() || undefined) : undefined,
-        ttsSpeed,
-        paceMode,
-        voiceOverMode,
-        audioMode,
-        separationPreset: audioMode === 'separate-vocals' ? separationPreset : undefined,
-        originalAudioVolume,
-        backgroundMusic: backgroundMusicConfig,
-        executionPolicy: {
-          ...(ttsProvider === 'edge-tts' ? { edgeTtsConcurrency } : {}),
-          maxActiveItems: runnableTasks.length >= 2 ? 2 : 1,
-          overlapIndependentStages: true
-        },
-        thumbnailConfig: batchAutoThumbnail ? {
-          enabled: true,
-          mode: batchThumbnailMode,
-          cleanSubtitles: thumbnailCleanSubtitles,
-          style: thumbnailStyle,
-          position: thumbnailPosition,
-          fontSize: thumbnailFontSize,
-          autoTitleFromAi: thumbnailAutoTitle
-        } : undefined,
-        outputDir,
-        videoSpeed: Math.abs(videoSpeed - 1.0) >= 0.01 ? videoSpeed : undefined,
-        videoSpeedPreservePitch,
-        openingZoom,
-        openingFlash
-      }
+      const config = buildCurrentConfig(backgroundMusicConfig, runnableTasks.length)
 
       try {
+        const saved = await window.api.autoShortSaveWorkflowConfig(config)
+        if (!saved.ok) throw Error(saved.error || 'Không lưu được cấu hình workflow.')
         const started = resume
           ? await window.api.autoShortResume({ jobId: resume.jobId, expectedRevision: resume.revision, config })
           : await window.api.autoShortStart({
@@ -1863,7 +1904,9 @@ export default function AutoShort({ onOpenSpeedModal }: AutoShortProps = {}): JS
           })
         if (!started.ok) {
           if (started.error?.includes('Đang có một Auto Short job khác chạy')) {
-            setIsRunning(true)
+            setIsRunning(false)
+            setOverallProgress(prev => ({ ...prev, message: started.error }))
+            setTasks(prev => prev.map(t => runnableIds.has(t.id) ? { ...t, status: 'idle', currentStepMessage: started.error } : t))
             return
           }
           setIsRunning(false)
@@ -1983,7 +2026,7 @@ export default function AutoShort({ onOpenSpeedModal }: AutoShortProps = {}): JS
   }
 
   const startSttnPreview = async (): Promise<void> => {
-    if (!selectedTask || !sttnRemoval || isRunning || sttnPreviewRunning) return
+    if (!selectedTask || (!sttnRemoval && !alphaRemoval) || isRunning || sttnPreviewRunning) return
     const videoPathSnapshot = selectedTask.filePath
     const scan = ocrRegion && clampAutoShortNormalizedRegion(ocrRegion)
     if (!scan || videoW <= 0 || videoH <= 0) {
@@ -2009,8 +2052,8 @@ export default function AutoShort({ onOpenSpeedModal }: AutoShortProps = {}): JS
         previewSeconds: 5,
         ...(selectedTask.temporalEdit ? { temporalEdit: selectedTask.temporalEdit } : {}),
         config: {
-          subtitleMethod: 'ocr', whisperModel: selectedWhisperModel, whisperDevice,
-          lamMo: true, blurMode: 'sttn', ocrBlurProfile: 'accurate', blurRegions: [],
+          subtitleMethod: alphaRemoval ? 'none' : 'ocr', whisperModel: selectedWhisperModel, whisperDevice,
+          lamMo: true, blurMode, ocrBlurProfile: 'accurate', blurRegions: [],
           ocrRegion: scan,
           translateTarget: 'none', translateProvider: 'local', ttsEnabled: false,
           voiceOverMode: false, audioMode: 'replace', originalAudioVolume: 1,
@@ -2036,7 +2079,7 @@ export default function AutoShort({ onOpenSpeedModal }: AutoShortProps = {}): JS
     setDependencyProgress({})
     try {
       const result = await window.api.autoShortInstallDependencies({
-        subtitleMethod: dependencyAction === 'preview' ? 'ocr' : subtitleMethod,
+        subtitleMethod: dependencyAction === 'preview' ? (alphaRemoval ? 'none' : 'ocr') : subtitleMethod,
         whisperModel: selectedWhisperModel,
         whisperDevice,
         lamMo: blurEnabled,
@@ -2120,6 +2163,9 @@ export default function AutoShort({ onOpenSpeedModal }: AutoShortProps = {}): JS
     <div className="video-editor autoshort-page" style={{ gridTemplateRows: 'minmax(0, 1fr) auto' }}>
       {/* KHU VỰC CHÍNH: 2 CỘT (TRÁI: BẢN XEM TRƯỚC, PHẢI: INSPECTOR) */}
       <div className="editor-workspace">
+        {workflowSyncError && <div role="status" style={{ gridColumn: '1 / -1', color: 'var(--text-muted)' }}>
+          Workflow tự động cần cấu hình hợp lệ: {workflowSyncError}
+        </div>}
 
         {/* ========================================================================= */}
         {/* CỘT TRÁI: BẢN XEM TRƯỚC VIDEO (CHUẨN 3 HÀNG GRID, TỰ ĐỘNG SCALE VỪA VẶN) */}
@@ -2296,8 +2342,8 @@ export default function AutoShort({ onOpenSpeedModal }: AutoShortProps = {}): JS
                     updateRegion={updateBlurRegion}
                     removeRegion={removeBlurRegion}
                     blurInteractive={tool === 'blur' && blurMode === 'manual'}
-                    hienSubBox={true}
-                    subInteractive={tool === 'subtitle'}
+                    hienSubBox={subtitleMethod !== 'none'}
+                    subInteractive={tool === 'subtitle' && subtitleMethod !== 'none'}
                     subRegion={subtitlePixelRegion || undefined}
                     setSubRegion={updateSubRegionClamped}
                     hienOcrBox={showOcrScanRegion}
@@ -2655,7 +2701,8 @@ export default function AutoShort({ onOpenSpeedModal }: AutoShortProps = {}): JS
                       [
                         ['whisper', '🎙️ Whisper', 'Nhận diện âm thanh chuẩn xác'],
                         ['ocr', '🔍 OCR (Đọc chữ video)', 'Quét trực tiếp chữ trên khung hình'],
-                        ['whisper-ocr', '✨ Whisper + OCR', 'Kết hợp nhận diện âm thanh & hình ảnh']
+                        ['whisper-ocr', '✨ Whisper + OCR', 'Kết hợp nhận diện âm thanh & hình ảnh'],
+                        ['none', '🚫 Không dùng phụ đề', 'Tắt nhận diện và không gắn phụ đề lên video']
                       ] as const
                     ).map(([value, label, note]) => (
                       <label
@@ -2678,7 +2725,7 @@ export default function AutoShort({ onOpenSpeedModal }: AutoShortProps = {}): JS
                     ))}
                   </div>
 
-                  {subtitleMethod !== 'ocr' && (
+                  {subtitleMethod !== 'ocr' && subtitleMethod !== 'none' && (
                     <label className="field editor-field" style={{ marginTop: 6 }}>
                       <span>Mô hình Whisper</span>
                       <select value={selectedWhisperModel} onChange={(e) => setWhisperModel(e.target.value)}>
@@ -2691,7 +2738,7 @@ export default function AutoShort({ onOpenSpeedModal }: AutoShortProps = {}): JS
                     </label>
                   )}
 
-                  {subtitleMethod !== 'ocr' && (
+                  {subtitleMethod !== 'ocr' && subtitleMethod !== 'none' && (
                     <label className="field editor-field" style={{ marginTop: 6 }}>
                       <span>Thiết bị Whisper</span>
                       <select value={whisperDevice} onChange={(e) => setWhisperDevice(e.target.value as WhisperDevice)}>
@@ -2701,7 +2748,24 @@ export default function AutoShort({ onOpenSpeedModal }: AutoShortProps = {}): JS
                     </label>
                   )}
 
-                  <div className="editor-section-divider" style={{ margin: '14px 0', borderBottom: '1px solid var(--border)' }} />
+                  {subtitleMethod === 'none' ? (
+                    <div style={{
+                      marginTop: 16,
+                      padding: '16px 14px',
+                      borderRadius: 8,
+                      background: 'rgba(255, 255, 255, 0.04)',
+                      border: '1px dashed var(--border)',
+                      textAlign: 'center'
+                    }}>
+                      <div style={{ fontSize: 26, marginBottom: 6 }}>🚫</div>
+                      <strong style={{ display: 'block', marginBottom: 4, fontSize: 13 }}>Đang chọn: Không dùng phụ đề</strong>
+                      <p className="muted small" style={{ margin: 0, lineHeight: 1.4 }}>
+                        Video xuất ra sẽ không gắn phụ đề. Toàn bộ các bước trích xuất lời thoại, dịch AI và burn chữ lên video sẽ được tự động bỏ qua.
+                      </p>
+                    </div>
+                  ) : (
+                    <>
+                      <div className="editor-section-divider" style={{ margin: '14px 0', borderBottom: '1px solid var(--border)' }} />
 
                   {/* 2. Dịch phụ đề AI */}
                   <div className="editor-section-head">
@@ -2985,7 +3049,7 @@ export default function AutoShort({ onOpenSpeedModal }: AutoShortProps = {}): JS
                         <input
                           type="checkbox"
                           checked={subtitlePlacementMode === 'ocr-dominant'}
-                          disabled={!automaticProcessing}
+                          disabled={!automaticProcessing || blurMode === 'sttn-region' || alphaRemoval}
                           onChange={(event) => setSubtitlePlacementMode(event.target.checked ? 'ocr-dominant' : 'manual')}
                         />
                         <span>{subtitlePlacementMode === 'ocr-dominant' ? 'Bật' : 'Tắt'}</span>
@@ -3283,6 +3347,8 @@ export default function AutoShort({ onOpenSpeedModal }: AutoShortProps = {}): JS
                       </label>
                     </div>
                   )}
+                    </>
+                  )}
                 </>
               )}
 
@@ -3327,16 +3393,35 @@ export default function AutoShort({ onOpenSpeedModal }: AutoShortProps = {}): JS
                       />
                       <span>Tự động OCR</span>
                     </label>
-                    <label className={`autoshort-blur-mode-option ${blurMode === 'sttn' ? 'selected' : ''}`}>
+                    <label className={`autoshort-blur-mode-option ${sttnRemoval ? 'selected' : ''}`}>
                       <input type="radio" name="autoshort-blur-mode" value="sttn"
-                        checked={blurMode === 'sttn'} onChange={() => setBlurModeRaw('sttn')} />
+                        checked={sttnRemoval} onChange={() => setBlurModeRaw('sttn')} />
                       <span>Xóa phụ đề AI (STTN)</span>
+                    </label>
+                    <label className={`autoshort-blur-mode-option ${alphaRemoval ? 'selected' : ''}`}>
+                      <input type="radio" name="autoshort-blur-mode" value="gemini-alpha" checked={alphaRemoval}
+                        onChange={() => { setBlurModeRaw('gemini-alpha'); setSubtitlePlacementMode('manual') }} />
+                      <span>Logo Gemini cố định · Alpha</span>
                     </label>
                   </div>
 
-                  {blurMode === 'sttn' ? (
+                  {alphaRemoval ? (
+                    <div className="autoshort-ocr-blur-settings">
+                      <p>Mẫu đã hiệu chỉnh cho logo cố định trên video 720×1280. Khoanh vùng bao phủ logo góc dưới phải. Tool kiểm tra mẫu trước khi khử Alpha và làm sạch viền; mẫu không khớp sẽ dừng.</p>
+                      <p>Không cần tải model. Chi tiết nền được giữ ngoài vùng logo; hãy xem thử để kiểm tra viền và màu nền.</p>
+                      <button className="btn editor-wide-action" type="button"
+                        disabled={!selectedTask || sttnPreviewRunning || dependencyInstalling}
+                        onClick={() => void startSttnPreview()}>Xem thử Alpha · 5 giây đầu</button>
+                      {sttnPreviewProgress && <div className="muted small" role="status">{sttnPreviewProgress.message}</div>}
+                      {sttnPreviewPath && <button className="btn ghost sm" type="button" onClick={() => void window.api.openPath(sttnPreviewPath)}>Mở bản xem thử</button>}
+                    </div>
+                  ) : sttnRemoval ? (
                     <div className="autoshort-ocr-blur-settings">
                       <div className="autoshort-ocr-blur-explain">
+                        <label><input type="checkbox" checked={blurMode === 'sttn-region'}
+                          onChange={e => { setBlurModeRaw(e.target.checked ? 'sttn-region' : 'sttn'); if (e.target.checked) setSubtitlePlacementMode('manual') }} />
+                          Xóa logo/vùng khoanh suốt video</label>
+                        {blurMode === 'sttn-region' && <p>Kéo vùng nét đứt ôm sát logo. AI phục hồi toàn bộ vùng khoanh suốt video, không cần OCR nhận ra chữ. Logo di chuyển cần nằm trong vùng này.</p>}
                         <p>STTN dùng các khung hình lân cận để phục hồi nền tại vị trí chữ. Luôn quét OCR Chính xác để xác định vị trí và thời gian xuất hiện.</p>
                         <p>Kéo vùng nét đứt bao phủ chữ gốc cần xóa. Phụ đề nguồn được nhận diện trước khi xóa để tiếp tục dịch, tạo tiêu đề và lồng tiếng.</p>
                         <p>Engine và model STTN được tải riêng khi cần; bản CUDA cần khoảng 4,5 GiB dung lượng cài đặt, cộng thêm chỗ trống xử lý video. Hãy xem thử 5 giây đầu để đánh giá nền và chuyển động trước khi chạy toàn bộ.</p>
@@ -3455,6 +3540,22 @@ export default function AutoShort({ onOpenSpeedModal }: AutoShortProps = {}): JS
                       <span>{ttsEnabled ? 'Bật' : 'Tắt'}</span>
                     </label>
                   </div>
+
+                  {subtitleMethod === 'none' && ttsEnabled && (
+                    <div style={{
+                      marginTop: 8,
+                      marginBottom: 8,
+                      padding: '8px 12px',
+                      borderRadius: 6,
+                      background: 'rgba(239, 68, 68, 0.1)',
+                      border: '1px solid rgba(239, 68, 68, 0.3)',
+                      color: '#f87171',
+                      fontSize: 12,
+                      lineHeight: 1.4
+                    }}>
+                      ⚠️ Tab Phụ đề đang chọn "Không dùng phụ đề" nên sẽ không có câu thoại để lồng tiếng. Hãy chọn Whisper hoặc OCR nếu muốn dùng tính năng này.
+                    </div>
+                  )}
 
                   <label className="field editor-field">
                     <span>Động cơ giọng đọc (TTS Provider)</span>

@@ -1,0 +1,57 @@
+[
+  {
+    "name": "motion",
+    "sourceBytes": 804288,
+    "sourceVideoBitrate": 1530036,
+    "plan": {
+      "mode": "balanced",
+      "qualityNvenc": 24,
+      "qualityX264": 22,
+      "gopFrames": 48,
+      "peakBitrate": 2700000,
+      "bufferBits": 5400000,
+      "frameRateForBudget": 24
+    },
+    "renders": [
+      {
+        "encoder": "nvenc",
+        "version": "old",
+        "medianMs": 2915.040799999999,
+        "bytes": 1870228,
+        "ssim": 0.994834
+      },
+      {
+        "encoder": "nvenc",
+        "version": "balanced",
+        "medianMs": 2883.068800000001,
+        "bytes": 1444549,
+        "ssim": 0.993578,
+        "sizeReductionPct": 22.7608077731699,
+        "timeChangePct": -1.0967942541318054
+      },
+      {
+        "encoder": "cpu",
+        "version": "old",
+        "medianMs": 3077.2752,
+        "bytes": 1338001,
+        "ssim": 0.993556
+      },
+      {
+        "encoder": "cpu",
+        "version": "balanced",
+        "medianMs": 3168.8660999999993,
+        "bytes": 1253000,
+        "ssim": 0.993038,
+        "sizeReductionPct": 6.352835311782279,
+        "timeChangePct": 2.9763636349456
+      }
+    ],
+    "production": {
+      "frames": 96,
+      "durationSeconds": 4,
+      "hasAudio": true,
+      "fullyDecoded": true,
+      "bytes": 1444521
+    }
+  }
+]

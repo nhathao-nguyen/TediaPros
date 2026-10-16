@@ -1,0 +1,54 @@
+{
+  "observations": [
+    {
+      "strength": 0.75,
+      "actual": [
+        63,
+        99,
+        147
+      ],
+      "expected": [
+        62.27133794694348,
+        96.91664359861592,
+        146.5224221453287
+      ]
+    },
+    {
+      "strength": 0.25,
+      "actual": [
+        59,
+        100,
+        156
+      ],
+      "expected": [
+        57.42377931564783,
+        98.3055478662053,
+        156.84080738177624
+      ]
+    },
+    {
+      "strength": 1,
+      "actual": [
+        65,
+        98,
+        141
+      ],
+      "expected": [
+        64.69511726259131,
+        96.22219146482122,
+        141.36322952710495
+      ]
+    }
+  ],
+  "legacyLookups": 1,
+  "checks": [
+    "ordered internal passes",
+    "whole-group intensity",
+    "all configured video effects",
+    "matte alpha/intensity",
+    "seek",
+    "rate",
+    "play/pause",
+    "unmount cleanup"
+  ]
+}

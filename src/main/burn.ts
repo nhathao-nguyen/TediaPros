@@ -22,6 +22,7 @@ import { debugRaw, errLabel, logInfo, logWarn } from './logger'
 import {
   type CanonicalDisplayGeometry,
   canonicalBurnDisplayFilter,
+  needsColorNormalization,
   parseCanonicalMediaMetadata,
   parseFrameRate
 } from './canonicalDisplayGeometry'
@@ -85,6 +86,7 @@ import {
   writeVideoSeoMetadata
 } from './videoTitle'
 import { formatVideoSeoMetadata } from '../shared/videoSeo'
+import { planBalancedVideoExport, balancedVideoEncoderCandidates, randomizeVideoExportPlan } from './videoExportPolicy'
 
 /** Parse #RGB / #RRGGBB -> { r,g,b } hoac null. */
 function parseHexColor(hex: string | undefined | null): { r: number; g: number; b: number } | null {
@@ -158,10 +160,10 @@ let child: ChildProcess | null = null
 let daHuy = false
 let burnInFlight = false
 let burnAbortController: AbortController | null = null
-let cachedWorkingEncoder: string | null = null
+const cachedWorkingEncoders = new Map<string, string>()
 
 export function resetCachedWorkingEncoder(): void {
-  cachedWorkingEncoder = null
+  cachedWorkingEncoders.clear()
 }
 const burnChildren = new Set<ChildProcess>()
 
@@ -207,6 +209,11 @@ export interface Meta {
   sampleAspectRatio?: string
   videoStart?: number
   audioStart?: number
+  videoBitrate?: number
+  videoCodec?: string
+  colorSpace?: string
+  colorPrimaries?: string
+  colorTransfer?: string
 }
 
 function evenDimension(value: number, fallback: number): number {
@@ -230,9 +237,17 @@ export function canonicalDisplayVideoFilter(meta: Meta): string | null {
   const sarDen = Number.isFinite(sarDenRaw) && sarDenRaw > 0 ? sarDenRaw : 1
   const needsSarNormalization = Math.abs(sarNum / sarDen - 1) > 0.0001
   const needsPtsNormalization = Math.abs(meta.videoStart || 0) > 0.0001
-  if (!needsSarNormalization && !needsPtsNormalization) return null
+  const needsColor = needsColorNormalization({
+    primaries: meta.colorPrimaries,
+    space: meta.colorSpace,
+    transfer: meta.colorTransfer
+  })
+  if (!needsSarNormalization && !needsPtsNormalization && !needsColor) return null
 
   const filters: string[] = []
+  if (needsColor) {
+    filters.push('setparams=color_primaries=bt709:color_trc=bt709:colorspace=bt709')
+  }
   if (needsPtsNormalization) filters.push('setpts=PTS-STARTPTS')
   if (needsSarNormalization) {
     filters.push(
@@ -250,7 +265,7 @@ async function doVideo(ffprobe: string, video: string): Promise<Meta> {
       ffprobe,
       [
         '-v', 'error',
-        '-show_entries', 'stream=index,codec_type,width,height,start_time,duration,r_frame_rate,avg_frame_rate,sample_aspect_ratio:stream_tags=rotate:stream_side_data=rotation',
+        '-show_entries', 'stream=index,codec_type,codec_name,bit_rate,width,height,start_time,duration,r_frame_rate,avg_frame_rate,sample_aspect_ratio,color_space,color_primaries,color_transfer:stream_tags=rotate:stream_side_data=rotation',
         '-show_entries', 'format=duration,start_time',
         '-of', 'json',
         video
@@ -262,7 +277,17 @@ async function doVideo(ffprobe: string, video: string): Promise<Meta> {
       p.on('close', () => {
         try {
           const parsed = JSON.parse(out)
-          resolve(parseCanonicalMediaMetadata(parsed))
+          const videoStream = parsed.streams?.find((stream: { codec_type?: string }) => stream.codec_type === 'video')
+          const bitrate = Number(videoStream?.bit_rate)
+          const colorSpace = typeof videoStream?.color_space === 'string' ? videoStream.color_space.trim().toLowerCase() : undefined
+          const colorPrimaries = typeof videoStream?.color_primaries === 'string' ? videoStream.color_primaries.trim().toLowerCase() : undefined
+          const colorTransfer = typeof videoStream?.color_transfer === 'string' ? videoStream.color_transfer.trim().toLowerCase() : undefined
+          resolve({ ...parseCanonicalMediaMetadata(parsed),
+            ...(Number.isFinite(bitrate) && bitrate > 0 ? { videoBitrate: bitrate } : {}),
+            ...(typeof videoStream?.codec_name === 'string' ? { videoCodec: videoStream.codec_name } : {}),
+            ...(colorSpace ? { colorSpace } : {}),
+            ...(colorPrimaries ? { colorPrimaries } : {}),
+            ...(colorTransfer ? { colorTransfer } : {}) })
         } catch {
           resolve({ w: 0, h: 0, giay: 0, hasAudio: false, videoDurationSeconds: null, containerDurationSeconds: 0 })
         }
@@ -394,11 +419,11 @@ export function docSrt(srtRaw: string): SubtitleCue[] {
   return parseSrt(srtRaw).cues
 }
 
-export async function probeBurnMedia(video: string): Promise<Meta> {
+export async function probeBurnMedia(video: string, ffmpegPath?: string): Promise<Meta> {
   if (!isAbsolute(video)) throw new Error('Đường dẫn video không hợp lệ.')
   const info = await stat(video)
   if (!info.isFile() || info.size <= 0) throw new Error('Không thể đọc video đã chọn.')
-  const ffmpeg = await resolveFfmpeg()
+  const ffmpeg = ffmpegPath || await resolveFfmpeg()
   if (!ffmpeg) throw new Error('Chưa tìm thấy FFmpeg để kiểm tra âm thanh video.')
   return doVideo(duongFfprobe(ffmpeg), video)
 }
@@ -1305,7 +1330,7 @@ export async function runBurnSubtitleLower(
     }, overlayFiles)
 
     const filmGrungePath = resolveFilmGrungePath()
-    options = { ...options, videoEffects: await restoreVideoEffectChromaKeys(options.videoEffects) }
+    options = { ...options, videoEffects: await restoreVideoEffectChromaKeys(options.videoEffects, options.signal) }
     const hasFilmGrunge = Boolean(filmGrungePath && options.videoEffects?.some(e => e.kind === 'film_grunge'))
     const baseInputCount = 1 + Number(options.plan.narrationAudioIndex != null) + Number(options.plan.maskVideoIndex != null)
     const overlayImageOffset = overlays?.image ? 1 : 0
@@ -1360,14 +1385,12 @@ export async function runBurnSubtitleLower(
       debugRaw('burn filter_complex', filterArgs.join(' '))
     }
 
-    const isDarwin = process.platform === 'darwin'
-    const allCandidates: Array<{ ten: string; gpu: boolean; args: string[] }> = [
-      ...(isDarwin ? [{ ten: 'h264_videotoolbox', gpu: true, args: ['-c:v', 'h264_videotoolbox', '-pix_fmt', 'yuv420p', '-q:v', '65'] }] : []),
-      { ten: 'h264_nvenc', gpu: true, args: ['-c:v', 'h264_nvenc', '-pix_fmt', 'yuv420p', '-preset', 'p4', '-cq', '23', '-spatial-aq', '1'] },
-      { ten: 'h264_amf', gpu: true, args: ['-c:v', 'h264_amf', '-pix_fmt', 'yuv420p', '-quality', 'balanced', '-rc', 'cqp', '-qp_i', '23', '-qp_p', '23'] },
-      { ten: 'h264_qsv', gpu: true, args: ['-c:v', 'h264_qsv', '-pix_fmt', 'yuv420p', '-global_quality', '23'] },
-      { ten: 'libx264', gpu: false, args: ['-c:v', 'libx264', '-pix_fmt', 'yuv420p', '-preset', 'faster', '-crf', '21'] }
-    ]
+    const exportPlan = randomizeVideoExportPlan(planBalancedVideoExport({ width: canvas.width, height: canvas.height, sourceWidth: meta.w, sourceHeight: meta.h,
+      frameRate: meta.frameRate, averageFrameRate: meta.averageFrameRate, videoBitrate: meta.videoBitrate, videoCodec: meta.videoCodec, effects: options.videoEffects }))
+    debugRaw('balanced video export policy', exportPlan)
+    const allCandidates = balancedVideoEncoderCandidates(exportPlan, process.platform)
+    const encoderCacheKey = `${ff}:${exportPlan.encoderPreference}`
+    const cachedWorkingEncoder = cachedWorkingEncoders.get(encoderCacheKey)
     if (cachedWorkingEncoder) {
       const workingIdx = allCandidates.findIndex((c) => c.ten === cachedWorkingEncoder)
       if (workingIdx > 0) {
@@ -1392,11 +1415,30 @@ export async function runBurnSubtitleLower(
         inputArgs.push('-stream_loop', '-1', '-i', filmGrungePath)
       }
       const dungFilterAudio = req.batAmThanh && (meta.hasAudio || hasAudioFile)
-      const audioCodecArgs = dungFilterAudio ? ['-c:a', 'aac'] : ['-c:a', 'copy']
+      const audioCodecArgs = dungFilterAudio ? ['-c:a', 'aac', '-b:a', '128k'] : ['-c:a', 'copy']
+
+      const isMp4 = output.toLowerCase().endsWith('.mp4') || output.toLowerCase().endsWith('.m4v')
+      const sanitizeContainerArgs = [
+        '-map_metadata', '-1',
+        '-map_metadata:s:v', '-1',
+        '-map_metadata:s:a', '-1',
+        '-fflags', '+bitexact',
+        '-flags:v', '+bitexact',
+        '-flags:a', '+bitexact',
+        '-metadata:s:v', 'encoder=',
+        '-metadata:s:a', 'encoder=',
+        '-metadata', 'encoder=',
+        ...(isMp4 ? [
+          '-brand', 'mp42',
+          '-movflags', '+faststart',
+          '-metadata:s:v', 'handler_name=Core Media Video',
+          '-metadata:s:a', 'handler_name=Core Media Audio'
+        ] : [])
+      ]
 
       const args = filterArgs.length > 0
-        ? [...inputArgs, ...filterArgs, ...enc.args, ...audioCodecArgs, output]
-        : [...inputArgs, ...enc.args, ...audioCodecArgs, output]
+        ? [...inputArgs, ...filterArgs, ...enc.args, ...audioCodecArgs, ...sanitizeContainerArgs, output]
+        : [...inputArgs, ...enc.args, ...audioCodecArgs, ...sanitizeContainerArgs, output]
 
       const attemptStarted = performance.now()
       const attempt = await chay(ff, args, tam, meta, onProgress, options.signal)
@@ -1412,7 +1454,7 @@ export async function runBurnSubtitleLower(
         return { ok: false, error: 'Đã huỷ.', encoderAttempts }
       }
       if (attemptSucceeded) {
-        cachedWorkingEncoder = enc.ten
+        cachedWorkingEncoders.set(encoderCacheKey, enc.ten)
         logInfo(`Dịch màn hình: xử lý video xong${enc.gpu ? ' (tăng tốc GPU)' : ''}.`)
         return { ok: true, output, selectedEncoder: enc.ten, encoderAttempts }
       }
@@ -1426,7 +1468,9 @@ export async function runBurnSubtitleLower(
     }
 
     const diagnostic = lastFailure?.diagnostic || 'không tạo được tệp video hợp lệ'
-    const exitCode = lastFailure?.code == null ? '' : `, mã ${lastFailure.code}`
+    const rawCode = lastFailure?.code
+    const signedCode = typeof rawCode === 'number' && rawCode > 0x7FFFFFFF ? (rawCode | 0) : rawCode
+    const exitCode = signedCode == null ? '' : `, mã ${signedCode}`
     logInfo(`Dịch màn hình: FFmpeg ${lastEncoder || 'render'} thất bại${exitCode} — ${diagnostic}.`)
     return { ok: false, error: `FFmpeg xuất video thất bại${exitCode}: ${diagnostic}.`, encoderAttempts }
   } finally {
@@ -1617,6 +1661,41 @@ export function validateFrameRateMeasurement(
   }
 }
 
+export function validateDurationMeasurement(
+  expected: {
+    durationSeconds: number
+    frameRate?: number
+    averageFrameRate?: number
+    durationToleranceFrames: number
+  },
+  actual: {
+    streamDuration?: number | null
+    containerDuration?: number | null
+  }
+): void {
+  const streamDuration = actual.streamDuration && actual.streamDuration > 0 ? actual.streamDuration : 0
+  const containerDuration = actual.containerDuration && actual.containerDuration > 0 ? actual.containerDuration : 0
+  const primaryDuration = streamDuration > 0 ? streamDuration : containerDuration
+  if (primaryDuration <= 0) {
+    throw new Error('Không thể xác định thời lượng video xuất.')
+  }
+
+  const durationFrameRate = expected.averageFrameRate && expected.averageFrameRate > 0
+    ? expected.averageFrameRate
+    : expected.frameRate
+  const durationTolerance = durationFrameRate && durationFrameRate > 0
+    ? expected.durationToleranceFrames / durationFrameRate
+    : 0.10
+
+  const diffStream = streamDuration > 0 ? Math.abs(streamDuration - expected.durationSeconds) : Infinity
+  const diffContainer = containerDuration > 0 ? Math.abs(containerDuration - expected.durationSeconds) : Infinity
+  const minDiff = Math.min(diffStream, diffContainer)
+
+  if (minDiff > durationTolerance) {
+    throw new Error(`Thời lượng video xuất (${primaryDuration.toFixed(3)}s) lệch quá mức so với dự kiến (${expected.durationSeconds.toFixed(3)}s).`)
+  }
+}
+
 export async function validateRenderedMedia(
   filePath: string,
   expected: {
@@ -1736,20 +1815,18 @@ export async function validateRenderedMedia(
 
   // Duration tolerance check
   const vStream = videoStreams[0]
-  const probedDuration = Number(vStream.duration) || Number(probeData.format?.duration) || 0
-  if (probedDuration <= 0) {
-    throw new Error('Không thể xác định thời lượng video xuất.')
-  }
-
-  const durationFrameRate = expected.averageFrameRate && expected.averageFrameRate > 0
-    ? expected.averageFrameRate
-    : expected.frameRate
-  const durationTolerance = durationFrameRate && durationFrameRate > 0
-    ? expected.durationToleranceFrames / durationFrameRate
-    : 0.10
-  if (Math.abs(probedDuration - expected.durationSeconds) > durationTolerance) {
-    throw new Error(`Thời lượng video xuất (${probedDuration.toFixed(3)}s) lệch quá mức so với dự kiến (${expected.durationSeconds.toFixed(3)}s).`)
-  }
+  validateDurationMeasurement(
+    {
+      durationSeconds: expected.durationSeconds,
+      frameRate: expected.frameRate,
+      averageFrameRate: expected.averageFrameRate,
+      durationToleranceFrames: expected.durationToleranceFrames
+    },
+    {
+      streamDuration: Number(vStream.duration) || null,
+      containerDuration: Number(probeData.format?.duration) || null
+    }
+  )
 
   // Frame rate check: average-to-average for VFR, nominal fallback for legacy
   // callers and probes that do not expose an average rate.
@@ -1948,7 +2025,7 @@ export async function burnAutoShort(
     // burnSubtitle(), so it must explicitly run the optional title stage
     // after the MP4 has been atomically published.
     return await completeBurnVideoTitle(
-      { ok: true, output: options.finalOutputPath },
+      { ...renderRes, output: options.finalOutputPath },
       renderReq,
       onProgress,
       options.signal,

@@ -108,4 +108,5 @@ separator-benchmark-results/
 scratch/
 .ai/tasks/**/*.mp4
 .ai/tasks/2026-09-12-dalam-encoder-test/*.mp4
+/.ai/qa/
 

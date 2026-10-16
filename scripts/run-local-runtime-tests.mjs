@@ -47,12 +47,14 @@ const electronMockPlugin = {
 }
 
 const knownTests = [
+  'reels-daily-workflow.test',
   'edge-tts-contract.test',
   'edge-tts-adapter.test',
   'edge-tts-scheduler.test',
   'autoshort-edge-tts.test',
   'tts-audio-format.test',
   'app-profile.test',
+  'gemini-alpha.test',
   'sttn-runtime.test',
   'sttn-contract.test',
   'sttn-pipeline.test',
@@ -78,6 +80,9 @@ const knownTests = [
   'portrait-blur.test',
   'video-adjustments.test',
   'video-effects.test',
+  'effect-layer-composition.test',
+  'balanced-video-export.test',
+  'packed-video-alpha.test',
   'autoshort-overlays.test',
   'ocr-visual-timeline.test',
   'autoshort-ocr-runtime.test',
@@ -156,6 +161,14 @@ const knownTests = [
   'autoshort-channel-preset-and-tone.test',
   'douyin-channel-folder.test',
   'facebook-reels-crawler.test',
+  'facebook-reels-parser.test',
+  'facebook-reels-lifecycle.test',
+  'facebook-reels-jobs.test',
+  'facebook-reels-selection.test',
+  'facebook-reels-export.test',
+  'facebook-reels-library.test',
+  'facebook-reels-monitor.test',
+  'facebook-reel-details.test',
   'burn-font-registry.test',
   'subtitle-layout.test',
   'subtitle-text-case.test',
@@ -179,11 +192,13 @@ await build({
   target: 'node20',
   outdir: outDir,
   sourcemap: false,
-  plugins: [electronMockPlugin]
+  plugins: [electronMockPlugin],
+  external: ['jsdom', 'exceljs', '@mozilla/readability']
 })
 
 const results = selectedTests.map((testName) =>
-  spawnSync(process.execPath, ['--test', join(outDir, `${testName}.js`)], { stdio: 'inherit' })
+  spawnSync(process.execPath, ['--test', join(outDir, `${testName}.js`)], { stdio: 'inherit',
+    env: { ...process.env, NODE_PATH: join(process.cwd(), 'node_modules') } })
 )
 rmSync(outDir, { recursive: true, force: true })
 if (results.some((result) => result.status !== 0)) process.exit(1)

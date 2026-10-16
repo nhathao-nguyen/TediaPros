@@ -30,6 +30,11 @@ video vẫn hợp lệ.
    `-fps_mode passthrough`; các filter render không được dùng nominal FPS để
    tạo frame mới.
 5. Với nguồn CFR, mismatch FPS vẫn là lỗi; tolerance hiện hành là 0.1 fps.
+6. Xác thực thời lượng (`validateDurationMeasurement`): `outputDuration` trong
+   coordinator được ghim theo thời lượng luồng video thực tế (`visualDurationSeconds`).
+   Validator chấp nhận độ khớp trong ngưỡng dung sai (mặc định 3 frame) với luồng
+   video hoặc container format để xử lý trường hợp video có đuôi âm thanh (audio tail)
+   dài hơn khung hình video do padding AAC.
 
 ## Hệ quả
 

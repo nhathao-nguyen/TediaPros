@@ -271,6 +271,20 @@ test('OCR subtitle methods still need OCR', () => {
   assert.equal(autoShortNeedsOcr(whisperOcrMethod), true)
 })
 
+test('none subtitle method is accepted by contract and does not need OCR by default', () => {
+  const req = autoShortRequest({
+    subtitleMethod: 'none',
+    lamMo: false,
+    blurMode: 'manual'
+  })
+  const result = validateAutoShortStartRequest(req)
+  assert.equal(result.ok, true)
+  if (result.ok) {
+    assert.equal(result.value.config.subtitleMethod, 'none')
+    assert.equal(autoShortNeedsOcr(result.value.config), false)
+  }
+})
+
 test('persisted mode normalizer rejects stale values', () => {
   assert.equal(normalizeAutoShortBlurMode(undefined), 'manual')
   assert.equal(normalizeAutoShortBlurMode(null), 'manual')

@@ -91,26 +91,49 @@ export async function fetchRuntimeManifest(fetchImpl?: typeof fetch): Promise<Ru
   const config = getDistributionConfig()
   if (!config.manifestUrl) return null
   const requestFetch = fetchImpl || createDistributionFetch(config)
-  try {
-    const response = await requestFetch(config.manifestUrl, {
-      headers: { Accept: 'application/json' },
-      signal: AbortSignal.timeout(15_000)
-    })
-    if (!response.ok) return null
-    const validated = validateRuntimeDistributionManifest(await response.json())
-    if (!validated.ok) {
-      logWarn(`[RuntimeInstaller] Manifest không hợp lệ: ${validated.error}`)
-      return null
+  const channelsToTry = [
+    config.runtimeChannel,
+    ...(config.fallbackRuntimeChannels || ['runtime-v6', 'runtime-v5'])
+  ]
+  const uniqueChannels = [...new Set(channelsToTry)]
+
+  for (const channel of uniqueChannels) {
+    try {
+      const url =
+        config.localRuntimeDir
+          ? config.manifestUrl
+          : `https://github.com/${config.owner}/${config.repo}/releases/download/${channel}/runtime-manifest.json`
+
+      const response = await requestFetch(url, {
+        headers: { Accept: 'application/json' },
+        signal: AbortSignal.timeout(15_000)
+      })
+      if (!response.ok) {
+        if (config.localRuntimeDir) return null
+        continue
+      }
+      const validated = validateRuntimeDistributionManifest(await response.json())
+      if (!validated.ok) {
+        logWarn(`[RuntimeInstaller] Manifest không hợp lệ trên channel ${channel}: ${validated.error}`)
+        continue
+      }
+      if (validated.manifest.platform !== platform() || validated.manifest.arch !== arch()) {
+        logWarn(`[RuntimeInstaller] Manifest trên channel ${channel} không đúng platform/architecture của máy.`)
+        continue
+      }
+      if (channel !== config.runtimeChannel) {
+        logInfo(`[RuntimeInstaller] Sử dụng runtime manifest từ fallback channel: ${channel}`)
+      }
+      return validated.manifest
+    } catch (error) {
+      if (config.localRuntimeDir) {
+        logWarn(`[RuntimeInstaller] Không tải được local runtime manifest: ${errLabel(error)}`)
+        return null
+      }
+      logWarn(`[RuntimeInstaller] Không tải được runtime manifest trên channel ${channel}: ${errLabel(error)}`)
     }
-    if (validated.manifest.platform !== platform() || validated.manifest.arch !== arch()) {
-      logWarn('[RuntimeInstaller] Manifest không đúng platform/architecture của máy.')
-      return null
-    }
-    return validated.manifest
-  } catch (error) {
-    logWarn(`[RuntimeInstaller] Không tải được runtime manifest: ${errLabel(error)}`)
-    return null
   }
+  return null
 }
 
 async function findArchiveRoot(extracted: string, spec: RuntimeAssetSpec): Promise<string> {
@@ -156,7 +179,8 @@ export async function downloadRuntimeEngineFromManifest(
   await rm(stagingDir, { recursive: true, force: true })
   await mkdir(extractDir, { recursive: true })
   try {
-    await downloadArchive(spec, archivePath, config.getAssetUrl, fetchImpl, onProgress)
+    const assetUrlGetter = (assetName: string) => config.getAssetUrl(assetName, manifest.runtimeVersion)
+    await downloadArchive(spec, archivePath, assetUrlGetter, fetchImpl, onProgress)
     const bytes = await fileBytes(archivePath)
     if (bytes !== spec.bytes) throw new Error(`Kích thước archive ${kind} không khớp manifest.`)
     onProgress(55, `Đang kiểm tra checksum ${kind}…`)

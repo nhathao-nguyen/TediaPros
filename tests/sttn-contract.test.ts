@@ -61,3 +61,28 @@ test('STTN contract clears manual rectangles before downstream rendering', () =>
   assert.equal(result.ok, true)
   if (result.ok) assert.deepEqual(result.value.config.blurRegions, [])
 })
+
+import { createManualSttnTimeline } from '../src/shared/sttnManualTimeline'
+test('manual mask covers fractional final sample without OCR dependency', () => {
+  const result = validateAutoShortStartRequest(request({ blurMode: 'sttn-region', subtitleMethod: 'none' }))
+  assert.equal(result.ok, true)
+  if (!result.ok) return
+  assert.equal(autoShortNeedsOcr(result.value.config), false)
+  assert.deepEqual(result.value.config.blurRegions, [])
+  const mask = createManualSttnTimeline({ width: 720, height: 1280, durationSeconds: 8.021,
+    sampleFps: 8, geometryFingerprint: 'a'.repeat(64), scanRegion: { x0: 574, y0: 1134, x1: 631, y1: 1191 } })
+  assert.equal(mask.segments[0].start, 0)
+  assert.equal(mask.segments[0].end, 8.021)
+  assert.equal(mask.segments[0].endFrameExclusive, 65)
+})
+
+import { parseAutoShortDependencyConfig } from '../src/shared/autoShortDependencyContract'
+test('dependency IPC accepts manual STTN for readiness and installation, rejects unknown modes and injected paths', () => {
+  const parsed = parseAutoShortDependencyConfig(request({ blurMode: 'sttn-region', subtitleMethod: 'none' }).config)
+  assert.equal(parsed.blurMode, 'sttn-region')
+  assert.equal(autoShortNeedsOcr(parsed), false)
+  assert.equal(isSttnRemoval(parsed), true)
+  for (const extra of [{ blurMode: 'unknown' }, { modelPath: 'injected' }, { maskPath: 'injected' }]) {
+    assert.throws(() => parseAutoShortDependencyConfig({ ...request().config, ...extra }))
+  }
+})

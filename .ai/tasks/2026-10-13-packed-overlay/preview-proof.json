@@ -1,0 +1,68 @@
+{
+  "observations": [
+    {
+      "x": 40,
+      "y": 90,
+      "expected": [
+        47,
+        76,
+        108
+      ],
+      "actual": [
+        49,
+        79,
+        109
+      ]
+    },
+    {
+      "x": 160,
+      "y": 90,
+      "expected": [
+        49,
+        78,
+        110
+      ],
+      "actual": [
+        51,
+        80,
+        112
+      ]
+    },
+    {
+      "x": 280,
+      "y": 90,
+      "expected": [
+        48,
+        76,
+        108
+      ],
+      "actual": [
+        50,
+        79,
+        110
+      ]
+    }
+  ],
+  "legacyLookups": 1,
+  "config": [
+    {
+      "kind": "custom_overlay",
+      "intensity": 75,
+      "assetPath": "C:\\Users\\PC\\AppData\\Local\\CapCut\\User Data\\Cache\\effect\\7620270556557921589\\6cb91fa515cd8b6854c46673ba32e0cc\\AmazingFeature\\resource\\video\\overlay.mp4",
+      "blendMode": "multiply",
+      "packedAlpha": "left",
+      "name": "Overlay",
+      "sourceType": "capcut"
+    }
+  ],
+  "frames": 24,
+  "hasAudio": true,
+  "fullyDecoded": true,
+  "checks": [
+    "legacy preview recovery",
+    "RGB/alpha unpack before geometry",
+    "preview matches FFmpeg",
+    "CapCut card and selection carry layout",
+    "canvas cleanup"
+  ]
+}

@@ -12,6 +12,7 @@ import Voice from './components/Voice'
 import License from './components/License'
 import Logs from './components/Logs'
 import VideoSpeedModal from './components/VideoSpeedModal'
+import { ReelsNotifications } from './components/ReelsNotifications'
 import type { UpdateStatus } from '../../shared/types'
 import { APP_BRAND } from '../../shared/brand'
 import brandLogo from './assets/tediapros-logo.png'
@@ -242,6 +243,7 @@ export default function App(): JSX.Element {
             <h1 className="content-title">{active.title}</h1>
             <p className="content-sub muted">{active.subtitle}</p>
           </div>
+          <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}><ReelsNotifications/>
           <button
             type="button"
             className="btn ghost sm"
@@ -252,6 +254,7 @@ export default function App(): JSX.Element {
             <span>⚡</span>
             <span>Tua nhanh video</span>
           </button>
+          </div>
         </header>
         <div className="content-body">
           {/* Giu 2 tab tai luon SONG (khong unmount) de chay song song, khong mat hang doi/tien do */}

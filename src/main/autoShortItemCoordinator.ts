@@ -1,3 +1,6 @@
+import { runGeminiAlpha } from './inpainting/geminiAlpha'
+import { isAlphaRemoval } from '../shared/autoShortOcrBlur'
+import { createManualSttnTimeline } from '../shared/sttnManualTimeline'
 import { basename, dirname, join } from 'node:path'
 import { copyFile, mkdir, mkdtemp, readFile, rename, rm, stat, writeFile } from 'node:fs/promises'
 import { createHash, randomUUID } from 'node:crypto'
@@ -181,6 +184,7 @@ export interface AutoShortItemCoordinatorDeps {
   writeTimedMask: typeof writeTimedOcrBlurMask
   burn: typeof burnAutoShort
   removeSubtitles?: typeof runSttnRemoval
+  removeAlpha?: typeof runGeminiAlpha
 }
 
 export interface AutoShortItemContext {
@@ -247,14 +251,18 @@ function emitProgress(
   translationAssessment?: TranslationAssessment,
   translationIdentity?: string
 ): void {
+  const boundedPercent = Math.max(0, Math.min(100, Math.round(percent)))
   context.emit({
     type: 'item-progress',
     jobId: context.jobId,
     taskId: context.item.id,
     itemId: context.item.id,
     itemStatus,
-    itemPercent: Math.max(0, Math.min(100, Math.round(percent))),
+    itemPercent: boundedPercent,
     itemMessage: message,
+    percent: boundedPercent,
+    phase: itemStatus,
+    message,
     batchIndex: context.index + 1,
     batchTotal: context.total,
     outputPath,
@@ -732,9 +740,10 @@ export function createAutoShortItemProcessor(
 
       const automaticBlur = isAutomaticOcrBlur(config)
       const sttnRemoval = isSttnRemoval(config)
+      const alphaRemoval = isAlphaRemoval(config)
       const visualOcrRequired = automaticBlur || sttnRemoval
       const effectiveProfile = effectiveAutoShortOcrProfile(config)
-      const forceFreshOcr = mustRegenerateOcrSource(config) || (sttnRemoval && config.subtitleMethod !== 'whisper')
+      const forceFreshOcr = mustRegenerateOcrSource(config) || (sttnRemoval && config.subtitleMethod !== 'whisper' && config.subtitleMethod !== 'none')
 
       // Exactly one visual OCR promise per item when automatic blur is active
       let visualOcrPromise: Promise<Awaited<ReturnType<typeof deps.runVisualOcr>>> | null = null
@@ -744,6 +753,17 @@ export function createAutoShortItemProcessor(
             emitProgress(context, 'extracting_sub', 5, 'Đang quét chữ trong video…', undefined, undefined, { stage: 'visual_ocr', phase: 'running' })
             const ocrDir = join(workDir, 'ocr')
             await mkdir(ocrDir, { recursive: true })
+            if (config.blurMode === 'sttn-region' && (config.subtitleMethod === 'none' || config.subtitleMethod === 'whisper')) {
+              const timeline = createManualSttnTimeline({ width: processingGeometry.displayWidth,
+                height: processingGeometry.displayHeight, durationSeconds: visualDurationSeconds,
+                sampleFps: 8, geometryFingerprint: processingGeometry.fingerprint, scanRegion: ocrRegion })
+              const sourceSrtPath = join(ocrDir, 'source.srt')
+              const sidecarPath = join(ocrDir, 'manual-mask.json')
+              await writeFile(sourceSrtPath, '', 'utf8')
+              await writeFile(sidecarPath, JSON.stringify(timeline), 'utf8')
+              return { timeline, sourceSrtPath, sidecarPath, engineVersion: 'manual-mask/1',
+                engineProtocol: 'ocr-local/1' as const, visualSegmentCount: 1, boxSegmentCount: 1 }
+            }
             const requestedTransport = context.policy?.ocrTransport || 'stream-roi'
             const visualCacheKey = buildStageKey('visual-ocr', {
               // Transport is intentionally excluded from the key: a qualified
@@ -860,6 +880,7 @@ export function createAutoShortItemProcessor(
         timedMask: TimedOcrBlurMask | null
         visualResultForAudit: Awaited<ReturnType<typeof deps.runVisualOcr>> | null
         sttnAudit?: { provider: 'cuda' | 'cpu'; elapsedMs: number }
+        alphaAudit?: { revision: string; matchScore: number; opacityRatio: number; frames: number; elapsedMs: number }
       }
       let visualBranchOutcomePromise: Promise<BranchOutcome<VisualBranchResult>> | null = null
 
@@ -868,18 +889,35 @@ export function createAutoShortItemProcessor(
         let branchTimedMask: TimedOcrBlurMask | null = null
         let branchVisualResult: Awaited<ReturnType<typeof deps.runVisualOcr>> | null = null
         let branchSttnAudit: { provider: 'cuda' | 'cpu'; elapsedMs: number } | undefined
+        let branchAlphaAudit: VisualBranchResult['alphaAudit']
 
         if (visualOcrRequired) {
           branchVisualResult = await getVisualOcr(branchSignal)
         }
 
-        if (sttnRemoval && branchVisualResult) {
+        if (alphaRemoval) {
+          sttnWorkDir = await mkdtemp(join(itemOutputDir, '.alpha-'))
+          const cleaned = await telemetry.withStageSpan('gemini_alpha', { requestedProvider: 'cpu' }, async () =>
+            resourceManager.withLease(['local-cpu-heavy'], branchSignal, async () =>
+              (deps.removeAlpha || runGeminiAlpha)({ videoPath: processingPath,
+                outputPath: join(sttnWorkDir!, 'alpha-cleaned.mkv'), ffmpegPath: ffmpeg, ffprobePath: ffprobe,
+                region: ocrRegion, signal: branchSignal,
+                onProgress: (percent, message) => emitProgress(context, 'removing_subtitles', 82 + percent * .03, message) })))
+          branchRenderVideoPath = cleaned.outputPath
+          branchAlphaAudit = { revision: cleaned.revision, matchScore: cleaned.matchScore, opacityRatio: cleaned.opacityRatio, frames: cleaned.frames, elapsedMs: cleaned.elapsedMs }
+        }
+
+        const sttnTimeline = config.blurMode === 'sttn-region'
+          ? createManualSttnTimeline({ width: processingGeometry.displayWidth, height: processingGeometry.displayHeight,
+              durationSeconds: visualDurationSeconds, sampleFps: 8, geometryFingerprint: processingGeometry.fingerprint, scanRegion: ocrRegion })
+          : branchVisualResult?.timeline
+        if (sttnRemoval && sttnTimeline) {
           emitProgress(context, 'removing_subtitles', 82, 'Đang xóa chữ bằng STTN…', undefined, undefined, { stage: 'sttn', phase: 'running' })
           const cleaned = await telemetry.withStageSpan('sttn', { requestedProvider: 'cuda' }, async (span) => {
             const sttnCacheKey = buildStageKey('sttn', {
               cacheRevision: 'sttn-inpaint-v2',
               sourceDigest: processingDigest,
-              timeline: branchVisualResult!.timeline,
+              timeline: sttnTimeline,
               geometryFingerprint: processingGeometry.fingerprint,
               displayWidth: processingGeometry.displayWidth,
               displayHeight: processingGeometry.displayHeight,
@@ -903,7 +941,7 @@ export function createAutoShortItemProcessor(
               span.recordResourceWait(lease.waitMs || 0)
               return (deps.removeSubtitles || runSttnRemoval)({
                 videoPath: processingPath,
-                timeline: branchVisualResult!.timeline,
+                timeline: sttnTimeline,
                 outputPath: join(sttnWorkDir!, 'sttn-cleaned.mkv'),
                 ffmpegPath: ffmpeg,
                 ffprobePath: ffprobe,
@@ -942,20 +980,32 @@ export function createAutoShortItemProcessor(
           renderVideoPath: branchRenderVideoPath,
           timedMask: branchTimedMask,
           visualResultForAudit: branchVisualResult,
-          sttnAudit: branchSttnAudit
+          sttnAudit: branchSttnAudit, alphaAudit: branchAlphaAudit
         }
       }
 
       const shouldOverlap = Boolean(context.policy?.overlapIndependentStages)
 
       // 1. Stage: Subtitle Extraction
-      const canReuseCheckpointCues = !forceFreshOcr && Boolean(checkpoint.sourceCues && checkpoint.sourceCues.length > 0)
-      if (canReuseCheckpointCues) {
-        logInfo(`[AutoShort] Phục hồi ${checkpoint.sourceCues!.length} câu nguồn từ checkpoint.`)
-        await writeFile(rawSrtPath, serializeAlignedCues(checkpoint.sourceCues!), 'utf8')
-        sourceCues = parseSrt(await readFile(rawSrtPath, 'utf8')).cues.filter((cue) => cue.text.trim())
-        extractedCueCount = sourceCues.length
+      if (config.subtitleMethod === 'none') {
+        logInfo(`[AutoShort] Bỏ qua nhận diện phụ đề (subtitleMethod: none).`)
+        await writeFile(rawSrtPath, '', 'utf8')
+        sourceCues = []
+        extractedCueCount = 0
+        checkpoint.sourceCues = []
+        checkpoint.translatedCues = []
+        checkpoint.detectedSourceLanguage = null
+        checkpoint.translationAssessment = undefined
+        translationAssessment = undefined
+        await saveCheckpoint()
       } else {
+        const canReuseCheckpointCues = !forceFreshOcr && Boolean(checkpoint.sourceCues && checkpoint.sourceCues.length > 0)
+        if (canReuseCheckpointCues) {
+          logInfo(`[AutoShort] Phục hồi ${checkpoint.sourceCues!.length} câu nguồn từ checkpoint.`)
+          await writeFile(rawSrtPath, serializeAlignedCues(checkpoint.sourceCues!), 'utf8')
+          sourceCues = parseSrt(await readFile(rawSrtPath, 'utf8')).cues.filter((cue) => cue.text.trim())
+          extractedCueCount = sourceCues.length
+        } else {
         const runWhisper = async (): Promise<{ cues: AlignedCue[]; language: string | null }> => {
           return telemetry.withStageSpan('asr', { requestedProvider: needsCuda(config) ? 'cuda' : 'cpu', model: config.whisperModel || 'base' }, async (span) => {
             const whisperDir = join(workDir, 'whisper')
@@ -1247,6 +1297,7 @@ export function createAutoShortItemProcessor(
           rm(join(workDir, 'ocr'), { recursive: true, force: true }).catch(() => {})
         ])
       }
+      }
 
       if (cutExecutionPlan) {
         const seamIssues = findCutSeamCueIssues(sourceCues, cutExecutionPlan)
@@ -1261,16 +1312,18 @@ export function createAutoShortItemProcessor(
       // an OCR/STTN failure can still abort translation without an orphaned
       // branch, while allowing the expensive visual work to overlap remote
       // translation and later audio preparation.
-      if (shouldOverlap && visualOcrRequired && config.subtitleMethod === 'whisper') {
+      if (shouldOverlap && visualOcrRequired && (config.subtitleMethod === 'whisper' || config.subtitleMethod === 'none')) {
         visualBranchOutcomePromise = scope.start((s) => runVisualBranch(s))
       }
 
-      artifactEntries.push({ source: rawSrtPath, name: 'source.srt' })
+      if (config.subtitleMethod !== 'none') {
+        artifactEntries.push({ source: rawSrtPath, name: 'source.srt' })
+      }
 
       let targetSrtPath = rawSrtPath
       let targetCues: SubtitleCue[] = sourceCues
 
-      if (config.translateTarget !== 'none') {
+      if (config.subtitleMethod !== 'none' && config.translateTarget !== 'none' && sourceCues.length > 0) {
         targetSrtPath = join(workDir, 'translated.srt')
         const sourceLanguage = resolveTranslationSourceLanguage(config.whisperLanguage, detectedSourceLanguage)
         const targetLocale = normalizeTranslationLocale(config.translateTarget)
@@ -1515,32 +1568,38 @@ export function createAutoShortItemProcessor(
         }
       }
 
-      const contentAssessment = assessContentQuality({ sourceCues, targetCues })
-      const languageAssessment = config.translateTarget !== 'none'
-        ? assessTranslationLanguage(buildTranslationInput(sourceCues, detectedSourceLanguage || 'auto', normalizeTranslationLocale(config.translateTarget), config.ttsEnabled ? 'dubbing' : 'subtitle'), targetCues.map((cue) => ({ id: cue.id, text: cue.text })))
-        : { languageEvidence: 'unknown' as const, issues: [] }
-      const combinedTranslationIssues = [
-        ...(providerTranslationAssessment?.issues || []),
-        ...contentAssessment.issues,
-        ...languageAssessment.issues
-      ].filter((item, index, all) => all.findIndex((candidate) =>
-        candidate.code === item.code && candidate.message === item.message && candidate.cueIds.join(',') === item.cueIds.join(',')) === index)
-      const combinedHasErrors = combinedTranslationIssues.some((issue) => issue.severity === 'error')
-      translationAssessment = {
-        ...contentAssessment,
-        disposition: combinedHasErrors
-          ? 'needs-review'
-          : combinedTranslationIssues.length > 0 ? 'with-warnings' : 'validated',
-        issues: combinedTranslationIssues,
-        languageEvidence: languageAssessment.languageEvidence === 'suspect'
-          ? 'suspect'
-          : providerTranslationAssessment?.languageEvidence === 'suspect' ? 'suspect' : languageAssessment.languageEvidence
-      }
-      checkpoint.translationAssessment = translationAssessment
-      await saveCheckpoint()
-      if (translationAssessment.disposition === 'needs-review') {
-        const firstIssue = translationAssessment.issues.find((issue) => issue.severity === 'error')
-        throw new Error(`Kiểm tra nội dung phụ đề thất bại: ${firstIssue?.message || 'cue mapping không hợp lệ.'}`)
+      if (config.subtitleMethod === 'none') {
+        translationAssessment = undefined
+        checkpoint.translationAssessment = undefined
+        await saveCheckpoint()
+      } else {
+        const contentAssessment = assessContentQuality({ sourceCues, targetCues })
+        const languageAssessment = config.translateTarget !== 'none'
+          ? assessTranslationLanguage(buildTranslationInput(sourceCues, detectedSourceLanguage || 'auto', normalizeTranslationLocale(config.translateTarget), config.ttsEnabled ? 'dubbing' : 'subtitle'), targetCues.map((cue) => ({ id: cue.id, text: cue.text })))
+          : { languageEvidence: 'unknown' as const, issues: [] }
+        const combinedTranslationIssues = [
+          ...(providerTranslationAssessment?.issues || []),
+          ...contentAssessment.issues,
+          ...languageAssessment.issues
+        ].filter((item, index, all) => all.findIndex((candidate) =>
+          candidate.code === item.code && candidate.message === item.message && candidate.cueIds.join(',') === item.cueIds.join(',')) === index)
+        const combinedHasErrors = combinedTranslationIssues.some((issue) => issue.severity === 'error')
+        translationAssessment = {
+          ...contentAssessment,
+          disposition: combinedHasErrors
+            ? 'needs-review'
+            : combinedTranslationIssues.length > 0 ? 'with-warnings' : 'validated',
+          issues: combinedTranslationIssues,
+          languageEvidence: languageAssessment.languageEvidence === 'suspect'
+            ? 'suspect'
+            : providerTranslationAssessment?.languageEvidence === 'suspect' ? 'suspect' : languageAssessment.languageEvidence
+        }
+        checkpoint.translationAssessment = translationAssessment
+        await saveCheckpoint()
+        if (translationAssessment.disposition === 'needs-review') {
+          const firstIssue = translationAssessment.issues.find((issue) => issue.severity === 'error')
+          throw new Error(`Kiểm tra nội dung phụ đề thất bại: ${firstIssue?.message || 'cue mapping không hợp lệ.'}`)
+        }
       }
 
       let separatedInstrumentalPath: string | null = null
@@ -1625,13 +1684,13 @@ export function createAutoShortItemProcessor(
       }
 
       let stitchedAudioPath: string | null = null
-      let outputDuration = processingMeta.giay
+      let outputDuration = visualDurationSeconds
       let dubbingTimeMap: DubbingTimeMap | undefined
       let renderSrtPath = targetSrtPath
       let renderDisplayStyle = config.subtitleDisplayStyle || 'standard'
       let finalWordTimings: any = undefined
 
-      if (config.ttsEnabled) {
+      if (config.ttsEnabled && config.subtitleMethod !== 'none' && targetCues.length > 0) {
         emitProgress(context, 'generating_tts', 58, 'Đang tạo voice từ SRT đích…', undefined, undefined, { stage: 'tts', phase: 'running' })
         const jobAdapter = buildAutoShortTtsJobAdapter({
           jobId,
@@ -1654,7 +1713,7 @@ export function createAutoShortItemProcessor(
             targetCues,
             sourceCues,
             workDir,
-            processingMeta.giay,
+            visualDurationSeconds,
             index,
             total,
             detectedSourceLanguage,
@@ -1673,7 +1732,7 @@ export function createAutoShortItemProcessor(
         outputDuration = synthesized.outputDuration
         dubbingTimeMap = synthesized.timeMap
         if (dubbingTimeMap) {
-          logInfo(`[AutoShort:retiming] sourceSeconds=${processingMeta.giay.toFixed(3)} outputSeconds=${outputDuration.toFixed(3)} maxLocalExtension=60% maxSlowdownExtension=20%`)
+          logInfo(`[AutoShort:retiming] sourceSeconds=${visualDurationSeconds.toFixed(3)} outputSeconds=${outputDuration.toFixed(3)} maxLocalExtension=60% maxSlowdownExtension=20%`)
           const mapPath = join(workDir, 'dubbing-time-map.json')
           await writeFile(mapPath, JSON.stringify({ ...dubbingTimeMap, originalSourceCues: sourceCues }, null, 2), 'utf8')
           artifactEntries.push({ source: mapPath, name: 'dubbing-time-map.json' })
@@ -1711,7 +1770,7 @@ export function createAutoShortItemProcessor(
         const timelineManifestPath = join(workDir, 'tts-timeline.json')
         await writeFile(timelineManifestPath, JSON.stringify({
           timeMap: dubbingTimeMap,
-          sourceDuration: processingMeta.giay,
+          sourceDuration: visualDurationSeconds,
           outputDuration,
           timingWarnings: syncValidation.warnings || [],
           language: synthesized.language,
@@ -1816,7 +1875,7 @@ export function createAutoShortItemProcessor(
         renderVideoPath,
         timedMask,
         visualResultForAudit,
-        sttnAudit
+        sttnAudit, alphaAudit
       } = visualBranch
 
       throwIfAborted(signal)
@@ -1845,16 +1904,23 @@ export function createAutoShortItemProcessor(
         })
       }
 
+      const isNoneSub = config.subtitleMethod === 'none'
       const placementMessage = subtitlePlacement.mode === 'ocr-dominant'
         ? subtitlePlacement.reason === 'selected'
           ? 'Đặt phụ đề theo vùng OCR'
           : 'Dùng vị trí phụ đề dự phòng'
         : null
-      const renderMsg = automaticBlur
-        ? `Đang làm mờ OCR, gắn phụ đề và xuất video…${placementMessage ? ` ${placementMessage}.` : ''}`
-        : sttnRemoval
-          ? `Đã xóa chữ STTN; đang gắn phụ đề và xuất video…${placementMessage ? ` ${placementMessage}.` : ''}`
-          : 'Đang làm mờ, gắn phụ đề và xuất video…'
+      const renderMsg = isNoneSub
+        ? (automaticBlur
+            ? 'Đang làm mờ OCR và xuất video…'
+            : sttnRemoval
+              ? 'Đã xóa chữ STTN; đang xuất video…'
+              : 'Đang làm mờ và xuất video…')
+        : (automaticBlur
+            ? `Đang làm mờ OCR, gắn phụ đề và xuất video…${placementMessage ? ` ${placementMessage}.` : ''}`
+            : sttnRemoval
+              ? `Đã xóa chữ STTN; đang gắn phụ đề và xuất video…${placementMessage ? ` ${placementMessage}.` : ''}`
+              : 'Đang làm mờ, gắn phụ đề và xuất video…')
       emitProgress(context, 'rendering_video', 85, renderMsg, undefined, undefined, { stage: 'render', phase: 'running' })
       outputName = await uniqueOutputName(itemOutputDir, item.filePath)
       const finalOutputPath = join(itemOutputDir, outputName)
@@ -1862,12 +1928,12 @@ export function createAutoShortItemProcessor(
       burnResult = await telemetry.withStageSpan('render', {}, async (span) => {
         const res = await resourceManager.withLease(['local-gpu-heavy', 'local-cpu-heavy'], signal, async (lease) => {
           span.recordResourceWait(lease.waitMs || 0)
-          const titleSrtPath = (config.translateTarget !== 'none' && targetSrtPath) ? targetSrtPath : renderSrtPath
+          const titleSrtPath = (!isNoneSub && config.translateTarget !== 'none' && targetSrtPath) ? targetSrtPath : renderSrtPath
           return deps.burn(
             {
               video: renderVideoPath,
-              srt: renderSrtPath,
-              titleSrt: titleSrtPath,
+              srt: isNoneSub ? undefined : renderSrtPath,
+              titleSrt: isNoneSub ? undefined : titleSrtPath,
               videoTitle: config.videoTitle ? {
                 ...config.videoTitle,
                 language: config.videoTitle.language === 'auto' && config.translateTarget !== 'none'
@@ -1875,8 +1941,8 @@ export function createAutoShortItemProcessor(
                   : config.videoTitle.language
               } : undefined,
               mode: 'burn',
-              blurRegions: visualOcrRequired ? [] : blurRegions,
-              lamMo: sttnRemoval ? false : config.lamMo,
+              blurRegions: (visualOcrRequired || alphaRemoval) ? [] : blurRegions,
+              lamMo: (sttnRemoval || alphaRemoval) ? false : config.lamMo,
               portraitBlur: config.portraitBlur === true,
               videoAdjustments: config.videoAdjustments,
               subRegion: resolvedSubtitleRegion,
@@ -1899,7 +1965,7 @@ export function createAutoShortItemProcessor(
               subtitleLayoutProfile: config.subtitleLayoutProfile || 'vertical',
               subtitleAutoOptimize: config.subtitleAutoOptimize !== false,
               subtitleTextCase: config.subtitleTextCase,
-              wordTimings: finalWordTimings || (!config.ttsEnabled && config.translateTarget === 'none'
+              wordTimings: isNoneSub ? undefined : (finalWordTimings || (!config.ttsEnabled && config.translateTarget === 'none'
                 ? (checkpoint.sourceCues || [])
                     .filter((cue) => Array.isArray(cue.words) && cue.words.length > 0)
                     .map((cue) => ({
@@ -1912,7 +1978,7 @@ export function createAutoShortItemProcessor(
                         probability: w.probability ?? null
                       }))
                     }))
-                : undefined),
+                : undefined)),
               batAmThanh: Boolean(outputAudioPath),
               amThanhFile: outputAudioPath || undefined,
               amLuongGoc: config.audioMode === 'mix' ? config.originalAudioVolume : 0
@@ -2007,10 +2073,11 @@ export function createAutoShortItemProcessor(
             if (firstLine) titleForThumbnail = firstLine
           }
 
-          if (!titleForThumbnail && config.thumbnailConfig.autoTitleFromAi !== false) {
-            const titleSourceCues = (targetCues && targetCues.length > 0)
-              ? targetCues
-              : sourceCues
+          const titleSourceCues = (targetCues && targetCues.length > 0)
+            ? targetCues
+            : sourceCues
+
+          if (!titleForThumbnail && config.thumbnailConfig.autoTitleFromAi !== false && titleSourceCues.length > 0) {
             const titleTargetLanguage = config.translateTarget !== 'none'
               ? config.translateTarget
               : (config.videoTitle?.language || 'vi')
@@ -2098,6 +2165,7 @@ export function createAutoShortItemProcessor(
             voice,
             separation: separationAuditMetadata,
             sttn: sttnAudit,
+            geminiAlpha: alphaAudit,
             ocrBlur: ocrAuditMetadata,
             subtitlePlacement: createSubtitlePlacementAuditMetadata(subtitlePlacement),
             encoder: {
@@ -2242,7 +2310,7 @@ export function createAutoShortItemProcessor(
       // has been committed but before content assessment is written. Preserve
       // that durable identity as an explicit review state so the UI can offer
       // one bounded, user-triggered retry instead of losing the recovery path.
-      if (!isCancelled && config.translateTarget.trim() !== 'none' && translationIdentity && !translationAssessment) {
+      if (!isCancelled && config.subtitleMethod !== 'none' && config.translateTarget.trim() !== 'none' && translationIdentity && !translationAssessment) {
         translationAssessment = {
           version: 'translation-assessment-v2',
           disposition: 'needs-review',

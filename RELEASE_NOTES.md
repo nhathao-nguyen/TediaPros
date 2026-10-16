@@ -1,3 +1,69 @@
+## TediaPros v0.1.39
+
+### AutoShort: chuẩn hóa color metadata và sửa lỗi Circuit Breaker
+
+- **Chuẩn hóa Color Primaries & Color Space**: Tự động phát hiện và chèn `setparams=color_primaries=bt709:color_trc=bt709:colorspace=bt709` khi video đầu vào có color metadata ở trạng thái `reserved` (VUI code 0 hoặc 2) hoặc `unknown`. Ngăn chặn triệt để lỗi đổ vỡ bộ lọc `swscaler` (`overlay` / `format=gbrp`) với mã thoát FFmpeg `-129` trên Windows.
+- **Sửa lỗi Gemini Gateway Circuit Breaker nhận nhầm mã thoát process**: Thắt chặt regex bắt mã lỗi HTTP sang `\b(?:405|429)\b`, ngăn ngừa mã thoát FFmpeg 32-bit unsigned (`4294967167` tương ứng `-129`) vô tình kích hoạt ngắt mạch Gemini Gateway và làm dừng cả hàng đợi render.
+- **Tối ưu hóa UI trạng thái phục hồi AutoShort**: Tách bạch trạng thái nghẽn API Gemini (`provider-throttled`) khỏi bộ đếm "Phục hồi thời lượng lượt X/2" để giao diện thông báo chính xác tiến trình xử lý.
+- **Cải thiện trích xuất bài viết & phân trang chương Facebook Reels**: Bổ sung bộ lọc tên chương anh/em (sibling chapters) loại bỏ dấu phân cách và xuống dòng, chuẩn hóa tiêu đề và xử lý ổn định các bài viết có chương mở đầu hoặc URL phân trang.
+
+## TediaPros v0.1.38
+
+### Logo Gemini cố định: khử Alpha
+
+- Thêm chế độ Alpha bằng CPU và làm sạch viền mỏng, có xem thử 5 giây. Không cần tải model OCR/STTN để chỉ xử lý logo.
+- Mẫu hiện hỗ trợ video SDR 8-bit 720×1280, CFR, pixel vuông và không xoay, với logo tại vị trí đã hiệu chỉnh. Tiền kiểm hình dạng/vị trí/độ trong suốt; mẫu không khớp sẽ dừng, không tự thay bằng làm mờ.
+- Giữ frame và audio trong trung gian FFV1, kiểm tra output và dọn tệp tạm khi hủy. Chất lượng còn phụ thuộc nền; hãy xem thử trước khi xuất toàn bộ.
+
+### Facebook Reels: chọn phần muốn tải
+
+- Chọn riêng Video MP4, caption TXT, bài viết/chương, thumbnail website và Excel; có nút Chỉ video và Tất cả, nhớ từng lựa chọn.
+- Chỉ video bỏ qua lấy caption/link bài viết/thumbnail và không xuất TXT hoặc Excel. Nhật ký kết quả nội bộ vẫn được giữ để theo dõi và hủy tác vụ.
+- Chỉ tạo thư mục cho phần được chọn; ẩn nút mở Excel và thống kê không liên quan. Thumbnail website cần đọc trang nguồn nhưng không lưu bài viết khi chưa chọn.
+- Request cũ giữ hành vi mặc định; từ chối lựa chọn rỗng hoặc tham số không hợp lệ.
+
+## TediaPros v0.1.37
+
+### AutoShort: xóa logo trong vùng khoanh
+
+- Thêm tùy chọn STTN xóa toàn bộ vùng khoanh suốt video, dùng cho logo cố định mà OCR không nhận diện được.
+- Xem thử STTN 5 giây dùng cùng mask thủ công với luồng xuất video. Có thể chọn không tạo phụ đề để chỉ xử lý hình ảnh.
+- Sửa bộ kiểm tra IPC cho kiểm tra và tải dependency để nhận chế độ mới.
+- Vùng khoanh được phục hồi bằng AI; chi tiết nền có thể nhòe. Chưa bao gồm khử watermark bằng alpha.
+
+## TediaPros v0.1.36
+
+### Tối ưu hóa xác thực thời lượng xuất video (Duration Validation)
+
+- **Xác thực thời lượng linh hoạt (validateDurationMeasurement)**: Kiểm tra độ khớp thời lượng video xuất trong dung sai an toàn (mặc định 3 frame) đối với cả luồng video (`streamDuration`) lẫn container (`containerDuration`), xử lý triệt để hiện tượng video có đuôi âm thanh dài hơn hình ảnh (audio tail) do padding AAC.
+- **Đồng bộ thời lượng AutoShort Item Coordinator**: Ghim `outputDuration` chính xác theo thời lượng luồng video thực tế (`visualDurationSeconds`) thay vì ước tính, đảm bảo tính nhất quán giữa tiến trình retiming, tts-timeline và burn media.
+- **Cập nhật ADR 011 & Test Suite**: Bổ sung bộ kiểm thử đơn vị và tích hợp chặt chẽ cho toàn bộ pipeline render và xác thực media.
+
+## TediaPros v0.1.35
+
+### Facebook Reels: quét, xuất dữ liệu và quản lý kênh
+
+- Quét Reels từ profile/fanpage, hiển thị tiến trình, kết quả một phần và trạng thái xác minh nguồn; cải thiện thu thập danh sách lớn và lấy caption theo đúng video ID.
+- Chọn video để tải hoặc xuất caption, bài viết liên kết và bảng Excel; hiển thị đầy đủ nội dung cùng lỗi của từng bước.
+- Thư viện kênh Reels lưu thư mục riêng, hỗ trợ mở/đổi thư mục, thêm kênh từ video đã tải và lấy video mới. Chống tải trùng theo ID, tái sử dụng video có sẵn.
+
+### Tự theo dõi Reels và thông báo
+
+- Bật theo dõi hằng ngày cho từng kênh; lịch mặc định 09:00 giờ Việt Nam, có thể đổi giờ. Nếu ứng dụng đóng hoặc máy ngủ qua lịch, chạy bù một lượt khi mở lại/thức dậy.
+- Chỉ tự tải các ID đã xác minh thuộc kênh và chưa từng tải thành công. Video tải lỗi được xét lại ở lượt kế tiếp; lịch sử chống trùng vẫn giữ khi xóa file cũ.
+- Chuông thông báo hiển thị số video đã tải/bỏ qua/lỗi, danh sách video và nút mở thư mục; hỗ trợ đã đọc, xóa từng thông báo và xóa tất cả thông báo đã kết thúc.
+- Giữ tối đa 100 thông báo, có thanh cuộn khi nội dung dài. Xóa thông báo không xóa video, lịch sử tải hoặc lịch theo dõi; thông báo đang chạy được giữ lại.
+
+Theo dõi tự động chạy khi ứng dụng mở, dùng phiên Facebook đã chọn và kết nối trực tiếp. Các kết quả chưa quét hết hoặc cần đăng nhập được báo rõ trong thông báo.
+
+## TediaPros v0.1.33
+
+### Khắc phục & Tăng cường độ ổn định Runtime (Multi-Channel Fallback)
+
+- **Dự phòng Runtime đa kênh tự động**: Tự động fallback sang các kênh runtime trước đó (`runtime-v6`, `runtime-v5`) khi kênh mới (`runtime-v7`) chưa sẵn sàng hoặc gặp lỗi mạng (404/timeout), giải quyết triệt để lỗi không khởi tạo được FFmpeg/FFprobe trên máy tính mới cài đặt.
+- **Tải model tách Vocal thông minh**: Áp dụng cơ chế fallback tương tự cho các manifest mô hình tách thoại offline.
+- **Tối ưu hóa dung lượng & dọn dẹp workspace**: Loại bỏ các artifact và file tạm thừa, tinh gọn codebase.
+
 ## TediaPros v0.1.32
 
 ### Tách nền màu Chroma Key cho hiệu ứng CapCut

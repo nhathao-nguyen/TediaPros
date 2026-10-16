@@ -8,12 +8,13 @@ export interface DistributionConfig {
   owner: string
   repo: string
   runtimeChannel: string
+  fallbackRuntimeChannels?: string[]
   runtimeSource: 'remote' | 'local'
   localRuntimeDir?: string
   manifestUrl: string
   separatorModelManifestUrl: string
-  getAssetUrl: (assetName: string) => string
-  getSeparatorModelAssetUrl: (assetName: string) => string
+  getAssetUrl: (assetName: string, channel?: string) => string
+  getSeparatorModelAssetUrl: (assetName: string, channel?: string) => string
 }
 
 const LOCAL_RUNTIME_SCHEME = 'local-runtime:'
@@ -43,7 +44,7 @@ function localRuntimeFileName(url: string | URL | Request): string | null {
  */
 export function createDistributionFetch(config: DistributionConfig): typeof fetch {
   const localRuntimeDir = config.localRuntimeDir
-  if (app.isPackaged !== false || !localRuntimeDir) return fetch
+  if (app?.isPackaged !== false || !localRuntimeDir) return fetch
 
   return async (input: string | URL | Request, init?: RequestInit): Promise<Response> => {
     const fileName = localRuntimeFileName(input)
@@ -73,8 +74,9 @@ export function getDistributionConfig(): DistributionConfig {
   const owner = process.env.TEDIAPROS_DISTRIBUTION_OWNER?.trim() || 'nhathao-nguyen'
   const repo = process.env.TEDIAPROS_DISTRIBUTION_REPO?.trim() || 'TediaPros'
   const runtimeChannel = process.env.TEDIAPROS_RUNTIME_CHANNEL?.trim() || 'runtime-v7'
+  const fallbackRuntimeChannels = ['runtime-v6', 'runtime-v5']
   const localCandidate = process.env.TEDIAPROS_LOCAL_RUNTIME_DIR?.trim()
-  const localRuntimeDir = app.isPackaged === false && localCandidate && isAbsolute(localCandidate) ? resolve(localCandidate) : undefined
+  const localRuntimeDir = app?.isPackaged === false && localCandidate && isAbsolute(localCandidate) ? resolve(localCandidate) : undefined
   const runtimeSource: DistributionConfig['runtimeSource'] = localRuntimeDir ? 'local' : 'remote'
 
   const manifestUrl =
@@ -91,22 +93,25 @@ export function getDistributionConfig(): DistributionConfig {
       ? `https://github.com/${owner}/${repo}/releases/download/${runtimeChannel}/separator-model-manifest.json`
       : ''
 
-  const getAssetUrl = (assetName: string): string => {
+  const getAssetUrl = (assetName: string, channel?: string): string => {
     if (localRuntimeDir) return `local-runtime:///${encodeURIComponent(assetName)}`
     if (!owner || !repo) return ''
-    return `https://github.com/${owner}/${repo}/releases/download/${runtimeChannel}/${encodeURIComponent(assetName)}`
+    const targetChannel = channel || runtimeChannel
+    return `https://github.com/${owner}/${repo}/releases/download/${targetChannel}/${encodeURIComponent(assetName)}`
   }
 
-  const getSeparatorModelAssetUrl = (assetName: string): string => {
+  const getSeparatorModelAssetUrl = (assetName: string, channel?: string): string => {
     if (localRuntimeDir) return `local-runtime:///${encodeURIComponent(assetName)}`
     if (!owner || !repo) return ''
-    return `https://github.com/${owner}/${repo}/releases/download/${runtimeChannel}/${encodeURIComponent(assetName)}`
+    const targetChannel = channel || runtimeChannel
+    return `https://github.com/${owner}/${repo}/releases/download/${targetChannel}/${encodeURIComponent(assetName)}`
   }
 
   return {
     owner,
     repo,
     runtimeChannel,
+    fallbackRuntimeChannels,
     runtimeSource,
     ...(localRuntimeDir ? { localRuntimeDir } : {}),
     manifestUrl,

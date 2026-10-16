@@ -173,7 +173,7 @@ function normalizeBaseUrl(value?: string): string {
 
 export function isProviderThrottledError(message?: string): boolean {
   if (!message) return false
-  return /provider-throttled|405|429|too many requests|rate limit|quota|resource-exhausted|robot|method not allowed|anti-bot|chống bot|hạn chế tần suất|giới hạn tần suất/iu.test(message)
+  return /provider-throttled|\b(?:405|429)\b|too many requests|rate limit|quota|resource-exhausted|robot|method not allowed|anti-bot|chống bot|hạn chế tần suất|giới hạn tần suất/iu.test(message)
 }
 
 export function isPermanentGatewayError(message?: string): boolean {

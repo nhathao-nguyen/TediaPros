@@ -1,316 +1,149 @@
 import { BrowserWindow, session as electronSession } from 'electron'
-import type { PlaylistEntry, PlaylistProbe } from '../shared/types'
-import { populateSessionFromDomainCookies, sitePartition } from './cookies'
-import { logInfo, logWarn } from './logger'
+import { createHash, randomUUID } from 'node:crypto'
+import type { PlaylistProbe } from '../shared/types'
+import { facebookReelEntry, facebookReelId, facebookReelsSource,
+  type FacebookReelsRequest } from '../shared/facebookReels'
+import { populateSessionFromDomainCookies } from './cookies'
+import { reelsOperation, runFacebookReelsController, type FacebookReelsControllerOptions } from './facebookReelsController'
+import { observeFacebookReelsNetwork } from './facebookReelsNetwork'
+import { facebookAccountDigest } from './facebookReelsAccount'
 
-/**
- * Kiểm tra xem URL có phải là trang / tab danh sách Facebook Reels hay không.
- * Ví dụ:
- * - https://www.facebook.com/profile.php?id=61580381841572&sk=reels_tab
- * - https://www.facebook.com/username/reels/
- * - https://www.facebook.com/username/reels
- * Không khớp với video Reel đơn lẻ (dạng /reel/<id>).
- */
-export function isFacebookReelsTabUrl(url: string): boolean {
+export function isFacebookReelsTabUrl(url: string): boolean { return facebookReelsSource(url) !== null }
+
+export function facebookBrowserUrl(raw: string): boolean {
   try {
-    const parsed = new URL(url)
-    const hostname = parsed.hostname.toLowerCase()
-    if (!hostname.endsWith('facebook.com') && !hostname.endsWith('fb.watch')) {
-      return false
-    }
-
-    const sk = parsed.searchParams.get('sk')?.toLowerCase()
-    if (sk === 'reels_tab' || sk === 'reels') {
-      return true
-    }
-
-    const segments = parsed.pathname
-      .toLowerCase()
-      .split('/')
-      .filter(Boolean)
-
-    if (
-      segments.length >= 1 &&
-      (segments[segments.length - 1] === 'reels' || segments[segments.length - 1] === 'reel_tab')
-    ) {
-      return true
-    }
-
-    return false
-  } catch {
-    return false
-  }
+    const u = new URL(raw)
+    return u.protocol === 'https:' && !u.username && !u.password &&
+      (u.hostname === 'facebook.com' || u.hostname.endsWith('.facebook.com'))
+  } catch { return false }
 }
 
-const sleep = (ms: number): Promise<void> => new Promise((resolve) => setTimeout(resolve, ms))
-
-interface ExtractedReel {
-  id: string
-  url: string
-  title: string
+export interface FacebookReelsBrowserDependencies {
+  newSession(): Electron.Session
+  newWindow(session: Electron.Session): BrowserWindow
+  populateCookies: typeof populateSessionFromDomainCookies
+}
+export const facebookReelsBrowserDependencies: FacebookReelsBrowserDependencies = {
+  newSession: () => electronSession.fromPartition(`facebook-reels:${randomUUID()}`),
+  newWindow: ses => new BrowserWindow({ width: 1280, height: 900, show: false, webPreferences: {
+    session: ses, sandbox: true, contextIsolation: true, nodeIntegration: false, backgroundThrottling: false
+  } }), populateCookies: populateSessionFromDomainCookies
 }
 
-/**
- * Cào danh sách video Facebook Reels từ tab Reels của Profile / Trang cá nhân / Fanpage
- * bằng cách tạo trình duyệt ngầm Electron (nạp session và cookie Facebook đã lưu),
- * tự động cuộn trang (infinite scroll) và trích xuất các liên kết /reel/<id>.
- */
-export async function crawlFacebookReelsTab(
-  url: string,
-  proxy?: string | null,
-  useCookies = false
-): Promise<PlaylistProbe> {
-  const partition = sitePartition('facebook')
-  const ses = electronSession.fromPartition(partition)
-
-  if (proxy) {
-    try {
-      await ses.setProxy({ proxyRules: proxy })
-    } catch (err) {
-      logWarn(
-        `[FacebookReels] Không thể thiết lập proxy: ${err instanceof Error ? err.message : String(err)}`
-      )
+const reelScrollersScript = `const root = document.querySelector('[role="main"]') || document.body;
+  const scrollers = new Set();
+  for (const a of root.querySelectorAll('a[href*="/reel/"]')) {
+    for (let e=a.parentElement; e; e=e.parentElement) {
+      if (e.clientHeight > 0 && e.scrollHeight > e.clientHeight + 30 &&
+        (e === document.scrollingElement || /auto|scroll/.test(getComputedStyle(e).overflowY))) { scrollers.add(e); break; }
     }
   }
+  if (!scrollers.size && document.scrollingElement) scrollers.add(document.scrollingElement);`
 
-  // Luôn nạp cookies nếu có sẵn file cookie Facebook
-  try {
-    const loadedCount = await populateSessionFromDomainCookies('facebook.com', ses)
-    if (loadedCount > 0) {
-      logInfo(`[FacebookReels] Đã nạp ${loadedCount} cookie Facebook vào phiên trình duyệt ngầm.`)
-    }
-  } catch (err) {
-    logWarn(
-      `[FacebookReels] Không thể nạp cookie Facebook: ${err instanceof Error ? err.message : String(err)}`
-    )
+// Preview/alt/aria text is not a caption. Read ID-associated Relay data instead.
+export const readFacebookReelsPageScript = `(() => {
+  ${reelScrollersScript}
+  const links = [...root.querySelectorAll('a[href*="/reel/"]')].map(a => a.href);
+  const visible = e => !!(e.offsetWidth || e.offsetHeight || e.getClientRects().length);
+  const loading = [...root.querySelectorAll('[role="progressbar"], [aria-busy="true"]')].some(visible);
+  const atBottom = [...scrollers].every(e => e.scrollTop + e.clientHeight >= e.scrollHeight - 30);
+  const rawTitle = (root.querySelector('h1')?.innerText || document.title || '')
+    .replace(/^\\(\\d+\\+?\\)\\s*/, '')
+    .replace(/\\s*[|•-]\\s*(?:Facebook|Reels).*/gi, '')
+    .trim();
+  const title = rawTitle.split(/\\r?\\n/)[0]?.trim() || '';
+  const profileId = [...root.querySelectorAll('a[href]')].map(a => {
+    try { const u = new URL(a.href); return u.pathname === '/profile.php' && u.searchParams.get('sk') === 'followers' ? u.searchParams.get('id') : null } catch {return null}
+  }).find(id => id && /^\\d{5,30}$/.test(id)) || null;
+  let bytes=0;
+  const scripts = [...document.querySelectorAll('script[type="application/json"]')].reverse()
+    .map(s => s.textContent || '').filter(s => {
+      if (s.length > 4*1024*1024 || !/aggregated_fb_shorts|creation_story/.test(s) || bytes+s.length>24*1024*1024) return false;
+      bytes+=s.length; return true;
+    }).slice(0,256).reverse();
+  const blocked = /\\/checkpoint(?:\\/|$)/.test(location.pathname) ? 'checkpoint' :
+    (/\\/login(?:\\/|\\.php|$)/.test(location.pathname) || (!links.length && document.querySelector('input[name="pass"]'))) ? 'login-required' : undefined;
+  return {title, url:location.href, links, loading, atBottom, profileId, scripts, blocked};
+})()`
+
+export const scrollFacebookReelsScript = `(() => {
+  ${reelScrollersScript}
+  for (const e of scrollers) {
+    const step = Math.max(400, Math.min(1500, e.clientHeight * 0.85));
+    if (e.scrollTop + e.clientHeight >= e.scrollHeight - 30) e.scrollTop=Math.max(0,e.scrollTop-80);
+    e.scrollTop += step;
   }
+})()`
 
-  let win: BrowserWindow | null = null
+/** Each scan gets an isolated, nonpersistent session; cookies and proxy are explicit. */
+export async function crawlFacebookReels(request: FacebookReelsRequest,
+  options: FacebookReelsControllerOptions = {}, dependencies = facebookReelsBrowserDependencies): Promise<PlaylistProbe> {
+  const source = facebookReelsSource(request.url)
+  if (!source) throw new Error('Liên kết profile/fanpage Facebook không hợp lệ.')
+  const ses = dependencies.newSession()
+  let win: BrowserWindow | undefined
+  let observer: ReturnType<typeof observeFacebookReelsNetwork> | undefined
+  let accountMismatch = false
+  const knownIds = new Set((options.initialEntries ?? []).map(e => e.id))
+  const scriptsSeen = new Set<string>()
+  const abort = (): void => { if (win && !win.isDestroyed()) win.destroy() }
   try {
-    win = new BrowserWindow({
-      width: 1280,
-      height: 900,
-      show: false,
-      webPreferences: {
-        partition,
-        sandbox: true,
-        contextIsolation: true,
-        nodeIntegration: false,
-        backgroundThrottling: false
-      }
-    })
-
-    const browserUserAgent = win.webContents
-      .getUserAgent()
-      .replace(/\sElectron\/[\d.]+/gi, '')
-      .replace(/\s(?:T-blao|TediaPros)\/[\d.]+/gi, '')
-    win.webContents.setUserAgent(browserUserAgent)
-
-    logInfo(`[FacebookReels] Đang mở liên kết Reels trong trình duyệt ngầm: ${url}`)
-    try {
-      await win.loadURL(url)
-    } catch (err) {
-      throw new Error(`Không thể kết nối đến Facebook: ${err instanceof Error ? err.message : String(err)}`)
+    await reelsOperation(ses.setProxy(request.proxy ? { proxyRules: request.proxy } : { mode: 'direct' }), options.signal)
+    if (request.useCookies) await reelsOperation(dependencies.populateCookies('facebook.com', ses), options.signal)
+    if (options.expectedAccount) {
+      const account = (await reelsOperation(ses.cookies.get({ name: 'c_user' }), options.signal))
+        .find(c => c.domain?.replace(/^\./, '') === 'facebook.com')?.value
+      if (facebookAccountDigest(account) !== options.expectedAccount) { accountMismatch = true; throw new Error('Tài khoản đã thay đổi.') }
     }
-
-    // Đợi trang nạp DOM và React render danh sách Reels ban đầu
-    let initialFound = 0
-    for (let wait = 0; wait < 6; wait++) {
-      await sleep(1000)
-      if (win.isDestroyed()) break
-      initialFound = await win.webContents
-        .executeJavaScript(`document.querySelectorAll('a[href*="/reel/"]').length`)
-        .catch(() => 0)
-      if (initialFound > 0) break
-    }
-
-    // Lấy tiêu đề trang / người tạo
-    let pageTitle = await win.webContents
-      .executeJavaScript(`
-        (() => {
-          const h1 = document.querySelector('h1');
-          if (h1 && h1.innerText && h1.innerText.trim()) return h1.innerText.trim();
-          const t = document.title || '';
-          return t.replace(/\\s*[|•-]\\s*Facebook/gi, '').trim();
-        })()
-      `)
-      .catch(() => '')
-
-    if (!pageTitle || pageTitle.toLowerCase() === 'facebook') {
-      pageTitle = 'Facebook Reels'
-    }
-
-    const reelsMap = new Map<string, PlaylistEntry>()
-    const MAX_SCROLLS = 40
-    const MAX_ENTRIES = 250
-    const SCROLL_DELAY_MS = 1400
-
-    let consecutiveNoNew = 0
-    let lastCount = 0
-
-    for (let i = 0; i < MAX_SCROLLS; i++) {
-      if (win.isDestroyed()) break
-
-      // Bỏ qua popups / banners cookie nếu có
-      await win.webContents
-        .executeJavaScript(`
-          (() => {
-            const closeBtns = document.querySelectorAll(
-              'div[aria-label="Đóng"], div[aria-label="Close"], [aria-label="Decline optional cookies"], [aria-label="Allow all cookies"], button[data-cookiebanner="accept_button"]'
-            );
-            for (const btn of closeBtns) {
-              try { btn.click(); } catch {}
-            }
-          })()
-        `)
-        .catch(() => {})
-
-      // Trích xuất các thẻ Reel hiện có trong DOM
-      const extracted: ExtractedReel[] = await win.webContents
-        .executeJavaScript(`
-          (() => {
-            const items = [];
-            const seen = new Set();
-            const anchors = document.querySelectorAll('a[href*="/reel/"]');
-            for (const a of anchors) {
-              const href = a.getAttribute('href') || a.href || '';
-              const m = href.match(/\\/reel\\/(\\d{6,})/);
-              if (!m) continue;
-              const id = m[1];
-              if (seen.has(id)) continue;
-              seen.add(id);
-
-              const img = a.querySelector('img');
-              const imgAlt = img ? (img.getAttribute('alt') || '').trim() : '';
-              const aria = (a.getAttribute('aria-label') || '').trim();
-              const card = a.closest('div[role="article"]') ||
-                           a.closest('div[role="gridcell"]') ||
-                           a.closest('div[data-visualcompletion]') ||
-                           a.parentElement;
-              const cardText = card ? (card.innerText || '').trim() : '';
-
-              const isGeneric = (txt) => {
-                if (!txt) return true;
-                const lower = txt.toLowerCase();
-                return lower.startsWith('hình ảnh có thể có') ||
-                       lower.startsWith('may be an image') ||
-                       lower.includes('bản xem trước ô thước phim') ||
-                       lower.includes('reel preview') ||
-                       lower.includes('reels preview');
-              };
-
-              let candidate = '';
-              if (imgAlt && !isGeneric(imgAlt)) {
-                candidate = imgAlt;
-              } else if (aria && !isGeneric(aria)) {
-                candidate = aria;
-              } else if (cardText) {
-                const lines = cardText.split('\\n').map(s => s.trim()).filter(Boolean);
-                candidate = lines.join(' - ');
-              }
-
-              candidate = candidate.replace(/\\s+/g, ' ').trim();
-              if (candidate.length > 90) {
-                candidate = candidate.slice(0, 87) + '...';
-              }
-
-              items.push({
-                id,
-                url: 'https://www.facebook.com/reel/' + id,
-                title: candidate || ('Facebook Reel ' + id)
-              });
-            }
-            return items;
-          })()
-        `)
-        .catch(() => [])
-
-      for (const item of extracted) {
-        if (!reelsMap.has(item.id)) {
-          reelsMap.set(item.id, {
-            id: item.id,
-            title: item.title,
-            url: item.url,
-            uploader: pageTitle,
-            duration: null,
-            durationString: null,
-            isPlaylist: false,
-            count: null
-          })
+    if (options.signal?.aborted) throw new Error('Cancelled')
+    win = dependencies.newWindow(ses)
+    const wc = win.webContents
+    wc.setUserAgent(wc.getUserAgent().replace(/\sElectron\/[\d.]+/gi, '').replace(/\s(?:T-blao|TediaPros)\/[\d.]+/gi, ''))
+    wc.setWindowOpenHandler(() => ({ action: 'deny' }))
+    const guardNavigation = (e: Electron.Event, target: string): void => { if (!facebookBrowserUrl(target)) e.preventDefault() }
+    wc.on('will-navigate', guardNavigation)
+    wc.on('will-redirect', guardNavigation)
+    options.signal?.addEventListener('abort', abort, { once: true })
+    observer = observeFacebookReelsNetwork(wc.debugger, () => ({ source, knownIds }))
+    await reelsOperation(Promise.all([observer.ready, win.loadURL(source.url)]), options.signal, 45000)
+    const network = observer
+    return await runFacebookReelsController(source, request, {
+      readPage: async () => {
+        const page = await wc.executeJavaScript(readFacebookReelsPageScript) as {
+          title: string; url: string; links: string[]; loading: boolean; atBottom: boolean;
+          profileId: string | null; scripts: string[]; blocked?: 'login-required' | 'checkpoint'
         }
-      }
-
-      if (reelsMap.size > lastCount) {
-        consecutiveNoNew = 0
-        lastCount = reelsMap.size
-        logInfo(`[FacebookReels] Đã quét được ${reelsMap.size} video reels…`)
-      } else {
-        consecutiveNoNew++
-      }
-
-      if (reelsMap.size >= MAX_ENTRIES) {
-        logInfo(`[FacebookReels] Đã đạt ngưỡng tối đa ${MAX_ENTRIES} video reels.`)
-        break
-      }
-
-      if (consecutiveNoNew >= 4) {
-        // 4 nhịp cuộn liên tiếp không xuất hiện reel mới -> đã đến cuối danh sách
-        break
-      }
-
-      // Cuộn xuống
-      await win.webContents
-        .executeJavaScript(`
-          (() => {
-            window.scrollTo(0, document.body.scrollHeight || document.documentElement.scrollHeight);
-            const scrollers = document.querySelectorAll('div[role="main"], div[role="feed"]');
-            for (const s of scrollers) {
-              s.scrollTop = s.scrollHeight;
-            }
-          })()
-        `)
-        .catch(() => {})
-
-      await sleep(SCROLL_DELAY_MS)
-    }
-
-    const entries = Array.from(reelsMap.values())
-
-    if (entries.length === 0) {
-      const pageText: string = await win.webContents
-        .executeJavaScript(`document.body.innerText || ''`)
-        .catch(() => '')
-      const currentUrl = win.webContents.getURL()
-
-      if (
-        pageText.includes('Đăng nhập') ||
-        pageText.includes('Log In') ||
-        pageText.includes('Bạn phải đăng nhập') ||
-        currentUrl.includes('/login')
-      ) {
-        throw new Error(
-          'Facebook yêu cầu đăng nhập để xem tab Reels này. Vui lòng vào Cài đặt kết nối tài khoản Facebook rồi thử lại.'
-        )
-      }
-
-      throw new Error(
-        'Không tìm thấy video Reel nào trong trang. Hãy kiểm tra lại liên kết hoặc kết nối tài khoản Facebook.'
-      )
-    }
-
-    logInfo(`[FacebookReels] Hoàn tất quét: tổng cộng ${entries.length} video reels.`)
-    return {
-      isPlaylist: true,
-      title: `${pageTitle} - Reels`,
-      count: entries.length,
-      entries
-    }
+        if (!facebookBrowserUrl(page.url)) throw new Error('Facebook navigation left allowed origin')
+        const ids = page.links.filter(link => source.kind === 'feed' || new URL(link).searchParams.get('s') === 'fb_shorts_profile')
+          .map(facebookReelId).filter((id): id is string => id !== null)
+        for (const id of ids) knownIds.add(id)
+        if (!source.profileId && page.profileId) source.profileId = page.profileId
+        for (const raw of page.scripts) {
+          const hash = createHash('sha256').update(raw).digest('hex')
+          if (!scriptsSeen.has(hash)) { scriptsSeen.add(hash); network.ingest(raw) }
+        }
+        return { ...page, entries: ids.map(id => facebookReelEntry(id)) }
+      },
+      scroll: async () => { await wc.executeJavaScript(scrollFacebookReelsScript) },
+      network: () => network.snapshot(), wait: ms => new Promise(resolve => setTimeout(resolve, ms)), now: Date.now
+    }, options)
+  } catch {
+    const partial = await runFacebookReelsController(source, request, {
+      readPage: async () => { throw new Error('Không mở được Facebook') }, scroll: async () => {},
+      network: () => observer?.snapshot() ?? { entries: [], connections: [], pending: 0, revision: 0, warnings: [] },
+      wait: async () => {}, now: Date.now
+    }, { ...options, initialEntries: [...(options.initialEntries ?? []), ...(observer?.snapshot().entries ?? [])] })
+    if (accountMismatch) partial.facebook?.warnings.push('Tài khoản Facebook đã thay đổi. Hãy bắt đầu lượt quét mới.')
+    return partial
   } finally {
-    if (win && !win.isDestroyed()) {
-      try {
-        win.destroy()
-      } catch {}
-      win = null
-    }
+    options.signal?.removeEventListener('abort', abort)
+    observer?.dispose()
+    if (win && !win.isDestroyed()) win.destroy()
+    await reelsOperation(ses.clearStorageData(), undefined, 10000).catch(() => {})
   }
+}
+
+/** Compatibility path for existing getInfo/getPlaylist callers. */
+export async function crawlFacebookReelsTab(url: string, proxy?: string | null, useCookies = false): Promise<PlaylistProbe> {
+  return crawlFacebookReels({ url, proxy, useCookies })
 }

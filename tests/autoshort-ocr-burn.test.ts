@@ -115,6 +115,15 @@ test('taoFilterComplexAutomatic generates exact video filter chain and bounded s
   const meta1080: Meta = { w: 1920, h: 1080, giay: 1.0, hasAudio: false }
   const f1080 = taoFilterComplexAutomatic(meta1080, plan, true, 'sub.ass', false).join(' ')
   assert.match(f1080, /gblur=sigma=43:steps=6/u)
+
+  // When color primaries are reserved, setparams must be injected before format=gbrp
+  const metaReserved: Meta = { w: 1920, h: 1080, giay: 1.0, hasAudio: false, colorPrimaries: 'reserved' }
+  const fReserved = taoFilterComplexAutomatic(metaReserved, plan, true, 'sub.ass', false).join(' ')
+  assert.match(fReserved, /setparams=color_primaries=bt709:color_trc=bt709:colorspace=bt709,format=gbrp\[display\]/u)
+
+  // In manual graph, setparams must also be injected
+  const manualReserved = taoFilterComplex(metaReserved, [{ x0: 10, y0: 10, x1: 100, y1: 50 }], true, false, 'sub.ass', false).join(' ')
+  assert.match(manualReserved, /\[0:v\]setparams=color_primaries=bt709:color_trc=bt709:colorspace=bt709\[display\]/u)
 })
 
 test('automatic graph is constant size and forbids repeatlast/eof_action/shortest', () => {

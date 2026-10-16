@@ -8,6 +8,7 @@ import {
   checkGeminiGateway,
   rephraseGeminiGateway,
   isPermanentGatewayError,
+  isProviderThrottledError,
   autoHealReviewedDubbingPunctuation
 } from '../src/main/geminiGateway'
 import { parseAiJsonObject } from '../src/shared/aiOutput'
@@ -309,6 +310,19 @@ test('isPermanentGatewayError classifies permanent vs transient errors', () => {
   assert.equal(isPermanentGatewayError('Gemini Gateway không xác thực được model: trạng thái unverified.'), true)
   assert.equal(isPermanentGatewayError('Lỗi mạng tạm thời khi gọi gateway'), false)
   assert.equal(isPermanentGatewayError('Gateway timeout sau 60s'), false)
+})
+
+test('isProviderThrottledError correctly detects rate limiting and avoids exit code false positives', () => {
+  assert.equal(isProviderThrottledError('HTTP 429 Too Many Requests'), true)
+  assert.equal(isProviderThrottledError('HTTP 405 Method Not Allowed'), true)
+  assert.equal(isProviderThrottledError('provider-throttled'), true)
+  assert.equal(isProviderThrottledError('giới hạn tần suất'), true)
+  assert.equal(isProviderThrottledError('chống bot'), true)
+
+  // Exit code 4294967167 from FFmpeg (-129) MUST NOT trip circuit breaker
+  assert.equal(isProviderThrottledError('FFmpeg xuất video thất bại, mã 4294967167: Conversion failed!.'), false)
+  assert.equal(isProviderThrottledError('mã 4294967167'), false)
+  assert.equal(isProviderThrottledError('exit code 4294967167'), false)
 })
 
 test('Gemini Gateway explains structured failures without leaking raw JSON and does not replay them', async () => {

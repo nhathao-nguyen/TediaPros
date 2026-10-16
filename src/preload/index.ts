@@ -1,5 +1,6 @@
 import { contextBridge, ipcRenderer } from 'electron'
 import {
+  AutoShortConfig,
   AutoShortEvent,
   AutoShortDependencyConfig,
   AutoShortDependencyProgress,
@@ -79,10 +80,40 @@ import {
   YtDlpErrorCode
 } from '../shared/types'
 import type { TranslationAssessment } from '../shared/translation'
-import type { CapCutScannedEffect, SavedOverlayEffect } from '../shared/videoEffects'
+import type { ReelsMonitorResult, ReelsWatchRequest } from '../shared/facebookReelsMonitor'
+import type { FacebookReelsRequest, FacebookReelsProgress, FacebookReelsStartResult,
+  FacebookReelsResult, FacebookReelsMetadataResult, FacebookReelsExportRequest, FacebookReelsExportResponse,
+  FacebookReelsChannelSource, FacebookReelsLibraryResult } from '../shared/facebookReels'
+import type { CapCutScannedEffect, SavedOverlayEffect, OverlayComposition } from '../shared/videoEffects'
 import type { OverlayChromaKey } from '../shared/overlayChromaKey'
 
 const api = {
+  facebookReelsMonitorState: (): Promise<ReelsMonitorResult> => ipcRenderer.invoke('facebook-reels:monitor-state'),
+  setFacebookReelsWatch: (request: ReelsWatchRequest): Promise<ReelsMonitorResult> => ipcRenderer.invoke('facebook-reels:monitor-watch', request),
+  setFacebookReelsMonitorTime: (time: string): Promise<ReelsMonitorResult> => ipcRenderer.invoke('facebook-reels:monitor-time', time),
+  checkFacebookReelsWatchNow: (url: string): Promise<ReelsMonitorResult> => ipcRenderer.invoke('facebook-reels:monitor-check', url),
+  cancelFacebookReelsMonitor: (): Promise<ReelsMonitorResult> => ipcRenderer.invoke('facebook-reels:monitor-cancel'),
+  readFacebookReelsNotices: (ids: string[]): Promise<ReelsMonitorResult> => ipcRenderer.invoke('facebook-reels:monitor-read', ids),
+  deleteFacebookReelsNotices: (ids: string[]): Promise<ReelsMonitorResult> => ipcRenderer.invoke('facebook-reels:monitor-delete', ids),
+  onFacebookReelsMonitorChanged: (cb: () => void): (() => void) => {
+    const listener = (): void => cb()
+    ipcRenderer.on('facebook-reels:monitor-changed', listener)
+    return () => ipcRenderer.removeListener('facebook-reels:monitor-changed', listener)
+  },
+  facebookReelsChannels: (): Promise<FacebookReelsLibraryResult> => ipcRenderer.invoke('facebook-reels:channels'),
+  trackFacebookReelsChannel: (source: FacebookReelsChannelSource, folder: string): Promise<FacebookReelsLibraryResult> => ipcRenderer.invoke('facebook-reels:track-channel', source, folder),
+  updateFacebookReelsChannelFolder: (url: string, folder: string): Promise<FacebookReelsLibraryResult> => ipcRenderer.invoke('facebook-reels:channel-folder', url, folder),
+  removeFacebookReelsChannel: (url: string): Promise<FacebookReelsLibraryResult> => ipcRenderer.invoke('facebook-reels:remove-channel', url),
+  startFacebookReels: (request: FacebookReelsRequest): Promise<FacebookReelsStartResult> => ipcRenderer.invoke('facebook-reels:start', request),
+  facebookReelsResult: (jobId: string): Promise<FacebookReelsResult> => ipcRenderer.invoke('facebook-reels:result', jobId),
+  cancelFacebookReels: (jobId: string): Promise<{ ok: boolean; error?: string }> => ipcRenderer.invoke('facebook-reels:cancel', jobId),
+  facebookReelsMetadata: (jobId: string, ids: string[]): Promise<FacebookReelsMetadataResult> => ipcRenderer.invoke('facebook-reels:metadata', jobId, ids),
+  exportFacebookReels: (jobId:string,request:FacebookReelsExportRequest):Promise<FacebookReelsExportResponse>=>ipcRenderer.invoke('facebook-reels:export',jobId,request),
+  onFacebookReelsProgress: (cb: (p: FacebookReelsProgress) => void): (() => void) => {
+    const listener = (_e: unknown, p: FacebookReelsProgress): void => cb(p)
+    ipcRenderer.on('facebook-reels:progress', listener)
+    return () => ipcRenderer.removeListener('facebook-reels:progress', listener)
+  },
   checkDeps: (): Promise<DepStatus> => ipcRenderer.invoke('deps:check'),
 
   runSetup: (): Promise<{ ok: boolean; error?: string }> => ipcRenderer.invoke('deps:setup'),
@@ -448,6 +479,10 @@ const api = {
     ipcRenderer.invoke('autoshort:retryTitle', request),
   autoShortClearCache: (): Promise<{ ok: boolean; error?: string }> =>
     ipcRenderer.invoke('autoshort:clearCache'),
+  autoShortSaveWorkflowConfig: (config: AutoShortConfig, validationError?: string): Promise<{ ok: boolean; error?: string }> =>
+    ipcRenderer.invoke('autoshort:saveWorkflowConfig', config, validationError),
+  autoShortGetWorkflowConfig: (outputDir?: string): Promise<{ ok: boolean; config?: AutoShortConfig; error?: string }> =>
+    ipcRenderer.invoke('autoshort:getWorkflowConfig', outputDir),
   onAutoShortEvent: (cb: (event: AutoShortEvent) => void): (() => void) => {
     const listener = (_e: unknown, event: AutoShortEvent): void => cb(event)
     ipcRenderer.on('autoshort:event', listener)
@@ -470,12 +505,24 @@ const api = {
     ipcRenderer.invoke('effects:scanCapCut'),
   resolveOverlayChromaKey: (videoPath: string): Promise<{ ok: boolean; chromaKey?: OverlayChromaKey; error?: string }> =>
     ipcRenderer.invoke('effects:chromaKey', videoPath),
+  resolveOverlayComposition: (videoPath: string): Promise<{ ok: boolean; composition?: OverlayComposition; error?: string }> =>
+    ipcRenderer.invoke('effects:composition', videoPath),
   getSavedOverlayEffects: (): Promise<SavedOverlayEffect[]> =>
     ipcRenderer.invoke('effects:getSavedVault'),
   saveOverlayToVault: (effect: CapCutScannedEffect): Promise<{ ok: boolean; saved?: SavedOverlayEffect; error?: string }> =>
     ipcRenderer.invoke('effects:saveToVault', effect),
   deleteOverlayFromVault: (id: string): Promise<boolean> =>
-    ipcRenderer.invoke('effects:deleteFromVault', id)
+    ipcRenderer.invoke('effects:deleteFromVault', id),
+  typesafeGetInfo: (): Promise<{ hasKey: boolean; masked: string }> =>
+    ipcRenderer.invoke('typesafe:getInfo'),
+  typesafeHasKey: (): Promise<boolean> =>
+    ipcRenderer.invoke('typesafe:hasKey'),
+  typesafeSaveKey: (key: string): Promise<{ ok: boolean; message: string }> =>
+    ipcRenderer.invoke('typesafe:saveKey', key),
+  typesafeCheckKey: (key: string): Promise<{ ok: boolean; message: string }> =>
+    ipcRenderer.invoke('typesafe:checkKey', key),
+  typesafeClearKey: (): Promise<{ ok: boolean }> =>
+    ipcRenderer.invoke('typesafe:clearKey')
 }
 
 contextBridge.exposeInMainWorld('api', api)

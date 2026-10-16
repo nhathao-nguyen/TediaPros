@@ -1,3 +1,6 @@
+import { runGeminiAlpha } from './inpainting/geminiAlpha'
+import { isAlphaRemoval } from '../shared/autoShortOcrBlur'
+import { createManualSttnTimeline } from '../shared/sttnManualTimeline'
 import { app, dialog } from 'electron'
 import { spawn, type ChildProcess } from 'node:child_process'
 import { access, copyFile, mkdir, readFile, readdir, rename, rm, stat, writeFile } from 'node:fs/promises'
@@ -501,11 +504,11 @@ function spawnAutoShortChild(command: string, args: string[], options?: Paramete
 }
 
 function needsWhisper(method: AutoShortConfig['subtitleMethod']): boolean {
-  return method !== 'ocr'
+  return method === 'whisper' || method === 'whisper-ocr'
 }
 
 export function needsCuda(config: Pick<AutoShortConfig, 'subtitleMethod' | 'whisperDevice'>): boolean {
-  return config.whisperDevice === 'cuda' && config.subtitleMethod !== 'ocr'
+  return config.whisperDevice === 'cuda' && (config.subtitleMethod === 'whisper' || config.subtitleMethod === 'whisper-ocr')
 }
 
 export function resolveAutoShortTtsLanguage(config: AutoShortConfig, detectedLanguage?: string | null): string {
@@ -575,7 +578,7 @@ export async function getAutoShortReadiness(
 
   const automaticBlur = isAutomaticOcrBlur(config)
   const sttnRemoval = isSttnRemoval(config)
-  const visualOcrRequired = automaticBlur || sttnRemoval
+  const visualOcrRequired = automaticBlur || (sttnRemoval && config.blurMode !== 'sttn-region')
   const needsOcr = autoShortNeedsOcr(config)
   const useWhisper = needsWhisper(config.subtitleMethod)
   const useCuda = needsCuda(config)
@@ -1153,14 +1156,18 @@ function emitProgress(
   outputPath?: string,
   error?: string
 ): void {
+  const boundedPercent = Math.max(0, Math.min(100, Math.round(percent)))
   safeEmit(job, {
     type: 'item-progress',
     jobId: job.id,
     taskId: item.id,
     itemId: item.id,
     itemStatus: status,
-    itemPercent: Math.max(0, Math.min(100, Math.round(percent))),
+    itemPercent: boundedPercent,
     itemMessage: message,
+    percent: boundedPercent,
+    phase: status,
+    message,
     batchIndex: index + 1,
     batchTotal: total,
     outputPath,
@@ -3929,6 +3936,7 @@ interface SttnPreviewHooks {
   probeMedia?: typeof probeBurnMedia
   runVisualOcr?: typeof ocrVideoWithVisualTimeline
   removeSubtitles?: typeof runSttnRemoval
+  removeAlpha?: typeof runGeminiAlpha
   runMedia?: typeof runSttnPreviewMedia
   resourceManager?: AutoShortResourceManager
 }
@@ -3974,7 +3982,7 @@ export async function runAutoShortSttnPreview(
   })
   if (!validated.ok) throw new Error(validated.error)
   const { config } = validated.value
-  if (!isSttnRemoval(config)) throw new Error('Hãy bật chế độ xóa chữ STTN trước khi xem thử.')
+  if (!isSttnRemoval(config) && !isAlphaRemoval(config)) throw new Error('Hãy bật chế độ xóa chữ STTN trước khi xem thử.')
   throwIfAborted(signal)
   const sourcePath = validated.value.items[0].filePath
   if (!(await stat(sourcePath)).isFile()) throw new Error('Video xem thử không hợp lệ.')
@@ -4040,9 +4048,25 @@ export async function runAutoShortSttnPreview(
   const geometry = meta.geometry ?? deriveCanonicalDisplayGeometry({ codedWidth: meta.w, codedHeight: meta.h, rotation: meta.rotation, sampleAspectRatio: meta.sampleAspectRatio, videoStart: meta.videoStart })
   const scanRegion = normalizedToPixels(config.ocrRegion, geometry)
   if (!scanRegion) throw new Error('Cần chọn vùng OCR để xem thử STTN.')
+  if (isAlphaRemoval(config)) {
+    const result = await resourceManager.withLease(['local-cpu-heavy'], signal, async () =>
+      (hooks.removeAlpha || runGeminiAlpha)({ videoPath: sourceClip, outputPath: cleanedPath,
+        ffmpegPath: ffmpeg, ffprobePath: ffprobe, region: scanRegion, signal,
+        onProgress: (percent, message) => onProgress({ percent: 5 + percent * .85, message }) }))
+    await media(ffmpeg, ['-i', result.outputPath, '-map', '0:v:0', '-map', '0:a:0?', '-c:v', 'libx264', '-preset', 'fast', '-crf', '18', '-pix_fmt', 'yuv420p', '-c:a', 'aac', '-movflags', '+faststart', outputPath], signal)
+    throwIfAborted(signal)
+    if (!(await stat(outputPath)).size) throw new Error('Video xem thử Alpha trống.')
+    await Promise.all([sourceClip, cleanedPath, ...(videoPath === sourcePath ? [] : [videoPath])].map(path => rm(path, { recursive: true, force: true })))
+    onProgress({ percent: 100, message: 'Xem thử Alpha hoàn tất.' })
+    return { ...result, outputPath }
+  }
   const ocrDir = join(workDir, 'ocr')
   await mkdir(ocrDir, { recursive: true })
-  const visual = await resourceManager.withLease(['local-gpu-heavy', 'local-cpu-heavy'], signal, async () => {
+  const visual = config.blurMode === 'sttn-region'
+    ? { timeline: createManualSttnTimeline({ width: geometry.displayWidth, height: geometry.displayHeight,
+        durationSeconds: meta.videoDurationSeconds || meta.giay, sampleFps: 8,
+        geometryFingerprint: geometry.fingerprint, scanRegion }), boxSegmentCount: 1 }
+    : await resourceManager.withLease(['local-gpu-heavy', 'local-cpu-heavy'], signal, async () => {
     return (hooks.runVisualOcr || ocrVideoWithVisualTimeline)({
       input: sourceClip, outputDir: ocrDir, scanRegion, profile: 'accurate', geometry,
       videoDurationSeconds: meta.videoDurationSeconds || meta.giay, sampleFps: 8, signal
