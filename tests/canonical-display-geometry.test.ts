@@ -194,4 +194,34 @@ test('canonicalBurnDisplayFilter returns null for square SAR and zero start', ()
     canonicalBurnDisplayFilter(nonSquareSar),
     'scale=768:576:flags=lanczos,setsar=1'
   )
+
+  const reservedColor = deriveCanonicalDisplayGeometry({
+    codedWidth: 1920,
+    codedHeight: 1080,
+    rotation: 0,
+    sampleAspectRatio: '1:1',
+    videoStart: 0,
+    colorPrimaries: 'reserved'
+  })
+  assert.equal(
+    canonicalBurnDisplayFilter(reservedColor),
+    'setparams=color_primaries=bt709:color_trc=bt709:colorspace=bt709'
+  )
+
+  const reservedWithStartAndSar = deriveCanonicalDisplayGeometry({
+    codedWidth: 720,
+    codedHeight: 576,
+    sampleAspectRatio: '16:15',
+    videoStart: 1.5,
+    colorPrimaries: 'reserved'
+  })
+  assert.equal(
+    canonicalBurnDisplayFilter(reservedWithStartAndSar),
+    'setparams=color_primaries=bt709:color_trc=bt709:colorspace=bt709,setpts=PTS-STARTPTS,scale=768:576:flags=lanczos,setsar=1'
+  )
+
+  assert.equal(
+    canonicalOcrExtractionFilter(reservedColor, 8),
+    'setparams=color_primaries=bt709:color_trc=bt709:colorspace=bt709,setpts=PTS-STARTPTS,scale=1920:1080:flags=lanczos,setsar=1,fps=8'
+  )
 })

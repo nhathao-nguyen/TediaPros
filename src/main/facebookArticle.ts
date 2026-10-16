@@ -130,6 +130,9 @@ export function parseStoryChapters(text: string): StoryChapter[] {
   }
 
   if (currentBody.length > 0 || chapters.length === 0) {
+    if (chapters.length === 0 && currentTitle === 'Mở đầu') {
+      return []
+    }
     const joined = currentBody.join('\n\n')
     chapters.push({
       index: chapterNumber(currentTitle) || chapters.length + 1,
@@ -806,8 +809,10 @@ export async function fetchArticle(
       if (controller.signal.aborted) { complete = false; stopReason = 'timeout'; break }
       if (visited.has(current.article.url) || hashes.has(contentHash(current.article.content))) { complete = false; stopReason = 'duplicate-content'; break }
       visited.add(current.article.url); hashes.add(contentHash(current.article.content))
+      const siblings = findSiblingChapterUrls(current.html, current.article.url)
       const inline = current.article.chapters || []
-      if (inline.length > 0) {
+      const hasRealInlineChapters = inline.length > 1 || (inline.length === 1 && inline[0].title !== 'Mở đầu')
+      if (hasRealInlineChapters) {
         for (let i = 0; i < inline.length; i++) {
           const ch = inline[i]
           const num = chapterNumber(ch.title)
@@ -827,7 +832,7 @@ export async function fetchArticle(
         }
       } else {
         const urlNum = chapterNumber(new URL(current.article.url).pathname) || chapterNumber(new URL(current.article.url).search)
-        const isUrlChapter = urlNum !== null && urlNum > 1
+        const isUrlChapter = urlNum !== null && urlNum >= 1
         if (page > 0 && chapters.length > 0 && !chapterNumber(current.article.title) && !isUrlChapter) {
           const prev = chapters[chapters.length - 1]
           prev.content += '\n\n' + current.article.content
@@ -835,9 +840,20 @@ export async function fetchArticle(
         } else {
           const num = chapterNumber(current.article.title) || urlNum
           const actual = (num !== null && num >= nextChapterIndex) ? num : nextChapterIndex
+          const foundSib = siblings.find(s => s.index === actual)?.title
+          let rawSibTitle = foundSib ? foundSib.replace(/^\d+[\s\n\-\.]*/, '').trim() : ''
+          if (rawSibTitle.includes('·')) {
+            const beforeDot = rawSibTitle.split('·')[0].trim()
+            if (beforeDot) rawSibTitle = beforeDot
+          }
+          if (rawSibTitle.includes('\n')) {
+            const line = rawSibTitle.split('\n')[0].trim()
+            if (line) rawSibTitle = line
+          }
+          const chTitle = rawSibTitle || (current.article.title && current.article.title !== first.article.title ? current.article.title : (first.article.title ? `${first.article.title} - Chapter ${actual}` : `Chapter ${actual}`))
           chapters.push({
             index: actual,
-            title: current.article.title && current.article.title !== first.article.title ? current.article.title : `Chapter ${actual}`,
+            title: chTitle,
             content: current.article.content,
             wordCount: current.article.content.split(/\s+/).filter(Boolean).length
           })
@@ -845,7 +861,6 @@ export async function fetchArticle(
         }
       }
       if (!complete) break
-      const siblings = findSiblingChapterUrls(current.html, current.article.url)
       const next = nextChapterLink(current.html, current.article.url)
       let nextUrl: string | undefined = undefined
 
@@ -936,7 +951,7 @@ export async function fetchArticle(
     if (startIndex > 1) {
       complete = false; stopReason = 'started-after-first'
     }
-    return { ...first.article, chapters, content: chapters.length > 1 ? chapters.map(ch => `${ch.title}\n\n${ch.content}`).join('\n\n---\n\n') : first.article.content,
+    return { ...first.article, chapters, content: chapters.length > 1 ? chapters.map(ch => `${ch.title}\n\n${ch.content}`).join('\n\n---\n\n') : (chapters[0]?.content || first.article.content),
       completion: complete ? 'complete' : 'partial', stopReason }
   } finally { clearTimeout(timer); parent.removeEventListener('abort', abort) }
 }

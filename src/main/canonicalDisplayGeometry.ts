@@ -10,6 +10,9 @@ export interface CanonicalDisplayGeometry {
   displayWidth: number
   displayHeight: number
   fingerprint: string
+  colorPrimaries?: string
+  colorSpace?: string
+  colorTransfer?: string
 }
 
 export interface CanonicalVideoTiming {
@@ -33,6 +36,9 @@ export interface CanonicalMediaMetadata {
   hasAudio: boolean
   audioDurationSeconds?: number
   audioStartSeconds?: number
+  colorSpace?: string
+  colorPrimaries?: string
+  colorTransfer?: string
   // Legacy compatibility fields
   w: number
   h: number
@@ -85,6 +91,9 @@ export function deriveCanonicalDisplayGeometry(input: {
   rotation?: number
   sampleAspectRatio?: string
   videoStart?: number
+  colorPrimaries?: string
+  colorSpace?: string
+  colorTransfer?: string
 }): CanonicalDisplayGeometry {
   if (
     !Number.isFinite(input.codedWidth) ||
@@ -131,15 +140,34 @@ export function deriveCanonicalDisplayGeometry(input: {
     videoStart,
     displayWidth,
     displayHeight,
-    fingerprint
+    fingerprint,
+    ...(input.colorPrimaries ? { colorPrimaries: input.colorPrimaries } : {}),
+    ...(input.colorSpace ? { colorSpace: input.colorSpace } : {}),
+    ...(input.colorTransfer ? { colorTransfer: input.colorTransfer } : {})
   }
+}
+
+export function isUnsupportedColorParam(value?: string): boolean {
+  if (!value) return false
+  return /reserved|unknown|unspecified/i.test(value)
+}
+
+export function needsColorNormalization(color?: { primaries?: string; space?: string; transfer?: string }): boolean {
+  if (!color) return false
+  return isUnsupportedColorParam(color.primaries) || isUnsupportedColorParam(color.transfer) || isUnsupportedColorParam(color.space)
 }
 
 export function canonicalOcrExtractionFilter(
   geometry: CanonicalDisplayGeometry,
   sampleFps: 8 = 8
 ): string {
-  return `setpts=PTS-STARTPTS,scale=${geometry.displayWidth}:${geometry.displayHeight}:flags=lanczos,setsar=1,fps=${sampleFps}`
+  const needsColor = needsColorNormalization({
+    primaries: geometry.colorPrimaries,
+    space: geometry.colorSpace,
+    transfer: geometry.colorTransfer
+  })
+  const colorFilter = needsColor ? 'setparams=color_primaries=bt709:color_trc=bt709:colorspace=bt709,' : ''
+  return `${colorFilter}setpts=PTS-STARTPTS,scale=${geometry.displayWidth}:${geometry.displayHeight}:flags=lanczos,setsar=1,fps=${sampleFps}`
 }
 
 export function canonicalBurnDisplayFilter(
@@ -147,9 +175,17 @@ export function canonicalBurnDisplayFilter(
 ): string | null {
   const needsPts = Math.abs(geometry.videoStart) > 1e-4
   const needsSar = geometry.sampleAspectRatio.numerator !== geometry.sampleAspectRatio.denominator
-  if (!needsPts && !needsSar) return null
+  const needsColor = needsColorNormalization({
+    primaries: geometry.colorPrimaries,
+    space: geometry.colorSpace,
+    transfer: geometry.colorTransfer
+  })
+  if (!needsPts && !needsSar && !needsColor) return null
 
   const filters: string[] = []
+  if (needsColor) {
+    filters.push('setparams=color_primaries=bt709:color_trc=bt709:colorspace=bt709')
+  }
   if (needsPts) filters.push('setpts=PTS-STARTPTS')
   if (needsSar) {
     filters.push(
@@ -183,6 +219,9 @@ export interface FFprobeRawStream {
   r_frame_rate?: string
   avg_frame_rate?: string
   sample_aspect_ratio?: string
+  color_space?: string
+  color_primaries?: string
+  color_transfer?: string
   tags?: { rotate?: string }
   side_data_list?: Array<{ rotation?: number }>
 }
@@ -233,6 +272,10 @@ export function parseCanonicalMediaMetadata(parsed: FFprobeRawJson): CanonicalMe
   const videoStart = Number(videoStream?.start_time) || Number(parsed.format?.start_time) || 0
   const audioStart = Number(audioStream?.start_time) || 0
 
+  const colorSpace = typeof videoStream?.color_space === 'string' ? videoStream.color_space.trim().toLowerCase() : undefined
+  const colorPrimaries = typeof videoStream?.color_primaries === 'string' ? videoStream.color_primaries.trim().toLowerCase() : undefined
+  const colorTransfer = typeof videoStream?.color_transfer === 'string' ? videoStream.color_transfer.trim().toLowerCase() : undefined
+
   let geometry: CanonicalDisplayGeometry | undefined
   if (codedWidth > 0 && codedHeight > 0) {
     try {
@@ -241,7 +284,10 @@ export function parseCanonicalMediaMetadata(parsed: FFprobeRawJson): CanonicalMe
         codedHeight,
         rotation,
         sampleAspectRatio: sar,
-        videoStart
+        videoStart,
+        colorPrimaries,
+        colorSpace,
+        colorTransfer
       })
     } catch {
       // If invalid, geometry remains undefined
@@ -261,6 +307,9 @@ export function parseCanonicalMediaMetadata(parsed: FFprobeRawJson): CanonicalMe
     hasAudio: Boolean(audioStream),
     audioDurationSeconds: positive(audioStream?.duration) ?? undefined,
     audioStartSeconds: audioStart,
+    ...(colorSpace ? { colorSpace } : {}),
+    ...(colorPrimaries ? { colorPrimaries } : {}),
+    ...(colorTransfer ? { colorTransfer } : {}),
     // Legacy Meta compatibility
     w,
     h,

@@ -392,7 +392,15 @@ const AutoShortTaskCard = memo(function AutoShortTaskCard({
         {task.error && <div className="queue-item-msg" style={{ color: 'var(--danger)' }}>{task.error}</div>}
         {task.recovery && task.status === 'error' && (
           <div className="queue-item-msg small" style={{ color: 'var(--danger)' }}>
-            Phục hồi thời lượng lượt {task.recovery.attempt}/2
+            {task.recovery.kind === 'dubbing-duration'
+              ? `Phục hồi thời lượng lượt ${task.recovery.attempt}/2`
+              : task.recovery.kind === 'provider-throttled'
+                ? `Giới hạn tần suất dịch (lượt ${task.recovery.attempt})`
+                : task.recovery.kind === 'provider-transient'
+                  ? `Dịch tạm lỗi (lượt ${task.recovery.attempt})`
+                  : task.recovery.kind === 'tts-quality'
+                    ? `Phục hồi chất lượng giọng đọc lượt ${task.recovery.attempt}/2`
+                    : `Thử lại lượt ${task.recovery.attempt}/2`}
             {task.recovery.cueId ? ` · ${task.recovery.cueId}` : ''}
             {task.recovery.missingSeconds != null ? ` · thiếu ${task.recovery.missingSeconds.toFixed(2)} giây` : ''}
             {task.recovery.requiredPercent != null ? ` · cần ${task.recovery.requiredPercent.toFixed(1)}%` : ''}

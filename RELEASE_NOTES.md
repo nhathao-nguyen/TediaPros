@@ -1,3 +1,12 @@
+## TediaPros v0.1.39
+
+### AutoShort: chuẩn hóa color metadata và sửa lỗi Circuit Breaker
+
+- **Chuẩn hóa Color Primaries & Color Space**: Tự động phát hiện và chèn `setparams=color_primaries=bt709:color_trc=bt709:colorspace=bt709` khi video đầu vào có color metadata ở trạng thái `reserved` (VUI code 0 hoặc 2) hoặc `unknown`. Ngăn chặn triệt để lỗi đổ vỡ bộ lọc `swscaler` (`overlay` / `format=gbrp`) với mã thoát FFmpeg `-129` trên Windows.
+- **Sửa lỗi Gemini Gateway Circuit Breaker nhận nhầm mã thoát process**: Thắt chặt regex bắt mã lỗi HTTP sang `\b(?:405|429)\b`, ngăn ngừa mã thoát FFmpeg 32-bit unsigned (`4294967167` tương ứng `-129`) vô tình kích hoạt ngắt mạch Gemini Gateway và làm dừng cả hàng đợi render.
+- **Tối ưu hóa UI trạng thái phục hồi AutoShort**: Tách bạch trạng thái nghẽn API Gemini (`provider-throttled`) khỏi bộ đếm "Phục hồi thời lượng lượt X/2" để giao diện thông báo chính xác tiến trình xử lý.
+- **Cải thiện trích xuất bài viết & phân trang chương Facebook Reels**: Bổ sung bộ lọc tên chương anh/em (sibling chapters) loại bỏ dấu phân cách và xuống dòng, chuẩn hóa tiêu đề và xử lý ổn định các bài viết có chương mở đầu hoặc URL phân trang.
+
 ## TediaPros v0.1.38
 
 ### Logo Gemini cố định: khử Alpha

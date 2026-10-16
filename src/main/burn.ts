@@ -22,6 +22,7 @@ import { debugRaw, errLabel, logInfo, logWarn } from './logger'
 import {
   type CanonicalDisplayGeometry,
   canonicalBurnDisplayFilter,
+  needsColorNormalization,
   parseCanonicalMediaMetadata,
   parseFrameRate
 } from './canonicalDisplayGeometry'
@@ -210,6 +211,9 @@ export interface Meta {
   audioStart?: number
   videoBitrate?: number
   videoCodec?: string
+  colorSpace?: string
+  colorPrimaries?: string
+  colorTransfer?: string
 }
 
 function evenDimension(value: number, fallback: number): number {
@@ -233,9 +237,17 @@ export function canonicalDisplayVideoFilter(meta: Meta): string | null {
   const sarDen = Number.isFinite(sarDenRaw) && sarDenRaw > 0 ? sarDenRaw : 1
   const needsSarNormalization = Math.abs(sarNum / sarDen - 1) > 0.0001
   const needsPtsNormalization = Math.abs(meta.videoStart || 0) > 0.0001
-  if (!needsSarNormalization && !needsPtsNormalization) return null
+  const needsColor = needsColorNormalization({
+    primaries: meta.colorPrimaries,
+    space: meta.colorSpace,
+    transfer: meta.colorTransfer
+  })
+  if (!needsSarNormalization && !needsPtsNormalization && !needsColor) return null
 
   const filters: string[] = []
+  if (needsColor) {
+    filters.push('setparams=color_primaries=bt709:color_trc=bt709:colorspace=bt709')
+  }
   if (needsPtsNormalization) filters.push('setpts=PTS-STARTPTS')
   if (needsSarNormalization) {
     filters.push(
@@ -253,7 +265,7 @@ async function doVideo(ffprobe: string, video: string): Promise<Meta> {
       ffprobe,
       [
         '-v', 'error',
-        '-show_entries', 'stream=index,codec_type,codec_name,bit_rate,width,height,start_time,duration,r_frame_rate,avg_frame_rate,sample_aspect_ratio:stream_tags=rotate:stream_side_data=rotation',
+        '-show_entries', 'stream=index,codec_type,codec_name,bit_rate,width,height,start_time,duration,r_frame_rate,avg_frame_rate,sample_aspect_ratio,color_space,color_primaries,color_transfer:stream_tags=rotate:stream_side_data=rotation',
         '-show_entries', 'format=duration,start_time',
         '-of', 'json',
         video
@@ -267,9 +279,15 @@ async function doVideo(ffprobe: string, video: string): Promise<Meta> {
           const parsed = JSON.parse(out)
           const videoStream = parsed.streams?.find((stream: { codec_type?: string }) => stream.codec_type === 'video')
           const bitrate = Number(videoStream?.bit_rate)
+          const colorSpace = typeof videoStream?.color_space === 'string' ? videoStream.color_space.trim().toLowerCase() : undefined
+          const colorPrimaries = typeof videoStream?.color_primaries === 'string' ? videoStream.color_primaries.trim().toLowerCase() : undefined
+          const colorTransfer = typeof videoStream?.color_transfer === 'string' ? videoStream.color_transfer.trim().toLowerCase() : undefined
           resolve({ ...parseCanonicalMediaMetadata(parsed),
             ...(Number.isFinite(bitrate) && bitrate > 0 ? { videoBitrate: bitrate } : {}),
-            ...(typeof videoStream?.codec_name === 'string' ? { videoCodec: videoStream.codec_name } : {}) })
+            ...(typeof videoStream?.codec_name === 'string' ? { videoCodec: videoStream.codec_name } : {}),
+            ...(colorSpace ? { colorSpace } : {}),
+            ...(colorPrimaries ? { colorPrimaries } : {}),
+            ...(colorTransfer ? { colorTransfer } : {}) })
         } catch {
           resolve({ w: 0, h: 0, giay: 0, hasAudio: false, videoDurationSeconds: null, containerDurationSeconds: 0 })
         }
@@ -1450,7 +1468,9 @@ export async function runBurnSubtitleLower(
     }
 
     const diagnostic = lastFailure?.diagnostic || 'không tạo được tệp video hợp lệ'
-    const exitCode = lastFailure?.code == null ? '' : `, mã ${lastFailure.code}`
+    const rawCode = lastFailure?.code
+    const signedCode = typeof rawCode === 'number' && rawCode > 0x7FFFFFFF ? (rawCode | 0) : rawCode
+    const exitCode = signedCode == null ? '' : `, mã ${signedCode}`
     logInfo(`Dịch màn hình: FFmpeg ${lastEncoder || 'render'} thất bại${exitCode} — ${diagnostic}.`)
     return { ok: false, error: `FFmpeg xuất video thất bại${exitCode}: ${diagnostic}.`, encoderAttempts }
   } finally {
