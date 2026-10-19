@@ -88,11 +88,15 @@ test('article failure recovers after restart; same-day workbook retains old rows
   deps.scan = async (w, s) => { const p = await scan(w, s); p.entries = [entry('111111', true)]; return p }
   deps.fetchArticle = async () => { throw Error('network down') }
   await monitor.tick(key); assert.equal((await monitor.state()).notices[0].status, 'partial')
-  deps.fetchArticle = async () => ({ url: 'https://news.example/story', title: 'Story', content: 'Complete story', status: 'success', completion: 'complete', stopReason: 'end-of-story', chapters: [{ index: 1, title: 'Chapter 1', content: 'Complete story', wordCount: 2 }] })
+  deps.thumbnail = async () => ({ buffer: Buffer.from('mock image'), ext: '.jpg' })
+  deps.fetchArticle = async () => ({ url: 'https://news.example/story', title: 'Story', content: 'Complete story', status: 'success', completion: 'complete', stopReason: 'end-of-story', thumbnailUrl: 'https://news.example/thumb.jpg', chapters: [{ index: 1, title: 'Chapter 1', content: 'Complete story', wordCount: 2 }] })
   deps.scan = async (w, s) => { const p = await scan(w, s); p.entries = [entry('111111', true), entry('222222')]; return p }
   const restarted = new FacebookReelsMonitor(new ReelsMonitorStore(join(root, 'monitor')), deps)
   await restarted.initialize(); await restarted.tick(key)
   const items = await ledger.read(); assert.equal(items.length, 2); assert.equal(items[0].article, 'done'); assert.deepEqual(calls, ['111111','222222'])
+  assert.equal(items[0].thumbnailUrl, 'https://news.example/thumb.jpg')
+  assert.ok(items[0].thumbnailPath && items[0].thumbnailPath.endsWith('.jpg'))
+  assert.equal(await readFile(items[0].thumbnailPath!, 'utf8'), 'mock image')
   const wb = new ExcelJS.Workbook(); await wb.xlsx.readFile(join(ledger.root, '2026-10-13', 'excel', 'reels_content.xlsx'))
   assert.equal(wb.worksheets[0].rowCount, 3)
   assert.match(await readFile(join(ledger.root, '2026-10-13', 'article', `${items[0].stem}_chapters`, 'chapter_01.txt'), 'utf8'), /Complete story/)

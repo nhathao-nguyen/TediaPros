@@ -5,6 +5,7 @@ import type { FacebookReelsChannel } from '../shared/facebookReels'
 import type { ReelsNotice, ReelsWatch } from '../shared/facebookReelsMonitor'
 import type { ReelsMonitorDependencies } from './facebookReelsMonitor'
 import { externalArticleUrl, articleLinksFromMessage } from '../shared/facebookArticleLinks'
+import { downloadArticleThumbnail } from './facebookArticle'
 import { assertContainedParentDirectory, assertContainedRegularFile } from './safeContainedPath'
 import { atomicWorkflowWrite, ReelsWorkflowStore, type ReelsWorkflowItem } from './reelsWorkflowStore'
 
@@ -88,6 +89,21 @@ export async function runDailyReelsWorkflow(
             await assertContainedParentDirectory(join(chaptersDir, '.check'), channel.outputDir, 'Thư mục chapter')
             await mkdir(chaptersDir, { recursive: true })
             await atomicWorkflowWrite(join(chaptersDir, `chapter_${String(chapter.index).padStart(2, '0')}.txt`), channel.outputDir, `${chapter.title}\n\n${chapter.content}`)
+          }
+          if (article.thumbnailUrl) {
+            item.thumbnailUrl = article.thumbnailUrl
+            try {
+              progress(`Đang tải thumbnail ${item.id}…`)
+              const fetchThumb = deps.thumbnail || downloadArticleThumbnail
+              const thumb = await fetchThumb(article.thumbnailUrl, signal)
+              if (thumb && thumb.buffer.length > 0) {
+                const thumbPath = join(dirs.thumbnail, `${item.stem}${thumb.ext}`)
+                await atomicWorkflowWrite(thumbPath, channel.outputDir, thumb.buffer)
+                item.thumbnailPath = thumbPath
+              }
+            } catch {
+              // Non-fatal error for thumbnail download
+            }
           }
           item.article = article.completion === 'partial' ? 'partial' : 'done'
           if (item.article === 'partial') item.error = `Bài viết chưa đầy đủ: ${article.stopReason || 'unknown'}`

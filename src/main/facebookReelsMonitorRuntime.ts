@@ -12,7 +12,7 @@ import { reelsOperation } from './facebookReelsController'
 import { logError } from './logger'
 import { facebookReelEntry, facebookReelsSource, mergeFacebookReel } from '../shared/facebookReels'
 import type { ReelsWatchRequest } from '../shared/facebookReelsMonitor'
-import { fetchArticle } from './facebookArticle'
+import { fetchArticle, downloadArticleThumbnail } from './facebookArticle'
 import { startAutoShortJob, cancelAutoShort, getAutoShortBatch } from './autoshort'
 import { runReelsAutoShort } from './reelsAutoShortRunner'
 import { getWorkflowAutoShortConfig } from './autoShortWorkflowConfig'
@@ -41,6 +41,7 @@ export function reelsMonitor(changed?: () => void): FacebookReelsMonitor {
       } finally { clearTimeout(timer); signal.removeEventListener('abort', abort) }
     },
     fetchArticle,
+    thumbnail: downloadArticleThumbnail,
     resolveDetails: async (entry, s, account, watch) => {
       let current = entry
       if (!current.facebook?.caption) {

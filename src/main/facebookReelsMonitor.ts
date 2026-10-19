@@ -17,6 +17,7 @@ export interface ReelsMonitorDependencies {
   scan(watch: ReelsWatch, signal: AbortSignal): Promise<PlaylistProbe>
   download(entry: PlaylistEntry, channel: FacebookReelsChannel, watch: ReelsWatch, signal: AbortSignal, targetDir?: string, stem?: string): Promise<DownloadResult>
   fetchArticle?(url: string, signal: AbortSignal): Promise<FacebookArticle>
+  thumbnail?(url: string, signal: AbortSignal): Promise<{ buffer: Buffer; ext: string } | null>
   resolveDetails?(entry: PlaylistEntry, signal: AbortSignal, account: string, watch: ReelsWatch): Promise<PlaylistEntry>
   runAutoShort?(videoPaths: string[], outputDir: string, signal: AbortSignal, onProgress?: (p: { index: number; total: number; message: string }) => void, hooks?: ReelsAutoShortHooks): Promise<AutoShortItemResult[]>
   recoverAutoShort?(jobId: string): Promise<AutoShortItemResult[]>

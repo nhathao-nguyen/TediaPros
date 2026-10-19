@@ -1,3 +1,11 @@
+## TediaPros v0.1.40
+
+### Facebook Reels: Tự động tải đầy đủ Thumbnail và các thành phần trong Daily Workflow
+
+- **Tự động tải Thumbnail website bài viết**: Bổ sung cơ chế tự động tải ảnh thumbnail chất lượng cao từ trang web nguồn bài viết vào thư mục `<kênh>/<ngày>/thumbnail/` trong tiến trình theo dõi hàng ngày (Daily Workflow), đồng bộ đầy đủ các phần tải giống với luồng Xuất thủ công (Video MP4, Caption TXT, Bài viết & chapter, Thumbnail, Excel, AutoShort).
+- **Cập nhật Bảng tổng hợp Excel**: Bổ sung cột `Link Thumbnail` và `File thumbnail` vào file tổng hợp `reels_content.xlsx` của từng ngày.
+- **Cập nhật giao diện Thư viện kênh**: Đổi nhãn tùy chọn thành "Cào bài viết, chapter & thumbnail theo ngày" để người dùng dễ dàng nhận biết tính năng tải trọn gói.
+
 ## TediaPros v0.1.39
 
 ### AutoShort: chuẩn hóa color metadata và sửa lỗi Circuit Breaker

@@ -480,7 +480,7 @@ export function FacebookReelsLibrary({ channels, busy, error, message, onRefresh
                                 )
                               }}
                             />
-                            <span>Cào bài viết & các chapter theo ngày</span>
+                            <span>Cào bài viết, chapter & thumbnail theo ngày</span>
                           </label>
 
                           <label style={{ display: 'inline-flex', alignItems: 'center', gap: 6, cursor: 'pointer', color: watch?.autoRunAutoShort ? 'var(--accent, #43e7d5)' : 'var(--text-muted)' }}>
